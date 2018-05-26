@@ -1,6 +1,8 @@
 
-<h3>Today's date is {{today.toString()}}</h3>
+<h3>Today's date is ...</h3>
 
-<svg viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="50"/>
+<svg viewBox="0 0 1000 1000">
+  <path *ngFor="let path of daySquares" [attr.d]="path"/>
 </svg>
+
+{{rows}}
