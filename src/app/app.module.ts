@@ -1,3 +1,4 @@
+import { TimeService } from './services/time.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
@@ -18,7 +19,7 @@ import { MonthViewComponent } from './views/month-view/month-view.component';
   imports: [
     BrowserModule
   ],
-  providers: [],
+  providers: [ TimeService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

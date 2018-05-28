@@ -1,3 +1,4 @@
+import { TimeService } from './../../services/time.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,33 +8,52 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MonthViewComponent implements OnInit {
 
+  
+  viewBox: string;
+  viewBoxHeight: Number;
+  viewBoxWidth: Number;
+  now: Date;
 
-  viewBoxHeight = 600;
-  viewBoxWidth = 800;
-
-  daySquares = this.calculateDays();
-
-  constructor() { }
-
-  ngOnInit() {
-
+  daySquareStyle = {
+    "fill":"#f9f9f9",
+    "stroke":"none"
   }
 
-  calculateDays(): Object[] {
-    let now: Date = new Date();
+  days: {
+    date: Date, 
+    dateString: string,
+    path:string
+  }[];
+
+  constructor(private timeService: TimeService) { }
+
+  ngOnInit() {
+    this.viewBoxHeight = 600;
+    this.viewBoxWidth = 800;
+    this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
+    this.days = this.calculateDays(this.viewBoxHeight, this.viewBoxWidth);
+    this.now = this.timeService.getDate();
+  }
+
+  calculateDays(viewBoxHeight, viewBoxWidth): { date: Date, dateString: string, path:string}[] {
+    let now: Date = this.timeService.getDate();
     let firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1 );
     let lastOfMonth = new Date(now.getFullYear(), now.getMonth()+1, 0);
+    let currentDate: Date = firstOfMonth;
     let columns = 7;
     let rows = Math.ceil((lastOfMonth.getDate()+firstOfMonth.getDay())/columns);
 
-    let padding = 5;
-    let dayWidth = (this.viewBoxWidth - (padding*(columns+1))) / columns;
-    let dayHeight = (this.viewBoxHeight - (padding*(rows+1))) / rows;
+    let padding = 10;
+    let dayWidth = (viewBoxWidth - (padding*(columns+1))) / columns;
+    let dayHeight = (viewBoxHeight - (padding*(rows+1))) / rows;
 
-    let daySquares: String[] = [];
+    let days: { date: Date, dateString: string, path:string}[] = [];
 
     for(let row = 0; row < rows; row++){
       for(let col = 0; col < columns; col++){
+        if(currentDate === firstOfMonth){
+          col = currentDate.getDay();
+        }
         let x = padding + (col*dayWidth) + (col*padding);
         let y = padding + (row*dayHeight) + (row*padding);
         let path = 'M'+x+' '+y+
@@ -42,13 +62,27 @@ export class MonthViewComponent implements OnInit {
           ' L'+(x+dayWidth)+' '+y+
           ' Z'+
           ''
+        let day: { date: Date, dateString: string, path:string} = {
+          date: currentDate,
+          dateString: this.timeService.static_yyyymmdd(currentDate),
+          path: path
+        }
+        if(currentDate.getMonth() === lastOfMonth.getMonth())
+          days.push(day);
+
+        let nextDate = new Date(currentDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+        currentDate = nextDate;
+
         
-        daySquares.push(path);
+        
       }
     }
-    console.log(daySquares);
+    return days;
+  }
 
-    return daySquares;
+  clickDay(yyyymmdd: string){
+    let selectedDate = new Date(yyyymmdd);
   }
 
 }
