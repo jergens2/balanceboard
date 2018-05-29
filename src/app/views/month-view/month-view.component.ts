@@ -1,5 +1,7 @@
 import { TimeService } from './../../services/time.service';
 import { Component, OnInit } from '@angular/core';
+import { Day } from './day.model';
+
 
 @Component({
   selector: 'app-month-view',
@@ -14,16 +16,8 @@ export class MonthViewComponent implements OnInit {
   viewBoxWidth: Number;
   now: Date;
 
-  daySquareStyle = {
-    "fill":"#f9f9f9",
-    "stroke":"none"
-  }
 
-  days: {
-    date: Date, 
-    dateString: string,
-    path:string
-  }[];
+  days: Day[];
 
   constructor(private timeService: TimeService) { }
 
@@ -35,7 +29,7 @@ export class MonthViewComponent implements OnInit {
     this.now = this.timeService.getDate();
   }
 
-  calculateDays(viewBoxHeight, viewBoxWidth): { date: Date, dateString: string, path:string}[] {
+  calculateDays(viewBoxHeight, viewBoxWidth): Day[] {
     let now: Date = this.timeService.getDate();
     let firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1 );
     let lastOfMonth = new Date(now.getFullYear(), now.getMonth()+1, 0);
@@ -47,7 +41,7 @@ export class MonthViewComponent implements OnInit {
     let dayWidth = (viewBoxWidth - (padding*(columns+1))) / columns;
     let dayHeight = (viewBoxHeight - (padding*(rows+1))) / rows;
 
-    let days: { date: Date, dateString: string, path:string}[] = [];
+    let days: Day[] = [];
 
     for(let row = 0; row < rows; row++){
       for(let col = 0; col < columns; col++){
@@ -62,10 +56,14 @@ export class MonthViewComponent implements OnInit {
           ' L'+(x+dayWidth)+' '+y+
           ' Z'+
           ''
-        let day: { date: Date, dateString: string, path:string} = {
+        let day: Day = {
           date: currentDate,
-          dateString: this.timeService.static_yyyymmdd(currentDate),
-          path: path
+          dateYYYYMMDD: this.timeService.static_yyyymmdd(currentDate),
+          svgPath: path,
+          style: {
+            "fill":"#f9f9f9",
+            "stroke":"none"
+          }
         }
         if(currentDate.getMonth() === lastOfMonth.getMonth())
           days.push(day);
@@ -81,8 +79,21 @@ export class MonthViewComponent implements OnInit {
     return days;
   }
 
-  clickDay(yyyymmdd: string){
-    let selectedDate = new Date(yyyymmdd);
+  onClick(day: Day){
+    console.log(day);
+  }
+  onMouseEnter(day: Day){
+    day.style = {
+      "fill":"#f9f9f9",
+      "stroke":"blue",
+      "cursor":"pointer"
+    }
+  }
+  onMouseLeave(day: Day){
+    day.style = {
+      "fill":"#f9f9f9",
+      "stroke":"none"
+    }
   }
 
 }

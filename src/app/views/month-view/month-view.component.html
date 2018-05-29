@@ -2,9 +2,16 @@
 <h3>{{this.timeService.getMonthString()}} {{this.timeService.getDate().getFullYear()}}</h3>
 
 <svg [attr.viewBox]="viewBox" width="100%">
-  <path *ngFor="let day of days" 
-    (mouseover)="hover=true" (mouseleave)="hover=false"
-    [ngStyle]="daySquareStyle" 
-    (click)="clickDay(day.dateString)"
-    [attr.d]="day.path" />
+  <g *ngFor="let day of days" >
+      <text>hello.</text>
+      <path 
+      [ngStyle]="day.style"
+      (click)="onClick(day)"
+      (mouseenter)="onMouseEnter(day)"
+      (mouseleave)="onMouseLeave(day)"
+      [attr.d]="day.svgPath" />
+  </g>
+  
 </svg>
+
+<div     appHoverShape> Hello </div>
