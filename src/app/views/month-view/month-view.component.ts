@@ -1,3 +1,4 @@
+import { HomeService } from './../../services/home.service';
 import { TimeService } from './../../services/time.service';
 import { Component, OnInit } from '@angular/core';
 import { Day } from './day.model';
@@ -14,19 +15,18 @@ export class MonthViewComponent implements OnInit {
   viewBox: string;
   viewBoxHeight: Number;
   viewBoxWidth: Number;
-  now: Date;
 
+  
 
   days: Day[];
 
-  constructor(private timeService: TimeService) { }
+  constructor(private timeService: TimeService, private homeService: HomeService) { }
 
   ngOnInit() {
     this.viewBoxHeight = 600;
     this.viewBoxWidth = 800;
     this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
     this.days = this.calculateDays(this.viewBoxHeight, this.viewBoxWidth);
-    this.now = this.timeService.getDate();
   }
 
   calculateDays(viewBoxHeight, viewBoxWidth): Day[] {
@@ -58,12 +58,14 @@ export class MonthViewComponent implements OnInit {
           ''
         let day: Day = {
           date: currentDate,
-          dateYYYYMMDD: this.timeService.static_yyyymmdd(currentDate),
+          yyyymmdd: this.timeService.static_yyyymmdd(currentDate),
           svgPath: path,
           style: {
             "fill":"#f9f9f9",
             "stroke":"none"
-          }
+          },
+          text_x: x+5,
+          text_y: y+20
         }
         if(currentDate.getMonth() === lastOfMonth.getMonth())
           days.push(day);
@@ -80,7 +82,7 @@ export class MonthViewComponent implements OnInit {
   }
 
   onClick(day: Day){
-    console.log(day);
+    this.homeService.setView('day');
   }
   onMouseEnter(day: Day){
     day.style = {

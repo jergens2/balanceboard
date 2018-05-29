@@ -7,12 +7,18 @@
   </div>
   <div class="row text-center">
     <div class="col-3">
-      <button class="btn btn-sm">Year</button>
-      <button class="btn btn-sm">Month</button>
-      <button class="btn btn-sm">Week</button>
+      <button class="btn btn-sm" (click)="onClickTimeFrameButton('year')">Year</button>
+      <button class="btn btn-sm" (click)="onClickTimeFrameButton('month')">Month</button>
+      <button class="btn btn-sm" (click)="onClickTimeFrameButton('day')">Day</button>
     </div>
-    <div class="col-12 col-lg-6">
+    <div class="col-12 col-lg-6" *ngIf="selectedView=='day'">
+      <app-day-view></app-day-view>
+    </div>
+    <div class="col-12 col-lg-6" *ngIf="selectedView=='month'">
       <app-month-view></app-month-view>
+    </div>
+    <div class="col-12 col-lg-6" *ngIf="selectedView=='year'">
+      <app-year-view></app-year-view>
     </div>
     <div class="col-3"></div>
   </div>
