@@ -1,3 +1,19 @@
-<p>
-  day-view works!
-</p>
+
+Day View
+<svg [attr.viewBox]="viewBox" width="100%">
+  <g *ngFor="let timeSegment of timeSegments">
+    <line
+        [ngStyle]="timeSegment.style"
+        [attr.x1]="timeSegment.line_x1"
+        [attr.x2]="timeSegment.line_x2"
+        [attr.y1]="timeSegment.line_y1"
+        [attr.y2]="timeSegment.line_y2"
+    />
+    <text 
+      [attr.x]="timeSegment.text_x" 
+      [attr.y]="timeSegment.text_y" 
+      class="dayDateDisplay">
+      {{timeSegment.text_string}}
+    </text>
+  </g>
+</svg>

@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
+import * as moment from 'moment';
 
 @Injectable()
 export class TimeService {
 
-  constructor() { }
+  constructor() {}
 
-  now = new Date();
-
-  now_yyyymmdd(){
-    return this.static_yyyymmdd(this.now);
-  } 
+  now: Date = new Date();
+  activeDate: moment.Moment = moment(this.now);
 
   getDate(): Date{
     return this.now;
@@ -32,14 +30,15 @@ export class TimeService {
     return months[this.now.getMonth()];
   }
 
-  static_yyyymmdd(date: Date): string{
-    var mm = date.getMonth() + 1;
-    var dd = date.getDate();
-  
-    return [date.getFullYear(),
-      '-' + (mm>9 ? '' : '0') + mm,
-      '-' + (dd>9 ? '' : '0') + dd
-           ].join('');
+  setActiveDate(date: Date){
+    //this.activeDate = date;
   }
+
+  getActiveDate(): moment.Moment{
+    return this.activeDate;
+  }
+
+
+
 
 }

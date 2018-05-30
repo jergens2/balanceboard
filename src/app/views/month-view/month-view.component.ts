@@ -13,8 +13,8 @@ export class MonthViewComponent implements OnInit {
 
   
   viewBox: string;
-  viewBoxHeight: Number;
-  viewBoxWidth: Number;
+  viewBoxHeight: number;
+  viewBoxWidth: number;
 
   
 
@@ -58,7 +58,7 @@ export class MonthViewComponent implements OnInit {
           ''
         let day: Day = {
           date: currentDate,
-          yyyymmdd: this.timeService.static_yyyymmdd(currentDate),
+          yyyymmdd: "yyyymmdd is not assigned",
           svgPath: path,
           style: {
             "fill":"#f9f9f9",

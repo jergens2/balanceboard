@@ -5,8 +5,8 @@ export class Day {
     public yyyymmdd: string;
     public svgPath: string;
     public style: {};
-    public text_x: Number;
-    public text_y: Number;
+    public text_x: number;
+    public text_y: number;
 
     /*
     constructor(
