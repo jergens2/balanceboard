@@ -1,6 +1,8 @@
 
 Day View
-<svg [attr.viewBox]="viewBox" width="100%">
+<svg #svgDayView
+  [attr.viewBox]="viewBox" width="100%" 
+  >
   <g *ngFor="let timeSegment of timeSegments">
     <line
         [ngStyle]="timeSegment.style"
@@ -15,5 +17,16 @@ Day View
       class="dayDateDisplay">
       {{timeSegment.text_string}}
     </text>
+  </g>
+  <g *ngFor="let activityRect of activityRects">
+    <rect 
+      [attr.x]="activityRect.x"
+      [attr.y]="activityRect.y"
+      [attr.width]="activityRect.width"
+      [attr.height]="activityRect.height"
+      [attr.rx]="activityRect.rx"
+      [attr.ry]="activityRect.ry"
+      [ngStyle]="activityRect.style"
+    />
   </g>
 </svg>
