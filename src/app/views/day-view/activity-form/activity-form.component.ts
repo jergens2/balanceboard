@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 
@@ -11,6 +11,8 @@ export class ActivityFormComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal) { }
 
+  @Output() formAction = new EventEmitter<string>();
+
   testObservable: Observable<string>;
 
   ngOnInit() {
@@ -18,9 +20,11 @@ export class ActivityFormComponent implements OnInit {
   }
 
   closeModal(){
-    
-    this.activeModal.close('modal closed');
+    this.activeModal.close('cancelled');
+  }
 
+  specialButton(){
+    this.activeModal.close('success');
   }
 
 }

@@ -21,7 +21,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('svgDayView') svgObject: ElementRef;
   
-  activeModal: NgbActiveModal;
   activeModalSubscription: Subscription;
   newActivityForm: FormGroup;
 
@@ -67,7 +66,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       .do((mm: MouseEvent) => mm.preventDefault());
     const up = Observable.fromEvent(document, 'mouseup')
       .do((mu: MouseEvent) => {
-        this.finalizeActivityRect(this.getCursorPt(mu));
+        this.createModal(this.getCursorPt(mu));
         mu.preventDefault()
       });
 
@@ -117,17 +116,33 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     
   }
-  finalizeActivityRect(cursorPt: SVGPoint){
-    //this.activityRects.push(this.activeActivityRect);
-    //this.activeActivityRect = null;
-
-
-    this.openFormModal();
+  finalizeActiveActivityRect(action: string){
+    if(action === 'cancelled'){
+      this.activeActivityRect = null;
+    }else if(action === 'success'){
+      this.activityRects.push(this.activeActivityRect);
+      this.activeActivityRect = null;
+    }else{
+      
+    }
   }
+  createModal(cursorPt: SVGPoint){
+    if(cursorPt.y <= this.activeActivityRect.y){
+
+    }else{
+      let modalRef = this.openFormModal();
+      modalRef.result.then((resultAction) => {
+        this.finalizeActiveActivityRect(resultAction);
+      }).catch((error) => {});
+    }
+
+    
+  }
+  
 
   openFormModal() {
     const modalRef = this.modalService.open(ActivityFormComponent, { centered: true });
-    console.log(modalRef);
+    return modalRef;
   }
 
 

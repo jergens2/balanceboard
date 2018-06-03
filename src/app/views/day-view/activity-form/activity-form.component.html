@@ -1,13 +1,14 @@
 
   <div class="modal-header">
     <h4 class="modal-title">Modal title</h4>
-    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+    <button type="button" class="close" aria-label="Close" (click)="closeModal()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     Body
+    <button class="btn-btn-block" (click)="specialButton()">huehuehe</button>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="activeModal.dismiss()">Close</button>
+    <button type="button" class="btn btn-outline-dark" (click)="closeModal()">Cancel</button>
   </div>
