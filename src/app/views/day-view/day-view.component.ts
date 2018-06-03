@@ -1,9 +1,15 @@
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Observable, Subscription } from 'rxjs';
+import { NgbModal, NgbActiveModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+
+import * as moment from 'moment';
+
 import { TimeService } from './../../services/time.service';
 import { TimeSegment } from './time-segment.model';
 import { ActivityRect } from './activity-rect.model'
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
-import * as moment from 'moment';
-import { Observable, Subscription } from 'rxjs';
+
+import { ActivityFormComponent } from './activity-form/activity-form.component';
 
 
 @Component({
@@ -13,14 +19,12 @@ import { Observable, Subscription } from 'rxjs';
 })
 export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @Input() label: string = '';
-  @Input() min = 0;
-  @Input() max = 1;
-  @Input() value = 0;
-  //@Output() valueChange = new EventEmitter<number>();
-
   @ViewChild('svgDayView') svgObject: ElementRef;
-  cursorPt: SVGPoint = {x: 0, y: 0} as any;
+  
+  activeModal: NgbActiveModal;
+  activeModalSubscription: Subscription;
+  newActivityForm: FormGroup;
+
   handle: Subscription;
   pt: SVGPoint;
 
@@ -28,16 +32,14 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   viewBoxHeight: number;
   viewBoxWidth: number;
 
-  mouseLine: any;
-
   timeSegments: TimeSegment[];
   activityRects: ActivityRect[] = [];
 
-  activityRect: ActivityRect;
+  activeActivityRect: ActivityRect;
 
   today: moment.Moment;
 
-  constructor(private timeService:TimeService) { }
+  constructor(private timeService:TimeService, private modalService: NgbModal) { }
 
   ngOnInit() {
     this.viewBoxHeight = 600;
@@ -45,7 +47,12 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
     this.today = this.timeService.getActiveDate();
     this.timeSegments = this.calculateTimeSegments();
-    this.cursorPt = {x:0, y:0} as any;
+    this.newActivityForm = new FormGroup({
+      'startTime': new FormControl(null),
+      'endTime': new FormControl(null),
+      'description' : new FormControl(null),
+      'category' : new FormControl(null)
+    });
   }
 
   ngAfterViewInit(){
@@ -53,29 +60,14 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const down = Observable.fromEvent(this.svgObject.nativeElement, 'mousedown')
       .do((md: MouseEvent) => {
-        this.pt.x = md.clientX;
-        this.pt.y = md.clientY;
-        this.cursorPt = this.pt.matrixTransform(
-          this.svgObject.nativeElement.getScreenCTM().inverse()
-          //at this pont the cursorPt provides accurate SVG coordinates within the SVG object
-        );
-        this.initiateActivityRect(this.cursorPt);
+        this.initiateActivityRect(this.getCursorPt(md));
         md.preventDefault();
       });
     const move = Observable.fromEvent(document, 'mousemove')
-      .do((mm: MouseEvent) => {
-        mm.preventDefault()
-        
-      });
+      .do((mm: MouseEvent) => mm.preventDefault());
     const up = Observable.fromEvent(document, 'mouseup')
       .do((mu: MouseEvent) => {
-        this.pt.x = mu.clientX;
-        this.pt.y = mu.clientY;
-        this.cursorPt = this.pt.matrixTransform(
-          this.svgObject.nativeElement.getScreenCTM().inverse()
-          //at this pont the cursorPt provides accurate SVG coordinates within the SVG object
-        );
-        this.finalizeActivityRect(this.cursorPt);
+        this.finalizeActivityRect(this.getCursorPt(mu));
         mu.preventDefault()
       });
 
@@ -85,50 +77,59 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.handle = drag
     .subscribe((md: MouseEvent) => {
-        this.pt.x = md.clientX;
-        this.pt.y = md.clientY;
-        this.cursorPt = this.pt.matrixTransform(
-          this.svgObject.nativeElement.getScreenCTM().inverse()
-          //at this pont the cursorPt provides accurate SVG coordinates within the SVG object
-        );
-        
-
+        this.updateActiveActivtyRect(this.getCursorPt(md))
     });
   }
 
+  getCursorPt(me: MouseEvent): SVGPoint{
+    let cursorPt: SVGPoint;
+    this.pt.x = me.clientX;
+    this.pt.y = me.clientY;
+    cursorPt = this.pt.matrixTransform(
+      this.svgObject.nativeElement.getScreenCTM().inverse()
+      //at this pont the cursorPt provides accurate SVG coordinates within the SVG object
+    );
+    return cursorPt;
+  }
+
   initiateActivityRect(cursorPt: SVGPoint){
-    this.activityRect = new ActivityRect();
-    this.activityRect.x = 0 + 100;
-    this.activityRect.width = this.viewBoxWidth - 150;
-    this.activityRect.y = cursorPt.y;
-    this.activityRect.height = 0;
-    this.activityRect.rx = 5;
-    this.activityRect.ry = 10;
-    this.activityRect.style = {
+    this.activeActivityRect = new ActivityRect();
+    this.activeActivityRect.x = 0 + 100;
+    this.activeActivityRect.width = this.viewBoxWidth - 150;
+    this.activeActivityRect.y = cursorPt.y;
+    this.activeActivityRect.height = 0;
+    this.activeActivityRect.rx = 1;
+    this.activeActivityRect.ry = 1;
+    this.activeActivityRect.style = {
       "fill":"red",
       "stroke":"black",
+      "stroke-width":"2",
+      "fill-opacity":"0.2"
     }
+  }
+  updateActiveActivtyRect(cursorPt: SVGPoint){
+    if(cursorPt.y < this.activeActivityRect.y){
+      let height = this.activeActivityRect.y - cursorPt.y;
+      this.activeActivityRect.y = cursorPt.y;
+      this.activeActivityRect.height = height;
+    }else{
+      this.activeActivityRect.height = cursorPt.y - this.activeActivityRect.y;
+    }
+    
   }
   finalizeActivityRect(cursorPt: SVGPoint){
-    this.activityRect.height = cursorPt.y - this.activityRect.y;
-    this.activityRects.push(this.activityRect);
-    console.log(this.activityRects)
+    //this.activityRects.push(this.activeActivityRect);
+    //this.activeActivityRect = null;
+
+
+    this.openFormModal();
   }
 
-  createActivityRect(x: number, width: number, y:number, height:number, style?:{}): ActivityRect{
-    let activityRect: ActivityRect = new ActivityRect();
-    activityRect.x = 0 + 50;
-    activityRect.width = this.viewBoxWidth - 50;
-    activityRect.y = this.cursorPt.y;
-    activityRect.height = 100;
-    activityRect.style = {
-      "fill":"red",
-      "stroke":"black",
-    }
-
-    return activityRect
-
+  openFormModal() {
+    const modalRef = this.modalService.open(ActivityFormComponent, { centered: true });
+    console.log(modalRef);
   }
+
 
   ngOnDestroy() {
     this.handle.unsubscribe();

@@ -1,32 +1,55 @@
+<div class="row">
+  <div class="col-12">Day View</div>
+</div>
+<div class="row">
 
-Day View
-<svg #svgDayView
-  [attr.viewBox]="viewBox" width="100%" 
-  >
-  <g *ngFor="let timeSegment of timeSegments">
-    <line
-        [ngStyle]="timeSegment.style"
-        [attr.x1]="timeSegment.line_x1"
-        [attr.x2]="timeSegment.line_x2"
-        [attr.y1]="timeSegment.line_y1"
-        [attr.y2]="timeSegment.line_y2"
-    />
-    <text 
-      [attr.x]="timeSegment.text_x" 
-      [attr.y]="timeSegment.text_y" 
-      class="dayDateDisplay">
-      {{timeSegment.text_string}}
-    </text>
-  </g>
-  <g *ngFor="let activityRect of activityRects">
-    <rect 
-      [attr.x]="activityRect.x"
-      [attr.y]="activityRect.y"
-      [attr.width]="activityRect.width"
-      [attr.height]="activityRect.height"
-      [attr.rx]="activityRect.rx"
-      [attr.ry]="activityRect.ry"
-      [ngStyle]="activityRect.style"
-    />
-  </g>
-</svg>
+
+  <div class="col-8">
+
+
+    <svg #svgDayView [attr.viewBox]="viewBox" width="100%">
+      <g *ngFor="let timeSegment of timeSegments">
+        <line [ngStyle]="timeSegment.style" [attr.x1]="timeSegment.line_x1" [attr.x2]="timeSegment.line_x2" [attr.y1]="timeSegment.line_y1"
+          [attr.y2]="timeSegment.line_y2" />
+        <text [attr.x]="timeSegment.text_x" [attr.y]="timeSegment.text_y" class="dayDateDisplay">
+          {{timeSegment.text_string}}
+        </text>
+      </g>
+      <g *ngFor="let activityRect of activityRects">
+        <rect [attr.x]="activityRect.x" [attr.y]="activityRect.y" [attr.width]="activityRect.width" [attr.height]="activityRect.height"
+          [attr.rx]="activityRect.rx" [attr.ry]="activityRect.ry" [ngStyle]="activityRect.style" />
+      </g>
+      <g *ngIf="activeActivityRect">
+        <rect [attr.x]="activeActivityRect.x" [attr.y]="activeActivityRect.y" [attr.width]="activeActivityRect.width" [attr.height]="activeActivityRect.height"
+          [attr.rx]="activeActivityRect.rx" [attr.ry]="activeActivityRect.ry" [ngStyle]="activeActivityRect.style" />
+      </g>
+    </svg>
+  </div>
+  <div class="col-4">
+    <!-- <div *ngIf="true"></div> -->
+      <!-- <form [formGroup]="newActivityForm" >
+          <div class="form-group">
+              <label class="center-block">Name:
+                <input class="form-control" formControlName="startTime">
+              </label>
+            </div>
+      </form> -->
+    <!-- </div> -->
+  </div>
+</div>
+
+  
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Modal title</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    Body
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="c('Close click')">Close</button>
+  </div>
+</ng-template>
