@@ -1,7 +1,10 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbTimepicker } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
+
+import * as moment from 'moment';
+
 
 @Component({
   selector: 'app-activity-form',
@@ -15,11 +18,25 @@ export class ActivityFormComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) { }
 
   newActivityForm: FormGroup;
+  public startTime: moment.Moment;
+  public endTime: moment.Moment;
 
   ngOnInit() {
     this.newActivityForm = new FormGroup({
-      'startTime': new FormControl(null),
-      'endTime': new FormControl(null),
+      'startTime': new FormGroup({
+        'startTimeYear': new FormControl(null),
+        'startTimeMonth': new FormControl(null),
+        'startTimeDay': new FormControl(null),
+        'startTimeHour': new FormControl(null),
+        'startTimeMinute': new FormControl(null),
+        'startTimeSecond': new FormControl(null),
+      }),
+      'endTimeYear': new FormControl(null),
+      'endTimeMonth': new FormControl(null),
+      'endTimeDay': new FormControl(null),
+      'endTimeHour': new FormControl(null),
+      'endTimeMinute': new FormControl(null),
+      'endTimeSecond': new FormControl(null),
       'description' : new FormControl(null),
       'category' : new FormControl(null)
     });

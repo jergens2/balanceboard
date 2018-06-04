@@ -119,16 +119,27 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   createModal(cursorPt: SVGPoint){
     if(cursorPt.y <= this.activeActivityRect.y){
-
+      //in this case, the cursor is above the original start point.  
     }else{
       const modalRef = this.modalService.open(ActivityFormComponent, { centered: true });
       //
       // Need up clean up the next couple of statements:  change to variables to work dynamically, not on static values of 7 and 21
       //
-      //modalRef.componentInstance.startTime = ;
+      const padding: number = 10;
+      const totalHeight = (this.viewBoxHeight - (padding * 2));
+      const totalMinutes = 29*30;  //29 increments * 30 minutes of time each
+      const startMinutes = totalMinutes * (this.activeActivityRect.y/totalHeight);
+      const endMinutes = totalMinutes * (this.activeActivityRect.y+this.activeActivityRect.height)/totalHeight;
+      
+      const startTime: moment.Moment = moment().hour(7).minute(0).second(0).millisecond(0).add(startMinutes, 'minute');
+      const endTime: moment.Moment = moment().hour(7).minute(0).second(0).millisecond(0).add(endMinutes, 'minute');
 
+      modalRef.componentInstance.startTime = startTime;
+      modalRef.componentInstance.poop = endTime;
 
-      // end
+      //
+      // end of section to be cleaned
+      //
 
       modalRef.result.then((resultAction) => {
         this.finalizeActiveActivityRect(resultAction);
@@ -155,29 +166,35 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     let timeSegments: TimeSegment[] = [];
     let currentHour = startHour;
-    let currentTime: moment.Moment = this.today.hours(currentHour);
-    currentTime.minutes(0).seconds(0);
+    let currentTime: moment.Moment = this.today.hours(currentHour).minutes(0).seconds(0);;
   
     for (let increment = 0; increment < increments; increment++){
       let timeSegment: TimeSegment = new TimeSegment();
       
       timeSegment.dateTime = currentTime.toDate();
 
-      timeSegment.line_x1 = 0 + padding;
+      timeSegment.line_x1 = 0 + padding + 80;
       timeSegment.line_x2 = this.viewBoxWidth - padding;
       timeSegment.line_y1 = (padding*2) + (increment*segmentHeight);
       timeSegment.line_y2 = timeSegment.line_y1;
-      timeSegment.text_x = timeSegment.line_x1;
-      timeSegment.text_y = timeSegment.line_y1 - 3;
+      timeSegment.text_x = timeSegment.line_x1 -80;
+      timeSegment.text_y = timeSegment.line_y1 -15;
       if(currentTime.minutes() === 0){
-        timeSegment.text_string = currentTime.clone().format('h:mm a');
+        //  I added 1 hour because something about this arithmetic produces the line segments that do not line up with the hours, so I simply added 1 hour here.  
+        //  This should probably be revisited to be more robust going forward, especially if the display should have dynamically settable start and end hours
+        if(currentTime.hour() === 7){
+          //quick hack to get rid of the hour 7 label.
+          timeSegment.text_string = "";
+        }else{
+          timeSegment.text_string = currentTime.clone().format('h:mm a');
+        }
       }else{
         timeSegment.text_string = "";
       }
       
       timeSegment.style = {
         "stroke":"black",
-        "stroke-width":"0.5px",
+        "stroke-width":"0.5px"
       }
 
       timeSegments.push(timeSegment);

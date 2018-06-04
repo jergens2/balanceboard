@@ -6,14 +6,30 @@
 </div>
 <div class="modal-body">
   <form [formGroup]="newActivityForm">
-    <div class="form-group">
+    <div class="form-group" formGroupName="startTime">
       <label class="center-block" for="startTime">Start Time</label>
-        <input class="form-control" formControlName="startTime" [value]="startTime">
-      
+      <div class="form-row">
+        <div class="col-4">
+          <label class="center-block" for="startTimeYear">YYYY-MM-DD</label>
+          <input class="form-control" formControlName="startTimeYear" [value]="startTime.format('YYYY-MM-DD')" disabled>
+        </div>
+        <div class="col">
+          <label class="center-block" for="startTimeHour">HH</label>
+          <input class="form-control" formControlName="startTimeHour" [value]="startTime.format('HH')">
+        </div>
+        <div class="col">
+          <label class="center-block" for="startTimeMinute">mm</label>
+          <input class="form-control" formControlName="startTimeMinute" [value]="startTime.format('mm')"> 
+        </div>
+        <div class="col">
+          <label class="center-block" for="startTimeSecond">ss</label>
+          <input class="form-control" formControlName="startTimeSecond" [value]="startTime.format('ss')">
+        </div>
+      </div>
     </div>
     <div class="form-group" >
       <label class="center-block" for="endTime">End Time</label>
-        <input class="form-control" formControlName="endTime" [value]="endTime">
+        <input class="form-control" formControlName="endTimeYear" [value]="poop">
       
     </div>
     <div class="form-group">

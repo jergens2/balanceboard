@@ -13,17 +13,15 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-2"></div>
-    <div class="col-8" *ngIf="selectedView=='day'">
+    <div class="col-12" *ngIf="selectedView=='day'">
       <app-day-view></app-day-view>
     </div>
-    <div class="col-8" *ngIf="selectedView=='month'">
+    <div class="col-12" *ngIf="selectedView=='month'">
       <app-month-view></app-month-view>
     </div>
-    <div class="col-8" *ngIf="selectedView=='year'">
+    <div class="col-12" *ngIf="selectedView=='year'">
       <app-year-view></app-year-view>
     </div>
-    <div class="col-2"></div>
   </div>
 </div>
 
