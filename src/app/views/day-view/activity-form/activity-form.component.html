@@ -1,14 +1,32 @@
-
-  <div class="modal-header">
-    <h4 class="modal-title">Modal title</h4>
-    <button type="button" class="close" aria-label="Close" (click)="closeModal()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    Body
-    <button class="btn-btn-block" (click)="specialButton()">huehuehe</button>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="closeModal()">Cancel</button>
-  </div>
+<div class="modal-header">
+  <h4 class="modal-title">New Activity</h4>
+  <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="newActivityForm">
+    <div class="form-group">
+      <label class="center-block" for="startTime">Start Time</label>
+        <input class="form-control" formControlName="startTime" [value]="startTime">
+      
+    </div>
+    <div class="form-group" >
+      <label class="center-block" for="endTime">End Time</label>
+        <input class="form-control" formControlName="endTime" [value]="endTime">
+      
+    </div>
+    <div class="form-group">
+      <label class="center-block" for="description">Description</label>
+        <input class="form-control" formControlName="description">
+      
+    </div>
+    <div class="form-group">
+      <label class="center-block" for="category">Category</label>
+        <input class="form-control" formControlName="category">
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-dark" (click)="closeModal()">Cancel</button>
+</div>

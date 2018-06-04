@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+
 import { Observable, Subscription } from 'rxjs';
-import { NgbModal, NgbActiveModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbActiveModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import * as moment from 'moment';
 
@@ -20,9 +20,6 @@ import { ActivityFormComponent } from './activity-form/activity-form.component';
 export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('svgDayView') svgObject: ElementRef;
-  
-  activeModalSubscription: Subscription;
-  newActivityForm: FormGroup;
 
   handle: Subscription;
   pt: SVGPoint;
@@ -46,12 +43,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
     this.today = this.timeService.getActiveDate();
     this.timeSegments = this.calculateTimeSegments();
-    this.newActivityForm = new FormGroup({
-      'startTime': new FormControl(null),
-      'endTime': new FormControl(null),
-      'description' : new FormControl(null),
-      'category' : new FormControl(null)
-    });
   }
 
   ngAfterViewInit(){
@@ -130,7 +121,15 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     if(cursorPt.y <= this.activeActivityRect.y){
 
     }else{
-      let modalRef = this.openFormModal();
+      const modalRef = this.modalService.open(ActivityFormComponent, { centered: true });
+      //
+      // Need up clean up the next couple of statements:  change to variables to work dynamically, not on static values of 7 and 21
+      //
+      //modalRef.componentInstance.startTime = ;
+
+
+      // end
+
       modalRef.result.then((resultAction) => {
         this.finalizeActiveActivityRect(resultAction);
       }).catch((error) => {});
@@ -138,13 +137,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     
   }
-  
-
-  openFormModal() {
-    const modalRef = this.modalService.open(ActivityFormComponent, { centered: true });
-    return modalRef;
-  }
-
 
   ngOnDestroy() {
     this.handle.unsubscribe();

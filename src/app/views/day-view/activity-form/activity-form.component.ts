@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 
@@ -9,14 +10,19 @@ import { Observable } from 'rxjs';
 })
 export class ActivityFormComponent implements OnInit {
 
-  constructor(public activeModal: NgbActiveModal) { }
-
   @Output() formAction = new EventEmitter<string>();
 
-  testObservable: Observable<string>;
+  constructor(public activeModal: NgbActiveModal) { }
+
+  newActivityForm: FormGroup;
 
   ngOnInit() {
-    
+    this.newActivityForm = new FormGroup({
+      'startTime': new FormControl(null),
+      'endTime': new FormControl(null),
+      'description' : new FormControl(null),
+      'category' : new FormControl(null)
+    });
   }
 
   closeModal(){
