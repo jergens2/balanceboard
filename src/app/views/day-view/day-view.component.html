@@ -1,10 +1,10 @@
 <div class="row">
-  <div class="col-12">Day View</div>
+  <div class="col-12 text-center"><h3 *ngIf="today">{{today.format('MMM Do, YYYY')}}</h3></div>
 </div>
 <div class="row">
 
 
-  <div class="col-8">
+  <div class="col-12">
 
 
     <svg #svgDayView [attr.viewBox]="viewBox" width="100%">
@@ -15,19 +15,19 @@
           {{timeSegment.text_string}}
         </text>
       </g>
-      <g *ngFor="let activityRect of activityRects">
-        <rect [attr.x]="activityRect.x" [attr.y]="activityRect.y" [attr.width]="activityRect.width" [attr.height]="activityRect.height"
-          [attr.rx]="activityRect.rx" [attr.ry]="activityRect.ry" [ngStyle]="activityRect.style" />
+      <g *ngFor="let eventRect of eventRects">
+        <rect [attr.x]="eventRect.x" [attr.y]="eventRect.y" [attr.width]="eventRect.width" [attr.height]="eventRect.height"
+          [attr.rx]="eventRect.rx" [attr.ry]="eventRect.ry" [ngStyle]="eventRect.style" />
       </g>
-      <g *ngIf="activeActivityRect">
-        <rect [attr.x]="activeActivityRect.x" [attr.y]="activeActivityRect.y" [attr.width]="activeActivityRect.width" [attr.height]="activeActivityRect.height"
-          [attr.rx]="activeActivityRect.rx" [attr.ry]="activeActivityRect.ry" [ngStyle]="activeActivityRect.style" />
+      <g *ngIf="activeEventRect">
+        <rect [attr.x]="activeEventRect.x" [attr.y]="activeEventRect.y" [attr.width]="activeEventRect.width" [attr.height]="activeEventRect.height"
+          [attr.rx]="activeEventRect.rx" [attr.ry]="activeEventRect.ry" [ngStyle]="activeEventRect.style" />
       </g>
     </svg>
   </div>
   <div class="col-4">
     <!-- <div *ngIf="true"></div> -->
-      <!-- <form [formGroup]="newActivityForm" >
+      <!-- <form [formGroup]="newEventForm" >
           <div class="form-group">
               <label class="center-block">Name:
                 <input class="form-control" formControlName="startTime">

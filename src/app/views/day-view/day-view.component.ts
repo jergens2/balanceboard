@@ -7,9 +7,10 @@ import * as moment from 'moment';
 
 import { TimeService } from './../../services/time.service';
 import { TimeSegment } from './time-segment.model';
-import { ActivityRect } from './activity-rect.model'
+import { EventRect } from './event-rect.model';
+import { Event } from './../../models/event.model';
 
-import { ActivityFormComponent } from './activity-form/activity-form.component';
+import { EventFormComponent } from './event-form/event-form.component';
 
 
 @Component({
@@ -29,9 +30,10 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   viewBoxWidth: number;
 
   timeSegments: TimeSegment[];
-  activityRects: ActivityRect[] = [];
+  eventRects: EventRect[] = [];
+  eventList: Event[];
 
-  activeActivityRect: ActivityRect;
+  activeEventRect: EventRect;
 
   today: moment.Moment;
 
@@ -41,8 +43,16 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewBoxHeight = 600;
     this.viewBoxWidth = 600;
     this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
-    this.today = this.timeService.getActiveDate();
-    this.timeSegments = this.calculateTimeSegments();
+    
+
+    this.timeService.getEventsByDate(this.timeService.getActiveDate()).subscribe(        
+      (eventList) => {
+        this.today = this.timeService.getActiveDate();
+        this.eventList = eventList;
+        this.timeSegments = this.calculateTimeSegments();
+        console.log(this.today);
+        //this.drawEvents(this.eventList);
+      });
   }
 
   ngAfterViewInit(){
@@ -50,7 +60,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const down = Observable.fromEvent(this.svgObject.nativeElement, 'mousedown')
       .do((md: MouseEvent) => {
-        this.initiateActivityRect(this.getCursorPt(md));
+        this.initiateEventRect(this.getCursorPt(md));
         md.preventDefault();
       });
     const move = Observable.fromEvent(document, 'mousemove')
@@ -82,15 +92,15 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     return cursorPt;
   }
 
-  initiateActivityRect(cursorPt: SVGPoint){
-    this.activeActivityRect = new ActivityRect();
-    this.activeActivityRect.x = 0 + 100;
-    this.activeActivityRect.width = this.viewBoxWidth - 150;
-    this.activeActivityRect.y = cursorPt.y;
-    this.activeActivityRect.height = 0;
-    this.activeActivityRect.rx = 1;
-    this.activeActivityRect.ry = 1;
-    this.activeActivityRect.style = {
+  initiateEventRect(cursorPt: SVGPoint){
+    this.activeEventRect = new EventRect();
+    this.activeEventRect.x = 0 + 100;
+    this.activeEventRect.width = this.viewBoxWidth - 150;
+    this.activeEventRect.y = cursorPt.y;
+    this.activeEventRect.height = 0;
+    this.activeEventRect.rx = 1;
+    this.activeEventRect.ry = 1;
+    this.activeEventRect.style = {
       "fill":"red",
       "stroke":"black",
       "stroke-width":"2",
@@ -98,51 +108,53 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   updateActiveActivtyRect(cursorPt: SVGPoint){
-    if(cursorPt.y < this.activeActivityRect.y){
-      let height = this.activeActivityRect.y - cursorPt.y;
-      this.activeActivityRect.y = cursorPt.y;
-      this.activeActivityRect.height = height;
+    if(cursorPt.y < this.activeEventRect.y){
+      let height = this.activeEventRect.y - cursorPt.y;
+      this.activeEventRect.y = cursorPt.y;
+      this.activeEventRect.height = height;
     }else{
-      this.activeActivityRect.height = cursorPt.y - this.activeActivityRect.y;
+      this.activeEventRect.height = cursorPt.y - this.activeEventRect.y;
     }
     
   }
-  finalizeActiveActivityRect(action: string){
+  finalizeActiveEventRect(action: string){
     if(action === 'cancelled'){
-      this.activeActivityRect = null;
+      this.activeEventRect = null;
     }else if(action === 'success'){
-      this.activityRects.push(this.activeActivityRect);
-      this.activeActivityRect = null;
+      this.eventRects.push(this.activeEventRect);
+      this.activeEventRect = null;
     }else{
       
     }
   }
   createModal(cursorPt: SVGPoint){
-    if(cursorPt.y <= this.activeActivityRect.y){
+    if(cursorPt.y <= this.activeEventRect.y){
       //in this case, the cursor is above the original start point.  
     }else{
-      const modalRef = this.modalService.open(ActivityFormComponent, { centered: true });
       //
-      // Need up clean up the next couple of statements:  change to variables to work dynamically, not on static values of 7 and 21
+      // Need up clean up the next section:  change to variables to work dynamically, not on static values
       //
+      
       const padding: number = 10;
       const totalHeight = (this.viewBoxHeight - (padding * 2));
       const totalMinutes = 29*30;  //29 increments * 30 minutes of time each
-      const startMinutes = totalMinutes * (this.activeActivityRect.y/totalHeight);
-      const endMinutes = totalMinutes * (this.activeActivityRect.y+this.activeActivityRect.height)/totalHeight;
+      const startMinutes = totalMinutes * (this.activeEventRect.y/totalHeight);
+      const endMinutes = totalMinutes * (this.activeEventRect.y+this.activeEventRect.height)/totalHeight;
       
-      const startTime: moment.Moment = moment().hour(7).minute(0).second(0).millisecond(0).add(startMinutes, 'minute');
-      const endTime: moment.Moment = moment().hour(7).minute(0).second(0).millisecond(0).add(endMinutes, 'minute');
+      const startTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(startMinutes, 'minute');
+      const endTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(endMinutes, 'minute');
+      
+      this.timeService.setDayEventTimes(startTime, endTime);
 
-      modalRef.componentInstance.startTime = startTime;
-      modalRef.componentInstance.poop = endTime;
+      const modalRef = this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop:'static' });
 
       //
       // end of section to be cleaned
       //
+      
 
       modalRef.result.then((resultAction) => {
-        this.finalizeActiveActivityRect(resultAction);
+        this.finalizeActiveEventRect(resultAction);
       }).catch((error) => {});
     }
 

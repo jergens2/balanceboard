@@ -1,5 +1,5 @@
 
-export class ActivityRect{
+export class EventRect{
     public startTime: Date;
     public endTime: Date;
 

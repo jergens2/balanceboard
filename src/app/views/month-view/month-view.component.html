@@ -1,17 +1,18 @@
+<div class="row">
+  <div class="col-12 text-center">
+    <h3>{{this.timeService.getActiveDate().format('MMMM YYYY')}}</h3>
+  </div>
+</div>
+<div class="div">
+  <div class="col-12">
+    <svg [attr.viewBox]="viewBox" width="100%">
+      <g *ngFor="let day of days" (click)="onClick(day)" (mouseenter)="onMouseEnter(day)" (mouseleave)="onMouseLeave(day)">
 
-<!-- <h3>{{this.timeService.getMonthString()}} {{this.timeService.getDate().getFullYear()}}</h3> -->
+        <path [ngStyle]="day.style" [attr.d]="day.svgPath" />
 
-<svg [attr.viewBox]="viewBox" width="100%">
-  <g *ngFor="let day of days" 
-    (click)="onClick(day)"
-    (mouseenter)="onMouseEnter(day)"
-    (mouseleave)="onMouseLeave(day)">
-      
-      <path 
-        [ngStyle]="day.style"
-        [attr.d]="day.svgPath" />
+        <text [attr.x]="day.text_x" [attr.y]="day.text_y" class="dayDateDisplay">{{day.date.date()}}</text>
+      </g>
 
-      <text [attr.x]="day.text_x" [attr.y]="day.text_y" class="dayDateDisplay">{{day.date.getDate()}}</text>
-  </g>
-  
-</svg>
+    </svg>
+  </div>
+</div>

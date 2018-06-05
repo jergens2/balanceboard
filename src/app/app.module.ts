@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { HomeService } from './services/home.service';
 import { TimeService } from './services/time.service';
 import { BrowserModule } from '@angular/platform-browser';
@@ -12,7 +13,7 @@ import { HeaderComponent } from './header/header.component';
 import { MonthViewComponent } from './views/month-view/month-view.component';
 import { DayViewComponent } from './views/day-view/day-view.component';
 import { YearViewComponent } from './views/year-view/year-view.component';
-import { ActivityFormComponent } from './views/day-view/activity-form/activity-form.component';
+import { EventFormComponent } from './views/day-view/event-form/event-form.component';
 
 
 @NgModule({
@@ -23,11 +24,12 @@ import { ActivityFormComponent } from './views/day-view/activity-form/activity-f
     MonthViewComponent,
     DayViewComponent,
     YearViewComponent,
-    ActivityFormComponent
+    EventFormComponent
   ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
+    HttpClientModule,
     NgbModule.forRoot()
   ],
   providers: [ 
@@ -36,7 +38,7 @@ import { ActivityFormComponent } from './views/day-view/activity-form/activity-f
   ],
   bootstrap: [AppComponent],
   entryComponents: [
-    ActivityFormComponent
+    EventFormComponent
   ]
 })
 export class AppModule { }
