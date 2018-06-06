@@ -2,11 +2,7 @@
   <div class="col-12 text-center"><h3 *ngIf="today">{{today.format('MMM Do, YYYY')}}</h3></div>
 </div>
 <div class="row">
-
-
   <div class="col-12">
-
-
     <svg #svgDayView [attr.viewBox]="viewBox" width="100%">
       <g *ngFor="let timeSegment of timeSegments">
         <line [ngStyle]="timeSegment.style" [attr.x1]="timeSegment.line_x1" [attr.x2]="timeSegment.line_x2" [attr.y1]="timeSegment.line_y1"

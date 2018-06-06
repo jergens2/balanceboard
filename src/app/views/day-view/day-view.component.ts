@@ -47,11 +47,10 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.timeService.getEventsByDate(this.timeService.getActiveDate()).subscribe(        
       (eventList) => {
+        console.log(eventList);
         this.today = this.timeService.getActiveDate();
         this.eventList = eventList;
         this.timeSegments = this.calculateTimeSegments();
-        console.log(this.today);
-        //this.drawEvents(this.eventList);
       });
   }
 
@@ -117,11 +116,11 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     
   }
-  finalizeActiveEventRect(action: string){
-    if(action === 'cancelled'){
+  finalizeActiveEventRect(result: any){
+    if(result.message === 'cancelled'){
       this.activeEventRect = null;
-    }else if(action === 'success'){
-      this.eventRects.push(this.activeEventRect);
+    }else if(result.message === 'success'){
+      this.timeService.saveEvent(result.data);
       this.activeEventRect = null;
     }else{
       
@@ -153,8 +152,8 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       //
       
 
-      modalRef.result.then((resultAction) => {
-        this.finalizeActiveEventRect(resultAction);
+      modalRef.result.then((result) => {
+        this.finalizeActiveEventRect(result);
       }).catch((error) => {});
     }
 

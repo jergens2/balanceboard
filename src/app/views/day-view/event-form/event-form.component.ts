@@ -22,6 +22,11 @@ export class EventFormComponent implements OnInit {
 
   newEventForm: FormGroup;
 
+  private response = {
+    message: '',
+    data: {}
+  }
+
   ngOnInit() {
     this.startTime = this.timeService.getDayEventStartTime();
     this.endTime = this.timeService.getDayEventEndTime();
@@ -44,12 +49,14 @@ export class EventFormComponent implements OnInit {
 
   onSaveEvent(){
     let event: Event = new Event( this.getStartTime(), this.getEndTime(), this.newEventForm.get('description').value, this.newEventForm.get('category').value );
-    this.timeService.saveEvent(event);
-    this.activeModal.close('success');
+    this.response.message = 'success';
+    this.response.data = event; 
+    this.activeModal.close(this.response);
   }
 
   closeModal(){
-    this.activeModal.close('cancelled');
+    this.response.message = 'cancelled';
+    this.activeModal.close(this.response);
   }
 
   getStartTime(): moment.Moment{
