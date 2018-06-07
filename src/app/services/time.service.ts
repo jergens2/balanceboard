@@ -53,7 +53,16 @@ export class TimeService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    return this.httpClient.post<Event>(postUrl,event,httpOptions);
+    let request = this.httpClient.post<Event>(postUrl,event,httpOptions)
+      .map((value) => {
+        // what am i doing here?  it seems like maybe this is the issue here? 
+        // need to test that this function is working, http post
+        console.log(value);
+      } )
+      .catch((error:Response)=>Observable.throw(error) || 'Server error');
+
+    console.log(request);
+    return request;
   }
 
 
@@ -69,9 +78,25 @@ export class TimeService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    let request = this.httpClient.post<Event[]>(getUrl, body, httpOptions);
-    return request;
-
+    return this.httpClient.post<Event[]>(getUrl, body, httpOptions)
+      .map((events: any) => {
+        let newEventList = [];
+        for(let event of events){
+          console.log(event);
+          console.log(event.startTime, event.endTime)
+          let newEventObject = new Event(
+            moment(event.startTime),
+            moment(event.endTime),
+            event.description,
+            event.category
+          ) 
+          newEventList.push(event);
+        }
+        this.eventList = newEventList;
+        console.log(this.eventList);
+        return this.eventList;
+      })
+      
   }
 
 

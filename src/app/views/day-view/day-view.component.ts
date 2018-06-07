@@ -4,6 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { NgbModal, NgbActiveModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import * as moment from 'moment';
+import { Moment } from "moment";
 
 import { TimeService } from './../../services/time.service';
 import { TimeSegment } from './time-segment.model';
@@ -35,26 +36,68 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   activeEventRect: EventRect;
 
-  today: moment.Moment;
+  today: Moment;
 
-  constructor(private timeService:TimeService, private modalService: NgbModal) { }
+  constructor(private timeService: TimeService, private modalService: NgbModal) { }
 
   ngOnInit() {
     this.viewBoxHeight = 600;
     this.viewBoxWidth = 600;
-    this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
-    
+    this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
 
-    this.timeService.getEventsByDate(this.timeService.getActiveDate()).subscribe(        
-      (eventList) => {
-        console.log(eventList);
+
+    this.timeService.getEventsByDate(this.timeService.getActiveDate()).subscribe(
+      (eventList: Event[]) => {
+        // console.log(eventList)
         this.today = this.timeService.getActiveDate();
         this.eventList = eventList;
         this.timeSegments = this.calculateTimeSegments();
+        this.eventRects = this.drawEventRects(this.eventList);
       });
   }
 
-  ngAfterViewInit(){
+  calculateYFromEventTime(time: Moment): number{
+    // ?? ? ? ? ?
+    // for some reason the time doesn't actually come in as a Moment, 
+    // it comes in as a string maybe?  but error = time.diff() is not a function
+    // so by re-setting time as a moment, it fixes it but why did this happen?  issue is unresolved.
+
+    time = moment(time);
+    const padding: number = 10;
+    const beginning = moment(time).hour(7).minute(0).second(0).millisecond(0);
+    console.log(beginning)
+    console.log(time)
+    const totalHeight = (this.viewBoxHeight - (padding * 2));
+    const totalMinutes = 29 * 30;  //29 increments * 30 minutes of time each
+    var difference = moment.duration(time.diff(beginning)).asMinutes();
+    var result = (difference/totalMinutes) * totalHeight;
+    console.log(result)
+    return result;
+  }
+
+
+  drawEventRects(eventList: Event[]): EventRect[] {
+    let eventRects: EventRect[] = [];
+    for (let event of eventList) {
+      let eventRect = new EventRect();
+      eventRect.x = 0 + 100;
+      eventRect.width = this.viewBoxWidth - 150;
+      eventRect.y = this.calculateYFromEventTime(event.startTime);
+      eventRect.height = this.calculateYFromEventTime(event.endTime);
+      eventRect.rx = 1;
+      eventRect.ry = 1;
+      eventRect.style = {
+        "fill": "red",
+        "stroke": "black",
+        "stroke-width": "2",
+        "fill-opacity": "0.2"
+      }
+      eventRects.push(eventRect)
+    }
+    return eventRects;
+  }
+
+  ngAfterViewInit() {
     this.pt = this.svgObject.nativeElement.createSVGPoint();
 
     const down = Observable.fromEvent(this.svgObject.nativeElement, 'mousedown')
@@ -71,16 +114,16 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       });
 
     const drag = down.mergeMap((md: MouseEvent) => {
-        return move.startWith(md).takeUntil(up.take(1));
+      return move.startWith(md).takeUntil(up.take(1));
     });
 
     this.handle = drag
-    .subscribe((md: MouseEvent) => {
+      .subscribe((md: MouseEvent) => {
         this.updateActiveActivtyRect(this.getCursorPt(md))
-    });
+      });
   }
 
-  getCursorPt(me: MouseEvent): SVGPoint{
+  getCursorPt(me: MouseEvent): SVGPoint {
     let cursorPt: SVGPoint;
     this.pt.x = me.clientX;
     this.pt.y = me.clientY;
@@ -91,7 +134,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     return cursorPt;
   }
 
-  initiateEventRect(cursorPt: SVGPoint){
+  initiateEventRect(cursorPt: SVGPoint) {
     this.activeEventRect = new EventRect();
     this.activeEventRect.x = 0 + 100;
     this.activeEventRect.width = this.viewBoxWidth - 150;
@@ -100,71 +143,71 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activeEventRect.rx = 1;
     this.activeEventRect.ry = 1;
     this.activeEventRect.style = {
-      "fill":"red",
-      "stroke":"black",
-      "stroke-width":"2",
-      "fill-opacity":"0.2"
+      "fill": "red",
+      "stroke": "black",
+      "stroke-width": "2",
+      "fill-opacity": "0.2"
     }
   }
-  updateActiveActivtyRect(cursorPt: SVGPoint){
-    if(cursorPt.y < this.activeEventRect.y){
+  updateActiveActivtyRect(cursorPt: SVGPoint) {
+    if (cursorPt.y < this.activeEventRect.y) {
       let height = this.activeEventRect.y - cursorPt.y;
       this.activeEventRect.y = cursorPt.y;
       this.activeEventRect.height = height;
-    }else{
+    } else {
       this.activeEventRect.height = cursorPt.y - this.activeEventRect.y;
     }
-    
+
   }
-  finalizeActiveEventRect(result: any){
-    if(result.message === 'cancelled'){
+  finalizeActiveEventRect(result: any) {
+    if (result.message === 'cancelled') {
       this.activeEventRect = null;
-    }else if(result.message === 'success'){
+    } else if (result.message === 'success') {
       this.timeService.saveEvent(result.data);
       this.activeEventRect = null;
-    }else{
-      
+    } else {
+
     }
   }
-  createModal(cursorPt: SVGPoint){
-    if(cursorPt.y <= this.activeEventRect.y){
+  createModal(cursorPt: SVGPoint) {
+    if (cursorPt.y <= this.activeEventRect.y) {
       //in this case, the cursor is above the original start point.  
-    }else{
+    } else {
       //
       // Need up clean up the next section:  change to variables to work dynamically, not on static values
       //
-      
+
       const padding: number = 10;
       const totalHeight = (this.viewBoxHeight - (padding * 2));
-      const totalMinutes = 29*30;  //29 increments * 30 minutes of time each
-      const startMinutes = totalMinutes * (this.activeEventRect.y/totalHeight);
-      const endMinutes = totalMinutes * (this.activeEventRect.y+this.activeEventRect.height)/totalHeight;
-      
+      const totalMinutes = 29 * 30;  //29 increments * 30 minutes of time each
+      const startMinutes = totalMinutes * (this.activeEventRect.y / totalHeight);
+      const endMinutes = totalMinutes * (this.activeEventRect.y + this.activeEventRect.height) / totalHeight;
+
       const startTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(startMinutes, 'minute');
       const endTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(endMinutes, 'minute');
-      
+
       this.timeService.setDayEventTimes(startTime, endTime);
 
-      const modalRef = this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop:'static' });
+      const modalRef = this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop: 'static' });
 
       //
       // end of section to be cleaned
       //
-      
+
 
       modalRef.result.then((result) => {
         this.finalizeActiveEventRect(result);
-      }).catch((error) => {});
+      }).catch((error) => { });
     }
 
-    
+
   }
 
   ngOnDestroy() {
     this.handle.unsubscribe();
   }
 
-  calculateTimeSegments(): TimeSegment[]{
+  calculateTimeSegments(): TimeSegment[] {
 
     const padding: number = 10;
 
@@ -178,34 +221,34 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     let timeSegments: TimeSegment[] = [];
     let currentHour = startHour;
     let currentTime: moment.Moment = this.today.hours(currentHour).minutes(0).seconds(0);;
-  
-    for (let increment = 0; increment < increments; increment++){
+
+    for (let increment = 0; increment < increments; increment++) {
       let timeSegment: TimeSegment = new TimeSegment();
-      
+
       timeSegment.dateTime = currentTime.toDate();
 
       timeSegment.line_x1 = 0 + padding + 80;
       timeSegment.line_x2 = this.viewBoxWidth - padding;
-      timeSegment.line_y1 = (padding*2) + (increment*segmentHeight);
+      timeSegment.line_y1 = (padding * 2) + (increment * segmentHeight);
       timeSegment.line_y2 = timeSegment.line_y1;
-      timeSegment.text_x = timeSegment.line_x1 -80;
-      timeSegment.text_y = timeSegment.line_y1 -15;
-      if(currentTime.minutes() === 0){
+      timeSegment.text_x = timeSegment.line_x1 - 80;
+      timeSegment.text_y = timeSegment.line_y1 - 15;
+      if (currentTime.minutes() === 0) {
         //  I added 1 hour because something about this arithmetic produces the line segments that do not line up with the hours, so I simply added 1 hour here.  
         //  This should probably be revisited to be more robust going forward, especially if the display should have dynamically settable start and end hours
-        if(currentTime.hour() === 7){
+        if (currentTime.hour() === 7) {
           //quick hack to get rid of the hour 7 label.
           timeSegment.text_string = "";
-        }else{
+        } else {
           timeSegment.text_string = currentTime.clone().format('h:mm a');
         }
-      }else{
+      } else {
         timeSegment.text_string = "";
       }
-      
+
       timeSegment.style = {
-        "stroke":"black",
-        "stroke-width":"0.5px"
+        "stroke": "black",
+        "stroke-width": "0.5px"
       }
 
       timeSegments.push(timeSegment);

@@ -18,7 +18,7 @@ export class MonthViewComponent implements OnInit {
   viewBoxWidth: number;
 
   
-
+  now: moment.Moment;
   days: Day[];
 
   constructor(private timeService: TimeService, private homeService: HomeService) { }
@@ -28,6 +28,7 @@ export class MonthViewComponent implements OnInit {
     this.viewBoxWidth = 800;
     this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
     this.days = this.calculateDays(this.viewBoxHeight, this.viewBoxWidth);
+    this.now = this.timeService.getActiveDate();
   }
 
   calculateDays(viewBoxHeight, viewBoxWidth): Day[] {
