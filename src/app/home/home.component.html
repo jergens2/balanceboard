@@ -12,11 +12,11 @@
       <!-- <button class="btn btn-sm" (click)="onClickTimeFrameButton('day')">Day</button> -->
     </div>
   </div>
-  <div class="row">
-    <div class="col-12" *ngIf="selectedView=='day'">
+  <div class="row" style="border:1px solid black">
+    <div class="col-12" *ngIf="selectedView=='day'" style="border:1px solid red">
       <app-day-view></app-day-view>
     </div>
-    <div class="col-12" *ngIf="selectedView=='month'">
+    <div class="col-12" *ngIf="selectedView=='month'" style="border:1px solid blue">
       <app-month-view></app-month-view>
     </div>
     <div class="col-12" *ngIf="selectedView=='year'">

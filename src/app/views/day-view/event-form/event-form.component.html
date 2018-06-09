@@ -5,7 +5,7 @@
   </button>
 </div>
 <div class="modal-body">
-  <form [formGroup]="newEventForm">
+  <form [formGroup]="newEventActivityForm">
     <div class="form-group" formGroupName="startTime">
       <label class="center-block" for="startTime">Start Time</label>
       <div class="form-row">
@@ -60,6 +60,6 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-block btn-primary" (click)="onSaveEvent()">Save Event</button>
+  <button type="button" class="btn btn-block btn-primary" (click)="onSaveEventActivity()">Save Event</button>
   <button type="button" class="btn btn-outline-dark" (click)="closeModal()">Cancel</button>
 </div>

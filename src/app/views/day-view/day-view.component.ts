@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, AfterViewInit, OnDestroy } from '@angular/core';
 
 import { Observable, Subscription } from 'rxjs';
 import { NgbModal, NgbActiveModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -9,7 +9,7 @@ import { Moment } from "moment";
 import { TimeService } from './../../services/time.service';
 import { TimeSegment } from './time-segment.model';
 import { EventRect } from './event-rect.model';
-import { Event } from './../../models/event.model';
+import { EventActivity } from './../../models/event-activity.model';
 
 import { EventFormComponent } from './event-form/event-form.component';
 
@@ -32,9 +32,9 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   timeSegments: TimeSegment[];
   eventRects: EventRect[] = [];
-  eventList: Event[];
+  eventList: EventActivity[];
 
-  activeEventRect: EventRect;
+  activeEventActivityRect: EventRect;
 
   today: Moment;
 
@@ -46,48 +46,49 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
 
 
-    this.timeService.getEventsByDate(this.timeService.getActiveDate()).subscribe(
-      (eventList: Event[]) => {
-        // console.log(eventList)
+    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1,'day').hour(0).minute(0).second(0).millisecond(0)).subscribe(
+      (eventList: EventActivity[]) => {
         this.today = this.timeService.getActiveDate();
         this.eventList = eventList;
         this.timeSegments = this.calculateTimeSegments();
-        this.eventRects = this.drawEventRects(this.eventList);
+        this.eventRects = this.drawEventActivityRects(this.eventList);
       });
   }
 
-  calculateYFromEventTime(time: Moment): number{
+  calculateYFromEventActivityTime(time: Moment): number{
     // ?? ? ? ? ?
     // for some reason the time doesn't actually come in as a Moment, 
     // it comes in as a string maybe?  but error = time.diff() is not a function
     // so by re-setting time as a moment, it fixes it but why did this happen?  issue is unresolved.
 
     time = moment(time);
+
     const padding: number = 10;
     const beginning = moment(time).hour(7).minute(0).second(0).millisecond(0);
-    console.log(beginning)
-    console.log(time)
+    const end = moment(time).hour(21).minute(0).second(0).millisecond(0);
     const totalHeight = (this.viewBoxHeight - (padding * 2));
-    const totalMinutes = 29 * 30;  //29 increments * 30 minutes of time each
-    var difference = moment.duration(time.diff(beginning)).asMinutes();
-    var result = (difference/totalMinutes) * totalHeight;
+    const totalMinutes = moment.duration(end.diff(beginning)).asMinutes();
+
+    
+    const difference = moment.duration(time.diff(beginning)).asMinutes();
+    const result = (difference* totalHeight) / totalMinutes;
     console.log(result)
     return result;
   }
 
 
-  drawEventRects(eventList: Event[]): EventRect[] {
+  drawEventActivityRects(eventList: EventActivity[]): EventRect[] {
     let eventRects: EventRect[] = [];
     for (let event of eventList) {
       let eventRect = new EventRect();
       eventRect.x = 0 + 100;
       eventRect.width = this.viewBoxWidth - 150;
-      eventRect.y = this.calculateYFromEventTime(event.startTime);
-      eventRect.height = this.calculateYFromEventTime(event.endTime);
+      eventRect.y = this.calculateYFromEventActivityTime(event.startTime);
+      eventRect.height = this.calculateYFromEventActivityTime(event.endTime) - eventRect.y;
       eventRect.rx = 1;
       eventRect.ry = 1;
       eventRect.style = {
-        "fill": "red",
+        "fill": "blue",
         "stroke": "black",
         "stroke-width": "2",
         "fill-opacity": "0.2"
@@ -102,7 +103,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const down = Observable.fromEvent(this.svgObject.nativeElement, 'mousedown')
       .do((md: MouseEvent) => {
-        this.initiateEventRect(this.getCursorPt(md));
+        this.initiateEventActivityRect(this.getCursorPt(md));
         md.preventDefault();
       });
     const move = Observable.fromEvent(document, 'mousemove')
@@ -134,15 +135,15 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     return cursorPt;
   }
 
-  initiateEventRect(cursorPt: SVGPoint) {
-    this.activeEventRect = new EventRect();
-    this.activeEventRect.x = 0 + 100;
-    this.activeEventRect.width = this.viewBoxWidth - 150;
-    this.activeEventRect.y = cursorPt.y;
-    this.activeEventRect.height = 0;
-    this.activeEventRect.rx = 1;
-    this.activeEventRect.ry = 1;
-    this.activeEventRect.style = {
+  initiateEventActivityRect(cursorPt: SVGPoint) {
+    this.activeEventActivityRect = new EventRect();
+    this.activeEventActivityRect.x = 0 + 100;
+    this.activeEventActivityRect.width = this.viewBoxWidth - 150;
+    this.activeEventActivityRect.y = cursorPt.y;
+    this.activeEventActivityRect.height = 0;
+    this.activeEventActivityRect.rx = 1;
+    this.activeEventActivityRect.ry = 1;
+    this.activeEventActivityRect.style = {
       "fill": "red",
       "stroke": "black",
       "stroke-width": "2",
@@ -150,27 +151,27 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   updateActiveActivtyRect(cursorPt: SVGPoint) {
-    if (cursorPt.y < this.activeEventRect.y) {
-      let height = this.activeEventRect.y - cursorPt.y;
-      this.activeEventRect.y = cursorPt.y;
-      this.activeEventRect.height = height;
+    if (cursorPt.y < this.activeEventActivityRect.y) {
+      let height = this.activeEventActivityRect.y - cursorPt.y;
+      this.activeEventActivityRect.y = cursorPt.y;
+      this.activeEventActivityRect.height = height;
     } else {
-      this.activeEventRect.height = cursorPt.y - this.activeEventRect.y;
+      this.activeEventActivityRect.height = cursorPt.y - this.activeEventActivityRect.y;
     }
 
   }
-  finalizeActiveEventRect(result: any) {
+  finalizeActiveEventActivityRect(result: any) {
     if (result.message === 'cancelled') {
-      this.activeEventRect = null;
+      this.activeEventActivityRect = null;
     } else if (result.message === 'success') {
-      this.timeService.saveEvent(result.data);
-      this.activeEventRect = null;
+      this.timeService.saveEventActivity(result.data);
+      this.activeEventActivityRect = null;
     } else {
 
     }
   }
   createModal(cursorPt: SVGPoint) {
-    if (cursorPt.y <= this.activeEventRect.y) {
+    if (cursorPt.y <= this.activeEventActivityRect.y) {
       //in this case, the cursor is above the original start point.  
     } else {
       //
@@ -180,13 +181,13 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       const padding: number = 10;
       const totalHeight = (this.viewBoxHeight - (padding * 2));
       const totalMinutes = 29 * 30;  //29 increments * 30 minutes of time each
-      const startMinutes = totalMinutes * (this.activeEventRect.y / totalHeight);
-      const endMinutes = totalMinutes * (this.activeEventRect.y + this.activeEventRect.height) / totalHeight;
+      const startMinutes = totalMinutes * (this.activeEventActivityRect.y / totalHeight);
+      const endMinutes = totalMinutes * (this.activeEventActivityRect.y + this.activeEventActivityRect.height) / totalHeight;
 
       const startTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(startMinutes, 'minute');
       const endTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(endMinutes, 'minute');
 
-      this.timeService.setDayEventTimes(startTime, endTime);
+      this.timeService.setDayEventActivityTimes(startTime, endTime);
 
       const modalRef = this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop: 'static' });
 
@@ -196,7 +197,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
       modalRef.result.then((result) => {
-        this.finalizeActiveEventRect(result);
+        this.finalizeActiveEventActivityRect(result);
       }).catch((error) => { });
     }
 

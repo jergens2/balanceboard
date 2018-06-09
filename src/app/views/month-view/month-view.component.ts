@@ -1,8 +1,9 @@
+import { EventActivity } from './../../models/event-activity.model';
 import * as moment from 'moment';
 import { HomeService } from './../../services/home.service';
 import { TimeService } from './../../services/time.service';
 import { Component, OnInit } from '@angular/core';
-import { Day } from './day.model';
+import { DaySquare } from './daySquare.model';
 
 
 @Component({
@@ -17,9 +18,9 @@ export class MonthViewComponent implements OnInit {
   viewBoxHeight: number;
   viewBoxWidth: number;
 
-  
+  monthEvents: EventActivity[];
   now: moment.Moment;
-  days: Day[];
+  days: DaySquare[];
 
   constructor(private timeService: TimeService, private homeService: HomeService) { }
 
@@ -29,9 +30,14 @@ export class MonthViewComponent implements OnInit {
     this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
     this.days = this.calculateDays(this.viewBoxHeight, this.viewBoxWidth);
     this.now = this.timeService.getActiveDate();
+    this.timeService.getEventActivitysByDateRange(this.now.startOf('month'),this.now.endOf('month')).subscribe(
+      (events) => {
+        console.log(events);
+      }
+    )
   }
 
-  calculateDays(viewBoxHeight, viewBoxWidth): Day[] {
+  calculateDays(viewBoxHeight, viewBoxWidth): DaySquare[] {
     let now: moment.Moment = this.timeService.getDate();
     let firstOfMonth = moment(now).date(1);
     let lastOfMonth = moment(now).endOf('month');
@@ -43,7 +49,7 @@ export class MonthViewComponent implements OnInit {
     let dayWidth = (viewBoxWidth - (padding*(columns+1))) / columns;
     let dayHeight = (viewBoxHeight - (padding*(rows+1))) / rows;
 
-    let days: Day[] = [];
+    let days: DaySquare[] = [];
 
     for(let row = 0; row < rows; row++){
       for(let col = 0; col < columns; col++){
@@ -58,7 +64,7 @@ export class MonthViewComponent implements OnInit {
           ' L'+(x+dayWidth)+' '+y+
           ' Z'+
           ''
-        let day: Day = {
+        let day: DaySquare = {
           date: currentDate,
           svgPath: path,
           style: {
@@ -66,7 +72,8 @@ export class MonthViewComponent implements OnInit {
             "stroke":"none"
           },
           text_x: x+5,
-          text_y: y+20
+          text_y: y+20,
+          eventActivities: [] 
         }
         if(currentDate.month() === lastOfMonth.month())
           days.push(day);
@@ -82,18 +89,18 @@ export class MonthViewComponent implements OnInit {
     return days;
   }
 
-  onClick(day: Day){
+  onClick(day: DaySquare){
     this.timeService.setActiveDate(day.date);
     this.homeService.setView('day');
   }
-  onMouseEnter(day: Day){
+  onMouseEnter(day: DaySquare){
     day.style = {
       "fill":"#f9f9f9",
       "stroke":"blue",
       "cursor":"pointer"
     }
   }
-  onMouseLeave(day: Day){
+  onMouseLeave(day: DaySquare){
     day.style = {
       "fill":"#f9f9f9",
       "stroke":"none"

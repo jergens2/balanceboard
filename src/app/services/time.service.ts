@@ -1,6 +1,6 @@
 import { Moment } from 'moment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Event } from './../models/event.model';
+import { EventActivity } from './../models/event-activity.model';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import 'rxjs/Rx';
@@ -15,10 +15,10 @@ export class TimeService {
   now: Moment = moment();
   private activeDate: Moment = moment();
 
-  private dayEventStartTime: Moment;
-  private dayEventEndTime: Moment;
+  private dayEventActivityStartTime: Moment;
+  private dayEventActivityEndTime: Moment;
 
-  private eventList: Event[] = [];
+  private eventList: EventActivity[] = [];
 
   getDate(): Moment{
     return this.now;
@@ -31,18 +31,18 @@ export class TimeService {
     return this.activeDate;
   }
 
-  setDayEventTimes(startTime: Moment, endTime: Moment){
-    this.dayEventStartTime = startTime;
-    this.dayEventEndTime = endTime;
+  setDayEventActivityTimes(startTime: Moment, endTime: Moment){
+    this.dayEventActivityStartTime = startTime;
+    this.dayEventActivityEndTime = endTime;
   }
-  getDayEventStartTime(): Moment{
-    return this.dayEventStartTime;
+  getDayEventActivityStartTime(): Moment{
+    return this.dayEventActivityStartTime;
   }
-  getDayEventEndTime(): Moment{
-    return this.dayEventEndTime;
+  getDayEventActivityEndTime(): Moment{
+    return this.dayEventActivityEndTime;
   }
-  saveEvent(event: Event){
-    //receives Event object from Event-form modal, then saves it to database
+  saveEventActivity(event: EventActivity){
+    //receives EventActivity object from EventActivity-form modal, then saves it to database
     // Regarding Date objects / types:  use the toJSON() method to pass via JSON object
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toJSON
     
@@ -53,24 +53,21 @@ export class TimeService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    let request = this.httpClient.post<Event>(postUrl,event,httpOptions)
-      .map((value) => {
-        // what am i doing here?  it seems like maybe this is the issue here? 
-        // need to test that this function is working, http post
-        console.log(value);
-      } )
-      .catch((error:Response)=>Observable.throw(error) || 'Server error');
+    let request = this.httpClient.post<EventActivity>(postUrl,event,httpOptions)
+      .subscribe((response) => {
+        //an observable must be subscribed to in order to work, apparently.
+        console.log(response)
+      })
 
-    console.log(request);
+    // console.log(request);
     return request;
   }
 
-
-  getEventsByDate(date: Moment): Observable<Event[]> {
+  getEventActivitysByDateRange(startDate: Moment, endDate: Moment): Observable<EventActivity[]> {
     const getUrl = this.serverUrl + "/event/byDate";
     const body = {
-      'startDate':date.format('YYYY-MM-DD'),
-      'endDate':moment(date).add(1, 'day').format('YYYY-MM-DD')
+      'startDate':startDate.format('YYYY-MM-DD'),
+      'endDate':endDate.format('YYYY-MM-DD')
     };
     const httpOptions = {
       headers: new HttpHeaders({
@@ -78,27 +75,24 @@ export class TimeService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    return this.httpClient.post<Event[]>(getUrl, body, httpOptions)
+    return this.httpClient.post<EventActivity[]>(getUrl, body, httpOptions)
       .map((events: any) => {
-        let newEventList = [];
+        let newEventActivityList = [];
         for(let event of events){
-          console.log(event);
-          console.log(event.startTime, event.endTime)
-          let newEventObject = new Event(
+          // console.log(event);
+          // console.log(event.startTime, event.endTime)
+          let newEventActivityObject = new EventActivity(
             moment(event.startTime),
             moment(event.endTime),
             event.description,
             event.category
           ) 
-          newEventList.push(event);
+          newEventActivityList.push(event);
         }
-        this.eventList = newEventList;
-        console.log(this.eventList);
+        this.eventList = newEventActivityList;
+        // console.log(this.eventList);
         return this.eventList;
       })
-      
+    
   }
-
-
-
 }

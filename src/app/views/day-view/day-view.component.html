@@ -15,9 +15,9 @@
         <rect [attr.x]="eventRect.x" [attr.y]="eventRect.y" [attr.width]="eventRect.width" [attr.height]="eventRect.height"
           [attr.rx]="eventRect.rx" [attr.ry]="eventRect.ry" [ngStyle]="eventRect.style" />
       </g>
-      <g *ngIf="activeEventRect">
-        <rect [attr.x]="activeEventRect.x" [attr.y]="activeEventRect.y" [attr.width]="activeEventRect.width" [attr.height]="activeEventRect.height"
-          [attr.rx]="activeEventRect.rx" [attr.ry]="activeEventRect.ry" [ngStyle]="activeEventRect.style" />
+      <g *ngIf="activeEventActivityRect">
+        <rect [attr.x]="activeEventActivityRect.x" [attr.y]="activeEventActivityRect.y" [attr.width]="activeEventActivityRect.width" [attr.height]="activeEventActivityRect.height"
+          [attr.rx]="activeEventActivityRect.rx" [attr.ry]="activeEventActivityRect.ry" [ngStyle]="activeEventActivityRect.style" />
       </g>
     </svg>
   </div>

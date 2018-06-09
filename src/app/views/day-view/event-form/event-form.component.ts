@@ -1,5 +1,5 @@
 
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { NgbActiveModal, NgbTimepicker, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
@@ -7,12 +7,12 @@ import { Observable } from 'rxjs';
 import * as moment from 'moment';
 
 import { TimeService } from './../../../services/time.service';
-import { Event } from './../../../models/event.model';
+import { EventActivity } from './../../../models/event-activity.model';
 
 @Component({
-  selector: 'app-Event-form',
-  templateUrl: './Event-form.component.html',
-  styleUrls: ['./Event-form.component.css']
+  selector: 'app-event-form',
+  templateUrl: './event-form.component.html',
+  styleUrls: ['./event-form.component.css']
 })
 export class EventFormComponent implements OnInit {
   
@@ -20,7 +20,7 @@ export class EventFormComponent implements OnInit {
   public endTime: moment.Moment;
   constructor(public activeModal: NgbActiveModal, private timeService: TimeService) {  }
 
-  newEventForm: FormGroup;
+  newEventActivityForm: FormGroup;
 
   private response = {
     message: '',
@@ -28,9 +28,9 @@ export class EventFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.startTime = this.timeService.getDayEventStartTime();
-    this.endTime = this.timeService.getDayEventEndTime();
-    this.newEventForm = new FormGroup({
+    this.startTime = this.timeService.getDayEventActivityStartTime();
+    this.endTime = this.timeService.getDayEventActivityEndTime();
+    this.newEventActivityForm = new FormGroup({
       'startTime': new FormGroup({
         'startTimeDate': new FormControl({value: this.startTime.format('YYYY-MM-DD'), disabled: true}),
         'startTimeHour': new FormControl(this.startTime.hour(), [Validators.min(0),Validators.max(23)]),
@@ -47,8 +47,8 @@ export class EventFormComponent implements OnInit {
     });
   }
 
-  onSaveEvent(){
-    let event: Event = new Event( this.getStartTime(), this.getEndTime(), this.newEventForm.get('description').value, this.newEventForm.get('category').value );
+  onSaveEventActivity(){
+    let event: EventActivity = new EventActivity( this.getStartTime(), this.getEndTime(), this.newEventActivityForm.get('description').value, this.newEventActivityForm.get('category').value );
     this.response.message = 'success';
     this.response.data = event; 
     this.activeModal.close(this.response);
@@ -60,11 +60,11 @@ export class EventFormComponent implements OnInit {
   }
 
   getStartTime(): moment.Moment{
-    this.startTime.hour(this.newEventForm.get('startTime.startTimeHour').value).minute(this.newEventForm.get('startTime.startTimeMinute').value);
+    this.startTime.hour(this.newEventActivityForm.get('startTime.startTimeHour').value).minute(this.newEventActivityForm.get('startTime.startTimeMinute').value);
     return this.startTime;
   }
   getEndTime(): moment.Moment{
-    this.endTime.hour(this.newEventForm.get('endTime.endTimeHour').value).minute(this.newEventForm.get('endTime.endTimeMinute').value);
+    this.endTime.hour(this.newEventActivityForm.get('endTime.endTimeHour').value).minute(this.newEventActivityForm.get('endTime.endTimeMinute').value);
     return this.endTime;
   }
 
