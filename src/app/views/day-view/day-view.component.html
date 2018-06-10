@@ -2,7 +2,7 @@
   <div class="col-12 text-center"><h3 *ngIf="today">{{today.format('MMM Do, YYYY')}}</h3></div>
 </div>
 <div class="row">
-  <div class="col-12">
+  <div class="col-8">
     <svg #svgDayView [attr.viewBox]="viewBox" width="100%">
       <g *ngFor="let timeSegment of timeSegments">
         <line [ngStyle]="timeSegment.style" [attr.x1]="timeSegment.line_x1" [attr.x2]="timeSegment.line_x2" [attr.y1]="timeSegment.line_y1"
@@ -11,26 +11,29 @@
           {{timeSegment.text_string}}
         </text>
       </g>
-      <g *ngFor="let eventRect of eventRects">
-        <rect [attr.x]="eventRect.x" [attr.y]="eventRect.y" [attr.width]="eventRect.width" [attr.height]="eventRect.height"
-          [attr.rx]="eventRect.rx" [attr.ry]="eventRect.ry" [ngStyle]="eventRect.style" />
-      </g>
       <g *ngIf="activeEventActivityRect">
-        <rect [attr.x]="activeEventActivityRect.x" [attr.y]="activeEventActivityRect.y" [attr.width]="activeEventActivityRect.width" [attr.height]="activeEventActivityRect.height"
-          [attr.rx]="activeEventActivityRect.rx" [attr.ry]="activeEventActivityRect.ry" [ngStyle]="activeEventActivityRect.style" />
+          <rect [attr.x]="activeEventActivityRect.x" [attr.y]="activeEventActivityRect.y" [attr.width]="activeEventActivityRect.width" [attr.height]="activeEventActivityRect.height"
+            [attr.rx]="activeEventActivityRect.rx" [attr.ry]="activeEventActivityRect.ry" [ngStyle]="activeEventActivityRect.style" />
+        </g>
+      <g *ngFor="let eventRect of eventRects" (click)="onClick(eventRect)" (mouseenter)="onMouseEnter(eventRect)" (mouseleave)="onMouseLeave(eventRect)">
+        <rect [attr.x]="eventRect.x" [attr.y]="eventRect.y" [attr.width]="eventRect.width" [attr.height]="eventRect.height"
+          [attr.rx]="eventRect.rx" [attr.ry]="eventRect.ry" [ngStyle]="eventRect.style" 
+          />
       </g>
+      
     </svg>
   </div>
   <div class="col-4">
-    <!-- <div *ngIf="true"></div> -->
-      <!-- <form [formGroup]="newEventForm" >
-          <div class="form-group">
-              <label class="center-block">Name:
-                <input class="form-control" formControlName="startTime">
-              </label>
-            </div>
-      </form> -->
-    <!-- </div> -->
+    <h4>Event List</h4>
+    <table class="table table-sm">
+      <tr><td>Start Time</td><td>End Time</td><td>Description</td><td>Category</td></tr>
+      <tr *ngFor="let event of eventList">
+        <td>{{event.startTime.format('hh:mm:ss a')}}</td>
+        <td>{{event.endTime.format('hh:mm:ss a')}}</td>
+        <td>{{event.description}}</td>
+        <td>{{event.category}}</td>
+      </tr>
+    </table>
   </div>
 </div>
 

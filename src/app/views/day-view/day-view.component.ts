@@ -41,19 +41,40 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private timeService: TimeService, private modalService: NgbModal) { }
 
   ngOnInit() {
-    this.viewBoxHeight = 600;
+    this.viewBoxHeight = 400;
     this.viewBoxWidth = 600;
     this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
 
 
-    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1,'day').hour(0).minute(0).second(0).millisecond(0)).subscribe(
+    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1,'day').hour(0).minute(0).second(0).millisecond(0))
+      .subscribe(
       (eventList: EventActivity[]) => {
-        this.today = this.timeService.getActiveDate();
         this.eventList = eventList;
+        this.today = this.timeService.getActiveDate();
+        // this.eventList = this.eventListMapMoments(eventList);
         this.timeSegments = this.calculateTimeSegments();
         this.eventRects = this.drawEventActivityRects(this.eventList);
       });
   }
+
+  eventListMapMoments(eventList: EventActivity[]):EventActivity[]{
+    let newEventList: EventActivity[] = [];
+    for(let event of eventList){
+      console.log(event);
+      newEventList.push(
+        new EventActivity(
+          //event._id, 
+          '',
+          moment(event.startTime),
+          moment(event.endTime),
+          event.description,
+          event.category
+        )
+      )
+    }
+    return newEventList;
+  }
+
 
   calculateYFromEventActivityTime(time: Moment): number{
     // ?? ? ? ? ?
@@ -72,7 +93,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     
     const difference = moment.duration(time.diff(beginning)).asMinutes();
     const result = (difference* totalHeight) / totalMinutes;
-    console.log(result)
     return result;
   }
 
@@ -90,9 +110,10 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       eventRect.style = {
         "fill": "blue",
         "stroke": "black",
-        "stroke-width": "2",
+        "stroke-width": "1",
         "fill-opacity": "0.2"
       }
+      eventRect.eventActivity = event;
       eventRects.push(eventRect)
     }
     return eventRects;
@@ -110,7 +131,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       .do((mm: MouseEvent) => mm.preventDefault());
     const up = Observable.fromEvent(document, 'mouseup')
       .do((mu: MouseEvent) => {
-        this.createModal(this.getCursorPt(mu));
+        this.createNewEventModal(this.getCursorPt(mu));
         mu.preventDefault()
       });
 
@@ -170,7 +191,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
   }
-  createModal(cursorPt: SVGPoint) {
+  createNewEventModal(cursorPt: SVGPoint) {
     if (cursorPt.y <= this.activeEventActivityRect.y) {
       //in this case, the cursor is above the original start point.  
     } else {
@@ -186,8 +207,9 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
       const startTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(startMinutes, 'minute');
       const endTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(endMinutes, 'minute');
+      let activeEvent = new EventActivity('', startTime, endTime, '', '');
 
-      this.timeService.setDayEventActivityTimes(startTime, endTime);
+      this.timeService.setActiveEvent(activeEvent, 'create');
 
       const modalRef = this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop: 'static' });
 
@@ -257,6 +279,30 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return timeSegments;
 
+  }
+
+  onClick(eventRect: EventRect){
+    this.timeService.setActiveEvent(eventRect.eventActivity, 'modify');
+    const modalRef = this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop: 'static' });
+  } 
+  
+  onMouseEnter(eventRect: EventRect){
+    eventRect.style = {
+      "cursor":"pointer",
+      "fill": "yellow",
+      "stroke": "red",
+      "stroke-width": "4",
+      "fill-opacity": "0.2"
+    }
+  }
+
+  onMouseLeave(eventRect){
+    eventRect.style = {
+      "fill": "blue",
+      "stroke": "black",
+      "stroke-width": "1",
+      "fill-opacity": "0.2"
+    }
   }
 
 }

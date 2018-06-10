@@ -6,11 +6,13 @@
 <div class="div">
   <div class="col-12">
     <svg [attr.viewBox]="viewBox" width="100%">
-      <g *ngFor="let day of days" (click)="onClick(day)" (mouseenter)="onMouseEnter(day)" (mouseleave)="onMouseLeave(day)">
+      <g *ngFor="let daySquare of daySquares" (click)="onClick(daySquare)" (mouseenter)="onMouseEnter(daySquare)" (mouseleave)="onMouseLeave(daySquare)">
 
-        <path [ngStyle]="day.style" [attr.d]="day.svgPath" />
+        <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath" />
 
-        <text [attr.x]="day.text_x" [attr.y]="day.text_y" class="dayDateDisplay">{{day.date.date()}}</text>
+        <text [attr.x]="daySquare.text_x" [attr.y]="daySquare.text_y" class="dayDateDisplay">{{daySquare.date.date()}}</text>
+        <text *ngIf="daySquare.eventActivities.length > 0" [attr.x]="daySquare.text_x+20" [attr.y]="daySquare.text_y+20" class="dayDateDisplay">{{daySquare.eventActivities.length}} events</text>
+        
       </g>
 
     </svg>

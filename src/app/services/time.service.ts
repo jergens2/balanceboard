@@ -1,4 +1,5 @@
 import { Moment } from 'moment';
+import { Response } from '@angular/http';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventActivity } from './../models/event-activity.model';
 import { Injectable } from '@angular/core';
@@ -15,10 +16,17 @@ export class TimeService {
   now: Moment = moment();
   private activeDate: Moment = moment();
 
-  private dayEventActivityStartTime: Moment;
-  private dayEventActivityEndTime: Moment;
-
   private eventList: EventActivity[] = [];
+  private activeEvent: EventActivity;
+  private eventMode: string;
+
+  getActiveEvent(): {event: EventActivity, mode: string}{
+    return { event: this.activeEvent, mode: this.eventMode};
+  }
+  setActiveEvent(event: EventActivity, mode: string){
+    this.activeEvent = event;
+    this.eventMode = mode;
+  }
 
   getDate(): Moment{
     return this.now;
@@ -31,16 +39,6 @@ export class TimeService {
     return this.activeDate;
   }
 
-  setDayEventActivityTimes(startTime: Moment, endTime: Moment){
-    this.dayEventActivityStartTime = startTime;
-    this.dayEventActivityEndTime = endTime;
-  }
-  getDayEventActivityStartTime(): Moment{
-    return this.dayEventActivityStartTime;
-  }
-  getDayEventActivityEndTime(): Moment{
-    return this.dayEventActivityEndTime;
-  }
   saveEventActivity(event: EventActivity){
     //receives EventActivity object from EventActivity-form modal, then saves it to database
     // Regarding Date objects / types:  use the toJSON() method to pass via JSON object
@@ -63,7 +61,19 @@ export class TimeService {
     return request;
   }
 
-  getEventActivitysByDateRange(startDate: Moment, endDate: Moment): Observable<EventActivity[]> {
+  deleteEvent(event: EventActivity){
+    console.log(event);
+    const postUrl = this.serverUrl + "/event/" + event.id + '/delete';
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    return this.httpClient.post(postUrl, {}, httpOptions)
+  }
+
+    getEventActivitysByDateRange(startDate: Moment, endDate: Moment): Observable<EventActivity[]> {
     const getUrl = this.serverUrl + "/event/byDate";
     const body = {
       'startDate':startDate.format('YYYY-MM-DD'),
@@ -71,28 +81,28 @@ export class TimeService {
     };
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type':  'application/json',
+        observe: 'response'
         // 'Authorization': 'my-auth-token'
       })
     };
-    return this.httpClient.post<EventActivity[]>(getUrl, body, httpOptions)
-      .map((events: any) => {
+    return this.httpClient.post(getUrl, body, httpOptions)
+      .map((response: Response) => {
+        let events = response as any; 
         let newEventActivityList = [];
         for(let event of events){
-          // console.log(event);
-          // console.log(event.startTime, event.endTime)
-          let newEventActivityObject = new EventActivity(
+          newEventActivityList.push(new EventActivity(
+            event._id,
             moment(event.startTime),
             moment(event.endTime),
             event.description,
             event.category
-          ) 
-          newEventActivityList.push(event);
+            )
+          )
         }
         this.eventList = newEventActivityList;
-        // console.log(this.eventList);
         return this.eventList;
       })
-    
+      //.subscribe(data => console.log("subscription data:" ,data));    
   }
 }

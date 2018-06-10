@@ -16,8 +16,8 @@ import { EventActivity } from './../../../models/event-activity.model';
 })
 export class EventFormComponent implements OnInit {
   
-  public startTime: moment.Moment;
-  public endTime: moment.Moment;
+  private activeEvent: EventActivity;
+  mode: string;
   constructor(public activeModal: NgbActiveModal, private timeService: TimeService) {  }
 
   newEventActivityForm: FormGroup;
@@ -28,19 +28,20 @@ export class EventFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.startTime = this.timeService.getDayEventActivityStartTime();
-    this.endTime = this.timeService.getDayEventActivityEndTime();
+    this.activeEvent = this.timeService.getActiveEvent().event;
+    this.mode = this.timeService.getActiveEvent().mode;
+    console.log(this.mode);
     this.newEventActivityForm = new FormGroup({
       'startTime': new FormGroup({
-        'startTimeDate': new FormControl({value: this.startTime.format('YYYY-MM-DD'), disabled: true}),
-        'startTimeHour': new FormControl(this.startTime.hour(), [Validators.min(0),Validators.max(23)]),
-        'startTimeMinute': new FormControl(this.startTime.minute(), [Validators.min(0),Validators.max(59)]),
+        'startTimeDate': new FormControl({value: this.activeEvent.startTime.format('YYYY-MM-DD'), disabled: true}),
+        'startTimeHour': new FormControl(this.activeEvent.startTime.hour(), [Validators.min(0),Validators.max(23)]),
+        'startTimeMinute': new FormControl(this.activeEvent.startTime.minute(), [Validators.min(0),Validators.max(59)]),
         // 'startTimeSecond': new FormControl({value: this.startTime.format('ss')}, [Validators.min(0),Validators.max(59)]),
       }),
       'endTime': new FormGroup({
-        'endTimeDate': new FormControl({value: this.endTime.format('YYYY-MM-DD'), disabled: true}),
-        'endTimeHour': new FormControl(this.endTime.hour(), [Validators.min(0),Validators.max(23)]),
-        'endTimeMinute': new FormControl(this.endTime.minute(), [Validators.min(0),Validators.max(59)]),
+        'endTimeDate': new FormControl({value: this.activeEvent.endTime.format('YYYY-MM-DD'), disabled: true}),
+        'endTimeHour': new FormControl(this.activeEvent.endTime.hour(), [Validators.min(0),Validators.max(23)]),
+        'endTimeMinute': new FormControl(this.activeEvent.endTime.minute(), [Validators.min(0),Validators.max(59)]),
       }),
       'description' : new FormControl(null),
       'category' : new FormControl(null)
@@ -48,9 +49,19 @@ export class EventFormComponent implements OnInit {
   }
 
   onSaveEventActivity(){
-    let event: EventActivity = new EventActivity( this.getStartTime(), this.getEndTime(), this.newEventActivityForm.get('description').value, this.newEventActivityForm.get('category').value );
+    let event: EventActivity = new EventActivity("", this.getStartTime(), this.getEndTime(), this.newEventActivityForm.get('description').value, this.newEventActivityForm.get('category').value );
     this.response.message = 'success';
     this.response.data = event; 
+    this.activeModal.close(this.response);
+  }
+
+  onClickDelete(){
+    this.response.message = 'cancelled'; 
+    this.timeService.deleteEvent(this.activeEvent).subscribe(
+      (data)=>{
+        console.log(data);
+      }
+    );
     this.activeModal.close(this.response);
   }
 
@@ -60,12 +71,12 @@ export class EventFormComponent implements OnInit {
   }
 
   getStartTime(): moment.Moment{
-    this.startTime.hour(this.newEventActivityForm.get('startTime.startTimeHour').value).minute(this.newEventActivityForm.get('startTime.startTimeMinute').value);
-    return this.startTime;
+    this.activeEvent.startTime.hour(this.newEventActivityForm.get('startTime.startTimeHour').value).minute(this.newEventActivityForm.get('startTime.startTimeMinute').value);
+    return this.activeEvent.startTime;
   }
   getEndTime(): moment.Moment{
-    this.endTime.hour(this.newEventActivityForm.get('endTime.endTimeHour').value).minute(this.newEventActivityForm.get('endTime.endTimeMinute').value);
-    return this.endTime;
+    this.activeEvent.endTime.hour(this.newEventActivityForm.get('endTime.endTimeHour').value).minute(this.newEventActivityForm.get('endTime.endTimeMinute').value);
+    return this.activeEvent.endTime;
   }
 
 }

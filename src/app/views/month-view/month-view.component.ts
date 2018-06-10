@@ -18,9 +18,9 @@ export class MonthViewComponent implements OnInit {
   viewBoxHeight: number;
   viewBoxWidth: number;
 
-  monthEvents: EventActivity[];
   now: moment.Moment;
-  days: DaySquare[];
+  daySquares: DaySquare[];
+  maxCount: number = 0;
 
   constructor(private timeService: TimeService, private homeService: HomeService) { }
 
@@ -28,16 +28,48 @@ export class MonthViewComponent implements OnInit {
     this.viewBoxHeight = 600;
     this.viewBoxWidth = 800;
     this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
-    this.days = this.calculateDays(this.viewBoxHeight, this.viewBoxWidth);
     this.now = this.timeService.getActiveDate();
-    this.timeService.getEventActivitysByDateRange(this.now.startOf('month'),this.now.endOf('month')).subscribe(
-      (events) => {
-        console.log(events);
+    this.daySquares = this.calculateDaySquares(this.viewBoxHeight, this.viewBoxWidth);
+    this.timeService.getEventActivitysByDateRange(moment(this.now.startOf('month')),moment(this.now.endOf('month')))
+      .subscribe((eventList)=>{
+        this.updateDaySquareEvents(eventList);
+      });
+  }
+  updateDaySquareEvents(eventActivities: EventActivity[]){
+    for(let eventActivity of eventActivities){
+      for(let daySquare of this.daySquares){
+        if(eventActivity.startTime.format('YYYY-MM-DD') === daySquare.date.format('YYYY-MM-DD')){
+          daySquare.eventActivities.push(eventActivity);
+        }
       }
-    )
+    }
+    
+    for(let daySquare of this.daySquares){
+      if(daySquare.eventActivities.length > this.maxCount){
+        this.maxCount = daySquare.eventActivities.length;
+      }
+    }
+    for(let daySquare of this.daySquares){
+      daySquare.style = {
+        "fill":this.getColorScale(daySquare.eventActivities.length, this.maxCount),
+        "stroke":"none"
+      }
+    }
   }
 
-  calculateDays(viewBoxHeight, viewBoxWidth): DaySquare[] {
+  getColorScale(value, max): string{
+    
+    const colorScale = ['#edf8e9','#c7e9c0','#a1d99b','#74c476','#31a354','#006d2c'];
+    if(value == 0){
+      return "#f9f9f9";
+    }else{
+      return colorScale[Math.ceil((value*colorScale.length)/max)-1];
+
+    }
+
+  }
+
+  calculateDaySquares(viewBoxHeight, viewBoxWidth): DaySquare[] {
     let now: moment.Moment = this.timeService.getDate();
     let firstOfMonth = moment(now).date(1);
     let lastOfMonth = moment(now).endOf('month');
@@ -49,7 +81,7 @@ export class MonthViewComponent implements OnInit {
     let dayWidth = (viewBoxWidth - (padding*(columns+1))) / columns;
     let dayHeight = (viewBoxHeight - (padding*(rows+1))) / rows;
 
-    let days: DaySquare[] = [];
+    let daySquares: DaySquare[] = [];
 
     for(let row = 0; row < rows; row++){
       for(let col = 0; col < columns; col++){
@@ -64,7 +96,7 @@ export class MonthViewComponent implements OnInit {
           ' L'+(x+dayWidth)+' '+y+
           ' Z'+
           ''
-        let day: DaySquare = {
+        let daySquare: DaySquare = {
           date: currentDate,
           svgPath: path,
           style: {
@@ -76,7 +108,7 @@ export class MonthViewComponent implements OnInit {
           eventActivities: [] 
         }
         if(currentDate.month() === lastOfMonth.month())
-          days.push(day);
+          daySquares.push(daySquare);
 
         let nextDate: moment.Moment = moment(currentDate);
         nextDate.date(nextDate.date() + 1);
@@ -86,24 +118,25 @@ export class MonthViewComponent implements OnInit {
         
       }
     }
-    return days;
+    return daySquares;
   }
 
-  onClick(day: DaySquare){
-    this.timeService.setActiveDate(day.date);
+  onClick(daySquare: DaySquare){
+    this.timeService.setActiveDate(daySquare.date);
     this.homeService.setView('day');
   }
-  onMouseEnter(day: DaySquare){
-    day.style = {
-      "fill":"#f9f9f9",
+  onMouseEnter(daySquare: DaySquare){
+    daySquare.style = {
+      "fill":"yellow",
       "stroke":"blue",
       "cursor":"pointer"
     }
   }
-  onMouseLeave(day: DaySquare){
-    day.style = {
-      "fill":"#f9f9f9",
-      "stroke":"none"
+  onMouseLeave(daySquare: DaySquare){
+    daySquare.style = {
+      "fill":this.getColorScale(daySquare.eventActivities.length, this.maxCount),
+      "stroke":"none",
+      "stroke-width":""
     }
   }
 
