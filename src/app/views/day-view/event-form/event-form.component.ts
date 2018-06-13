@@ -56,12 +56,8 @@ export class EventFormComponent implements OnInit {
   }
 
   onClickDelete(){
-    this.response.message = 'cancelled'; 
-    this.timeService.deleteEvent(this.activeEvent).subscribe(
-      (data)=>{
-        console.log(data);
-      }
-    );
+    this.response.message = 'delete';
+    this.response.data = this.activeEvent; 
     this.activeModal.close(this.response);
   }
 

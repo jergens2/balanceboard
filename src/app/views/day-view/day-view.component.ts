@@ -44,55 +44,26 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewBoxHeight = 400;
     this.viewBoxWidth = 600;
     this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
-
-
-    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1,'day').hour(0).minute(0).second(0).millisecond(0))
+    this.today = this.timeService.getActiveDate();
+    this.timeSegments = this.calculateTimeSegments();
+    this.timeService.eventListSubject
       .subscribe(
-      (eventList: EventActivity[]) => {
-        this.eventList = eventList;
-        this.today = this.timeService.getActiveDate();
-        // this.eventList = this.eventListMapMoments(eventList);
-        this.timeSegments = this.calculateTimeSegments();
-        this.eventRects = this.drawEventActivityRects(this.eventList);
-      });
-  }
-
-  eventListMapMoments(eventList: EventActivity[]):EventActivity[]{
-    let newEventList: EventActivity[] = [];
-    for(let event of eventList){
-      console.log(event);
-      newEventList.push(
-        new EventActivity(
-          //event._id, 
-          '',
-          moment(event.startTime),
-          moment(event.endTime),
-          event.description,
-          event.category
-        )
+        (eventList: EventActivity[]) => {
+          this.eventList = eventList;
+          this.eventRects = this.drawEventActivityRects(this.eventList);
+        }
       )
-    }
-    return newEventList;
+    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1, 'day').hour(0).minute(0).second(0).millisecond(0));
   }
 
-
-  calculateYFromEventActivityTime(time: Moment): number{
-    // ?? ? ? ? ?
-    // for some reason the time doesn't actually come in as a Moment, 
-    // it comes in as a string maybe?  but error = time.diff() is not a function
-    // so by re-setting time as a moment, it fixes it but why did this happen?  issue is unresolved.
-
-    time = moment(time);
-
+  calculateYFromEventActivityTime(time: Moment): number {
     const padding: number = 10;
     const beginning = moment(time).hour(7).minute(0).second(0).millisecond(0);
     const end = moment(time).hour(21).minute(0).second(0).millisecond(0);
     const totalHeight = (this.viewBoxHeight - (padding * 2));
     const totalMinutes = moment.duration(end.diff(beginning)).asMinutes();
-
-    
     const difference = moment.duration(time.diff(beginning)).asMinutes();
-    const result = (difference* totalHeight) / totalMinutes;
+    const result = (difference * totalHeight) / totalMinutes;
     return result;
   }
 
@@ -104,7 +75,9 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       eventRect.x = 0 + 100;
       eventRect.width = this.viewBoxWidth - 150;
       eventRect.y = this.calculateYFromEventActivityTime(event.startTime);
+      eventRect.y = eventRect.y < 0 ? 0 : eventRect.y;
       eventRect.height = this.calculateYFromEventActivityTime(event.endTime) - eventRect.y;
+      eventRect.height = eventRect.height < 0 ? 0 : eventRect.height;
       eventRect.rx = 1;
       eventRect.ry = 1;
       eventRect.style = {
@@ -120,6 +93,11 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
+    this.buildMouseEvents();
+
+  }
+
+  buildMouseEvents() {
     this.pt = this.svgObject.nativeElement.createSVGPoint();
 
     const down = Observable.fromEvent(this.svgObject.nativeElement, 'mousedown')
@@ -281,14 +259,19 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  onClick(eventRect: EventRect){
+  onClick(eventRect: EventRect) {
     this.timeService.setActiveEvent(eventRect.eventActivity, 'modify');
-    const modalRef = this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop: 'static' });
-  } 
-  
-  onMouseEnter(eventRect: EventRect){
+    this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop: 'static' })
+      .result.then((result) => {
+        if (result.message === 'delete') {
+          this.timeService.deleteEvent(result.data);
+        }
+      }).catch((error) => { });
+  }
+
+  onMouseEnter(eventRect: EventRect) {
     eventRect.style = {
-      "cursor":"pointer",
+      "cursor": "pointer",
       "fill": "yellow",
       "stroke": "red",
       "stroke-width": "4",
@@ -296,7 +279,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onMouseLeave(eventRect){
+  onMouseLeave(eventRect) {
     eventRect.style = {
       "fill": "blue",
       "stroke": "black",

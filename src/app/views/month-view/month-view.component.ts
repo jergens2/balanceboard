@@ -22,6 +22,8 @@ export class MonthViewComponent implements OnInit {
   daySquares: DaySquare[];
   maxCount: number = 0;
 
+  eventList: EventActivity[];
+
   constructor(private timeService: TimeService, private homeService: HomeService) { }
 
   ngOnInit() {
@@ -30,10 +32,14 @@ export class MonthViewComponent implements OnInit {
     this.viewBox = "0 0 "+this.viewBoxWidth+" "+this.viewBoxHeight;
     this.now = this.timeService.getActiveDate();
     this.daySquares = this.calculateDaySquares(this.viewBoxHeight, this.viewBoxWidth);
+    this.timeService.eventListSubject
+      .subscribe(
+        (eventList) => {
+          this.eventList = eventList;
+          this.updateDaySquareEvents(this.eventList);
+        }
+      )
     this.timeService.getEventActivitysByDateRange(moment(this.now.startOf('month')),moment(this.now.endOf('month')))
-      .subscribe((eventList)=>{
-        this.updateDaySquareEvents(eventList);
-      });
   }
   updateDaySquareEvents(eventActivities: EventActivity[]){
     for(let eventActivity of eventActivities){
