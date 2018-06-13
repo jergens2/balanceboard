@@ -21,6 +21,8 @@ export class TimeService {
   private activeEvent: EventActivity;
   private eventMode: string;
 
+  
+
   getActiveEvent(): { event: EventActivity, mode: string } {
     return { event: this.activeEvent, mode: this.eventMode };
   }

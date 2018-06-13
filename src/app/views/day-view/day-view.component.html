@@ -4,12 +4,10 @@
 <div class="row">
   <div class="col-8">
     <svg #svgDayView [attr.viewBox]="viewBox" width="100%">
+   
       <g *ngFor="let timeSegment of timeSegments">
-        <line [ngStyle]="timeSegment.style" [attr.x1]="timeSegment.line_x1" [attr.x2]="timeSegment.line_x2" [attr.y1]="timeSegment.line_y1"
-          [attr.y2]="timeSegment.line_y2" />
-        <text [attr.x]="timeSegment.text_x" [attr.y]="timeSegment.text_y" class="dayDateDisplay">
-          {{timeSegment.text_string}}
-        </text>
+        <path [ngStyle]="timeSegment.style" [attr.d]="timeSegment.path" />
+        <text [attr.x]="timeSegment.text_x" [attr.y]="timeSegment.text_y" class="dayDateDisplay">{{ timeSegment.text_string }}</text>
       </g>
       <g *ngIf="activeEventActivityRect">
           <rect [attr.x]="activeEventActivityRect.x" [attr.y]="activeEventActivityRect.y" [attr.width]="activeEventActivityRect.width" [attr.height]="activeEventActivityRect.height"
@@ -20,7 +18,7 @@
           [attr.rx]="eventRect.rx" [attr.ry]="eventRect.ry" [ngStyle]="eventRect.style" 
           />
       </g>
-      
+      <line *ngIf="marginLine" [attr.x1]="marginLine.x1" [attr.x2]="marginLine.x2" [attr.y1]="marginLine.y1" [attr.y2]="marginLine.y2" [ngStyle]="{'stroke':'black','stroke-width':'0.5'}" />
     </svg>
   </div>
   <div class="col-4">

@@ -30,9 +30,19 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   viewBoxHeight: number;
   viewBoxWidth: number;
 
+  viewStartTime: Moment;
+  viewEndTime: Moment;
+
   timeSegments: TimeSegment[];
   eventRects: EventRect[] = [];
   eventList: EventActivity[];
+  
+  marginLine : {
+    x1: number,
+    x2: number,
+    y1: number,
+    y2: number
+  };
 
   activeEventActivityRect: EventRect;
 
@@ -41,11 +51,18 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private timeService: TimeService, private modalService: NgbModal) { }
 
   ngOnInit() {
-    this.viewBoxHeight = 400;
+    
+    this.today = this.timeService.getActiveDate();
+    this.viewStartTime = moment(this.today).hour(7).minute(0).second(0).millisecond(0);
+    this.viewEndTime = moment(this.today).hour(22).minute(0).second(0).millisecond(0);
+
+    this.viewBoxHeight = 700;
     this.viewBoxWidth = 600;
     this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
-    this.today = this.timeService.getActiveDate();
-    this.timeSegments = this.calculateTimeSegments();
+
+    this.marginLine = {x1: 1, x2:2, y1:3, y2:4};
+    
+    this.timeSegments = this.calculateTimeSegments(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
     this.timeService.eventListSubject
       .subscribe(
         (eventList: EventActivity[]) => {
@@ -56,7 +73,18 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1, 'day').hour(0).minute(0).second(0).millisecond(0));
   }
 
+  ngAfterViewInit() {
+    this.buildMouseEvents();
+  }
+
+  ngOnDestroy() {
+    this.handle.unsubscribe();
+  }
+
+  
+
   calculateYFromEventActivityTime(time: Moment): number {
+    //this method as of 2018-03-13 does not produce an accurate location
     const padding: number = 10;
     const beginning = moment(time).hour(7).minute(0).second(0).millisecond(0);
     const end = moment(time).hour(21).minute(0).second(0).millisecond(0);
@@ -72,8 +100,8 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     let eventRects: EventRect[] = [];
     for (let event of eventList) {
       let eventRect = new EventRect();
-      eventRect.x = 0 + 100;
-      eventRect.width = this.viewBoxWidth - 150;
+      eventRect.x = .2 * this.viewBoxWidth + 10;
+      eventRect.width = this.viewBoxWidth - (3*10) - (.2*this.viewBoxWidth);
       eventRect.y = this.calculateYFromEventActivityTime(event.startTime);
       eventRect.y = eventRect.y < 0 ? 0 : eventRect.y;
       eventRect.height = this.calculateYFromEventActivityTime(event.endTime) - eventRect.y;
@@ -92,10 +120,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     return eventRects;
   }
 
-  ngAfterViewInit() {
-    this.buildMouseEvents();
 
-  }
 
   buildMouseEvents() {
     this.pt = this.svgObject.nativeElement.createSVGPoint();
@@ -136,8 +161,8 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   initiateEventActivityRect(cursorPt: SVGPoint) {
     this.activeEventActivityRect = new EventRect();
-    this.activeEventActivityRect.x = 0 + 100;
-    this.activeEventActivityRect.width = this.viewBoxWidth - 150;
+    this.activeEventActivityRect.x = .2 * this.viewBoxWidth + 10;
+    this.activeEventActivityRect.width = this.viewBoxWidth - (3*10) - (.2*this.viewBoxWidth);
     this.activeEventActivityRect.y = cursorPt.y;
     this.activeEventActivityRect.height = 0;
     this.activeEventActivityRect.rx = 1;
@@ -204,57 +229,47 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  ngOnDestroy() {
-    this.handle.unsubscribe();
-  }
-
-  calculateTimeSegments(): TimeSegment[] {
+  calculateTimeSegments(width: number, height: number, startTime: Moment, endTime: Moment): TimeSegment[] {
 
     const padding: number = 10;
 
-    const startHour = 7;
-    const endHour = 21;
+    const startHour = startTime.hour();
+    const endHour = endTime.hour();
 
-    const increments = (((endHour + 1) - startHour) * 2) - 1;
-    const incrementMinutes = 30;
-    const segmentHeight = (this.viewBoxHeight - (padding * 2)) / increments;
+    //increments is multiplied by 2 to allow an extra division for every half hour.  In the future it may be preferrable to make this a dynamic variable or a parameter to determine if it is broken down by half hour incrememnts
+    const increments = ((endHour - startHour) + 1) * 2;
+    const incrementHeight = (height - (padding * 2)) / increments;
 
     let timeSegments: TimeSegment[] = [];
     let currentHour = startHour;
-    let currentTime: moment.Moment = this.today.hours(currentHour).minutes(0).seconds(0);;
+    let currentTime: Moment = moment(this.today).hours(currentHour).minutes(0).seconds(0);
 
     for (let increment = 0; increment < increments; increment++) {
+      let x = 0 + padding;
+      let y = 0 + padding + (increment * incrementHeight);
       let timeSegment: TimeSegment = new TimeSegment();
-
-      timeSegment.dateTime = currentTime.toDate();
-
-      timeSegment.line_x1 = 0 + padding + 80;
-      timeSegment.line_x2 = this.viewBoxWidth - padding;
-      timeSegment.line_y1 = (padding * 2) + (increment * segmentHeight);
-      timeSegment.line_y2 = timeSegment.line_y1;
-      timeSegment.text_x = timeSegment.line_x1 - 80;
-      timeSegment.text_y = timeSegment.line_y1 - 15;
-      if (currentTime.minutes() === 0) {
-        //  I added 1 hour because something about this arithmetic produces the line segments that do not line up with the hours, so I simply added 1 hour here.  
-        //  This should probably be revisited to be more robust going forward, especially if the display should have dynamically settable start and end hours
-        if (currentTime.hour() === 7) {
-          //quick hack to get rid of the hour 7 label.
-          timeSegment.text_string = "";
-        } else {
-          timeSegment.text_string = currentTime.clone().format('h:mm a');
-        }
-      } else {
-        timeSegment.text_string = "";
-      }
-
+      timeSegment.dateTime = moment(currentTime);
+      timeSegment.path = 'M ' + x + ' ' + y + 
+        ' L ' + x + ' ' + (y+incrementHeight) + 
+        ' L ' + (width-padding) + ' ' + (y+incrementHeight) + 
+        ' L ' + (width-padding) + ' ' + y + 
+        ' Z ' ; 
       timeSegment.style = {
-        "stroke": "black",
-        "stroke-width": "0.5px"
+          "stroke": "black",
+          "stroke-width": "0.5",
+          "fill":"black",
+          "fill-opacity":"0.1"
       }
-
+      timeSegment.text_x = padding + (incrementHeight/2);
+      timeSegment.text_y = y + (incrementHeight * .75);
+      timeSegment.text_string = timeSegment.dateTime.minute() == 0 ? timeSegment.dateTime.format('H:mm a') : ''
       timeSegments.push(timeSegment);
       currentTime.add(0.5, 'hours');
     }
+    this.marginLine.x1 = .2 * width;
+    this.marginLine.x2 = this.marginLine.x1;
+    this.marginLine.y1 = 0+padding;
+    this.marginLine.y2 = height-padding;
     return timeSegments;
 
   }
