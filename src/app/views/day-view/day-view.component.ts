@@ -63,6 +63,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.marginLine = {x1: 1, x2:2, y1:3, y2:4};
     
     this.timeSegments = this.calculateTimeSegments(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
+    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1, 'day').hour(0).minute(0).second(0).millisecond(0));
     this.timeService.eventListSubject
       .subscribe(
         (eventList: EventActivity[]) => {
@@ -70,7 +71,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
           this.eventRects = this.drawEventActivityRects(this.eventList);
         }
       )
-    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1, 'day').hour(0).minute(0).second(0).millisecond(0));
   }
 
   ngAfterViewInit() {
@@ -85,13 +85,12 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   calculateYFromEventActivityTime(time: Moment): number {
     //this method as of 2018-03-13 does not produce an accurate location
-    const padding: number = 10;
     const beginning = moment(time).hour(7).minute(0).second(0).millisecond(0);
     const end = moment(time).hour(21).minute(0).second(0).millisecond(0);
-    const totalHeight = (this.viewBoxHeight - (padding * 2));
+    const totalHeight = this.viewBoxHeight;
     const totalMinutes = moment.duration(end.diff(beginning)).asMinutes();
     const difference = moment.duration(time.diff(beginning)).asMinutes();
-    const result = (difference * totalHeight) / totalMinutes;
+    const result = ((difference * totalHeight) / totalMinutes);
     return result;
   }
 
@@ -134,7 +133,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       .do((mm: MouseEvent) => mm.preventDefault());
     const up = Observable.fromEvent(document, 'mouseup')
       .do((mu: MouseEvent) => {
-        this.createNewEventModal(this.getCursorPt(mu));
+        this.createNewEventModal(this.getCursorPt(mu), this.viewStartTime, this.viewEndTime, this.viewBoxHeight);
         mu.preventDefault()
       });
 
@@ -175,6 +174,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   updateActiveActivtyRect(cursorPt: SVGPoint) {
+    console.log(cursorPt)
     if (cursorPt.y < this.activeEventActivityRect.y) {
       let height = this.activeEventActivityRect.y - cursorPt.y;
       this.activeEventActivityRect.y = cursorPt.y;
@@ -194,33 +194,30 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     }
   }
-  createNewEventModal(cursorPt: SVGPoint) {
+  createNewEventModal(cursorPt: SVGPoint, dayStartTime: Moment, dayEndTimeShort: Moment, height: number) {
     if (cursorPt.y <= this.activeEventActivityRect.y) {
       //in this case, the cursor is above the original start point.  
     } else {
-      //
-      // Need up clean up the next section:  change to variables to work dynamically, not on static values
-      //
+       console.log(dayStartTime)
+      //need to add 30 minutes to the day end time due to the fact that an extra segment is added when segments are created
+      let dayEndTime = moment(dayEndTimeShort).add(1, 'hour');
+      const totalMinutes = moment.duration(dayEndTime.diff(dayStartTime)).asMinutes();
+      //console.log(totalMinutes);
 
-      const padding: number = 10;
-      const totalHeight = (this.viewBoxHeight - (padding * 2));
-      const totalMinutes = 29 * 30;  //29 increments * 30 minutes of time each
-      const startMinutes = totalMinutes * (this.activeEventActivityRect.y / totalHeight);
-      const endMinutes = totalMinutes * (this.activeEventActivityRect.y + this.activeEventActivityRect.height) / totalHeight;
+      const startMinutes = ((this.activeEventActivityRect.y) * totalMinutes) / height;
+      const endMinutes = ((this.activeEventActivityRect.y + this.activeEventActivityRect.height) * totalMinutes) / height;
+      //console.log(startMinutes, endMinutes);
 
-      const startTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(startMinutes, 'minute');
-      const endTime: moment.Moment = this.timeService.getActiveDate().clone().hour(7).minute(0).second(0).millisecond(0).add(endMinutes, 'minute');
+      const startTime: Moment = moment(dayStartTime).add(startMinutes, 'minute');
+      const endTime: Moment = moment(dayStartTime).add(endMinutes, 'minute');
+
+      //console.log(startTime, endTime);
+
       let activeEvent = new EventActivity('', startTime, endTime, '', '');
 
       this.timeService.setActiveEvent(activeEvent, 'create');
 
       const modalRef = this.modalService.open(EventFormComponent, { centered: true, keyboard: false, backdrop: 'static' });
-
-      //
-      // end of section to be cleaned
-      //
-
-
       modalRef.result.then((result) => {
         this.finalizeActiveEventActivityRect(result);
       }).catch((error) => { });
@@ -231,28 +228,27 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   calculateTimeSegments(width: number, height: number, startTime: Moment, endTime: Moment): TimeSegment[] {
 
-    const padding: number = 10;
 
     const startHour = startTime.hour();
     const endHour = endTime.hour();
 
     //increments is multiplied by 2 to allow an extra division for every half hour.  In the future it may be preferrable to make this a dynamic variable or a parameter to determine if it is broken down by half hour incrememnts
     const increments = ((endHour - startHour) + 1) * 2;
-    const incrementHeight = (height - (padding * 2)) / increments;
+    const incrementHeight = (height) / increments;
 
     let timeSegments: TimeSegment[] = [];
     let currentHour = startHour;
     let currentTime: Moment = moment(this.today).hours(currentHour).minutes(0).seconds(0);
 
     for (let increment = 0; increment < increments; increment++) {
-      let x = 0 + padding;
-      let y = 0 + padding + (increment * incrementHeight);
+      let x = 0;
+      let y = 0 + (increment * incrementHeight);
       let timeSegment: TimeSegment = new TimeSegment();
       timeSegment.dateTime = moment(currentTime);
       timeSegment.path = 'M ' + x + ' ' + y + 
         ' L ' + x + ' ' + (y+incrementHeight) + 
-        ' L ' + (width-padding) + ' ' + (y+incrementHeight) + 
-        ' L ' + (width-padding) + ' ' + y + 
+        ' L ' + (width) + ' ' + (y+incrementHeight) + 
+        ' L ' + (width) + ' ' + y + 
         ' Z ' ; 
       timeSegment.style = {
           "stroke": "black",
@@ -260,16 +256,16 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
           "fill":"black",
           "fill-opacity":"0.1"
       }
-      timeSegment.text_x = padding + (incrementHeight/2);
+      timeSegment.text_x = (incrementHeight/2);
       timeSegment.text_y = y + (incrementHeight * .75);
-      timeSegment.text_string = timeSegment.dateTime.minute() == 0 ? timeSegment.dateTime.format('H:mm a') : ''
+      timeSegment.text_string = timeSegment.dateTime.minute() == 0 ? timeSegment.dateTime.format('h:mm a') : ''
       timeSegments.push(timeSegment);
       currentTime.add(0.5, 'hours');
     }
     this.marginLine.x1 = .2 * width;
     this.marginLine.x2 = this.marginLine.x1;
-    this.marginLine.y1 = 0+padding;
-    this.marginLine.y2 = height-padding;
+    this.marginLine.y1 = 0;
+    this.marginLine.y2 = height;
     return timeSegments;
 
   }
