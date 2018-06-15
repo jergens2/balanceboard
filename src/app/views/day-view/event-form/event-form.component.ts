@@ -30,7 +30,6 @@ export class EventFormComponent implements OnInit {
   ngOnInit() {
     this.activeEvent = this.timeService.getActiveEvent().event;
     this.mode = this.timeService.getActiveEvent().mode;
-    console.log(this.mode);
     this.newEventActivityForm = new FormGroup({
       'startTime': new FormGroup({
         'startTimeDate': new FormControl({value: this.activeEvent.startTime.format('YYYY-MM-DD'), disabled: true}),

@@ -85,13 +85,20 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   calculateYFromEventActivityTime(time: Moment): number {
     //this method as of 2018-03-13 does not produce an accurate location
+
     const beginning = moment(time).hour(7).minute(0).second(0).millisecond(0);
-    const end = moment(time).hour(21).minute(0).second(0).millisecond(0);
+    const end = moment(time).hour(23).minute(0).second(0).millisecond(0);
     const totalHeight = this.viewBoxHeight;
     const totalMinutes = moment.duration(end.diff(beginning)).asMinutes();
     const difference = moment.duration(time.diff(beginning)).asMinutes();
     const result = ((difference * totalHeight) / totalMinutes);
-    return result;
+    if(result > totalHeight){ 
+      return totalHeight;
+    }else if(result < 0){
+      return 0;
+    }else{
+      return result;
+    }
   }
 
 
@@ -104,18 +111,24 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       eventRect.y = this.calculateYFromEventActivityTime(event.startTime);
       eventRect.y = eventRect.y < 0 ? 0 : eventRect.y;
       eventRect.height = this.calculateYFromEventActivityTime(event.endTime) - eventRect.y;
-      eventRect.height = eventRect.height < 0 ? 0 : eventRect.height;
+      if((eventRect.y + eventRect.height) > this.viewBoxHeight ){
+        eventRect.height = this.viewBoxHeight;
+      }
+      if(eventRect.height < 0){
+        eventRect.height = this.viewBoxHeight;
+      }
       eventRect.rx = 1;
       eventRect.ry = 1;
       eventRect.style = {
         "fill": "blue",
         "stroke": "black",
-        "stroke-width": "1",
+        "stroke-width": "2",
         "fill-opacity": "0.2"
       }
       eventRect.eventActivity = event;
       eventRects.push(eventRect)
     }
+    console.log(eventRects);
     return eventRects;
   }
 
@@ -146,7 +159,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
         this.updateActiveActivtyRect(this.getCursorPt(md))
       });
   }
-
   getCursorPt(me: MouseEvent): SVGPoint {
     let cursorPt: SVGPoint;
     this.pt.x = me.clientX;
@@ -157,7 +169,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     );
     return cursorPt;
   }
-
   initiateEventActivityRect(cursorPt: SVGPoint) {
     this.activeEventActivityRect = new EventRect();
     this.activeEventActivityRect.x = .2 * this.viewBoxWidth + 10;
@@ -174,7 +185,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   updateActiveActivtyRect(cursorPt: SVGPoint) {
-    console.log(cursorPt)
     if (cursorPt.y < this.activeEventActivityRect.y) {
       let height = this.activeEventActivityRect.y - cursorPt.y;
       this.activeEventActivityRect.y = cursorPt.y;
@@ -198,21 +208,14 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     if (cursorPt.y <= this.activeEventActivityRect.y) {
       //in this case, the cursor is above the original start point.  
     } else {
-       console.log(dayStartTime)
-      //need to add 30 minutes to the day end time due to the fact that an extra segment is added when segments are created
+
       let dayEndTime = moment(dayEndTimeShort).add(1, 'hour');
       const totalMinutes = moment.duration(dayEndTime.diff(dayStartTime)).asMinutes();
-      //console.log(totalMinutes);
 
       const startMinutes = ((this.activeEventActivityRect.y) * totalMinutes) / height;
       const endMinutes = ((this.activeEventActivityRect.y + this.activeEventActivityRect.height) * totalMinutes) / height;
-      //console.log(startMinutes, endMinutes);
-
       const startTime: Moment = moment(dayStartTime).add(startMinutes, 'minute');
       const endTime: Moment = moment(dayStartTime).add(endMinutes, 'minute');
-
-      //console.log(startTime, endTime);
-
       let activeEvent = new EventActivity('', startTime, endTime, '', '');
 
       this.timeService.setActiveEvent(activeEvent, 'create');
