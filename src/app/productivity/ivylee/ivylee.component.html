@@ -1,0 +1,105 @@
+<div class="container my-3">
+  <div class="row">
+    <div class="col-12">
+      <h1>Ivy Lee method</h1>
+      <h3>Instructions</h3>
+      <ol>
+        <li>At the end of each workday, write down the six most important things you need to accomplish tomorrow. Do not write
+          down more than six tasks.</li>
+        <li>Prioritize those six items in order of their true importance</li>
+        <li>When you arrive tomorrow, concentrate only on the first task. Work until the first task is finished before moving
+          on to the second task.</li>
+        <li>Approach the rest of your list in the same fashion. At the end of the day, move any unfinished items to a new list
+          of six tasks for the following day.</li>
+        <li>Repeat this process every working day</li>
+      </ol>
+      <hr>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <b>Tasks for tomorrow ({{ tomorrow }})</b>
+      <form [formGroup]="buildTaskForm">
+
+        <div class="form-row my-2">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <div class="input-group-text">1</div>
+            </div>
+            <input type="text" class="form-control" formControlName="item1">
+          </div>
+        </div>
+
+        <div class="form-row my-2">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <div class="input-group-text">2</div>
+            </div>
+            <input type="text" class="form-control" formControlName="item2">
+          </div>
+        </div>
+        <div class="form-row my-2">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <div class="input-group-text">3</div>
+            </div>
+            <input type="text" class="form-control" formControlName="item3">
+          </div>
+        </div>
+        <div class="form-row my-2">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <div class="input-group-text">4</div>
+            </div>
+            <input type="text" class="form-control" formControlName="item4">
+          </div>
+        </div>
+        <div class="form-row my-2">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <div class="input-group-text">5</div>
+            </div>
+            <input type="text" class="form-control" formControlName="item5">
+          </div>
+        </div>
+        <div class="form-row my-2">
+          <div class="input-group">
+            <div class="input-group-addon">
+              <div class="input-group-text">6</div>
+            </div>
+            <input type="text" class="form-control" formControlName="item6">
+          </div>
+        </div>
+        <div class="form-row text-center">
+          <button class="btn btn-lg btn-success" (click)="onClickSaveTaskList()">Save Task List</button>
+        </div>
+      </form>
+
+
+
+    </div>
+  </div>
+  <!-- <div class="row">
+    <div class="col-12">
+      <div *ngIf="(workingTaskList.tasks.length == 0) && (buildTask == false)">
+        There are no tasks<br>
+        <button class="btn btn-sm btn-primary" (click)="onClickAddTask()">Add Task</button>
+      </div>
+      <div *ngIf="buildTask">
+        <form [formGroup]="buildTaskForm">
+          <div class=""></div>
+        </form>
+      </div>
+    </div>
+    <hr>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div *ngIf="workingTaskList.tasks.length > 0">
+          <div *ngFor="let task of workingTaskList.tasks" class="card">
+            {{task.title}}
+          </div>
+        </div>
+    </div>
+  </div> -->
+</div>

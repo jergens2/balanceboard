@@ -1,17 +1,21 @@
+<div class="sidebar d-none d-xl-flex">
+  <ul>
+    <li>
+        <button class="btn btn-sm" (click)="onClickTimeFrameButton('year')">Year</button>
+    </li>
+    <li>
+        <button class="btn btn-sm" (click)="onClickTimeFrameButton('month')">Month</button>
+    </li>
+    <li>
+        <button class="btn btn-sm" (click)="onClick('ivylee')">To Do (Ivy Lee method)</button>
+    </li>
+  </ul>
+  
+  
+</div>
+
+
 <div class="container">
-  <div class="row">
-    <div class="col-12 my-3">
-      
-      
-    </div>
-  </div>
-  <div class="row text-center">
-    <div class="col-3">
-      <button class="btn btn-sm" (click)="onClickTimeFrameButton('year')">Year</button>
-      <button class="btn btn-sm" (click)="onClickTimeFrameButton('month')">Month</button>
-      <!-- <button class="btn btn-sm" (click)="onClickTimeFrameButton('day')">Day</button> -->
-    </div>
-  </div>
   <div class="row" style="border:1px solid black">
     <div class="col-12" *ngIf="selectedView=='day'" style="border:1px solid red">
       <app-day-view></app-day-view>

@@ -17,10 +17,10 @@ import { EventActivity } from './../../../models/event-activity.model';
 export class EventFormComponent implements OnInit {
   
   private activeEvent: EventActivity;
-  mode: string;
-  constructor(public activeModal: NgbActiveModal, private timeService: TimeService) {  }
-
   newEventActivityForm: FormGroup;
+  mode: string;
+
+  constructor(public activeModal: NgbActiveModal, private timeService: TimeService) {  }
 
   private response = {
     message: '',

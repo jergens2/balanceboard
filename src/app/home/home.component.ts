@@ -1,6 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 import { HomeService } from './../services/home.service';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -15,6 +16,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private homeService: HomeService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -29,5 +31,9 @@ export class HomeComponent implements OnInit {
 
   onClickTimeFrameButton(selectedView){
     this.homeService.setView(selectedView);
+  }
+
+  onClick(button: string){
+    this.router.navigate(['/' + button]);
   }
 }
