@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class TaskService {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   taskList: IvyLeeTaskList = new IvyLeeTaskList();
   taskListSubject: Subject<IvyLeeTaskList> = new Subject();
@@ -32,6 +33,8 @@ export class TaskService {
     console.log("TaskService: ", this.taskList)
     this.taskListSubject.next(this.taskList);
     //push the task list to the server.
+
+    this.router.navigate(['/']);
   }
 
 }

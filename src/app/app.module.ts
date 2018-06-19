@@ -10,13 +10,15 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { HeaderComponent } from './header/header.component';
+import { HeaderComponent } from './nav/header/header.component';
 import { MonthViewComponent } from './views/month-view/month-view.component';
 import { DayViewComponent } from './views/day-view/day-view.component';
 import { YearViewComponent } from './views/year-view/year-view.component';
 import { EventFormComponent } from './views/day-view/event-form/event-form.component';
 import { IvyleeComponent } from './productivity/ivylee/ivylee.component';
 import { TaskService } from './services/task.service';
+import { SidebarComponent } from './nav/sidebar/sidebar.component';
+import { ContentComponent } from './nav/content/content.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -33,7 +35,9 @@ const appRoutes: Routes = [
     DayViewComponent,
     YearViewComponent,
     EventFormComponent,
-    IvyleeComponent
+    IvyleeComponent,
+    SidebarComponent,
+    ContentComponent
   ],
   imports: [
     BrowserModule,

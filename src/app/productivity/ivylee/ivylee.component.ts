@@ -21,6 +21,11 @@ export class IvyleeComponent implements OnInit {
   buildTask: boolean = false;
   buildTaskForm: FormGroup;
   tomorrow: string;
+  saveListButtonText: string = "Save Task List";
+  saveSpinnerStyle = {
+    display:"none"
+  }
+  saveButtonDisabled = false;
 
   ngOnInit() {
     //this.workingTaskList = this.taskService.getIvyLeeTasks();
@@ -40,6 +45,10 @@ export class IvyleeComponent implements OnInit {
   }
 
   onClickSaveTaskList(){
+    this.saveSpinnerStyle = { display: 'inline' }
+    this.saveListButtonText = "Saving...";
+    
+    this.saveButtonDisabled = true;
     this.workingTaskList = new IvyLeeTaskList();
     this.workingTaskList.tasks.push(new IvyLeeTask(1, this.buildTaskForm.get('task1').value));
     this.workingTaskList.tasks.push(new IvyLeeTask(2, this.buildTaskForm.get('task2').value));
@@ -48,5 +57,6 @@ export class IvyleeComponent implements OnInit {
     this.workingTaskList.tasks.push(new IvyLeeTask(5, this.buildTaskForm.get('task5').value));
     this.workingTaskList.tasks.push(new IvyLeeTask(6, this.buildTaskForm.get('task6').value));
     this.taskService.submitIvyLeeTasks(this.workingTaskList);
+    
   }
 }

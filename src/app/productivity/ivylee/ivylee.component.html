@@ -21,7 +21,7 @@
       <b>Tasks for tomorrow ({{ tomorrow }})</b>
       <form [formGroup]="buildTaskForm">
 
-        <div class="form-row my-2">
+        <div class="form-row my-1">
           <div class="input-group">
             <div class="input-group-addon">
               <div class="input-group-text">1</div>
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <div class="form-row my-2">
+        <div class="form-row my-1">
           <div class="input-group">
             <div class="input-group-addon">
               <div class="input-group-text">2</div>
@@ -38,7 +38,7 @@
             <input type="text" class="form-control" formControlName="task2">
           </div>
         </div>
-        <div class="form-row my-2">
+        <div class="form-row my-1">
           <div class="input-group">
             <div class="input-group-addon">
               <div class="input-group-text">3</div>
@@ -46,7 +46,7 @@
             <input type="text" class="form-control" formControlName="task3">
           </div>
         </div>
-        <div class="form-row my-2">
+        <div class="form-row my-1">
           <div class="input-group">
             <div class="input-group-addon">
               <div class="input-group-text">4</div>
@@ -54,7 +54,7 @@
             <input type="text" class="form-control" formControlName="task4">
           </div>
         </div>
-        <div class="form-row my-2">
+        <div class="form-row my-1">
           <div class="input-group">
             <div class="input-group-addon">
               <div class="input-group-text">5</div>
@@ -62,7 +62,7 @@
             <input type="text" class="form-control" formControlName="task5">
           </div>
         </div>
-        <div class="form-row my-2">
+        <div class="form-row mt-1 mb-3">
           <div class="input-group">
             <div class="input-group-addon">
               <div class="input-group-text">6</div>
@@ -71,10 +71,10 @@
           </div>
         </div>
         <div class="form-row text-center">
-          <button class="btn btn-lg btn-success" (click)="onClickSaveTaskList()">Save Task List</button>
+          <button class="btn btn-lg btn-success" (click)="onClickSaveTaskList()" [disabled]="saveButtonDisabled">{{saveListButtonText}} <span [ngStyle]="saveSpinnerStyle"><i class="fa fa-spinner fa-spin"></i></span></button>
         </div>
       </form>
-
+      
 
 
     </div>

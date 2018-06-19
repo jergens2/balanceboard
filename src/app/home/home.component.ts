@@ -39,7 +39,6 @@ export class HomeComponent implements OnInit {
       .subscribe(
         (taskList) => {
           this.taskList = taskList;
-          console.log("HomeComponent: ", this.taskList);
         }
       )
   }

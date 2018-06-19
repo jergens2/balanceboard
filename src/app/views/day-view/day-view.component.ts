@@ -56,7 +56,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewStartTime = moment(this.today).hour(7).minute(0).second(0).millisecond(0);
     this.viewEndTime = moment(this.today).hour(22).minute(0).second(0).millisecond(0);
 
-    this.viewBoxHeight = 700;
+    this.viewBoxHeight = 600;
     this.viewBoxWidth = 600;
     this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
 
@@ -128,7 +128,6 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       eventRect.eventActivity = event;
       eventRects.push(eventRect)
     }
-    console.log(eventRects);
     return eventRects;
   }
 
