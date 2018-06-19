@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class TaskService {
 
   constructor() { }
 
-  taskList: IvyLeeTaskList;
+  taskList: IvyLeeTaskList = new IvyLeeTaskList();
+  taskListSubject: Subject<IvyLeeTaskList> = new Subject();
 
   getIvyLeeTasks(): IvyLeeTaskList{
     /* 
@@ -23,6 +25,13 @@ export class TaskService {
       
     }
     return this.taskList;
+  }
+
+  submitIvyLeeTasks(taskList: IvyLeeTaskList){
+    this.taskList = taskList;
+    console.log("TaskService: ", this.taskList)
+    this.taskListSubject.next(this.taskList);
+    //push the task list to the server.
   }
 
 }

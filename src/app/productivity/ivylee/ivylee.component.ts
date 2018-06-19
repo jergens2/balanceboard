@@ -4,6 +4,7 @@ import * as moment from 'moment';
 
 import { TaskService } from '../../services/task.service';
 import { IvyLeeTaskList } from './ivyleeTaskList.model';
+import { IvyLeeTask } from './ivyleeTask.model';
 
 
 
@@ -22,27 +23,30 @@ export class IvyleeComponent implements OnInit {
   tomorrow: string;
 
   ngOnInit() {
-    this.workingTaskList = this.taskService.getIvyLeeTasks();
+    //this.workingTaskList = this.taskService.getIvyLeeTasks();
     this.tomorrow = moment().add(1,'day').format('dddd MMM Do, YYYY');
     this.buildTaskForm = this.createForm();
-    console.log(this.workingTaskList)
   }
 
   createForm(): FormGroup{
     return new FormGroup({
-      'item1': new FormControl(null),
-      'item2': new FormControl(null),
-      'item3': new FormControl(null),
-      'item4': new FormControl(null),
-      'item5': new FormControl(null),
-      'item6': new FormControl(null)
+      'task1': new FormControl(null),
+      'task2': new FormControl(null),
+      'task3': new FormControl(null),
+      'task4': new FormControl(null),
+      'task5': new FormControl(null),
+      'task6': new FormControl(null)
     });
   }
 
-  onClickAddTask(){
-    this.buildTask = true;
-  }
   onClickSaveTaskList(){
-
+    this.workingTaskList = new IvyLeeTaskList();
+    this.workingTaskList.tasks.push(new IvyLeeTask(1, this.buildTaskForm.get('task1').value));
+    this.workingTaskList.tasks.push(new IvyLeeTask(2, this.buildTaskForm.get('task2').value));
+    this.workingTaskList.tasks.push(new IvyLeeTask(3, this.buildTaskForm.get('task3').value));
+    this.workingTaskList.tasks.push(new IvyLeeTask(4, this.buildTaskForm.get('task4').value));
+    this.workingTaskList.tasks.push(new IvyLeeTask(5, this.buildTaskForm.get('task5').value));
+    this.workingTaskList.tasks.push(new IvyLeeTask(6, this.buildTaskForm.get('task6').value));
+    this.taskService.submitIvyLeeTasks(this.workingTaskList);
   }
 }

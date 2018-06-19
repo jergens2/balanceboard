@@ -1,31 +1,41 @@
 <div class="sidebar d-none d-xl-flex">
   <ul>
     <li>
-        <button class="btn btn-sm" (click)="onClickTimeFrameButton('year')">Year</button>
+      <button class="btn btn-sm" (click)="onClickTimeFrameButton('year')">Year</button>
     </li>
     <li>
-        <button class="btn btn-sm" (click)="onClickTimeFrameButton('month')">Month</button>
+      <button class="btn btn-sm" (click)="onClickTimeFrameButton('month')">Month</button>
     </li>
     <li>
-        <button class="btn btn-sm" (click)="onClick('ivylee')">To Do (Ivy Lee method)</button>
+      <button class="btn btn-sm" (click)="onClick('ivylee')">To Do (Ivy Lee method)</button>
     </li>
   </ul>
-  
-  
+
+
 </div>
 
 
 <div class="container">
-  <div class="row" style="border:1px solid black">
-    <div class="col-12" *ngIf="selectedView=='day'" style="border:1px solid red">
+  <div class="row">
+    <div class="col-4" *ngIf="taskList">
+      <div class="card">
+        <div class="card-header">Task List</div>
+        <div class="card-body">
+          <ol *ngFor="let task of (taskList.tasks)">
+            <li>{{task.title}}</li>
+          </ol>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-8" *ngIf="selectedView=='day'" style="border:1px solid red">
       <app-day-view></app-day-view>
     </div>
-    <div class="col-12" *ngIf="selectedView=='month'" style="border:1px solid blue">
+    <div class="col-8" *ngIf="selectedView=='month'" style="border:1px solid blue">
       <app-month-view></app-month-view>
     </div>
-    <div class="col-12" *ngIf="selectedView=='year'">
+    <div class="col-8" *ngIf="selectedView=='year'">
       <app-year-view></app-year-view>
     </div>
   </div>
 </div>
-

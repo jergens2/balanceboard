@@ -6,4 +6,9 @@ export class IvyLeeTask {
     category: string;
     details: string;
 
+    constructor(priority: number, title: string){
+        this.title = title;
+        this.priority = priority;
+    }
+
 }
