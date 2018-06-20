@@ -11,6 +11,8 @@ export class SidebarComponent implements OnInit {
 
   constructor(private homeService: HomeService, private router: Router) { }
 
+  activeLink = { color: 'red' };
+
   ngOnInit() {
   }
 

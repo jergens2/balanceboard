@@ -14,7 +14,7 @@
     </div>
     <div class="col-12 col-lg-8 mb-3" *ngIf="selectedView=='day'">
       <div class="card">
-        <div class="card-header">Day View</div>
+        <div class="card-header"> Day View<button class="btn border border-primary bg-white btn btn-sm float-right" (click)="onClickMonth()" ><i  class="fa fa-calendar"></i> Month</button></div>
         <div class="card-body">
           <app-day-view></app-day-view>
         </div>

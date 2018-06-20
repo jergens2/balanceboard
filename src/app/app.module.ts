@@ -1,3 +1,4 @@
+import { AuthenticationService } from './services/authentication.service';
 import { HttpClientModule } from '@angular/common/http';
 import { HomeService } from './services/home.service';
 import { TimeService } from './services/time.service';
@@ -19,11 +20,15 @@ import { IvyleeComponent } from './productivity/ivylee/ivylee.component';
 import { TaskService } from './services/task.service';
 import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { ContentComponent } from './nav/content/content.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { AuthenticateComponent } from './auth/authenticate/authenticate.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'ivylee', component: IvyleeComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'authenticate', component: AuthenticateComponent }
 ];
 
 @NgModule({
@@ -37,7 +42,9 @@ const appRoutes: Routes = [
     EventFormComponent,
     IvyleeComponent,
     SidebarComponent,
-    ContentComponent
+    ContentComponent,
+    RegisterComponent,
+    AuthenticateComponent
   ],
   imports: [
     BrowserModule,
@@ -47,6 +54,7 @@ const appRoutes: Routes = [
     NgbModule.forRoot()
   ],
   providers: [ 
+    AuthenticationService,
     TimeService, 
     HomeService,
     TaskService

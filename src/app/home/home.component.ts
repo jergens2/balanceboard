@@ -50,4 +50,8 @@ export class HomeComponent implements OnInit {
   onClick(button: string){
     this.router.navigate(['/' + button]);
   }
+
+  onClickMonth(){
+    this.homeService.setView('month');
+  }
 }
