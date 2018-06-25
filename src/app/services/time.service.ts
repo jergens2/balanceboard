@@ -44,7 +44,7 @@ export class TimeService {
 
   saveEventActivity(event: EventActivity) {
 
-    const postUrl = this.serverUrl + "/event/create";
+    const postUrl = this.serverUrl + "/api/event/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ export class TimeService {
   }
 
   deleteEvent(event: EventActivity) {
-    const postUrl = this.serverUrl + "/event/" + event.id + '/delete';
+    const postUrl = this.serverUrl + "/api/event/" + event.id + '/delete';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -94,7 +94,7 @@ export class TimeService {
   }
 
   getEventActivitysByDateRange(startDate: Moment, endDate: Moment){
-    const getUrl = this.serverUrl + "/event/byDate";
+    const getUrl = this.serverUrl + "/api/event/byDate";
     const body = {
       'startDate': startDate.format('YYYY-MM-DD'),
       'endDate': endDate.format('YYYY-MM-DD')
