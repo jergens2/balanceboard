@@ -11,50 +11,108 @@ import { AuthData } from '../models/auth-data.model';
 export class AuthenticationComponent implements OnInit {
 
   action: string = null;
+  actionMessage: string = null;
+  errorMessage: string = '';
   registrationForm: FormGroup;
   confirmRegistrationForm: FormGroup;
+  authenticationForm: FormGroup;
   authData: AuthData = {email: '', password: ''};
   constructor(private authService: AuthenticationService) { }
 
   ngOnInit() {
+    this.authenticationForm = new FormGroup({
+      'email' : new FormControl(null, [Validators.email, Validators.required]),
+      'password' : new FormControl(null, [Validators.required ])
+    })
     this.registrationForm = new FormGroup({
       'email' : new FormControl(null, [Validators.email, Validators.required]),
-      'password' : new FormControl(null, [Validators.required, Validators.min(4)])
+      'password' : new FormControl(null, [Validators.required ])
     });
     this.confirmRegistrationForm = new FormGroup({
-      'password': new FormControl(null, [Validators.required, Validators.min(4)])
+      'password': new FormControl(null, [Validators.required ])
     })
-    this.action = "initial"
+    this.setAction("initial");
+  }
+
+  authenticate(authData: AuthData){
+    this.setAction("waiting");
+    // use the authserivce to attempt to authenticate with authdate.
+    // if success then route to home page
+    // if fail then change action to authenticate
+
+
+
+
   }
 
   onClickLogIn(){
-    this.action = "authenticate";
+    this.setAction("authenticate");
   }
 
   onClickCancel(){
-    this.action = "initial";
+    this.setAction("initial");
   }
 
   onClickRegister(){
-    this.action = "register";
+    this.setAction("register");
+  }
+
+  onContinueAuthentication(){
+    if(this.action == "authenticate"){
+      if(this.authenticationForm.valid){
+        this.authData.email = this.authenticationForm.value.email;
+        this.authData.password = this.authenticationForm.value.password;
+        this.authenticate(this.authData);
+      }else{
+        //form is invalid
+      }
+    }else if(this.action == "final"){
+      this.authenticate(this.authData);
+    }
   }
 
   onContinueRegistration(){
     if(this.registrationForm.valid){
-      this.authData.email = this.registrationForm.value.email
+      this.setAction("waiting");
+      this.authData.email = this.registrationForm.value.email;
       this.authData.password =  this.registrationForm.value.password;
-      this.action = "confirmRegistration";
+      this.authService.checkForExistingAccount(this.authData.email)
+        .subscribe((response: {message: string, data: any}) => {
+          if(response.data == this.authData.email){
+            this.setAction("register");
+            this.errorMessage = "There is already an account with this email address";
+          }else{
+            this.setAction("confirmRegistration");
+          }
+        })
+    }else{
+      //console.log("form is invald onContinueRegistration()");
     }
   }
 
   onSubmitRegistration(){
     if(this.confirmRegistrationForm.valid){
       if(this.confirmRegistrationForm.value.password === this.authData.password){
-        this.authService.registerUser(this.authData);
+        this.setAction("waiting");
+        this.authService.registerUser(this.authData)
+          .subscribe(
+            (response) =>{
+              this.actionMessage = "Woohoo! " + this.authData.email + " has been successfully registered!";
+              this.setAction("final");
+            }
+          );
       }else{
-        //passwords do not match
+        this.errorMessage = "Error: Passwords do not match";
       }
+    }else{
+      //form is invalid
     }
+  }
+
+
+  setAction(action: string){
+    this.errorMessage = null;
+    this.action = action;
   }
 
 }

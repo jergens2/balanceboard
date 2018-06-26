@@ -11,17 +11,43 @@
               <button class="btn btn-block btn-primary" (click)="onClickLogIn()">Log in</button>
               <button class="btn btn-block btn-secondary" (click)="onClickRegister()">Register</button>
           </div>
+          <div *ngIf="action === 'waiting'">
+              <div class="text-center">
+                <h2 style="color:limegreen"><i class="fa fa-spinner fa-spin"></i></h2>
+              </div>
+  
+          </div>
           <div *ngIf="action === 'authenticate'">
-            Authenticate
+              <form [formGroup]="authenticateForm">
+                  <div class="form-group my-1">
+                    <input class="form-control" type="email" formControlName="email" placeholder="email">
+                  </div>
+                  <div class="form-group mb-1">
+                    <input class="form-control" type="password" formControlName="password" placeholder="password">
+                  </div>
+                  <div *ngIf="errorMessage" class="error-message mb-3">
+                    {{ errorMessage }}
+                  </div>
+                  <button class="btn btn-white border-primary" (click)="onContinueAuthentication()">Log In</button>
+                  <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
+                  
+                </form>
 
+          </div>
+          <div *ngIf="action === 'final'">
+              <h6 class="text-center">{{ actionMessage }}</h6>
+              <button class="btn btn-success" (click)="onContinueAuthentication()">Continue</button>
           </div>
           <div *ngIf="action === 'register'">
               <form [formGroup]="registrationForm">
                   <div class="form-group my-1">
                     <input class="form-control" type="email" formControlName="email" placeholder="email">
                   </div>
-                  <div class="form-group">
+                  <div class="form-group mb-1">
                     <input class="form-control" type="password" formControlName="password" placeholder="password">
+                  </div>
+                  <div *ngIf="errorMessage" class="error-message mb-3">
+                    {{ errorMessage }}
                   </div>
                   <button class="btn btn-white border-primary" (click)="onContinueRegistration()">Continue</button>
                   <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
@@ -31,8 +57,11 @@
           </div>
           <div *ngIf="action === 'confirmRegistration'">
               <form [formGroup]="confirmRegistrationForm">
-                  <div class="form-group">
+                  <div class="form-group mb-1">
                     <input class="form-control" type="password" formControlName="password" placeholder="confirm password">
+                  </div>
+                  <div *ngIf="errorMessage" class="error-message mb-3">
+                      {{ errorMessage }}
                   </div>
                   <button class="btn btn-success" (click)="onSubmitRegistration()">Register</button>
                   <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
