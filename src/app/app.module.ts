@@ -20,15 +20,13 @@ import { IvyleeComponent } from './productivity/ivylee/ivylee.component';
 import { TaskService } from './services/task.service';
 import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { ContentComponent } from './nav/content/content.component';
-import { RegisterComponent } from './auth/register/register.component';
-import { AuthenticateComponent } from './auth/authenticate/authenticate.component';
+import { AuthenticationComponent } from './authentication/authentication.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'ivylee', component: IvyleeComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'authenticate', component: AuthenticateComponent }
+  { path: 'auth', component: AuthenticationComponent }
 ];
 
 @NgModule({
@@ -43,8 +41,7 @@ const appRoutes: Routes = [
     IvyleeComponent,
     SidebarComponent,
     ContentComponent,
-    RegisterComponent,
-    AuthenticateComponent
+    AuthenticationComponent
   ],
   imports: [
     BrowserModule,

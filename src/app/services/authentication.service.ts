@@ -5,15 +5,22 @@ import { AuthData } from '../models/auth-data.model';
 @Injectable()
 export class AuthenticationService {
 
+  public authentication: { isAuthenticated: boolean } = { isAuthenticated: false};
+
   constructor(private http: HttpClient) { }
 
   private serverUrl = "https://www.mashboard.app";
-  registerUser(email: string, password: string){
-    const authData: AuthData = { email: email, password: password }
-    this.http.post(this.serverUrl + "/api/authentication/register",authData)
+
+  registerUser(authdata: AuthData){
+    const authData: AuthData = { email: authdata.email, password: authdata.password }
+    this.http.post(this.serverUrl + "/api/authentication/register", authData)
       .subscribe(response => {
         console.log(response);
       })
+  }
+
+  authenticateUser(email: string, password: string){
+
   }
 
 }

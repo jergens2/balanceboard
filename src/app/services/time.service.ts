@@ -69,6 +69,9 @@ export class TimeService {
   }
 
   deleteEvent(event: EventActivity) {
+
+    //To do:  change this method from a POST request to a DELETE request
+    
     const postUrl = this.serverUrl + "/api/event/" + event.id + '/delete';
     const httpOptions = {
       headers: new HttpHeaders({
