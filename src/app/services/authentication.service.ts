@@ -17,8 +17,8 @@ export class AuthenticationService {
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)
   }
 
-  authenticateUser(email: string, password: string){
-
+  authenticateUser(authData: AuthData): Observable<Object>{
+    return this.http.post(this.serverUrl + "/api/authentication/authenticate", authData);
   }
 
   checkForExistingAccount(email: string): Observable<Object>{
