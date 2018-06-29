@@ -36,11 +36,14 @@ export class AuthenticationComponent implements OnInit {
 
   authenticate(authData: AuthData){
     this.setAction("waiting");
-    // use the authserivce to attempt to authenticate with authdate.
-    // if success then route to home page
-    // if fail then change action to authenticate
-    this.authService.authenticateUser(authData);  
-
+    this.authService.authentication.subscribe((change)=>{
+      if(change == false){
+        this.setAction("authenticate");
+        this.errorMessage = "Error: bad username or password.";
+      }
+    })
+    let authResponse = this.authService.authenticateUser(authData);  
+    console.log(authResponse);
 
 
   }

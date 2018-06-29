@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthData } from '../models/auth-data.model';
@@ -7,7 +7,7 @@ import { AuthData } from '../models/auth-data.model';
 export class AuthenticationService {
 
   private token: string;
-  //public authentication: { isAuthenticated: boolean } = { isAuthenticated: false};
+  public authentication: Subject<boolean> = new Subject();
 
   constructor(private http: HttpClient) { }
 
@@ -22,14 +22,18 @@ export class AuthenticationService {
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)
   }
 
-  authenticateUser(authData: AuthData){
-    this.http.post(this.serverUrl + "/api/authentication/authenticate", authData)
+  authenticateUser(authData: AuthData) {
+    let response = { message: '', data: null }; 
+    return this.http.post(this.serverUrl + "/api/authentication/authenticate", authData)
       .subscribe((response: {message: string, data: string}) =>{
-        console.log(response);
         const token = response.data;
         this.token = token;
-        //this.setAction("authenticate");
-      });
+        this.authentication.next(true);
+      }, (error) => {
+        console.log(error); 
+        this.authentication.next(false);
+
+      })
 
   }
 

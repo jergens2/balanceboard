@@ -26,8 +26,7 @@ import { AuthenticationComponent } from './authentication/authentication.compone
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'ivylee', component: IvyleeComponent },
-  { path: 'auth', component: AuthenticationComponent }
+  { path: 'ivylee', component: IvyleeComponent }
 ];
 
 @NgModule({
