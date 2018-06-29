@@ -1,5 +1,6 @@
+import { AuthInterceptor } from './authentication/auth-interceptor';
 import { AuthenticationService } from './services/authentication.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HomeService } from './services/home.service';
 import { TimeService } from './services/time.service';
 import { BrowserModule } from '@angular/platform-browser';
@@ -51,10 +52,12 @@ const appRoutes: Routes = [
     NgbModule.forRoot()
   ],
   providers: [ 
+
     AuthenticationService,
     TimeService, 
     HomeService,
-    TaskService
+    TaskService,
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ],
   bootstrap: [AppComponent],
   entryComponents: [

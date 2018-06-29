@@ -39,10 +39,7 @@ export class AuthenticationComponent implements OnInit {
     // use the authserivce to attempt to authenticate with authdate.
     // if success then route to home page
     // if fail then change action to authenticate
-    this.authService.authenticateUser(authData)
-      .subscribe(response =>{
-        console.log(response);
-      });
+    this.authService.authenticateUser(authData);  
 
 
 
