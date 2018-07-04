@@ -7,7 +7,7 @@ import { AuthData } from '../models/auth-data.model';
 export class AuthenticationService {
 
   private token: string;
-  public authentication: Subject<boolean> = new Subject();
+  public authentication: Subject<boolean> = new Subject<boolean>();
 
   constructor(private http: HttpClient) { }
 
@@ -39,6 +39,11 @@ export class AuthenticationService {
 
   checkForExistingAccount(email: string): Observable<Object>{
     return this.http.get(this.serverUrl + "/api/authentication/validateNewEmail/" + email)
+  }
+
+  logout(){
+    this.token = null;
+    this.authentication.next(false);
   }
   
 }

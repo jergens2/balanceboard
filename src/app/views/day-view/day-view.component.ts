@@ -63,7 +63,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.marginLine = {x1: 1, x2:2, y1:3, y2:4};
     
     this.timeSegments = this.calculateTimeSegments(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
-    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate(), moment(this.timeService.getActiveDate()).add(1, 'day').hour(0).minute(0).second(0).millisecond(0));
+    this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate().startOf('day'), moment(this.timeService.getActiveDate()).endOf('day'));
     this.timeService.eventListSubject
       .subscribe(
         (eventList: EventActivity[]) => {
@@ -83,9 +83,10 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   
 
-  calculateYFromEventActivityTime(time: Moment): number {
+  calculateYFromEventActivityTime(timeISO: string): number {
     //this method as of 2018-03-13 does not produce an accurate location
 
+    let time = moment(timeISO);
     const beginning = moment(time).hour(7).minute(0).second(0).millisecond(0);
     const end = moment(time).hour(23).minute(0).second(0).millisecond(0);
     const totalHeight = this.viewBoxHeight;
@@ -108,9 +109,9 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       let eventRect = new EventRect();
       eventRect.x = .2 * this.viewBoxWidth + 10;
       eventRect.width = this.viewBoxWidth - (3*10) - (.2*this.viewBoxWidth);
-      eventRect.y = this.calculateYFromEventActivityTime(event.startTime);
+      eventRect.y = this.calculateYFromEventActivityTime(event.startTimeISO);
       eventRect.y = eventRect.y < 0 ? 0 : eventRect.y;
-      eventRect.height = this.calculateYFromEventActivityTime(event.endTime) - eventRect.y;
+      eventRect.height = this.calculateYFromEventActivityTime(event.endTimeISO) - eventRect.y;
       if((eventRect.y + eventRect.height) > this.viewBoxHeight ){
         eventRect.height = this.viewBoxHeight;
       }
@@ -215,7 +216,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       const endMinutes = ((this.activeEventActivityRect.y + this.activeEventActivityRect.height) * totalMinutes) / height;
       const startTime: Moment = moment(dayStartTime).add(startMinutes, 'minute');
       const endTime: Moment = moment(dayStartTime).add(endMinutes, 'minute');
-      let activeEvent = new EventActivity('', startTime, endTime, '', '');
+      let activeEvent = new EventActivity('', startTime.toISOString(), endTime.toISOString(), '', '');
 
       this.timeService.setActiveEvent(activeEvent, 'create');
 

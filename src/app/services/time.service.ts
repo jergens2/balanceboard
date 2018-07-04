@@ -4,7 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventActivity } from './../models/event-activity.model';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import 'rxjs/Rx';
+import { map } from 'rxjs/operators'
+// import 'rxjs/Rx';
 import * as moment from 'moment';
 
 @Injectable()
@@ -12,7 +13,8 @@ export class TimeService {
 
   constructor(private httpClient: HttpClient) { }
 
-  serverUrl = "https://www.mashboard.app";
+  //serverUrl = "https://www.mashboard.app";
+  serverUrl = "http://localhost:3000";
   now: Moment = moment();
   private activeDate: Moment = moment();
 
@@ -21,7 +23,7 @@ export class TimeService {
   private activeEvent: EventActivity;
   private eventMode: string;
 
-  
+
 
   getActiveEvent(): { event: EventActivity, mode: string } {
     return { event: this.activeEvent, mode: this.eventMode };
@@ -43,7 +45,6 @@ export class TimeService {
   }
 
   saveEventActivity(event: EventActivity) {
-
     const postUrl = this.serverUrl + "/api/event/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -51,27 +52,22 @@ export class TimeService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post(postUrl, event, httpOptions)
-      .subscribe((event: any) => {
-        this.eventList.push(this.mapEvent(event));
-        this.eventListSubject.next(this.eventList);
+    this.httpClient.post<{ message: string, data: any }>(postUrl, event, httpOptions)
+      .pipe(map((response) => {
+        let responseEvent = response.data;
+        return new EventActivity(responseEvent._id, responseEvent.startTime, responseEvent.endTime, responseEvent.description, responseEvent.category);
+      }))
+      .subscribe((event: EventActivity) => {
+        this.eventList.push(event);
+        this.eventListSubject.next([...this.eventList]);
       })
   }
 
-  mapEvent(event: any): EventActivity{
-    return new EventActivity(
-      event._id,
-      moment(event.startTime),
-      moment(event.endTime),
-      event.description,
-      event.category
-    )
-  }
 
   deleteEvent(event: EventActivity) {
 
     //To do:  change this method from a POST request to a DELETE request
-    
+
     const postUrl = this.serverUrl + "/api/event/" + event.id + '/delete';
     const httpOptions = {
       headers: new HttpHeaders({
@@ -81,50 +77,41 @@ export class TimeService {
     };
     this.httpClient.post(postUrl, {}, httpOptions)
       .subscribe(
-         (response: any) => {
+        (response: any) => {
           //This is probably not the appropriate way to receive the response, using the if statement but for now it works. 
-          if(response.message === 'Event successfully deleted'){
-            this.eventList.splice(this.eventList.indexOf(event),1);
-            this.eventListSubject.next(this.eventList);
+          if (response.message === 'Event successfully deleted') {
+            this.eventList.splice(this.eventList.indexOf(event), 1);
+            this.eventListSubject.next([... this.eventList]);
           }
-          
-          ///this.eventList = events;
-          
-          //this.eventListSubject.next(this.eventList);
-         } 
+        }
       );
 
   }
 
-  getEventActivitysByDateRange(startDate: Moment, endDate: Moment){
+  getEventActivitysByDateRange(startDate: Moment, endDate: Moment) {
     const getUrl = this.serverUrl + "/api/event/byDate";
     const body = {
-      'startDate': startDate.format('YYYY-MM-DD'),
-      'endDate': endDate.format('YYYY-MM-DD')
+      'startDate': startDate.toISOString(),
+      'endDate': endDate.toISOString()
     };
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        observe: 'response'
+        'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post(getUrl, body, httpOptions)
-      .map((response: Response) => {
-        let events = response as any;
-        let newEventActivityList = [];
-        for (let event of events) {
-          newEventActivityList.push(this.mapEvent(event))
-        }
-        this.eventList = newEventActivityList;
-        return this.eventList;
-      })
+    this.httpClient.post<{ message: string, data: any }>(getUrl, body, httpOptions)
+      .pipe(map((response) => {
+        // the following map function is specifically to map an Array of objects.  If the data is just a single object then the map() operator is not usable.
+        return response.data.map(event => {
+            return new EventActivity(event._id, event.startTime, event.endTime, event.description, event.category);
+        })
+      }))
       .subscribe(
         (events: EventActivity[]) => {
           this.eventList = events;
-          this.eventListSubject.next(this.eventList);
+          this.eventListSubject.next([...this.eventList]);
         }
       )
-    //.subscribe(data => console.log("subscription data:" ,data));    
   }
 }

@@ -39,12 +39,12 @@ export class MonthViewComponent implements OnInit {
           this.updateDaySquareEvents(this.eventList);
         }
       )
-    this.timeService.getEventActivitysByDateRange(moment(this.now.startOf('month')),moment(this.now.endOf('month')))
+    this.timeService.getEventActivitysByDateRange(moment(this.now.startOf('month')).startOf('day'),moment(this.now.endOf('month')).endOf('day'));
   }
   updateDaySquareEvents(eventActivities: EventActivity[]){
     for(let eventActivity of eventActivities){
       for(let daySquare of this.daySquares){
-        if(eventActivity.startTime.format('YYYY-MM-DD') === daySquare.date.format('YYYY-MM-DD')){
+        if(moment(eventActivity.startTimeISO).format('YYYY-MM-DD') === moment(daySquare.date).format('YYYY-MM-DD')){
           daySquare.eventActivities.push(eventActivity);
         }
       }

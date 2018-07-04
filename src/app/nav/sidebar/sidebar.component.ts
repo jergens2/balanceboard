@@ -1,3 +1,4 @@
+import { AuthenticationService } from './../../services/authentication.service';
 import { Router } from '@angular/router';
 import { HomeService } from './../../services/home.service';
 import { Component, OnInit } from '@angular/core';
@@ -9,7 +10,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor(private homeService: HomeService, private router: Router) { }
+  constructor(private homeService: HomeService, private authService: AuthenticationService, private router: Router) { }
 
   activeLink = { color: 'red' };
 
@@ -23,6 +24,10 @@ export class SidebarComponent implements OnInit {
 
   onClick(button: string){
     this.router.navigate(['/' + button]);
+  }
+
+  onClickLogout(){
+    this.authService.logout();
   }
 
 }
