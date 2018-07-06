@@ -13,8 +13,8 @@ export class TimeService {
 
   constructor(private httpClient: HttpClient) { }
 
-  //serverUrl = "https://www.mashboard.app";
-  serverUrl = "http://localhost:3000";
+  serverUrl = "https://www.mashboard.app";
+  // serverUrl = "http://localhost:3000";
   now: Moment = moment();
   private activeDate: Moment = moment();
 

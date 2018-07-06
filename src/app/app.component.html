@@ -3,10 +3,19 @@
 </div>
 
 <div *ngIf="authenticated">
-    <app-sidebar></app-sidebar>
-    <!-- <app-header></app-header> -->
-    
-    <app-content></app-content>
-    
+    <div class="d-inline d-md-none">
+        <app-header></app-header>
+    </div>
+    <div class="wrapper">
+
+        <div class="d-none d-md-inline" >
+            <app-sidebar></app-sidebar>
+        </div>
+        <div class="d-none d-md-inline sidebar-margin"></div>
+        <div class="container-fluid">
+            <app-content></app-content>
+        </div>
+       
+    </div>
     
 </div>

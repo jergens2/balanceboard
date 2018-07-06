@@ -1,0 +1,11 @@
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+.sidebar-margin{
+    width: 250px;
+    margin-right: 60px;
+    top: 0;
+    left: 0;
+    height: 100vh;
+}
