@@ -6,6 +6,7 @@ export class EventActivity{
     public endTimeISO: string;
     public description: string;
     public category: string;
+    public userId: string;
 
     constructor(id: string, startTimeISO: string, endTimeISO: string, description: string, category: string){
         this.id = id;

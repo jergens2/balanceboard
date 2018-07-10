@@ -18,9 +18,12 @@ export class AppComponent implements OnInit{
     this.authService.authenticationStatus.subscribe(
       (change: boolean) => {
         this.authenticated = change;
-        console.log("Authenticated? " , this.authenticated)
       }
     )
-    this.authService.checkLocalStorage();
+    if(this.authService.checkLocalStorage()){
+      //localStorage has token and userId value, so the view will automatically load 
+    }else{
+      //localStorage does not have token or User ID, so the view will automatically go to auth.
+    };
   }
 }
