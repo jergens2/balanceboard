@@ -14,12 +14,13 @@ export class AppComponent implements OnInit{
   constructor(private authService: AuthenticationService){}
 
   ngOnInit(){
-    this.authService.authentication.subscribe(
+    
+    this.authService.authenticationStatus.subscribe(
       (change: boolean) => {
         this.authenticated = change;
         console.log("Authenticated? " , this.authenticated)
       }
     )
-    
+    this.authService.checkLocalStorage();
   }
 }

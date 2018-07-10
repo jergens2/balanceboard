@@ -36,7 +36,7 @@ export class AuthenticationComponent implements OnInit {
 
   authenticate(authData: AuthData){
     this.setAction("waiting");
-    this.authService.authentication.subscribe((change)=>{
+    this.authService.authenticationStatus.subscribe((change)=>{
       if(change == false){
         this.setAction("authenticate");
         this.errorMessage = "Error: bad username or password.";

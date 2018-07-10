@@ -7,7 +7,7 @@ import { AuthData } from '../models/auth-data.model';
 export class AuthenticationService {
 
   private token: string;
-  public authentication: Subject<boolean> = new Subject<boolean>();
+  public authenticationStatus: Subject<boolean> = new Subject<boolean>();
 
   constructor(private http: HttpClient) { }
 
@@ -28,10 +28,11 @@ export class AuthenticationService {
       .subscribe((response: {message: string, data: string}) =>{
         const token = response.data;
         this.token = token;
-        this.authentication.next(true);
+        localStorage.setItem("token",this.token);
+        this.authenticationStatus.next(true);
       }, (error) => {
         console.log(error); 
-        this.authentication.next(false);
+        this.authenticationStatus.next(false);
 
       })
 
@@ -43,7 +44,17 @@ export class AuthenticationService {
 
   logout(){
     this.token = null;
-    this.authentication.next(false);
+    localStorage.clear();
+    this.authenticationStatus.next(false);
   }
+
+  checkLocalStorage(){
+    if(localStorage.getItem("token")){
+      this.token = localStorage.getItem("token");
+      this.authenticationStatus.next(true);
+    }
+  }
+
+
   
 }
