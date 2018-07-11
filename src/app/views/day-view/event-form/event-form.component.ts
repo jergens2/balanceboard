@@ -8,6 +8,7 @@ import * as moment from 'moment';
 
 import { TimeService } from './../../../services/time.service';
 import { EventActivity } from './../../../models/event-activity.model';
+import { AuthenticationService } from '../../../services/authentication.service';
 
 @Component({
   selector: 'app-event-form',
@@ -20,7 +21,7 @@ export class EventFormComponent implements OnInit {
   newEventActivityForm: FormGroup;
   mode: string;
 
-  constructor(public activeModal: NgbActiveModal, private timeService: TimeService) {  }
+  constructor(public activeModal: NgbActiveModal, private timeService: TimeService, private authService: AuthenticationService) {  }
 
   private response = {
     message: '',
@@ -48,7 +49,7 @@ export class EventFormComponent implements OnInit {
   }
 
   onSaveEventActivity(){
-    let event: EventActivity = new EventActivity("", this.getStartTimeISOString(), this.getEndTimeISOString(), this.newEventActivityForm.get('description').value, this.newEventActivityForm.get('category').value );
+    let event: EventActivity = new EventActivity("", this.authService.getAuthenticatedUser().id, this.getStartTimeISOString(), this.getEndTimeISOString(), this.newEventActivityForm.get('description').value, this.newEventActivityForm.get('category').value );
     this.response.message = 'success';
     this.response.data = event; 
     this.activeModal.close(this.response);

@@ -21,6 +21,10 @@ export class AuthenticationService {
     return this.token;
   }
 
+  getAuthenticatedUser(): User{
+    return this.authenticatedUser;
+  }
+
   registerUser(authdata: AuthData): Observable<Object>{
     const authData: AuthData = { email: authdata.email, password: authdata.password }
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)

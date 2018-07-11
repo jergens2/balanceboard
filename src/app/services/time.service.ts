@@ -7,14 +7,15 @@ import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators'
 // import 'rxjs/Rx';
 import * as moment from 'moment';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class TimeService {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private authService: AuthenticationService) { }
 
-  serverUrl = "https://www.mashboard.app";
-  // serverUrl = "http://localhost:3000";
+  //serverUrl = "https://www.mashboard.app";
+  serverUrl = "http://localhost:3000";
   now: Moment = moment();
   private activeDate: Moment = moment();
 
@@ -55,7 +56,8 @@ export class TimeService {
     this.httpClient.post<{ message: string, data: any }>(postUrl, event, httpOptions)
       .pipe(map((response) => {
         let responseEvent = response.data;
-        return new EventActivity(responseEvent._id, responseEvent.startTime, responseEvent.endTime, responseEvent.description, responseEvent.category);
+        //2018-07-11: note:  as of now, we get userId from auth service as a function.  at some point we might have to change this to an observable / subscription
+        return new EventActivity(responseEvent._id, responseEvent.userId, responseEvent.startTime, responseEvent.endTime, responseEvent.description, responseEvent.category);
       }))
       .subscribe((event: EventActivity) => {
         this.eventList.push(event);
@@ -91,6 +93,7 @@ export class TimeService {
   getEventActivitysByDateRange(startDate: Moment, endDate: Moment) {
     const getUrl = this.serverUrl + "/api/event/byDate";
     const body = {
+      'userId': this.authService.getAuthenticatedUser().id,
       'startDate': startDate.toISOString(),
       'endDate': endDate.toISOString()
     };
@@ -104,7 +107,7 @@ export class TimeService {
       .pipe(map((response) => {
         // the following map function is specifically to map an Array of objects.  If the data is just a single object then the map() operator is not usable.
         return response.data.map(event => {
-            return new EventActivity(event._id, event.startTime, event.endTime, event.description, event.category);
+            return new EventActivity(event._id, event.userId, event.startTime, event.endTime, event.description, event.category);
         })
       }))
       .subscribe(

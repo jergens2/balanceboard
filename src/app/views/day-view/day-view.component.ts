@@ -1,3 +1,4 @@
+import { AuthenticationService } from './../../services/authentication.service';
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, AfterViewInit, OnDestroy } from '@angular/core';
 
 import { Observable, Subscription } from 'rxjs';
@@ -48,7 +49,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   today: Moment;
 
-  constructor(private timeService: TimeService, private modalService: NgbModal) { }
+  constructor(private timeService: TimeService, private authService: AuthenticationService, private modalService: NgbModal) { }
 
   ngOnInit() {
     
@@ -216,7 +217,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       const endMinutes = ((this.activeEventActivityRect.y + this.activeEventActivityRect.height) * totalMinutes) / height;
       const startTime: Moment = moment(dayStartTime).add(startMinutes, 'minute');
       const endTime: Moment = moment(dayStartTime).add(endMinutes, 'minute');
-      let activeEvent = new EventActivity('', startTime.toISOString(), endTime.toISOString(), '', '');
+      let activeEvent = new EventActivity('', this.authService.getAuthenticatedUser().id, startTime.toISOString(), endTime.toISOString(), '', '');
 
       this.timeService.setActiveEvent(activeEvent, 'create');
 

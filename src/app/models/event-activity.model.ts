@@ -1,4 +1,3 @@
-import { Moment } from "moment";
 
 export class EventActivity{
     public id: string;
@@ -8,8 +7,9 @@ export class EventActivity{
     public category: string;
     public userId: string;
 
-    constructor(id: string, startTimeISO: string, endTimeISO: string, description: string, category: string){
+    constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string, description: string, category: string){
         this.id = id;
+        this.userId = userId;
         this.startTimeISO = startTimeISO;
         this.endTimeISO = endTimeISO;
         this.description = description;

@@ -1,8 +1,10 @@
+import { GenericDataEntryService } from './services/generic-data-entry.service';
 import { AuthInterceptor } from './authentication/auth-interceptor';
 import { AuthenticationService } from './services/authentication.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HomeService } from './services/home.service';
 import { TimeService } from './services/time.service';
+
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -56,6 +58,7 @@ const appRoutes: Routes = [
     TimeService, 
     HomeService,
     TaskService,
+    GenericDataEntryService,
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ],
   bootstrap: [AppComponent],
