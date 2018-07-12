@@ -56,7 +56,6 @@ export class TimeService {
     this.httpClient.post<{ message: string, data: any }>(postUrl, event, httpOptions)
       .pipe(map((response) => {
         let responseEvent = response.data;
-        //2018-07-11: note:  as of now, we get userId from auth service as a function.  at some point we might have to change this to an observable / subscription
         return new EventActivity(responseEvent._id, responseEvent.userId, responseEvent.startTime, responseEvent.endTime, responseEvent.description, responseEvent.category);
       }))
       .subscribe((event: EventActivity) => {

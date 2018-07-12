@@ -12,8 +12,27 @@ export class TaskService {
 
   constructor(private router: Router, private authService: AuthenticationService, private dataService: GenericDataEntryService) { }
 
-  taskList: IvyLeeTaskList = new IvyLeeTaskList();
+  //2018-07-12: probably don't want to actually instantiate the object.
+  taskList: IvyLeeTaskList = new IvyLeeTaskList([],moment().toISOString());
   taskListSubject: Subject<IvyLeeTaskList> = new Subject();
+
+
+
+  findIvyLeeTaskLists(dataEntries: GenericDataEntry[]): IvyLeeTaskList[] {
+    /*
+      this might be kind of confusing: an IvyLeeTaskList is an object that contains an array of task objects.
+      this particular method returns an array of these List objects 
+      (the GET request retreives all of these data objects, there will be tasklists from multiple days therefore multiple of them)
+    */
+    let ivyLeeTaskLists: IvyLeeTaskList[] = []; 
+    for (let dataEntry of dataEntries) {
+      if(dataEntry.dataType === 'IvyLeeTaskList'){
+        let dataObject: IvyLeeTaskList = dataEntry.dataObject as IvyLeeTaskList;
+        ivyLeeTaskLists.push(dataObject);
+      }
+    }
+    return ivyLeeTaskLists;
+  }
 
   getIvyLeeTasks(): IvyLeeTaskList{
     /* 
@@ -24,8 +43,7 @@ export class TaskService {
 
     // taskList = http post get task list
     if(!this.taskList){
-      console.log("Task List is empty.")
-      this.taskList = new IvyLeeTaskList();
+      this.taskList = new IvyLeeTaskList([],moment().toISOString());
     }else{
       
     }
@@ -34,7 +52,7 @@ export class TaskService {
 
   submitIvyLeeTasks(taskList: IvyLeeTaskList){
 
-    let dataObject: GenericDataEntry = new GenericDataEntry('',this.authService.getAuthenticatedUser().id, moment().toISOString(), taskList );
+    let dataObject: GenericDataEntry = new GenericDataEntry('',this.authService.getAuthenticatedUser().id, moment().toISOString(), "IvyLeeTaskList", taskList );
     this.dataService.saveDataObject(dataObject);
 
     this.taskList = taskList;

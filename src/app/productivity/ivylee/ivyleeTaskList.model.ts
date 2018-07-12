@@ -3,12 +3,11 @@ import { IvyLeeTask } from './ivyleeTask.model'
 
 export class IvyLeeTaskList {
 
-    forDate: moment.Moment
+    forDate: string;
     tasks: IvyLeeTask[];
 
-    constructor(){
-        this.tasks = [];
-        this.forDate = moment().add(1,'day');
-        
+    constructor(tasks: IvyLeeTask[], forDate: string){
+        this.tasks = tasks;
+        this.forDate = forDate;
     }
 }

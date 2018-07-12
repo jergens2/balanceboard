@@ -21,6 +21,7 @@ export class IvyleeComponent implements OnInit {
   buildTask: boolean = false;
   buildTaskForm: FormGroup;
   tomorrow: string;
+  
   saveListButtonText: string = "Save Task List";
   saveSpinnerStyle = {
     display:"none"
@@ -49,13 +50,15 @@ export class IvyleeComponent implements OnInit {
     this.saveListButtonText = "Saving...";
     
     this.saveButtonDisabled = true;
-    this.workingTaskList = new IvyLeeTaskList();
-    this.workingTaskList.tasks.push(new IvyLeeTask(1, this.buildTaskForm.get('task1').value));
-    this.workingTaskList.tasks.push(new IvyLeeTask(2, this.buildTaskForm.get('task2').value));
-    this.workingTaskList.tasks.push(new IvyLeeTask(3, this.buildTaskForm.get('task3').value));
-    this.workingTaskList.tasks.push(new IvyLeeTask(4, this.buildTaskForm.get('task4').value));
-    this.workingTaskList.tasks.push(new IvyLeeTask(5, this.buildTaskForm.get('task5').value));
-    this.workingTaskList.tasks.push(new IvyLeeTask(6, this.buildTaskForm.get('task6').value));
+    let taskArray: IvyLeeTask[] = [];
+    taskArray.push(new IvyLeeTask(1, this.buildTaskForm.get('task1').value));
+    taskArray.push(new IvyLeeTask(2, this.buildTaskForm.get('task2').value));
+    taskArray.push(new IvyLeeTask(3, this.buildTaskForm.get('task3').value));
+    taskArray.push(new IvyLeeTask(4, this.buildTaskForm.get('task4').value));
+    taskArray.push(new IvyLeeTask(5, this.buildTaskForm.get('task5').value));
+    taskArray.push(new IvyLeeTask(6, this.buildTaskForm.get('task6').value));
+
+    this.workingTaskList = new IvyLeeTaskList(taskArray, moment().add(1,'days').toISOString());
     this.taskService.submitIvyLeeTasks(this.workingTaskList);
     
   }
