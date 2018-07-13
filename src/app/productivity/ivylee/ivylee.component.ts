@@ -18,23 +18,32 @@ export class IvyleeComponent implements OnInit {
   constructor(private taskService: TaskService) { }
 
   workingTaskList: IvyLeeTaskList;
-  buildTask: boolean = false;
   buildTaskForm: FormGroup;
-  tomorrow: string;
-  
+
+  forDate: moment.Moment;
+
   saveListButtonText: string = "Save Task List";
   saveSpinnerStyle = {
-    display:"none"
+    display: "none"
   }
   saveButtonDisabled = false;
-
-  ngOnInit() {
-    //this.workingTaskList = this.taskService.getIvyLeeTasks();
-    this.tomorrow = moment().add(1,'day').format('dddd MMM Do, YYYY');
-    this.buildTaskForm = this.createForm();
+  calendarFormat = {
+    lastDay: '[Yesterday]',
+    sameDay: '[Today]',
+    nextDay: '[Tomorrow]',
+    lastWeek: '[last] dddd',
+    nextWeek: 'dddd',
+    sameElse: 'L'
   }
 
-  createForm(): FormGroup{
+  ngOnInit() {
+
+    this.buildTaskForm = this.createForm();
+    this.forDate = this.taskService.buildListforDate;
+    console.log(this.forDate.calendar(null, this.calendarFormat))
+  }
+
+  createForm(): FormGroup {
     return new FormGroup({
       'task1': new FormControl(null),
       'task2': new FormControl(null),
@@ -45,10 +54,10 @@ export class IvyleeComponent implements OnInit {
     });
   }
 
-  onClickSaveTaskList(){
+  onClickSaveTaskList() {
     this.saveSpinnerStyle = { display: 'inline' }
     this.saveListButtonText = "Saving...";
-    
+
     this.saveButtonDisabled = true;
     let taskArray: IvyLeeTask[] = [];
     taskArray.push(new IvyLeeTask(1, this.buildTaskForm.get('task1').value));
@@ -58,8 +67,8 @@ export class IvyleeComponent implements OnInit {
     taskArray.push(new IvyLeeTask(5, this.buildTaskForm.get('task5').value));
     taskArray.push(new IvyLeeTask(6, this.buildTaskForm.get('task6').value));
 
-    this.workingTaskList = new IvyLeeTaskList(taskArray, moment().add(1,'days').toISOString());
+    this.workingTaskList = new IvyLeeTaskList(taskArray, this.forDate.toISOString());
     this.taskService.submitIvyLeeTasks(this.workingTaskList);
-    
+
   }
 }

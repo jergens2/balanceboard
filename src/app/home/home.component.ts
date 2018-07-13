@@ -17,9 +17,13 @@ import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
 export class HomeComponent implements OnInit {
 
 
+  loadingTaskList: boolean = true;
+  
   selectedView: string;
   todaysTaskList: IvyLeeTaskList;
   authenticatedUser: User
+
+
   private viewSubscription: Subscription;
   private taskListSubscription: Subscription;
 
@@ -41,37 +45,25 @@ export class HomeComponent implements OnInit {
           this.selectedView = view;
         }
       )
-    // this.taskList = this.taskService.getIvyLeeTasks();
-    // console.log(this.taskList);
-    // // this.taskListSubscription = this.taskService.taskListSubject
-    //   .subscribe(
-    //     (taskList) => {
-    //       this.taskList = taskList;
-    //     }
-    //   )
     this.authenticatedUser = this.authService.getAuthenticatedUser();
 
     this.homeService.userGenericDataEntriesSubject
       .subscribe((dataEntries: GenericDataEntry[]) => {
         this.userGenericDataEntries = dataEntries;
+        
+        // currenty this component uses the taskService but maybe all task functions should be done through homeService?  
         let foundTaskLists: IvyLeeTaskList[] = this.taskService.findIvyLeeTaskLists(this.userGenericDataEntries);
         let today = moment();
         for(let taskList of foundTaskLists){
-          console.log(taskList);
           //will only find one task list for today.  if there are multiple then that would be a bug.
           if(moment(taskList.forDate).format('YYYY-MM-DD') === today.format('YYYY-MM-DD')){
-            console.log("Found a task list for today:", today.toString(), taskList);
+            this.todaysTaskList = taskList;
           }
         }
-
+        this.loadingTaskList = false;
       })
     this.homeService.getGenericDataObjects(this.authenticatedUser);
 
-
-    // .subscribe((response: GenericDataEntry[])=>{
-    //   this.userGenericDataEntries = response;
-    //   this.findIvyLeeTaskList(this.userGenericDataEntries);
-    // })
   }
 
 
@@ -81,15 +73,17 @@ export class HomeComponent implements OnInit {
     this.homeService.setView(selectedView);
   }
 
-  onClick(button: string) {
-    this.router.navigate(['/' + button]);
-  }
 
   onClickMonth() {
     this.homeService.setView('month');
   }
-  onClickCreateTaskList() {
-
+  onClickCreateTaskList(forDate: string) {
+    if(forDate === 'today'){
+      this.taskService.setForDate(moment());
+    }else if(forDate === 'tomorrow'){
+      this.taskService.setForDate(moment().add(1,'days'));
+    }
+    this.router.navigate(['/ivylee']);
   }
 
 

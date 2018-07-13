@@ -7,18 +7,18 @@
         <li>At the end of each workday, write down the six most important things you need to accomplish tomorrow. Do not write
           down more than six tasks.</li>
         <li>Prioritize those six items in order of their true importance</li>
-        <li>When you arrive tomorrow, concentrate only on the first task. Work until the first task is finished before moving
+        <li>When you start your work tomorrow, concentrate only on the first task. Work until the first task is finished before moving
           on to the second task.</li>
         <li>Approach the rest of your list in the same fashion. At the end of the day, move any unfinished items to a new list
           of six tasks for the following day.</li>
-        <li>Repeat this process every working day</li>
+        <li>Repeat this process every working day.</li>
       </ol>
       <hr>
     </div>
   </div>
   <div class="row">
-    <div class="col-12">
-      <b>Tasks for tomorrow ({{ tomorrow }})</b>
+    <div class="col-12 mt-3">
+      <h4>Build your task list for <b>{{ this.forDate.format('YYYY-MM-DD') }}</b> ({{this.forDate.calendar(null, this.calendarFormat)}})</h4>
       <form [formGroup]="buildTaskForm">
 
         <div class="form-row my-1">

@@ -13,8 +13,14 @@ export class TaskService {
   constructor(private router: Router, private authService: AuthenticationService, private dataService: GenericDataEntryService) { }
 
   //2018-07-12: probably don't want to actually instantiate the object.
-  taskList: IvyLeeTaskList = new IvyLeeTaskList([],moment().toISOString());
-  taskListSubject: Subject<IvyLeeTaskList> = new Subject();
+  tomorrowsTaskList: IvyLeeTaskList = new IvyLeeTaskList([],moment().toISOString());
+  todaysTaskList: IvyLeeTaskList;
+  historicTaskLists: IvyLeeTaskList[];
+
+  // taskListSubject: Subject<IvyLeeTaskList> = new Subject();
+
+  //by default the build date will be for tomorrow unless set otherwise
+  buildListforDate: moment.Moment = moment().add(1,'days');
 
 
 
@@ -34,33 +40,37 @@ export class TaskService {
     return ivyLeeTaskLists;
   }
 
-  getIvyLeeTasks(): IvyLeeTaskList{
-    /* 
-      search for the task list which should have been created the previous day.  
-      for various reasons it is likely that there might not be one, in which case you would be prompted to create one 
+  // getIvyLeeTasks(): IvyLeeTaskList{
+  //   /* 
+  //     search for the task list which should have been created the previous day.  
+  //     for various reasons it is likely that there might not be one, in which case you would be prompted to create one 
 
-    */
+  //   */
 
-    // taskList = http post get task list
-    if(!this.taskList){
-      this.taskList = new IvyLeeTaskList([],moment().toISOString());
-    }else{
+  //   // taskList = http post get task list
+  //   if(!this.taskList){
+  //     this.taskList = new IvyLeeTaskList([],moment().toISOString());
+  //   }else{
       
-    }
-    return this.taskList;
-  }
+  //   }
+  //   return this.taskList;
+  // }
 
   submitIvyLeeTasks(taskList: IvyLeeTaskList){
 
     let dataObject: GenericDataEntry = new GenericDataEntry('',this.authService.getAuthenticatedUser().id, moment().toISOString(), "IvyLeeTaskList", taskList );
     this.dataService.saveDataObject(dataObject);
 
-    this.taskList = taskList;
-    console.log("TaskService: ", this.taskList)
-    this.taskListSubject.next(this.taskList);
-    //push the task list to the server.
+    // this.taskList = taskList;
+    // console.log("TaskService: ", this.taskList)
+    // this.taskListSubject.next(this.taskList);
+    // //push the task list to the server.
 
     this.router.navigate(['/']);
+  }
+
+  setForDate(date: moment.Moment){
+    this.buildListforDate = moment(date);
   }
 
 }
