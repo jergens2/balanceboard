@@ -3,19 +3,33 @@
   <div class="row">
     <div class="col-12 col-lg-4 mb-3">
       <div class="card">
-        <div class="card-header">Task List</div>
+        <div class="card-header">Task List For Today <span class="badge badge-secondary float-right ">Open</span></div>
         <div *ngIf="loadingTaskList">
           <i class="fa fa-spinner fa-spin"></i>
         </div>
         <div *ngIf="!loadingTaskList" class="card-body">
+          <div [ngClass]="{'d-none': !allTasksComplete, 'd-inline allCompleteNotice': allTasksComplete}">Woohoo!!</div>
           <ol *ngIf="todaysTaskList">
-            <li *ngFor="let task of (todaysTaskList.tasks)" >{{task.title}}</li>
+            <li *ngFor="let task of (todaysTaskList.tasks)" 
+              (click)="onClickTask(task, todaysTaskList)"
+              [ngClass]="{'completedTask': task.isComplete }"
+              class="taskItem">
+              {{task.title}} <i *ngIf="task.isComplete" class="fa fa-check greenCheck"></i>
+            </li>
           </ol>
           <div *ngIf="!todaysTaskList">
             <span>No task list was created for today.</span>
             <button class="btn btn-success btn-sm" (click)="onClickCreateTaskList('today')">Create task list for today</button>
           </div>
-          <button class="btn btn-primary btn-sm mr-0" (click)="onClickCreateTaskList('tomorrow')">Create task list for tomorrow</button>
+          
+        </div>
+        <div class="card-footer" >
+          <div *ngIf="!tomorrowsTaskList">
+              <button class="btn btn-primary btn-sm mr-0" (click)="onClickCreateTaskList('tomorrow')">Create task list for tomorrow</button>
+          </div>
+          <div *ngIf="tomorrowsTaskList">
+            Woohoo! You've already set your task list for tomorrow.<span class="badge badge-secondary float-right" (click)="onClickOpenTomorrowsTaskList()">Open</span>
+          </div>
         </div>
       </div>
 

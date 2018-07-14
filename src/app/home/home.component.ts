@@ -8,6 +8,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TaskService } from '../services/task.service';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
+import { IvyLeeTask } from '../productivity/ivylee/ivyleeTask.model';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +22,9 @@ export class HomeComponent implements OnInit {
   
   selectedView: string;
   todaysTaskList: IvyLeeTaskList;
+  allTasksComplete: boolean;
+  tomorrowsTaskList: IvyLeeTaskList;
+
   authenticatedUser: User
 
 
@@ -56,8 +60,11 @@ export class HomeComponent implements OnInit {
         let today = moment();
         for(let taskList of foundTaskLists){
           //will only find one task list for today.  if there are multiple then that would be a bug.
-          if(moment(taskList.forDate).format('YYYY-MM-DD') === today.format('YYYY-MM-DD')){
+          if(moment(taskList.forDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')){
             this.todaysTaskList = taskList;
+          }
+          if(moment(taskList.forDate).format('YYYY-MM-DD') === moment().add(1,'days').format('YYYY-MM-DD')){
+            this.tomorrowsTaskList = taskList;
           }
         }
         this.loadingTaskList = false;
@@ -86,7 +93,22 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/ivylee']);
   }
 
+  onClickTask(task: IvyLeeTask, taskList: IvyLeeTaskList){
+    task.isComplete = true;
+    task.completionTimeISO = moment().toISOString();
+    let allTasksComplete: boolean = true;
+    for(let task of taskList.tasks){
+      if(!task.isComplete){
+        allTasksComplete = false;
+      }
+    }
+    this.allTasksComplete = allTasksComplete;
 
+  }
+
+  onClickOpenTomorrowsTaskList(){
+    console.log("This method doesn't do anything atm.  ")
+  }
 
 
 }

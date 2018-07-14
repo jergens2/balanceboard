@@ -21,7 +21,7 @@ export class AuthenticationService {
     return this.token;
   }
 
-  getAuthenticatedUser(): User{
+  getAuthenticatedUser(){
     return this.authenticatedUser;
   }
 
