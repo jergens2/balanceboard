@@ -11,7 +11,7 @@ export class HomeService {
   private timeView: string = 'month';
   
   userGenericDataEntries: GenericDataEntry[];
-  userGenericDataEntriesSubject: Subject<GenericDataEntry[]> = new Subject<GenericDataEntry[]>();
+  // userGenericDataEntriesSubject: Subject<GenericDataEntry[]> = new Subject<GenericDataEntry[]>();
   
 
   constructor(private genericDataEntryService: GenericDataEntryService) { }
@@ -25,13 +25,11 @@ export class HomeService {
     return this.timeView;
   }
 
-  getGenericDataObjects(authenticatedUser: User): any {
-    this.genericDataEntryService.getDataObjectsByUser(authenticatedUser)
-      .subscribe((dataEntries: GenericDataEntry[])=>{
-        this.userGenericDataEntries = dataEntries;
-        this.userGenericDataEntriesSubject.next(this.userGenericDataEntries);
-      });
-  }
+  // getGenericDataObjects(authenticatedUser: User): Subject<GenericDataEntry[]>{
+    
+  //   this.genericDataEntryService.getDataObjectsByUser(authenticatedUser);
+  //   return this.genericDataEntryService.userGenericDataEntriesSubject;
+  // }
   
 
 }

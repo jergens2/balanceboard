@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { TaskService } from '../services/task.service';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
 import { IvyLeeTask } from '../productivity/ivylee/ivyleeTask.model';
+import { GenericDataEntryService } from '../services/generic-data-entry.service';
 
 @Component({
   selector: 'app-home',
@@ -19,11 +20,11 @@ export class HomeComponent implements OnInit {
 
 
   loadingTaskList: boolean = true;
-  
+
   selectedView: string;
-  todaysTaskList: IvyLeeTaskList;
-  allTasksComplete: boolean;
-  tomorrowsTaskList: IvyLeeTaskList;
+  todaysTaskList: GenericDataEntry;
+
+  tomorrowsTaskList: GenericDataEntry;
 
   authenticatedUser: User
 
@@ -37,6 +38,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private homeService: HomeService,
     private taskService: TaskService,
+    private genericDataEntryService: GenericDataEntryService,
     private authService: AuthenticationService,
     private router: Router
   ) { }
@@ -51,25 +53,28 @@ export class HomeComponent implements OnInit {
       )
     this.authenticatedUser = this.authService.getAuthenticatedUser();
 
-    this.homeService.userGenericDataEntriesSubject
+    this.genericDataEntryService.getDataObjectsByUser(this.authenticatedUser);
+    this.genericDataEntryService.userGenericDataEntriesSubject
       .subscribe((dataEntries: GenericDataEntry[]) => {
+        console.log("subscription is updated!", dataEntries)
         this.userGenericDataEntries = dataEntries;
-        
+
         // currenty this component uses the taskService but maybe all task functions should be done through homeService?  
-        let foundTaskLists: IvyLeeTaskList[] = this.taskService.findIvyLeeTaskLists(this.userGenericDataEntries);
-        let today = moment();
-        for(let taskList of foundTaskLists){
+        let foundIvyLeeEntries: GenericDataEntry[] = this.taskService.findIvyLeeTaskLists(this.userGenericDataEntries);
+
+        for (let ivyLeeEntry of foundIvyLeeEntries) {
+          let taskList = ivyLeeEntry.dataObject as IvyLeeTaskList;
+
           //will only find one task list for today.  if there are multiple then that would be a bug.
-          if(moment(taskList.forDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')){
-            this.todaysTaskList = taskList;
+          if (moment(taskList.forDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
+            this.todaysTaskList = ivyLeeEntry;
           }
-          if(moment(taskList.forDate).format('YYYY-MM-DD') === moment().add(1,'days').format('YYYY-MM-DD')){
-            this.tomorrowsTaskList = taskList;
+          if (moment(taskList.forDate).format('YYYY-MM-DD') === moment().add(1, 'days').format('YYYY-MM-DD')) {
+            this.tomorrowsTaskList = ivyLeeEntry;
           }
         }
         this.loadingTaskList = false;
       })
-    this.homeService.getGenericDataObjects(this.authenticatedUser);
 
   }
 
@@ -85,28 +90,33 @@ export class HomeComponent implements OnInit {
     this.homeService.setView('month');
   }
   onClickCreateTaskList(forDate: string) {
-    if(forDate === 'today'){
+    if (forDate === 'today') {
       this.taskService.setForDate(moment());
-    }else if(forDate === 'tomorrow'){
-      this.taskService.setForDate(moment().add(1,'days'));
+    } else if (forDate === 'tomorrow') {
+      this.taskService.setForDate(moment().add(1, 'days'));
     }
     this.router.navigate(['/ivylee']);
   }
 
-  onClickTask(task: IvyLeeTask, taskList: IvyLeeTaskList){
-    task.isComplete = true;
-    task.completionTimeISO = moment().toISOString();
-    let allTasksComplete: boolean = true;
-    for(let task of taskList.tasks){
+  onClickTask(task: IvyLeeTask, taskListEntry: GenericDataEntry) {
+    let checkedTask: IvyLeeTask = Object.assign({}, task);
+    checkedTask.isComplete = true;
+
+    let newTaskList: IvyLeeTaskList = Object.assign({}, taskListEntry.dataObject as IvyLeeTaskList);
+    newTaskList.tasks[newTaskList.tasks.indexOf(task)] = checkedTask;
+    newTaskList.isComplete = true;
+    for(let task of newTaskList.tasks){
       if(!task.isComplete){
-        allTasksComplete = false;
+        newTaskList.isComplete = false;
       }
     }
-    this.allTasksComplete = allTasksComplete;
 
+    let newDataEntry: GenericDataEntry = Object.assign({}, taskListEntry);
+    newDataEntry.dataObject = newTaskList;
+    this.taskService.updateTaskList(newDataEntry)
   }
 
-  onClickOpenTomorrowsTaskList(){
+  onClickOpenTomorrowsTaskList() {
     console.log("This method doesn't do anything atm.  ")
   }
 

@@ -43,9 +43,6 @@ export class AuthenticationComponent implements OnInit {
       }
     })
     let authResponse = this.authService.authenticateUser(authData);  
-    console.log(authResponse);
-
-
   }
 
   onClickLogIn(){

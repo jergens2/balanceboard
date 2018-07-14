@@ -2,6 +2,9 @@
 .btn:hover{
     cursor:pointer;
 }
+.badge:hover{
+    cursor:pointer;
+}
 .taskItem{
     cursor:pointer;
 }
