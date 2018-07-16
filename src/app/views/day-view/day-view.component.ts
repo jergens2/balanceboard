@@ -1,4 +1,4 @@
-import { AuthenticationService } from './../../services/authentication.service';
+import { AuthenticationService } from '../../services/authentication.service';
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, AfterViewInit, OnDestroy } from '@angular/core';
 
 import { Observable, Subscription } from 'rxjs';
@@ -7,10 +7,10 @@ import { NgbModal, NgbActiveModal, ModalDismissReasons, NgbModalRef } from '@ng-
 import * as moment from 'moment';
 import { Moment } from "moment";
 
-import { TimeService } from './../../services/time.service';
+import { TimeService } from '../../services/time.service';
 import { TimeSegment } from './time-segment.model';
 import { EventRect } from './event-rect.model';
-import { EventActivity } from './../../models/event-activity.model';
+import { EventActivity } from '../../models/event-activity.model';
 
 import { EventFormComponent } from './event-form/event-form.component';
 

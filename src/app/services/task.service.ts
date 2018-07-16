@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { GenericDataEntry } from './../models/generic-data-entry.model';
+import { GenericDataEntry } from '../models/generic-data-entry.model';
 import { GenericDataEntryService } from './generic-data-entry.service';
 import { Injectable } from '@angular/core';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';

@@ -1,7 +1,7 @@
 import { map } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
-import { User } from './../models/user.model';
-import { GenericDataEntry } from './../models/generic-data-entry.model';
+import { User } from '../models/user.model';
+import { GenericDataEntry } from '../models/generic-data-entry.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
@@ -53,7 +53,7 @@ export class GenericDataEntryService {
         })
       }))
       .subscribe((dataEntries: GenericDataEntry[])=>{
-        dataEntries.forEach((dataEntry)=>{this.userGenericDataEntries.push(dataEntry)})
+        this.userGenericDataEntries = dataEntries;
         this.userGenericDataEntriesSubject.next([...this.userGenericDataEntries]);
       });
 

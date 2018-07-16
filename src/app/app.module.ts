@@ -19,16 +19,17 @@ import { MonthViewComponent } from './views/month-view/month-view.component';
 import { DayViewComponent } from './views/day-view/day-view.component';
 import { YearViewComponent } from './views/year-view/year-view.component';
 import { EventFormComponent } from './views/day-view/event-form/event-form.component';
-import { IvyleeComponent } from './productivity/ivylee/ivylee.component';
+import { IvyleeCreationComponent } from './productivity/ivylee/ivylee-creation/ivylee-creation.component';
 import { TaskService } from './services/task.service';
 import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { ContentComponent } from './nav/content/content.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
+import { IvyleeManageComponent } from './productivity/ivylee/ivylee-manage/ivylee-manage.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'ivylee', component: IvyleeComponent }
+  { path: 'ivyleeCreation', component: IvyleeCreationComponent }
 ];
 
 @NgModule({
@@ -40,10 +41,11 @@ const appRoutes: Routes = [
     DayViewComponent,
     YearViewComponent,
     EventFormComponent,
-    IvyleeComponent,
+    IvyleeCreationComponent,
     SidebarComponent,
     ContentComponent,
-    AuthenticationComponent
+    AuthenticationComponent,
+    IvyleeManageComponent
   ],
   imports: [
     BrowserModule,

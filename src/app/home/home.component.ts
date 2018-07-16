@@ -1,10 +1,10 @@
 import * as moment from 'moment';
-import { GenericDataEntry } from './../models/generic-data-entry.model';
-import { User } from './../models/user.model';
-import { AuthenticationService } from './../services/authentication.service';
+import { GenericDataEntry } from '../models/generic-data-entry.model';
+import { User } from '../models/user.model';
+import { AuthenticationService } from '../services/authentication.service';
 import { Subscription } from 'rxjs/Subscription';
-import { HomeService } from './../services/home.service';
-import { Component, OnInit } from '@angular/core';
+import { HomeService } from '../services/home.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { TaskService } from '../services/task.service';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
@@ -16,7 +16,7 @@ import { GenericDataEntryService } from '../services/generic-data-entry.service'
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
 
   loadingTaskList: boolean = true;
@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
   private taskListSubscription: Subscription;
 
   userGenericDataEntries: GenericDataEntry[];
-
+  userGenericDataEntriesSubjectSubscription: Subscription;
 
   constructor(
     private homeService: HomeService,
@@ -54,7 +54,7 @@ export class HomeComponent implements OnInit {
     this.authenticatedUser = this.authService.getAuthenticatedUser();
 
     this.genericDataEntryService.getDataObjectsByUser(this.authenticatedUser);
-    this.genericDataEntryService.userGenericDataEntriesSubject
+    this.userGenericDataEntriesSubjectSubscription = this.genericDataEntryService.userGenericDataEntriesSubject
       .subscribe((dataEntries: GenericDataEntry[]) => {
         console.log("subscription is updated!", dataEntries)
         this.userGenericDataEntries = dataEntries;
@@ -78,7 +78,9 @@ export class HomeComponent implements OnInit {
 
   }
 
-
+  ngOnDestroy(){
+    this.userGenericDataEntriesSubjectSubscription.unsubscribe();
+  }
 
 
   onClickTimeFrameButton(selectedView) {
@@ -95,7 +97,7 @@ export class HomeComponent implements OnInit {
     } else if (forDate === 'tomorrow') {
       this.taskService.setForDate(moment().add(1, 'days'));
     }
-    this.router.navigate(['/ivylee']);
+    this.router.navigate(['/ivyleeCreation']);
   }
 
   onClickTask(task: IvyLeeTask, taskListEntry: GenericDataEntry) {

@@ -1,7 +1,7 @@
 import { Moment } from 'moment';
 import { Response } from '@angular/http';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { EventActivity } from './../models/event-activity.model';
+import { EventActivity } from '../models/event-activity.model';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators'

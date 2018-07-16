@@ -1,4 +1,4 @@
-import { EventActivity } from './../../models/event-activity.model';
+import { EventActivity } from '../../models/event-activity.model';
 import { Moment } from "moment";
 
 export class DaySquare {

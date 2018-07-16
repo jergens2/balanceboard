@@ -2,18 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import * as moment from 'moment';
 
-import { TaskService } from '../../services/task.service';
-import { IvyLeeTaskList } from './ivyleeTaskList.model';
-import { IvyLeeTask } from './ivyleeTask.model';
+import { TaskService } from '../../../services/task.service';
+import { IvyLeeTaskList } from '../ivyleeTaskList.model';
+import { IvyLeeTask } from '../ivyleeTask.model';
 
 
 
 @Component({
   selector: 'app-ivylee',
-  templateUrl: './ivylee.component.html',
-  styleUrls: ['./ivylee.component.css']
+  templateUrl: './ivylee-creation.component.html',
+  styleUrls: ['./ivylee-creation.component.css']
 })
-export class IvyleeComponent implements OnInit {
+export class IvyleeCreationComponent implements OnInit {
 
   constructor(private taskService: TaskService) { }
 
