@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { GenericDataEntry } from '../models/generic-data-entry.model';
 import { User } from '../models/user.model';
-import { AuthenticationService } from '../services/authentication.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 import { Subscription } from 'rxjs/Subscription';
 import { HomeService } from '../services/home.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.selectedView = view;
         }
       )
-    this.authenticatedUser = this.authService.getAuthenticatedUser();
+    this.authenticatedUser = this.authService.authenticatedUser;
 
     this.genericDataEntryService.getDataObjectsByUser(this.authenticatedUser);
     this.userGenericDataEntriesSubjectSubscription = this.genericDataEntryService.userGenericDataEntriesSubject

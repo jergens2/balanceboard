@@ -4,7 +4,7 @@ import { User } from '../models/user.model';
 import { GenericDataEntry } from '../models/generic-data-entry.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthenticationService } from './authentication.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable()
 export class GenericDataEntryService {

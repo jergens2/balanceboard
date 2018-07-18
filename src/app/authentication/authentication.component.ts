@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { AuthenticationService } from '../services/authentication.service';
-import { AuthData } from '../models/auth-data.model';
+import { AuthenticationService } from './authentication.service';
+import { AuthData } from './auth-data.model';
+import { AuthStatus } from './auth-status.model';
 
 @Component({
   selector: 'app-authentication',
@@ -36,8 +37,8 @@ export class AuthenticationComponent implements OnInit {
 
   authenticate(authData: AuthData){
     this.setAction("waiting");
-    this.authService.authenticationStatus.subscribe((change)=>{
-      if(change == false){
+    this.authService.authStatus.subscribe((authStatus: AuthStatus)=>{
+      if(authStatus.isAuthenticated == false){
         this.setAction("authenticate");
         this.errorMessage = "Error: bad username or password.";
       }

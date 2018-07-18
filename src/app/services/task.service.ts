@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
 import { Subject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { AuthenticationService } from './authentication.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable()
 export class TaskService {
@@ -41,7 +41,7 @@ export class TaskService {
 
   submitIvyLeeTasks(taskList: IvyLeeTaskList){
 
-    let dataObject: GenericDataEntry = new GenericDataEntry('',this.authService.getAuthenticatedUser().id, moment().toISOString(), "IvyLeeTaskList", taskList );
+    let dataObject: GenericDataEntry = new GenericDataEntry('',this.authService.authenticatedUser.id, moment().toISOString(), "IvyLeeTaskList", taskList );
     this.dataService.saveDataObject(dataObject)
       // .subscribe((response: { message: string, data: any })=>{
       //   // response.data is the saved IvyLeeTaskList.  Need to set the todaysTaskList as this object.

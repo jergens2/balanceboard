@@ -7,7 +7,7 @@ import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators'
 // import 'rxjs/Rx';
 import * as moment from 'moment';
-import { AuthenticationService } from './authentication.service';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable()
 export class TimeService {
@@ -92,7 +92,7 @@ export class TimeService {
   getEventActivitysByDateRange(startDate: Moment, endDate: Moment) {
     const getUrl = this.serverUrl + "/api/event/byDate";
     const body = {
-      'userId': this.authService.getAuthenticatedUser().id,
+      'userId': this.authService.authenticatedUser.id,
       'startDate': startDate.toISOString(),
       'endDate': endDate.toISOString()
     };

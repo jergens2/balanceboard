@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from './services/authentication.service';
+import { AuthenticationService } from './authentication/authentication.service';
+import { AuthStatus } from './authentication/auth-status.model';
 
 @Component({
   selector: 'app-root',
@@ -15,9 +16,9 @@ export class AppComponent implements OnInit{
 
   ngOnInit(){
     
-    this.authService.authenticationStatus.subscribe(
-      (change: boolean) => {
-        this.authenticated = change;
+    this.authService.authStatus.subscribe(
+      (authStatus: AuthStatus) => {
+        this.authenticated = authStatus.isAuthenticated;
       }
     )
     if(this.authService.checkLocalStorage()){
