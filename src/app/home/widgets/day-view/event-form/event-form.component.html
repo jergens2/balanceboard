@@ -1,0 +1,68 @@
+<div class="modal-header">
+  <h4 class="modal-title" *ngIf="mode == 'create'">New Event</h4>
+  <h4 class="modal-title" *ngIf="mode == 'modify'">Modify Event</h4>
+  <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="newEventActivityForm">
+    <div class="form-group" formGroupName="startTime">
+      <label class="center-block" for="startTime">Start Time</label>
+      <div class="form-row">
+        <div class="col-6">
+          <label class="center-block" for="startTimeDate">YYYY-MM-DD</label>
+          <input class="form-control" formControlName="startTimeDate">
+        </div>
+        <div class="col">
+          <label class="center-block" for="startTimeHour">HH</label>
+          <input class="form-control" formControlName="startTimeHour" >
+        </div>
+        <div class="col">
+          <label class="center-block" for="startTimeMinute">mm</label>
+          <input class="form-control" formControlName="startTimeMinute"> 
+        </div>
+        <!-- <div class="col">
+          <label class="center-block" for="startTimeSecond">ss</label>
+          <input class="form-control" formControlName="startTimeSecond" [value]="startTime.format('ss')">
+        </div> -->
+      </div>
+    </div>
+    <div class="form-group" formGroupName="endTime">
+        <label class="center-block" for="endTime">End Time</label>
+        <div class="form-row">
+          <div class="col-6">
+            <label class="center-block" for="endTimeDate">YYYY-MM-DD</label>
+            <input class="form-control" formControlName="endTimeDate">
+          </div>
+          <div class="col">
+            <label class="center-block" for="endTimeHour">HH</label>
+            <input class="form-control" formControlName="endTimeHour">
+          </div>
+          <div class="col">
+            <label class="center-block" for="endTimeMinute">mm</label>
+            <input class="form-control" formControlName="endTimeMinute"> 
+          </div>
+          <!-- <div class="col">
+            <label class="center-block" for="endTimeSecond">ss</label>
+            <input class="form-control" formControlName="endTimeSecond" [value]="endTime.format('ss')">
+          </div> -->
+        </div>
+      </div>
+    <div class="form-group">
+      <label class="center-block" for="description">Description</label>
+        <input class="form-control" formControlName="description">
+      
+    </div>
+    <div class="form-group">
+      <label class="center-block" for="category">Category</label>
+        <input class="form-control" formControlName="category">
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-block btn-primary" (click)="onSaveEventActivity()">Save Event</button>
+  <br>
+  <!-- <button type="button" class="btn btn-outline-dark" (click)="closeModal()">Cancel</button> -->
+  <button type="button" class="btn btn-block btn-danger" *ngIf="mode === 'modify'" (click)="onClickDelete()">Delete Event</button>
+</div>
