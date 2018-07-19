@@ -1,26 +1,39 @@
 import { map } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
 import { GenericDataEntry } from '../models/generic-data-entry.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthenticationService } from '../authentication/authentication.service';
+import { AuthStatus } from '../authentication/auth-status.model';
 
 @Injectable()
 export class GenericDataEntryService {
 
 
-  constructor(private httpClient: HttpClient, private authService: AuthenticationService) { }
+  constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
+    this.authService.authStatus.subscribe((authStatus: AuthStatus)=>{
+      if(authStatus.isAuthenticated){
+        this.fetchAllUserDataObjects(authStatus.user);
+      }else{
+        console.log("dataService constructor: not authenticated");
+      }      
+    })
+  }
 
 
   // serverUrl: string = "https://www.mashboard.app";
-  serverUrl: string = "http://localhost:3000";
+  private serverUrl: string = "http://localhost:3000";
 
-  userGenericDataEntries: GenericDataEntry[] = [];
-  userGenericDataEntriesSubject: Subject <GenericDataEntry[]> = new Subject<GenericDataEntry[]>(); 
+  // private userGenericDataEntries: GenericDataEntry[] = [];
+  private _userGenericDataEntriesSubject: BehaviorSubject <GenericDataEntry[]> = new BehaviorSubject<GenericDataEntry[]>([]); 
 
+  get allUserDataEntries(): Observable<GenericDataEntry[]>{
+    return this._userGenericDataEntriesSubject.asObservable();
+  }
 
   saveDataObject(dataObject: GenericDataEntry){
+    dataObject.userId = this.authService.authenticatedUser.id;
     const postUrl = this.serverUrl + "/api/genericData/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -33,12 +46,13 @@ export class GenericDataEntryService {
       return new GenericDataEntry(response.data._id, response.data.userId, response.data.createdTimeISO, response.data.dataType, response.data.dataObject);
     }))
     .subscribe((receivedDataEntry: GenericDataEntry)=>{
-      this.userGenericDataEntries.splice(this.userGenericDataEntries.indexOf(dataObject),1,receivedDataEntry)
-      this.userGenericDataEntriesSubject.next([...this.userGenericDataEntries]);
+      let dataEntries = this._userGenericDataEntriesSubject.getValue();
+      dataEntries.splice(dataEntries.indexOf(dataObject),1,receivedDataEntry)
+      this._userGenericDataEntriesSubject.next(dataEntries);
     });
   }
 
-  getDataObjectsByUser(authenticatedUser: User){
+  private fetchAllUserDataObjects(authenticatedUser: User){
     const getUrl = this.serverUrl + "/api/genericData/byUser/" + authenticatedUser.id;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -53,8 +67,7 @@ export class GenericDataEntryService {
         })
       }))
       .subscribe((dataEntries: GenericDataEntry[])=>{
-        this.userGenericDataEntries = dataEntries;
-        this.userGenericDataEntriesSubject.next([...this.userGenericDataEntries]);
+        this._userGenericDataEntriesSubject.next(dataEntries);
       });
 
   }
@@ -72,8 +85,9 @@ export class GenericDataEntryService {
         return new GenericDataEntry(response.data._id, response.data.userId, response.data.createdTimeISO, response.data.dataType, response.data.dataObject);
       }))
     .subscribe((receivedDataEntry: GenericDataEntry)=>{
-      this.userGenericDataEntries.splice(this.userGenericDataEntries.indexOf(dataEntry),1,receivedDataEntry)
-      this.userGenericDataEntriesSubject.next([...this.userGenericDataEntries]);
+      let dataEntries = this._userGenericDataEntriesSubject.getValue();
+      dataEntries.splice(dataEntries.indexOf(dataEntry),1,receivedDataEntry)
+      this._userGenericDataEntriesSubject.next(dataEntries);
     });
   }
 

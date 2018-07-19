@@ -25,6 +25,7 @@ import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { ContentComponent } from './nav/content/content.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
 import { IvyleeManageComponent } from './productivity/ivylee/ivylee-manage/ivylee-manage.component';
+import { IvyleeWidgetComponent } from './home/widgets/ivylee-widget/ivylee-widget.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -45,7 +46,8 @@ const appRoutes: Routes = [
     SidebarComponent,
     ContentComponent,
     AuthenticationComponent,
-    IvyleeManageComponent
+    IvyleeManageComponent,
+    IvyleeWidgetComponent
   ],
   imports: [
     BrowserModule,

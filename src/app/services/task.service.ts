@@ -3,33 +3,35 @@ import { GenericDataEntry } from '../models/generic-data-entry.model';
 import { GenericDataEntryService } from './generic-data-entry.service';
 import { Injectable } from '@angular/core';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable()
 export class TaskService {
 
-  constructor(private router: Router, private authService: AuthenticationService, private dataService: GenericDataEntryService) { }
+  private _allIvyLeeTaskLists: BehaviorSubject<GenericDataEntry[]> = new BehaviorSubject([]);
 
-  //2018-07-12: probably don't want to actually instantiate the object.
-  // tomorrowsTaskList: IvyLeeTaskList = new IvyLeeTaskList([],moment().toISOString());
-  // todaysTaskList: IvyLeeTaskList;
-  // historicTaskLists: IvyLeeTaskList[];
+  constructor(private router: Router, private dataService: GenericDataEntryService) { 
+    this.dataService.allUserDataEntries.subscribe((dataEntries: GenericDataEntry[])=>{
+      this._allIvyLeeTaskLists.next(this.findIvyLeeTaskLists(dataEntries));
+    });
+  }
 
-  // taskListSubject: Subject<IvyLeeTaskList> = new Subject();
+  get ivyLeeTaskLists(): Observable<GenericDataEntry[]>{
+    return this._allIvyLeeTaskLists.asObservable();
+  }
 
-  //by default the build date will be for tomorrow unless set otherwise
-  buildListforDate: moment.Moment = moment().add(1,'days');
+  private buildListforDate: moment.Moment = moment().add(1,'days');
 
-
+  set forDate(date: moment.Moment){
+    this.buildListforDate = moment(date);
+  }
+  get forDate(): moment.Moment{
+    return this.buildListforDate;
+  }
 
   findIvyLeeTaskLists(dataEntries: GenericDataEntry[]): GenericDataEntry[] {
-    /*
-      2018-07-14: 
-      I've set this function to be of type GenericDataEntry soas to retain the .id property for easier reference.
-      The IvyLeeTaskList will have to be obtained as a property of the GenericDataEntry object
-    */
     let ivyLeeTaskLists: GenericDataEntry[] = []; 
     for (let dataEntry of dataEntries) {
       if(dataEntry.dataType === 'IvyLeeTaskList'){
@@ -41,11 +43,8 @@ export class TaskService {
 
   submitIvyLeeTasks(taskList: IvyLeeTaskList){
 
-    let dataObject: GenericDataEntry = new GenericDataEntry('',this.authService.authenticatedUser.id, moment().toISOString(), "IvyLeeTaskList", taskList );
-    this.dataService.saveDataObject(dataObject)
-      // .subscribe((response: { message: string, data: any })=>{
-      //   // response.data is the saved IvyLeeTaskList.  Need to set the todaysTaskList as this object.
-      // });
+    let dataObject: GenericDataEntry = new GenericDataEntry(null,null, moment().toISOString(), "IvyLeeTaskList", taskList );
+    this.dataService.saveDataObject(dataObject);
     this.router.navigate(['/']);
   }
 
@@ -53,8 +52,6 @@ export class TaskService {
     this.dataService.updateDataEntryDataObject(dataEntry);
   }
 
-  setForDate(date: moment.Moment){
-    this.buildListforDate = moment(date);
-  }
+
 
 }
