@@ -39,7 +39,7 @@ export class IvyleeCreationComponent implements OnInit {
   ngOnInit() {
 
     this.buildTaskForm = this.createForm();
-    this.forDate = this.taskService.forDate;
+    this.forDate = this.taskService.buildForDate;
     console.log(this.forDate.calendar(null, this.calendarFormat))
   }
 

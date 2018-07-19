@@ -30,7 +30,8 @@ import { IvyleeWidgetComponent } from './home/widgets/ivylee-widget/ivylee-widge
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'ivyleeCreation', component: IvyleeCreationComponent }
+  { path: 'ivyleeCreation', component: IvyleeCreationComponent },
+  { path: 'ivyleeManagement', component: IvyleeManageComponent }
 ];
 
 @NgModule({

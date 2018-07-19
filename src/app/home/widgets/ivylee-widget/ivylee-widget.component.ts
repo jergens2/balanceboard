@@ -36,9 +36,9 @@ export class IvyleeWidgetComponent implements OnInit {
 
   onClickCreateTaskList(forDate: string) {
     if (forDate === 'today') {
-      this.taskService.forDate = moment();
+      this.taskService.buildForDate = moment();
     } else if (forDate === 'tomorrow') {
-      this.taskService.forDate = moment().add(1, 'days');
+      this.taskService.buildForDate = moment().add(1, 'days');
     }
     this.router.navigate(['/ivyleeCreation']);
   }
@@ -61,8 +61,13 @@ export class IvyleeWidgetComponent implements OnInit {
     this.taskService.updateTaskList(newDataEntry)
   }
 
-  onClickOpenTomorrowsTaskList() {
-    console.log("This method doesn't do anything atm.  ")
+  onClickOpenTaskManagement(day: string){
+    if(day === 'today'){
+      this.taskService.manageForDate = moment();
+    }else if(day === 'tomorrow'){
+      this.taskService.manageForDate = moment().add(1, 'days');
+    }
+    this.router.navigate(['/ivyleeManagement']);
   }
 
 }

@@ -10,8 +10,7 @@ import { AuthenticationService } from '../authentication/authentication.service'
 @Injectable()
 export class TaskService {
 
-  private _allIvyLeeTaskLists: BehaviorSubject<GenericDataEntry[]> = new BehaviorSubject([]);
-
+  
   constructor(private router: Router, private dataService: GenericDataEntryService) { 
     this.dataService.allUserDataEntries.subscribe((dataEntries: GenericDataEntry[])=>{
       this._allIvyLeeTaskLists.next(this.findIvyLeeTaskLists(dataEntries));
@@ -23,16 +22,29 @@ export class TaskService {
     return this._allIvyLeeTaskLists.asObservable();
   }
 
-  private buildListforDate: moment.Moment = moment().add(1,'days');
+  private buildListForDate: moment.Moment = moment().add(1,'days');
+  private manageListForDate: moment.Moment = moment();
 
-  set forDate(date: moment.Moment){
-    this.buildListforDate = moment(date);
+  private _allIvyLeeTaskLists: BehaviorSubject<GenericDataEntry[]> = new BehaviorSubject([]);
+
+
+
+  set buildForDate(date: moment.Moment){
+    this.buildListForDate = moment(date);
   }
-  get forDate(): moment.Moment{
-    return this.buildListforDate;
+  get buildForDate(): moment.Moment{
+    return this.buildListForDate;
   }
 
-  findIvyLeeTaskLists(dataEntries: GenericDataEntry[]): GenericDataEntry[] {
+  set manageForDate(date: moment.Moment){
+    this.manageListForDate = moment(date);
+  }
+  get manageForDate(): moment.Moment{
+    return this.manageListForDate;
+  }
+
+
+  private findIvyLeeTaskLists(dataEntries: GenericDataEntry[]): GenericDataEntry[] {
     let ivyLeeTaskLists: GenericDataEntry[] = []; 
     for (let dataEntry of dataEntries) {
       if(dataEntry.dataType === 'IvyLeeTaskList'){

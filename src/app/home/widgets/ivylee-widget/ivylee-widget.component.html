@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-header">Task List For Today
-    <span class="badge badge-secondary float-right ">Open</span>
+    <span class="badge badge-secondary float-right" (click)="onClickOpenTaskManagement('today')">Open</span>
   </div>
   <div *ngIf="loadingTaskList">
     <i class="fa fa-spinner fa-spin"></i>
@@ -28,7 +28,7 @@
       <button class="btn btn-primary btn-sm mr-0" (click)="onClickCreateTaskList('tomorrow')">Create task list for tomorrow</button>
     </div>
     <div *ngIf="tomorrowsTaskList">
-      <span class="badge badge-secondary float-right" (click)="onClickOpenTomorrowsTaskList()">Open</span>
+      <span class="badge badge-secondary float-right" (click)="onClickOpenTaskManagement('today')">Open</span>
       Woohoo! You've already set your task list for tomorrow.
     </div>
   </div>

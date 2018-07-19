@@ -1,3 +1,12 @@
-<p>
-  ivylee-manage works!
-</p>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <table class="table" *ngIf="activeTaskList">
+        <tr><td>Priority</td><td>Description</td><td>Complete?</td></tr>
+        <tr *ngFor="let task of activeTaskList.dataObject.tasks" >
+            <td>{{task.priority}}</td><td>{{task.title}}</td><td>{{task.isComplete}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
