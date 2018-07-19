@@ -1,0 +1,11 @@
+.fa-circle-thin{
+    color: black;
+
+}
+.fa-check-circle{
+    color: limegreen;
+}
+
+.fa-check-circle:hover,.fa-circle-thin:hover{
+    cursor:pointer;
+}

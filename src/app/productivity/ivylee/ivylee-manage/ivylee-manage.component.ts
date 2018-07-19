@@ -1,3 +1,4 @@
+import { IvyLeeTask } from './../ivyleeTask.model';
 import { IvyLeeTaskList } from './../ivyleeTaskList.model';
 import * as moment from 'moment';
 import { GenericDataEntry } from './../../../models/generic-data-entry.model';
@@ -31,6 +32,24 @@ export class IvyleeManageComponent implements OnInit {
         this.activeTaskList = taskList;
       }
     }
+  }
+
+  clickTaskComplete(task: IvyLeeTask){
+    let checkedTask: IvyLeeTask = Object.assign({}, task);
+    checkedTask.isComplete = !task.isComplete;
+
+    let newTaskList: IvyLeeTaskList = Object.assign({}, this.activeTaskList.dataObject as IvyLeeTaskList);
+    newTaskList.tasks[newTaskList.tasks.indexOf(task)] = checkedTask;
+    newTaskList.isComplete = true;
+    for(let task of newTaskList.tasks){
+      if(!task.isComplete){
+        newTaskList.isComplete = false;
+      }
+    }
+
+    let newDataEntry: GenericDataEntry = Object.assign({}, this.activeTaskList);
+    newDataEntry.dataObject = newTaskList;
+    this.taskService.updateTaskList(newDataEntry)
   }
 
 }

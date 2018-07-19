@@ -2,9 +2,13 @@
   <div class="row">
     <div class="col-12">
       <table class="table" *ngIf="activeTaskList">
-        <tr><td>Priority</td><td>Description</td><td>Complete?</td></tr>
+        <tr><td></td><td>Priority</td><td>Description</td></tr>
         <tr *ngFor="let task of activeTaskList.dataObject.tasks" >
-            <td>{{task.priority}}</td><td>{{task.title}}</td><td>{{task.isComplete}}</td>
+            <td (click)="clickTaskComplete(task)">
+              <i *ngIf="!task.isComplete" class="fa fa-circle-thin"></i>
+              <i *ngIf="task.isComplete" class="fa fa-check-circle"></i>
+            </td>
+            <td>{{task.priority}}</td><td>{{task.title}}</td>
         </tr>
       </table>
     </div>
