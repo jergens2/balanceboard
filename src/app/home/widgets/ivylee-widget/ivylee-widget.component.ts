@@ -16,6 +16,8 @@ export class IvyleeWidgetComponent implements OnInit {
 
   constructor(private taskService: TaskService, private router: Router) { }
 
+  loadingTaskList: boolean = true;
+
   ivyLeeTaskLists: GenericDataEntry[] = [];
   todaysTaskList: GenericDataEntry;
   tomorrowsTaskList: GenericDataEntry;
@@ -26,6 +28,7 @@ export class IvyleeWidgetComponent implements OnInit {
       for(let ivyLeeTaskList of ivyLeeTaskLists){
         if(moment((ivyLeeTaskList.dataObject as IvyLeeTaskList).forDate).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')){
           this.todaysTaskList = ivyLeeTaskList;
+          this.loadingTaskList = false;
         }
         if(moment((ivyLeeTaskList.dataObject as IvyLeeTaskList).forDate).format('YYYY-MM-DD') == moment().add(1,'days').format('YYYY-MM-DD')){
           this.tomorrowsTaskList = ivyLeeTaskList;

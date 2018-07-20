@@ -19,14 +19,14 @@ export class IvyleeManageComponent implements OnInit {
 
   ngOnInit() {
     this.taskService.ivyLeeTaskLists.subscribe((allTaskLists)=>{
-      console.log("manage:", allTaskLists);
+      // console.log("manage:", allTaskLists);
       this.allTaskLists = allTaskLists;
       this.setActiveTaskList(this.taskService.manageForDate);
     })
   }
 
   setActiveTaskList(manageDate: moment.Moment){
-    console.log("manage date is ", manageDate)
+    // console.log("manage date is ", manageDate)
     for(let taskList of this.allTaskLists){
       if(moment((taskList.dataObject as IvyLeeTaskList).forDate).format('YYYY-MM-DD') === manageDate.format('YYYY-MM-DD') ){
         this.activeTaskList = taskList;
