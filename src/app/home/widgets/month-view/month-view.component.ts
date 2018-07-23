@@ -60,6 +60,12 @@ export class MonthViewComponent implements OnInit {
         "fill":this.getColorScale(daySquare.eventActivities.length, this.maxCount),
         "stroke":"none"
       }
+      if(this.isToday(daySquare)){
+        daySquare.style = {
+          "fill":this.getColorScale(daySquare.eventActivities.length, this.maxCount),
+          "stroke":"red"
+        }
+      }
     }
   }
 
@@ -73,6 +79,13 @@ export class MonthViewComponent implements OnInit {
 
     }
 
+  }
+
+  isToday(daySquare: DaySquare): boolean{
+    if(daySquare.date.dayOfYear() === moment().dayOfYear()){
+      return true;
+    }
+    return false;
   }
 
   calculateDaySquares(viewBoxHeight, viewBoxWidth): DaySquare[] {
@@ -113,6 +126,13 @@ export class MonthViewComponent implements OnInit {
           text_y: y+20,
           eventActivities: [] 
         }
+        if(this.isToday(daySquare)){
+          daySquare.style = {
+            "fill":"#f9f9f9",
+            "stroke":"red"
+          }
+        }
+
         if(currentDate.month() === lastOfMonth.month())
           daySquares.push(daySquare);
 
@@ -137,12 +157,25 @@ export class MonthViewComponent implements OnInit {
       "stroke":"blue",
       "cursor":"pointer"
     }
+    if(this.isToday(daySquare)){
+      daySquare.style = {
+        "fill":"#f9f9f9",
+        "stroke":"red",
+        "cursor":"pointer"
+      }
+    }
   }
   onMouseLeave(daySquare: DaySquare){
     daySquare.style = {
       "fill":this.getColorScale(daySquare.eventActivities.length, this.maxCount),
       "stroke":"none",
       "stroke-width":""
+    }
+    if(this.isToday(daySquare)){
+      daySquare.style = {
+        "fill":"#f9f9f9",
+        "stroke":"red"
+      }
     }
   }
 

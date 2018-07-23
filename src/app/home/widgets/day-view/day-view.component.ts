@@ -73,7 +73,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     
     if(moment().dayOfYear() == this.viewStartTime.dayOfYear()){
       this.nowLine = this.drawNowLine(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
-      this.nowLineSubscription = Observable.interval(60000).subscribe((second)=>{
+      this.nowLineSubscription = Observable.interval(60000).subscribe(()=>{
         this.nowLine = this.drawNowLine(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
       })
     }
@@ -103,8 +103,9 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   drawNowLine(width: number, height: number, startTime: moment.Moment, endTime: moment.Moment): {x1: number,x2: number,y1: number,y2: number} {
-    const now = moment().date(startTime.date());
-    const totalMilliseconds = endTime.diff(startTime);
+    const now = moment().dayOfYear(startTime.dayOfYear());
+    //due to the way the timesegments are created, an extra hour is added to the initial (endtime - starttime) duration, so we need to add an hour of milliseconds here.
+    const totalMilliseconds = endTime.diff(startTime) + (1000*3600);
     const millisecondsFromStart = now.diff(startTime);
     const lineHeight = (millisecondsFromStart/totalMilliseconds) * (height);
 
