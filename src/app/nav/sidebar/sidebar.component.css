@@ -51,3 +51,7 @@
 .activeLink:hover{
     background: #ddeaff;
 }
+
+.fa{
+    width:25px;
+}

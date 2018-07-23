@@ -4,18 +4,32 @@
     <div class="sidebar-header">
       <h3 class="mb-5" >balanceboard  </h3>
     </div>
-    <!-- <div class="sidebar-button">
-      <a routerLink='/home' routerLinkActive='activeLink' class='sidebar-button-title'>Year View</a>
-    </div> -->
+
+    
     <div class="sidebar-button" routerLink='/home' routerLinkActive='activeLink' >
-      <span class='sidebar-button-title'>Home</span>
+      <span class='sidebar-button-title'><i class="fa fa-home"></i> Home</span>
+    </div>
+    <div class="sidebar-button" routerLink='/productivity' routerLinkActive='activeLink' >
+      <span class='sidebar-button-title'><i class="fa fa-bar-chart"></i> Productivity</span>
     </div>
     <div class="sidebar-button" routerLink='/ivyleeCreation' routerLinkActive='activeLink' >
-      <span class='sidebar-button-title'>To Do (Ivy Lee method)</span>
+      <span style="margin-left:15px;"></span><span class='sidebar-button-title'><i class="fa fa-list-ol"></i> Task List</span>
     </div>
-    <div class="sidebar-button" style="margin-top:150px" (click)="onClickLogout()">
-      <span class='sidebar-button-title'>Logout</span>
+    <div class="sidebar-button" routerLink='/finances' routerLinkActive='activeLink' >
+      <span class='sidebar-button-title'><i class="fa fa-dollar"></i> Finances</span>
     </div>
+    <div class="sidebar-button" routerLink='/health' routerLinkActive='activeLink' >
+      <span class='sidebar-button-title'><i class="fa fa-medkit"></i> Health</span>
+    </div>
+
+
+    <div class="sidebar-button" style="margin-top:150px">
+      <span class='sidebar-button-title'><i class="fa fa-cogs"></i> Settings</span>
+    </div>
+    <div class="sidebar-button" (click)="onClickLogout()">
+      <span class='sidebar-button-title'><i class="fa fa-sign-out"></i> Logout</span>
+    </div>
+
 
 
   </nav>

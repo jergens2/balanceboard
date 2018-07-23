@@ -34,6 +34,7 @@ export class IvyleeWidgetComponent implements OnInit {
           this.tomorrowsTaskList = ivyLeeTaskList;
         }
       }
+      this.loadingTaskList = false;
     })
   }
 
