@@ -9,6 +9,8 @@
         <path [ngStyle]="timeSegment.style" [attr.d]="timeSegment.path" />
         <text [attr.x]="timeSegment.text_x" [attr.y]="timeSegment.text_y" class="dayDateDisplay">{{ timeSegment.text_string }}</text>
       </g>
+      <line *ngIf="nowLine" [attr.x1]="nowLine.x1" [attr.x2]="nowLine.x2" [attr.y1]="nowLine.y1" [attr.y2]="nowLine.y2" [ngStyle]="{'stroke':'red','stroke-width':'2'}" />
+      
       <g *ngIf="activeEventActivityRect">
           <rect [attr.x]="activeEventActivityRect.x" [attr.y]="activeEventActivityRect.y" [attr.width]="activeEventActivityRect.width" [attr.height]="activeEventActivityRect.height"
             [attr.rx]="activeEventActivityRect.rx" [attr.ry]="activeEventActivityRect.ry" [ngStyle]="activeEventActivityRect.style" />
@@ -19,6 +21,7 @@
           />
       </g>
       <line *ngIf="marginLine" [attr.x1]="marginLine.x1" [attr.x2]="marginLine.x2" [attr.y1]="marginLine.y1" [attr.y2]="marginLine.y2" [ngStyle]="{'stroke':'black','stroke-width':'0.5'}" />
+      
     </svg>
   </div>
   <!-- <div class="col-4">

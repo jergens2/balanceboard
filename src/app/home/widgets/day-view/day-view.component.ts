@@ -2,7 +2,7 @@ import { AuthenticationService } from '../../../authentication/authentication.se
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, AfterViewInit, OnDestroy } from '@angular/core';
 
 import { Observable, Subscription } from 'rxjs';
-import { NgbModal, NgbActiveModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import * as moment from 'moment';
 import { Moment } from "moment";
@@ -25,6 +25,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('svgDayView') svgObject: ElementRef;
 
   handle: Subscription;
+  nowLineSubscription: Subscription;
   pt: SVGPoint;
 
   viewBox: string;
@@ -39,6 +40,13 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   eventList: EventActivity[];
   
   marginLine : {
+    x1: number,
+    x2: number,
+    y1: number,
+    y2: number
+  };
+
+  nowLine: {
     x1: number,
     x2: number,
     y1: number,
@@ -63,6 +71,14 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.marginLine = {x1: 1, x2:2, y1:3, y2:4};
     
+    if(moment().dayOfYear() == this.viewStartTime.dayOfYear()){
+      this.nowLine = this.drawNowLine(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
+      this.nowLineSubscription = Observable.interval(60000).subscribe((second)=>{
+        this.nowLine = this.drawNowLine(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
+      })
+    }
+
+    
     this.timeSegments = this.calculateTimeSegments(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
     this.timeService.getEventActivitysByDateRange(this.timeService.getActiveDate().startOf('day'), moment(this.timeService.getActiveDate()).endOf('day'));
     this.timeService.eventListSubject
@@ -72,6 +88,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
           this.eventRects = this.drawEventActivityRects(this.eventList);
         }
       )
+    
   }
 
   ngAfterViewInit() {
@@ -80,9 +97,24 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.handle.unsubscribe();
+    if(this.nowLineSubscription){
+      this.nowLineSubscription.unsubscribe();
+    }  
   }
 
-  
+  drawNowLine(width: number, height: number, startTime: moment.Moment, endTime: moment.Moment): {x1: number,x2: number,y1: number,y2: number} {
+    const now = moment().date(startTime.date());
+    const totalMilliseconds = endTime.diff(startTime);
+    const millisecondsFromStart = now.diff(startTime);
+    const lineHeight = (millisecondsFromStart/totalMilliseconds) * (height);
+
+    return {
+      x1: 0+(width*.2),
+      x2: width - (width*.2),
+      y1: lineHeight,
+      y2: lineHeight
+    }
+  }
 
   calculateYFromEventActivityTime(timeISO: string): number {
     //this method as of 2018-03-13 does not produce an accurate location
@@ -256,7 +288,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
         ' Z ' ; 
       timeSegment.style = {
           "stroke": "black",
-          "stroke-width": "0.5",
+          "stroke-width": "0.4",
           "fill":"black",
           "fill-opacity":"0.1"
       }
