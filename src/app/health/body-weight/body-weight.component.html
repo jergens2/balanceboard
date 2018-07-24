@@ -1,19 +1,52 @@
-<div class="row">
-  <div class="col-12">
-    <h3>Body Weight Entry</h3>
-  </div>
-  <div class="col-12">
-    Entry time: {{ now.format('YYYY-MM-DD h:mm a')}}
-    <br>
-    <div class="form-row my-1">
-      <div class="input-group">
-        <div class="input-group-addon">
-          <div class="input-group-text units-button" (click)="onClickUnits()">{{ units }}</div>
-        </div>
-        <input type="text" class="form-control" >
+<div class="container">
+
+ <div class="row">
+  <div class="col-12 col-lg-6 mb-3">
+    <div class="card">
+      <div class="card-header">
+          Body Weight Entry
+      </div>
+      <div class="card-body">
+          Entry time: {{ now.format('YYYY-MM-DD h:mm a')}}
+          <br>
+          <form [formGroup]="bodyWeightForm">
+            <div class="form-row my-1">
+              <!-- <div class="col-4"> -->
+                  <div class="input-group">
+                      <input type="text" class="form-control" formControlName="weight">
+                      <div class="input-group-addon units-button" (click)="onClickUnits()">
+                        <div class="input-group-text " >{{ units }}</div>
+                      </div>
+                      
+                    </div>
+              <!-- </div> -->
+              
+            </div>
+          </form>
+          <button class="btn btn-success btn-sm">Submit Entry</button>
       </div>
     </div>
     
-    <button class="btn btn-success btn-sm">Submit Entry</button>
   </div>
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-header">Ideal Body Weight</div>
+      <div class="card-body">
+        <div *ngIf="loadingIdealWeight">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <div *ngIf="!loadingIdealWeight">
+          <div *ngIf="healthProfiles.length > 0">
+            health profiles
+          </div>
+          <div *ngIf="healthProfiles.length < 1">
+            No health profile has been set up. <br>
+            <button class="btn btn-sm btn-secondary">Create health profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>

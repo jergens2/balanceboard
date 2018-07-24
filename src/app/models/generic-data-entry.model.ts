@@ -20,12 +20,12 @@ export class GenericDataEntry{
     }
 
     /*
-        2018-07-12
+
         At some point the dataType should be an enum instead of a string?  At this time it is a string, 
         expected dataType strings:
     
         -    IvyLeeTaskList
-        -    BodyWeight
+        -    HealthProfile
         
 
 

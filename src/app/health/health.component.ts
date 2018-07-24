@@ -1,3 +1,4 @@
+import { HealthProfile } from './health-profile.model';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -9,7 +10,10 @@ export class HealthComponent implements OnInit {
 
   constructor() { }
 
+
   ngOnInit() {
   }
+
+
 
 }

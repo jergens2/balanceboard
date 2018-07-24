@@ -1,3 +1,4 @@
+import { HealthService } from './health/health.service';
 import { GenericDataEntryService } from './services/generic-data-entry.service';
 import { AuthInterceptor } from './authentication/auth-interceptor';
 import { AuthenticationService } from './authentication/authentication.service';
@@ -71,6 +72,7 @@ const appRoutes: Routes = [
     HomeService,
     TaskService,
     GenericDataEntryService,
+    HealthService,
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ],
   bootstrap: [AppComponent],

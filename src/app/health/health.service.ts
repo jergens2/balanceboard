@@ -1,3 +1,4 @@
+import { HealthProfile } from './health-profile.model';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { GenericDataEntryService } from '../services/generic-data-entry.service';
@@ -7,23 +8,24 @@ import { GenericDataEntry } from '../models/generic-data-entry.model';
 @Injectable()
 export class HealthService {
 
-  private _allBodyWeightEntries: BehaviorSubject<GenericDataEntry[]> = new BehaviorSubject([]);
+
+
+  private _allHealthProfiles: BehaviorSubject<GenericDataEntry[]> = new BehaviorSubject([]);
 
   constructor(private router: Router, private dataService: GenericDataEntryService) { 
     this.dataService.allUserDataEntries.subscribe((dataEntries: GenericDataEntry[])=>{
-      this._allBodyWeightEntries.next(this.findBodyWeightEntries(dataEntries));
-      // console.log(this._allIvyLeeTaskLists.getValue());
+      this._allHealthProfiles.next(this.findHealthProfiles(dataEntries));
     });
   }
 
-  get bodyWeightEntries(): Observable<GenericDataEntry[]>{
-    return this._allBodyWeightEntries.asObservable();
+  get healthProfiles(): Observable<GenericDataEntry[]>{
+    return this._allHealthProfiles.asObservable();
   }
 
-  private findBodyWeightEntries(dataEntries: GenericDataEntry[]): GenericDataEntry[] {
+  private findHealthProfiles(dataEntries: GenericDataEntry[]): GenericDataEntry[] {
     let healthEntries: GenericDataEntry[] = [];
     for (let healthEntry of healthEntries) {
-      if (healthEntry.dataType === 'BodyWeight') {
+      if (healthEntry.dataType === 'HealthProfile') {
         healthEntries.push(healthEntry);
       }
     }
