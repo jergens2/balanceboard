@@ -25,7 +25,7 @@ export class GenericDataEntry{
         expected dataType strings:
     
         -    IvyLeeTaskList
-        -    
+        -    BodyWeight
         
 
 
