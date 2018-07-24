@@ -26,6 +26,7 @@ import { ContentComponent } from './nav/content/content.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
 import { IvyleeManageComponent } from './productivity/ivylee/ivylee-manage/ivylee-manage.component';
 import { IvyleeWidgetComponent } from './home/widgets/ivylee-widget/ivylee-widget.component';
+import { BodyWeightWidgetComponent } from './home/widgets/body-weight/body-weight-widget.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -48,7 +49,8 @@ const appRoutes: Routes = [
     ContentComponent,
     AuthenticationComponent,
     IvyleeManageComponent,
-    IvyleeWidgetComponent
+    IvyleeWidgetComponent,
+    BodyWeightWidgetComponent
   ],
   imports: [
     BrowserModule,

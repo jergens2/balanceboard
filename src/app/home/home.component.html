@@ -2,37 +2,12 @@
   <div class="row">
     <div class="col-12 col-lg-4 mb-3">
       <app-ivylee-widget></app-ivylee-widget>
-
+      <app-body-weight-widget></app-body-weight-widget>
     </div>
-    <div class="col-12 col-lg-8 mb-3" *ngIf="selectedView=='day'">
-      <div class="card">
-        <div class="card-header"> Day View
-          <button class="btn border border-primary bg-white btn btn-sm float-right" (click)="onClickMonth()">
-            <i class="fa fa-calendar"></i> Month</button>
-        </div>
-        <div class="card-body">
-          <app-day-view></app-day-view>
-        </div>
-      </div>
-
-    </div>
-    <div class="col-12 col-lg-8 mb-3" *ngIf="selectedView=='month'">
-
-      <div class="card">
-        <div class="card-header">Month View</div>
-        <div class="card-body">
-          <app-month-view></app-month-view>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-lg-8 mb-3" *ngIf="selectedView=='year'">
-      <div class="card">
-        <div class="card-header">Year View</div>
-        <div class="card-body">
-          <app-year-view></app-year-view>
-        </div>
-      </div>
-
+    <div class="col-12 col-lg-8 mb-3" >
+        <app-day-view *ngIf="selectedView=='day'"></app-day-view>
+        <app-month-view *ngIf="selectedView=='month'"></app-month-view>
+        <app-year-view *ngIf="selectedView=='year'"></app-year-view>
     </div>
   </div>
 </div>

@@ -1,20 +1,20 @@
-<div class="row">
-  <div class="col-12 text-center">
-    <h3 *ngIf="now">{{now.format('MMMM YYYY')}}</h3>
+<div class="card">
+  <div class="card-header">
+    <span *ngIf="now">{{now.format('MMMM YYYY')}}</span>
   </div>
-</div>
-<div class="div">
-  <div class="col-12">
-    <svg [attr.viewBox]="viewBox" width="100%">
-      <g *ngFor="let daySquare of daySquares" (click)="onClick(daySquare)" (mouseenter)="onMouseEnter(daySquare)" (mouseleave)="onMouseLeave(daySquare)">
+  <div class="card-body">
+    <div class="col-12">
+      <svg [attr.viewBox]="viewBox" width="100%">
+        <g *ngFor="let daySquare of daySquares" (click)="onClick(daySquare)" (mouseenter)="onMouseEnter(daySquare)" (mouseleave)="onMouseLeave(daySquare)">
 
-        <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath" />
+          <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath" />
 
-        <text [attr.x]="daySquare.text_x" [attr.y]="daySquare.text_y" class="dayDateDisplay">{{daySquare.date.date()}}</text>
-        <text *ngIf="daySquare.eventActivities.length > 0" [attr.x]="daySquare.text_x+20" [attr.y]="daySquare.text_y+20" class="dayDateDisplay">{{daySquare.eventActivities.length}} events</text>
-        
-      </g>
+          <text [attr.x]="daySquare.text_x" [attr.y]="daySquare.text_y" class="dayDateDisplay">{{daySquare.date.date()}}</text>
+          <text *ngIf="daySquare.eventActivities.length > 0" [attr.x]="daySquare.text_x+20" [attr.y]="daySquare.text_y+20" class="dayDateDisplay">{{daySquare.eventActivities.length}} events</text>
 
-    </svg>
+        </g>
+
+      </svg>
+    </div>
   </div>
 </div>

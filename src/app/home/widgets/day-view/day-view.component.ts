@@ -13,6 +13,7 @@ import { EventRect } from './event-rect.model';
 import { EventActivity } from '../../../models/event-activity.model';
 
 import { EventFormComponent } from './event-form/event-form.component';
+import { HomeService } from '../../../services/home.service';
 
 
 @Component({
@@ -57,7 +58,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   today: Moment;
 
-  constructor(private timeService: TimeService, private authService: AuthenticationService, private modalService: NgbModal) { }
+  constructor(private timeService: TimeService, private authService: AuthenticationService, private homeService: HomeService, private modalService: NgbModal) { }
 
   ngOnInit() {
     
@@ -317,6 +318,10 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       }).catch((error) => { });
   }
 
+  onClickMonth() {
+    this.homeService.setView('month');
+  }
+
   onMouseEnter(eventRect: EventRect) {
     eventRect.style = {
       "cursor": "pointer",
@@ -334,6 +339,10 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
       "stroke-width": "1",
       "fill-opacity": "0.2"
     }
+  }
+
+  onClickMarkTime(){
+
   }
 
 }

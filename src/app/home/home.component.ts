@@ -58,9 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
 
-  onClickMonth() {
-    this.homeService.setView('month');
-  }
+
 
 
 
