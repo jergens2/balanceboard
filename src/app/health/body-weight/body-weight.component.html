@@ -1,52 +1,89 @@
 <div class="container">
 
- <div class="row">
-  <div class="col-12 col-lg-6 mb-3">
-    <div class="card">
-      <div class="card-header">
+  <div class="row">
+    <div class="col-12 col-lg-6 mb-3">
+      <div class="card">
+        <div class="card-header">
           Body Weight Entry
-      </div>
-      <div class="card-body">
-          Entry time: {{ now.format('YYYY-MM-DD h:mm a')}}
+        </div>
+        <div class="card-body">
+          Entry date: {{ now.format('YYYY-MM-DD')}}
           <br>
           <form [formGroup]="bodyWeightForm">
             <div class="form-row my-1">
-              <!-- <div class="col-4"> -->
-                  <div class="input-group">
-                      <input type="text" class="form-control" formControlName="weight">
-                      <div class="input-group-addon units-button" (click)="onClickUnits()">
-                        <div class="input-group-text " >{{ units }}</div>
-                      </div>
-                      
-                    </div>
-              <!-- </div> -->
-              
+              <div class="input-group">
+                <input type="text" class="form-control" formControlName="weight">
+                <div class="input-group-addon units-button" (click)="onClickWeightUnits()">
+                  <div class="input-group-text ">{{ weightUnits }}</div>
+                </div>
+
+              </div>
+
             </div>
           </form>
           <button class="btn btn-success btn-sm">Submit Entry</button>
-      </div>
-    </div>
-    
-  </div>
-  <div class="col-12 col-lg-6">
-    <div class="card">
-      <div class="card-header">Ideal Body Weight</div>
-      <div class="card-body">
-        <div *ngIf="loadingIdealWeight">
-          <i class="fa fa-spinner fa-spin"></i>
-        </div>
-        <div *ngIf="!loadingIdealWeight">
-          <div *ngIf="healthProfiles.length > 0">
-            health profiles
-          </div>
-          <div *ngIf="healthProfiles.length < 1">
-            No health profile has been set up. <br>
-            <button class="btn btn-sm btn-secondary">Create health profile</button>
-          </div>
         </div>
       </div>
+
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="card">
+        <div class="card-header">Ideal Body Weight</div>
+        <div class="card-body">
+          <div *ngIf="loadingIdealWeight">
+            <i class="fa fa-spinner fa-spin"></i>
+          </div>
+          <div *ngIf="!loadingIdealWeight">
+            <div *ngIf="healthProfiles.length > 0">
+              health profiles
+            </div>
+            <div *ngIf="healthProfiles.length < 1">
+              Please enter your height in order to calculate ideal body weight
+              <br>
+              <form [formGroup]="heightForm">
+                <div class="form-row my-1">
+                  <label class="col-form-label">Height <div class="badge badge-dark" (click)="onClickHeightUnits()">{{ heightUnits }}</div></label>
+                  <div class="form-group row" *ngIf="heightUnits=='Imperial'">
+
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <input type="text" class="form-control height-input" formControlName="heightFt" placeholder="0">
+                        <div class="input-group-addon units-button">
+                          <div class="input-group-text ">ft</div>
+                        </div>
+
+                      </div>
+
+                    </div>
+                    <div class="col-sm-5">
+                      <div class="input-group">
+                        <input type="text" class="form-control height-input" formControlName="heightIn" placeholder="0">
+                        <div class="input-group-addon units-button">
+                          <div class="input-group-text ">in</div>
+                        </div>
+
+                      </div>
+
+                    </div>
+                  </div>
+                  <div class="input-group" *ngIf="heightUnits=='Metric'">
+                    <div class="input-group">
+                      <input type="text" class="form-control height-input" formControlName="heightCm" placeholder="0">
+                      <div class="input-group-addon units-button">
+                        <div class="input-group-text ">cm</div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
 </div>

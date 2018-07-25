@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { HealthService } from './../health.service';
 import { GenericDataEntry } from './../../models/generic-data-entry.model';
 import { Component, OnInit } from '@angular/core';
@@ -11,7 +12,7 @@ import { FormGroup, FormControl } from '../../../../node_modules/@angular/forms'
 })
 export class BodyWeightComponent implements OnInit {
 
-  constructor(private healthService: HealthService) { }
+  constructor(private router: Router, private healthService: HealthService) { }
 
 
   loadingIdealWeight: boolean = true;
@@ -20,14 +21,21 @@ export class BodyWeightComponent implements OnInit {
 
   now: moment.Moment;
   poundsToKg: number = 0.453592;
-  units: string = "lbs";
+  weightUnits: string = "lbs";
+  heightUnits: string = 'Imperial';
 
   bodyWeightForm: FormGroup;
+  heightForm: FormGroup;
 
   ngOnInit() {
     this.now = moment();
     this.bodyWeightForm = new FormGroup({
       'weight' : new FormControl(null)
+    });
+    this.heightForm = new FormGroup({
+      'heightIn' : new FormControl(null),
+      'heightFt' : new FormControl(null),
+      'heightCm' : new FormControl(null)
     });
     this.healthService.healthProfiles.subscribe((healthProfiles)=>{
       this.healthProfiles = healthProfiles;
@@ -38,15 +46,27 @@ export class BodyWeightComponent implements OnInit {
 
 
 
-  onClickUnits(){
-    if(this.units === 'lbs'){
-      this.units = 'kg';
+  onClickWeightUnits(){
+    if(this.weightUnits === 'lbs'){
+      this.weightUnits = 'kg';
       this.bodyWeightForm.get('weight').setValue(this.bodyWeightForm.get('weight').value * this.poundsToKg);
     }else{
-      this.units = 'lbs';
+      this.weightUnits = 'lbs';
       this.bodyWeightForm.get('weight').setValue(this.bodyWeightForm.get('weight').value / this.poundsToKg)
       // change input value from kg to lbs equivalent
     }
+  }
+
+  onClickHeightUnits(){
+    if(this.heightUnits === 'Imperial'){
+      this.heightUnits = 'Metric';
+    }else{
+      this.heightUnits = 'Imperial';
+    }
+  }
+
+  onClickBuildProfile(){
+    this.router.navigateByUrl('/healthProfile');
   }
 
 

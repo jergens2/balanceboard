@@ -30,13 +30,15 @@ import { IvyleeWidgetComponent } from './home/widgets/ivylee-widget/ivylee-widge
 import { BodyWeightWidgetComponent } from './home/widgets/body-weight/body-weight-widget.component';
 import { HealthComponent } from './health/health.component';
 import { BodyWeightComponent } from './health/body-weight/body-weight.component';
+import { BuildProfileComponent } from './health/build-profile/build-profile.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'ivyleeCreation', component: IvyleeCreationComponent },
   { path: 'ivyleeManagement', component: IvyleeManageComponent },
-  { path: 'bodyWeight', component: BodyWeightComponent }
+  { path: 'bodyWeight', component: BodyWeightComponent },
+  { path: 'healthProfile', component: BuildProfileComponent }
 ];
 
 @NgModule({
@@ -56,7 +58,8 @@ const appRoutes: Routes = [
     IvyleeWidgetComponent,
     BodyWeightWidgetComponent,
     HealthComponent,
-    BodyWeightComponent
+    BodyWeightComponent,
+    BuildProfileComponent
   ],
   imports: [
     BrowserModule,

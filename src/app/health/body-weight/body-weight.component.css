@@ -1,8 +1,8 @@
 
-.btn:hover{
+.badge:hover, .btn:hover, .units-button:hover{
     cursor: pointer;
 }
 
-.units-button:hover{
-    cursor:pointer;
+.height-input{
+    justify-content: right;
 }
