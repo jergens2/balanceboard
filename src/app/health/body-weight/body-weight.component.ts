@@ -21,6 +21,7 @@ export class BodyWeightComponent implements OnInit {
 
   now: moment.Moment;
   poundsToKg: number = 0.453592;
+  feetToCm: number = 30.48;
   weightUnits: string = "lbs";
   heightUnits: string = 'Imperial';
 
@@ -59,8 +60,20 @@ export class BodyWeightComponent implements OnInit {
 
   onClickHeightUnits(){
     if(this.heightUnits === 'Imperial'){
+      const ft: number = this.heightForm.value.heightFt as number;
+      const inches: number = this.heightForm.value.heightIn as number;
+      const totalFt: number = ft + (inches/12);
+      this.heightForm.get('heightCm').setValue((totalFt*this.feetToCm).toFixed(1));
       this.heightUnits = 'Metric';
     }else{
+      const totalCm: number = this.heightForm.value.heightCm;
+      const totalFt: number = totalCm / this.feetToCm;
+      console.log(totalFt);
+      const ft: number = Math.floor(totalFt);
+      const inches: number = (totalFt - ft)*12;
+      console.log(ft, inches);
+      this.heightForm.get('heightFt').setValue(ft);
+      this.heightForm.get('heightIn').setValue(inches.toFixed(1));
       this.heightUnits = 'Imperial';
     }
   }
