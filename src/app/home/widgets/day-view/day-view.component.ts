@@ -1,7 +1,9 @@
 import { AuthenticationService } from '../../../authentication/authentication.service';
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, AfterViewInit, OnDestroy } from '@angular/core';
 
-import { Observable, Subscription } from 'rxjs';
+import { from, Observable, Subscription, interval, fromEvent } from 'rxjs';
+import { mergeMap, tap, startWith, take, takeUntil } from 'rxjs/operators';
+// import 'rxjs/add/operator/do';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import * as moment from 'moment';
@@ -74,7 +76,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
     
     if(moment().dayOfYear() == this.viewStartTime.dayOfYear()){
       this.nowLine = this.drawNowLine(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
-      this.nowLineSubscription = Observable.interval(60000).subscribe(()=>{
+      this.nowLineSubscription = interval(60000).subscribe(()=>{
         this.nowLine = this.drawNowLine(this.viewBoxWidth, this.viewBoxHeight, this.viewStartTime, this.viewEndTime);
       })
     }
@@ -172,22 +174,23 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   buildMouseEvents() {
     this.pt = this.svgObject.nativeElement.createSVGPoint();
 
-    const down = Observable.fromEvent(this.svgObject.nativeElement, 'mousedown')
-      .do((md: MouseEvent) => {
-        this.initiateEventActivityRect(this.getCursorPt(md));
-        md.preventDefault();
-      });
-    const move = Observable.fromEvent(document, 'mousemove')
-      .do((mm: MouseEvent) => mm.preventDefault());
-    const up = Observable.fromEvent(document, 'mouseup')
-      .do((mu: MouseEvent) => {
-        this.createNewEventModal(this.getCursorPt(mu), this.viewStartTime, this.viewEndTime, this.viewBoxHeight);
-        mu.preventDefault()
-      });
+    const down = fromEvent(this.svgObject.nativeElement, 'mousedown').pipe(tap((md: MouseEvent) => {
+      this.initiateEventActivityRect(this.getCursorPt(md));
+      md.preventDefault();
+    }))
+      ;
+    const move = fromEvent(document, 'mousemove').pipe(tap((mm: MouseEvent) => mm.preventDefault()))
+      
+    const up = fromEvent(document, 'mouseup').pipe(tap((mu: MouseEvent) => {
+      this.createNewEventModal(this.getCursorPt(mu), this.viewStartTime, this.viewEndTime, this.viewBoxHeight);
+      mu.preventDefault()
+    }))
+      
 
-    const drag = down.mergeMap((md: MouseEvent) => {
-      return move.startWith(md).takeUntil(up.take(1));
-    });
+    const drag = from(down).pipe(mergeMap((md: MouseEvent) => {
+      return move.pipe(startWith(md)).pipe(takeUntil(up.pipe(take(1))));
+    }))
+    
 
     this.handle = drag
       .subscribe((md: MouseEvent) => {

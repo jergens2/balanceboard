@@ -14,7 +14,7 @@ export class TimeService {
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) { }
 
-  //serverUrl = "https://www.mashboard.app";
+  // serverUrl = "https://www.mashboard.app";
   serverUrl = "http://localhost:3000";
   now: Moment = moment();
   private activeDate: Moment = moment();
