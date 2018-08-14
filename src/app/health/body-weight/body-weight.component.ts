@@ -20,6 +20,10 @@ export class BodyWeightComponent implements OnInit {
   healthProfiles: GenericDataEntry[];
 
   now: moment.Moment;
+
+  weightInKg: number;
+  heightInM: number;
+
   poundsToKg: number = 0.453592;
   feetToCm: number = 30.48;
   weightUnits: string = "lbs";
@@ -30,6 +34,10 @@ export class BodyWeightComponent implements OnInit {
 
   ngOnInit() {
     this.now = moment();
+
+    this.weightInKg = 0;
+    this.heightInM = 0;
+
     this.bodyWeightForm = new FormGroup({
       'weight' : new FormControl(null)
     });
@@ -41,7 +49,6 @@ export class BodyWeightComponent implements OnInit {
     this.healthService.healthProfiles.subscribe((healthProfiles)=>{
       this.healthProfiles = healthProfiles;
       this.loadingIdealWeight = false;
-      console.log(this.healthProfiles);
     })
   }
 
@@ -60,26 +67,47 @@ export class BodyWeightComponent implements OnInit {
 
   onClickHeightUnits(){
     if(this.heightUnits === 'Imperial'){
-      const ft: number = this.heightForm.value.heightFt as number;
-      const inches: number = this.heightForm.value.heightIn as number;
-      const totalFt: number = ft + (inches/12);
-      this.heightForm.get('heightCm').setValue((totalFt*this.feetToCm).toFixed(1));
+      this.calulateHeightInImperial();
       this.heightUnits = 'Metric';
     }else{
-      const totalCm: number = this.heightForm.value.heightCm;
-      const totalFt: number = totalCm / this.feetToCm;
-      console.log(totalFt);
-      const ft: number = Math.floor(totalFt);
-      const inches: number = (totalFt - ft)*12;
-      console.log(ft, inches);
-      this.heightForm.get('heightFt').setValue(ft);
-      this.heightForm.get('heightIn').setValue(inches.toFixed(1));
+      this.calculateHeightInMetric();
       this.heightUnits = 'Imperial';
     }
   }
 
-  onClickBuildProfile(){
-    this.router.navigateByUrl('/healthProfile');
+  calculateHeight(){
+    if(this.heightUnits === 'Imperial'){
+      this.calulateHeightInImperial();
+    }else{
+      this.calculateHeightInMetric();
+    }
+  }
+
+  calulateHeightInImperial(){
+    const ft: number = this.heightForm.value.heightFt as number;
+    const inches: number = this.heightForm.value.heightIn as number;
+    const totalFt: number = ft + (inches/12);
+    this.heightForm.get('heightCm').setValue((totalFt*this.feetToCm).toFixed(1));
+    this.heightInM = totalFt*this.feetToCm / 100;
+    
+  }
+  calculateHeightInMetric(){
+    const totalCm: number = this.heightForm.value.heightCm;
+    const totalFt: number = totalCm / this.feetToCm;
+    const ft: number = Math.floor(totalFt);
+    const inches: number = (totalFt - ft)*12;
+    this.heightForm.get('heightFt').setValue(ft);
+    this.heightForm.get('heightIn').setValue(inches.toFixed(1));
+    this.heightInM = totalCm / 100;
+    
+  }
+
+  onClickSubmitWeight(){
+
+  }
+  onClickSubmitHeight(){
+    this.calculateHeight();
+    console.log("Height in M:", this.heightInM);
   }
 
 
