@@ -1,11 +1,11 @@
+import { serverUrl } from './../serverurl';
 import { Moment } from 'moment';
 import { Response } from '@angular/http';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { EventActivity } from '../models/event-activity.model';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators'
-// import 'rxjs/Rx';
+import { map } from 'rxjs/operators';
 import * as moment from 'moment';
 import { AuthenticationService } from '../authentication/authentication.service';
 
@@ -14,8 +14,7 @@ export class TimeService {
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) { }
 
-  // serverUrl = "https://www.mashboard.app";
-  serverUrl = "http://localhost:3000";
+  private serverUrl = serverUrl;
   now: Moment = moment();
   private activeDate: Moment = moment();
 

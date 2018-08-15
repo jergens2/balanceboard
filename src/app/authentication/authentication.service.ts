@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthData } from './auth-data.model';
 import { AuthStatus } from './auth-status.model';
+import { serverUrl } from '../serverurl';
 
 @Injectable()
 export class AuthenticationService {
@@ -18,8 +19,7 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient) { }
 
-  // private serverUrl = "https://www.mashboard.app";
-  private serverUrl = "http://localhost:3000";
+  private serverUrl = serverUrl;
 
   get token(): string {
     return this._authStatusSubject.getValue().token;

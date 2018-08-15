@@ -11,13 +11,10 @@ export class HealthService {
 
 
   private _allHealthProfiles: BehaviorSubject<GenericDataEntry[]> = new BehaviorSubject([]);
-  private _currentHealthProfile: BehaviorSubject<GenericDataEntry>;
 
   constructor(private router: Router, private dataService: GenericDataEntryService) { 
     this.dataService.allUserDataEntries.subscribe((dataEntries: GenericDataEntry[])=>{
-      const healthProfiles = this.findHealthProfiles(dataEntries);
-      this._allHealthProfiles.next(healthProfiles);
-      this._currentHealthProfile.next(this.findCurrentHealthProfile(healthProfiles));
+      this._allHealthProfiles.next(this.findHealthProfiles(dataEntries));
     });
   }
 
@@ -25,31 +22,16 @@ export class HealthService {
     return this._allHealthProfiles.asObservable();
   }
 
-  get currentHealthProfile(): Observable<GenericDataEntry>{
-    return this._currentHealthProfile.asObservable();
-  }
+  
 
   private findHealthProfiles(dataEntries: GenericDataEntry[]): GenericDataEntry[] {
     let healthEntries: GenericDataEntry[] = [];
-    for (let healthEntry of dataEntries) {
+    for (let healthEntry of healthEntries) {
       if (healthEntry.dataType === 'HealthProfile') {
         healthEntries.push(healthEntry);
       }
     }
     return healthEntries;
-  }
-
-  private findCurrentHealthProfile(dataEntries: GenericDataEntry[]): GenericDataEntry {
-    let currentHealthEntry: GenericDataEntry;
-    if(dataEntries.length > 0){
-      currentHealthEntry = dataEntries[0];
-      for (let healthEntry of dataEntries) {
-        if((healthEntry.dataObject as HealthProfile).dateSetISO > (currentHealthEntry.dataObject as HealthProfile).dateSetISO){
-          currentHealthEntry = healthEntry;
-        }
-      }
-    }
-    return currentHealthEntry;
   }
 
 }

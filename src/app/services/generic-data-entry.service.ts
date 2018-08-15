@@ -1,3 +1,4 @@
+import { serverUrl } from './../serverurl';
 import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
@@ -6,6 +7,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { AuthStatus } from '../authentication/auth-status.model';
+
 
 @Injectable()
 export class GenericDataEntryService {
@@ -22,10 +24,8 @@ export class GenericDataEntryService {
   }
 
 
-  // serverUrl: string = "https://www.mashboard.app";
-  private serverUrl: string = "http://localhost:3000";
+  private serverUrl: string = serverUrl;
 
-  // private userGenericDataEntries: GenericDataEntry[] = [];
   private _userGenericDataEntriesSubject: BehaviorSubject <GenericDataEntry[]> = new BehaviorSubject<GenericDataEntry[]>([]); 
 
   get allUserDataEntries(): Observable<GenericDataEntry[]>{

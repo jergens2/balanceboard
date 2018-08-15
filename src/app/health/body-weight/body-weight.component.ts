@@ -18,10 +18,8 @@ export class BodyWeightComponent implements OnInit {
   loadingIdealWeight: boolean = true;
 
   healthProfiles: GenericDataEntry[];
-  currentHealthProfile: GenericDataEntry;
 
   now: moment.Moment;
-
 
   weightInKg: number;
   heightInM: number;
@@ -51,9 +49,6 @@ export class BodyWeightComponent implements OnInit {
     this.healthService.healthProfiles.subscribe((healthProfiles)=>{
       this.healthProfiles = healthProfiles;
       this.loadingIdealWeight = false;
-    })
-    this.healthService.currentHealthProfile.subscribe((healthProfile)=>{
-      this.currentHealthProfile = healthProfile;
     })
   }
 
@@ -93,7 +88,7 @@ export class BodyWeightComponent implements OnInit {
     const inches: number = this.heightForm.value.heightIn as number;
     const totalFt: number = ft + (inches/12);
     this.heightForm.get('heightCm').setValue((totalFt*this.feetToCm).toFixed(1));
-    this.heightInM = totalFt*this.feetToCm / 100;
+    this.heightInM = (totalFt*this.feetToCm / 100);
     
   }
   calculateHeightInMetric(){
@@ -112,7 +107,7 @@ export class BodyWeightComponent implements OnInit {
   }
   onClickSubmitHeight(){
     this.calculateHeight();
-    // this.healthService.saveHealthProfile(this.currentHealthProfile);
+    console.log("Height in M:", this.heightInM);
   }
 
 
