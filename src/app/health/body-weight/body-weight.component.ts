@@ -13,6 +13,19 @@ import { FormGroup, FormControl } from '../../../../node_modules/@angular/forms'
 })
 export class BodyWeightComponent implements OnInit {
 
+  /*
+    2018-08-16
+    Some notes on the current design of this component and the data it saves to the DB:
+    
+    as of right now every update to weight or height creates a new HealthProfile object wrapped in a GenericDataEntry, and saves to DB.  
+    On the one hand I want to be able to save a history of health profiles so that they can be reviewed across a dimension of time (e.g. bodyweight over time)
+    On the other hand each of the entries in the DB may make for inefficient use of space and also API calls.  
+    
+    At some point this should be revisited to improve efficiency
+
+  */
+
+
   constructor(private router: Router, private healthService: HealthService) { }
 
 
@@ -22,10 +35,11 @@ export class BodyWeightComponent implements OnInit {
   healthProfiles: GenericDataEntry[];
   currentHealthProfile: HealthProfile;
 
+  private weightInKg: number;
 
   now: moment.Moment;
 
-
+  
   heightFt: number = 0;
   heightIn: number = 0;
 
@@ -38,6 +52,7 @@ export class BodyWeightComponent implements OnInit {
 
   ngOnInit() {
     this.now = moment();
+    this.weightInKg = 0;
 
     this.bodyWeightForm = new FormGroup({
       'weight' : new FormControl(null)
@@ -46,9 +61,7 @@ export class BodyWeightComponent implements OnInit {
     
     this.healthService.currentHealthProfile.subscribe((healthProfile)=>{
       if(healthProfile){
-        console.log("there is a health profile", healthProfile);
         this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
-      }else{
       }
       this.loadingHealthProfile = false;
       this.updateHeight = false;
@@ -62,25 +75,37 @@ export class BodyWeightComponent implements OnInit {
   onClickWeightUnits(){
     if(this.weightUnits === 'lbs'){
       this.weightUnits = 'kg';
+      this.weightInKg = this.bodyWeightForm.get('weight').value * this.poundsToKg;
       this.bodyWeightForm.get('weight').setValue(this.bodyWeightForm.get('weight').value * this.poundsToKg);
     }else{
       this.weightUnits = 'lbs';
+      this.weightInKg = this.bodyWeightForm.get('weight').value;
       this.bodyWeightForm.get('weight').setValue(this.bodyWeightForm.get('weight').value / this.poundsToKg)
-      // change input value from kg to lbs equivalent
     }
   }
 
-
+  calculateWeightInKg(){
+    if(this.weightUnits === 'lbs'){
+      this.weightInKg = this.bodyWeightForm.get('weight').value * this.poundsToKg;
+    }else{
+      this.weightInKg = this.bodyWeightForm.get('weight').value;
+    }
+  }
 
   
 
   onClickSubmitWeight(){
+    this.calculateWeightInKg();
+    if(!this.currentHealthProfile){
+      this.currentHealthProfile = new HealthProfile(this.weightInKg, 0, moment().toISOString());
+    }else{
+      this.currentHealthProfile.dateSetISO = moment().toISOString();
+      this.currentHealthProfile.bodyWeightInKg = this.weightInKg;
+    }
 
-  }
-
-  saveHealthProfile(){
     this.healthService.saveHealthProfile(this.currentHealthProfile);
-  }
+  }  
+
 
 
 }

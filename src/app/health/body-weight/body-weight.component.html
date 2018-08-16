@@ -42,10 +42,8 @@
 
                 </div>
               </div>
-
-
             </div>
-            <button class="btn btn-success btn-sm" (click)="onClickSubmitWeight()">Submit Weight Entry</button>
+            <button class="btn btn-success btn-sm" (click)="onClickSubmitWeight()">Save weight</button>
           </form>
         </div>
       </div>
@@ -67,7 +65,7 @@
 
                 <button *ngIf="!updateHeight" class="btn btn-sm btn-warning" (click)="onClickUpdateHeight()">Update Height</button>
                 <app-height-form *ngIf="updateHeight"></app-height-form>
-                <button *ngIf="updateHeight" class="btn btn-sm btn-warning" (click)="onClickUpdateHeight()">Cancel</button>
+                <button *ngIf="updateHeight" class="btn btn-sm btn-warning mt-2" (click)="onClickUpdateHeight()">Cancel</button>
               </div>
               <div *ngIf="!currentHealthProfile.heightInMeters">
                 Height has not been set. <br>

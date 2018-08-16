@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import { HealthProfile } from './../../health-profile.model';
 import { HealthService } from './../../health.service';
 import { FormGroup, FormControl } from '@angular/forms';
@@ -86,12 +87,11 @@ export class HeightFormComponent implements OnInit {
 
   saveHealthProfile(){
     if(!this.currentHealthProfile){
-      let healthProfile = new HealthProfile();
-      healthProfile.heightInMeters = this.heightInMeters;
-      console.log(this.heightInMeters)
+      const healthProfile = new HealthProfile(0, this.heightInMeters, moment().toISOString());
       this.healthService.saveHealthProfile(healthProfile);
     }else{
       this.currentHealthProfile.heightInMeters = this.heightInMeters;
+      this.currentHealthProfile.dateSetISO = moment().toISOString();
       this.healthService.saveHealthProfile(this.currentHealthProfile);
     }
     
