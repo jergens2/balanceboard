@@ -38,10 +38,11 @@
             <i class="fa fa-spinner fa-spin"></i>
           </div>
           <div *ngIf="!loadingIdealWeight">
-            <div *ngIf="healthProfiles.length > 0">
-              health profiles
+            <div *ngIf="currentHealthProfile">
+              Health Profile exists
             </div>
-            <div *ngIf="healthProfiles.length < 1">
+            <div *ngIf="!currentHealthProfile">
+              Health profile is null
               Enter your height to calculate ideal body weight
               <br>
               <form [formGroup]="heightForm">

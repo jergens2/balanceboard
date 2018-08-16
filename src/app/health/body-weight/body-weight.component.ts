@@ -18,6 +18,7 @@ export class BodyWeightComponent implements OnInit {
   loadingIdealWeight: boolean = true;
 
   healthProfiles: GenericDataEntry[];
+  currentHealthProfile: GenericDataEntry;
 
   now: moment.Moment;
 
@@ -46,8 +47,12 @@ export class BodyWeightComponent implements OnInit {
       'heightFt' : new FormControl(null),
       'heightCm' : new FormControl(null)
     });
-    this.healthService.healthProfiles.subscribe((healthProfiles)=>{
-      this.healthProfiles = healthProfiles;
+    // this.healthService.healthProfiles.subscribe((healthProfiles)=>{
+    //   this.healthProfiles = healthProfiles;
+    //   this.loadingIdealWeight = false;
+    // })
+    this.healthService.currentHealthProfile.subscribe((healthProfile)=>{
+      this.currentHealthProfile = healthProfile;
       this.loadingIdealWeight = false;
     })
   }
@@ -107,7 +112,7 @@ export class BodyWeightComponent implements OnInit {
   }
   onClickSubmitHeight(){
     this.calculateHeight();
-    console.log("Height in M:", this.heightInM);
+    
   }
 
 
