@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import { HealthProfile } from './health-profile.model';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -50,5 +51,10 @@ export class HealthService {
       }
     }
     return currentHealthEntry;
+  }
+
+  saveHealthProfile(healthProfile: HealthProfile){
+    let dataEntry: GenericDataEntry = new GenericDataEntry(null, null, moment().toISOString(), "HealthProfile", healthProfile);
+    this.dataService.saveDataObject(dataEntry);
   }
 }

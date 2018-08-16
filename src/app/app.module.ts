@@ -31,6 +31,7 @@ import { BodyWeightWidgetComponent } from './home/widgets/body-weight/body-weigh
 import { HealthComponent } from './health/health.component';
 import { BodyWeightComponent } from './health/body-weight/body-weight.component';
 import { BuildProfileComponent } from './health/build-profile/build-profile.component';
+import { HeightFormComponent } from './health/body-weight/height-form/height-form.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -59,7 +60,8 @@ const appRoutes: Routes = [
     BodyWeightWidgetComponent,
     HealthComponent,
     BodyWeightComponent,
-    BuildProfileComponent
+    BuildProfileComponent,
+    HeightFormComponent
   ],
   imports: [
     BrowserModule,

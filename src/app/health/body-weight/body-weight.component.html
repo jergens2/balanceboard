@@ -1,6 +1,27 @@
 <div class="container">
-
   <div class="row">
+    <div class="col-12">
+      <div class="card" [ngClass]="{'border-primary':currentHealthProfile}">
+        <div class="card-header ">Health Profile</div>
+        <div class="card-body" *ngIf="loadingHealthProfile">
+          <i class="fa fa-spinner fa-spin"></i>
+        </div>
+        <div class="card-body" *ngIf="!loadingHealthProfile">
+          <div *ngIf="!currentHealthProfile">
+            No health profile has been created.
+          </div>
+          <div *ngIf="currentHealthProfile">
+            <h4>Current Health Profile</h4>
+            Date updated: {{ currentHealthProfile.dateSetISO }}
+            <br> Weight in kg: {{currentHealthProfile.bodyWeightInKg}}
+            <br> Height in meters: {{currentHealthProfile.heightInMeters.toFixed(2)}}
+            <br>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row my-3">
     <div class="col-12 col-lg-6 mb-3">
       <div class="card">
         <div class="card-header">
@@ -30,71 +51,32 @@
       </div>
 
     </div>
+
     <div class="col-12 col-lg-6">
       <div class="card">
-        <div class="card-header">Ideal Body Weight</div>
+        <div class="card-header">Height</div>
         <div class="card-body">
-          <div *ngIf="loadingIdealWeight">
+          <div *ngIf="loadingHealthProfile">
             <i class="fa fa-spinner fa-spin"></i>
           </div>
-          <div *ngIf="!loadingIdealWeight">
+          <div *ngIf="!loadingHealthProfile">
             <div *ngIf="currentHealthProfile">
-              Health Profile exists
+              <div *ngIf="currentHealthProfile.heightInMeters">
+                Height set to {{currentHealthProfile.heightInMeters.toFixed(2)}} meters.
+                <br>
+
+                <button *ngIf="!updateHeight" class="btn btn-sm btn-warning" (click)="onClickUpdateHeight()">Update Height</button>
+                <app-height-form *ngIf="updateHeight"></app-height-form>
+                <button *ngIf="updateHeight" class="btn btn-sm btn-warning" (click)="onClickUpdateHeight()">Cancel</button>
+              </div>
+              <div *ngIf="!currentHealthProfile.heightInMeters">
+                Height has not been set. <br>
+                <app-height-form></app-height-form>
+              </div>
             </div>
             <div *ngIf="!currentHealthProfile">
-              Health profile is null
-              Enter your height to calculate ideal body weight
-              <br>
-              <form [formGroup]="heightForm">
-                <!-- <div class="form-row my-1"> -->
-                <div class="row my-1">
-                  <div class="col-12">
-                    <label class="col-form-label">Height
-                      <div class="badge badge-dark" (click)="onClickHeightUnits()">{{ heightUnits }}</div>
-                    </label>
-
-                  </div>
-                </div>
-                <div class="form-group row my-1" *ngIf="heightUnits=='Imperial'">
-
-                  <div class="col-sm-6">
-                    <div class="input-group">
-                      <input type="number" class="form-control height-input" formControlName="heightFt" placeholder="0">
-                      <div class="input-group-addon">
-                        <div class="input-group-text ">ft</div>
-                      </div>
-
-                    </div>
-
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="input-group">
-                      <input type="number" class="form-control height-input" formControlName="heightIn" placeholder="0">
-                      <div class="input-group-addon">
-                        <div class="input-group-text ">in</div>
-                      </div>
-
-                    </div>
-
-                  </div>
-                </div>
-                <div class="row my-1" *ngIf="heightUnits=='Metric'">
-                  <div class="col-12">
-                    <div class="input-group">
-                      <div class="input-group">
-                        <input type="number" class="form-control height-input" formControlName="heightCm" placeholder="0">
-                        <div class="input-group-addon units-button">
-                          <div class="input-group-text ">cm</div>
-                        </div>
-
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-                <button class="btn btn-success btn-sm" (click)="onClickSubmitHeight()">Save Height</button>
-              </form>
-
+              No profile exists yet. <br>
+              <app-height-form></app-height-form>
             </div>
           </div>
         </div>

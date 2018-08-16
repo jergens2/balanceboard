@@ -6,3 +6,7 @@
 .height-input{
     justify-content: right;
 }
+
+.btn:hover{
+    cursor: pointer;
+}
