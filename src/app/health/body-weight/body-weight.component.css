@@ -10,3 +10,16 @@
 .btn:hover{
     cursor: pointer;
 }
+
+.underweight{
+    color: orange;
+}
+.normalweight{
+    color:limegreen;
+}
+.overweight{
+    color: orange;
+}
+.obese{
+    color: red;
+}

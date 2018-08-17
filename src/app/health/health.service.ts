@@ -64,7 +64,6 @@ export class HealthService {
   }
   updateCurrentHealthProfile(healthProfile: HealthProfile){
     let dataEntry: GenericDataEntry = this._todayHealthProfile.value;
-    console.log("updating...", healthProfile);
     dataEntry.dataObject = healthProfile;
     this.dataService.updateDataEntryDataObject(dataEntry);
   }

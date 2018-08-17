@@ -39,6 +39,9 @@ export class BodyWeightComponent implements OnInit {
   todayBodyWeightEntered: boolean = false;
   heightIsSet: boolean = false;
   canCalculateBMI: boolean = false;
+  calculatedBMI: number;
+  weightClassification: string;
+  bmiStyle: string = "{}";
 
   private weightInKg: number;
 
@@ -65,7 +68,6 @@ export class BodyWeightComponent implements OnInit {
     
     
     this.healthService.todayHealthProfile.subscribe((healthProfile)=>{
-      console.log("subscription in bodyweightcomponent: ", healthProfile)
       if(healthProfile){
         this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
         if(this.currentHealthProfile.bodyWeight){
@@ -76,11 +78,32 @@ export class BodyWeightComponent implements OnInit {
         }
         if(this.todayBodyWeightEntered && this.heightIsSet){
           this.canCalculateBMI = true;
+          this.calculatedBMI = this.calculateBMI(this.currentHealthProfile.bodyWeight.weightInKg, this.currentHealthProfile.heightInMeters);
+          this.weightClassification = this.getWeightClassification(this.calculatedBMI);
         }
       }
       this.loadingHealthProfile = false;
       this.updateHeight = false;
     })
+  }
+
+  private calculateBMI(kg, m):number {
+    return (kg / (m*m));
+  }
+  private getWeightClassification(bmi: number): string{
+    if(bmi < 18.5){
+      this.bmiStyle = "{'color':'orange'}";
+      return "underweight";
+    }else if(bmi < 25){
+      this.bmiStyle = "{'color':'limegreen'}";
+      return "normal weight";
+    }else if(bmi < 30){
+      this.bmiStyle = "{'color':'orange'}";
+      return "overweight";
+    }else{
+      this.bmiStyle = "{'color':'red'}";
+      return "obese";
+    }
   }
 
   onClickUpdateHeight(){
@@ -112,7 +135,6 @@ export class BodyWeightComponent implements OnInit {
   onClickSubmitWeight(){
     this.calculateWeightInKg();
     let bodyWeight = new BodyWeight(this.weightInKg, moment().toISOString());
-    console.log("bodyweight is ", bodyWeight);
     if(!this.currentHealthProfile){
       //if there is no profile, create a new one.
       this.currentHealthProfile = new HealthProfile(bodyWeight, 0, moment().toISOString());
@@ -127,7 +149,6 @@ export class BodyWeightComponent implements OnInit {
   }
 
   onClickUpdateWeight(){
-    console.log(this.currentHealthProfile);
     this.weightUnits = 'kg';
     this.bodyWeightForm.setValue({'weight':this.currentHealthProfile.bodyWeight.weightInKg})
     // this.bodyWeightForm.get('weight').setValue(this.currentHealthProfile.bodyWeight.weightInKg);

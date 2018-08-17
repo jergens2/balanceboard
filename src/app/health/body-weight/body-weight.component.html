@@ -17,6 +17,12 @@
             <span *ngIf="!currentHealthProfile.bodyWeight">Weight in kg: not set</span>
             <br> Height in meters: {{ currentHealthProfile.heightInMeters.toFixed(2) }}
             <br>
+
+            <div *ngIf="canCalculateBMI">
+              <hr>
+              <h3>BMI of {{ calculatedBMI.toFixed(1) }}</h3>
+              At a BMI of {{ calculatedBMI.toFixed(1) }} you are classified as {{ weightClassification }}. <br>
+            </div>
           </div>
         </div>
       </div>
