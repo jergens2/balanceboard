@@ -1,3 +1,4 @@
+import { BodyWeight } from './../body-weight.model';
 import { HealthProfile } from './../health-profile.model';
 import { Router } from '@angular/router';
 import { HealthService } from './../health.service';
@@ -59,7 +60,8 @@ export class BodyWeightComponent implements OnInit {
     });
     
     
-    this.healthService.currentHealthProfile.subscribe((healthProfile)=>{
+    this.healthService.todayHealthProfile.subscribe((healthProfile)=>{
+      console.log("subscription in bodyweightcomponent: ", healthProfile)
       if(healthProfile){
         this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
       }
@@ -96,14 +98,19 @@ export class BodyWeightComponent implements OnInit {
 
   onClickSubmitWeight(){
     this.calculateWeightInKg();
+    let bodyWeight = new BodyWeight(this.weightInKg, moment().toISOString());
+    console.log("bodyweight is ", bodyWeight);
     if(!this.currentHealthProfile){
-      this.currentHealthProfile = new HealthProfile(this.weightInKg, 0, moment().toISOString());
+      //if there is no profile, create a new one.
+      this.currentHealthProfile = new HealthProfile(bodyWeight, 0, moment().toISOString());
+      this.healthService.saveHealthProfile(this.currentHealthProfile);
     }else{
       this.currentHealthProfile.dateSetISO = moment().toISOString();
-      this.currentHealthProfile.bodyWeightInKg = this.weightInKg;
+      this.currentHealthProfile.bodyWeight = bodyWeight;
+      this.healthService.updateCurrentHealthProfile(this.currentHealthProfile);
     }
 
-    this.healthService.saveHealthProfile(this.currentHealthProfile);
+    
   }  
 
 

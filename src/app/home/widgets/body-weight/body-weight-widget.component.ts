@@ -22,7 +22,7 @@ export class BodyWeightWidgetComponent implements OnInit {
       this.healthProfiles = healthProfiles;
       this.tableData = this.healthProfiles.map((healthProfile)=>{
         let profile: HealthProfile = healthProfile.dataObject as HealthProfile;
-        return {weightInKg: profile.bodyWeightInKg, heightInM: profile.heightInMeters, date: moment(profile.dateSetISO).format('YYYY-MM-DD')};
+        return {weightInKg: profile.bodyWeight.weightInKg, heightInM: profile.heightInMeters, date: moment(profile.dateSetISO).format('YYYY-MM-DD')};
       })
     })
   }

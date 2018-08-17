@@ -13,8 +13,8 @@
           <div *ngIf="currentHealthProfile">
             <h4>Current Health Profile</h4>
             Date updated: {{ currentHealthProfile.dateSetISO }}
-            <br> Weight in kg: {{currentHealthProfile.bodyWeightInKg}}
-            <br> Height in meters: {{currentHealthProfile.heightInMeters.toFixed(2)}}
+            <br> Weight in kg: {{ currentHealthProfile.bodyWeight.weightInKg }}
+            <br> Height in meters: {{ currentHealthProfile.heightInMeters.toFixed(2) }}
             <br>
           </div>
         </div>
@@ -23,7 +23,7 @@
   </div>
   <div class="row my-3">
     <div class="col-12 col-lg-6 mb-3">
-      <div class="card">
+      <div class="card" >
         <div class="card-header">
           Body Weight Entry
         </div>

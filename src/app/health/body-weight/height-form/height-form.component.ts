@@ -32,7 +32,7 @@ export class HeightFormComponent implements OnInit {
       'heightCm' : new FormControl(null)
     });
 
-    this.healthService.currentHealthProfile.subscribe((healthProfile)=>{
+    this.healthService.todayHealthProfile.subscribe((healthProfile)=>{
       if(healthProfile){
         this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
         this.heightInMeters = this.currentHealthProfile.heightInMeters;
@@ -87,7 +87,7 @@ export class HeightFormComponent implements OnInit {
 
   saveHealthProfile(){
     if(!this.currentHealthProfile){
-      const healthProfile = new HealthProfile(0, this.heightInMeters, moment().toISOString());
+      const healthProfile = new HealthProfile(null, this.heightInMeters, moment().toISOString());
       this.healthService.saveHealthProfile(healthProfile);
     }else{
       this.currentHealthProfile.heightInMeters = this.heightInMeters;
