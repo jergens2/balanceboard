@@ -20,8 +20,8 @@
 
             <div *ngIf="canCalculateBMI">
               <hr>
-              <h3>BMI of {{ calculatedBMI.toFixed(1) }}</h3>
-              At a BMI of {{ calculatedBMI.toFixed(1) }} you are classified as {{ weightClassification }}. <br>
+              <h5>BMI of {{ calculatedBMI.toFixed(1) }}</h5>
+              A BMI of {{ calculatedBMI.toFixed(1) }} is classified as {{ weightClassification }}. <br>
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@
         </div>
         <div class="card-body" *ngIf="todayBodyWeightEntered">
           Weight has been entered in today.  <i class="fa fa-check" style="font-size:3em;color:limegreen"></i>
-          <button class="btn btn-success btn-sm" (click)="onClickUpdateWeight()">Re-enter today's weight entry</button>
+          <button class="btn btn-warning btn-sm" (click)="onClickUpdateWeight()">Re-enter today's weight entry</button>
         </div>
       </div>
     </div>

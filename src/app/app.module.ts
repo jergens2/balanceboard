@@ -32,6 +32,9 @@ import { HealthComponent } from './health/health.component';
 import { BodyWeightComponent } from './health/body-weight/body-weight.component';
 import { BuildProfileComponent } from './health/build-profile/build-profile.component';
 import { HeightFormComponent } from './health/body-weight/height-form/height-form.component';
+import { FinanceComponent } from './finance/finance.component';
+import { BudgetComponent } from './finance/budget/budget.component';
+import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -61,7 +64,10 @@ const appRoutes: Routes = [
     HealthComponent,
     BodyWeightComponent,
     BuildProfileComponent,
-    HeightFormComponent
+    HeightFormComponent,
+    FinanceComponent,
+    BudgetComponent,
+    NetWorthComponent
   ],
   imports: [
     BrowserModule,
