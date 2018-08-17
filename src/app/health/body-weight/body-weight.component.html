@@ -13,7 +13,8 @@
           <div *ngIf="currentHealthProfile">
             <h4>Current Health Profile</h4>
             Date updated: {{ currentHealthProfile.dateSetISO }}
-            <br> Weight in kg: {{ currentHealthProfile.bodyWeight.weightInKg }}
+            <br> <span *ngIf="currentHealthProfile.bodyWeight">Weight in kg: {{ currentHealthProfile.bodyWeight.weightInKg }}</span>
+            <span *ngIf="!currentHealthProfile.bodyWeight">Weight in kg: not set</span>
             <br> Height in meters: {{ currentHealthProfile.heightInMeters.toFixed(2) }}
             <br>
           </div>
@@ -23,11 +24,11 @@
   </div>
   <div class="row my-3">
     <div class="col-12 col-lg-6 mb-3">
-      <div class="card" >
+      <div class="card" [ngClass]="{'border-success':todayBodyWeightEntered}">
         <div class="card-header">
           Body Weight Entry
         </div>
-        <div class="card-body">
+        <div class="card-body" *ngIf="!todayBodyWeightEntered">
           Entry date: {{ now.format('YYYY-MM-DD')}}
           <br>
           <div class="badge badge-dark" (click)="onClickWeightUnits()">{{ weightUnits }}</div>
@@ -46,12 +47,15 @@
             <button class="btn btn-success btn-sm" (click)="onClickSubmitWeight()">Save weight</button>
           </form>
         </div>
+        <div class="card-body" *ngIf="todayBodyWeightEntered">
+          Weight has been entered in today.  <i class="fa fa-check" style="font-size:3em;color:limegreen"></i>
+          <button class="btn btn-success btn-sm" (click)="onClickUpdateWeight()">Re-enter today's weight entry</button>
+        </div>
       </div>
-
     </div>
 
     <div class="col-12 col-lg-6">
-      <div class="card">
+      <div class="card" [ngClass]="{'border-success':heightIsSet}">
         <div class="card-header">Height</div>
         <div class="card-body">
           <div *ngIf="loadingHealthProfile">

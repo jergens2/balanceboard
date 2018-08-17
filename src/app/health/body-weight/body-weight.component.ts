@@ -36,6 +36,10 @@ export class BodyWeightComponent implements OnInit {
   healthProfiles: GenericDataEntry[];
   currentHealthProfile: HealthProfile;
 
+  todayBodyWeightEntered: boolean = false;
+  heightIsSet: boolean = false;
+  canCalculateBMI: boolean = false;
+
   private weightInKg: number;
 
   now: moment.Moment;
@@ -64,6 +68,15 @@ export class BodyWeightComponent implements OnInit {
       console.log("subscription in bodyweightcomponent: ", healthProfile)
       if(healthProfile){
         this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
+        if(this.currentHealthProfile.bodyWeight){
+          this.todayBodyWeightEntered = true;
+        }
+        if(this.currentHealthProfile.heightInMeters){
+          this.heightIsSet = true;
+        }
+        if(this.todayBodyWeightEntered && this.heightIsSet){
+          this.canCalculateBMI = true;
+        }
       }
       this.loadingHealthProfile = false;
       this.updateHeight = false;
@@ -111,7 +124,15 @@ export class BodyWeightComponent implements OnInit {
     }
 
     
-  }  
+  }
+
+  onClickUpdateWeight(){
+    console.log(this.currentHealthProfile);
+    this.weightUnits = 'kg';
+    this.bodyWeightForm.setValue({'weight':this.currentHealthProfile.bodyWeight.weightInKg})
+    // this.bodyWeightForm.get('weight').setValue(this.currentHealthProfile.bodyWeight.weightInKg);
+    this.todayBodyWeightEntered = !this.todayBodyWeightEntered;
+  }
 
 
 

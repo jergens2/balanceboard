@@ -92,7 +92,7 @@ export class HeightFormComponent implements OnInit {
     }else{
       this.currentHealthProfile.heightInMeters = this.heightInMeters;
       this.currentHealthProfile.dateSetISO = moment().toISOString();
-      this.healthService.saveHealthProfile(this.currentHealthProfile);
+      this.healthService.updateCurrentHealthProfile(this.currentHealthProfile);
     }
     
   }
