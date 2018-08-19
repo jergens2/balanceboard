@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { GenericDataEntry } from '../../models/generic-data-entry.model';
+import { FinanceService } from '../finance.service';
+import { FinanceProfile } from '../finance-profile.model';
 
 @Component({
   selector: 'app-net-worth',
@@ -7,9 +10,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NetWorthComponent implements OnInit {
 
-  constructor() { }
+
+  financeEntry: GenericDataEntry;
+  financeProfile: FinanceProfile;
+
+  constructor(private financeService: FinanceService) { }
 
   ngOnInit() {
+    this.financeService.financeProfile.subscribe((financeEntry: GenericDataEntry)=>{
+      if(financeEntry){
+        this.financeEntry = financeEntry;
+        this.financeProfile = this.financeEntry.dataObject as FinanceProfile;  
+      }}
+    )
   }
 
 }

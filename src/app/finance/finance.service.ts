@@ -14,7 +14,6 @@ export class FinanceService {
 
   constructor(private dataService: GenericDataEntryService) { 
     this.dataService.allUserDataEntries.subscribe((dataEntries)=>{
-      console.log("finance service dataEntries: ", dataEntries)
       const financeProfile = this.findFinanceProfile(dataEntries);
       if(financeProfile){
         this._financeProfile.next(financeProfile);
@@ -28,15 +27,12 @@ export class FinanceService {
 
 
   private findFinanceProfile(dataEntries: GenericDataEntry[]): GenericDataEntry{
-    console.log(dataEntries)
     for(let dataEntry of dataEntries){
-      if(dataEntry.dataType = "FinanceProfile"){
-        console.log(dataEntry)
+      if(dataEntry.dataType === "FinanceProfile"){
         return dataEntry;
       }
     }
     return null;
   }
 }
-
 

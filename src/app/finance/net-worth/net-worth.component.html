@@ -1,3 +1,17 @@
-<p>
-  net-worth works!
-</p>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card" [ngClass]="{'border-primary': financeProfile}">
+        <div class="card-header">Net Worth Profile</div>
+        <div class="card-body">
+          <div *ngIf="financeProfile">
+            Finance Profile Information
+          </div>
+          <div *ngIf="!financeProfile">
+            No finance profile has been created
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
