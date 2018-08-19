@@ -5,6 +5,7 @@ import { FinanceProfile } from '../finance-profile.model';
 import { NetWorthProfile } from './net-worth-profile.model';
 import { NetWorthAsset } from './net-worth-asset.model';
 import { NetWorthLiability } from './net-worth-liability.model';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-net-worth',
@@ -23,6 +24,9 @@ export class NetWorthComponent implements OnInit {
   addAsset: boolean = false;
   addLiability: boolean = false;
 
+  addAssetForm: FormGroup;
+  addLiabilityForm: FormGroup;
+
   constructor(private financeService: FinanceService) { }
 
   ngOnInit() {
@@ -37,6 +41,24 @@ export class NetWorthComponent implements OnInit {
         }
       }}
     )
+    this.addAssetForm = new FormGroup({
+      'title' : new FormControl(null),
+      'description': new FormControl(null),
+      'dollarValue': new FormControl(null),
+      'quantity': new FormControl(null),
+      'type': new FormControl(null),
+    });
+    this.addLiabilityForm = new FormGroup({
+
+    });
+  }
+
+  onClickSaveAsset(){
+
+  }
+
+  onClickSaveLiability(){
+    
   }
 
   onClickAddAsset(){
