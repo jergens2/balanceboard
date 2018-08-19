@@ -1,4 +1,4 @@
-import { GenericDataType } from "./generic-data-type.mode";
+import { GenericDataType } from "./generic-data-type.model";
 
 export class GenericDataEntry{
     public id: string;
@@ -21,15 +21,4 @@ export class GenericDataEntry{
         this.dataObject = dataObject;
     }
 
-    /*
-
-        At some point the dataType should be an enum instead of a string?  At this time it is a string, 
-        expected dataType strings:
-    
-        -    IvyLeeTaskList
-        -    HealthProfile
-        
-
-
-    */
 }

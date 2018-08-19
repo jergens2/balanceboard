@@ -14,4 +14,41 @@
       </div>
     </div>
   </div>
+  <div class="row my-3">
+    <div class="col-12 col-md-6">
+      <div class="card">
+        <div class="card-header">
+          Assets
+        </div>
+        <div class="card-body">
+          <div *ngIf="!assets">
+            No assets
+          </div>
+          <button *ngIf="!addAsset" class="btn btn-sm btn-warning mt-3" (click)="onClickAddAsset()">Add asset</button>
+          <div *ngIf="addAsset" class="mt-3">
+            Add asset form
+            <button class="btn btn-sm btn-warning mt-3" (click)="onClickAddAsset()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class="card">
+        <div class="card-header">
+          Liabilities
+        </div>
+        <div class="card-body">
+          <div *ngIf="!liabilities">
+            No liabilities
+          </div>
+          <button *ngIf="!addLiability" class="btn btn-sm btn-warning mt-3" (click)="onClickAddLiability()">Add liability</button>
+          <div *ngIf="addLiability" class="mt-3">
+            Add liability form
+            
+          <button class="btn btn-sm btn-warning mt-3" (click)="onClickAddLiability()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -7,7 +7,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { AuthStatus } from '../authentication/auth-status.model';
-import { GenericDataType } from './generic-data-type.mode';
+import { GenericDataType } from './generic-data-type.model';
 
 
 @Injectable()

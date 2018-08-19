@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { GenericDataEntryService } from '../generic-data/generic-data-entry.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { GenericDataEntry } from '../generic-data/generic-data-entry.model';
-import { GenericDataType } from '../generic-data/generic-data-type.mode';
+import { GenericDataType } from '../generic-data/generic-data-type.model';
 
 @Injectable()
 export class HealthService {
