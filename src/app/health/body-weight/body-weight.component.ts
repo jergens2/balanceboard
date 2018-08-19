@@ -1,11 +1,11 @@
-import { BodyWeight } from './../body-weight.model';
-import { HealthProfile } from './../health-profile.model';
+import { BodyWeight } from '../body-weight.model';
+import { HealthProfile } from '../health-profile.model';
 import { Router } from '@angular/router';
-import { HealthService } from './../health.service';
-import { GenericDataEntry } from './../../models/generic-data-entry.model';
+import { HealthService } from '../health.service';
+import { GenericDataEntry } from '../../models/generic-data-entry.model';
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { FormGroup, FormControl } from '../../../../node_modules/@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-body-weight',

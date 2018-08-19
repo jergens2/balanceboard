@@ -1,4 +1,4 @@
-import { serverUrl } from './../serverurl';
+import { serverUrl } from '../serverurl';
 import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';

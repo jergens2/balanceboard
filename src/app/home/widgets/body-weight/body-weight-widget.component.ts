@@ -1,7 +1,7 @@
-import { HealthProfile } from './../../../health/health-profile.model';
+import { HealthProfile } from '../../../health/health-profile.model';
 import * as moment from 'moment';
-import { GenericDataEntry } from './../../../models/generic-data-entry.model';
-import { HealthService } from './../../../health/health.service';
+import { GenericDataEntry } from '../../../models/generic-data-entry.model';
+import { HealthService } from '../../../health/health.service';
 import { Component, OnInit } from '@angular/core';
 
 

@@ -1,4 +1,4 @@
-import { serverUrl } from './../serverurl';
+import { serverUrl } from '../serverurl';
 import { Moment } from 'moment';
 import { Response } from '@angular/http';
 import { HttpClient, HttpHeaders } from '@angular/common/http';

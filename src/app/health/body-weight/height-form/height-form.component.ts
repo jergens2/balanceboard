@@ -1,6 +1,6 @@
 import * as moment from 'moment';
-import { HealthProfile } from './../../health-profile.model';
-import { HealthService } from './../../health.service';
+import { HealthProfile } from '../../health-profile.model';
+import { HealthService } from '../../health.service';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 

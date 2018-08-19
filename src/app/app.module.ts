@@ -35,6 +35,7 @@ import { HeightFormComponent } from './health/body-weight/height-form/height-for
 import { FinanceComponent } from './finance/finance.component';
 import { BudgetComponent } from './finance/budget/budget.component';
 import { NetWorthComponent } from './finance/net-worth/net-worth.component';
+import { FinanceService } from './finance/finance.service';
 
 const appRoutes: Routes = [
   { path: '', component: HomeComponent },
@@ -42,7 +43,8 @@ const appRoutes: Routes = [
   { path: 'ivyleeCreation', component: IvyleeCreationComponent },
   { path: 'ivyleeManagement', component: IvyleeManageComponent },
   { path: 'bodyWeight', component: BodyWeightComponent },
-  { path: 'healthProfile', component: BuildProfileComponent }
+  { path: 'healthProfile', component: BuildProfileComponent },
+  { path: 'networth', component: NetWorthComponent }
 ];
 
 @NgModule({
@@ -84,6 +86,7 @@ const appRoutes: Routes = [
     TaskService,
     GenericDataEntryService,
     HealthService,
+    FinanceService,
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ],
   bootstrap: [AppComponent],
