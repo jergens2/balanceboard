@@ -6,8 +6,7 @@ export class FinanceProfile{
     public budget: boolean;
     public dateUpdatedISO: string;
 
-    constructor(dateUpdated: string, netWorthProfile: NetWorthProfile){
-        this.netWorthProfile = netWorthProfile;
+    constructor(dateUpdated: string){
         this.dateUpdatedISO = dateUpdated;
     }
 }

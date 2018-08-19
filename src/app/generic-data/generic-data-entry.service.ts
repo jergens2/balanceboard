@@ -44,7 +44,7 @@ export class GenericDataEntryService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, dataObject, httpOptions)
     .pipe(map((response) => {
-      return new GenericDataEntry(response.data._id, response.data.userId, response.data.createdTimeISO, this.getDataType(response.data.dataType), response.data.dataObject);
+      return new GenericDataEntry(response.data._id, response.data.userId, response.data.dateUpdatedISO, this.getDataType(response.data.dataType), response.data.dataObject);
     }))
     .subscribe((receivedDataEntry: GenericDataEntry)=>{
       let dataEntries = this._userGenericDataEntriesSubject.getValue();
@@ -64,7 +64,7 @@ export class GenericDataEntryService {
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe(map((response) => {
         return response.data.map((dataObject) => {
-          return new GenericDataEntry(dataObject._id, dataObject.userId, dataObject.createdTimeISO, this.getDataType(dataObject.dataType), dataObject.dataObject);
+          return new GenericDataEntry(dataObject._id, dataObject.userId, dataObject.dateUpdatedISO, this.getDataType(dataObject.dataType), dataObject.dataObject);
         })
       }))
       .subscribe((dataEntries: GenericDataEntry[])=>{
@@ -83,7 +83,7 @@ export class GenericDataEntryService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, dataEntry, httpOptions)
       .pipe(map((response) => {
-        return new GenericDataEntry(response.data._id, response.data.userId, response.data.createdTimeISO, this.getDataType(response.data.dataType), response.data.dataObject);
+        return new GenericDataEntry(response.data._id, response.data.userId, response.data.dateUpdatedISO, this.getDataType(response.data.dataType), response.data.dataObject);
       }))
     .subscribe((receivedDataEntry: GenericDataEntry)=>{
       let dataEntries = this._userGenericDataEntriesSubject.getValue();

@@ -1,14 +1,27 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <div class="card" [ngClass]="{'border-primary': financeProfile}">
+      <div class="card" [ngClass]="{'border-primary': netWorthProfile}">
         <div class="card-header">Net Worth Profile</div>
         <div class="card-body">
-          <div *ngIf="financeProfile">
-            Finance Profile Information
+          <div *ngIf="netWorthProfile">
+            Net worth data:
+            <h4>Assets</h4>
+            <table class="table">
+              <tr>
+                <td>Title</td>
+                <td>Value</td>
+                <td>Type</td>
+              </tr>
+              <tr *ngFor="let asset of netWorthProfile.assets">
+                <td>{{ asset.title }}</td>
+                <td>$ {{ asset.value.toFixed(0) }}</td>
+                <td>{{ asset.type }}</td>
+              </tr>
+            </table>
           </div>
-          <div *ngIf="!financeProfile">
-            No finance profile has been created
+          <div *ngIf="!netWorthProfile">
+            No net worth profile has been created
           </div>
         </div>
       </div>
@@ -43,28 +56,27 @@
                 </div>
               </div>
               <div class="form-group row">
-                <label class="col-3 col-form-label" for="dollarValue">Dollar Value</label>
+                <label class="col-3 col-form-label" for="value">Value</label>
                 <div class="col-9">
-                  <input class="form-control" formControlName="dollarValue" type="number" placeholder="0">
+                  <input class="form-control" formControlName="value" type="number" placeholder="0">
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-3 col-form-label" for="quantity">Quantity</label>
                 <div class="col-9">
-                  <input class="form-control" formControlName="quantity" type="number" placeholder="1">
+                  <input class="form-control" formControlName="quantity" type="number">
                 </div>
               </div>
               <div class="form-group row">
                 <label class="col-3 col-form-label" for="type">Type</label>
                 <div class="col-9">
-
-                    <select class="custom-select form-control">
-                      <option selected>Money / currency</option>
-                      <option value="1">Real estate</option>
-                      <option value="2">Security (stocks, bonds, etc.)</option>
-                      <option value="3">Vehicle (car, truck, etc.)</option>
-                      <option value="5">other...</option>
-                    </select>
+                  <select class="custom-select form-control">
+                    <option value="currency" selected>Money / currency</option>
+                    <option value="realestate">Real estate</option>
+                    <option value="security">Security (stocks, bonds, etc.)</option>
+                    <option value="vehicle">Vehicle (car, truck, etc.)</option>
+                    <option value="other">other...</option>
+                  </select>
                 </div>
               </div>
             </form>
