@@ -1,5 +1,5 @@
 import { HealthService } from './health/health.service';
-import { GenericDataEntryService } from './services/generic-data-entry.service';
+import { GenericDataEntryService } from './generic-data/generic-data-entry.service';
 import { AuthInterceptor } from './authentication/auth-interceptor';
 import { AuthenticationService } from './authentication/authentication.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';

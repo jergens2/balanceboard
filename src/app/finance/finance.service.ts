@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { GenericDataEntry } from '../models/generic-data-entry.model';
-import { GenericDataEntryService } from '../services/generic-data-entry.service';
+import { GenericDataEntry } from '../generic-data/generic-data-entry.model';
+import { GenericDataEntryService } from '../generic-data/generic-data-entry.service';
 
 @Injectable({
   providedIn: 'root'

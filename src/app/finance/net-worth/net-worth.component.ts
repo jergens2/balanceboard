@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GenericDataEntry } from '../../models/generic-data-entry.model';
+import { GenericDataEntry } from '../../generic-data/generic-data-entry.model';
 import { FinanceService } from '../finance.service';
 import { FinanceProfile } from '../finance-profile.model';
 

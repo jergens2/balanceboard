@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { GenericDataEntry } from '../models/generic-data-entry.model';
+import { GenericDataEntry } from '../generic-data/generic-data-entry.model';
 import { User } from '../models/user.model';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { Subscription } from 'rxjs/Subscription';
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { TaskService } from '../services/task.service';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
 import { IvyLeeTask } from '../productivity/ivylee/ivyleeTask.model';
-import { GenericDataEntryService } from '../services/generic-data-entry.service';
+import { GenericDataEntryService } from '../generic-data/generic-data-entry.service';
 
 @Component({
   selector: 'app-home',

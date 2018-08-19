@@ -2,9 +2,10 @@ import * as moment from 'moment';
 import { HealthProfile } from './health-profile.model';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { GenericDataEntryService } from '../services/generic-data-entry.service';
+import { GenericDataEntryService } from '../generic-data/generic-data-entry.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { GenericDataEntry } from '../models/generic-data-entry.model';
+import { GenericDataEntry } from '../generic-data/generic-data-entry.model';
+import { GenericDataType } from '../generic-data/generic-data-type.mode';
 
 @Injectable()
 export class HealthService {
@@ -59,7 +60,7 @@ export class HealthService {
   }
 
   saveHealthProfile(healthProfile: HealthProfile){
-    let dataEntry: GenericDataEntry = new GenericDataEntry(null, null, moment().toISOString(), "HealthProfile", healthProfile);
+    let dataEntry: GenericDataEntry = new GenericDataEntry(null, null, moment().toISOString(), GenericDataType.HealthProfile, healthProfile);
     this.dataService.saveDataObject(dataEntry);
   }
   updateCurrentHealthProfile(healthProfile: HealthProfile){

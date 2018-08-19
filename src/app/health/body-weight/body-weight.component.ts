@@ -2,7 +2,7 @@ import { BodyWeight } from '../body-weight.model';
 import { HealthProfile } from '../health-profile.model';
 import { Router } from '@angular/router';
 import { HealthService } from '../health.service';
-import { GenericDataEntry } from '../../models/generic-data-entry.model';
+import { GenericDataEntry } from '../../generic-data/generic-data-entry.model';
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { FormGroup, FormControl } from '@angular/forms';

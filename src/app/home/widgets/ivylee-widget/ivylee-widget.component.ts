@@ -4,7 +4,7 @@ import { TaskService } from '../../../services/task.service';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
 import { IvyLeeTask } from '../../../productivity/ivylee/ivyleeTask.model';
-import { GenericDataEntry } from '../../../models/generic-data-entry.model';
+import { GenericDataEntry } from '../../../generic-data/generic-data-entry.model';
 import { IvyLeeTaskList } from '../../../productivity/ivylee/ivyleeTaskList.model';
 
 @Component({

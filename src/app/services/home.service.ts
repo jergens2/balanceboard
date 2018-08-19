@@ -1,6 +1,6 @@
-import { GenericDataEntry } from '../models/generic-data-entry.model';
+import { GenericDataEntry } from '../generic-data/generic-data-entry.model';
 import { User } from '../models/user.model';
-import { GenericDataEntryService } from './generic-data-entry.service';
+import { GenericDataEntryService } from '../generic-data/generic-data-entry.service';
 import { Subject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 
