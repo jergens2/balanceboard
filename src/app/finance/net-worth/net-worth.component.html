@@ -5,20 +5,22 @@
         <div class="card-header">Net Worth Profile</div>
         <div class="card-body">
           <div *ngIf="netWorthProfile">
-            Net worth data:
-            <h4>Assets</h4>
+            <h6>Assets</h6>
             <table class="table">
               <tr>
                 <td>Title</td>
                 <td>Value</td>
                 <td>Type</td>
               </tr>
-              <tr *ngFor="let asset of netWorthProfile.assets">
-                <td>{{ asset.title }}</td>
-                <td>$ {{ asset.value.toFixed(0) }}</td>
-                <td>{{ asset.type }}</td>
+              <tr *ngFor="let asset of netWorthProfile.assets" >
+                <td class="p-1">{{ asset.title }}</td>
+                <td class="p-1">$ {{ asset.value.toFixed(0) }}</td>
+                <td class="p-1">{{ asset.type }}</td>
               </tr>
+
             </table>
+            <hr>
+            <h5>Calculated Net Worth: {{ calculatedNetWorth }} </h5>
           </div>
           <div *ngIf="!netWorthProfile">
             No net worth profile has been created
@@ -28,19 +30,19 @@
     </div>
   </div>
   <div class="row my-3">
-    <div class="col-12 col-md-6">
-      <div class="card">
+    <div class="col-12">
+      <div class="card" [ngClass]="{'border-warning': addAsset}">
         <div class="card-header">
-          Assets
+          Assets & Liabilities
         </div>
         <div class="card-body">
           <div *ngIf="!assets">
-            No assets
+            No assets or liabilities have been entered
           </div>
-          <button *ngIf="!addAsset" class="btn btn-sm btn-warning mt-3" (click)="onClickAddAsset()">Add asset</button>
-          <div *ngIf="addAsset" class="mt-3">
-            <hr>
-            <h4 class="mb-3">Add an asset</h4>
+          <button *ngIf="!addAsset" class="btn btn-sm btn-warning mx-3" (click)="onClickAddAsset('asset')">Add an asset</button>
+          <button *ngIf="!addAsset" class="btn btn-sm btn-warning" (click)="onClickAddAsset('liability')">Add a liability</button>
+          <div *ngIf="addAsset">
+            <h4 class="mt-0">Add an asset</h4>
             <form [formGroup]="addAssetForm">
               <div class="form-group row">
                 <label class="col-3 col-form-label" for="title">Title</label>
@@ -86,23 +88,6 @@
         </div>
       </div>
     </div>
-    <div class="col-12 col-md-6">
-      <div class="card">
-        <div class="card-header">
-          Liabilities
-        </div>
-        <div class="card-body">
-          <div *ngIf="!liabilities">
-            No liabilities
-          </div>
-          <button *ngIf="!addLiability" class="btn btn-sm btn-warning mt-3" (click)="onClickAddLiability()">Add liability</button>
-          <div *ngIf="addLiability" class="mt-3">
-            Add liability form
 
-            <button class="btn btn-sm btn-warning mt-3" (click)="onClickAddLiability()">Cancel</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>

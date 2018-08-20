@@ -1,12 +1,12 @@
 
-
-export class NetWorthLiability{
+export class NetWorthItem{
 
     dateUpdatedISO: string;
-    name: string;
+    title: string;
     description: string;
-    dollarValue: number;
+    value: number;
     quantity: number;
+    type: string;
     
     constructor(dateUpdated: string){
         this.dateUpdatedISO = dateUpdated;

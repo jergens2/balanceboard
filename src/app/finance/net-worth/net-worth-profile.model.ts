@@ -1,14 +1,11 @@
-import { NetWorthAsset } from "./net-worth-asset.model";
-import { NetWorthLiability } from "./net-worth-liability.model";
+import { NetWorthItem } from "./net-worth-item.model";
 
 
 export class NetWorthProfile{
 
     public dateUpdatedISO: string;
-    public assets: NetWorthAsset[];
-    public liabilities: NetWorthLiability[];
-
-
+    public assets: NetWorthItem[];
+    public liabilities: NetWorthItem[];
 
     constructor(dateUpdated: string){
         this.dateUpdatedISO = dateUpdated;
