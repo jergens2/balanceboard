@@ -15,7 +15,7 @@ import { EventRect } from './event-rect.model';
 import { EventActivity } from '../../../models/event-activity.model';
 
 import { EventFormComponent } from './event-form/event-form.component';
-import { HomeService } from '../../../services/home.service';
+import { HomeService } from '../../home.service';
 
 
 @Component({

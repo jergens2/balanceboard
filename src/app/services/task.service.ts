@@ -13,6 +13,7 @@ export class TaskService {
 
 
   constructor(private router: Router, private dataService: GenericDataEntryService) {
+    console.log("Task service constructor has been called");
     this.dataService.allUserDataEntries.subscribe((dataEntries: GenericDataEntry[]) => {
       this._allIvyLeeTaskLists.next(this.findIvyLeeTaskLists(dataEntries));
       // console.log(this._allIvyLeeTaskLists.getValue());

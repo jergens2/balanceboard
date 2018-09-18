@@ -17,7 +17,9 @@ export class AuthenticationService {
     return this._authStatusSubject.asObservable();
   }
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    console.log("Authentication service constructor has been called");
+  }
 
   private serverUrl = serverUrl;
 

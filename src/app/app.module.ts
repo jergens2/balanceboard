@@ -3,7 +3,7 @@ import { GenericDataEntryService } from './generic-data/generic-data-entry.servi
 import { AuthInterceptor } from './authentication/auth-interceptor';
 import { AuthenticationService } from './authentication/authentication.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { HomeService } from './services/home.service';
+import { HomeService } from './home/home.service';
 import { TimeService } from './services/time.service';
 
 import { BrowserModule } from '@angular/platform-browser';
@@ -81,12 +81,12 @@ const appRoutes: Routes = [
   providers: [ 
 
     AuthenticationService,
-    TimeService, 
-    HomeService,
-    TaskService,
-    GenericDataEntryService,
-    HealthService,
-    FinanceService,
+    // TimeService, 
+    // HomeService,
+    // TaskService,
+    // GenericDataEntryService,
+    // HealthService,
+    // FinanceService,
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ],
   bootstrap: [AppComponent],

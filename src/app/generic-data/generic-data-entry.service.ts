@@ -15,11 +15,13 @@ export class GenericDataEntryService {
 
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
+    console.log("Data entry service constructor has been called");
     this.authService.authStatus.subscribe((authStatus: AuthStatus)=>{
       if(authStatus.isAuthenticated){
         this.fetchAllUserDataObjects(authStatus.user);
       }else{
         console.log("dataService constructor: not authenticated");
+        // this._userGenericDataEntriesSubject
       }      
     })
   }
@@ -68,6 +70,7 @@ export class GenericDataEntryService {
         })
       }))
       .subscribe((dataEntries: GenericDataEntry[])=>{
+        console.log(dataEntries);
         this._userGenericDataEntriesSubject.next(dataEntries);
       });
 

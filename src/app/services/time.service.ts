@@ -12,7 +12,9 @@ import { AuthenticationService } from '../authentication/authentication.service'
 @Injectable()
 export class TimeService {
 
-  constructor(private httpClient: HttpClient, private authService: AuthenticationService) { }
+  constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
+    console.log("Time service constructor has been called");
+  }
 
   private serverUrl = serverUrl;
   now: Moment = moment();

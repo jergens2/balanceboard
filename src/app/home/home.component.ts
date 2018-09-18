@@ -3,7 +3,7 @@ import { GenericDataEntry } from '../generic-data/generic-data-entry.model';
 import { User } from '../models/user.model';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { Subscription } from 'rxjs/Subscription';
-import { HomeService } from '../services/home.service';
+import { HomeService } from './home.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { TaskService } from '../services/task.service';

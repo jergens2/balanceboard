@@ -31,6 +31,7 @@ export class NetWorthComponent implements OnInit {
 
   ngOnInit() {
     this.financeService.financeProfile.subscribe((financeEntry: GenericDataEntry)=>{
+      console.log("networthcomponent: financeProfile", financeEntry);
       if(financeEntry){
         this.financeEntry = financeEntry;
         this.financeProfile = this.financeEntry.dataObject as FinanceProfile;  

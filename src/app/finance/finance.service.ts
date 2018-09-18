@@ -16,6 +16,7 @@ export class FinanceService {
   private _financeProfile: BehaviorSubject<GenericDataEntry> = new BehaviorSubject(null);
 
   constructor(private dataService: GenericDataEntryService) { 
+    console.log("Finance service constructor has been called");
     this.dataService.allUserDataEntries.subscribe((dataEntries)=>{
       const financeProfile = this.findFinanceProfile(dataEntries);
       if(financeProfile){
