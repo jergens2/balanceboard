@@ -21,7 +21,7 @@ export class GenericDataEntryService {
         this.fetchAllUserDataObjects(authStatus.user);
       }else{
         console.log("dataService constructor: not authenticated");
-        // this._userGenericDataEntriesSubject
+        this.logout();
       }      
     })
   }
@@ -30,6 +30,13 @@ export class GenericDataEntryService {
   private serverUrl: string = serverUrl;
 
   private _userGenericDataEntriesSubject: BehaviorSubject <GenericDataEntry[]> = new BehaviorSubject<GenericDataEntry[]>([]); 
+
+  private logout(){
+    console.log("data service: logging out, nexting with empty array []")
+    this._userGenericDataEntriesSubject.next([]);
+    console.log(this._userGenericDataEntriesSubject.value);
+    console.log(this._userGenericDataEntriesSubject.getValue());
+  }
 
   get allUserDataEntries(): Observable<GenericDataEntry[]>{
     return this._userGenericDataEntriesSubject.asObservable();

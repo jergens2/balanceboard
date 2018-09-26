@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 import { HomeComponent } from './home/home.component';
 import { MonthViewComponent } from './home/widgets/month-view/month-view.component';
 import { DayViewComponent } from './home/widgets/day-view/day-view.component';
@@ -24,8 +27,7 @@ import { GenericDataEntryService } from './generic-data/generic-data-entry.servi
 import { HealthService } from './health/health.service';
 import { FinanceService } from './finance/finance.service';
 
-import { ReactiveFormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 
 
 @NgModule({
