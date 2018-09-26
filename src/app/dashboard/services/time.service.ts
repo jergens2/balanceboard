@@ -1,4 +1,4 @@
-import { serverUrl } from '../serverurl';
+import { serverUrl } from '../../serverurl';
 import { Moment } from 'moment';
 import { Response } from '@angular/http';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
-import { AuthenticationService } from '../authentication/authentication.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
 
 @Injectable()
 export class TimeService {

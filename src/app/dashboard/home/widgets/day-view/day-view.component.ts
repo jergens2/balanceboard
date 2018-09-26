@@ -1,4 +1,4 @@
-import { AuthenticationService } from '../../../authentication/authentication.service';
+import { AuthenticationService } from '../../../../authentication/authentication.service';
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, AfterViewInit, OnDestroy } from '@angular/core';
 
 import { from, Observable, Subscription, interval, fromEvent } from 'rxjs';

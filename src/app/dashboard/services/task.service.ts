@@ -5,7 +5,6 @@ import { Injectable } from '@angular/core';
 import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import { AuthenticationService } from '../authentication/authentication.service';
 import { GenericDataType } from '../generic-data/generic-data-type.model';
 
 @Injectable()

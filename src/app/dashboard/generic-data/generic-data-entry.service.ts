@@ -1,12 +1,12 @@
-import { serverUrl } from '../serverurl';
+import { serverUrl } from '../../serverurl';
 import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
 import { GenericDataEntry } from './generic-data-entry.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthenticationService } from '../authentication/authentication.service';
-import { AuthStatus } from '../authentication/auth-status.model';
+import { AuthenticationService } from '../../authentication/authentication.service';
+import { AuthStatus } from '../../authentication/auth-status.model';
 import { GenericDataType } from './generic-data-type.model';
 
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import { HomeService } from '../../home/home.service';
-import { GenericDataEntryService } from '../../generic-data/generic-data-entry.service';
+import { HomeService } from '../../dashboard/home/home.service';
+import { GenericDataEntryService } from '../../dashboard/generic-data/generic-data-entry.service';
 import { AuthStatus } from '../../authentication/auth-status.model';
 
 @Component({

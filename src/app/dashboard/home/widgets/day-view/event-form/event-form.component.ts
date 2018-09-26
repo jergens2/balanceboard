@@ -8,7 +8,7 @@ import * as moment from 'moment';
 
 import { TimeService } from '../../../../services/time.service';
 import { EventActivity } from '../../../../models/event-activity.model';
-import { AuthenticationService } from '../../../../authentication/authentication.service';
+import { AuthenticationService } from '../../../../../authentication/authentication.service';
 
 
 @Component({
