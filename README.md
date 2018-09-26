@@ -1,6 +1,6 @@
 # balanceboard
 
-working product can be found at... https://www.mashboard.app
+working product can be found at... https://www.balanceboard.app
 
 new domain name soon
 
