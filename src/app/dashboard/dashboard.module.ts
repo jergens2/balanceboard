@@ -3,6 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { TimeService } from './services/time.service';
+import { HomeService } from './home/home.service';
+import { TaskService } from './services/task.service';
+import { GenericDataEntryService } from './generic-data/generic-data-entry.service';
+import { HealthService } from './health/health.service';
+import { FinanceService } from './finance/finance.service';
+
 import { HomeComponent } from './home/home.component';
 import { MonthViewComponent } from './home/widgets/month-view/month-view.component';
 import { DayViewComponent } from './home/widgets/day-view/day-view.component';
@@ -19,13 +26,7 @@ import { HeightFormComponent } from './health/body-weight/height-form/height-for
 import { FinanceComponent } from './finance/finance.component';
 import { BudgetComponent } from './finance/budget/budget.component';
 import { NetWorthComponent } from './finance/net-worth/net-worth.component';
-
-import { TimeService } from './services/time.service';
-import { HomeService } from './home/home.service';
-import { TaskService } from './services/task.service';
-import { GenericDataEntryService } from './generic-data/generic-data-entry.service';
-import { HealthService } from './health/health.service';
-import { FinanceService } from './finance/finance.service';
+import { TimelogComponent } from './timelog/timelog.component';
 
 
 
@@ -52,7 +53,8 @@ import { FinanceService } from './finance/finance.service';
     HeightFormComponent,
     FinanceComponent,
     BudgetComponent,
-    NetWorthComponent
+    NetWorthComponent,
+    TimelogComponent
   ],
   providers: [
     TimeService, 

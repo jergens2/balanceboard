@@ -345,7 +345,7 @@ export class DayViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onClickMarkTime(){
-
+    
   }
 
 }
