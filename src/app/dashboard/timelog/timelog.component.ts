@@ -17,6 +17,7 @@ export class TimelogComponent implements OnInit {
 
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
+  ifAddActivity: boolean = true;
   timeMarks: TimeMark[];
   timeMarkForm: FormGroup;
   newActivityForm: FormGroup;
@@ -41,6 +42,8 @@ export class TimelogComponent implements OnInit {
   ngOnInit() {
     this.timeMarkForm = new FormGroup({
       'time': new FormControl(moment().format('HH:mm').toString()),
+      'title': new FormControl(),
+      'description': new FormControl(),
     });
     this.newActivityForm = new FormGroup({
       'name': new FormControl('Overwatch'),
@@ -60,10 +63,12 @@ export class TimelogComponent implements OnInit {
 
   onClickAddActivity(){
     this.newCategorizedActivity = true;
+    this.ifAddActivity = false;
   }
 
   onClickCancelActivity(){
     this.newCategorizedActivity = false;
+    this.ifAddActivity = true;
   }
   onClickSaveActivity(){
     let activity: CategorizedActivity = new CategorizedActivity();
@@ -75,6 +80,12 @@ export class TimelogComponent implements OnInit {
     activity.parentId = "";
     activity.icon = "";
     this.timeMarkActivities.push(activity);
+    this.newCategorizedActivity = false;
+    this.ifAddActivity = true;
+  }
+
+  onClickSaveTimeMark(){
+
   }
 
 }

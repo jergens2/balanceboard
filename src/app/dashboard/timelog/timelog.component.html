@@ -20,14 +20,25 @@
             <hr class='mb-2'>
             <button *ngIf="!addTimeMarkForm" class="btn btn-primary" (click)="toggleTimeMarkForm()">Add New Time Mark</button>
           </div>
-          <div *ngIf="addTimeMarkForm">
+          <div *ngIf="addTimeMarkForm" class='m-3 p-3 border border-secondary new-time-mark'>
             New Time Mark
             <div [formGroup]="timeMarkForm" class="mb-3">
-              <div class="form-group row my-1">
-                <div class="col-12">
+              <div class="form-group row my-2">
+                <div class="col-6">
+                  <div class="input-group">
+                    <input type="text" class="form-control" formControlName="title" placeholder="Title">
+                  </div>
+                </div>
+                <div class="col-6">
                   <div class="input-group">
                     <input type="time" class="form-control" formControlName="time">
-
+                  </div>
+                </div>
+              </div>
+              <div class="form-group row my-2">
+                <div class="col-12">
+                  <div class="input-group">
+                    <input type="text" class="form-control" formControlName="description" placeholder="description">
                   </div>
                 </div>
               </div>
@@ -41,29 +52,32 @@
 -->
               <h6>Activities Prior</h6>
               <div *ngIf="timeMarkActivities">
-                <div *ngFor="let activity of timeMarkActivities" class='m-3 p-3 border border-secondary' style='border-radius:5px;'>
-                  Activity:  {{ activity.name }}
+                <div *ngFor="let activity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity' style='border-radius:5px;'>
+                  Activity: {{ activity.name }}
                 </div>
               </div>
-              <div *ngIf="newCategorizedActivity" class='m-3 p-3 border border-primary' style='border-radius:5px;'>
+              <div *ngIf="newCategorizedActivity" class='m-1 p-3 border border-warning' style='border-radius:5px;background-color:#fefff2;'>
                 New Activity
                 <div [formGroup]="newActivityForm" class="mb-3">
                   <div class="input-group">
                     <input type="text" class="form-control" formControlName="name">
-                    
+
                   </div>
                 </div>
-
                 <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()">Save Activity</button>
                 <button class="btn btn-sm border-warning mx-1" (click)="onClickCancelActivity()">Cancel Activity</button>
+
               </div>
 
-              <button class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">+ Add
-                Activity</button>
+              <button *ngIf="ifAddActivity" class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">+ Add Activity</button>
             </div>
 
-            <button class="btn border-warning float-right mx-1" (click)="toggleTimeMarkForm()">Cancel</button>
-            <button class="btn btn-success float-right mx-1">Save Time Mark</button>
+            <div class='d-flex flex-row-reverse'>
+              <button class="btn border-warning mx-1" (click)="toggleTimeMarkForm()">Cancel</button>
+              <button class="btn btn-success mx-1" (click)="onClickSaveTimeMark()">Save Time Mark</button>
+
+            </div>
+
           </div>
         </div>
       </div>
