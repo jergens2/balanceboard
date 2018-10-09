@@ -9,7 +9,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import * as moment from 'moment';
 import { Moment } from "moment";
 
-import { TimeService } from '../../../services/time.service';
+import { TimeService } from '../../time.service';
 import { TimeSegment } from './time-segment.model';
 import { EventRect } from './event-rect.model';
 import { EventActivity } from '../../../models/event-activity.model';

@@ -1,7 +1,7 @@
 import { EventActivity } from '../../../models/event-activity.model';
 import * as moment from 'moment';
 import { HomeService } from '../../home.service';
-import { TimeService } from '../../../services/time.service';
+import { TimeService } from '../../time.service';
 import { Component, OnInit } from '@angular/core';
 import { DaySquare } from './daySquare.model';
 

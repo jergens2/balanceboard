@@ -2,7 +2,7 @@ import { IvyLeeTask } from '../ivyleeTask.model';
 import { IvyLeeTaskList } from '../ivyleeTaskList.model';
 import * as moment from 'moment';
 import { GenericDataEntry } from '../../../generic-data/generic-data-entry.model';
-import { TaskService } from '../../../services/task.service';
+import { TaskService } from '../task.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({

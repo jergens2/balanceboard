@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import * as moment from 'moment';
 
-import { TaskService } from '../../../services/task.service';
+import { TaskService } from '../task.service';
 import { IvyLeeTaskList } from '../ivyleeTaskList.model';
 import { IvyLeeTask } from '../ivyleeTask.model';
 

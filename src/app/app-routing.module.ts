@@ -6,6 +6,7 @@ import { IvyleeManageComponent } from "./dashboard/productivity/ivylee/ivylee-ma
 import { BodyWeightComponent } from "./dashboard/health/body-weight/body-weight.component";
 import { BuildProfileComponent } from "./dashboard/health/build-profile/build-profile.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
+import { TimelogComponent } from "./dashboard/timelog/timelog.component";
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
@@ -14,7 +15,8 @@ const appRoutes: Routes = [
     { path: 'ivyleeManagement', component: IvyleeManageComponent },
     { path: 'bodyWeight', component: BodyWeightComponent },
     { path: 'healthProfile', component: BuildProfileComponent },
-    { path: 'networth', component: NetWorthComponent }
+    { path: 'networth', component: NetWorthComponent },
+    { path: 'timelog', component: TimelogComponent }
 ];
 
 

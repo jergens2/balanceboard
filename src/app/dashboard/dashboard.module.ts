@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { TimeService } from './services/time.service';
+import { TimeService } from './home/time.service';
 import { HomeService } from './home/home.service';
-import { TaskService } from './services/task.service';
+import { TaskService } from './productivity/ivylee/task.service';
 import { GenericDataEntryService } from './generic-data/generic-data-entry.service';
 import { HealthService } from './health/health.service';
 import { FinanceService } from './finance/finance.service';
@@ -27,6 +27,7 @@ import { FinanceComponent } from './finance/finance.component';
 import { BudgetComponent } from './finance/budget/budget.component';
 import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 import { TimelogComponent } from './timelog/timelog.component';
+import { TimelogService } from './timelog/timelog.service';
 
 
 
@@ -59,6 +60,7 @@ import { TimelogComponent } from './timelog/timelog.component';
   providers: [
     TimeService, 
     HomeService,
+    TimelogService,
     TaskService,
     GenericDataEntryService,
     HealthService,

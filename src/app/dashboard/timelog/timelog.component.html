@@ -1,3 +1,72 @@
-<p>
-  timelog works!
-</p>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card border border-success">
+        <div class="card-header">
+          Time Log
+        </div>
+        <div class="card-body">
+          <div *ngIf="loadingTimeMarks">
+            <i class="fa fa-spinner fa-spin"></i>
+          </div>
+          <div *ngIf="!loadingTimeMarks">
+            Loading complete
+            <div *ngIf="timeMarks">
+              Time Marks
+            </div>
+            <div *ngIf="!timeMarks">
+              No Time Marks
+            </div>
+            <hr class='mb-2'>
+            <button *ngIf="!addTimeMarkForm" class="btn btn-primary" (click)="toggleTimeMarkForm()">Add New Time Mark</button>
+          </div>
+          <div *ngIf="addTimeMarkForm">
+            New Time Mark
+            <div [formGroup]="timeMarkForm" class="mb-3">
+              <div class="form-group row my-1">
+                <div class="col-12">
+                  <div class="input-group">
+                    <input type="time" class="form-control" formControlName="time">
+
+                  </div>
+                </div>
+              </div>
+              <!--
+              userId: {type: Schema.Types.ObjectId, ref: 'User', required: true },
+              previousTimeMarkId: { type: Schema.Types.ObjectId, ref: 'TimeMark'},
+              timeISO: {type: String, required: true},
+              title: String,
+              description: String,
+              activities: [Schema.Types.ObjectId]
+-->
+              <h6>Activities Prior</h6>
+              <div *ngIf="timeMarkActivities">
+                <div *ngFor="let activity of timeMarkActivities" class='m-3 p-3 border border-secondary' style='border-radius:5px;'>
+                  Activity:  {{ activity.name }}
+                </div>
+              </div>
+              <div *ngIf="newCategorizedActivity" class='m-3 p-3 border border-primary' style='border-radius:5px;'>
+                New Activity
+                <div [formGroup]="newActivityForm" class="mb-3">
+                  <div class="input-group">
+                    <input type="text" class="form-control" formControlName="name">
+                    
+                  </div>
+                </div>
+
+                <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()">Save Activity</button>
+                <button class="btn btn-sm border-warning mx-1" (click)="onClickCancelActivity()">Cancel Activity</button>
+              </div>
+
+              <button class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">+ Add
+                Activity</button>
+            </div>
+
+            <button class="btn border-warning float-right mx-1" (click)="toggleTimeMarkForm()">Cancel</button>
+            <button class="btn btn-success float-right mx-1">Save Time Mark</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,11 +1,11 @@
 import * as moment from 'moment';
-import { GenericDataEntry } from '../generic-data/generic-data-entry.model';
-import { GenericDataEntryService } from '../generic-data/generic-data-entry.service';
+import { GenericDataEntry } from '../../generic-data/generic-data-entry.model';
+import { GenericDataEntryService } from '../../generic-data/generic-data-entry.service';
 import { Injectable } from '@angular/core';
-import { IvyLeeTaskList } from '../productivity/ivylee/ivyleeTaskList.model';
+import { IvyLeeTaskList } from './ivyleeTaskList.model';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import { GenericDataType } from '../generic-data/generic-data-type.model';
+import { GenericDataType } from '../../generic-data/generic-data-type.model';
 
 @Injectable()
 export class TaskService {

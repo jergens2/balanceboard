@@ -6,7 +6,7 @@ import { NgbActiveModal, NgbTimepicker, NgbModalOptions } from '@ng-bootstrap/ng
 import { Observable } from 'rxjs';
 import * as moment from 'moment';
 
-import { TimeService } from '../../../../services/time.service';
+import { TimeService } from '../../../time.service';
 import { EventActivity } from '../../../../models/event-activity.model';
 import { AuthenticationService } from '../../../../../authentication/authentication.service';
 
