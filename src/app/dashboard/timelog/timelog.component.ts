@@ -42,7 +42,7 @@ export class TimelogComponent implements OnInit {
   ngOnInit() {
     this.timeMarkForm = new FormGroup({
       'time': new FormControl(moment().format('HH:mm').toString()),
-      'title': new FormControl(),
+      // 'title': new FormControl(),
       'description': new FormControl(),
     });
     this.newActivityForm = new FormGroup({
@@ -85,6 +85,14 @@ export class TimelogComponent implements OnInit {
   }
 
   onClickSaveTimeMark(){
+    let newTimeMark = new TimeMark(null, null, this.timeMarkForm.get('time').value);
+    newTimeMark.description = this.timeMarkForm.get('description').value;
+    newTimeMark.activities = this.timeMarkActivities;
+
+
+
+    this.timeLogService.saveTimeMark(newTimeMark);
+
 
   }
 
