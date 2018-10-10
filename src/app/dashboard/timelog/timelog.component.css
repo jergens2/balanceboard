@@ -10,3 +10,7 @@
 .time-mark-activity{
     background-color: #fefff2;
 }
+
+.time-mark {
+    border-radius: 5px;
+}

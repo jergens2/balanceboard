@@ -55,3 +55,7 @@
 .fa{
     width:25px;
 }
+
+.incomplete-sidebar-button{
+    color: red;
+}

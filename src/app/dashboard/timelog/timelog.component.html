@@ -10,9 +10,17 @@
             <i class="fa fa-spinner fa-spin"></i>
           </div>
           <div *ngIf="!loadingTimeMarks">
-            Loading complete
+            <!-- Loading complete -->
             <div *ngIf="timeMarks">
-              Time Marks
+              <!-- Time Marks -->
+              <div *ngFor="let timeMark of timeMarks">
+                <div class='m-1 p-1 border border-success time-mark'>
+                  {{ timeMark.timeISO }} - {{ timeMark.description }}
+                  <div class='ml-2' *ngFor="let activity of timeMark.activities">
+                    {{ activity.name }}
+                  </div>
+                </div>
+              </div>
             </div>
             <div *ngIf="!timeMarks">
               No Time Marks
