@@ -59,11 +59,33 @@ export class TimelogService {
         return timeMark;
       }))
       .subscribe((timeMark: TimeMark) => {
-        console.log("http request:", timeMark);
         let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
         timeMarks.push(timeMark);
         this._timeMarksSubject.next(timeMarks);
       })
+  }
+
+  deleteTimeMark(timeMark: TimeMark){
+    const postUrl = this.serverUrl + "/api/timeMark/delete";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+
+    this.httpClient.post<{ message: string, data: any }>(postUrl, timeMark, httpOptions)
+    // .pipe(map((response) => {
+    //   let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO);
+    //   timeMark.description = response.data.description;
+    //   timeMark.activities = response.data.activities as CategorizedActivity[];
+    //   return timeMark;
+    // }))
+    .subscribe((response) => {
+      let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+      timeMarks.splice(timeMarks.indexOf(timeMark));
+      this._timeMarksSubject.next(timeMarks);
+    })
   }
 
   private fetchTimeMarks(authenticatedUserId: string, startTime: string, endTime: string) {
@@ -84,7 +106,6 @@ export class TimelogService {
         })
       }))
       .subscribe((timeMarks: TimeMark[]) => {
-        console.log("get request:", timeMarks);
         this._timeMarksSubject.next(timeMarks);
       });
 

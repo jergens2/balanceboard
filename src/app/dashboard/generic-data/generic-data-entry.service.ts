@@ -77,7 +77,7 @@ export class GenericDataEntryService {
         })
       }))
       .subscribe((dataEntries: GenericDataEntry[])=>{
-        console.log(dataEntries);
+        // console.log(dataEntries);
         this._userGenericDataEntriesSubject.next(dataEntries);
       });
 

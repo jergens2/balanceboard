@@ -26,18 +26,18 @@ export class TimelogComponent implements OnInit {
   timeMarkActivities: CategorizedActivity[] = [];
 
 
-/*
-    public name: string;
-    public description: string;
-
-    public userId: string;
-    public parentId: string;
-
-    public childCategoryIds: string[];
-    public color: string;
-    public icon: string;
-
-*/
+  /*
+      public name: string;
+      public description: string;
+  
+      public userId: string;
+      public parentId: string;
+  
+      public childCategoryIds: string[];
+      public color: string;
+      public icon: string;
+  
+  */
 
   ngOnInit() {
     this.timeMarkForm = new FormGroup({
@@ -50,27 +50,27 @@ export class TimelogComponent implements OnInit {
       'description': new FormControl('Overwatch PC video game'),
       'color': new FormControl('blue')
     })
-    this.timeLogService.timeMarks.subscribe((timeMarks: TimeMark[])=>{
+    this.timeLogService.timeMarks.subscribe((timeMarks: TimeMark[]) => {
       this.timeMarks = timeMarks;
-      this.loadingTimeMarks = false;  
+      this.loadingTimeMarks = false;
     });
 
   }
 
-  toggleTimeMarkForm(){
+  toggleTimeMarkForm() {
     this.addTimeMarkForm = !this.addTimeMarkForm;
   }
 
-  onClickAddActivity(){
+  onClickAddActivity() {
     this.newCategorizedActivity = true;
     this.ifAddActivity = false;
   }
 
-  onClickCancelActivity(){
+  onClickCancelActivity() {
     this.newCategorizedActivity = false;
     this.ifAddActivity = true;
   }
-  onClickSaveActivity(){
+  onClickSaveActivity() {
     let activity: CategorizedActivity = new CategorizedActivity();
     //Get form data and build the object.
     activity.name = "Overwatch";
@@ -84,7 +84,7 @@ export class TimelogComponent implements OnInit {
     this.ifAddActivity = true;
   }
 
-  onClickSaveTimeMark(){
+  onClickSaveTimeMark() {
     let newTimeMark = new TimeMark(null, null, this.timeMarkForm.get('time').value);
     newTimeMark.description = this.timeMarkForm.get('description').value;
     newTimeMark.activities = this.timeMarkActivities;
@@ -94,6 +94,11 @@ export class TimelogComponent implements OnInit {
     this.timeLogService.saveTimeMark(newTimeMark);
 
 
+  }
+
+  onClickDeleteTimeMark(timeMark: TimeMark) {
+    this.timeLogService.deleteTimeMark(timeMark);
+    
   }
 
 }
