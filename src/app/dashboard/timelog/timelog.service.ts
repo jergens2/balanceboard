@@ -18,6 +18,9 @@ import { AuthStatus } from '../../authentication/auth-status.model';
 })
 export class TimelogService {
 
+
+
+
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
       if (authStatus.isAuthenticated) {
@@ -83,7 +86,7 @@ export class TimelogService {
     // }))
     .subscribe((response) => {
       let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
-      timeMarks.splice(timeMarks.indexOf(timeMark));
+      timeMarks.splice(timeMarks.indexOf(timeMark),1);
       this._timeMarksSubject.next(timeMarks);
     })
   }

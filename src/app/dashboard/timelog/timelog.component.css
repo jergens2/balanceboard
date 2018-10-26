@@ -14,3 +14,7 @@
 .time-mark {
     border-radius: 5px;
 }
+
+.delete-time-mark-button:hover{
+    background-color: orangered;
+}
