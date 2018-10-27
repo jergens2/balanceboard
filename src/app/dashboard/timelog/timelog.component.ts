@@ -16,6 +16,7 @@ export class TimelogComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService) { }
 
+  todayYYYYMMDD: string = '';
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
   ifAddActivity: boolean = true;
@@ -26,21 +27,6 @@ export class TimelogComponent implements OnInit {
   newCategorizedActivity: boolean = false;
   timeMarkActivities: CategorizedActivity[] = [];
 
-
-  /*
-      public name: string;
-      public description: string;
-  
-      public userId: string;
-      public parentId: string;
-  
-      public childCategoryIds: string[];
-      public color: string;
-      public icon: string;
-  
-  */
-
-    
   /*
     Note about time versus ISO time
     Pacific Standard Time (PST) is UTC-8 on standard time, which is between November and March, 
@@ -82,10 +68,34 @@ export class TimelogComponent implements OnInit {
     we are then looking for all time marks which would be between the hours of 00:00 and 23:59:59.9999 for the relative date of the client.
 
     Ultimately would we not want to store the timezone data in the DB as well and just do the conversion clientside?
+  */
 
+  /*
+    Issues:
+    -time marks can be specified for any time.  this means at 1:00pm you can add a time mark that is marked at 4:00pm, then 2 minutes later mark another time mark 
+      that makes 1:02pm, and you would have time marks that are out of chronological order.
+      -do what about this?  make it so users cannot specify the time of the time mark? - maybe an override button - by default time mark time is greyed out but can be overridden if user wants to
+      -then sort all time marks by chronological order?
+        -now you get overlapping timemarks? do time marks need a start and an end, and the start should be the equivalent of the end of the previous one?
+          so if you make a time mark for 4:00pm at 1:00pm, then presumably that time mark *spans* from a start of 1:00pm to an end of 4:00pm, so that time is already
+          being accounted for... should you be able to add another timemark earlier than 4:00pm?
     
+    -When adding an activity, should the "Save time mark" button disappear until you are finalized with the activity form ?
 
+    -b
+    
+    -c
+  */
 
+  /*
+    new time mark form:
+
+    creating a new time mark, and there may or may not be time marks prior to this one
+    form asks: "time mark spans from?" and options can be: "since previous time mark", "for the last X minutes", 
+      activities within this time mark can be similar 
+        -activity a spans from?: duration of 20 minutes
+        -activity b spans from?: 30 percent of the duration of this time mark span
+        -activity c spans from?: auto-calculate the remainder of that time
 
   */
 
@@ -108,6 +118,7 @@ export class TimelogComponent implements OnInit {
       this.updateUserInput(x);
     })
     */
+   this.todayYYYYMMDD = moment().format('YYYY-MM-DD');
 
     this.timeLogService.timeMarks.subscribe((timeMarks: TimeMark[]) => {
       this.timeMarks = this.todaysTimeMarks(timeMarks);
@@ -119,7 +130,6 @@ export class TimelogComponent implements OnInit {
 
   private todaysTimeMarks(timeMarks: TimeMark[]): TimeMark[]{
     
-    const today = moment().format('YYYY-MM-DD');
     // const utcOffsetMinutes = moment().utcOffset();
 
     // const utcOffsetStart = moment(today).hour(0).minute(utcOffsetMinutes).second(0).millisecond(0);
@@ -127,10 +137,11 @@ export class TimelogComponent implements OnInit {
 
     let todaysTimeMarks: TimeMark[] = [];
     for(let timeMark of timeMarks){
-      if(moment(timeMark.timeISO).local().format('YYYY-MM-DD') == moment(today).format('YYYY-MM-DD')){
+      if(timeMark.time.local().format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')){
         todaysTimeMarks.push(timeMark);
       }
     }
+    
     return todaysTimeMarks;
   }
 
@@ -194,7 +205,7 @@ export class TimelogComponent implements OnInit {
 
     this.buildActivityForm();
     this.buildTimeMarkForm();
-    
+
   }
 
   onClickDeleteTimeMark(timeMark: TimeMark) {

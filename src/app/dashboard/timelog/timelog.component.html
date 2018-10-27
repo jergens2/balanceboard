@@ -3,7 +3,15 @@
     <div class="col-12">
       <div class="card border border-success">
         <div class="card-header">
-          Time Log
+          <div class="d-flex">
+            <div class="px-2">
+                Time Log
+            </div>
+            <div class="px-2">
+                <h2>{{ this.todayYYYYMMDD }}</h2>
+            </div>
+          </div>
+            
         </div>
         <div class="card-body">
           <div *ngIf="loadingTimeMarks">
@@ -19,7 +27,7 @@
   
                     <div class="d-flex">
                         <div class="p-2 w-100">
-                            {{ timeMark.timeISO }} - {{ timeMark.description }}
+                            {{ timeMark.time.format('HH:mm') }} - {{ timeMark.description }}
                             <div class='ml-2' *ngFor="let activity of timeMark.activities">
                               {{ activity.name }}
                             </div>
