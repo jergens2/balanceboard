@@ -5,6 +5,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 import * as moment from 'moment';
 import { CategorizedActivity } from './categorized-activity.model';
+import { Observable, fromEvent } from 'rxjs';
 
 @Component({
   selector: 'app-timelog',
@@ -92,13 +93,29 @@ export class TimelogComponent implements OnInit {
 
 
   ngOnInit() {
-    this.buildForms();
+
+    /*
+    const blur$ = fromEvent(document, 'focusout');
+    blur$.subscribe(x=>{
+      this.updateUserInput(x);
+    })
+    const click$ = fromEvent(document, 'mouseclick');
+    blur$.subscribe(x=>{
+      this.updateUserInput(x);
+    })
+    const focus$ = fromEvent(document, 'focusin');
+    focus$.subscribe(x=>{
+      this.updateUserInput(x);
+    })
+    */
+
     this.timeLogService.timeMarks.subscribe((timeMarks: TimeMark[]) => {
       this.timeMarks = this.todaysTimeMarks(timeMarks);
       this.loadingTimeMarks = false;
     });
 
   }
+
 
   private todaysTimeMarks(timeMarks: TimeMark[]): TimeMark[]{
     
@@ -117,12 +134,8 @@ export class TimelogComponent implements OnInit {
     return todaysTimeMarks;
   }
 
-  buildForms(){
-    this.timeMarkForm = new FormGroup({
-      'time': new FormControl(moment().format('HH:mm').toString()),
-      // 'title': new FormControl(),
-      'description': new FormControl(),
-    });
+  buildActivityForm(){
+
     this.newActivityForm = new FormGroup({
       'name': new FormControl('Overwatch'),
       'description': new FormControl('Overwatch PC video game'),
@@ -130,13 +143,24 @@ export class TimelogComponent implements OnInit {
     })
   }
 
+  buildTimeMarkForm(){
+    this.timeMarkForm = new FormGroup({
+      'time': new FormControl(moment().format('HH:mm').toString()),
+      // 'title': new FormControl(),
+      'description': new FormControl(),
+    });
+  }
+
   toggleTimeMarkForm() {
     this.addTimeMarkForm = !this.addTimeMarkForm;
+    this.buildTimeMarkForm();
   }
 
   onClickAddActivity() {
     this.newCategorizedActivity = true;
     this.ifAddActivity = false;
+
+    this.buildActivityForm();
   }
 
   onClickCancelActivity() {
@@ -167,8 +191,10 @@ export class TimelogComponent implements OnInit {
     this.timeLogService.saveTimeMark(newTimeMark);
     this.toggleTimeMarkForm();
     this.timeMarkForm.reset();
-    this.buildForms();
 
+    this.buildActivityForm();
+    this.buildTimeMarkForm();
+    
   }
 
   onClickDeleteTimeMark(timeMark: TimeMark) {

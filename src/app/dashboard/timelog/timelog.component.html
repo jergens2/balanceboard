@@ -13,20 +13,26 @@
             <!-- Loading complete -->
             <div *ngIf="timeMarks">
               <!-- Time Marks -->
-              <div *ngFor="let timeMark of timeMarks">
-                <div class='m-1 p-1 border border-success time-mark'>
-
-                  <div class="d-flex">
-                      <div class="p-2 w-100">
-                          {{ timeMark.timeISO }} - {{ timeMark.description }}
-                          <div class='ml-2' *ngFor="let activity of timeMark.activities">
-                            {{ activity.name }}
-                          </div>
+              <div *ngIf="timeMarks.length > 0">
+                <div *ngFor="let timeMark of timeMarks">
+                  <div class='m-1 p-1 border border-success time-mark'>
+  
+                    <div class="d-flex">
+                        <div class="p-2 w-100">
+                            {{ timeMark.timeISO }} - {{ timeMark.description }}
+                            <div class='ml-2' *ngFor="let activity of timeMark.activities">
+                              {{ activity.name }}
+                            </div>
+                        </div>
+                        <div class="p-2 flex-shrink-1"><button class="btn btn-sm border-danger delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMark)">Delete</button></div>
                       </div>
-                      <div class="p-2 flex-shrink-1"><button class="btn btn-sm border-danger delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMark)">Delete</button></div>
-                    </div>
+                  </div>
                 </div>
               </div>
+              <div *ngIf="timeMarks.length < 1">
+                No time marks today yet
+              </div>
+              
             </div>
             <div *ngIf="!timeMarks">
               No Time Marks
