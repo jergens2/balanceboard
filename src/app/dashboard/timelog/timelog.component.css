@@ -11,10 +11,23 @@
     background-color: #fefff2;
 }
 
-.time-mark {
+.time-mark-tile {
     border-radius: 5px;
 }
 
+.delete-time-mark-button{
+
+    font-size: 0.75em;
+    /* line-height: 26px;
+    white-space: nowrap; */
+    padding:5px;
+    border-radius: 3px;
+    border: 1px solid orange;
+    margin: 0px;
+}
 .delete-time-mark-button:hover{
-    background-color: orangered;
+    cursor: pointer;
+    border: 1px solid red;
+    background-color: orange;
+
 }

@@ -7,25 +7,19 @@ import * as moment from 'moment';
 import { CategorizedActivity } from './categorized-activity.model';
 import { Observable, fromEvent } from 'rxjs';
 
+export interface ITimeMarkTile {
+  timeMark: TimeMark,
+  style: Object,
+  deleteButtonIsVisible: boolean
+}
+
 @Component({
   selector: 'app-timelog',
   templateUrl: './timelog.component.html',
   styleUrls: ['./timelog.component.css']
 })
+
 export class TimelogComponent implements OnInit {
-
-  constructor(private timeLogService: TimelogService) { }
-
-  todayYYYYMMDD: string = '';
-  loadingTimeMarks: boolean = true;
-  addTimeMarkForm: boolean = false;
-  ifAddActivity: boolean = true;
-  timeMarks: TimeMark[];
-  timeMarkForm: FormGroup;
-  newActivityForm: FormGroup;
-
-  newCategorizedActivity: boolean = false;
-  timeMarkActivities: CategorizedActivity[] = [];
 
   /*
     Note about time versus ISO time
@@ -72,6 +66,7 @@ export class TimelogComponent implements OnInit {
 
   /*
     Issues:
+
     -time marks can be specified for any time.  this means at 1:00pm you can add a time mark that is marked at 4:00pm, then 2 minutes later mark another time mark 
       that makes 1:02pm, and you would have time marks that are out of chronological order.
       -do what about this?  make it so users cannot specify the time of the time mark? - maybe an override button - by default time mark time is greyed out but can be overridden if user wants to
@@ -88,64 +83,87 @@ export class TimelogComponent implements OnInit {
   */
 
   /*
+    Features to add:
+
     new time mark form:
 
-    creating a new time mark, and there may or may not be time marks prior to this one
+    -creating a new time mark, and there may or may not be time marks prior to this one
     form asks: "time mark spans from?" and options can be: "since previous time mark", "for the last X minutes", 
       activities within this time mark can be similar 
         -activity a spans from?: duration of 20 minutes
         -activity b spans from?: 30 percent of the duration of this time mark span
         -activity c spans from?: auto-calculate the remainder of that time
 
+    -adding activities:
+    instead of a button to add activity, perhaps just a text input box and when you type in the input box it automatically starts predicting the activity which you 
+    were about to add.  and then as you add activities in the text box they get delineated as a distinct variable and has a color highlight for example
+
+
+    maybe some kind of representation proportionally over the last 24 hours what these activities look to with respect to size in a kind of rectangular shape thing representing 24 hours
+    kind of like how in Visual Studio Code, the bar on the far right kind of gives you a zoomed out visual representation of the entire document.
   */
 
 
 
+  constructor(private timeLogService: TimelogService) { }
+
+  todayYYYYMMDD: string = '';
+  loadingTimeMarks: boolean = true;
+  addTimeMarkForm: boolean = false;
+  ifAddActivity: boolean = true;
+  private timeMarks: TimeMark[];
+  timeMarkForm: FormGroup;
+  newActivityForm: FormGroup;
+
+  newCategorizedActivity: boolean = false;
+  timeMarkActivities: CategorizedActivity[] = [];
+
+
+  timeMarkTiles: ITimeMarkTile[] = [];
+  private defaultTimeMarkTileStyle: Object;
+
 
   ngOnInit() {
+    this.defaultTimeMarkTileStyle = {};
 
-    /*
-    const blur$ = fromEvent(document, 'focusout');
-    blur$.subscribe(x=>{
-      this.updateUserInput(x);
-    })
-    const click$ = fromEvent(document, 'mouseclick');
-    blur$.subscribe(x=>{
-      this.updateUserInput(x);
-    })
-    const focus$ = fromEvent(document, 'focusin');
-    focus$.subscribe(x=>{
-      this.updateUserInput(x);
-    })
-    */
-   this.todayYYYYMMDD = moment().format('YYYY-MM-DD');
+
+    this.todayYYYYMMDD = moment().format('YYYY-MM-DD');
 
     this.timeLogService.timeMarks.subscribe((timeMarks: TimeMark[]) => {
       this.timeMarks = this.todaysTimeMarks(timeMarks);
+      this.timeMarkTiles = this.buildTimeMarkTiles(this.timeMarks);
       this.loadingTimeMarks = false;
     });
 
   }
 
+  private buildTimeMarkTiles(timeMarks: TimeMark[]): ITimeMarkTile[] {
+    let timeMarkTiles: ITimeMarkTile[] = [];
+    for (let timeMark of timeMarks) {
+      let timeMarkTile: ITimeMarkTile = { timeMark: timeMark, style: this.defaultTimeMarkTileStyle, deleteButtonIsVisible: false };
+      timeMarkTiles.push(timeMarkTile);
+    }
+    return timeMarkTiles;
+  }
 
-  private todaysTimeMarks(timeMarks: TimeMark[]): TimeMark[]{
-    
+  private todaysTimeMarks(timeMarks: TimeMark[]): TimeMark[] {
+
     // const utcOffsetMinutes = moment().utcOffset();
 
     // const utcOffsetStart = moment(today).hour(0).minute(utcOffsetMinutes).second(0).millisecond(0);
     // const utcOffsetEnd =   moment(today).hour(23).minute(59+utcOffsetMinutes).second(59).millisecond(999);
 
     let todaysTimeMarks: TimeMark[] = [];
-    for(let timeMark of timeMarks){
-      if(timeMark.time.local().format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')){
+    for (let timeMark of timeMarks) {
+      if (timeMark.time.local().format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
         todaysTimeMarks.push(timeMark);
       }
     }
-    
+
     return todaysTimeMarks;
   }
 
-  buildActivityForm(){
+  buildActivityForm() {
 
     this.newActivityForm = new FormGroup({
       'name': new FormControl('Overwatch'),
@@ -154,7 +172,7 @@ export class TimelogComponent implements OnInit {
     })
   }
 
-  buildTimeMarkForm(){
+  buildTimeMarkForm() {
     this.timeMarkForm = new FormGroup({
       'time': new FormControl(moment().format('HH:mm').toString()),
       // 'title': new FormControl(),
@@ -198,6 +216,7 @@ export class TimelogComponent implements OnInit {
     newTimeMark.description = this.timeMarkForm.get('description').value;
     newTimeMark.activities = this.timeMarkActivities;
 
+    this.timeMarkActivities = [];
 
     this.timeLogService.saveTimeMark(newTimeMark);
     this.toggleTimeMarkForm();
@@ -209,8 +228,22 @@ export class TimelogComponent implements OnInit {
   }
 
   onClickDeleteTimeMark(timeMark: TimeMark) {
+    //to add:  when clicked, prompt for a confirmation:  "Delete this time mark?"
     this.timeLogService.deleteTimeMark(timeMark);
-    
+
+  }
+
+
+
+  onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
+    //timeMarkTile.style = {};
+    timeMarkTile.deleteButtonIsVisible = true;
+
+  }
+
+  onMouseLeaveTimeMarkTile(timeMarkTile: ITimeMarkTile) {
+    //timeMarkTile.style = {};
+    timeMarkTile.deleteButtonIsVisible = false;
   }
 
 }

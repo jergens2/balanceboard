@@ -19,30 +19,35 @@
           </div>
           <div *ngIf="!loadingTimeMarks">
             <!-- Loading complete -->
-            <div *ngIf="timeMarks">
+            <div *ngIf="timeMarkTiles">
               <!-- Time Marks -->
-              <div *ngIf="timeMarks.length > 0">
-                <div *ngFor="let timeMark of timeMarks">
-                  <div class='m-1 p-1 border border-success time-mark'>
+              <div *ngIf="timeMarkTiles.length > 0">
+                <div *ngFor="let timeMarkTile of timeMarkTiles">
+                  <div class='m-1 p-1 border border-success time-mark-tile' 
+                    [ngStyle]="timeMarkTile.style"
+                    (mouseenter)="onMouseEnterTimeMarkTile(timeMarkTile)" 
+                    (mouseleave)="onMouseLeaveTimeMarkTile(timeMarkTile)">
   
-                    <div class="d-flex">
+                    <div class="d-flex" >
                         <div class="p-2 w-100">
-                            {{ timeMark.time.format('HH:mm') }} - {{ timeMark.description }}
-                            <div class='ml-2' *ngFor="let activity of timeMark.activities">
+                            {{ timeMarkTile.timeMark.time.format('HH:mm') }} - {{ timeMarkTile.timeMark.description }}
+                            <div class='ml-2' *ngFor="let activity of timeMarkTile.timeMark.activities">
                               {{ activity.name }}
                             </div>
                         </div>
-                        <div class="p-2 flex-shrink-1"><button class="btn btn-sm border-danger delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMark)">Delete</button></div>
+                        <div *ngIf="timeMarkTile.deleteButtonIsVisible" class="p-0 m-0">
+                          <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">Delete</div>
+                        </div>
                       </div>
                   </div>
                 </div>
               </div>
-              <div *ngIf="timeMarks.length < 1">
+              <div *ngIf="timeMarkTiles.length < 1">
                 No time marks today yet
               </div>
               
             </div>
-            <div *ngIf="!timeMarks">
+            <div *ngIf="!timeMarkTiles">
               No Time Marks
             </div>
             <hr class='mb-2'>
