@@ -3,17 +3,27 @@
     <div class="col-12">
       <div class="card border border-success">
         <div class="card-header">
-          <div class="d-flex">
-            <div class="px-2">
-                Time Log
+          <div class="d-flex" style="justify-content: space-between;align-items: center;">
+            <div class="text-center" style='order:1'>
+
+                <span (click)="onClickAdjacentDate(headerDates.thisDateMinusOne)" class='adjacent-date'>{{ headerDates.thisDateMinusOne }}</span>
             </div>
-            <div class="px-2">
-                <h2>{{ this.todayYYYYMMDD }}</h2>
+
+            <div class='text-center' style='order:1'>
+              <h2>{{ headerDates.thisDate }}</h2>
+              actively updated time clock here
             </div>
+            <div class='text-center' style='order:1'>
+                <!-- Possibility: change this so that in stead of not being displayed, it is still displayed but un-clickable -->
+                <!-- <span *ngIf="dateNotGreaterThanToday(headerDates.thisDayPlusOne)" class='font-size: 0.8em'>{{ headerDates.thisDayPlusOne }}</span> -->
+                <span (click)="onClickAdjacentDate(headerDates.thisDatePlusOne)" class='adjacent-date'>{{ headerDates.thisDatePlusOne }}</span>
+            </div>
+
           </div>
-            
+
         </div>
         <div class="card-body">
+          Time Log
           <div *ngIf="loadingTimeMarks">
             <i class="fa fa-spinner fa-spin"></i>
           </div>
@@ -23,29 +33,27 @@
               <!-- Time Marks -->
               <div *ngIf="timeMarkTiles.length > 0">
                 <div *ngFor="let timeMarkTile of timeMarkTiles">
-                  <div class='m-1 p-1 border border-success time-mark-tile' 
-                    [ngStyle]="timeMarkTile.style"
-                    (mouseenter)="onMouseEnterTimeMarkTile(timeMarkTile)" 
+                  <div class='m-1 p-1 border border-success time-mark-tile' [ngStyle]="timeMarkTile.style" (mouseenter)="onMouseEnterTimeMarkTile(timeMarkTile)"
                     (mouseleave)="onMouseLeaveTimeMarkTile(timeMarkTile)">
-  
-                    <div class="d-flex" >
-                        <div class="p-2 w-100">
-                            {{ timeMarkTile.timeMark.time.format('HH:mm') }} - {{ timeMarkTile.timeMark.description }}
-                            <div class='ml-2' *ngFor="let activity of timeMarkTile.timeMark.activities">
-                              {{ activity.name }}
-                            </div>
-                        </div>
-                        <div *ngIf="timeMarkTile.deleteButtonIsVisible" class="p-0 m-0">
-                          <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">Delete</div>
-                        </div>
+
+                    <div class="d-flex">
+                      <div class="p-2 w-100">
+                        {{ timeMarkTile.timeMark.time.format('HH:mm') }} - {{ timeMarkTile.timeMark.description }}
+                        <ul class='m-0 ml-2 py-0' *ngFor="let activity of timeMarkTile.timeMark.activities">
+                          <li class='m-0 p-0'>{{ activity.name }}</li>
+                        </ul>
                       </div>
+                      <div *ngIf="timeMarkTile.deleteButtonIsVisible" class="p-0 m-0">
+                        <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">Delete</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
               <div *ngIf="timeMarkTiles.length < 1">
-                No time marks today yet
+                No time marks for {{ headerDates.thisDate }}
               </div>
-              
+
             </div>
             <div *ngIf="!timeMarkTiles">
               No Time Marks
@@ -85,7 +93,8 @@
 -->
               <h6>Activities Prior</h6>
               <div *ngIf="timeMarkActivities">
-                <div *ngFor="let activity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity' style='border-radius:5px;'>
+                <div *ngFor="let activity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity'
+                  style='border-radius:5px;'>
                   Activity: {{ activity.name }}
                 </div>
               </div>
@@ -102,7 +111,8 @@
 
               </div>
 
-              <button *ngIf="ifAddActivity" class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">+ Add Activity</button>
+              <button *ngIf="ifAddActivity" class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">+
+                Add Activity</button>
             </div>
 
             <div class='d-flex flex-row-reverse'>

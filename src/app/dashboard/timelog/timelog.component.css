@@ -31,3 +31,14 @@
     background-color: orange;
 
 }
+
+.adjacent-date{
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 10px;
+}
+.adjacent-date:hover{
+    border: 1px solid green;
+    background-color: #f3fff2;
+    cursor: pointer;
+}

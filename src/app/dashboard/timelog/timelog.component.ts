@@ -107,11 +107,18 @@ export class TimelogComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService) { }
 
-  todayYYYYMMDD: string = '';
+
+  headerDates: {
+    thisDate: string, 
+    thisDateMinusOne: string, 
+    thisDatePlusOne: string
+  };
+
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
   ifAddActivity: boolean = true;
-  private timeMarks: TimeMark[];
+  private thisDaysTimeMarks: TimeMark[];
+  private allTimeMarks: TimeMark[];
   timeMarkForm: FormGroup;
   newActivityForm: FormGroup;
 
@@ -124,17 +131,29 @@ export class TimelogComponent implements OnInit {
 
 
   ngOnInit() {
+    this.headerDates = this.setHeaderDates(moment().format('YYYY-MM-DD'));
     this.defaultTimeMarkTileStyle = {};
 
-
-    this.todayYYYYMMDD = moment().format('YYYY-MM-DD');
-
     this.timeLogService.timeMarks.subscribe((timeMarks: TimeMark[]) => {
-      this.timeMarks = this.todaysTimeMarks(timeMarks);
-      this.timeMarkTiles = this.buildTimeMarkTiles(this.timeMarks);
+      this.allTimeMarks = timeMarks;
+      this.updateThisDaysTimeMarks(moment(this.headerDates.thisDate));
       this.loadingTimeMarks = false;
     });
 
+  } 
+
+  private updateThisDaysTimeMarks(thisDate: moment.Moment){
+    this.headerDates = this.setHeaderDates(moment(thisDate).format('YYYY-MM-DD'));
+    this.thisDaysTimeMarks = this.getThisDaysTimeMarks(moment(this.headerDates.thisDate), this.allTimeMarks);
+    this.timeMarkTiles = this.buildTimeMarkTiles(this.thisDaysTimeMarks);
+  }
+
+  private setHeaderDates(focusDateYYYYMMDD: string){
+    return {
+      thisDate: moment(focusDateYYYYMMDD).format('YYYY-MM-DD'), 
+      thisDateMinusOne: moment(focusDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'), 
+      thisDatePlusOne: moment(focusDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'), 
+    };
   }
 
   private buildTimeMarkTiles(timeMarks: TimeMark[]): ITimeMarkTile[] {
@@ -146,28 +165,28 @@ export class TimelogComponent implements OnInit {
     return timeMarkTiles;
   }
 
-  private todaysTimeMarks(timeMarks: TimeMark[]): TimeMark[] {
+  private getThisDaysTimeMarks(thisDay: moment.Moment, timeMarks: TimeMark[]): TimeMark[] {
 
     // const utcOffsetMinutes = moment().utcOffset();
 
     // const utcOffsetStart = moment(today).hour(0).minute(utcOffsetMinutes).second(0).millisecond(0);
     // const utcOffsetEnd =   moment(today).hour(23).minute(59+utcOffsetMinutes).second(59).millisecond(999);
 
-    let todaysTimeMarks: TimeMark[] = [];
+    let thisDaysTimeMarks: TimeMark[] = [];
     for (let timeMark of timeMarks) {
-      if (timeMark.time.local().format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
-        todaysTimeMarks.push(timeMark);
+      if (timeMark.time.local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD')) {
+        thisDaysTimeMarks.push(timeMark);
       }
     }
 
-    return todaysTimeMarks;
+    return thisDaysTimeMarks;
   }
 
   buildActivityForm() {
 
     this.newActivityForm = new FormGroup({
-      'name': new FormControl('Overwatch'),
-      'description': new FormControl('Overwatch PC video game'),
+      'name': new FormControl(null),
+      'description': new FormControl(null),
       'color': new FormControl('blue')
     })
   }
@@ -199,9 +218,9 @@ export class TimelogComponent implements OnInit {
   onClickSaveActivity() {
     let activity: CategorizedActivity = new CategorizedActivity();
     //Get form data and build the object.
-    activity.name = "Overwatch";
-    activity.description = "Overwatch PC video game";
-    activity.color = "silver"
+    activity.name = this.newActivityForm.get('name').value;
+    activity.description = this.newActivityForm.get('description').value;
+    activity.color = this.newActivityForm.get('color').value
     activity.childCategoryIds = [];
     activity.parentId = "";
     activity.icon = "";
@@ -244,6 +263,18 @@ export class TimelogComponent implements OnInit {
   onMouseLeaveTimeMarkTile(timeMarkTile: ITimeMarkTile) {
     //timeMarkTile.style = {};
     timeMarkTile.deleteButtonIsVisible = false;
+  }
+
+  onClickAdjacentDate(dateYYYYMMDD: string){
+    this.updateThisDaysTimeMarks(moment(dateYYYYMMDD));
+  }
+
+  dateNotGreaterThanToday(dateYYYYMMDD: string): boolean{
+    if(moment().format('YYYY-MM-DD') < moment(dateYYYYMMDD).format('YYYY-MM-DD')){
+      return false;
+    }else{
+      return true;
+    }
   }
 
 }
