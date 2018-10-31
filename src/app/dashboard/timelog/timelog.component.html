@@ -1,22 +1,24 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <div class="card border border-success">
+      <div [ngStyle]="thisDayCardStyle" class="card">
         <div class="card-header">
           <div class="d-flex" style="justify-content: space-between;align-items: center;">
-            <div class="text-center" style='order:1'>
+            <div class="text-center adjacent-date" style='order:1' (click)="onClickAdjacentDate(headerDates.thisDateMinusOne)" >
 
-                <span (click)="onClickAdjacentDate(headerDates.thisDateMinusOne)" class='adjacent-date'>{{ headerDates.thisDateMinusOne }}</span>
+                <span >{{ getFormattedDateString(headerDates.thisDateMinusOne) }}</span> <br>
+                <span>{{ dateRelevanceToTodayString(headerDates.thisDateMinusOne) }}</span>
             </div>
 
             <div class='text-center' style='order:1'>
-              <h2>{{ headerDates.thisDate }}</h2>
-              actively updated time clock here
+              <h2>{{ getFormattedDateString(headerDates.thisDate) }}</h2>
+              <span>{{ dateRelevanceToTodayString(headerDates.thisDate) }}</span>
             </div>
-            <div class='text-center' style='order:1'>
+            <div class='text-center adjacent-date' style='order:1' (click)="onClickAdjacentDate(headerDates.thisDatePlusOne)">
                 <!-- Possibility: change this so that in stead of not being displayed, it is still displayed but un-clickable -->
                 <!-- <span *ngIf="dateNotGreaterThanToday(headerDates.thisDayPlusOne)" class='font-size: 0.8em'>{{ headerDates.thisDayPlusOne }}</span> -->
-                <span (click)="onClickAdjacentDate(headerDates.thisDatePlusOne)" class='adjacent-date'>{{ headerDates.thisDatePlusOne }}</span>
+                <span>{{ getFormattedDateString(headerDates.thisDatePlusOne) }}</span> <br>
+                <span>{{ dateRelevanceToTodayString(headerDates.thisDatePlusOne) }}</span>
             </div>
 
           </div>
@@ -59,7 +61,7 @@
               No Time Marks
             </div>
             <hr class='mb-2'>
-            <button *ngIf="!addTimeMarkForm" class="btn btn-primary" (click)="toggleTimeMarkForm()">Add New Time Mark</button>
+            <button *ngIf="!addTimeMarkForm && dateIsToday(headerDates.thisDate)" class="btn btn-primary" (click)="toggleTimeMarkForm()">Add New Time Mark</button>
           </div>
           <div *ngIf="addTimeMarkForm" class='m-3 p-3 border border-secondary new-time-mark'>
             New Time Mark

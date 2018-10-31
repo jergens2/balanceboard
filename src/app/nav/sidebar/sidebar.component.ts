@@ -13,8 +13,10 @@ export class SidebarComponent implements OnInit {
   constructor(private homeService: HomeService, private authService: AuthenticationService, private router: Router) { }
 
   activeLink = { color: 'red' };
+  loggedInUser: string = '';
 
   ngOnInit() {
+    this.loggedInUser = this.authService.authenticatedUser.email;
   }
 
   onClickTimeFrameButton(selectedView){

@@ -118,9 +118,11 @@ export class TimelogComponent implements OnInit {
   addTimeMarkForm: boolean = false;
   ifAddActivity: boolean = true;
   private thisDaysTimeMarks: TimeMark[];
+  
   private allTimeMarks: TimeMark[];
   timeMarkForm: FormGroup;
   newActivityForm: FormGroup;
+  thisDayCardStyle = {};
 
   newCategorizedActivity: boolean = false;
   timeMarkActivities: CategorizedActivity[] = [];
@@ -146,6 +148,18 @@ export class TimelogComponent implements OnInit {
     this.headerDates = this.setHeaderDates(moment(thisDate).format('YYYY-MM-DD'));
     this.thisDaysTimeMarks = this.getThisDaysTimeMarks(moment(this.headerDates.thisDate), this.allTimeMarks);
     this.timeMarkTiles = this.buildTimeMarkTiles(this.thisDaysTimeMarks);
+    if(moment().format('YYYY-MM-DD') == thisDate.format('YYYY-MM-DD')){
+      this.thisDayCardStyle = {
+        'border':'1px solid green',
+        
+
+      }  
+    }else{
+      this.thisDayCardStyle = {
+        'border':'1px solid gray',
+      }
+    }
+    
   }
 
   private setHeaderDates(focusDateYYYYMMDD: string){
@@ -275,6 +289,35 @@ export class TimelogComponent implements OnInit {
     }else{
       return true;
     }
+  }
+
+  dateRelevanceToTodayString(dateYYYYMMDD: string): string{ 
+    //Used by the template to input any date and return a colloquialism relative to Today
+    if(moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')){
+      return "Today";
+    }else if(moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().add(1, 'days').format('YYYY-MM-DD')){
+      return "Tomorrow";
+    }else if(moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().add(-1, 'days').format('YYYY-MM-DD')){
+      return "Yesterday";
+    }else if(moment(dateYYYYMMDD).isBefore(moment().startOf('day'))){
+      let duration = moment.duration(moment().startOf('day').diff(dateYYYYMMDD));
+      let days = duration.asDays();
+      return "" + days + " days ago";
+    }else if(moment(dateYYYYMMDD).isAfter(moment().endOf('day'))){
+      let duration = moment.duration(moment(dateYYYYMMDD).diff(moment().startOf('day')));
+      let days = duration.asDays().toFixed(0);
+      return "" + days + " days from today";
+    }
+  }
+
+  getFormattedDateString(dateYYYYMMDD: string): string{
+    //Used by template to input any date and receive back a formatted date string 
+    return moment(dateYYYYMMDD).format('dddd, MMMM Do, gggg');
+  }
+
+  dateIsToday(dateYYYYMMDD: string): boolean{
+    //Used by template to check if provided date string is Today
+    return (moment().format('YYYY-MM-DD') == dateYYYYMMDD);
   }
 
 }
