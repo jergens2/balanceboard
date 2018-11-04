@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, OnDestroy } from '@angular/core';
-import { faCaretSquareDown } from '@fortawesome/free-regular-svg-icons';
+import { faCalendarAlt, faCaretSquareDown } from '@fortawesome/free-regular-svg-icons';
+import { faHome, faProjectDiagram, faChartBar, faChartPie, faListOl, faSyncAlt, faDollarSign, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,6 +13,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor() { }
   faCaretSquareDown = faCaretSquareDown;
+  faHome = faHome;
+  faCalendarAlt = faCalendarAlt;
+  faProjectDiagram = faProjectDiagram;
+  faChartBar = faChartBar;
+  faChartPie = faChartPie;
+  faListOl = faListOl;
+  faSyncAlt = faSyncAlt;
+  faDollarSign = faDollarSign;
+  faChartLine = faChartLine;
+  faBriefcaseMedical = faBriefcaseMedical;
+  faWeight = faWeight;
+  faCogs = faCogs;
+  faSignOutAlt = faSignOutAlt;
 
   menuIsExpanded: boolean;
   menuSubscription: Subscription;
@@ -35,7 +49,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   onMouseLeaveMenu(){
     this.menuSubscription.unsubscribe();
     let documentClickListener: Observable<Event> = fromEvent(document, 'click');
-    this.menuSubscription = documentClickListener.subscribe((click)=>{
+    this.menuSubscription = documentClickListener.subscribe((click)=>{  
       this.menuIsExpanded = false;
     })
 

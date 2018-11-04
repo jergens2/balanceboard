@@ -3,16 +3,50 @@
   <div>
     <button class="btn btn-primary" (click)="onClickMenuButton()">Menu <fa-icon [icon]="faCaretSquareDown"></fa-icon></button>
     <div [ngClass]="{'expanded-menu': menuIsExpanded}" class="menu" (mouseleave)="onMouseLeaveMenu()" (mouseenter)="onMouseEnterMenu()">
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 1</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 2</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 3</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 4</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 5</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 6</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 7</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 8</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 9</div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">Item 10</div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faHome"></fa-icon> Home
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faCalendarAlt"></fa-icon> Time Log
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faProjectDiagram"></fa-icon> Activities / Categories
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faProjectDiagram"></fa-icon> Productivity
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faListOl"></fa-icon> Work Task List
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faProjectDiagram"></fa-icon> Ongoing Task List
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faSyncAlt"></fa-icon> Routine
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faDollarSign"></fa-icon> Finances
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faChartPie"></fa-icon> Budget
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faChartLine"></fa-icon> Net Worth
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+        <fa-icon [icon]="faBriefcaseMedical"></fa-icon> Health
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+          <fa-icon [icon]="faWeight"></fa-icon> Body Weight
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+
+        <fa-icon [icon]="faCogs"></fa-icon> Settings
+
+      </div>
+      <div class='menu-item' (click)="onClickMenuItem($event)">
+          <fa-icon [icon]="faSignOutAlt"></fa-icon> Logout
+      </div>
 
     </div>
   </div>
