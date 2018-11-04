@@ -47,3 +47,10 @@
 .expanded-menu {
     display: flex;
 }
+
+.activeLink{
+    background: #ddeaff;
+}
+.activeLink:hover{
+    background: #ddeaff;
+}

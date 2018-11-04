@@ -3,7 +3,7 @@
   <div (mouseleave)="onMouseLeaveMenu()" (mouseenter)="onMouseEnterMenu()">
     <button class="btn btn-primary" (click)="onClickMenuButton()">Menu <fa-icon [icon]="faCaretSquareDown"></fa-icon></button>
     <div [ngClass]="{'expanded-menu': menuIsExpanded}" class="menu">
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/home" routerLinkActive='activeLink'>
         <div class="menu-item-icon">
           <fa-icon [icon]="faHome"></fa-icon>
         </div>
@@ -11,7 +11,7 @@
           Home
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/timelog" routerLinkActive='activeLink'>
         <div class="menu-item-icon">
           <fa-icon [icon]="faCalendarAlt"></fa-icon>
         </div>
@@ -19,7 +19,7 @@
           Time Log
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()">
         <div class="menu-item-icon">
           <fa-icon [icon]="faProjectDiagram"></fa-icon>
         </div>
@@ -27,7 +27,7 @@
           Activities / Categories
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()">
         <div class="menu-item-icon">
           <fa-icon [icon]="faProjectDiagram"></fa-icon>
         </div>
@@ -35,7 +35,7 @@
           Productivity
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/ivyleeCreation" routerLinkActive='activeLink'>
         <div class="menu-item-icon">
           <fa-icon [icon]="faListOl"></fa-icon>
         </div>
@@ -43,7 +43,7 @@
           Work Task List
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()">
         <div class="menu-item-icon">
           <fa-icon [icon]="faProjectDiagram"></fa-icon>
         </div>
@@ -51,7 +51,7 @@
           Ongoing Task List
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()">
         <div class="menu-item-icon">
           <fa-icon [icon]="faSyncAlt"></fa-icon>
         </div>
@@ -59,7 +59,7 @@
           Routine
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()">
         <div class="menu-item-icon">
           <fa-icon [icon]="faDollarSign"></fa-icon>
         </div>
@@ -67,7 +67,7 @@
           Finances
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()">
         <div class="menu-item-icon">
           <fa-icon [icon]="faChartPie"></fa-icon>
         </div>
@@ -75,7 +75,7 @@
           Budget
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/networth" routerLinkActive='activeLink'>
         <div class="menu-item-icon">
           <fa-icon [icon]="faChartLine"></fa-icon>
         </div>
@@ -83,7 +83,7 @@
           Net Worth
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()">
         <div class="menu-item-icon">
           <fa-icon [icon]="faBriefcaseMedical"></fa-icon>
         </div>
@@ -91,7 +91,7 @@
           Health
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem($event)">
+      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/bodyWeight" routerLinkActive='activeLink'>
         <div class="menu-item-icon">
           <fa-icon [icon]="faWeight"></fa-icon>
         </div>

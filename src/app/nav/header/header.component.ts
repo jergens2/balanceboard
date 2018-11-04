@@ -3,6 +3,7 @@ import { faCalendarAlt, faCaretSquareDown } from '@fortawesome/free-regular-svg-
 import { faHome, faProjectDiagram, faChartBar, faChartPie, faListOl, faSyncAlt, faDollarSign, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,7 @@ import { map } from 'rxjs/operators';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-  constructor() { }
+  constructor(private router: Router) { }
   faCaretSquareDown = faCaretSquareDown;
   faHome = faHome;
   faCalendarAlt = faCalendarAlt;
@@ -55,24 +56,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   }
 
-  onClickMenuItem($event){
-    console.log("Event!,", $event);
+  onClickMenuItem(){
+    this.menuSubscription.unsubscribe();
+    this.menuIsExpanded = false;
   }
+
 
 
   ngOnDestroy(){
     this.menuSubscription.unsubscribe();
   }
-
-  /*
-    mouseleave()
-
-    --start a timer or lister that simply waits until the next mouseclick and then closes
-    --a listener that is listening for other clicks.
-
-    you move mouse away but no click, so the menu stays open.
-      once a click happens, then the listener knows this and turns off the menu
-
-  */
 
 }
