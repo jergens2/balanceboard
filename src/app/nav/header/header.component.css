@@ -1,3 +1,33 @@
 #header{
     z-index: 999;
 }
+
+.menu {
+    display: none;
+    position: fixed;
+    /* top: 0; */
+    right: 10px;
+    padding: 10px;
+    border: 1px solid black;
+    /* border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px; */
+    border-radius: 3px;
+    z-index: 10;
+    background-color : white;
+    box-shadow: 2px 2px 5px #8e8e8e;
+    flex-direction: column;
+}
+
+.menu-item{
+    margin: 0px;
+    padding: 0px;
+}
+
+.menu-item:hover{
+    background-color:lime;
+    cursor:pointer;
+}
+
+.expanded-menu {
+    display: flex;
+}

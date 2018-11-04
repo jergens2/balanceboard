@@ -1,60 +1,91 @@
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <h3 class="mb-5">balanceboard </h3>
+    Logged in as <span style='color:dodgerblue'>{{ loggedInUser }}</span>
+  </div>
 
 
-  <nav id="sidebar">
-    <div class="sidebar-header">
-      <h3 class="mb-5" >balanceboard  </h3>
-      Logged in as <span style='color:dodgerblue'>{{ loggedInUser }}</span>
-    </div>
+  <div class="sidebar-button" routerLink='/home' routerLinkActive='activeLink'>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faHome"></fa-icon> Home
+    </span>
+  </div>
+
+  <div class="sidebar-button" routerLink='/timelog' routerLinkActive='activeLink'>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faCalendarAlt"></fa-icon> Time Log
+    </span>
+  </div>
+  <div class="sidebar-button incomplete-sidebar-button" routerLink='/timeactivities' routerLinkActive='activeLink'>
+    <span style="margin-left:15px;" class='sidebar-button-title'>
+      <fa-icon [icon]="faProjectDiagram"></fa-icon> Activities / Categories
+    </span>
+  </div>
+  <div class="sidebar-button incomplete-sidebar-button" routerLink='/productivity' routerLinkActive='activeLink'>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faProjectDiagram"></fa-icon> Productivity
+    </span>
+  </div>
+  <div class="sidebar-button" routerLink='/ivyleeCreation' routerLinkActive='activeLink'>
+    <span style="margin-left:15px;"></span>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faListOl"></fa-icon> Work Task List
+    </span>
+  </div>
+  <div class="sidebar-button incomplete-sidebar-button">
+    <span style="margin-left:15px;"></span>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faProjectDiagram"></fa-icon> Ongoing Task List
+    </span>
+  </div>
+  <div class="sidebar-button incomplete-sidebar-button" routerLink='/routine' routerLinkActive='activeLink'>
+    <span style="margin-left:15px;"></span>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faSyncAlt"></fa-icon> Routine
+    </span>
+  </div>
+
+  <div class="sidebar-button incomplete-sidebar-button" routerLink='/finances' routerLinkActive='activeLink'>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faDollarSign"></fa-icon> Finances
+    </span>
+  </div>
+  <div class="sidebar-button incomplete-sidebar-button" routerLink='/budget' routerLinkActive='activeLink'>
+    <span style="margin-left:15px;"></span>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faChartPie"></fa-icon> Budget
+    </span>
+  </div>
+  <div class="sidebar-button" routerLink='/networth' routerLinkActive='activeLink'>
+    <span style="margin-left:15px;"></span>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faChartLine"></fa-icon> Net Worth
+    </span>
+  </div>
+
+  <div class="sidebar-button incomplete-sidebar-button" routerLink='/health' routerLinkActive='activeLink'>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faBriefcaseMedical"></fa-icon> Health
+    </span>
+  </div>
+  <div class="sidebar-button" routerLink='/bodyWeight' routerLinkActive='activeLink'>
+    <span style="margin-left:15px;"></span>
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faWeight"></fa-icon> Body Weight
+    </span>
+  </div>
+
+  <div class="sidebar-button" style="margin-top:150px">
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faCogs"></fa-icon> Settings
+    </span>
+  </div>
+  <div class="sidebar-button" (click)="onClickLogout()">
+    <span class='sidebar-button-title'>
+      <fa-icon [icon]="faSignOutAlt"></fa-icon> Logout
+    </span>
+  </div>
 
 
-    <div class="sidebar-button" routerLink='/home' routerLinkActive='activeLink' >
-      <span class='sidebar-button-title'><i class="fa fa-home"></i> Home</span>
-    </div>
 
-    <div class="sidebar-button" routerLink='/timelog' routerLinkActive='activeLink' >
-      <span class='sidebar-button-title'><i class="fa fa-calendar"></i> Time Log</span>
-    </div>
-    <div class="sidebar-button incomplete-sidebar-button" routerLink='/timeactivities' routerLinkActive='activeLink' >
-      <span style="margin-left:15px;" class='sidebar-button-title'><i class="fas fa-project-diagram"></i> Activities / Categories</span>
-    </div>
-    <div class="sidebar-button incomplete-sidebar-button" routerLink='/productivity' routerLinkActive='activeLink' >
-      <span class='sidebar-button-title'><i class="fa fa-bar-chart"></i> Productivity</span>
-    </div>
-    <div class="sidebar-button" routerLink='/ivyleeCreation' routerLinkActive='activeLink' >
-      <span style="margin-left:15px;"></span><span class='sidebar-button-title'><i class="fa fa-list-ol"></i> Work Task List</span>
-    </div>
-    <div class="sidebar-button incomplete-sidebar-button">
-      <span style="margin-left:15px;"></span><span class='sidebar-button-title'><i class="fa fa-list-ol"></i> Ongoing Task List</span>
-    </div>
-    <div class="sidebar-button incomplete-sidebar-button" routerLink='/routine' routerLinkActive='activeLink' >
-      <span style="margin-left:15px;"></span><span class='sidebar-button-title'><i class="fa fa-refresh"></i> Routine</span>
-    </div>
-
-    <div class="sidebar-button incomplete-sidebar-button" routerLink='/finances' routerLinkActive='activeLink' >
-      <span class='sidebar-button-title'><i class="fa fa-dollar"></i> Finances</span>
-    </div>
-    <div class="sidebar-button incomplete-sidebar-button" routerLink='/budget' routerLinkActive='activeLink' >
-      <span style="margin-left:15px;"></span><span class='sidebar-button-title'><i class="fa fa-pie-chart"></i> Budget</span>
-    </div>
-    <div class="sidebar-button" routerLink='/networth' routerLinkActive='activeLink' >
-      <span style="margin-left:15px;"></span><span class='sidebar-button-title'><i class="fa fa-line-chart"></i> Net Worth</span>
-    </div>
-
-    <div class="sidebar-button incomplete-sidebar-button" routerLink='/health' routerLinkActive='activeLink' >
-      <span class='sidebar-button-title'><i class="fa fa-medkit"></i> Health</span>
-    </div>
-    <div class="sidebar-button" routerLink='/bodyWeight' routerLinkActive='activeLink' >
-      <span style="margin-left:15px;"></span><span class='sidebar-button-title'><i class="fa fa-balance-scale" aria-hidden="true"></i> Body Weight</span>
-    </div>
-
-    <div class="sidebar-button" style="margin-top:150px">
-      <span class='sidebar-button-title'><i class="fa fa-cogs"></i> Settings</span>
-    </div>
-    <div class="sidebar-button" (click)="onClickLogout()">
-      <span class='sidebar-button-title'><i class="fa fa-sign-out"></i> Logout</span>
-    </div>
-
-
-
-  </nav>
-
+</nav>

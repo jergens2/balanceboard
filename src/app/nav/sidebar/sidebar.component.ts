@@ -3,6 +3,9 @@ import { Router } from '@angular/router';
 import { HomeService } from '../../dashboard/home/home.service';
 import { Component, OnInit } from '@angular/core';
 
+import { faHome, faProjectDiagram, faListOl, faSyncAlt, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt  } from '@fortawesome/free-solid-svg-icons';
+import { faChartBar, faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
+
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -11,6 +14,22 @@ import { Component, OnInit } from '@angular/core';
 export class SidebarComponent implements OnInit {
 
   constructor(private homeService: HomeService, private authService: AuthenticationService, private router: Router) { }
+
+
+  faHome = faHome;
+  faCalendarAlt = faCalendarAlt;
+  faProjectDiagram = faProjectDiagram;
+  faChartBar = faChartBar;
+  faChartPie = faChartPie;
+  faListOl = faListOl;
+  faSyncAlt = faSyncAlt;
+  faDollarSign = faDollarSign;
+  faChartLine = faChartLine;
+  faBriefcaseMedical = faBriefcaseMedical;
+  faWeight = faWeight;
+  faCogs = faCogs;
+  faSignOutAlt = faSignOutAlt;
+
 
   activeLink = { color: 'red' };
   loggedInUser: string = '';

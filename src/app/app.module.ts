@@ -1,9 +1,11 @@
-
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -31,10 +33,12 @@ import { AuthenticationComponent } from './authentication/authentication.compone
     ReactiveFormsModule,
     HttpClientModule,
     DashboardModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FontAwesomeModule
   ],
   providers: [
     AuthenticationService,
+    NgbModule,
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]
