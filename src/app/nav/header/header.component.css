@@ -7,7 +7,6 @@
     position: fixed;
     /* top: 0; */
     right: 10px;
-    padding: 10px;
     border: 1px solid black;
     /* border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px; */
@@ -16,16 +15,33 @@
     background-color : white;
     box-shadow: 2px 2px 5px #8e8e8e;
     flex-direction: column;
+
 }
 
 .menu-item{
-    margin: 0px;
-    padding: 5px;
+    margin: 1px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+    display: flex;
 }
 
 .menu-item:hover{
-    background-color:lime;
+    background-color:#efefef;
     cursor:pointer;
+}
+.menu-item-icon{
+    margin: 0px;
+    margin-right: 10px;
+    padding: 0px;
+    width: 15px;
+}
+.menu-item-text{
+    margin: 0px;
+    padding: 0px;
+
 }
 
 .expanded-menu {
