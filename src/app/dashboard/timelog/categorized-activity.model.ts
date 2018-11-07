@@ -4,14 +4,16 @@ export class CategorizedActivity{
     public name: string;
     public description: string;
 
-    public userId: string;
-    public parentId: string;
+    // public userId: string;
+    // public parentId: string;
 
-    public childCategoryIds: string[];
+    // public childCategoryIds: string[];
     public color: string;
     public icon: string;
 
     constructor(){
-
     }
+
+
+
 }

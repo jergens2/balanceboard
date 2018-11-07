@@ -4,6 +4,7 @@ import { faHome, faProjectDiagram, faChartBar, faChartPie, faListOl, faSyncAlt, 
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { AuthenticationService } from '../../authentication/authentication.service';
 
 @Component({
   selector: 'app-header',
@@ -12,7 +13,7 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-  constructor(private router: Router) { }
+  constructor(private authService: AuthenticationService, private router: Router) { }
   faCaretSquareDown = faCaretSquareDown;
   faHome = faHome;
   faCalendarAlt = faCalendarAlt;
@@ -61,6 +62,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.menuIsExpanded = false;
   }
 
+  onClickLogout(){
+    this.authService.logout();
+  }
 
 
   ngOnDestroy(){

@@ -42,3 +42,23 @@
     background-color: #f3fff2;
     cursor: pointer;
 }
+
+.activity-name-input-dropdown-container{
+    position: relative;
+    display: inline-block;
+}
+.activity-name-input-dropdown{
+    position: absolute;
+    background-color: white;
+    border: 1px solid gray;
+    width: 100%;
+    padding: 1px;
+}
+.activity-name-input-dropdown-item{
+    padding:4px;
+    margin:0px;
+}
+.activity-name-input-dropdown-item:hover{
+    background-color:#efefef;
+    cursor:pointer;
+}

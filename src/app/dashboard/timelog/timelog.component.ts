@@ -109,16 +109,49 @@ export class TimelogComponent implements OnInit {
 
 
   headerDates: {
-    thisDate: string, 
-    thisDateMinusOne: string, 
+    thisDate: string,
+    thisDateMinusOne: string,
     thisDatePlusOne: string
   };
+
+  categorizedActivities: CategorizedActivity[] = [
+    {
+      id: '',
+      name: "Overwatch",
+      description: "Overwatch PC video game",
+      color: "#f8a01b",
+      icon: ''
+    },
+    {
+      id: '',
+      name: "Reddit",
+      description: "Browse Reddit",
+      color: "#ff6435",
+      icon: ''
+    },
+    {
+      id: '',
+      name: "CSC - NSD",
+      description: "Working for Correctional Service of Canada - National IT Service Desk",
+      color: "#2f54f9",
+      icon: ''
+    },
+    {
+      id: '',
+      name: "Walk Dogs",
+      description: "Take the dogs for a walk",
+      color: "#1da529",
+      icon: ''
+    }
+  ];
+
+  categorizedActivitiesSearchResults: CategorizedActivity[] = [];
 
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
   ifAddActivity: boolean = true;
   private thisDaysTimeMarks: TimeMark[];
-  
+
   private allTimeMarks: TimeMark[];
   timeMarkForm: FormGroup;
   newActivityForm: FormGroup;
@@ -142,31 +175,31 @@ export class TimelogComponent implements OnInit {
       this.loadingTimeMarks = false;
     });
 
-  } 
+  }
 
-  private updateThisDaysTimeMarks(thisDate: moment.Moment){
+  private updateThisDaysTimeMarks(thisDate: moment.Moment) {
     this.headerDates = this.setHeaderDates(moment(thisDate).format('YYYY-MM-DD'));
     this.thisDaysTimeMarks = this.getThisDaysTimeMarks(moment(this.headerDates.thisDate), this.allTimeMarks);
     this.timeMarkTiles = this.buildTimeMarkTiles(this.thisDaysTimeMarks);
-    if(moment().format('YYYY-MM-DD') == thisDate.format('YYYY-MM-DD')){
+    if (moment().format('YYYY-MM-DD') == thisDate.format('YYYY-MM-DD')) {
       this.thisDayCardStyle = {
-        'border':'1px solid green',
-        
+        'border': '1px solid green',
 
-      }  
-    }else{
+
+      }
+    } else {
       this.thisDayCardStyle = {
-        'border':'1px solid gray',
+        'border': '1px solid gray',
       }
     }
-    
+
   }
 
-  private setHeaderDates(focusDateYYYYMMDD: string){
+  private setHeaderDates(focusDateYYYYMMDD: string) {
     return {
-      thisDate: moment(focusDateYYYYMMDD).format('YYYY-MM-DD'), 
-      thisDateMinusOne: moment(focusDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'), 
-      thisDatePlusOne: moment(focusDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'), 
+      thisDate: moment(focusDateYYYYMMDD).format('YYYY-MM-DD'),
+      thisDateMinusOne: moment(focusDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'),
+      thisDatePlusOne: moment(focusDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'),
     };
   }
 
@@ -235,8 +268,8 @@ export class TimelogComponent implements OnInit {
     activity.name = this.newActivityForm.get('name').value;
     activity.description = this.newActivityForm.get('description').value;
     activity.color = this.newActivityForm.get('color').value
-    activity.childCategoryIds = [];
-    activity.parentId = "";
+    // activity.childCategoryIds = [];
+    // activity.parentId = "";
     activity.icon = "";
     this.timeMarkActivities.push(activity);
     this.newCategorizedActivity = false;
@@ -266,6 +299,31 @@ export class TimelogComponent implements OnInit {
 
   }
 
+  onKeyUpActivityName(event){
+    let inputValue = this.newActivityForm.get('name').value;
+    this.searchForCategorizedActivities(inputValue);
+    
+  } 
+
+  private searchForCategorizedActivities(inputValue: string){
+    let searchResults: CategorizedActivity[] = [];
+    if(inputValue != ""){
+      for(let activity of this.categorizedActivities){
+        if(activity.name.toLowerCase().match(inputValue.toLowerCase())){
+          searchResults.push(activity);
+        }
+      }
+    }
+    this.categorizedActivitiesSearchResults = searchResults;
+  }
+
+  getActivityNameInputStyle(activity: CategorizedActivity){
+    return {'background-color': activity.color};
+  }
+  onClickActivityNameDropdownItem(activity: CategorizedActivity){
+    this.newActivityForm.patchValue({'name':activity.name});
+    this.searchForCategorizedActivities('');
+  }
 
 
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
@@ -279,43 +337,43 @@ export class TimelogComponent implements OnInit {
     timeMarkTile.deleteButtonIsVisible = false;
   }
 
-  onClickAdjacentDate(dateYYYYMMDD: string){
+  onClickAdjacentDate(dateYYYYMMDD: string) {
     this.updateThisDaysTimeMarks(moment(dateYYYYMMDD));
   }
 
-  dateNotGreaterThanToday(dateYYYYMMDD: string): boolean{
-    if(moment().format('YYYY-MM-DD') < moment(dateYYYYMMDD).format('YYYY-MM-DD')){
+  dateNotGreaterThanToday(dateYYYYMMDD: string): boolean {
+    if (moment().format('YYYY-MM-DD') < moment(dateYYYYMMDD).format('YYYY-MM-DD')) {
       return false;
-    }else{
+    } else {
       return true;
     }
   }
 
-  dateRelevanceToTodayString(dateYYYYMMDD: string): string{ 
+  dateRelevanceToTodayString(dateYYYYMMDD: string): string {
     //Used by the template to input any date and return a colloquialism relative to Today
-    if(moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')){
+    if (moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
       return "Today";
-    }else if(moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().add(1, 'days').format('YYYY-MM-DD')){
+    } else if (moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().add(1, 'days').format('YYYY-MM-DD')) {
       return "Tomorrow";
-    }else if(moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().add(-1, 'days').format('YYYY-MM-DD')){
+    } else if (moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().add(-1, 'days').format('YYYY-MM-DD')) {
       return "Yesterday";
-    }else if(moment(dateYYYYMMDD).isBefore(moment().startOf('day'))){
+    } else if (moment(dateYYYYMMDD).isBefore(moment().startOf('day'))) {
       let duration = moment.duration(moment().startOf('day').diff(dateYYYYMMDD));
       let days = duration.asDays();
       return "" + days + " days ago";
-    }else if(moment(dateYYYYMMDD).isAfter(moment().endOf('day'))){
+    } else if (moment(dateYYYYMMDD).isAfter(moment().endOf('day'))) {
       let duration = moment.duration(moment(dateYYYYMMDD).diff(moment().startOf('day')));
       let days = duration.asDays().toFixed(0);
       return "" + days + " days from today";
     }
   }
 
-  getFormattedDateString(dateYYYYMMDD: string): string{
+  getFormattedDateString(dateYYYYMMDD: string): string {
     //Used by template to input any date and receive back a formatted date string 
     return moment(dateYYYYMMDD).format('dddd, MMMM Do, gggg');
   }
 
-  dateIsToday(dateYYYYMMDD: string): boolean{
+  dateIsToday(dateYYYYMMDD: string): boolean {
     //Used by template to check if provided date string is Today
     return (moment().format('YYYY-MM-DD') == dateYYYYMMDD);
   }
