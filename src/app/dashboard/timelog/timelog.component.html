@@ -113,10 +113,15 @@
                                 </div>
                           </div>
                         </div>
+                        
                       </div>
                       
                       <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()">Save Activity</button>
                       <button class="btn btn-sm border-warning mx-1" (click)="onClickCancelActivity()">Cancel</button>
+                  </div>
+                  <div *ngIf="activityNameInputValue" class="mt-3">
+                      No category matches for <span style="font-weight:bold;"> {{ activityNameInputValue }} </span>
+                      <button class="ml-3 btn btn-primary" (click)="onClickMakeNewCategoryButton()">Create new category</button>
                   </div>
                 </div>
                 

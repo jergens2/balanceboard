@@ -146,6 +146,7 @@ export class TimelogComponent implements OnInit {
   ];
 
   categorizedActivitiesSearchResults: CategorizedActivity[] = [];
+  activityNameInputValue = '';
 
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
@@ -159,6 +160,7 @@ export class TimelogComponent implements OnInit {
 
   newCategorizedActivity: boolean = false;
   timeMarkActivities: CategorizedActivity[] = [];
+  
 
 
   timeMarkTiles: ITimeMarkTile[] = [];
@@ -302,17 +304,24 @@ export class TimelogComponent implements OnInit {
   onKeyUpActivityName(event){
     let inputValue = this.newActivityForm.get('name').value;
     this.searchForCategorizedActivities(inputValue);
-    
   } 
 
   private searchForCategorizedActivities(inputValue: string){
     let searchResults: CategorizedActivity[] = [];
+    
     if(inputValue != ""){
       for(let activity of this.categorizedActivities){
         if(activity.name.toLowerCase().match(inputValue.toLowerCase())){
           searchResults.push(activity);
         }
       }
+      if(searchResults.length > 0){
+        this.activityNameInputValue = "";
+      }else{
+        this.activityNameInputValue = inputValue;
+      }
+    }else{
+      this.activityNameInputValue = "";
     }
     this.categorizedActivitiesSearchResults = searchResults;
   }
@@ -325,15 +334,17 @@ export class TimelogComponent implements OnInit {
     this.searchForCategorizedActivities('');
   }
 
-
-  onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
-    //timeMarkTile.style = {};
-    timeMarkTile.deleteButtonIsVisible = true;
+  onClickMakeNewCategoryButton(){
+    //click make new category button
+    // navigate to a new page where you can manage categories
 
   }
 
+  onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
+    timeMarkTile.deleteButtonIsVisible = true;
+  }
+
   onMouseLeaveTimeMarkTile(timeMarkTile: ITimeMarkTile) {
-    //timeMarkTile.style = {};
     timeMarkTile.deleteButtonIsVisible = false;
   }
 

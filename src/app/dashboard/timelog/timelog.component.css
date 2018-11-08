@@ -56,7 +56,8 @@
 }
 .activity-name-input-dropdown-item{
     padding:4px;
-    margin:0px;
+    margin:1px;
+    border-radius:15px;
 }
 .activity-name-input-dropdown-item:hover{
     background-color:#efefef;
