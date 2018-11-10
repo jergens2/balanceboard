@@ -10,6 +10,8 @@ export class TimeMark{
     public description: string;
     public activities: CategorizedActivity[];
 
+    public previousTimeMarkId: string;
+
     public userId: string;
 
     constructor(id: string, userId: string, timeISO: string){

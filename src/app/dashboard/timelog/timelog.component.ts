@@ -175,6 +175,9 @@ export class TimelogComponent implements OnInit {
       this.allTimeMarks = timeMarks;
       this.updateThisDaysTimeMarks(moment(this.headerDates.thisDate));
       this.loadingTimeMarks = false;
+
+      console.log("Latest time mark",this.timeLogService.latestTimeMark);
+      
     });
 
   }
@@ -346,6 +349,10 @@ export class TimelogComponent implements OnInit {
 
   onMouseLeaveTimeMarkTile(timeMarkTile: ITimeMarkTile) {
     timeMarkTile.deleteButtonIsVisible = false;
+  }
+
+  getTotalMinutes(timeMark: TimeMark){
+    // console.log(timeMark);
   }
 
   onClickAdjacentDate(dateYYYYMMDD: string) {

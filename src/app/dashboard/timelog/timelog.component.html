@@ -45,6 +45,10 @@
                           <li class='m-0 p-0'>{{ activity.name }}</li>
                         </ul>
                       </div>
+                      <div style="min-width:150px;">
+                        Total minutes: 
+                         <!-- {{ getTotalMinutes(timeMarkTile.timeMark) }} -->
+                      </div>
                       <div *ngIf="timeMarkTile.deleteButtonIsVisible" class="p-0 m-0">
                         <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">Delete</div>
                       </div>

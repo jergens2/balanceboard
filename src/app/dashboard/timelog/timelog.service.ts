@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TimeMark } from './time-mark.model';
 import { CategorizedActivity } from './categorized-activity.model';
 
@@ -33,15 +33,23 @@ export class TimelogService {
 
   private serverUrl: string = serverUrl;
 
-  private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>([]);
-  // private _activitiesSubject: BehaviorSubject<CategorizedActivity> = new BehaviorSubject<CategorizedActivity>(null);
-
+  private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>([]); 
+  
   get timeMarks(): Observable<TimeMark[]> {
     return this._timeMarksSubject.asObservable();
   }
-  // get activities(): Observable<CategorizedActivity>{
-  //   return this._activitiesSubject.asObservable();
-  // }
+  
+  get latestTimeMark(): TimeMark {
+    let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+    let tempTimeMark = timeMarks[0];
+    for(let timeMark of timeMarks){
+      if(timeMark.timeISO > tempTimeMark.timeISO){
+        tempTimeMark = timeMark;
+      }
+    }
+    return tempTimeMark;
+  }
+
 
   saveTimeMark(timeMark: TimeMark) {
     let newTimeMark: TimeMark = timeMark;
