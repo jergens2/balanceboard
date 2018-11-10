@@ -1,11 +1,6 @@
 New Time Mark
 <div [formGroup]="timeMarkForm" class="mb-3">
   <div class="form-group row my-2">
-    <!-- <div class="col-6">
-                  <div class="input-group">
-                    <input type="text" class="form-control" formControlName="title" placeholder="Title">
-                  </div>
-                </div> -->
     <div class="col-6">
       <div class="input-group">
         <input type="time" class="form-control" formControlName="time">
@@ -19,15 +14,6 @@ New Time Mark
       </div>
     </div>
   </div>
-  This is the Time Mark Form component
-  <!--
-              userId: {type: Schema.Types.ObjectId, ref: 'User', required: true },
-              previousTimeMarkId: { type: Schema.Types.ObjectId, ref: 'TimeMark'},
-              timeISO: {type: String, required: true},
-              title: String,
-              description: String,
-              activities: [Schema.Types.ObjectId]
--->
   <h6>Activities Prior</h6>
   <div *ngIf="timeMarkActivities">
     <div *ngFor="let activity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity' style='border-radius:5px;'>

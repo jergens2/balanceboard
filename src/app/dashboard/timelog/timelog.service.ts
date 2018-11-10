@@ -18,9 +18,6 @@ import { AuthStatus } from '../../authentication/auth-status.model';
 })
 export class TimelogService {
 
-
-
-
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
       if (authStatus.isAuthenticated) {
@@ -34,9 +31,16 @@ export class TimelogService {
   private serverUrl: string = serverUrl;
 
   private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>([]); 
+  private _currentDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
   
   get timeMarks(): Observable<TimeMark[]> {
     return this._timeMarksSubject.asObservable();
+  }
+  get currentDate(): Observable<moment.Moment> {
+    return this._currentDate.asObservable();
+  }
+  setCurrentDate(newDate: moment.Moment){
+    this._currentDate.next(newDate);
   }
   
   get latestTimeMark(): TimeMark {

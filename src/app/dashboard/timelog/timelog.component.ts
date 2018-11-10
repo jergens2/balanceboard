@@ -4,8 +4,6 @@ import { TimeMark } from './time-mark.model';
 import { FormGroup, FormControl } from '@angular/forms';
 
 import * as moment from 'moment';
-import { CategorizedActivity } from './categorized-activity.model';
-import { Observable, fromEvent } from 'rxjs';
 
 export interface ITimeMarkTile {
   timeMark: TimeMark,
@@ -105,12 +103,7 @@ export class TimelogComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService) { }
 
-
-  headerDates: {
-    thisDate: string,
-    thisDateMinusOne: string,
-    thisDatePlusOne: string
-  };
+  private currentDate: moment.Moment;
 
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
@@ -126,52 +119,51 @@ export class TimelogComponent implements OnInit {
 
 
   ngOnInit() {
-    this.headerDates = this.setHeaderDates(moment().format('YYYY-MM-DD'));
+    
     this.defaultTimeMarkTileStyle = {};
+    this.currentDate = moment();
+
+    this.timeLogService.currentDate.subscribe((currentDate: moment.Moment)=>{
+      this.currentDate = currentDate;
+      this.updateThisDaysTimeMarks(this.currentDate);
+    })
 
     this.timeLogService.timeMarks.subscribe((timeMarks: TimeMark[]) => {
       this.allTimeMarks = timeMarks;
-      this.updateThisDaysTimeMarks(moment(this.headerDates.thisDate));
       this.loadingTimeMarks = false;
-
-      console.log("Latest time mark",this.timeLogService.latestTimeMark);
-      
+      this.updateThisDaysTimeMarks(this.currentDate);
     });
   }
 
-  toggleTimeMarkForm() {
-    this.addTimeMarkForm = !this.addTimeMarkForm;
-    //can I get rid of this toggle method and change it to a strict true and another method with a strict false?
+  get thisDate(): string{
+    return this.currentDate.format('YYYY-MM-DD');
+  }
+  get thisDatePlusOne(): string{
+    return moment(this.currentDate).add(1,'days').format('YYYY-MM-DD');
+  }
+  get thisDateMinusOne(): string{
+    return moment(this.currentDate).subtract(1,'days').format('YYYY-MM-DD');
+  }
+
+  onClickNewTimeMark() {
+    this.addTimeMarkForm = true;
   }
   onCloseForm(event){
-    console.log("event from onCloseForm", event);
     this.addTimeMarkForm = false;
   }
 
   private updateThisDaysTimeMarks(thisDate: moment.Moment) {
-    this.headerDates = this.setHeaderDates(moment(thisDate).format('YYYY-MM-DD'));
-    this.thisDaysTimeMarks = this.getThisDaysTimeMarks(moment(this.headerDates.thisDate), this.allTimeMarks);
+    this.thisDaysTimeMarks = this.getThisDaysTimeMarks(this.currentDate, this.allTimeMarks);
     this.timeMarkTiles = this.buildTimeMarkTiles(this.thisDaysTimeMarks);
     if (moment().format('YYYY-MM-DD') == thisDate.format('YYYY-MM-DD')) {
       this.thisDayCardStyle = {
         'border': '1px solid green',
-
-
       }
     } else {
       this.thisDayCardStyle = {
         'border': '1px solid gray',
       }
     }
-
-  }
-
-  private setHeaderDates(focusDateYYYYMMDD: string) {
-    return {
-      thisDate: moment(focusDateYYYYMMDD).format('YYYY-MM-DD'),
-      thisDateMinusOne: moment(focusDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'),
-      thisDatePlusOne: moment(focusDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'),
-    };
   }
 
   private buildTimeMarkTiles(timeMarks: TimeMark[]): ITimeMarkTile[] {
@@ -184,24 +176,16 @@ export class TimelogComponent implements OnInit {
   }
 
   private getThisDaysTimeMarks(thisDay: moment.Moment, timeMarks: TimeMark[]): TimeMark[] {
-
-    // const utcOffsetMinutes = moment().utcOffset();
-
-    // const utcOffsetStart = moment(today).hour(0).minute(utcOffsetMinutes).second(0).millisecond(0);
-    // const utcOffsetEnd =   moment(today).hour(23).minute(59+utcOffsetMinutes).second(59).millisecond(999);
-
     let thisDaysTimeMarks: TimeMark[] = [];
-    for (let timeMark of timeMarks) {
-      if (timeMark.time.local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD')) {
-        thisDaysTimeMarks.push(timeMark);
+    if(timeMarks){
+      for (let timeMark of timeMarks) {
+        if (timeMark.time.local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD')) {
+          thisDaysTimeMarks.push(timeMark);
+        }
       }
-    }
-
+    }   
     return thisDaysTimeMarks;
   }
-
-  
-
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
     timeMarkTile.deleteButtonIsVisible = true;
   }
@@ -215,12 +199,9 @@ export class TimelogComponent implements OnInit {
     this.timeLogService.deleteTimeMark(timeMark);
   }
 
-  getTotalMinutes(timeMark: TimeMark){
-    // console.log(timeMark);
-  }
-
   onClickAdjacentDate(dateYYYYMMDD: string) {
-    this.updateThisDaysTimeMarks(moment(dateYYYYMMDD));
+    this.timeLogService.setCurrentDate(moment(dateYYYYMMDD));
+    //this.updateThisDaysTimeMarks(moment(dateYYYYMMDD));
   }
 
   dateNotGreaterThanToday(dateYYYYMMDD: string): boolean {

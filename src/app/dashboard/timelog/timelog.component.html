@@ -1,29 +1,26 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
+
       <div [ngStyle]="thisDayCardStyle" class="card">
+        
         <div class="card-header">
           <div class="d-flex" style="justify-content: space-between;align-items: center;">
-            <div class="text-center adjacent-date" style='order:1' (click)="onClickAdjacentDate(headerDates.thisDateMinusOne)">
-
-              <span>{{ getFormattedDateString(headerDates.thisDateMinusOne) }}</span> <br>
-              <span>{{ dateRelevanceToTodayString(headerDates.thisDateMinusOne) }}</span>
+            <div class="text-center adjacent-date" style='order:1' (click)="onClickAdjacentDate(thisDateMinusOne)">
+              <span>{{ getFormattedDateString(thisDateMinusOne) }}</span> <br>
+              <span>{{ dateRelevanceToTodayString(thisDateMinusOne) }}</span>
             </div>
-
             <div class='text-center' style='order:1'>
-              <h2>{{ getFormattedDateString(headerDates.thisDate) }}</h2>
-              <span>{{ dateRelevanceToTodayString(headerDates.thisDate) }}</span>
+              <h2>{{ getFormattedDateString(thisDate) }}</h2>
+              <span>{{ dateRelevanceToTodayString(thisDate) }}</span>
             </div>
-            <div class='text-center adjacent-date' style='order:1' (click)="onClickAdjacentDate(headerDates.thisDatePlusOne)">
-              <!-- Possibility: change this so that in stead of not being displayed, it is still displayed but un-clickable -->
-              <!-- <span *ngIf="dateNotGreaterThanToday(headerDates.thisDayPlusOne)" class='font-size: 0.8em'>{{ headerDates.thisDayPlusOne }}</span> -->
-              <span>{{ getFormattedDateString(headerDates.thisDatePlusOne) }}</span> <br>
-              <span>{{ dateRelevanceToTodayString(headerDates.thisDatePlusOne) }}</span>
+            <div class='text-center adjacent-date' style='order:1' (click)="onClickAdjacentDate(thisDatePlusOne)">
+              <span>{{ getFormattedDateString(thisDatePlusOne) }}</span> <br>
+              <span>{{ dateRelevanceToTodayString(thisDatePlusOne) }}</span>
             </div>
-
           </div>
-
         </div>
+
         <div class="card-body">
           Time Log
           <div *ngIf="loadingTimeMarks">
@@ -57,7 +54,7 @@
                 </div>
               </div>
               <div *ngIf="timeMarkTiles.length < 1">
-                No time marks for {{ headerDates.thisDate }}
+                No time marks for {{ thisDate }}
               </div>
 
             </div>
@@ -65,7 +62,7 @@
               No Time Marks
             </div>
             <hr class='mb-2'>
-            <button *ngIf="!addTimeMarkForm && dateIsToday(headerDates.thisDate)" class="btn btn-primary" (click)="toggleTimeMarkForm()">Add
+            <button *ngIf="!addTimeMarkForm && dateIsToday(thisDate)" class="btn btn-primary" (click)="onClickNewTimeMark()">Add
               New Time Mark</button>
           </div>
           <div *ngIf="addTimeMarkForm" class='m-3 p-3 border border-secondary new-time-mark'>
