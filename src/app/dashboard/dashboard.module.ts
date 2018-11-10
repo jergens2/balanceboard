@@ -28,6 +28,7 @@ import { BudgetComponent } from './finance/budget/budget.component';
 import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 import { TimelogComponent } from './timelog/timelog.component';
 import { TimelogService } from './timelog/timelog.service';
+import { TimeMarkFormComponent } from './timelog/time-mark-form/time-mark-form.component';
 
 
 
@@ -55,7 +56,8 @@ import { TimelogService } from './timelog/timelog.service';
     FinanceComponent,
     BudgetComponent,
     NetWorthComponent,
-    TimelogComponent
+    TimelogComponent,
+    TimeMarkFormComponent
   ],
   providers: [
     TimeService, 

@@ -103,8 +103,6 @@ export class TimelogComponent implements OnInit {
     kind of like how in Visual Studio Code, the bar on the far right kind of gives you a zoomed out visual representation of the entire document.
   */
 
-
-
   constructor(private timeLogService: TimelogService) { }
 
 
@@ -114,54 +112,14 @@ export class TimelogComponent implements OnInit {
     thisDatePlusOne: string
   };
 
-  categorizedActivities: CategorizedActivity[] = [
-    {
-      id: '',
-      name: "Overwatch",
-      description: "Overwatch PC video game",
-      color: "#f8a01b",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "Reddit",
-      description: "Browse Reddit",
-      color: "#ff6435",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "CSC - NSD",
-      description: "Working for Correctional Service of Canada - National IT Service Desk",
-      color: "#2f54f9",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "Walk Dogs",
-      description: "Take the dogs for a walk",
-      color: "#1da529",
-      icon: ''
-    }
-  ];
-
-  categorizedActivitiesSearchResults: CategorizedActivity[] = [];
-  activityNameInputValue = '';
-
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
-  ifAddActivity: boolean = true;
+  
   private thisDaysTimeMarks: TimeMark[];
 
   private allTimeMarks: TimeMark[];
-  timeMarkForm: FormGroup;
-  newActivityForm: FormGroup;
-  thisDayCardStyle = {};
-
-  newCategorizedActivity: boolean = false;
-  timeMarkActivities: CategorizedActivity[] = [];
   
-
+  thisDayCardStyle = {};
 
   timeMarkTiles: ITimeMarkTile[] = [];
   private defaultTimeMarkTileStyle: Object;
@@ -179,7 +137,15 @@ export class TimelogComponent implements OnInit {
       console.log("Latest time mark",this.timeLogService.latestTimeMark);
       
     });
+  }
 
+  toggleTimeMarkForm() {
+    this.addTimeMarkForm = !this.addTimeMarkForm;
+    //can I get rid of this toggle method and change it to a strict true and another method with a strict false?
+  }
+  onCloseForm(event){
+    console.log("event from onCloseForm", event);
+    this.addTimeMarkForm = false;
   }
 
   private updateThisDaysTimeMarks(thisDate: moment.Moment) {
@@ -234,114 +200,7 @@ export class TimelogComponent implements OnInit {
     return thisDaysTimeMarks;
   }
 
-  buildActivityForm() {
-
-    this.newActivityForm = new FormGroup({
-      'name': new FormControl(null),
-      'description': new FormControl(null),
-      'color': new FormControl('blue')
-    })
-  }
-
-  buildTimeMarkForm() {
-    this.timeMarkForm = new FormGroup({
-      'time': new FormControl(moment().format('HH:mm').toString()),
-      // 'title': new FormControl(),
-      'description': new FormControl(),
-    });
-  }
-
-  toggleTimeMarkForm() {
-    this.addTimeMarkForm = !this.addTimeMarkForm;
-    this.buildTimeMarkForm();
-  }
-
-  onClickAddActivity() {
-    this.newCategorizedActivity = true;
-    this.ifAddActivity = false;
-
-    this.buildActivityForm();
-  }
-
-  onClickCancelActivity() {
-    this.newCategorizedActivity = false;
-    this.ifAddActivity = true;
-  }
-  onClickSaveActivity() {
-    let activity: CategorizedActivity = new CategorizedActivity();
-    //Get form data and build the object.
-    activity.name = this.newActivityForm.get('name').value;
-    activity.description = this.newActivityForm.get('description').value;
-    activity.color = this.newActivityForm.get('color').value
-    // activity.childCategoryIds = [];
-    // activity.parentId = "";
-    activity.icon = "";
-    this.timeMarkActivities.push(activity);
-    this.newCategorizedActivity = false;
-    this.ifAddActivity = true;
-  }
-
-  onClickSaveTimeMark() {
-    let time = moment(moment().format('YYYY-MM-DD') + ' ' + this.timeMarkForm.get('time').value).toISOString();
-    let newTimeMark = new TimeMark(null, null, time);
-    newTimeMark.description = this.timeMarkForm.get('description').value;
-    newTimeMark.activities = this.timeMarkActivities;
-
-    this.timeMarkActivities = [];
-
-    this.timeLogService.saveTimeMark(newTimeMark);
-    this.toggleTimeMarkForm();
-    this.timeMarkForm.reset();
-
-    this.buildActivityForm();
-    this.buildTimeMarkForm();
-
-  }
-
-  onClickDeleteTimeMark(timeMark: TimeMark) {
-    //to add:  when clicked, prompt for a confirmation:  "Delete this time mark?"
-    this.timeLogService.deleteTimeMark(timeMark);
-
-  }
-
-  onKeyUpActivityName(event){
-    let inputValue = this.newActivityForm.get('name').value;
-    this.searchForCategorizedActivities(inputValue);
-  } 
-
-  private searchForCategorizedActivities(inputValue: string){
-    let searchResults: CategorizedActivity[] = [];
-    
-    if(inputValue != ""){
-      for(let activity of this.categorizedActivities){
-        if(activity.name.toLowerCase().match(inputValue.toLowerCase())){
-          searchResults.push(activity);
-        }
-      }
-      if(searchResults.length > 0){
-        this.activityNameInputValue = "";
-      }else{
-        this.activityNameInputValue = inputValue;
-      }
-    }else{
-      this.activityNameInputValue = "";
-    }
-    this.categorizedActivitiesSearchResults = searchResults;
-  }
-
-  getActivityNameInputStyle(activity: CategorizedActivity){
-    return {'background-color': activity.color};
-  }
-  onClickActivityNameDropdownItem(activity: CategorizedActivity){
-    this.newActivityForm.patchValue({'name':activity.name});
-    this.searchForCategorizedActivities('');
-  }
-
-  onClickMakeNewCategoryButton(){
-    //click make new category button
-    // navigate to a new page where you can manage categories
-
-  }
+  
 
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
     timeMarkTile.deleteButtonIsVisible = true;
@@ -349,6 +208,11 @@ export class TimelogComponent implements OnInit {
 
   onMouseLeaveTimeMarkTile(timeMarkTile: ITimeMarkTile) {
     timeMarkTile.deleteButtonIsVisible = false;
+  }
+
+  onClickDeleteTimeMark(timeMark: TimeMark) {
+    //to do:  when clicked, prompt for a confirmation:  "Delete this time mark?"
+    this.timeLogService.deleteTimeMark(timeMark);
   }
 
   getTotalMinutes(timeMark: TimeMark){
@@ -377,7 +241,7 @@ export class TimelogComponent implements OnInit {
       return "Yesterday";
     } else if (moment(dateYYYYMMDD).isBefore(moment().startOf('day'))) {
       let duration = moment.duration(moment().startOf('day').diff(dateYYYYMMDD));
-      let days = duration.asDays();
+      let days = duration.asDays().toFixed(0);
       return "" + days + " days ago";
     } else if (moment(dateYYYYMMDD).isAfter(moment().endOf('day'))) {
       let duration = moment.duration(moment(dateYYYYMMDD).diff(moment().startOf('day')));

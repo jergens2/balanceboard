@@ -10,7 +10,8 @@ export class TimeMark{
     public description: string;
     public activities: CategorizedActivity[];
 
-    public previousTimeMarkId: string;
+    public precedingTimeMarkId: string;
+    public followingTimeMarkId: string;
 
     public userId: string;
 
