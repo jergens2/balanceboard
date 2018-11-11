@@ -105,38 +105,55 @@ export class TimelogService {
     let precedingTimeMarkId = latestTimeMark.precedingTimeMarkId;
     let precedingTimeMark: TimeMark;
     let currentTimeMarks = this._timeMarksSubject.getValue();
-    let index = 0;
-    precedingTimeMark = currentTimeMarks.find((element)=>{
-      return element.id == precedingTimeMarkId;
+
+    precedingTimeMark = currentTimeMarks.find((timeMark)=>{
+      return timeMark.id == precedingTimeMarkId;
     });
 
     console.log("precedingTimeMark found? ", precedingTimeMark);
-    // newTimeMark.userId = this.authService.authenticatedUser.id;
-    // const postUrl = this.serverUrl + "/api/timeMark/create";
-    // const httpOptions = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/json'
-    //     // 'Authorization': 'my-auth-token'
-    //   })
-    // };
-    // this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeMark, httpOptions)
-    //   .pipe<TimeMark>(map((response) => {
-    //     let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO);
-    //     timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
-    //     timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
-    //     timeMark.description = response.data.description;
-    //     timeMark.activities = response.data.activities as CategorizedActivity[];
-    //     return timeMark;
-    //   }))
-    //   .subscribe((timeMark: TimeMark) => {
-    //     let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
-    //     timeMarks.push(timeMark);
-    //     this._timeMarksSubject.next(timeMarks);
-    //     this.updatePrecedingTimeMark(timeMark);
-    //   })
+    precedingTimeMark.followingTimeMarkId = latestTimeMark.id;
+    const postUrl = this.serverUrl + "/api/timeMark/update/" + precedingTimeMark.id;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    this.httpClient.post<{ message: string, data: any }>(postUrl, precedingTimeMark, httpOptions)
+      .pipe<TimeMark>(map((response) => {
+        let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO);
+        timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
+        timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
+        timeMark.description = response.data.description;
+        timeMark.activities = response.data.activities as CategorizedActivity[];
+        return timeMark;
+      }))
+      .subscribe((updatedTimeMark: TimeMark) => {
+        let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+        let precedingTimeMarkIndex = timeMarks.findIndex((timeMark)=>{
+          return timeMark.id == updatedTimeMark.id;
+        })
+        timeMarks[precedingTimeMarkIndex] = updatedTimeMark;
+        this._timeMarksSubject.next(timeMarks);
+      })
+
   }
 
   deleteTimeMark(timeMark: TimeMark){
+    /*
+      2018-11-11  
+      To do: unresolved issue: if timeMark get's deleted, we need to update other time Marks in the DB?
+      For example, there are 3 sequential time marks A, B, C
+      A points to next which is B, B points back to A and forward to C, and C points backward to B.
+
+      timeMark B gets deleted(), but A is still pointing to what used to be B but B no longer exists, and similar with C.
+
+      Doesn't really break the app, but does mean that timeMarks are pointing to non-existing items.
+
+      How to fix?  Should A and C just start pointing to each other then?
+        What about the time gap that is left now that B has been deleted?
+
+    */
     const postUrl = this.serverUrl + "/api/timeMark/delete";
     const httpOptions = {
       headers: new HttpHeaders({

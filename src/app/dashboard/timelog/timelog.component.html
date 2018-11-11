@@ -3,7 +3,7 @@
     <div class="col-12">
 
       <div [ngStyle]="thisDayCardStyle" class="card">
-        
+
         <div class="card-header">
           <div class="d-flex" style="justify-content: space-between;align-items: center;">
             <div class="text-center adjacent-date" style='order:1' (click)="onClickAdjacentDate(thisDateMinusOne)">
@@ -36,12 +36,24 @@
                     (mouseleave)="onMouseLeaveTimeMarkTile(timeMarkTile)">
 
                     <div class="d-flex">
+                      <div class="border">
+                        Previous timeMark ID: <br>
+                        {{ timeMarkTile.timeMark.precedingTimeMarkId }}
+                      </div>
+                      <div class="border">
+                        Id:  <br>{{ timeMarkTile.timeMark.id}}
+                      </div>
+                      <div class="border">
+                        Following timeMark ID: <br>
+                        {{ timeMarkTile.timeMark.followingTimeMarkId }}
+                      </div>
                       <div class="p-2 w-100">
                         {{ timeMarkTile.timeMark.time.format('HH:mm') }} - {{ timeMarkTile.timeMark.description }}
                         <ul class='m-0 ml-2 py-0' *ngFor="let activity of timeMarkTile.timeMark.activities">
                           <li class='m-0 p-0'>{{ activity.name }}</li>
                         </ul>
                       </div>
+
                       <div style="min-width:150px;">
                         Total minutes:
                         <!-- {{ getTotalMinutes(timeMarkTile.timeMark) }} -->
@@ -66,8 +78,7 @@
               New Time Mark</button>
           </div>
           <div *ngIf="addTimeMarkForm" class='m-3 p-3 border border-secondary new-time-mark'>
-            <app-time-mark-form
-              (closeForm)="onCloseForm($event)">
+            <app-time-mark-form (closeForm)="onCloseForm($event)">
             </app-time-mark-form>
           </div>
         </div>
