@@ -33,9 +33,11 @@ export class SidebarComponent implements OnInit {
 
   activeLink = { color: 'red' };
   loggedInUser: string = '';
+  userId: string = '';
 
   ngOnInit() {
     this.loggedInUser = this.authService.authenticatedUser.email;
+    this.userId = this.authService.authenticatedUser.id;
   }
 
   onClickTimeFrameButton(selectedView){

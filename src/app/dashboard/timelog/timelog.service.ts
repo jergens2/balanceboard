@@ -32,6 +32,7 @@ export class TimelogService {
 
   private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>([]); 
   private _currentDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
+  private _latestTimeMark: TimeMark;
   
   get timeMarks(): Observable<TimeMark[]> {
     return this._timeMarksSubject.asObservable();
@@ -44,21 +45,29 @@ export class TimelogService {
   }
   
   get latestTimeMark(): TimeMark {
-    let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
-    let tempTimeMark = timeMarks[0];
-    for(let timeMark of timeMarks){
-      if(timeMark.timeISO > tempTimeMark.timeISO){
-        tempTimeMark = timeMark;
-      }
+    if(this._latestTimeMark){
+      return this._latestTimeMark;
     }
-    return tempTimeMark;
+    let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+    if(timeMarks){
+      let tempTimeMark = timeMarks[0];
+      for(let timeMark of timeMarks){
+        if(timeMark.timeISO > tempTimeMark.timeISO){
+          tempTimeMark = timeMark;
+        }
+      }
+      return tempTimeMark;
+    }else{
+      return null;
+    }
   }
-
+  setLatestTimeMark(latestTimeMark: TimeMark){
+    this._latestTimeMark = latestTimeMark;
+  }
 
   saveTimeMark(timeMark: TimeMark) {
     let newTimeMark: TimeMark = timeMark;
     newTimeMark.userId = this.authService.authenticatedUser.id;
-
     const postUrl = this.serverUrl + "/api/timeMark/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -67,8 +76,10 @@ export class TimelogService {
       })
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeMark, httpOptions)
-      .pipe(map((response) => {
+      .pipe<TimeMark>(map((response) => {
         let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO);
+        timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
+        timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
         timeMark.description = response.data.description;
         timeMark.activities = response.data.activities as CategorizedActivity[];
         return timeMark;
@@ -76,8 +87,53 @@ export class TimelogService {
       .subscribe((timeMark: TimeMark) => {
         let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
         timeMarks.push(timeMark);
+        this.setLatestTimeMark(timeMark);
         this._timeMarksSubject.next(timeMarks);
+        this.updatePrecedingTimeMark(timeMark);
       })
+  }
+  private updatePrecedingTimeMark(latestTimeMark: TimeMark){
+    /*
+      2018-11-11
+      The way this is currently designed is that whenever a new timeMark is made, it is first sent to the backend to be saved in the DB.
+      When new timeMark is returned to this front end, then this front end then executes this private function to send another request
+      to the back end to update the preceding timeMark of our recently saved timeMark, 
+      for the purpose of updating its field 'followingTimeMarkId' to point to our recently created timeMark.
+
+      Perhaps it would maybe make more sense to do both updates on the back end at the same time?  I'm not sure.
+    */
+    let precedingTimeMarkId = latestTimeMark.precedingTimeMarkId;
+    let precedingTimeMark: TimeMark;
+    let currentTimeMarks = this._timeMarksSubject.getValue();
+    let index = 0;
+    precedingTimeMark = currentTimeMarks.find((element)=>{
+      return element.id == precedingTimeMarkId;
+    });
+
+    console.log("precedingTimeMark found? ", precedingTimeMark);
+    // newTimeMark.userId = this.authService.authenticatedUser.id;
+    // const postUrl = this.serverUrl + "/api/timeMark/create";
+    // const httpOptions = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json'
+    //     // 'Authorization': 'my-auth-token'
+    //   })
+    // };
+    // this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeMark, httpOptions)
+    //   .pipe<TimeMark>(map((response) => {
+    //     let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO);
+    //     timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
+    //     timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
+    //     timeMark.description = response.data.description;
+    //     timeMark.activities = response.data.activities as CategorizedActivity[];
+    //     return timeMark;
+    //   }))
+    //   .subscribe((timeMark: TimeMark) => {
+    //     let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+    //     timeMarks.push(timeMark);
+    //     this._timeMarksSubject.next(timeMarks);
+    //     this.updatePrecedingTimeMark(timeMark);
+    //   })
   }
 
   deleteTimeMark(timeMark: TimeMark){

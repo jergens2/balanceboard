@@ -139,10 +139,19 @@ export class TimeMarkFormComponent implements OnInit {
   }
 
   onClickSaveTimeMark() {
+
+    //grabs time from TODAY.  Might need to fix this to resolve cases where the form goes past midnight but then user modifies the time to be like 11:00pm of what they think is "today" but what is now actually yesterday due to passing midnight.
     let time = moment(moment().format('YYYY-MM-DD') + ' ' + this.timeMarkForm.get('time').value).toISOString();
     let newTimeMark = new TimeMark(null, null, time);
     newTimeMark.description = this.timeMarkForm.get('description').value;
     newTimeMark.activities = this.timeMarkActivities;
+    let latestTimeMark = this.timeLogService.latestTimeMark;
+    if(latestTimeMark){
+      newTimeMark.precedingTimeMarkId = latestTimeMark.id;
+    }else{
+      newTimeMark.precedingTimeMarkId = "NO_PRECEDING_TIME_MARK";
+    }
+    newTimeMark.followingTimeMarkId = "NO_FOLLOWING_TIME_MARK";
 
     this.timeLogService.saveTimeMark(newTimeMark);
     this.timeMarkForm.reset();
