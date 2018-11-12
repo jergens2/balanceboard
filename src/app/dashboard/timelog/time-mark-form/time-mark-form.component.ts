@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CategorizedActivity } from '../categorized-activity.model';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import * as moment from 'moment';
 import { TimeMark } from '../time-mark.model';
@@ -19,10 +19,12 @@ export class TimeMarkFormComponent implements OnInit {
   constructor(private timeLogService: TimelogService) { }
 
   activityNameInputValue: string = '';
-
+  private _durationString: string = '';
 
 
   newCategorizedActivity: boolean = false;
+  ifAddActivityButton: boolean = true;
+  saveTimeMarkDisabled: string = '';
 
   timeMarkForm: FormGroup;
   newActivityForm: FormGroup;
@@ -64,18 +66,42 @@ export class TimeMarkFormComponent implements OnInit {
 
 
   ngOnInit() {
-    console.log("ngOnInt() called on Time Mark Form Component");
     this.timeMarkActivities = [];
     this.buildTimeMarkForm();
+    this.setDurationString(this.timeLogService.latestTimeMark.time);
   }
 
+  private setDurationString(previousTime: moment.Moment){
+    let duration = moment.duration(moment().diff(previousTime));
+    let durationString = '';
+    if(duration.days() > 0){
+      duration.days() == 1 ? durationString += "1 day " : durationString += (duration.days() + " days ");
+    }
+    if(duration.hours() > 0){
+      duration.hours() == 1 ? durationString += "1 hour " : durationString += (duration.hours() + " hours ");
+    }
+    // else{
+    //   durationString += "0 hours ";
+    // }
+    if(duration.minutes() > 0){
+      duration.minutes() == 1 ? durationString += "1 minute " : durationString += (duration.minutes() + " minutes ");
+    }else{
+      durationString += "0 minutes";
+    }
+    this._durationString = durationString;
+  }
+
+  get durationString(): string {
+    return this._durationString;
+  }
 
   buildActivityForm() {
 
     this.newActivityForm = new FormGroup({
-      'name': new FormControl(null),
+      'name': new FormControl(null, Validators.required),
       'description': new FormControl(null),
-      'color': new FormControl('blue')
+      'color': new FormControl('blue'),
+      'duration': new FormControl(0, Validators.required)
     })
   }
 
@@ -92,12 +118,21 @@ export class TimeMarkFormComponent implements OnInit {
   onClickAddActivity() {
     this.newCategorizedActivity = true;
 
+    /*
+      Build an observable.fromEvent subscription that listens for keyboard ESCAPE key in order to cancel the search / close the dropdown for categorizedActivity search
+      
+    */
+
+
     this.buildActivityForm();
+    this.ifAddActivityButton = false;
+    this.saveTimeMarkDisabled = 'disabled';
   }
 
   onClickCancelActivity() {
     this.newCategorizedActivity = false;
-
+    this.ifAddActivityButton = true;
+    this.saveTimeMarkDisabled = '';
   }
   onClickSaveActivity() {
     let activity: CategorizedActivity = new CategorizedActivity();
@@ -110,6 +145,8 @@ export class TimeMarkFormComponent implements OnInit {
     activity.icon = "";
     this.timeMarkActivities.push(activity);
     this.newCategorizedActivity = false;
+    this.ifAddActivityButton = true;
+    this.saveTimeMarkDisabled = '';
   }
 
 
@@ -120,8 +157,7 @@ export class TimeMarkFormComponent implements OnInit {
 
   private searchForCategorizedActivities(inputValue: string){
     let searchResults: CategorizedActivity[] = [];
-    
-    if(inputValue != ""){
+    if(inputValue !== ""){
       for(let activity of this.categorizedActivities){
         if(activity.name.toLowerCase().match(inputValue.toLowerCase())){
           searchResults.push(activity);

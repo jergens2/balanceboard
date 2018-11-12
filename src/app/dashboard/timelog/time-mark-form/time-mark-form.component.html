@@ -6,6 +6,9 @@ New Time Mark
         <input type="time" class="form-control" formControlName="time">
       </div>
     </div>
+    <div class="col-6">
+      Duration since previous time mark: {{ durationString }}
+    </div>
   </div>
   <div class="form-group row my-2">
     <div class="col-12">
@@ -20,11 +23,17 @@ New Time Mark
       Activity: {{ activity.name }}
     </div>
   </div>
-  <div *ngIf="newCategorizedActivity" class='m-1 p-3 border border-warning' style='border-radius:5px;background-color:#fefff2;'>
-    New Activity
-    <div [formGroup]="newActivityForm" class="mb-3">
-      <div style="display:flex;">
-        <div class="activity-name-input-dropdown-container">
+  <div *ngIf="newCategorizedActivity" class='border border-warning activity-form-content-container'>
+    <div class="activity-form-content-item">
+      New Activity
+    </div>
+    <div [formGroup]="newActivityForm" class="new-activity-form activity-form-content-item">
+
+      <div class="activity-name-input-dropdown-container new-activity-form-row">
+        <div style="width:8em;">
+          Activity Name:
+        </div>
+        <div style="flex-grow: 2;">
           <input type="text" class="form-control" formControlName="name" (keyup)="onKeyUpActivityName($event)">
           <div class="activity-name-input-dropdown" *ngIf="categorizedActivitiesSearchResults.length > 0">
             <div *ngFor="let activity of categorizedActivitiesSearchResults">
@@ -33,28 +42,54 @@ New Time Mark
               </div>
             </div>
           </div>
-
         </div>
 
-        <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()">Save Activity</button>
-        <button class="btn btn-sm border-warning mx-1" (click)="onClickCancelActivity()">Cancel</button>
+
       </div>
-      <div *ngIf="activityNameInputValue" class="mt-3">
-        No category matches for <span style="font-weight:bold;"> {{ activityNameInputValue }} </span>
-        <button class="ml-3 btn btn-primary" (click)="onClickMakeNewCategoryButton()">Create new category</button>
+      <div *ngIf="activityNameInputValue" class="new-activity-form-row">
+        <div >
+            No category matches for <span style="font-weight:bold;"> {{ activityNameInputValue }} </span>
+        </div>
+        <div style="flex-grow:2;">
+            <button class="ml-3 btn btn-primary" (click)="onClickMakeNewCategoryButton()">
+              Create new category <span style="font-weight:bold">{{ activityNameInputValue }}</span>
+            </button>
+        </div>
+        
+        
       </div>
+      <div class="new-activity-form-row duration-row">
+        <div style="width:8em;">
+          Duration:
+        </div>
+        <div style="flex-grow: 2;">
+          <input class="form-control" type="number" formControlName="duration">
+        </div>
+      </div>
+      <div class="new-activity-form-row duration-row">
+        <div style="width:8em;">
+          Description:
+        </div>
+        <div style="flex-grow: 2;">
+          <input class="form-control" type="text" formControlName="description" placeholder="Optional: add some details of this activity">
+        </div>
+      </div>
+
     </div>
-
-
+    <div class="activity-action-buttons activity-form-content-item">
+      <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()">Save Activity</button>
+      <button class="btn btn-sm border-warning mx-1" (click)="onClickCancelActivity()">Cancel</button>
+    </div>
   </div>
 
-  <button class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">+
-    Add Activity
-  </button>
 </div>
+
+<button *ngIf="ifAddActivityButton" class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">+
+  Add Activity
+</button>
 
 <div class='d-flex flex-row-reverse'>
   <button class="btn border-warning mx-1" (click)="onClickCancelTimeMark()">Cancel</button>
-  <button class="btn btn-success mx-1" (click)="onClickSaveTimeMark()">Save Time Mark</button>
+  <button class="btn btn-success mx-1" (click)="onClickSaveTimeMark()" [disabled]="saveTimeMarkDisabled">Save Time Mark</button>
 
 </div>

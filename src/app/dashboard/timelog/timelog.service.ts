@@ -109,8 +109,6 @@ export class TimelogService {
     precedingTimeMark = currentTimeMarks.find((timeMark)=>{
       return timeMark.id == precedingTimeMarkId;
     });
-
-    console.log("precedingTimeMark found? ", precedingTimeMark);
     precedingTimeMark.followingTimeMarkId = latestTimeMark.id;
     const postUrl = this.serverUrl + "/api/timeMark/update/" + precedingTimeMark.id;
     const httpOptions = {
@@ -151,9 +149,12 @@ export class TimelogService {
       Doesn't really break the app, but does mean that timeMarks are pointing to non-existing items.
 
       How to fix?  Should A and C just start pointing to each other then?
-        What about the time gap that is left now that B has been deleted?
+        What about the time gap that is left now that B has been deleted?  
 
     */
+    // console.log("TimeLogService: deleteTimeMark() function disabled");
+    
+
     const postUrl = this.serverUrl + "/api/timeMark/delete";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -172,8 +173,10 @@ export class TimelogService {
     .subscribe((response) => {
       let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
       timeMarks.splice(timeMarks.indexOf(timeMark),1);
+      this.setLatestTimeMark(null);
       this._timeMarksSubject.next(timeMarks);
     })
+    
   }
 
   private fetchTimeMarks(authenticatedUserId: string, startTime: string, endTime: string) {
