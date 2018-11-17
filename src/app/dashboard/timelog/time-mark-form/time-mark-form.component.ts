@@ -1,10 +1,15 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CategorizedActivity } from '../categorized-activity.model';
+import { Component, OnInit, Output, EventEmitter, Renderer2 } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
+import { Subscription, fromEvent } from 'rxjs';
+
 import * as moment from 'moment';
+import { faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons'; 
+
+import { CategorizedActivity } from '../categorized-activity.model';
 import { TimeMark } from '../time-mark.model';
 import { TimelogService } from '../timelog.service';
+
 
 
 @Component({
@@ -16,11 +21,14 @@ export class TimeMarkFormComponent implements OnInit {
 
 
 
-  constructor(private timeLogService: TimelogService) { }
+  constructor(private timeLogService: TimelogService, private renderer: Renderer2) { }
 
+  //variable for the template
   activityNameInputValue: string = '';
   private _durationString: string = '';
 
+  faCheckCircle = faCheckCircle;
+  faCircle = faCircle;
 
   newCategorizedActivity: boolean = false;
   ifAddActivityButton: boolean = true;
@@ -62,6 +70,8 @@ export class TimeMarkFormComponent implements OnInit {
   categorizedActivitiesSearchResults: CategorizedActivity[] = [];
   timeMarkActivities: CategorizedActivity[] = [];
 
+  activityInputKeyUpSubscription: Subscription = new Subscription();
+
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 
@@ -69,6 +79,7 @@ export class TimeMarkFormComponent implements OnInit {
     this.timeMarkActivities = [];
     this.buildTimeMarkForm();
     this.setDurationString(this.timeLogService.latestTimeMark.time);
+
   }
 
   private setDurationString(previousTime: moment.Moment){
@@ -150,14 +161,15 @@ export class TimeMarkFormComponent implements OnInit {
   }
 
 
-  onKeyUpActivityName(event){
+  onKeyUpActivityName(event: KeyboardEvent){
     let inputValue = this.newActivityForm.get('name').value;
+    this.activityInputKeyUpSubscription.unsubscribe();
     this.searchForCategorizedActivities(inputValue);
   } 
 
   private searchForCategorizedActivities(inputValue: string){
     let searchResults: CategorizedActivity[] = [];
-    if(inputValue !== ""){
+    if(inputValue !== null && inputValue !== ""){
       for(let activity of this.categorizedActivities){
         if(activity.name.toLowerCase().match(inputValue.toLowerCase())){
           searchResults.push(activity);
@@ -170,6 +182,37 @@ export class TimeMarkFormComponent implements OnInit {
       }
     }else{
       this.activityNameInputValue = "";
+      this.activityInputKeyUpSubscription.unsubscribe();
+    }
+    if(searchResults.length > 0){
+      this.activityInputKeyUpSubscription = fromEvent(document, 'keydown').subscribe((event: KeyboardEvent)=>{
+
+        //
+        // The intention of this subscription is to be able to pick up the users arrow key inputs (up and down) and navigate through the list or results
+        // I might just have to scrap this functionality if it is too cumbersome to implement.
+        //
+        let tabIndex = 0;
+
+        /*
+          2018-11-14
+          Apparently there does not seem to be an appropriate method in Angular to play with the DOM in this way w/ respect to focus and blur.
+          https://github.com/angular/angular/issues/15674
+
+          as of right now this code block doesn't really do anything.
+
+        */
+        if(event.key == "ArrowUp"){
+          tabIndex < this.categorizedActivitiesSearchResults.length-1 ? tabIndex++ : tabIndex = this.categorizedActivitiesSearchResults.length;
+        }else if(event.key == "ArrowDown"){
+          tabIndex > 0 ? tabIndex-- : tabIndex = 0;
+        }else if(event.key == "Escape"){
+          // searchResults = [];
+          // this.renderer.selectRootElement("#activity_name_input").blur();
+        }
+
+        // this.renderer.selectRootElement("#activity_name_input").blur();
+
+      });
     }
     this.categorizedActivitiesSearchResults = searchResults;
   }
@@ -178,7 +221,7 @@ export class TimeMarkFormComponent implements OnInit {
 
     //grabs time from TODAY.  Might need to fix this to resolve cases where the form goes past midnight but then user modifies the time to be like 11:00pm of what they think is "today" but what is now actually yesterday due to passing midnight.
     let time = moment(moment().format('YYYY-MM-DD') + ' ' + this.timeMarkForm.get('time').value).toISOString();
-    let newTimeMark = new TimeMark(null, null, time);
+    let newTimeMark = new TimeMark(null, null, time, null, null);
     newTimeMark.description = this.timeMarkForm.get('description').value;
     newTimeMark.activities = this.timeMarkActivities;
     let latestTimeMark = this.timeLogService.latestTimeMark;

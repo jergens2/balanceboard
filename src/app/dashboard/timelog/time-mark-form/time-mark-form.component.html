@@ -31,13 +31,14 @@ New Time Mark
 
       <div class="activity-name-input-dropdown-container new-activity-form-row">
         <div style="width:8em;">
-          Activity Name:
+          Activity:
         </div>
         <div style="flex-grow: 2;">
-          <input type="text" class="form-control" formControlName="name" (keyup)="onKeyUpActivityName($event)">
+          <input type="text" class="form-control" formControlName="name" (keyup)="onKeyUpActivityName($event)" id="activity_name_input">
           <div class="activity-name-input-dropdown" *ngIf="categorizedActivitiesSearchResults.length > 0">
             <div *ngFor="let activity of categorizedActivitiesSearchResults">
-              <div class="activity-name-input-dropdown-item" [ngStyle]="getActivityNameInputStyle(activity)" (click)="onClickActivityNameDropdownItem(activity)">
+              <div class="activity-name-input-dropdown-item" [ngStyle]="getActivityNameInputStyle(activity)" (click)="onClickActivityNameDropdownItem(activity)"
+                [id]="'activity_dropdown_'+categorizedActivitiesSearchResults.indexOf(activity)">
                 {{ activity.name }}
               </div>
             </div>
@@ -47,26 +48,39 @@ New Time Mark
 
       </div>
       <div *ngIf="activityNameInputValue" class="new-activity-form-row">
-        <div >
-            No category matches for <span style="font-weight:bold;"> {{ activityNameInputValue }} </span>
+        <div>
+          No category matches for <span style="font-weight:bold;"> {{ activityNameInputValue }} </span>
         </div>
         <div style="flex-grow:2;">
-            <button class="ml-3 btn btn-primary" (click)="onClickMakeNewCategoryButton()">
-              Create new category <span style="font-weight:bold">{{ activityNameInputValue }}</span>
-            </button>
+          <button class="ml-3 btn btn-primary" (click)="onClickMakeNewCategoryButton()">
+            Create new category <span style="font-weight:bold">{{ activityNameInputValue }}</span>
+          </button>
         </div>
-        
-        
+
+
       </div>
-      <div class="new-activity-form-row duration-row">
-        <div style="width:8em;">
+      <hr style="width:100%;" class="m-1">
+      <div class="new-activity-form-row ">
+        <div style="width:8em; align-self:flex-start;">
           Duration:
         </div>
         <div style="flex-grow: 2;">
           <input class="form-control" type="number" formControlName="duration">
+          <div>
+            <div>
+              <!-- <fa-icon [icon]="faCheckCircle"></fa-icon> Entirety of the duration -->
+            </div>
+            <div>
+              <!-- <fa-icon [icon]="faCircle"></fa-icon> Specific duration -->
+            </div>
+            <div>
+              <!-- <fa-icon [icon]="faCircle"></fa-icon> Percentage -->
+            </div>
+          </div>
         </div>
       </div>
-      <div class="new-activity-form-row duration-row">
+      <hr style="width:100%;" class="m-1">
+      <div class="new-activity-form-row">
         <div style="width:8em;">
           Description:
         </div>

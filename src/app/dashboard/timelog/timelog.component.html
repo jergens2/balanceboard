@@ -37,10 +37,11 @@
 
                     <div class="d-flex">
                       <div class="p-2 w-100">
-                        {{ timeMarkTile.timeMark.time.format('HH:mm') }} - {{ timeMarkTile.timeMark.description }}
+                        
                         <ul class='m-0 ml-2 py-0' *ngFor="let activity of timeMarkTile.timeMark.activities">
                           <li class='m-0 p-0'>{{ activity.name }}</li>
                         </ul>
+                        {{ timeMarkTile.timeMark.time.format('HH:mm') }} - {{ timeMarkTile.timeMark.description }}
                       </div>
 
                       <div style="min-width:150px;">
