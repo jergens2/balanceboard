@@ -1,15 +1,110 @@
 New Time Mark
 <div [formGroup]="timeMarkForm" class="mb-3">
-  <div class="form-group row my-2">
-    <div class="col-6">
-      <div class="input-group">
-        <input type="time" class="form-control" formControlName="time">
-      </div>
+
+  <!-- 
+
+    Need to add a section here for when if previous time mark exists but is older than 24 hours ago
+   -->
+
+  <div class="time-mark-form-control" style="display:flex; flex-direction:column;">
+    <div>
+      Start Time
     </div>
-    <div class="col-6">
-      Duration since previous time mark: {{ durationString }}
+    <div *ngIf="!ifPreviousTimeMark" style="color:#f4bc42; font-weight: bold;">
+      No Previous Time Mark
+    </div>
+    <div style="display:flex; flex-direction:row;width:100%; align-items: center;" class="row">
+      <div class="col-12 col-md-6 mb-2" style="display:flex; flex-direction:column;">
+        <div *ngFor="let option of startTimeOptions">
+          <div style="display:flex; flex-direction:row; align-items: center;" class="select-time-radio" (click)="onClickStartOption(option)">
+            <div class="mr-1">
+              <fa-icon [icon]="option.icon" [ngClass]="option.iconClass"></fa-icon>
+            </div>
+            <div>{{ option.label }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div *ngIf="startTimeAction == 'SPECIFY_TIME' || startTimeAction == 'SPECIFY_NO_PREVIOUS'">
+          <div style="display:flex; flex-direction:column;">
+            <div>Date</div>
+            <input type="date" class="form-control" formControlName="startTimeDate">
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <div>Time</div>
+            <input type="time" class="form-control" formControlName="startTime">
+          </div>
+        </div>
+        <div *ngIf="startTimeAction == 'SPECIFY_DURATION'">
+          <div style="display:flex; flex-direction:column;">
+            <div>Hours Ago</div>
+            <input type="number" class="form-control" formControlName="startTimeDurationHours" (keyup)="onKeyUpStartTimeHours()">
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <div>Minutes Ago</div>
+            <input type="number" class="form-control" formControlName="startTimeDurationMinutes" (keyup)="onKeyUpStartTimeMinutes()">
+          </div>
+        </div>
+        <div *ngIf="startTimeAction == 'DISPLAY_PREVIOUS'">
+          action is display previous
+        </div>
+      </div>
+
+
     </div>
   </div>
+
+  <div class="time-mark-form-control" style="display:flex; flex-direction:column;">
+    <div>
+      End Time
+    </div>
+    <div style="display:flex; flex-direction:row;width:100%; align-items: center;" class="row">
+      <div class="col-12 col-md-6 mb-2" style="display:flex; flex-direction:column;">
+        <div *ngFor="let option of endTimeOptions">
+          <div style="display:flex; flex-direction:row; align-items: center;" class="select-time-radio" (click)="onClickEndOption(option)">
+            <div class="mr-1">
+              <fa-icon [icon]="option.icon" [ngClass]="option.iconClass"></fa-icon>
+            </div>
+            <div>{{ option.label }}</div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-12 col-md-6">
+        <div *ngIf="endTimeAction == 'SPECIFY_TIME' || endTimeAction == 'NOW'">
+          <div style="display:flex; flex-direction:column;">
+            <div>Date</div>
+            <input type="date" class="form-control" formControlName="endTimeDate">
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <div>Time</div>
+            <input type="time" class="form-control" formControlName="endTime" >
+          </div>
+        </div>
+        <div *ngIf="endTimeAction == 'SPECIFY_DURATION'">
+          <div style="display:flex; flex-direction:column;">
+            <div>Hours it took</div>
+            <input type="number" class="form-control" formControlName="endTimeDurationHours" (keyup)="onKeyUpEndTimeHours()">
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <div>Minutes it took</div>
+            <input type="number" class="form-control" formControlName="endTimeDurationMinutes" (keyup)="onKeyUpEndTimeMinutes()">
+          </div>
+        </div>
+        
+      </div>
+
+    </div>
+  </div>
+
+  <div class="time-mark-form-control">
+    <div>Duration</div>
+    <div>
+      {{ durationString }}
+    </div>
+  </div>
+
   <div class="form-group row my-2">
     <div class="col-12">
       <div class="input-group">
@@ -17,89 +112,26 @@ New Time Mark
       </div>
     </div>
   </div>
+
+  <hr>
+  <!-- Activities section. -->
+
   <h6>Activities Prior</h6>
   <div *ngIf="timeMarkActivities">
     <div *ngFor="let activity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity' style='border-radius:5px;'>
       Activity: {{ activity.name }}
     </div>
   </div>
-  <div *ngIf="newCategorizedActivity" class='border border-warning activity-form-content-container'>
-    <div class="activity-form-content-item">
-      New Activity
-    </div>
-    <div [formGroup]="newActivityForm" class="new-activity-form activity-form-content-item">
-
-      <div class="activity-name-input-dropdown-container new-activity-form-row">
-        <div style="width:8em;">
-          Activity:
-        </div>
-        <div style="flex-grow: 2;">
-          <input type="text" class="form-control" formControlName="name" (keyup)="onKeyUpActivityName($event)" id="activity_name_input">
-          <div class="activity-name-input-dropdown" *ngIf="categorizedActivitiesSearchResults.length > 0">
-            <div *ngFor="let activity of categorizedActivitiesSearchResults">
-              <div class="activity-name-input-dropdown-item" [ngStyle]="getActivityNameInputStyle(activity)" (click)="onClickActivityNameDropdownItem(activity)"
-                [id]="'activity_dropdown_'+categorizedActivitiesSearchResults.indexOf(activity)">
-                {{ activity.name }}
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-      <div *ngIf="activityNameInputValue" class="new-activity-form-row">
-        <div>
-          No category matches for <span style="font-weight:bold;"> {{ activityNameInputValue }} </span>
-        </div>
-        <div style="flex-grow:2;">
-          <button class="ml-3 btn btn-primary" (click)="onClickMakeNewCategoryButton()">
-            Create new category <span style="font-weight:bold">{{ activityNameInputValue }}</span>
-          </button>
-        </div>
-
-
-      </div>
-      <hr style="width:100%;" class="m-1">
-      <div class="new-activity-form-row ">
-        <div style="width:8em; align-self:flex-start;">
-          Duration:
-        </div>
-        <div style="flex-grow: 2;">
-          <input class="form-control" type="number" formControlName="duration">
-          <div>
-            <div>
-              <!-- <fa-icon [icon]="faCheckCircle"></fa-icon> Entirety of the duration -->
-            </div>
-            <div>
-              <!-- <fa-icon [icon]="faCircle"></fa-icon> Specific duration -->
-            </div>
-            <div>
-              <!-- <fa-icon [icon]="faCircle"></fa-icon> Percentage -->
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr style="width:100%;" class="m-1">
-      <div class="new-activity-form-row">
-        <div style="width:8em;">
-          Description:
-        </div>
-        <div style="flex-grow: 2;">
-          <input class="form-control" type="text" formControlName="description" placeholder="Optional: add some details of this activity">
-        </div>
-      </div>
-
-    </div>
-    <div class="activity-action-buttons activity-form-content-item">
-      <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()">Save Activity</button>
-      <button class="btn btn-sm border-warning mx-1" (click)="onClickCancelActivity()">Cancel</button>
-    </div>
+  <div *ngIf="ifAddActivityForm" class='border border-warning activity-form-content-container'>
+    <app-activity-form (closeActivityForm)="onCloseActivityForm($event)" (activitySaved)="onActivitySaved($event)">
+    </app-activity-form>
   </div>
+  <!-- End of Activities section -->
 
 </div>
 
-<button *ngIf="ifAddActivityButton" class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">+
-  Add Activity
+<button *ngIf="ifAddActivityButton" class="btn btn-sm btn-primary" style='border-radius:15px;' (click)="onClickAddActivity()">
+  + Add Activity
 </button>
 
 <div class='d-flex flex-row-reverse'>

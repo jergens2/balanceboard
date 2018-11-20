@@ -1,0 +1,70 @@
+<div class="activity-form-content-item">
+  New Activity
+</div>
+<div [formGroup]="activityForm" class="new-activity-form activity-form-content-item">
+
+  <div class="activity-name-input-dropdown-container new-activity-form-row">
+    <div style="width:8em;">
+      Activity:
+    </div>
+    <div style="flex-grow: 2;">
+      <input type="text" class="form-control" formControlName="name" (keyup)="onKeyUpActivityName($event)" id="activity_name_input">
+      <div class="activity-name-input-dropdown" *ngIf="categorizedActivitiesSearchResults.length > 0">
+        <div *ngFor="let activity of categorizedActivitiesSearchResults">
+          <div class="activity-name-input-dropdown-item" [ngStyle]="getActivityNameInputStyle(activity)" (click)="onClickActivityNameDropdownItem(activity)"
+            [id]="'activity_dropdown_'+categorizedActivitiesSearchResults.indexOf(activity)">
+            {{ activity.name }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  <div *ngIf="activityNameInputValue" class="new-activity-form-row">
+    <div>
+      No category matches for <span style="font-weight:bold;"> {{ activityNameInputValue }} </span>
+    </div>
+    <div style="flex-grow:2;">
+      <button class="ml-3 btn btn-primary" (click)="onClickMakeNewCategoryButton()">
+        Create new category <span style="font-weight:bold">{{ activityNameInputValue }}</span>
+      </button>
+    </div>
+
+
+  </div>
+  <hr style="width:100%;" class="m-1">
+  <div class="new-activity-form-row ">
+    <div style="width:8em; align-self:flex-start;">
+      Duration:
+    </div>
+    <div style="flex-grow: 2;">
+      <input class="form-control" type="number" formControlName="duration">
+      <div>
+        <div>
+          <fa-icon [icon]="faCheckCircle"></fa-icon> Entirety of the duration
+        </div>
+        <div>
+          <fa-icon [icon]="faCircle"></fa-icon> Specific duration
+        </div>
+        <div>
+          <fa-icon [icon]="faCircle"></fa-icon> Percentage
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr style="width:100%;" class="m-1">
+  <div class="new-activity-form-row">
+    <div style="width:8em;">
+      Description:
+    </div>
+    <div style="flex-grow: 2;">
+      <input class="form-control" type="text" formControlName="description" placeholder="Optional: add some details of this activity">
+    </div>
+  </div>
+
+</div>
+<div class="activity-action-buttons activity-form-content-item">
+  <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()">Save Activity</button>
+  <button class="btn btn-sm border-warning mx-1" (click)="onClickCancelActivity()">Cancel</button>
+</div>

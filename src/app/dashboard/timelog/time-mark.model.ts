@@ -9,8 +9,8 @@ export class TimeMark{
     public startTimeISO: string;
     public endTimeISO: string;
 
-    private startTimeMoment: moment.Moment;
-    private endTimeMoment: moment.Moment;
+    // private startTimeMoment: moment.Moment;
+    // private endTimeMoment: moment.Moment;
     private timeMoment: moment.Moment;
 
     public description: string;
@@ -26,17 +26,19 @@ export class TimeMark{
         this.userId = userId;
         this.timeISO = timeISO;
         this.timeMoment = moment(timeISO); 
-        this.startTimeMoment = moment(this.startTimeISO);
-        this.endTimeMoment = moment(this.endTimeISO);
+        // this.startTimeMoment = moment(startTimeISO);
+        // this.endTimeMoment = moment(endTimeISO);
+        this.startTimeISO = startTimeISO;
+        this.endTimeISO = endTimeISO;
     }
 
     get time(): moment.Moment{
         return this.timeMoment;
     }
-    get startTime(): moment.Moment{
-        return this.startTimeMoment;
-    }
-    get endTime(): moment.Moment{
-        return this.endTime;
-    }
+    // get startTime(): moment.Moment{
+    //     return this.startTimeMoment;
+    // }
+    // get endTime(): moment.Moment{
+    //     return this.endTimeMoment;
+    // }
 }

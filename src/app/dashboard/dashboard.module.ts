@@ -29,6 +29,8 @@ import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 import { TimelogComponent } from './timelog/timelog.component';
 import { TimelogService } from './timelog/timelog.service';
 import { TimeMarkFormComponent } from './timelog/time-mark-form/time-mark-form.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ActivityFormComponent } from './timelog/time-mark-form/activity-form/activity-form.component';
 
 
 
@@ -37,6 +39,7 @@ import { TimeMarkFormComponent } from './timelog/time-mark-form/time-mark-form.c
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FontAwesomeModule,
     NgbModule.forRoot(),
   ],
   declarations: [
@@ -57,7 +60,8 @@ import { TimeMarkFormComponent } from './timelog/time-mark-form/time-mark-form.c
     BudgetComponent,
     NetWorthComponent,
     TimelogComponent,
-    TimeMarkFormComponent
+    TimeMarkFormComponent,
+    ActivityFormComponent
   ],
   providers: [
     TimeService, 

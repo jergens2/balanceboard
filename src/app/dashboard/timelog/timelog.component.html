@@ -67,9 +67,11 @@
             <button *ngIf="!addTimeMarkForm && dateIsToday(thisDate)" class="btn btn-primary" (click)="onClickNewTimeMark()">Add
               New Time Mark</button>
           </div>
-          <div *ngIf="addTimeMarkForm" class='m-3 p-3 border border-secondary new-time-mark'>
+          <div *ngIf="addTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>
+
             <app-time-mark-form (closeForm)="onCloseForm($event)">
             </app-time-mark-form>
+
           </div>
         </div>
       </div>

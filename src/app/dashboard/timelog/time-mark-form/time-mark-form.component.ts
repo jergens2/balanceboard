@@ -4,81 +4,137 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription, fromEvent } from 'rxjs';
 
 import * as moment from 'moment';
-import { faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons'; 
+import { faCheckCircle, faCircle, IconDefinition } from '@fortawesome/free-regular-svg-icons'; 
 
 import { CategorizedActivity } from '../categorized-activity.model';
 import { TimeMark } from '../time-mark.model';
 import { TimelogService } from '../timelog.service';
 
-
+export interface ITimeOption {
+  icon: IconDefinition,
+  iconClass: string,
+  label: string,
+  action: string
+}
 
 @Component({
   selector: 'app-time-mark-form',
   templateUrl: './time-mark-form.component.html',
   styleUrls: ['./time-mark-form.component.css']
 })
+
+
 export class TimeMarkFormComponent implements OnInit {
 
 
 
   constructor(private timeLogService: TimelogService, private renderer: Renderer2) { }
 
-  //variable for the template
-  activityNameInputValue: string = '';
   private _durationString: string = '';
+  private _latestTimeMark: TimeMark;
 
   faCheckCircle = faCheckCircle;
   faCircle = faCircle;
+
+  startTimeOptions: ITimeOption[];
+  endTimeOptions: ITimeOption[];
+
+  ifPreviousTimeMark: boolean = false;
+
+  ifAddActivityForm: boolean = false;
+
+  startTimeAction: string;
+  endTimeAction: string;
 
   newCategorizedActivity: boolean = false;
   ifAddActivityButton: boolean = true;
   saveTimeMarkDisabled: string = '';
 
   timeMarkForm: FormGroup;
-  newActivityForm: FormGroup;
 
-  categorizedActivities: CategorizedActivity[] = [
-    {
-      id: '',
-      name: "Overwatch",
-      description: "Overwatch PC video game",
-      color: "#f8a01b",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "Reddit",
-      description: "Browse Reddit",
-      color: "#ff6435",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "CSC - NSD",
-      description: "Working for Correctional Service of Canada - National IT Service Desk",
-      color: "#2f54f9",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "Walk Dogs",
-      description: "Take the dogs for a walk",
-      color: "#1da529",
-      icon: ''
-    }
-  ];
-  categorizedActivitiesSearchResults: CategorizedActivity[] = [];
+
+  
   timeMarkActivities: CategorizedActivity[] = [];
 
-  activityInputKeyUpSubscription: Subscription = new Subscription();
-
+  
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 
   ngOnInit() {
     this.timeMarkActivities = [];
+    this._latestTimeMark = this.timeLogService.latestTimeMark;
+    if(this._latestTimeMark != null){
+      if(this._latestTimeMark.endTimeISO != null){
+        this.ifPreviousTimeMark = true;
+      }else{
+        this.ifPreviousTimeMark = false;
+      }
+    }else{
+      this.ifPreviousTimeMark = false;
+    }
+    this.buildTimeOptions();
+    this.buildTimeInputs();
+    this.setDurationString(this._latestTimeMark.time);
     this.buildTimeMarkForm();
-    this.setDurationString(this.timeLogService.latestTimeMark.time);
+    
+  }
+
+  private buildTimeOptions(){
+    let options: ITimeOption[] = [];
+    if(this.ifPreviousTimeMark){
+      this.startTimeAction = "DISPLAY_PREVIOUS";
+      options.push({
+        "icon":faCheckCircle,
+        "iconClass":"color-green",
+        "label":"End of previous time mark",
+        "action":"SINCE_PREVIOUS",
+      });
+      options.push({
+        "icon":faCircle,
+        "iconClass":"",
+        "label":"Specify",
+        "action":"SPECIFY"
+      });
+    }else{
+      this.startTimeAction = "SPECIFY_TIME";
+      options.push({
+        "icon":faCheckCircle,
+        "iconClass":"color-green",
+        "label":"Specify start time",
+        "action":"SPECIFY_NO_PREVIOUS"
+      });
+      options.push({
+        "icon":faCircle,
+        "iconClass":"",
+        "label":"Specify duration (how long ago)",
+        "action":"SPECIFY_DURATION"
+      });
+    }
+    this.startTimeOptions = options;
+    options = [];
+
+    options.push({
+      "icon":faCheckCircle,
+      "iconClass":"color-green",
+      "label":"Now",
+      "action":"NOW"
+    });
+    options.push({
+      "icon":faCircle,
+      "iconClass":"",
+      "label":"Specify time",
+      "action":"SPECIFY_TIME"
+    });
+    options.push({
+      "icon":faCircle,
+      "iconClass":"",
+      "label":"Specify duration (how long it took)",
+      "action":"SPECIFY_DURATION"
+    });
+    this.endTimeOptions = options;
+    this.endTimeAction = "NOW";
+  }
+  private buildTimeInputs(){
 
   }
 
@@ -106,121 +162,102 @@ export class TimeMarkFormComponent implements OnInit {
     return this._durationString;
   }
 
-  buildActivityForm() {
-
-    this.newActivityForm = new FormGroup({
-      'name': new FormControl(null, Validators.required),
-      'description': new FormControl(null),
-      'color': new FormControl('blue'),
-      'duration': new FormControl(0, Validators.required)
-    })
+  get timeNow(): string{
+    return moment().format('HH:mm');
   }
 
-  buildTimeMarkForm() {
+  get timeEndOfPreviousTimeMark(): moment.Moment{
+    let previousTimeMark =  this.timeLogService.latestTimeMark;
+    if(previousTimeMark.endTimeISO != null){
+      let hoursBeforeNow = moment.duration(moment(previousTimeMark.endTimeISO).diff(moment())).asHours();
+      if(hoursBeforeNow > 24){
+        return null;
+      }else{
+        return moment(previousTimeMark.endTimeISO);
+      }
+    }else{
+      /*
+        2018-11-19
+        In previous versions of the model there was no end time property, so in those cases it will always be the case where it is equal to null.
+      */
+      return null;
+    }
+  }
+
+  private buildTimeMarkForm() {
     this.timeMarkForm = new FormGroup({
-      'time': new FormControl(moment().format('HH:mm').toString()),
+      'startTime': new FormControl({value: moment().format('HH:mm').toString(), disabled: false}),
+      'startTimeDate': new FormControl({value: moment().format('YYYY-MM-DD').toString(), disabled: false}),
+      'startTimeDurationHours': new FormControl(0, [Validators.max(23), Validators.min(0)]),
+      'startTimeDurationMinutes': new FormControl(0, [Validators.max(59), Validators.min(0)]),
+      'endTime': new FormControl({value: moment().format('HH:mm').toString(), disabled: true}),
+      'endTimeNow': new FormControl({value: moment().format('HH:mm').toString(), disabled: true}),
+      'endTimeDate': new FormControl({value: moment().format('YYYY-MM-DD').toString(), disabled: false}),
+      'endTimeDurationHours': new FormControl(0, [Validators.max(23), Validators.min(0)]),
+      'endTimeDurationMinutes': new FormControl(0, [Validators.max(59), Validators.min(0)]),
       // 'title': new FormControl(),
       'description': new FormControl(),
     });
   }
 
-
-
-  onClickAddActivity() {
-    this.newCategorizedActivity = true;
-
-    /*
-      Build an observable.fromEvent subscription that listens for keyboard ESCAPE key in order to cancel the search / close the dropdown for categorizedActivity search
+  onClickStartOption(option: ITimeOption){
+    for(let startOption of this.startTimeOptions){
+      startOption.icon = faCircle;
+      startOption.iconClass = "";
+    }
+    option.icon = faCheckCircle;
+    option.iconClass = "color-green";
+    this.startTimeAction = option.action;
+    if(option.action == "SINCE_PREVIOUS"){
+      this.timeMarkForm.controls['startTime'].disable();
+      this.timeMarkForm.controls['startTimeDate'].disable();
+      this.timeMarkForm.controls['startTime'].patchValue(moment().format('HH:mm'));
+      this.timeMarkForm.controls['startTimeDate'].patchValue(moment().format('YYYY-MM-DD'));
+    }else if(option.action == "SPECIFY"){
+      //in this case there was a previous time mark, 
+      // so we need to ensure that this time does not precede the end of the previous time mark.
+      //
+      this.timeMarkForm.controls['startTime'].enable();
+      this.timeMarkForm.controls['startTimeDate'].enable();
+      this.timeMarkForm.controls['startTime'].patchValue(moment().format('HH:mm'));
+      this.timeMarkForm.controls['startTimeDate'].patchValue(moment().format('YYYY-MM-DD'));
+    }else if(option.action == "SPECIFY_NO_PREVIOUS"){
+      this.timeMarkForm.controls['startTime'].enable();
+      this.timeMarkForm.controls['startTimeDate'].enable();
+      this.timeMarkForm.controls['startTime'].patchValue(moment().format('HH:mm'));
+      this.timeMarkForm.controls['startTimeDate'].patchValue(moment().format('YYYY-MM-DD'));
+    }else if(option.action == "SPECIFY_DURATION"){
       
-    */
-
-
-    this.buildActivityForm();
-    this.ifAddActivityButton = false;
-    this.saveTimeMarkDisabled = 'disabled';
-  }
-
-  onClickCancelActivity() {
-    this.newCategorizedActivity = false;
-    this.ifAddActivityButton = true;
-    this.saveTimeMarkDisabled = '';
-  }
-  onClickSaveActivity() {
-    let activity: CategorizedActivity = new CategorizedActivity();
-    //Get form data and build the object.
-    activity.name = this.newActivityForm.get('name').value;
-    activity.description = this.newActivityForm.get('description').value;
-    activity.color = this.newActivityForm.get('color').value
-    // activity.childCategoryIds = [];
-    // activity.parentId = "";
-    activity.icon = "";
-    this.timeMarkActivities.push(activity);
-    this.newCategorizedActivity = false;
-    this.ifAddActivityButton = true;
-    this.saveTimeMarkDisabled = '';
-  }
-
-
-  onKeyUpActivityName(event: KeyboardEvent){
-    let inputValue = this.newActivityForm.get('name').value;
-    this.activityInputKeyUpSubscription.unsubscribe();
-    this.searchForCategorizedActivities(inputValue);
-  } 
-
-  private searchForCategorizedActivities(inputValue: string){
-    let searchResults: CategorizedActivity[] = [];
-    if(inputValue !== null && inputValue !== ""){
-      for(let activity of this.categorizedActivities){
-        if(activity.name.toLowerCase().match(inputValue.toLowerCase())){
-          searchResults.push(activity);
-        }
-      }
-      if(searchResults.length > 0){
-        this.activityNameInputValue = "";
-      }else{
-        this.activityNameInputValue = inputValue;
-      }
-    }else{
-      this.activityNameInputValue = "";
-      this.activityInputKeyUpSubscription.unsubscribe();
     }
-    if(searchResults.length > 0){
-      this.activityInputKeyUpSubscription = fromEvent(document, 'keydown').subscribe((event: KeyboardEvent)=>{
+  }
 
-        //
-        // The intention of this subscription is to be able to pick up the users arrow key inputs (up and down) and navigate through the list or results
-        // I might just have to scrap this functionality if it is too cumbersome to implement.
-        //
-        let tabIndex = 0;
-
-        /*
-          2018-11-14
-          Apparently there does not seem to be an appropriate method in Angular to play with the DOM in this way w/ respect to focus and blur.
-          https://github.com/angular/angular/issues/15674
-
-          as of right now this code block doesn't really do anything.
-
-        */
-        if(event.key == "ArrowUp"){
-          tabIndex < this.categorizedActivitiesSearchResults.length-1 ? tabIndex++ : tabIndex = this.categorizedActivitiesSearchResults.length;
-        }else if(event.key == "ArrowDown"){
-          tabIndex > 0 ? tabIndex-- : tabIndex = 0;
-        }else if(event.key == "Escape"){
-          // searchResults = [];
-          // this.renderer.selectRootElement("#activity_name_input").blur();
-        }
-
-        // this.renderer.selectRootElement("#activity_name_input").blur();
-
-      });
+  onClickEndOption(option: ITimeOption){
+    for(let endOption of this.endTimeOptions){
+      endOption.icon = faCircle;
+      endOption.iconClass = "";
     }
-    this.categorizedActivitiesSearchResults = searchResults;
+    option.icon = faCheckCircle;
+    option.iconClass = "color-green";
+    this.endTimeAction = option.action;
+    if(option.action == "NOW"){
+      this.timeMarkForm.controls['endTime'].disable();
+      this.timeMarkForm.controls['endTimeDate'].disable();
+      this.timeMarkForm.controls['endTime'].patchValue(moment().format('HH:mm'));
+      this.timeMarkForm.controls['endTimeDate'].patchValue(moment().format('YYYY-MM-DD'));
+    }else if(option.action == "SPECIFY_TIME"){
+      this.timeMarkForm.controls['endTime'].enable();
+      this.timeMarkForm.controls['endTimeDate'].enable();
+      this.timeMarkForm.controls['endTime'].patchValue(moment().format('HH:mm'));
+      this.timeMarkForm.controls['endTimeDate'].patchValue(moment().format('YYYY-MM-DD'));
+    }else if(option.action == "SPECIFY_DURATION"){
+
+    }
   }
 
   onClickSaveTimeMark() {
 
     //grabs time from TODAY.  Might need to fix this to resolve cases where the form goes past midnight but then user modifies the time to be like 11:00pm of what they think is "today" but what is now actually yesterday due to passing midnight.
-    let time = moment(moment().format('YYYY-MM-DD') + ' ' + this.timeMarkForm.get('time').value).toISOString();
+    let time = moment(moment().format('YYYY-MM-DD') + ' ' + this.timeMarkForm.get('startTime').value).toISOString();
     let newTimeMark = new TimeMark(null, null, time, null, null);
     newTimeMark.description = this.timeMarkForm.get('description').value;
     newTimeMark.activities = this.timeMarkActivities;
@@ -235,29 +272,66 @@ export class TimeMarkFormComponent implements OnInit {
     this.timeLogService.saveTimeMark(newTimeMark);
     this.timeMarkForm.reset();
 
-    this.buildActivityForm();
     this.buildTimeMarkForm();
 
     this.closeForm.emit(true);
   }
+
+
+  onKeyUpStartTimeHours(){
+    if(this.timeMarkForm.get('startTimeDurationHours').value > 23){
+      this.timeMarkForm.controls['startTimeDurationHours'].patchValue(23);
+    }else if(this.timeMarkForm.get('startTimeDurationHours').value < 0){
+      this.timeMarkForm.controls['startTimeDurationHours'].patchValue(0);
+    }
+  }
+  onKeyUpStartTimeMinutes(){
+    if(this.timeMarkForm.get('startTimeDurationMinutes').value > 59){
+      this.timeMarkForm.controls['startTimeDurationMinutes'].patchValue(59);
+    }else if(this.timeMarkForm.get('startTimeDurationMinutes').value < 0){
+      this.timeMarkForm.controls['startTimeDurationMinutes'].patchValue(0);
+    }
+  }
+
+  onKeyUpEndTimeHours(){
+    if(this.timeMarkForm.get('endTimeDurationHours').value > 23){
+      this.timeMarkForm.controls['endTimeDurationHours'].patchValue(23);
+    }else if(this.timeMarkForm.get('endTimeDurationHours').value < 0){
+      this.timeMarkForm.controls['endTimeDurationHours'].patchValue(0);
+    }
+  }
+  onKeyUpEndTimeMinutes(){
+    if(this.timeMarkForm.get('endTimeDurationMinutes').value > 59){
+      this.timeMarkForm.controls['endTimeDurationMinutes'].patchValue(59);
+    }else if(this.timeMarkForm.get('endTimeDurationMinutes').value < 0){
+      this.timeMarkForm.controls['endTimeDurationMinutes'].patchValue(0);
+    }
+  }
+
+  
   onClickCancelTimeMark(){
     this.closeForm.emit(true);
   }
 
 
-
-  getActivityNameInputStyle(activity: CategorizedActivity){
-    return {'background-color': activity.color};
-  }
-  onClickActivityNameDropdownItem(activity: CategorizedActivity){
-    this.newActivityForm.patchValue({'name':activity.name});
-    this.searchForCategorizedActivities('');
+  onClickAddActivity() {
+    this.ifAddActivityForm = true;
+    this.ifAddActivityButton = false;
+    this.saveTimeMarkDisabled = 'disabled';
   }
 
-  onClickMakeNewCategoryButton(){
-    //click make new category button
-    // navigate to a new page where you can manage categories
-
+  onActivitySaved(activity: CategorizedActivity){
+    this.timeMarkActivities.push(activity);
+    this.onCloseActivityForm(null);
   }
+
+  onCloseActivityForm($event){
+    this.ifAddActivityForm = false;
+    this.ifAddActivityButton = true;
+    this.saveTimeMarkDisabled = '';
+  }
+
+
+
 
 }
