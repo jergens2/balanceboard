@@ -28,11 +28,11 @@ New Time Mark
         <div *ngIf="startTimeAction == 'SPECIFY_TIME' || startTimeAction == 'SPECIFY_NO_PREVIOUS'">
           <div style="display:flex; flex-direction:column;">
             <div>Date</div>
-            <input type="date" class="form-control" formControlName="startTimeDate">
+            <input type="date" class="form-control" formControlName="startTimeDate" (keyup)="updateDuration()">
           </div>
           <div style="display:flex; flex-direction:column;">
             <div>Time</div>
-            <input type="time" class="form-control" formControlName="startTime">
+            <input type="time" class="form-control" formControlName="startTime" (keyup)="updateDuration()">
           </div>
         </div>
         <div *ngIf="startTimeAction == 'SPECIFY_DURATION'">
@@ -45,7 +45,7 @@ New Time Mark
             <input type="number" class="form-control" formControlName="startTimeDurationMinutes" (keyup)="onKeyUpStartTimeMinutes()">
           </div>
         </div>
-        <div *ngIf="startTimeAction == 'DISPLAY_PREVIOUS'">
+        <div *ngIf="startTimeAction == 'SINCE_PREVIOUS'">
           action is display previous
         </div>
       </div>
@@ -72,14 +72,24 @@ New Time Mark
 
 
       <div class="col-12 col-md-6">
-        <div *ngIf="endTimeAction == 'SPECIFY_TIME' || endTimeAction == 'NOW'">
+        <div *ngIf="endTimeAction == 'NOW'">
           <div style="display:flex; flex-direction:column;">
             <div>Date</div>
             <input type="date" class="form-control" formControlName="endTimeDate">
           </div>
           <div style="display:flex; flex-direction:column;">
             <div>Time</div>
-            <input type="time" class="form-control" formControlName="endTime" >
+            <input type="time" class="form-control" formControlName="endTime">
+          </div>
+        </div>
+        <div *ngIf="endTimeAction == 'SPECIFY_TIME'">
+          <div style="display:flex; flex-direction:column;">
+            <div>Date</div>
+            <input type="date" class="form-control" formControlName="endTimeDate" (keyup)="updateDuration()">
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <div>Time</div>
+            <input type="time" class="form-control" formControlName="endTime" (keyup)="updateDuration()">
           </div>
         </div>
         <div *ngIf="endTimeAction == 'SPECIFY_DURATION'">
@@ -92,14 +102,14 @@ New Time Mark
             <input type="number" class="form-control" formControlName="endTimeDurationMinutes" (keyup)="onKeyUpEndTimeMinutes()">
           </div>
         </div>
-        
+
       </div>
 
     </div>
   </div>
 
   <div class="time-mark-form-control">
-    <div>Duration</div>
+    <div>Total Duration</div>
     <div>
       {{ durationString }}
     </div>

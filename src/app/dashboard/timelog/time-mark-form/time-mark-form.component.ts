@@ -74,15 +74,14 @@ export class TimeMarkFormComponent implements OnInit {
     }
     this.buildTimeOptions();
     this.buildTimeInputs();
-    this.setDurationString(this._latestTimeMark.time);
     this.buildTimeMarkForm();
-    
+    this.updateDuration();
   }
 
   private buildTimeOptions(){
     let options: ITimeOption[] = [];
     if(this.ifPreviousTimeMark){
-      this.startTimeAction = "DISPLAY_PREVIOUS";
+      this.startTimeAction = "SINCE_PREVIOUS";
       options.push({
         "icon":faCheckCircle,
         "iconClass":"color-green",
@@ -96,7 +95,7 @@ export class TimeMarkFormComponent implements OnInit {
         "action":"SPECIFY"
       });
     }else{
-      this.startTimeAction = "SPECIFY_TIME";
+      this.startTimeAction = "SPECIFY_NO_PREVIOUS";
       options.push({
         "icon":faCheckCircle,
         "iconClass":"color-green",
@@ -138,18 +137,37 @@ export class TimeMarkFormComponent implements OnInit {
 
   }
 
-  private setDurationString(previousTime: moment.Moment){
-    let duration = moment.duration(moment().diff(previousTime));
-    let durationString = '';
-    if(duration.days() > 0){
-      duration.days() == 1 ? durationString += "1 day " : durationString += (duration.days() + " days ");
+  private updateDuration(){
+    let startTime: moment.Moment = moment();
+    if(this.startTimeAction == "SPECIFY" || this.startTimeAction == "SPECIFY_NO_PREVIOUS"){
+      let date = this.timeMarkForm.get('startTimeDate').value;
+      let time = this.timeMarkForm.get('startTime').value;
+      startTime = moment(date + ' ' + time);
+    }else if(this.startTimeAction == "SPECIFY_DURATION"){
+      let hours = this.timeMarkForm.get('startTimeDurationHours').value;
+      let totalMinutes = this.timeMarkForm.get('startTimeDurationMinutes').value + (hours*60);
+      startTime = moment().subtract(totalMinutes,'minutes');
+    }else if(this.startTimeAction == "SINCE_PREVIOUS"){
+      //get value of previous timeMark
     }
+
+    let endTime: moment.Moment = moment();
+    if(this.endTimeAction == "NOW"){
+      endTime = moment();
+    }else if(this.endTimeAction == "SPECIFY_DURATION"){
+      let hours = this.timeMarkForm.get('endTimeDurationHours').value;
+      let totalMinutes = this.timeMarkForm.get('endTimeDurationMinutes').value + (hours*60);
+      endTime = moment(startTime).add(totalMinutes, 'minutes');
+    }else if(this.endTimeAction == "SPECIFY_TIME"){
+      let date = this.timeMarkForm.get('endTimeDate').value;
+      let time = this.timeMarkForm.get('endTime').value;
+      endTime = moment(date + ' ' + time);
+    }
+    let duration = moment.duration(endTime.diff(startTime));
+    let durationString = '';
     if(duration.hours() > 0){
       duration.hours() == 1 ? durationString += "1 hour " : durationString += (duration.hours() + " hours ");
     }
-    // else{
-    //   durationString += "0 hours ";
-    // }
     if(duration.minutes() > 0){
       duration.minutes() == 1 ? durationString += "1 minute " : durationString += (duration.minutes() + " minutes ");
     }else{
@@ -191,8 +209,8 @@ export class TimeMarkFormComponent implements OnInit {
       'startTimeDurationHours': new FormControl(0, [Validators.max(23), Validators.min(0)]),
       'startTimeDurationMinutes': new FormControl(0, [Validators.max(59), Validators.min(0)]),
       'endTime': new FormControl({value: moment().format('HH:mm').toString(), disabled: true}),
-      'endTimeNow': new FormControl({value: moment().format('HH:mm').toString(), disabled: true}),
-      'endTimeDate': new FormControl({value: moment().format('YYYY-MM-DD').toString(), disabled: false}),
+      // 'endTimeNow': new FormControl({value: moment().format('HH:mm').toString(), disabled: true}),
+      'endTimeDate': new FormControl({value: moment().format('YYYY-MM-DD').toString(), disabled: true}),
       'endTimeDurationHours': new FormControl(0, [Validators.max(23), Validators.min(0)]),
       'endTimeDurationMinutes': new FormControl(0, [Validators.max(59), Validators.min(0)]),
       // 'title': new FormControl(),
@@ -209,8 +227,8 @@ export class TimeMarkFormComponent implements OnInit {
     option.iconClass = "color-green";
     this.startTimeAction = option.action;
     if(option.action == "SINCE_PREVIOUS"){
-      this.timeMarkForm.controls['startTime'].disable();
-      this.timeMarkForm.controls['startTimeDate'].disable();
+      // this.timeMarkForm.controls['startTime'].disable();
+      // this.timeMarkForm.controls['startTimeDate'].disable();
       this.timeMarkForm.controls['startTime'].patchValue(moment().format('HH:mm'));
       this.timeMarkForm.controls['startTimeDate'].patchValue(moment().format('YYYY-MM-DD'));
     }else if(option.action == "SPECIFY"){
@@ -229,6 +247,7 @@ export class TimeMarkFormComponent implements OnInit {
     }else if(option.action == "SPECIFY_DURATION"){
       
     }
+    this.updateDuration();
   }
 
   onClickEndOption(option: ITimeOption){
@@ -252,6 +271,7 @@ export class TimeMarkFormComponent implements OnInit {
     }else if(option.action == "SPECIFY_DURATION"){
 
     }
+    this.updateDuration();
   }
 
   onClickSaveTimeMark() {
@@ -284,6 +304,7 @@ export class TimeMarkFormComponent implements OnInit {
     }else if(this.timeMarkForm.get('startTimeDurationHours').value < 0){
       this.timeMarkForm.controls['startTimeDurationHours'].patchValue(0);
     }
+    this.updateDuration();
   }
   onKeyUpStartTimeMinutes(){
     if(this.timeMarkForm.get('startTimeDurationMinutes').value > 59){
@@ -291,6 +312,7 @@ export class TimeMarkFormComponent implements OnInit {
     }else if(this.timeMarkForm.get('startTimeDurationMinutes').value < 0){
       this.timeMarkForm.controls['startTimeDurationMinutes'].patchValue(0);
     }
+    this.updateDuration();
   }
 
   onKeyUpEndTimeHours(){
@@ -299,6 +321,7 @@ export class TimeMarkFormComponent implements OnInit {
     }else if(this.timeMarkForm.get('endTimeDurationHours').value < 0){
       this.timeMarkForm.controls['endTimeDurationHours'].patchValue(0);
     }
+    this.updateDuration();
   }
   onKeyUpEndTimeMinutes(){
     if(this.timeMarkForm.get('endTimeDurationMinutes').value > 59){
@@ -306,6 +329,7 @@ export class TimeMarkFormComponent implements OnInit {
     }else if(this.timeMarkForm.get('endTimeDurationMinutes').value < 0){
       this.timeMarkForm.controls['endTimeDurationMinutes'].patchValue(0);
     }
+    this.updateDuration();
   }
 
   
