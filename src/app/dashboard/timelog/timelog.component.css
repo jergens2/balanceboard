@@ -18,14 +18,15 @@
     /* line-height: 26px;
     white-space: nowrap; */
     padding:5px;
-    border-radius: 3px;
-    border: 1px solid orange;
+    /* border-radius: 3px;
+    border: 1px solid orange; */
     margin: 0px;
+    color: #cacaca;
 }
 .delete-time-mark-button:hover{
     cursor: pointer;
-    border: 1px solid red;
-    background-color: orange;
+    /* border: 1px solid red; */
+    color: orange;
 
 }
 

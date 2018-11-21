@@ -52,7 +52,7 @@ export class TimelogService {
     if(timeMarks){
       let tempTimeMark = timeMarks[0];
       for(let timeMark of timeMarks){
-        if(timeMark.timeISO > tempTimeMark.timeISO){
+        if(timeMark.endTimeISO > tempTimeMark.endTimeISO){
           tempTimeMark = timeMark;
         }
       }
@@ -77,7 +77,7 @@ export class TimelogService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeMark, httpOptions)
       .pipe<TimeMark>(map((response) => {
-        let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO, null, null);
+        let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
         timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
         timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
         timeMark.description = response.data.description;
@@ -119,7 +119,7 @@ export class TimelogService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, precedingTimeMark, httpOptions)
       .pipe<TimeMark>(map((response) => {
-        let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO, null, null);
+        let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
         timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
         timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
         timeMark.description = response.data.description;
@@ -190,7 +190,7 @@ export class TimelogService {
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe(map((response) => {
         return response.data.map((dataObject) => {
-          let timeMark = new TimeMark(dataObject._id, dataObject.userId, dataObject.timeISO, null, null);
+          let timeMark = new TimeMark(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO);
           timeMark.description = dataObject.description;
           timeMark.activities = dataObject.activities as CategorizedActivity[];
           return timeMark;

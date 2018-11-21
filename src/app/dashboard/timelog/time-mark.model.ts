@@ -5,13 +5,9 @@ import * as moment from 'moment';
 export class TimeMark{
 
     public id: string;
-    public timeISO: string;
+
     public startTimeISO: string;
     public endTimeISO: string;
-
-    // private startTimeMoment: moment.Moment;
-    // private endTimeMoment: moment.Moment;
-    private timeMoment: moment.Moment;
 
     public description: string;
     public activities: CategorizedActivity[];
@@ -21,24 +17,30 @@ export class TimeMark{
 
     public userId: string;
 
-    constructor(id: string, userId: string, timeISO: string, startTimeISO: string, endTimeISO: string){
+    constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string){
         this.id = id;
         this.userId = userId;
-        this.timeISO = timeISO;
-        this.timeMoment = moment(timeISO); 
-        // this.startTimeMoment = moment(startTimeISO);
-        // this.endTimeMoment = moment(endTimeISO);
         this.startTimeISO = startTimeISO;
         this.endTimeISO = endTimeISO;
     }
 
-    get time(): moment.Moment{
-        return this.timeMoment;
+    get startTime(): moment.Moment{
+        return moment(this.startTimeISO);
     }
-    // get startTime(): moment.Moment{
-    //     return this.startTimeMoment;
-    // }
-    // get endTime(): moment.Moment{
-    //     return this.endTimeMoment;
-    // }
+    get endTime(): moment.Moment{
+        return moment(this.endTimeISO);
+    }
+    get duration(): string{
+        let duration = moment.duration(this.endTime.diff(this.startTime));
+        let durationString = '';
+        if(duration.hours() > 0){
+          duration.hours() == 1 ? durationString += "1 hour " : durationString += (duration.hours() + " hours ");
+        }
+        if(duration.minutes() > 0){
+          duration.minutes() == 1 ? durationString += "1 minute " : durationString += (duration.minutes() + " minutes ");
+        }else{
+          durationString += "0 minutes";
+        }
+        return durationString;
+    }
 }

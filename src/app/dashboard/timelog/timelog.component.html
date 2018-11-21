@@ -32,25 +32,43 @@
               <!-- Time Marks -->
               <div *ngIf="timeMarkTiles.length > 0">
                 <div *ngFor="let timeMarkTile of timeMarkTiles">
-                  <div class='m-1 p-1 border border-success time-mark-tile' [ngStyle]="timeMarkTile.style" (mouseenter)="onMouseEnterTimeMarkTile(timeMarkTile)"
-                    (mouseleave)="onMouseLeaveTimeMarkTile(timeMarkTile)">
+                  <div class='m-1 p-1 border border-success time-mark-tile' style="display:flex; flex-direction:column; "
+                    [ngStyle]="timeMarkTile.style" (mouseenter)="onMouseEnterTimeMarkTile(timeMarkTile)" (mouseleave)="onMouseLeaveTimeMarkTile(timeMarkTile)">
 
-                    <div class="d-flex">
-                      <div class="p-2 w-100">
-                        
-                        <ul class='m-0 ml-2 py-0' *ngFor="let activity of timeMarkTile.timeMark.activities">
-                          <li class='m-0 p-0'>{{ activity.name }}</li>
-                        </ul>
-                        {{ timeMarkTile.timeMark.time.format('HH:mm') }} - {{ timeMarkTile.timeMark.description }}
+                    <div style="display:flex; flex-direction: row;">
+                      <div style="display:flex; flex-direction: column; flex-grow:4; ">
+                        <div>
+                          <ul class='m-0  py-0' *ngFor="let activity of timeMarkTile.timeMark.activities">
+                            <li class='m-0 p-0'>{{ activity.name }}</li>
+                          </ul>
+                        </div>
+                        <div class="p-1" style="display:flex; flex-direction: row;">
+                          <div class="p-1">
+                            <span style="font-size:0.7em;">Start Time</span><br>
+                            {{ timeMarkTile.timeMark.startTime.format('HH:mm') }}
+                          </div>
+                          <div class="p-1">
+                            <span style="font-size:0.7em;">End Time</span><br>
+                            {{ timeMarkTile.timeMark.endTime.format('HH:mm') }}
+                          </div>
+                          <div class="p-1">
+                            <span style="font-size:0.7em;">Duration</span><br>
+                            {{ timeMarkTile.timeMark.duration }}
+                          </div>
+                        </div>
                       </div>
-
-                      <div style="min-width:150px;">
-                        Total minutes:
-                        <!-- {{ getTotalMinutes(timeMarkTile.timeMark) }} -->
+                      <div style="display:flex; flex-direction: row;">
+                        <!-- TO DO:  Need to add tooltips over the cog and X.  e.g. hover over cog and the word "Update" or "Modify pops up" -->
+                        <div class="delete-time-mark-button">
+                          <fa-icon [icon]="faCog"></fa-icon>
+                        </div>
+                        <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">
+                          <fa-icon [icon]="faTimes"></fa-icon>
+                        </div>
                       </div>
-                      <div *ngIf="timeMarkTile.deleteButtonIsVisible" class="p-0 m-0">
-                        <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">Delete</div>
-                      </div>
+                    </div>
+                    <div>
+                      {{ timeMarkTile.timeMark.description }}
                     </div>
                   </div>
                 </div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TimelogService } from './timelog.service';
 import { TimeMark } from './time-mark.model';
 import { FormGroup, FormControl } from '@angular/forms';
+import { faTimes, faCog } from '@fortawesome/free-solid-svg-icons';
 
 import * as moment from 'moment';
 
@@ -105,6 +106,9 @@ export class TimelogComponent implements OnInit {
 
   private currentDate: moment.Moment;
 
+  faTimes = faTimes;
+  faCog = faCog;
+
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
   
@@ -179,7 +183,7 @@ export class TimelogComponent implements OnInit {
     let thisDaysTimeMarks: TimeMark[] = [];
     if(timeMarks){
       for (let timeMark of timeMarks) {
-        if (timeMark.time.local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD')) {
+        if (moment(timeMark.startTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD')) {
           thisDaysTimeMarks.push(timeMark);
         }
       }

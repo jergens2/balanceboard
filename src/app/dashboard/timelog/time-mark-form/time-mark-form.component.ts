@@ -138,6 +138,14 @@ export class TimeMarkFormComponent implements OnInit {
   }
 
   private updateDuration(){
+    /*
+      2018-11-20
+      TO DO:
+      Need to validate that start time is in fact before end time.
+      Need to validate that end time does not exceed the time right now.
+
+
+    */
     let startTime: moment.Moment = moment();
     if(this.startTimeAction == "SPECIFY" || this.startTimeAction == "SPECIFY_NO_PREVIOUS"){
       let date = this.timeMarkForm.get('startTimeDate').value;
@@ -277,12 +285,16 @@ export class TimeMarkFormComponent implements OnInit {
   onClickSaveTimeMark() {
 
     //grabs time from TODAY.  Might need to fix this to resolve cases where the form goes past midnight but then user modifies the time to be like 11:00pm of what they think is "today" but what is now actually yesterday due to passing midnight.
-    let time = moment(moment().format('YYYY-MM-DD') + ' ' + this.timeMarkForm.get('startTime').value).toISOString();
-    let newTimeMark = new TimeMark(null, null, time, null, null);
+    
+    // let time = moment(moment().format('YYYY-MM-DD') + ' ' + this.timeMarkForm.get('startTime').value).toISOString();
+    let startTime = moment(this.timeMarkForm.get('startTimeDate').value + ' ' + this.timeMarkForm.get('startTime').value).toISOString();
+    let endTime = moment(this.timeMarkForm.get('endTimeDate').value + ' ' + this.timeMarkForm.get('endTime').value).toISOString();
+    console.log(startTime, endTime);
+    let newTimeMark = new TimeMark(null, null, startTime, endTime);
     newTimeMark.description = this.timeMarkForm.get('description').value;
     newTimeMark.activities = this.timeMarkActivities;
     let latestTimeMark = this.timeLogService.latestTimeMark;
-    if(latestTimeMark){
+    if(this.ifPreviousTimeMark){
       newTimeMark.precedingTimeMarkId = latestTimeMark.id;
     }else{
       newTimeMark.precedingTimeMarkId = "NO_PRECEDING_TIME_MARK";
