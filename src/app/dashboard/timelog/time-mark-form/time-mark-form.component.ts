@@ -31,7 +31,8 @@ export class TimeMarkFormComponent implements OnInit {
   constructor(private timeLogService: TimelogService, private renderer: Renderer2) { }
 
   private _durationString: string = '';
-  private _latestTimeMark: TimeMark;
+  
+  latestTimeMark: TimeMark;
 
   faCheckCircle = faCheckCircle;
   faCircle = faCircle;
@@ -39,7 +40,7 @@ export class TimeMarkFormComponent implements OnInit {
   startTimeOptions: ITimeOption[];
   endTimeOptions: ITimeOption[];
 
-  ifPreviousTimeMark: boolean = false;
+  // ifPreviousTimeMark: boolean = false;
 
   ifAddActivityForm: boolean = false;
 
@@ -62,16 +63,11 @@ export class TimeMarkFormComponent implements OnInit {
 
   ngOnInit() {
     this.timeMarkActivities = [];
-    this._latestTimeMark = this.timeLogService.latestTimeMark;
-    if(this._latestTimeMark != null){
-      if(this._latestTimeMark.endTimeISO != null){
-        this.ifPreviousTimeMark = true;
-      }else{
-        this.ifPreviousTimeMark = false;
-      }
-    }else{
-      this.ifPreviousTimeMark = false;
-    }
+    this.latestTimeMark = this.timeLogService.latestTimeMark;
+    this.timeLogService.timeMarks.subscribe((timeMarks)=>{
+      this.latestTimeMark = this.timeLogService.latestTimeMark;
+      console.log("latestTimeMark has been updated:", this.latestTimeMark);
+    })
     this.buildTimeOptions();
     this.buildTimeInputs();
     this.buildTimeMarkForm();
@@ -80,7 +76,7 @@ export class TimeMarkFormComponent implements OnInit {
 
   private buildTimeOptions(){
     let options: ITimeOption[] = [];
-    if(this.ifPreviousTimeMark){
+    if(this.latestTimeMark != null){
       this.startTimeAction = "SINCE_PREVIOUS";
       options.push({
         "icon":faCheckCircle,
@@ -88,12 +84,12 @@ export class TimeMarkFormComponent implements OnInit {
         "label":"End of previous time mark",
         "action":"SINCE_PREVIOUS",
       });
-      options.push({
-        "icon":faCircle,
-        "iconClass":"",
-        "label":"Specify",
-        "action":"SPECIFY"
-      });
+      // options.push({
+      //   "icon":faCircle,
+      //   "iconClass":"",
+      //   "label":"Specify",
+      //   "action":"SPECIFY"
+      // });
     }else{
       this.startTimeAction = "SPECIFY_NO_PREVIOUS";
       options.push({
@@ -124,12 +120,12 @@ export class TimeMarkFormComponent implements OnInit {
       "label":"Specify time",
       "action":"SPECIFY_TIME"
     });
-    options.push({
-      "icon":faCircle,
-      "iconClass":"",
-      "label":"Specify duration (how long it took)",
-      "action":"SPECIFY_DURATION"
-    });
+    // options.push({
+    //   "icon":faCircle,
+    //   "iconClass":"",
+    //   "label":"Specify duration (how long it took)",
+    //   "action":"SPECIFY_DURATION"
+    // });
     this.endTimeOptions = options;
     this.endTimeAction = "NOW";
   }
@@ -156,7 +152,7 @@ export class TimeMarkFormComponent implements OnInit {
       let totalMinutes = this.timeMarkForm.get('startTimeDurationMinutes').value + (hours*60);
       startTime = moment().subtract(totalMinutes,'minutes');
     }else if(this.startTimeAction == "SINCE_PREVIOUS"){
-      //get value of previous timeMark
+      startTime = this.latestTimeMark.endTime;
     }
 
     let endTime: moment.Moment = moment();
@@ -192,28 +188,17 @@ export class TimeMarkFormComponent implements OnInit {
     return moment().format('HH:mm');
   }
 
-  get timeEndOfPreviousTimeMark(): moment.Moment{
-    let previousTimeMark =  this.timeLogService.latestTimeMark;
-    if(previousTimeMark.endTimeISO != null){
-      let hoursBeforeNow = moment.duration(moment(previousTimeMark.endTimeISO).diff(moment())).asHours();
-      if(hoursBeforeNow > 24){
-        return null;
-      }else{
-        return moment(previousTimeMark.endTimeISO);
-      }
-    }else{
-      /*
-        2018-11-19
-        In previous versions of the model there was no end time property, so in those cases it will always be the case where it is equal to null.
-      */
-      return null;
-    }
-  }
-
   private buildTimeMarkForm() {
+    let startTime = moment().format('HH:mm').toString();
+    let startTimeDate = moment().format('YYYY-MM-DD').toString();
+    if(this.startTimeAction == "SINCE_PREVIOUS"){
+      startTime = this.latestTimeMark.endTime.format('HH:mm');
+      startTimeDate = this.latestTimeMark.endTime.format('YYYY-MM-DD');
+    }
+
     this.timeMarkForm = new FormGroup({
-      'startTime': new FormControl({value: moment().format('HH:mm').toString(), disabled: false}),
-      'startTimeDate': new FormControl({value: moment().format('YYYY-MM-DD').toString(), disabled: false}),
+      'startTime': new FormControl({value: startTime, disabled: false}),
+      'startTimeDate': new FormControl({value: startTimeDate, disabled: false}),
       'startTimeDurationHours': new FormControl(0, [Validators.max(23), Validators.min(0)]),
       'startTimeDurationMinutes': new FormControl(0, [Validators.max(59), Validators.min(0)]),
       'endTime': new FormControl({value: moment().format('HH:mm').toString(), disabled: true}),
@@ -283,19 +268,14 @@ export class TimeMarkFormComponent implements OnInit {
   }
 
   onClickSaveTimeMark() {
-
-    //grabs time from TODAY.  Might need to fix this to resolve cases where the form goes past midnight but then user modifies the time to be like 11:00pm of what they think is "today" but what is now actually yesterday due to passing midnight.
-    
-    // let time = moment(moment().format('YYYY-MM-DD') + ' ' + this.timeMarkForm.get('startTime').value).toISOString();
     let startTime = moment(this.timeMarkForm.get('startTimeDate').value + ' ' + this.timeMarkForm.get('startTime').value).toISOString();
     let endTime = moment(this.timeMarkForm.get('endTimeDate').value + ' ' + this.timeMarkForm.get('endTime').value).toISOString();
-    console.log(startTime, endTime);
+
     let newTimeMark = new TimeMark(null, null, startTime, endTime);
     newTimeMark.description = this.timeMarkForm.get('description').value;
     newTimeMark.activities = this.timeMarkActivities;
-    let latestTimeMark = this.timeLogService.latestTimeMark;
-    if(this.ifPreviousTimeMark){
-      newTimeMark.precedingTimeMarkId = latestTimeMark.id;
+    if(this.latestTimeMark != null){
+      newTimeMark.precedingTimeMarkId = this.latestTimeMark.id;
     }else{
       newTimeMark.precedingTimeMarkId = "NO_PRECEDING_TIME_MARK";
     }

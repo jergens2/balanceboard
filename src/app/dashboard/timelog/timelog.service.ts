@@ -30,40 +30,33 @@ export class TimelogService {
 
   private serverUrl: string = serverUrl;
 
-  private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>([]); 
+  private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>([]);
   private _currentDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
-  private _latestTimeMark: TimeMark;
-  
+
   get timeMarks(): Observable<TimeMark[]> {
     return this._timeMarksSubject.asObservable();
   }
   get currentDate(): Observable<moment.Moment> {
     return this._currentDate.asObservable();
   }
-  setCurrentDate(newDate: moment.Moment){
-    this._currentDate.next(newDate);
-  }
-  
   get latestTimeMark(): TimeMark {
-    if(this._latestTimeMark){
-      return this._latestTimeMark;
-    }
-    let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
-    if(timeMarks){
+    let timeMarks = this._timeMarksSubject.getValue();
+    if (timeMarks.length > 0) {
       let tempTimeMark = timeMarks[0];
-      for(let timeMark of timeMarks){
-        if(timeMark.endTimeISO > tempTimeMark.endTimeISO){
+      for (let timeMark of timeMarks) {
+        if (timeMark.endTimeISO > tempTimeMark.endTimeISO) {
           tempTimeMark = timeMark;
         }
       }
       return tempTimeMark;
-    }else{
+    } else {
       return null;
     }
   }
-  setLatestTimeMark(latestTimeMark: TimeMark){
-    this._latestTimeMark = latestTimeMark;
+  setCurrentDate(newDate: moment.Moment) {
+    this._currentDate.next(newDate);
   }
+
 
   saveTimeMark(timeMark: TimeMark) {
     let newTimeMark: TimeMark = timeMark;
@@ -87,12 +80,12 @@ export class TimelogService {
       .subscribe((timeMark: TimeMark) => {
         let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
         timeMarks.push(timeMark);
-        this.setLatestTimeMark(timeMark);
+
         this._timeMarksSubject.next(timeMarks);
         this.updatePrecedingTimeMark(timeMark);
       })
   }
-  private updatePrecedingTimeMark(latestTimeMark: TimeMark){
+  private updatePrecedingTimeMark(latestTimeMark: TimeMark) {
     /*
       2018-11-11
       The way this is currently designed is that whenever a new timeMark is made, it is first sent to the backend to be saved in the DB.
@@ -106,38 +99,40 @@ export class TimelogService {
     let precedingTimeMark: TimeMark;
     let currentTimeMarks = this._timeMarksSubject.getValue();
 
-    precedingTimeMark = currentTimeMarks.find((timeMark)=>{
+    precedingTimeMark = currentTimeMarks.find((timeMark) => {
       return timeMark.id == precedingTimeMarkId;
     });
-    precedingTimeMark.followingTimeMarkId = latestTimeMark.id;
-    const postUrl = this.serverUrl + "/api/timeMark/update/" + precedingTimeMark.id;
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'
-      })
-    };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, precedingTimeMark, httpOptions)
-      .pipe<TimeMark>(map((response) => {
-        let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
-        timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
-        timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
-        timeMark.description = response.data.description;
-        timeMark.activities = response.data.activities as CategorizedActivity[];
-        return timeMark;
-      }))
-      .subscribe((updatedTimeMark: TimeMark) => {
-        let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
-        let precedingTimeMarkIndex = timeMarks.findIndex((timeMark)=>{
-          return timeMark.id == updatedTimeMark.id;
-        })
-        timeMarks[precedingTimeMarkIndex] = updatedTimeMark;
-        this._timeMarksSubject.next(timeMarks);
-      })
+    if (precedingTimeMark) {
+      precedingTimeMark.followingTimeMarkId = latestTimeMark.id;
 
+      const postUrl = this.serverUrl + "/api/timeMark/update/" + precedingTimeMark.id;
+      const httpOptions = {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+          // 'Authorization': 'my-auth-token'
+        })
+      };
+      this.httpClient.post<{ message: string, data: any }>(postUrl, precedingTimeMark, httpOptions)
+        .pipe<TimeMark>(map((response) => {
+          let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
+          timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
+          timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
+          timeMark.description = response.data.description;
+          timeMark.activities = response.data.activities as CategorizedActivity[];
+          return timeMark;
+        }))
+        .subscribe((updatedTimeMark: TimeMark) => {
+          let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+          let precedingTimeMarkIndex = timeMarks.findIndex((timeMark) => {
+            return timeMark.id == updatedTimeMark.id;
+          })
+          timeMarks[precedingTimeMarkIndex] = updatedTimeMark;
+          this._timeMarksSubject.next(timeMarks);
+        })
+    }
   }
 
-  deleteTimeMark(timeMark: TimeMark){
+  deleteTimeMark(timeMark: TimeMark) {
     /*
       2018-11-11  
       To do: unresolved issue: if timeMark get's deleted, we need to update other time Marks in the DB?
@@ -153,7 +148,7 @@ export class TimelogService {
 
     */
     // console.log("TimeLogService: deleteTimeMark() function disabled");
-    
+
 
     const postUrl = this.serverUrl + "/api/timeMark/delete";
     const httpOptions = {
@@ -164,19 +159,19 @@ export class TimelogService {
     };
 
     this.httpClient.post<{ message: string, data: any }>(postUrl, timeMark, httpOptions)
-    // .pipe(map((response) => {
-    //   let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO);
-    //   timeMark.description = response.data.description;
-    //   timeMark.activities = response.data.activities as CategorizedActivity[];
-    //   return timeMark;
-    // }))
-    .subscribe((response) => {
-      let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
-      timeMarks.splice(timeMarks.indexOf(timeMark),1);
-      this.setLatestTimeMark(null);
-      this._timeMarksSubject.next(timeMarks);
-    })
-    
+      // .pipe(map((response) => {
+      //   let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.timeISO);
+      //   timeMark.description = response.data.description;
+      //   timeMark.activities = response.data.activities as CategorizedActivity[];
+      //   return timeMark;
+      // }))
+      .subscribe((response) => {
+        let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+        timeMarks.splice(timeMarks.indexOf(timeMark), 1);
+        // this.setLatestTimeMark(null);
+        this._timeMarksSubject.next(timeMarks);
+      })
+
   }
 
   private fetchTimeMarks(authenticatedUserId: string, startTime: string, endTime: string) {

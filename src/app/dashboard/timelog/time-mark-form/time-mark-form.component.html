@@ -10,7 +10,7 @@ New Time Mark
     <div>
       Start Time
     </div>
-    <div *ngIf="!ifPreviousTimeMark" style="color:#f4bc42; font-weight: bold;">
+    <div *ngIf="" style="color:#f4bc42; font-weight: bold;">
       No Previous Time Mark
     </div>
     <div style="display:flex; flex-direction:row;width:100%; align-items: center;" class="row">
@@ -46,7 +46,7 @@ New Time Mark
           </div>
         </div>
         <div *ngIf="startTimeAction == 'SINCE_PREVIOUS'">
-          action is display previous
+          {{ this.latestTimeMark.endTime }}
         </div>
       </div>
 
