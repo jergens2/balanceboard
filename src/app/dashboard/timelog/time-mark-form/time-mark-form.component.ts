@@ -66,7 +66,6 @@ export class TimeMarkFormComponent implements OnInit {
     this.latestTimeMark = this.timeLogService.latestTimeMark;
     this.timeLogService.timeMarks.subscribe((timeMarks)=>{
       this.latestTimeMark = this.timeLogService.latestTimeMark;
-      console.log("latestTimeMark has been updated:", this.latestTimeMark);
     })
     this.buildTimeOptions();
     this.buildTimeInputs();
@@ -168,12 +167,16 @@ export class TimeMarkFormComponent implements OnInit {
       endTime = moment(date + ' ' + time);
     }
     let duration = moment.duration(endTime.diff(startTime));
+    if(duration.asSeconds() < 0){
+      this.timeMarkForm.controls['endTime'].setValue(startTime.format('HH:mm'));
+      this.timeMarkForm.controls['endTimeDate'].setValue(startTime.format('YYYY-MM-DD'))
+    }
     let durationString = '';
     if(duration.hours() > 0){
       duration.hours() == 1 ? durationString += "1 hour " : durationString += (duration.hours() + " hours ");
     }
     if(duration.minutes() > 0){
-      duration.minutes() == 1 ? durationString += "1 minute " : durationString += (duration.minutes() + " minutes ");
+      duration.minutes() == 1 ? durationString += "1 minute " : durationString += (Math.round(duration.minutes()) + " minutes ");
     }else{
       durationString += "0 minutes";
     }
@@ -291,36 +294,61 @@ export class TimeMarkFormComponent implements OnInit {
 
 
   onKeyUpStartTimeHours(){
+    let hours = 0
     if(this.timeMarkForm.get('startTimeDurationHours').value > 23){
-      this.timeMarkForm.controls['startTimeDurationHours'].patchValue(23);
+      hours = 23;
     }else if(this.timeMarkForm.get('startTimeDurationHours').value < 0){
-      this.timeMarkForm.controls['startTimeDurationHours'].patchValue(0);
+      hours = 0;
+    }else{
+      hours = this.timeMarkForm.get('startTimeDurationHours').value;
     }
+    this.timeMarkForm.controls['startTimeDurationHours'].patchValue(hours);
+    let date = this.timeMarkForm.get('startTimeDate').value;
+    let time = this.timeMarkForm.get('startTime').value;
+    let startTime = moment(date + ' ' + time).subtract(hours, 'hours');
+    this.timeMarkForm.controls['startTimeDate'].setValue(startTime.format('YYYY-MM-DD'));
+    this.timeMarkForm.controls['startTime'].setValue(startTime.format('HH:mm'));
     this.updateDuration();
   }
   onKeyUpStartTimeMinutes(){
+    let minutes = 0;
     if(this.timeMarkForm.get('startTimeDurationMinutes').value > 59){
-      this.timeMarkForm.controls['startTimeDurationMinutes'].patchValue(59);
+      minutes = 59.9999;
     }else if(this.timeMarkForm.get('startTimeDurationMinutes').value < 0){
-      this.timeMarkForm.controls['startTimeDurationMinutes'].patchValue(0);
+      minutes = 0;
+    }else{
+      minutes = this.timeMarkForm.get('startTimeDurationMinutes').value;
     }
+    this.timeMarkForm.controls['startTimeDurationMinutes'].patchValue(minutes);
+    let date = this.timeMarkForm.get('startTimeDate').value;
+    let time = this.timeMarkForm.get('startTime').value;
+    let startTime = moment(date + ' ' + time).subtract(minutes, 'minutes');
+    this.timeMarkForm.controls['startTimeDate'].setValue(startTime.format('YYYY-MM-DD'));
+    this.timeMarkForm.controls['startTime'].setValue(startTime.format('HH:mm'));
     this.updateDuration();
   }
 
   onKeyUpEndTimeHours(){
     if(this.timeMarkForm.get('endTimeDurationHours').value > 23){
       this.timeMarkForm.controls['endTimeDurationHours'].patchValue(23);
+
+
     }else if(this.timeMarkForm.get('endTimeDurationHours').value < 0){
       this.timeMarkForm.controls['endTimeDurationHours'].patchValue(0);
+
+
     }
     this.updateDuration();
   }
   onKeyUpEndTimeMinutes(){
     if(this.timeMarkForm.get('endTimeDurationMinutes').value > 59){
       this.timeMarkForm.controls['endTimeDurationMinutes'].patchValue(59);
+
+
     }else if(this.timeMarkForm.get('endTimeDurationMinutes').value < 0){
       this.timeMarkForm.controls['endTimeDurationMinutes'].patchValue(0);
     }
+
     this.updateDuration();
   }
 

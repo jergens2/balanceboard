@@ -46,7 +46,7 @@ New Time Mark
           </div>
         </div>
         <div *ngIf="startTimeAction == 'SINCE_PREVIOUS'">
-          {{ this.latestTimeMark.endTime }}
+          {{ this.latestTimeMark.endTime.format('HH:mm') }}
         </div>
       </div>
 
