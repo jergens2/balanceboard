@@ -66,6 +66,7 @@ export class TimeMarkFormComponent implements OnInit {
     this.latestTimeMark = this.timeLogService.latestTimeMark;
     this.timeLogService.timeMarks.subscribe((timeMarks)=>{
       this.latestTimeMark = this.timeLogService.latestTimeMark;
+      console.log("Latest Time Mark:", this.latestTimeMark);
     })
     this.buildTimeOptions();
     this.buildTimeInputs();

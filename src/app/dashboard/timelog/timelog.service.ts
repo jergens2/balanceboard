@@ -186,6 +186,14 @@ export class TimelogService {
       .pipe(map((response) => {
         return response.data.map((dataObject) => {
           let timeMark = new TimeMark(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO);
+          if(dataObject.timeISO){
+            /* 
+              2018-11-23
+              This check is here for previous versions of the timeMark where there used to be a property called timeISO.
+            */
+           timeMark.endTimeISO = dataObject.timeISO;
+           timeMark.startTimeISO = dataObject.timeISO;
+          }
           timeMark.description = dataObject.description;
           timeMark.activities = dataObject.activities as CategorizedActivity[];
           return timeMark;

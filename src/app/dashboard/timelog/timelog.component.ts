@@ -111,11 +111,11 @@ export class TimelogComponent implements OnInit {
 
   loadingTimeMarks: boolean = true;
   addTimeMarkForm: boolean = false;
-  
+
   private thisDaysTimeMarks: TimeMark[];
 
   private allTimeMarks: TimeMark[];
-  
+
   thisDayCardStyle = {};
 
   timeMarkTiles: ITimeMarkTile[] = [];
@@ -123,11 +123,11 @@ export class TimelogComponent implements OnInit {
 
 
   ngOnInit() {
-    
+
     this.defaultTimeMarkTileStyle = {};
     this.currentDate = moment();
 
-    this.timeLogService.currentDate.subscribe((currentDate: moment.Moment)=>{
+    this.timeLogService.currentDate.subscribe((currentDate: moment.Moment) => {
       this.currentDate = currentDate;
       this.updateThisDaysTimeMarks(this.currentDate);
     })
@@ -139,20 +139,20 @@ export class TimelogComponent implements OnInit {
     });
   }
 
-  get thisDate(): string{
+  get thisDate(): string {
     return this.currentDate.format('YYYY-MM-DD');
   }
-  get thisDatePlusOne(): string{
-    return moment(this.currentDate).add(1,'days').format('YYYY-MM-DD');
+  get thisDatePlusOne(): string {
+    return moment(this.currentDate).add(1, 'days').format('YYYY-MM-DD');
   }
-  get thisDateMinusOne(): string{
-    return moment(this.currentDate).subtract(1,'days').format('YYYY-MM-DD');
+  get thisDateMinusOne(): string {
+    return moment(this.currentDate).subtract(1, 'days').format('YYYY-MM-DD');
   }
 
   onClickNewTimeMark() {
     this.addTimeMarkForm = true;
   }
-  onCloseForm(event){
+  onCloseForm(event) {
     this.addTimeMarkForm = false;
   }
 
@@ -181,15 +181,30 @@ export class TimelogComponent implements OnInit {
 
   private getThisDaysTimeMarks(thisDay: moment.Moment, timeMarks: TimeMark[]): TimeMark[] {
     let thisDaysTimeMarks: TimeMark[] = [];
-    if(timeMarks){
+    if (timeMarks) {
       for (let timeMark of timeMarks) {
-        if (moment(timeMark.startTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD')) {
-          thisDaysTimeMarks.push(timeMark);
+        /*
+          2018-11-23:
+          moment(undefined) produces the same result as moment().
+          therefore, if we pass it something that looks like this(moment(timeMark.startTimeISO)) where startTimeISO is undefined,
+          then it will just use todays date which causes problems for these purposes.
+
+          so we have to check that start time is defined.
+        */
+        if(timeMark.startTimeISO){
+          if (moment(timeMark.startTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD')) {
+            thisDaysTimeMarks.push(timeMark);
+          }
+        }else{
+          console.log("time mark startTime is not defined.", timeMark)
         }
+
+        
       }
-    }   
+    }
     return thisDaysTimeMarks;
   }
+  
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
     timeMarkTile.deleteButtonIsVisible = true;
   }
