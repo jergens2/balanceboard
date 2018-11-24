@@ -192,7 +192,9 @@ export class TimelogComponent implements OnInit {
           so we have to check that start time is defined.
         */
         if(timeMark.startTimeISO){
-          if (moment(timeMark.startTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD')) {
+          let isStartTimeToday: boolean = moment(timeMark.startTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD');
+          let isEndTimeToday: boolean = moment(timeMark.endTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD');
+          if (isStartTimeToday || isEndTimeToday) {
             thisDaysTimeMarks.push(timeMark);
           }
         }else{
@@ -204,7 +206,7 @@ export class TimelogComponent implements OnInit {
     }
     return thisDaysTimeMarks;
   }
-  
+
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
     timeMarkTile.deleteButtonIsVisible = true;
   }
