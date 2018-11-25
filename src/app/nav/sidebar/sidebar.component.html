@@ -18,9 +18,9 @@
       <fa-icon [icon]="faCalendarAlt"></fa-icon> Time Log
     </span>
   </div>
-  <div class="sidebar-button incomplete-sidebar-button" routerLink='/timeactivities' routerLinkActive='activeLink'>
+  <div class="sidebar-button" routerLink='/timelog-activities' routerLinkActive='activeLink' [routerLinkActiveOptions]="{exact:true}">
     <span style="margin-left:15px;" class='sidebar-button-title'>
-      <fa-icon [icon]="faProjectDiagram"></fa-icon> Activities / Categories
+      <fa-icon [icon]="faSiteMap"></fa-icon> Activities
     </span>
   </div>
   <div class="sidebar-button incomplete-sidebar-button" routerLink='/productivity' routerLinkActive='activeLink'>
@@ -77,12 +77,12 @@
     </span>
   </div>
 
-  <div class="sidebar-button" style="margin-top:150px">
+  <div class="sidebar-button mt-5" >
     <span class='sidebar-button-title'>
       <fa-icon [icon]="faCogs"></fa-icon> Settings
     </span>
   </div>
-  <div class="sidebar-button" (click)="onClickLogout()">
+  <div class="sidebar-button"  (click)="onClickLogout()">
     <span class='sidebar-button-title'>
       <fa-icon [icon]="faSignOutAlt"></fa-icon> Logout
     </span>

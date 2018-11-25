@@ -31,6 +31,7 @@ import { TimelogService } from './timelog/timelog.service';
 import { TimeMarkFormComponent } from './timelog/time-mark-form/time-mark-form.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ActivityFormComponent } from './timelog/time-mark-form/activity-form/activity-form.component';
+import { ActivitiesComponent } from './timelog/activities/activities.component';
 
 
 
@@ -61,7 +62,8 @@ import { ActivityFormComponent } from './timelog/time-mark-form/activity-form/ac
     NetWorthComponent,
     TimelogComponent,
     TimeMarkFormComponent,
-    ActivityFormComponent
+    ActivityFormComponent,
+    ActivitiesComponent
   ],
   providers: [
     TimeService, 

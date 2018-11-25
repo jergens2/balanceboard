@@ -152,7 +152,7 @@ export class TimelogComponent implements OnInit {
   onClickNewTimeMark() {
     this.addTimeMarkForm = true;
   }
-  onCloseForm(event) {
+  onCloseForm() {
     this.addTimeMarkForm = false;
   }
 
@@ -222,7 +222,7 @@ export class TimelogComponent implements OnInit {
 
   onClickAdjacentDate(dateYYYYMMDD: string) {
     this.timeLogService.setCurrentDate(moment(dateYYYYMMDD));
-    //this.updateThisDaysTimeMarks(moment(dateYYYYMMDD));
+    this.onCloseForm();
   }
 
   dateNotGreaterThanToday(dateYYYYMMDD: string): boolean {

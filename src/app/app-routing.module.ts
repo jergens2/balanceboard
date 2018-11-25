@@ -7,6 +7,7 @@ import { BodyWeightComponent } from "./dashboard/health/body-weight/body-weight.
 import { BuildProfileComponent } from "./dashboard/health/build-profile/build-profile.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
 import { TimelogComponent } from "./dashboard/timelog/timelog.component";
+import { ActivitiesComponent } from "./dashboard/timelog/activities/activities.component";
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
@@ -16,7 +17,8 @@ const appRoutes: Routes = [
     { path: 'bodyWeight', component: BodyWeightComponent },
     { path: 'healthProfile', component: BuildProfileComponent },
     { path: 'networth', component: NetWorthComponent },
-    { path: 'timelog', component: TimelogComponent }
+    { path: 'timelog', component: TimelogComponent },
+    { path: 'timelog-activities', component: ActivitiesComponent }
 ];
 
 

@@ -1,4 +1,4 @@
-import { CategorizedActivity } from "./categorized-activity.model";
+import { CategorizedActivity } from "./activities/categorized-activity.model";
 import * as moment from 'moment';
 
 

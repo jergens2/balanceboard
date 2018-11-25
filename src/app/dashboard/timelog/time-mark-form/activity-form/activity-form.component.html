@@ -21,17 +21,15 @@
 
 
   </div>
-  <div *ngIf="activityNameInputValue" class="new-activity-form-row">
+  <div *ngIf="activityNameInputValue" class="new-activity-form-row" style="display:flex; flex-direction: column;" >
     <div>
       No category matches for <span style="font-weight:bold;"> {{ activityNameInputValue }} </span>
     </div>
-    <div style="flex-grow:2;">
-      <button class="ml-3 btn btn-primary" (click)="onClickMakeNewCategoryButton()">
-        Create new category <span style="font-weight:bold">{{ activityNameInputValue }}</span>
-      </button>
+    <div>
+      <button class="btn btn-primary" (click)="onClickMakeNewCategoryButton()">
+        Create new activity category
+      </button>  
     </div>
-
-
   </div>
   <hr style="width:100%;" class="m-1">
   <div class="new-activity-form-row ">
@@ -65,6 +63,6 @@
 
 </div>
 <div class="activity-action-buttons activity-form-content-item">
-  <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()">Save Activity</button>
+  <button class="btn btn-sm btn-success mx-1" (click)="onClickSaveActivity()" [disabled]="activityNameInputValue ? 'disabled' : ''">Save Activity</button>
   <button class="btn btn-sm border-warning mx-1" (click)="onClickCancelActivity()">Cancel</button>
 </div>

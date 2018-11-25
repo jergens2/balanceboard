@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HomeService } from '../../dashboard/home/home.service';
 import { Component, OnInit } from '@angular/core';
 
-import { faHome, faProjectDiagram, faListOl, faSyncAlt, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt  } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faProjectDiagram, faListOl, faSyncAlt, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt, faSitemap  } from '@fortawesome/free-solid-svg-icons';
 import { faChartBar, faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
@@ -18,6 +18,7 @@ export class SidebarComponent implements OnInit {
 
   faHome = faHome;
   faCalendarAlt = faCalendarAlt;
+  faSiteMap = faSitemap;
   faProjectDiagram = faProjectDiagram;
   faChartBar = faChartBar;
   faChartPie = faChartPie;

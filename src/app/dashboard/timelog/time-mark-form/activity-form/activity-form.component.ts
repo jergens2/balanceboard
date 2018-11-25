@@ -1,9 +1,11 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CategorizedActivity } from '../../categorized-activity.model';
+import { CategorizedActivity } from '../../activities/categorized-activity.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription, fromEvent } from 'rxjs';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { faCircle } from '@fortawesome/free-regular-svg-icons';
+import { Router } from '@angular/router';
+import { ActivitiesService } from '../../activities/activities.service';
 
 @Component({
   selector: 'app-activity-form',
@@ -12,41 +14,12 @@ import { faCircle } from '@fortawesome/free-regular-svg-icons';
 })
 export class ActivityFormComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router, private activitiesService: ActivitiesService) { }
 
   faCheckCircle = faCheckCircle;
   faCircle = faCircle;
 
-  categorizedActivities: CategorizedActivity[] = [
-    {
-      id: '',
-      name: "Overwatch",
-      description: "Overwatch PC video game",
-      color: "#f8a01b",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "Reddit",
-      description: "Browse Reddit",
-      color: "#ff6435",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "CSC - NSD",
-      description: "Working for Correctional Service of Canada - National IT Service Desk",
-      color: "#2f54f9",
-      icon: ''
-    },
-    {
-      id: '',
-      name: "Walk Dogs",
-      description: "Take the dogs for a walk",
-      color: "#1da529",
-      icon: ''
-    }
-  ];
+  categorizedActivities: CategorizedActivity[] = [];
   categorizedActivitiesSearchResults: CategorizedActivity[] = [];
 
   activityForm: FormGroup;
@@ -55,12 +28,25 @@ export class ActivityFormComponent implements OnInit {
 
   activityNameInputValue: string = '';
 
+  private _activity: CategorizedActivity;
+
+  get activity(){
+    return this._activity;
+  }
+  set activity(activity: CategorizedActivity){
+    this._activity = activity;
+  }
+
   @Output() closeActivityForm: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() activitySaved: EventEmitter<CategorizedActivity> = new EventEmitter();
 
   ngOnInit() {
     this.buildActivityForm();
+    this.activitiesService.activities.subscribe((activities: CategorizedActivity[])=>{
+      this.categorizedActivities = activities;
+    })
   }
+
 
   buildActivityForm() {
 
@@ -76,15 +62,20 @@ export class ActivityFormComponent implements OnInit {
     this.closeActivityForm.emit(true);
   }
   onClickSaveActivity() {
-    let activity: CategorizedActivity = new CategorizedActivity();
-    //Get form data and build the object.
-    activity.name = this.activityForm.get('name').value;
-    activity.description = this.activityForm.get('description').value;
-    activity.color = this.activityForm.get('color').value
-    // activity.childCategoryIds = [];
-    // activity.parentId = "";
-    activity.icon = "";
+    /*
+      Note: remember, this method is not to create a new kind of categorized activity, 
+      this form is to save an instance of an already defined activity.
 
+      The purpose of this form, therefore, is to simply define a collection of activities performed and how long time was spent on them
+    */
+    let id = '';
+    let name = this.activityForm.get('name').value;;
+    let description = this.activityForm.get('description').value;
+    let parentActivityId = '';
+    let childActivityIds = [];
+    let color = this.activityForm.get('color').value
+
+    let activity: CategorizedActivity = new CategorizedActivity(id, name, description, parentActivityId, childActivityIds, color);
 
     this.activitySaved.emit(activity);
   }
@@ -157,7 +148,8 @@ export class ActivityFormComponent implements OnInit {
   onClickMakeNewCategoryButton(){
     //click make new category button
     // navigate to a new page where you can manage categories
-
+    this.activitiesService.activityNameFromActivityForm = this.activityForm.get('name').value;
+    this.router.navigate(['/timelog-activities']);
   }
 
 
