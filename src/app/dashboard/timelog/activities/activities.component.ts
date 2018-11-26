@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivitiesService } from './activities.service';
-import { CategorizedActivity } from './categorized-activity.model';
+import { CategorizedActivity } from './activity/categorized-activity.model';
+
 
 @Component({
   selector: 'app-activities',
@@ -11,24 +12,27 @@ export class ActivitiesComponent implements OnInit {
 
   constructor(private activitiesService: ActivitiesService) { }
 
-  private _activityNameFromForm: string = null;
-  activities: CategorizedActivity[] = [];
+  private aactivityNameFromForm: string = null;
+  private allActivities: CategorizedActivity[] = [];
+  private topLevelActivities: CategorizedActivity[] = [];
 
   ngOnInit() {
 
     let activityNameFromForm: string = this.activitiesService.activityNameFromActivityForm;
-    if(activityNameFromForm != null){
-      this._activityNameFromForm = activityNameFromForm;
+    if (activityNameFromForm != null) {
+      this.aactivityNameFromForm = activityNameFromForm;
       this.activitiesService.activityNameFromActivityForm = null;
-    }else{
-      console.log("activity name was NULL BITCH");
+    } else {
+      // no activity name was set on the service
     }
 
-    this.activitiesService.activities.subscribe((activities)=>{
-      this.activities = activities;
+    this.activitiesService.activities.subscribe((activities) => {
+      this.allActivities = activities;
+      
     })
-    
+
 
   }
 
+  
 }

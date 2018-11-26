@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CategorizedActivity } from './categorized-activity.model';
+import { CategorizedActivity } from './activity/categorized-activity.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { defaultActivities } from './default-activities';
@@ -21,14 +21,43 @@ export class ActivitiesService {
     let activities: CategorizedActivity[] = this.fetchActivities();
     if(activities == null){
       //no activities from server
-      activities = defaultActivities;
+      return this.buildActivityTree(defaultActivities);
     }else{
-      console.log("successfully retreieved activities from server");
       return activities;
     }
-    console.log("returning", activities);
-    return activities;
   }
+
+  private buildActivityTree(activities: CategorizedActivity[]): CategorizedActivity[] {
+    //builds tree and returns the top-level elements
+    let topLevelActivities: CategorizedActivity[] = [];
+
+    for (let activity of activities) {
+      if (activity.parentActivityId == 'TOP_LEVEL') {
+        let topLevelActivity = activity;
+        topLevelActivity = this.buildChildActivity(topLevelActivity, activities);
+        topLevelActivities.push(topLevelActivity);
+      }
+    }
+    return topLevelActivities;
+  }
+
+  private buildChildActivity(activityTreeNode: CategorizedActivity, allActivities: CategorizedActivity[]): CategorizedActivity {
+    for (let activity of allActivities) {
+      for (let activityId of activityTreeNode.childActivityIds) {
+        if (activity.id == activityId) {
+          activityTreeNode.addChild(activity);
+        }
+      }
+    }
+    if(activityTreeNode.children){
+      for(let childNode of activityTreeNode.children){
+        childNode = this.buildChildActivity(childNode, allActivities);
+      }
+    }
+
+    return activityTreeNode;
+  }
+
 
   private fetchActivities(): CategorizedActivity[]{
     //get activities from backend api

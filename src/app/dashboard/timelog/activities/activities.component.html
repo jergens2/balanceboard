@@ -7,8 +7,13 @@
   <div class="row">
     <div class="col-12">
 
-      <div class="card" *ngFor="let activity of activities">
-        {{activity.name}}
+      <div class="card" *ngFor="let activity of allActivities">
+        <div>{{activity.name}}</div>
+        <ul>
+          <li *ngFor="let childActivity of activity.children">
+            <app-activity [activity]="childActivity"></app-activity>
+          </li>
+        </ul>
       </div>
 
 

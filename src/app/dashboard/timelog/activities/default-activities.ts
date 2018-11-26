@@ -1,4 +1,4 @@
-import { CategorizedActivity } from "./categorized-activity.model";
+import { CategorizedActivity } from "./activity/categorized-activity.model";
 
 
 let activities = [];
@@ -32,7 +32,7 @@ activities.push(new CategorizedActivity('default_errands', 'Errands', 'Miscellan
 /*
     Yellow gradient for leisure;
 */
-activities.push(new CategorizedActivity('default_leisure', 'Leisure', 'Time spent on preferred activities', 'TOP_LEVEL', [], '#fff899'));
+activities.push(new CategorizedActivity('default_leisure', 'Leisure', 'Time spent on preferred activities', 'TOP_LEVEL', ['default_read','default_videoGames','default_webBrowsing','default_exercise'], '#fff899'));
 activities.push(new CategorizedActivity('default_read', 'Read', 'Time spent reading (books, magazines, newspapers, etc.)', 'default_leisure', [], '#fff899'));
 activities.push(new CategorizedActivity('default_videoGames', 'Video Games', 'Time spent playing video games', 'default_leisure', [], '#fff899'));
 activities.push(new CategorizedActivity('default_webBrowsing', 'Web Browsing', 'Time spent on websites', 'default_leisure', [], '#fff899'));

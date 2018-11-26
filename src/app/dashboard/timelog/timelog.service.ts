@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TimeMark } from './time-mark.model';
-import { CategorizedActivity } from './activities/categorized-activity.model';
+import { CategorizedActivity } from './activities/activity/categorized-activity.model';
 
 import * as moment from 'moment';
 

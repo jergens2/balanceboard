@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CategorizedActivity } from '../../activities/categorized-activity.model';
+import { CategorizedActivity } from '../../activities/activity/categorized-activity.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription, fromEvent } from 'rxjs';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
