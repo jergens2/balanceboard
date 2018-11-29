@@ -1,26 +1,36 @@
-<div class="container">
-  <div class="row">
-    <div class="col-12">
+<div class="root">
+  <!-- <div class="row"> -->
+  <div class="header">
+    <div style="height:100px;">Calendar</div>
+    <div class="text-center adjacent-date" (click)="onClickAdjacentDate(thisDateMinusOne)">
+      <fa-icon [icon]="faArrowCircleLeft" style="font-size:2em;" class="mr-1"></fa-icon>
+      <div style="display:flex;flex-direction: column;">
+        <div>{{ dayOfWeek(thisDateMinusOne) }}</div>
+        <div>{{ dateRelevanceToTodayString(thisDateMinusOne) }}</div>
+      </div>
 
+    </div>
+
+    <div class='text-center'>
+      <span>{{ dayOfWeek(thisDate) }}</span><br>
+      <span>{{ dayOfMonth(thisDate) }}</span>
+    </div>
+
+    <div class='text-center adjacent-date' (click)="onClickAdjacentDate(thisDatePlusOne)">
+      <div style="display:flex;flex-direction: column;" >
+        <div>{{ dayOfWeek(thisDatePlusOne) }}</div>
+        <div>{{ dateRelevanceToTodayString(thisDatePlusOne) }}</div>
+      </div>
+
+      <fa-icon [icon]="faArrowCircleRight" style="font-size:2em;" class="ml-1"></fa-icon>
+    </div>
+  </div>
+  <div class="content">
+    <div class="timelog-chart">
+      <app-timelog-chart></app-timelog-chart>
+    </div>
+    <div class="timelog">
       <div [ngStyle]="thisDayCardStyle" class="card">
-
-        <div class="card-header">
-          <div class="d-flex" style="justify-content: space-between;align-items: center;">
-            <div class="text-center adjacent-date" style='order:1' (click)="onClickAdjacentDate(thisDateMinusOne)">
-              <span>{{ getFormattedDateString(thisDateMinusOne) }}</span> <br>
-              <span>{{ dateRelevanceToTodayString(thisDateMinusOne) }}</span>
-            </div>
-            <div class='text-center' style='order:1'>
-              <h2>{{ getFormattedDateString(thisDate) }}</h2>
-              <span>{{ dateRelevanceToTodayString(thisDate) }}</span>
-            </div>
-            <div class='text-center adjacent-date' style='order:1' (click)="onClickAdjacentDate(thisDatePlusOne)">
-              <span>{{ getFormattedDateString(thisDatePlusOne) }}</span> <br>
-              <span>{{ dateRelevanceToTodayString(thisDatePlusOne) }}</span>
-            </div>
-          </div>
-        </div>
-
         <div class="card-body">
           Time Log
           <div *ngIf="loadingTimeMarks">
@@ -95,4 +105,6 @@
       </div>
     </div>
   </div>
+
+  <!-- </div> -->
 </div>

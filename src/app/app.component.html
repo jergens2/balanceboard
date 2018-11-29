@@ -8,12 +8,13 @@
     </div>
     <div class="wrapper">
 
-        <div class="d-none d-md-inline" >
+        <!-- <div class="d-none d-md-inline" > -->
+        <div class="sidebar">    
             <app-sidebar></app-sidebar>
         </div>
-        <div class="d-none d-md-inline sidebar-margin"></div>
-        <div class="container-fluid">
-            <app-content></app-content>
+        <!-- <div class="d-none d-md-inline sidebar-margin"></div> -->
+        <div class="content" >
+            <router-outlet></router-outlet>
         </div>
        
     </div>

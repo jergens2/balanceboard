@@ -33,6 +33,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ActivityFormComponent } from './timelog/time-mark-form/activity-form/activity-form.component';
 import { ActivitiesComponent } from './timelog/activities/activities.component';
 import { ActivityComponent } from './timelog/activities/activity/activity.component';
+import { TimelogChartComponent } from './timelog/timelog-chart/timelog-chart.component';
 
 
 
@@ -65,7 +66,8 @@ import { ActivityComponent } from './timelog/activities/activity/activity.compon
     TimeMarkFormComponent,
     ActivityFormComponent,
     ActivitiesComponent,
-    ActivityComponent
+    ActivityComponent,
+    TimelogChartComponent
   ],
   providers: [
     TimeService, 

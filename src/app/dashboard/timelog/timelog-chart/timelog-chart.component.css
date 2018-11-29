@@ -1,0 +1,17 @@
+
+.timelog-chart{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+}
+
+.chart-item{
+    /* width:50px; */
+    min-width: 50px;
+    margin:10px;
+    /* height:30px; */
+    border:1px solid lightsteelblue;
+    border-radius:2px;
+    font-size:3em;
+}

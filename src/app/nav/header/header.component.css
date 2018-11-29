@@ -1,5 +1,7 @@
 #header{
     z-index: 999;
+    border-bottom: 2px solid #f4f4f4;
+    margin-bottom: 10px;
 }
 
 .menu {
