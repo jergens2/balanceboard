@@ -42,6 +42,40 @@ export class TimelogCalendarComponent implements OnInit {
     })
 
   }
+  
+  onClickDaySquare(daySquare: IDaySquare){
+    this.timeLogService.setCurrentDate(moment(daySquare.date));
+  }
+  onMouseEnterDaySquare(daySquare: IDaySquare){
+    if(moment().dayOfYear() === moment(daySquare.date).dayOfYear()){
+      daySquare.style = {
+        "fill":"#2678ff",
+        "cursor":"pointer"
+      }
+    }else{
+      daySquare.style = {
+        "cursor":"pointer",
+        "fill":"lightblue",
+        "stroke":"#a5c7ff",
+        "stroke-width":10
+      }
+    }
+
+  }
+  onMouseLeaveDaySquare(daySquare: IDaySquare){
+    if(moment().dayOfYear() === moment(daySquare.date).dayOfYear()){
+      daySquare.style = {
+        "fill":"#2678ff",
+        "stroke":"#a5c7ff",
+        "stroke-width":10
+      }
+    }else{
+      daySquare.style = { 
+        "fill":"#ddeaff",
+      }
+    }
+
+  }
 
   buildDaySquares(date: moment.Moment, viewBoxWidth, viewBoxHeight): IDaySquare[]{
     let firstOfMonth = moment(date).date(1);

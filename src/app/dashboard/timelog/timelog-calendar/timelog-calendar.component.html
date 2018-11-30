@@ -13,8 +13,9 @@
 
   </svg> -->
   <svg [attr.viewBox]="viewBox">
-    <g *ngFor="let daySquare of daySquares">
-      <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath"/>
+    <g *ngFor="let daySquare of daySquares" (click)="onClickDaySquare(daySquare)" (mouseenter)="onMouseEnterDaySquare(daySquare)"
+      (mouseleave)="onMouseLeaveDaySquare(daySquare)">
+      <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath" />
     </g>
   </svg>
 </div>
