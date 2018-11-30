@@ -19,18 +19,14 @@ import { AuthStatus } from '../../authentication/auth-status.model';
 export class TimelogService {
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
-    console.log("constructor of timelog service")
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
-      console.log("Timelogservice subscribed to authService", authStatus);
       if (authStatus.isAuthenticated) {
         this.currentDate$.subscribe((date: moment.Moment)=>{
+          console.log("date has changed")
           let start = moment(date).startOf('day').toISOString();
           let end = moment(date).endOf('day').toISOString();
-          console.log(start, end);
           this.fetchTimeMarks(authStatus.user.id, start, end);
         })
-        
-        
       } else {
         this.logout();
       }
@@ -45,10 +41,6 @@ export class TimelogService {
   get timeMarks$(): Observable<TimeMark[]> {
     return this._timeMarksSubject.asObservable();
   }
-
-  // get timeMarks(): TimeMark[]{
-  //   return this._timeMarksSubject.getValue();
-  // }
 
   get currentDate$(): Observable<moment.Moment> {
     return this._currentDate.asObservable();
@@ -214,10 +206,16 @@ export class TimelogService {
         })
       }))
       .subscribe((timeMarks: TimeMark[]) => {
+        console.log("subscribed timeMarks in service");
         this._timeMarksSubject.next(timeMarks);
       });
 
   }
+
+  timeMarkUpdatesInterval(startTime, endTime){
+    this.fetchTimeMarks(this.authService.authenticatedUser.id, startTime, endTime);
+  }
+  
 
 
   private logout() {

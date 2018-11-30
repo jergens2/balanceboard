@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TimelogService } from './timelog.service';
 import { TimeMark } from './time-mark.model';
 import { faTimes, faCog, faArrowCircleRight, faArrowCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import * as moment from 'moment';
+import { interval, Subscription } from 'rxjs';
 
 export interface ITimeMarkTile {
   timeMark: TimeMark,
@@ -17,7 +18,7 @@ export interface ITimeMarkTile {
   styleUrls: ['./timelog.component.css']
 })
 
-export class TimelogComponent implements OnInit {
+export class TimelogComponent implements OnInit, OnDestroy{
 
   
   constructor(private timeLogService: TimelogService) { }
@@ -42,6 +43,7 @@ export class TimelogComponent implements OnInit {
   timeMarkTiles: ITimeMarkTile[] = [];
   private defaultTimeMarkTileStyle: Object;
 
+  intervalSubscription: Subscription = new Subscription();
 
   ngOnInit() {
     this.ifLoadingTimeMarks = true;
@@ -49,21 +51,23 @@ export class TimelogComponent implements OnInit {
     this.currentDate = moment();
 
     this.timeLogService.currentDate$.subscribe((currentDate: moment.Moment) => {
+      this.intervalSubscription.unsubscribe();
       this.currentDate = currentDate;
-      // this.allTimeMarks = this.timeLogService.timeMarks;
-      // this.updateThisDaysTimeMarks(this.currentDate);
+      let seconds = 60;
+      this.intervalSubscription = interval(1000*seconds).subscribe((increment)=>{
+        this.timeLogService.timeMarkUpdatesInterval(currentDate.startOf('day').toISOString(), currentDate.endOf('day').toISOString());
+      })
     })
 
     this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[]) => {
       if(timeMarks != null){
-        console.log("subscription thing", timeMarks)
-        // this.allTimeMarks = timeMarks;
-        // this.updateThisDaysTimeMarks(this.currentDate);
         this.timeMarkTiles = this.buildTimeMarkTiles(timeMarks);
         this.ifLoadingTimeMarks = false;
       }
-      
     });
+  }
+  ngOnDestroy(){
+    this.intervalSubscription.unsubscribe();
   }
 
   get latestTimeMark(): TimeMark{
@@ -192,7 +196,7 @@ export class TimelogComponent implements OnInit {
     return moment(dateYYYYMMDD).format('MMM Do');
   }
 
-  getFormattedDateString(dateYYYYMMDD: string): string {
+  dateFormattedDateString(dateYYYYMMDD: string): string {
     //Used by template to input any date and receive back a formatted date string 
     return moment(dateYYYYMMDD).format('dddd, MMMM Do, gggg');
   }
