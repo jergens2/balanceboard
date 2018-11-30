@@ -5,31 +5,6 @@
       <hr class="my-0">
       <div class="mb-3">{{ dateRelevanceToTodayString(thisDate) }}</div>
     </div>
-    <!-- <div>
-      <div style="flex-basis: 40%;">
-        <app-timelog-calendar></app-timelog-calendar>
-      </div>
-      <div class="timelog-header-dates">
-        <div class="text-center adjacent-date" (click)="onClickAdjacentDate(thisDateMinusOne)">
-          <fa-icon [icon]="faArrowCircleLeft" style="font-size:2em;" class="mr-1"></fa-icon>
-          <div style="display:flex;flex-direction: column;">
-            <div>{{ dayOfWeek(thisDateMinusOne) }}</div>
-            <div>{{ dateRelevanceToTodayString(thisDateMinusOne) }}</div>
-          </div>
-
-        </div>
-
-        <div class='text-center adjacent-date' (click)="onClickAdjacentDate(thisDatePlusOne)">
-          <div style="display:flex;flex-direction: column;">
-            <div>{{ dayOfWeek(thisDatePlusOne) }}</div>
-            <div>{{ dateRelevanceToTodayString(thisDatePlusOne) }}</div>
-          </div>
-
-          <fa-icon [icon]="faArrowCircleRight" style="font-size:2em;" class="ml-1"></fa-icon>
-        </div>
-      </div>
-    </div> -->
-
   </div>
 
 
@@ -39,23 +14,6 @@
           <fa-icon class="adjacent-date" [icon]="faArrowCircleLeft" (click)="onClickAdjacentDate(thisDateMinusOne)"></fa-icon>
           <span>{{ thisDate }}</span>
           <fa-icon class="adjacent-date" [icon]="faArrowCircleRight" (click)="onClickAdjacentDate(thisDatePlusOne)"></fa-icon>
-          <!-- <div class="text-center adjacent-date" (click)="onClickAdjacentDate(thisDateMinusOne)">
-              <fa-icon [icon]="faArrowCircleLeft" style="font-size:2em;" class="mr-1"></fa-icon>
-              <div style="display:flex;flex-direction: column;">
-                <div>{{ dayOfWeek(thisDateMinusOne) }}</div>
-                <div>{{ dateRelevanceToTodayString(thisDateMinusOne) }}</div>
-              </div>
-    
-            </div>
-    
-            <div class='text-center adjacent-date' (click)="onClickAdjacentDate(thisDatePlusOne)">
-              <div style="display:flex;flex-direction: column;">
-                <div>{{ dayOfWeek(thisDatePlusOne) }}</div>
-                <div>{{ dateRelevanceToTodayString(thisDatePlusOne) }}</div>
-              </div>
-    
-              <fa-icon [icon]="faArrowCircleRight" style="font-size:2em;" class="ml-1"></fa-icon>
-            </div> -->
       </div>
       <app-timelog-calendar></app-timelog-calendar>
       <hr>

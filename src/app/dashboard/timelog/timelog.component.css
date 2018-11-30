@@ -44,14 +44,27 @@
 
 }
 .timelog-chart-header-date{
-    width:100%; 
     padding:10px;
-    padding-bottom:0px; 
     display:flex;
     flex-direction: row; 
     justify-content: space-between;
     align-items: center;
+    border-radius: 6px;
+    color: white;
+    background-color:rgb(0,139,204);
+    margin:10px;
 }
+.adjacent-date{
+    cursor: pointer;
+    user-select: none;
+    font-size:1.2em;
+}
+.adjacent-date:hover{
+    color: rgb(255, 237, 78);
+    cursor: pointer;
+}
+
+
 .timelog{
     margin:5px;
     padding:0px;
@@ -124,13 +137,3 @@
     justify-content: space-between;
     align-items: center;
 }
-.adjacent-date{
-    cursor: pointer;
-    user-select: none;
-    font-size:2em;
-}
-.adjacent-date:hover{
-    color: darkgreen;
-    cursor: pointer;
-}
-
