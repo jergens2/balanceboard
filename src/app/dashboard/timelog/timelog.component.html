@@ -1,30 +1,37 @@
 <div class="root">
   <!-- <div class="row"> -->
-  <div class="header">
-    <div style="height:100px;">Calendar</div>
-    <div class="text-center adjacent-date" (click)="onClickAdjacentDate(thisDateMinusOne)">
-      <fa-icon [icon]="faArrowCircleLeft" style="font-size:2em;" class="mr-1"></fa-icon>
-      <div style="display:flex;flex-direction: column;">
-        <div>{{ dayOfWeek(thisDateMinusOne) }}</div>
-        <div>{{ dateRelevanceToTodayString(thisDateMinusOne) }}</div>
+  <div class="timelog-header">
+    <div style="flex-basis: 40%;">
+      <app-timelog-calendar></app-timelog-calendar>
+    </div>
+    <div class="timelog-header-dates">
+      <div class="text-center adjacent-date" (click)="onClickAdjacentDate(thisDateMinusOne)">
+        <fa-icon [icon]="faArrowCircleLeft" style="font-size:2em;" class="mr-1"></fa-icon>
+        <div style="display:flex;flex-direction: column;">
+          <div>{{ dayOfWeek(thisDateMinusOne) }}</div>
+          <div>{{ dateRelevanceToTodayString(thisDateMinusOne) }}</div>
+        </div>
+
       </div>
 
-    </div>
-
-    <div class='text-center'>
-      <span>{{ dayOfWeek(thisDate) }}</span><br>
-      <span>{{ dayOfMonth(thisDate) }}</span>
-    </div>
-
-    <div class='text-center adjacent-date' (click)="onClickAdjacentDate(thisDatePlusOne)">
-      <div style="display:flex;flex-direction: column;" >
-        <div>{{ dayOfWeek(thisDatePlusOne) }}</div>
-        <div>{{ dateRelevanceToTodayString(thisDatePlusOne) }}</div>
+      <div class='text-center'>
+        <span>{{ dayOfWeek(thisDate) }}</span><br>
+        <span>{{ dayOfMonth(thisDate) }}</span>
       </div>
 
-      <fa-icon [icon]="faArrowCircleRight" style="font-size:2em;" class="ml-1"></fa-icon>
+      <div class='text-center adjacent-date' (click)="onClickAdjacentDate(thisDatePlusOne)">
+        <div style="display:flex;flex-direction: column;">
+          <div>{{ dayOfWeek(thisDatePlusOne) }}</div>
+          <div>{{ dateRelevanceToTodayString(thisDatePlusOne) }}</div>
+        </div>
+
+        <fa-icon [icon]="faArrowCircleRight" style="font-size:2em;" class="ml-1"></fa-icon>
+      </div>
     </div>
+
   </div>
+
+
   <div class="content">
     <div class="timelog-chart">
       <app-timelog-chart></app-timelog-chart>
@@ -33,10 +40,10 @@
       <div [ngStyle]="thisDayCardStyle" class="card">
         <div class="card-body">
           Time Log
-          <div *ngIf="loadingTimeMarks">
-            <i class="fa fa-spinner fa-spin"></i>
+          <div *ngIf="ifLoadingTimeMarks">
+            <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
           </div>
-          <div *ngIf="!loadingTimeMarks">
+          <div *ngIf="!ifLoadingTimeMarks">
             <!-- Loading complete -->
             <div *ngIf="timeMarkTiles">
               <!-- Time Marks -->
@@ -97,7 +104,7 @@
           </div>
           <div *ngIf="addTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>
 
-            <app-time-mark-form (closeForm)="onCloseForm()">
+            <app-time-mark-form (closeForm)="onCloseForm()" [latestTimeMark]="latestTimeMark">
             </app-time-mark-form>
 
           </div>

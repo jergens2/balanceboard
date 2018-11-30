@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TimelogService } from './timelog.service';
 import { TimeMark } from './time-mark.model';
-import { faTimes, faCog, faArrowCircleRight, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faCog, faArrowCircleRight, faArrowCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import * as moment from 'moment';
 
@@ -28,13 +28,14 @@ export class TimelogComponent implements OnInit {
   faCog = faCog;
   faArrowCircleRight = faArrowCircleRight;
   faArrowCircleLeft = faArrowCircleLeft;
+  faSpinner = faSpinner;
 
-  loadingTimeMarks: boolean = true;
+  ifLoadingTimeMarks: boolean;
   addTimeMarkForm: boolean = false;
 
   private thisDaysTimeMarks: TimeMark[];
 
-  private allTimeMarks: TimeMark[];
+  // private allTimeMarks: TimeMark[];
 
   thisDayCardStyle = {};
 
@@ -43,20 +44,30 @@ export class TimelogComponent implements OnInit {
 
 
   ngOnInit() {
-
+    this.ifLoadingTimeMarks = true;
     this.defaultTimeMarkTileStyle = {};
     this.currentDate = moment();
 
-    this.timeLogService.currentDate.subscribe((currentDate: moment.Moment) => {
+    this.timeLogService.currentDate$.subscribe((currentDate: moment.Moment) => {
       this.currentDate = currentDate;
-      this.updateThisDaysTimeMarks(this.currentDate);
+      // this.allTimeMarks = this.timeLogService.timeMarks;
+      // this.updateThisDaysTimeMarks(this.currentDate);
     })
 
-    this.timeLogService.timeMarks.subscribe((timeMarks: TimeMark[]) => {
-      this.allTimeMarks = timeMarks;
-      this.loadingTimeMarks = false;
-      this.updateThisDaysTimeMarks(this.currentDate);
+    this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[]) => {
+      if(timeMarks != null){
+        console.log("subscription thing", timeMarks)
+        // this.allTimeMarks = timeMarks;
+        // this.updateThisDaysTimeMarks(this.currentDate);
+        this.timeMarkTiles = this.buildTimeMarkTiles(timeMarks);
+        this.ifLoadingTimeMarks = false;
+      }
+      
     });
+  }
+
+  get latestTimeMark(): TimeMark{
+    return this.timeLogService.latestTimeMark;
   }
 
   get thisDate(): string {
@@ -76,19 +87,19 @@ export class TimelogComponent implements OnInit {
     this.addTimeMarkForm = false;
   }
 
-  private updateThisDaysTimeMarks(thisDate: moment.Moment) {
-    this.thisDaysTimeMarks = this.getThisDaysTimeMarks(this.currentDate, this.allTimeMarks);
-    this.timeMarkTiles = this.buildTimeMarkTiles(this.thisDaysTimeMarks);
-    if (moment().format('YYYY-MM-DD') == thisDate.format('YYYY-MM-DD')) {
-      this.thisDayCardStyle = {
-        'border': '1px solid green',
-      }
-    } else {
-      this.thisDayCardStyle = {
-        'border': '1px solid gray',
-      }
-    }
-  }
+  // private updateThisDaysTimeMarks(thisDate: moment.Moment) {
+  //   this.thisDaysTimeMarks = this.getThisDaysTimeMarks(this.currentDate, this.allTimeMarks);
+  //   this.timeMarkTiles = this.buildTimeMarkTiles(this.thisDaysTimeMarks);
+  //   if (moment().format('YYYY-MM-DD') == thisDate.format('YYYY-MM-DD')) {
+  //     this.thisDayCardStyle = {
+  //       'border': '1px solid green',
+  //     }
+  //   } else {
+  //     this.thisDayCardStyle = {
+  //       'border': '1px solid gray',
+  //     }
+  //   }
+  // }
 
   private buildTimeMarkTiles(timeMarks: TimeMark[]): ITimeMarkTile[] {
     let timeMarkTiles: ITimeMarkTile[] = [];
@@ -99,33 +110,33 @@ export class TimelogComponent implements OnInit {
     return timeMarkTiles;
   }
 
-  private getThisDaysTimeMarks(thisDay: moment.Moment, timeMarks: TimeMark[]): TimeMark[] {
-    let thisDaysTimeMarks: TimeMark[] = [];
-    if (timeMarks) {
-      for (let timeMark of timeMarks) {
-        /*
-          2018-11-23:
-          moment(undefined) produces the same result as moment().
-          therefore, if we pass it something that looks like this(moment(timeMark.startTimeISO)) where startTimeISO is undefined,
-          then it will just use todays date which causes problems for these purposes.
+  // private getThisDaysTimeMarks(thisDay: moment.Moment, timeMarks: TimeMark[]): TimeMark[] {
+  //   let thisDaysTimeMarks: TimeMark[] = [];
+  //   if (timeMarks) {
+  //     for (let timeMark of timeMarks) {
+  //       /*
+  //         2018-11-23:
+  //         moment(undefined) produces the same result as moment().
+  //         therefore, if we pass it something that looks like this(moment(timeMark.startTimeISO)) where startTimeISO is undefined,
+  //         then it will just use todays date which causes problems for these purposes.
 
-          so we have to check that start time is defined.
-        */
-        if(timeMark.startTimeISO){
-          let isStartTimeToday: boolean = moment(timeMark.startTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD');
-          let isEndTimeToday: boolean = moment(timeMark.endTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD');
-          if (isStartTimeToday || isEndTimeToday) {
-            thisDaysTimeMarks.push(timeMark);
-          }
-        }else{
-          console.log("time mark startTime is not defined.", timeMark)
-        }
+  //         so we have to check that start time is defined.
+  //       */
+  //       if(timeMark.startTimeISO){
+  //         let isStartTimeToday: boolean = moment(timeMark.startTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD');
+  //         let isEndTimeToday: boolean = moment(timeMark.endTimeISO).local().format('YYYY-MM-DD') == moment(thisDay).format('YYYY-MM-DD');
+  //         if (isStartTimeToday || isEndTimeToday) {
+  //           thisDaysTimeMarks.push(timeMark);
+  //         }
+  //       }else{
+  //         console.log("time mark startTime is not defined.", timeMark)
+  //       }
 
         
-      }
-    }
-    return thisDaysTimeMarks;
-  }
+  //     }
+  //   }
+  //   return thisDaysTimeMarks;
+  // }
 
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
     timeMarkTile.deleteButtonIsVisible = true;
@@ -141,6 +152,8 @@ export class TimelogComponent implements OnInit {
   }
 
   onClickAdjacentDate(dateYYYYMMDD: string) {
+    this.timeMarkTiles = null;
+    this.ifLoadingTimeMarks = true;
     this.timeLogService.setCurrentDate(moment(dateYYYYMMDD));
     this.onCloseForm();
   }

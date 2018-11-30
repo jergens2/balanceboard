@@ -34,6 +34,7 @@ import { ActivityFormComponent } from './timelog/time-mark-form/activity-form/ac
 import { ActivitiesComponent } from './timelog/activities/activities.component';
 import { ActivityComponent } from './timelog/activities/activity/activity.component';
 import { TimelogChartComponent } from './timelog/timelog-chart/timelog-chart.component';
+import { TimelogCalendarComponent } from './timelog/timelog-calendar/timelog-calendar.component';
 
 
 
@@ -67,7 +68,8 @@ import { TimelogChartComponent } from './timelog/timelog-chart/timelog-chart.com
     ActivityFormComponent,
     ActivitiesComponent,
     ActivityComponent,
-    TimelogChartComponent
+    TimelogChartComponent,
+    TimelogCalendarComponent
   ],
   providers: [
     TimeService, 

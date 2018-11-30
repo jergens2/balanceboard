@@ -19,9 +19,18 @@ import { AuthStatus } from '../../authentication/auth-status.model';
 export class TimelogService {
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
+    console.log("constructor of timelog service")
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
+      console.log("Timelogservice subscribed to authService", authStatus);
       if (authStatus.isAuthenticated) {
-        this.fetchTimeMarks(authStatus.user.id, moment().startOf('day').toISOString(), moment().endOf('day').toISOString());
+        this.currentDate$.subscribe((date: moment.Moment)=>{
+          let start = moment(date).startOf('day').toISOString();
+          let end = moment(date).endOf('day').toISOString();
+          console.log(start, end);
+          this.fetchTimeMarks(authStatus.user.id, start, end);
+        })
+        
+        
       } else {
         this.logout();
       }
@@ -30,13 +39,18 @@ export class TimelogService {
 
   private serverUrl: string = serverUrl;
 
-  private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>([]);
+  private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
   private _currentDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
 
-  get timeMarks(): Observable<TimeMark[]> {
+  get timeMarks$(): Observable<TimeMark[]> {
     return this._timeMarksSubject.asObservable();
   }
-  get currentDate(): Observable<moment.Moment> {
+
+  // get timeMarks(): TimeMark[]{
+  //   return this._timeMarksSubject.getValue();
+  // }
+
+  get currentDate$(): Observable<moment.Moment> {
     return this._currentDate.asObservable();
   }
   get latestTimeMark(): TimeMark {
@@ -175,7 +189,7 @@ export class TimelogService {
   }
 
   private fetchTimeMarks(authenticatedUserId: string, startTime: string, endTime: string) {
-    const getUrl = this.serverUrl + "/api/timeMark/" + authenticatedUserId;
+    const getUrl = this.serverUrl + "/api/timeMark/" + authenticatedUserId + "/" + startTime + "/" + endTime;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

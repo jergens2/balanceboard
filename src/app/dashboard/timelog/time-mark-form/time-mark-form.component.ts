@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Renderer2 } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Renderer2, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { Subscription, fromEvent } from 'rxjs';
@@ -32,7 +32,7 @@ export class TimeMarkFormComponent implements OnInit {
 
   private _durationString: string = '';
   
-  latestTimeMark: TimeMark;
+  // latestTimeMark: TimeMark;
 
   faCheckCircle = faCheckCircle;
   faCircle = faCircle;
@@ -59,14 +59,13 @@ export class TimeMarkFormComponent implements OnInit {
 
   
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
-
+  @Input() latestTimeMark: TimeMark;
 
   ngOnInit() {
     this.timeMarkActivities = [];
-    this.latestTimeMark = this.timeLogService.latestTimeMark;
-    this.timeLogService.timeMarks.subscribe((timeMarks)=>{
-      this.latestTimeMark = this.timeLogService.latestTimeMark;
-    })
+    console.log("Latest time mark on form:", this.latestTimeMark);
+
+
     this.buildTimeOptions();
     this.buildTimeInputs();
     this.buildTimeMarkForm();
