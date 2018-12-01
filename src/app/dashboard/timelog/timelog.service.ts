@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { TimeMark } from './time-mark.model';
 import { CategorizedActivity } from './activities/activity/categorized-activity.model';
 
@@ -36,7 +36,12 @@ export class TimelogService {
   private serverUrl: string = serverUrl;
 
   private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
+  // private _timeMarksMonthSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   private _currentDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
+
+  // get timeMarksOfMonth$(){
+  //   return this._timeMarksMonthSubject.asObservable();
+  // }
 
   get timeMarks$(): Observable<TimeMark[]> {
     return this._timeMarksSubject.asObservable();
@@ -180,6 +185,21 @@ export class TimelogService {
 
   }
 
+  fetchMonthsTimeMarks(startTime: string): Observable<{ message: string, data: any }>{
+    let authenticatedUserId = this.authService.authenticatedUser.id;
+    const getUrl = this.serverUrl + "/api/timeMark/month/" + authenticatedUserId + "/" + startTime;
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'  
+      })
+    };
+    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+
+
+  }
+
   private fetchTimeMarks(authenticatedUserId: string, startTime: string, endTime: string) {
     const getUrl = this.serverUrl + "/api/timeMark/" + authenticatedUserId + "/" + startTime + "/" + endTime;
     const httpOptions = {
@@ -206,13 +226,13 @@ export class TimelogService {
         })
       }))
       .subscribe((timeMarks: TimeMark[]) => {
-        console.log("subscribed timeMarks in service");
         this._timeMarksSubject.next(timeMarks);
       });
 
   }
 
   timeMarkUpdatesInterval(startTime, endTime){
+    // this.fetchMonthsTimeMarks(this.authService.authenticatedUser.id, startTime);
     this.fetchTimeMarks(this.authService.authenticatedUser.id, startTime, endTime);
   }
   

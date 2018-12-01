@@ -50,10 +50,12 @@ export class TimelogComponent implements OnInit, OnDestroy{
     this.defaultTimeMarkTileStyle = {};
     this.currentDate = moment();
 
+
+
     this.timeLogService.currentDate$.subscribe((currentDate: moment.Moment) => {
       this.intervalSubscription.unsubscribe();
       this.currentDate = currentDate;
-      let seconds = 60;
+      let seconds = 5;
       this.intervalSubscription = interval(1000*seconds).subscribe((increment)=>{
         this.timeLogService.timeMarkUpdatesInterval(currentDate.startOf('day').toISOString(), currentDate.endOf('day').toISOString());
       })
@@ -199,6 +201,10 @@ export class TimelogComponent implements OnInit, OnDestroy{
   dateFormattedDateString(dateYYYYMMDD: string): string {
     //Used by template to input any date and receive back a formatted date string 
     return moment(dateYYYYMMDD).format('dddd, MMMM Do, gggg');
+  }
+  dateFormattedDateStringShort(dateYYYYMMDD: string): string {
+    //Used by template to input any date and receive back a formatted date string 
+    return moment(dateYYYYMMDD).format('MMMM Do, gggg');
   }
 
   dateIsToday(dateYYYYMMDD: string): boolean {

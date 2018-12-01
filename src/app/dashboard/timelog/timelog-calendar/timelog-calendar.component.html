@@ -16,6 +16,7 @@
     <g *ngFor="let daySquare of daySquares" (click)="onClickDaySquare(daySquare)" (mouseenter)="onMouseEnterDaySquare(daySquare)"
       (mouseleave)="onMouseLeaveDaySquare(daySquare)">
       <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath" />
+      <text [attr.x]="daySquare.text_x" [attr.y]="daySquare.text_y" style="font-size:6em;text-anchor:middle;alignment-baseline:middle;">{{daySquare.date.date()}}</text>
     </g>
   </svg>
 </div>

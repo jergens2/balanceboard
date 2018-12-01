@@ -13,7 +13,7 @@ export class ActivitiesComponent implements OnInit {
   constructor(private activitiesService: ActivitiesService) { }
 
   private aactivityNameFromForm: string = null;
-  private allActivities: CategorizedActivity[] = [];
+  allActivities: CategorizedActivity[] = [];
   private topLevelActivities: CategorizedActivity[] = [];
 
   ngOnInit() {
