@@ -50,21 +50,32 @@ export class TimelogService {
       Do a check here to see if the new date is still in the range.  If not, then perform a GET request to update the master variable
       otherwise, simply update thisDaysTimeMarks
     */
+    let outOfRange: boolean = false;
+    for(let timeMark of this._timeMarksSubject$.getValue()){
+      // at this time, we're just pretending like the time range is always fixed by month.  In the future, we can change this from month to any set variable range,
+      // for example a six week period.
+      if(moment(date).month() != moment(timeMark.startTime).month()){
+        outOfRange = true;
+        break;
+      }
+    }
 
-   console.log("current date has changed in service ");
-   console.log(this.getThisDaysTimeMarks(this._timeMarksSubject$.getValue(), date))
-    this._thisDaysTimeMarks.next((this.getThisDaysTimeMarks(this._timeMarksSubject$.getValue(), date)));
+    if(outOfRange){
+      this.fetchTimeMarksByRange(this.authService.authenticatedUser.id, moment(date).startOf('month'), moment(date).endOf('month'));
+    }else{
+      this._thisDaysTimeMarks.next((this.getThisDaysTimeMarks(this._timeMarksSubject$.getValue(), date)));
+    }
   }
 
   private _timeMarksSubject$: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
   private _thisDaysTimeMarks: Subject<TimeMark[]> = new Subject();
   private thisDaysTimeMarksSubscription: Subscription = this._timeMarksSubject$.subscribe((timeMarks: TimeMark[])=>{
-    console.log("the master variable _timeMarksSubject has changed.  Updating this days time marks.");
+    // console.log("the master variable _timeMarksSubject has changed.  Updating this days time marks.");
     this._thisDaysTimeMarks.next(this.getThisDaysTimeMarks(timeMarks, this.currentDate));
   })
   
   private getThisDaysTimeMarks(allTimeMarks: TimeMark[], currentDate: moment.Moment): TimeMark[]{
-    console.log("finding this days time marks", allTimeMarks);
+    // console.log("finding this days time marks", allTimeMarks);
     let thisDaysTimeMarks: TimeMark[] = [];
     if(allTimeMarks != null){
       for(let timeMark of allTimeMarks){
@@ -223,21 +234,6 @@ export class TimelogService {
       })
 
   }
-
-  // fetchMonthsTimeMarks(startTime: string): Observable<{ message: string, data: any }>{
-  //   let authenticatedUserId = this.authService.authenticatedUser.id;
-  //   const getUrl = this.serverUrl + "/api/timeMark/month/" + authenticatedUserId + "/" + startTime;
-
-  //   const httpOptions = {
-  //     headers: new HttpHeaders({
-  //       'Content-Type': 'application/json'
-  //       // 'Authorization': 'my-auth-token'  
-  //     })
-  //   };
-  //   return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-
-
-  // }
 
   private fetchTimeMarksByRange(authenticatedUserId: string, startTime: moment.Moment, endTime: moment.Moment) {
     
