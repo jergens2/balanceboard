@@ -15,7 +15,7 @@
           <span style="font-size:1.3em;" class="px-2">{{ dateFormattedDateStringShort(thisDate) }}</span>
           <fa-icon class="adjacent-date" [icon]="faArrowCircleRight" (click)="onClickAdjacentDate(thisDatePlusOne)"></fa-icon>
       </div>
-      <app-timelog-calendar></app-timelog-calendar>
+      <app-timelog-calendar (dateChange)="onDateChange($event)" [thisDate]="currentDate$"></app-timelog-calendar>
       <hr>
       <!-- <app-timelog-chart></app-timelog-chart> -->
     </div>

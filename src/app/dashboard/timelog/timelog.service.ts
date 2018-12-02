@@ -21,12 +21,12 @@ export class TimelogService {
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
       if (authStatus.isAuthenticated) {
-        this.currentDate$.subscribe((date: moment.Moment)=>{
-          console.log("date has changed")
-          let start = moment(date).startOf('day').toISOString();
-          let end = moment(date).endOf('day').toISOString();
-          this.fetchTimeMarks(authStatus.user.id, start, end);
-        })
+        // this.currentDate$.subscribe((date: moment.Moment)=>{
+        //   console.log("date has changed")
+        //   let start = moment(date).startOf('day').toISOString();
+        //   let end = moment(date).endOf('day').toISOString();
+        //   // this.fetchTimeMarks(authStatus.user.id, start, end);
+        // })
       } else {
         this.logout();
       }
@@ -37,7 +37,7 @@ export class TimelogService {
 
   private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
   // private _timeMarksMonthSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  private _currentDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
+  // private _currentDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
 
   // get timeMarksOfMonth$(){
   //   return this._timeMarksMonthSubject.asObservable();
@@ -47,26 +47,32 @@ export class TimelogService {
     return this._timeMarksSubject.asObservable();
   }
 
-  get currentDate$(): Observable<moment.Moment> {
-    return this._currentDate.asObservable();
-  }
+  // get currentDate$(): Observable<moment.Moment> {
+  //   return this._currentDate.asObservable();
+  // }
+
+
+
   get latestTimeMark(): TimeMark {
     let timeMarks = this._timeMarksSubject.getValue();
     if (timeMarks.length > 0) {
-      let tempTimeMark = timeMarks[0];
+      let latestTimeMark = timeMarks[0];
       for (let timeMark of timeMarks) {
-        if (timeMark.endTimeISO > tempTimeMark.endTimeISO) {
-          tempTimeMark = timeMark;
+        if (timeMark.endTimeISO > latestTimeMark.endTimeISO) {
+          latestTimeMark = timeMark;
         }
       }
-      return tempTimeMark;
+      return latestTimeMark;
     } else {
       return null;
     }
   }
-  setCurrentDate(newDate: moment.Moment) {
-    this._currentDate.next(newDate);
-  }
+
+
+
+  // setCurrentDate(newDate: moment.Moment) {
+  //   this._currentDate.next(newDate);
+  // }
 
 
   saveTimeMark(timeMark: TimeMark) {
@@ -185,23 +191,24 @@ export class TimelogService {
 
   }
 
-  fetchMonthsTimeMarks(startTime: string): Observable<{ message: string, data: any }>{
-    let authenticatedUserId = this.authService.authenticatedUser.id;
-    const getUrl = this.serverUrl + "/api/timeMark/month/" + authenticatedUserId + "/" + startTime;
+  // fetchMonthsTimeMarks(startTime: string): Observable<{ message: string, data: any }>{
+  //   let authenticatedUserId = this.authService.authenticatedUser.id;
+  //   const getUrl = this.serverUrl + "/api/timeMark/month/" + authenticatedUserId + "/" + startTime;
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'  
-      })
-    };
-    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+  //   const httpOptions = {
+  //     headers: new HttpHeaders({
+  //       'Content-Type': 'application/json'
+  //       // 'Authorization': 'my-auth-token'  
+  //     })
+  //   };
+  //   return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
 
 
-  }
+  // }
 
-  private fetchTimeMarks(authenticatedUserId: string, startTime: string, endTime: string) {
-    const getUrl = this.serverUrl + "/api/timeMark/" + authenticatedUserId + "/" + startTime + "/" + endTime;
+  private fetchTimeMarksByRange(authenticatedUserId: string, startTime: moment.Moment, endTime: moment.Moment) {
+    const getUrl = this.serverUrl + "/api/timeMark/" + authenticatedUserId + "/" + startTime.toISOString() + "/" + endTime.toISOString();
+    console.log("Service: getting time marks at url:", getUrl);
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -231,9 +238,13 @@ export class TimelogService {
 
   }
 
-  timeMarkUpdatesInterval(startTime, endTime){
+  scanForChanges(){
+
+  }
+
+  timeMarkUpdatesInterval(startTime: moment.Moment, endTime: moment.Moment){
     // this.fetchMonthsTimeMarks(this.authService.authenticatedUser.id, startTime);
-    this.fetchTimeMarks(this.authService.authenticatedUser.id, startTime, endTime);
+    this.fetchTimeMarksByRange(this.authService.authenticatedUser.id, startTime, endTime);
   }
   
 

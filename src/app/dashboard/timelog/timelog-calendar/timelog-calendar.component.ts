@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { TimelogService } from '../timelog.service';
 
 import * as moment from 'moment';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject, Observable } from 'rxjs';
+import { TimeMark } from '../time-mark.model';
 
 export interface IDaySquare {
 
@@ -27,36 +28,53 @@ export class TimelogCalendarComponent implements OnInit {
   constructor(private timeLogService: TimelogService) { }
 
 
-  currentDate: moment.Moment;
-  currentMonth: moment.Moment;
+
+  // currentMonth: moment.Moment;
+  currentDate: moment.Moment = moment();
+  timeMarks: TimeMark[] = [];
 
   daySquares: IDaySquare[];
   viewBox: string;
   viewBoxHeight: number;
   viewBoxWidth: number
 
+  @Output() dateChange: EventEmitter<moment.Moment> = new EventEmitter<moment.Moment>();
+  // @Input() set thisDate(thisDate: string){
+  //   this.currentDate = moment(thisDate);
+  // }
+  @Input('thisDate') currentDate$:Observable<moment.Moment>;
 
   ngOnInit() {
     this.viewBoxHeight = 1600;
     this.viewBoxWidth = 1800;
     this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
-    this.currentDate = moment();
 
-    let monthDataSubscription: Subscription = new Subscription();
-    this.timeLogService.currentDate$.subscribe((currentDate: moment.Moment) => {
-      monthDataSubscription.unsubscribe();
-      this.currentDate = moment(currentDate);
-      if (this.currentMonth == null || this.currentMonth.month() != currentDate.month()) {
-        this.currentMonth = moment(currentDate);
-        monthDataSubscription.unsubscribe();
-        this.timeLogService.fetchMonthsTimeMarks(this.currentDate.startOf('day').toISOString()).subscribe((responseData) => {
-          console.log("subscribed to the changing month", responseData.data)
-          let monthData: Array<{ date: string, timeMarks: number }> = responseData.data;
-          this.daySquares = this.buildDaySquares(this.currentDate, this.viewBoxWidth, this.viewBoxHeight, monthData);
-          // this.updateMonthData(responseData.data);
-        })
-      }
+    this.currentDate$.subscribe((date)=>{
+      this.currentDate = date;
+      this.daySquares = this.buildDaySquares(this.timeMarks, this.currentDate, this.viewBoxWidth, this.viewBoxHeight);
     })
+
+    this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[])=>{
+      this.timeMarks = timeMarks;
+      this.daySquares = this.buildDaySquares(this.timeMarks, this.currentDate, this.viewBoxWidth, this.viewBoxHeight);
+    })
+
+
+    // let monthDataSubscription: Subscription = new Subscription();
+    // this.timeLogService.currentDate$.subscribe((currentDate: moment.Moment) => {
+    //   monthDataSubscription.unsubscribe();
+    //   this.currentDate = moment(currentDate);
+    //   if (this.currentMonth == null || this.currentMonth.month() != currentDate.month()) {
+    //     this.currentMonth = moment(currentDate);
+    //     monthDataSubscription.unsubscribe();
+    //     this.timeLogService.fetchMonthsTimeMarks(this.currentDate.startOf('day').toISOString()).subscribe((responseData) => {
+    //       console.log("subscribed to the changing month", responseData.data)
+    //       let monthData: Array<{ date: string, timeMarks: number }> = responseData.data;
+    //       this.daySquares = this.buildDaySquares(this.currentDate, this.viewBoxWidth, this.viewBoxHeight, monthData);
+    //       // this.updateMonthData(responseData.data);
+    //     })
+    //   }
+    // })
   }
 
   // private updateMonthData(monthData: Array<{date: string, timeMarks: number}>){
@@ -85,7 +103,9 @@ export class TimelogCalendarComponent implements OnInit {
   }
 
   onClickDaySquare(daySquare: IDaySquare) {
-    this.timeLogService.setCurrentDate(moment(daySquare.date));
+    // this.timeLogService.setCurrentDate(moment(daySquare.date));
+    // console.log(daySquare.date);
+    this.dateChange.emit(moment(daySquare.date));
   }
   onMouseEnterDaySquare(daySquare: IDaySquare) {
     // if(moment().dayOfYear() === moment(daySquare.date).dayOfYear()){
@@ -118,7 +138,7 @@ export class TimelogCalendarComponent implements OnInit {
 
   }
 
-  buildDaySquares(date: moment.Moment, viewBoxWidth, viewBoxHeight, monthData: Array<{ date: string, timeMarks: number }>): IDaySquare[] {
+  buildDaySquares(timeMarks: TimeMark[], date: moment.Moment, viewBoxWidth, viewBoxHeight): IDaySquare[] {
     let firstOfMonth = moment(date).date(1);
     let lastOfMonth = moment(date).endOf('month');
     let currentDate: moment.Moment = firstOfMonth;
@@ -134,11 +154,11 @@ export class TimelogCalendarComponent implements OnInit {
 
     let maxCount = 0;
 
-    for (let monthDay of monthData) {
-      if (monthDay.timeMarks > maxCount) {
-        maxCount = monthDay.timeMarks;
-      }
-    }
+    // for (let monthDay of monthData) {
+    //   if (monthDay.timeMarks > maxCount) {
+    //     maxCount = monthDay.timeMarks;
+    //   }
+    // }
 
 
 
@@ -157,18 +177,19 @@ export class TimelogCalendarComponent implements OnInit {
           '';
 
         let todaysCount = 0;
-        for(let monthDay of monthData){
-          if (moment(monthDay.date).dayOfYear() == currentDate.dayOfYear()) {
-            todaysCount = monthDay.timeMarks;
-          }
-        }
+        // for(let monthDay of monthData){
+        //   if (moment(monthDay.date).dayOfYear() == currentDate.dayOfYear()) {
+        //     todaysCount = monthDay.timeMarks;
+        //   }
+        // }
 
 
         let daySquare: IDaySquare = {
           date: currentDate,
           svgPath: path,
           style: {
-            "fill": this.daySquareGradient(todaysCount, maxCount),
+            // "fill": this.daySquareGradient(todaysCount, maxCount),
+            "fill": "rgb(230, 230, 230)",
             "stroke": "none"
           },
           text_x: x + (dayWidth / 2),

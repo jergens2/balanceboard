@@ -4,7 +4,7 @@ import { TimeMark } from './time-mark.model';
 import { faTimes, faCog, faArrowCircleRight, faArrowCircleLeft, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import * as moment from 'moment';
-import { interval, Subscription } from 'rxjs';
+import { interval, Subscription, BehaviorSubject, Observable } from 'rxjs';
 
 export interface ITimeMarkTile {
   timeMark: TimeMark,
@@ -18,12 +18,12 @@ export interface ITimeMarkTile {
   styleUrls: ['./timelog.component.css']
 })
 
-export class TimelogComponent implements OnInit, OnDestroy{
+export class TimelogComponent implements OnInit, OnDestroy {
 
-  
+
   constructor(private timeLogService: TimelogService) { }
 
-  private currentDate: moment.Moment;
+
 
   faTimes = faTimes;
   faCog = faCog;
@@ -34,45 +34,63 @@ export class TimelogComponent implements OnInit, OnDestroy{
   ifLoadingTimeMarks: boolean;
   addTimeMarkForm: boolean = false;
 
-  private thisDaysTimeMarks: TimeMark[];
-
-  // private allTimeMarks: TimeMark[];
+  private _thisMonthsTimeMarks$: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
+  // private _thisDaysTimeMarks$: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
+  private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
 
   thisDayCardStyle = {};
 
   timeMarkTiles: ITimeMarkTile[] = [];
   private defaultTimeMarkTileStyle: Object;
 
-  intervalSubscription: Subscription = new Subscription();
 
   ngOnInit() {
     this.ifLoadingTimeMarks = true;
     this.defaultTimeMarkTileStyle = {};
-    this.currentDate = moment();
+
+    this._currentDate$.subscribe((date) => {
+      this.buildThisDaysTimeMarkTiles();
+
+    })
 
 
+    // this._thisDaysTimeMarks$.subscribe((timeMarks) => {
+    //   this.buildThisDaysTimeMarkTiles(this.currentDate);
+    // })
 
-    this.timeLogService.currentDate$.subscribe((currentDate: moment.Moment) => {
-      this.intervalSubscription.unsubscribe();
-      this.currentDate = currentDate;
-      let seconds = 5;
-      this.intervalSubscription = interval(1000*seconds).subscribe((increment)=>{
-        this.timeLogService.timeMarkUpdatesInterval(currentDate.startOf('day').toISOString(), currentDate.endOf('day').toISOString());
-      })
+    this._thisMonthsTimeMarks$.subscribe((timeMarks: TimeMark[]) => {
+      // let thisDaysTimeMarks: TimeMark[] = [];
+      // if (timeMarks != null) {
+      //   for (let timeMark of timeMarks) {
+      //     if (timeMark.startTime.dayOfYear() == this.currentDate.dayOfYear() || timeMark.endTime.dayOfYear() == this.currentDate.dayOfYear()) {
+      //       thisDaysTimeMarks.push(timeMark);
+      //     }
+      //   }
+      // }
+      this.buildThisDaysTimeMarkTiles();
+      // this._thisDaysTimeMarks$.next(thisDaysTimeMarks);
     })
 
     this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[]) => {
-      if(timeMarks != null){
-        this.timeMarkTiles = this.buildTimeMarkTiles(timeMarks);
-        this.ifLoadingTimeMarks = false;
+      if (timeMarks != null) {
+        this._thisMonthsTimeMarks$.next(timeMarks);
       }
     });
+    this.timeLogService.timeMarkUpdatesInterval(moment(this.currentDate).startOf('month'), moment(this.currentDate).endOf('month'));
   }
-  ngOnDestroy(){
-    this.intervalSubscription.unsubscribe();
+  ngOnDestroy() {
+
   }
 
-  get latestTimeMark(): TimeMark{
+  get currentDate$(): Observable<moment.Moment> {
+    return this._currentDate$.asObservable();
+  }
+
+  get currentDate(): moment.Moment {
+    return this._currentDate$.getValue();
+  }
+
+  get latestTimeMark(): TimeMark {
     return this.timeLogService.latestTimeMark;
   }
 
@@ -93,27 +111,20 @@ export class TimelogComponent implements OnInit, OnDestroy{
     this.addTimeMarkForm = false;
   }
 
-  // private updateThisDaysTimeMarks(thisDate: moment.Moment) {
-  //   this.thisDaysTimeMarks = this.getThisDaysTimeMarks(this.currentDate, this.allTimeMarks);
-  //   this.timeMarkTiles = this.buildTimeMarkTiles(this.thisDaysTimeMarks);
-  //   if (moment().format('YYYY-MM-DD') == thisDate.format('YYYY-MM-DD')) {
-  //     this.thisDayCardStyle = {
-  //       'border': '1px solid green',
-  //     }
-  //   } else {
-  //     this.thisDayCardStyle = {
-  //       'border': '1px solid gray',
-  //     }
-  //   }
-  // }
-
-  private buildTimeMarkTiles(timeMarks: TimeMark[]): ITimeMarkTile[] {
+  private buildThisDaysTimeMarkTiles(): void {
     let timeMarkTiles: ITimeMarkTile[] = [];
-    for (let timeMark of timeMarks) {
-      let timeMarkTile: ITimeMarkTile = { timeMark: timeMark, style: this.defaultTimeMarkTileStyle, deleteButtonIsVisible: false };
-      timeMarkTiles.push(timeMarkTile);
+    let thisMonthsTimeMarks = this._thisMonthsTimeMarks$.getValue();
+    if (thisMonthsTimeMarks != null) {
+      for (let timeMark of thisMonthsTimeMarks) {
+        if (timeMark.startTime.dayOfYear() == this.currentDate.dayOfYear() || timeMark.endTime.dayOfYear() == this.currentDate.dayOfYear()) {
+          let timeMarkTile: ITimeMarkTile = { timeMark: timeMark, style: this.defaultTimeMarkTileStyle, deleteButtonIsVisible: false };
+          timeMarkTiles.push(timeMarkTile);
+        }
+      }
     }
-    return timeMarkTiles;
+    this.timeMarkTiles = timeMarkTiles;
+    this.ifLoadingTimeMarks = false;
+
   }
 
   // private getThisDaysTimeMarks(thisDay: moment.Moment, timeMarks: TimeMark[]): TimeMark[] {
@@ -138,7 +149,7 @@ export class TimelogComponent implements OnInit, OnDestroy{
   //         console.log("time mark startTime is not defined.", timeMark)
   //       }
 
-        
+
   //     }
   //   }
   //   return thisDaysTimeMarks;
@@ -160,8 +171,14 @@ export class TimelogComponent implements OnInit, OnDestroy{
   onClickAdjacentDate(dateYYYYMMDD: string) {
     this.timeMarkTiles = null;
     this.ifLoadingTimeMarks = true;
-    this.timeLogService.setCurrentDate(moment(dateYYYYMMDD));
+    this._currentDate$.next(moment(dateYYYYMMDD))
+    // this.currentDate = moment(dateYYYYMMDD);
+
     this.onCloseForm();
+  }
+  onDateChange(calendarDate) {
+    this._currentDate$.next(moment(calendarDate))
+    // console.log("Date changed by calendar: ", moment(something).toISOString());
   }
 
   dateNotGreaterThanToday(dateYYYYMMDD: string): boolean {
