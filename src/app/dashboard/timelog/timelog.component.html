@@ -1,9 +1,9 @@
 <div class="root">
   <div class="timelog-header">
     <div class="text-center">
-      <span style="font-size:1.3em">{{ dateFormattedDateString(thisDate) }}</span>
+      <span style="font-size:1.3em">{{ dateFormattedDateString(currentDateString) }}</span>
       <hr class="my-0">
-      <div class="mb-3">{{ dateRelevanceToTodayString(thisDate) }}</div>
+      <div class="mb-3">{{ dateRelevanceToTodayString(currentDateString) }}</div>
     </div>
   </div>
 
@@ -11,11 +11,11 @@
   <div class="content">
     <div class="timelog-chart">
       <div class="timelog-chart-header-date" >
-          <fa-icon class="adjacent-date" [icon]="faArrowCircleLeft" (click)="onClickAdjacentDate(thisDateMinusOne)"></fa-icon>
-          <span style="font-size:1.3em;" class="px-2">{{ dateFormattedDateStringShort(thisDate) }}</span>
-          <fa-icon class="adjacent-date" [icon]="faArrowCircleRight" (click)="onClickAdjacentDate(thisDatePlusOne)"></fa-icon>
+          <fa-icon class="adjacent-date" [icon]="faArrowCircleLeft" (click)="onClickAdjacentDate('left')"></fa-icon>
+          <span style="font-size:1.3em;" class="px-2">{{ dateFormattedDateStringShort(currentDateString) }}</span>
+          <fa-icon class="adjacent-date" [icon]="faArrowCircleRight" (click)="onClickAdjacentDate('right')"></fa-icon>
       </div>
-      <app-timelog-calendar (dateChange)="onDateChange($event)" [thisDate]="currentDate$"></app-timelog-calendar>
+      <app-timelog-calendar (dateChange)="onDateChange($event)" ></app-timelog-calendar>
       <hr>
       <!-- <app-timelog-chart></app-timelog-chart> -->
     </div>
@@ -74,7 +74,7 @@
                 </div>
               </div>
               <div *ngIf="timeMarkTiles.length < 1">
-                No time marks for {{ thisDate }}
+                No time marks for {{ currentDateString }}
               </div>
 
             </div>
@@ -82,7 +82,7 @@
               No Time Marks
             </div>
             <hr class='mb-2'>
-            <button *ngIf="!addTimeMarkForm && dateIsToday(thisDate)" class="btn btn-primary" (click)="onClickNewTimeMark()">Add
+            <button *ngIf="!addTimeMarkForm && dateIsToday(currentDateString)" class="btn btn-primary" (click)="onClickNewTimeMark()">Add
               New Time Mark</button>
           </div>
           <div *ngIf="addTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>

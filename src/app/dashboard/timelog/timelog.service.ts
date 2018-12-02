@@ -35,26 +35,59 @@ export class TimelogService {
 
   private serverUrl: string = serverUrl;
 
-  private _timeMarksSubject: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
-  // private _timeMarksMonthSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  // private _currentDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
+  private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
+  
 
-  // get timeMarksOfMonth$(){
-  //   return this._timeMarksMonthSubject.asObservable();
-  // }
+  get currentDate(): moment.Moment{
+    return this._currentDate$.getValue();
+  }
+  get currentDate$(): Observable<moment.Moment>{
+    return this._currentDate$.asObservable();
+  }
+  set currentDate(date: moment.Moment){
+    this._currentDate$.next(date);
+    /*
+      Do a check here to see if the new date is still in the range.  If not, then perform a GET request to update the master variable
+      otherwise, simply update thisDaysTimeMarks
+    */
 
-  get timeMarks$(): Observable<TimeMark[]> {
-    return this._timeMarksSubject.asObservable();
+   console.log("current date has changed in service ");
+   console.log(this.getThisDaysTimeMarks(this._timeMarksSubject$.getValue(), date))
+    this._thisDaysTimeMarks.next((this.getThisDaysTimeMarks(this._timeMarksSubject$.getValue(), date)));
   }
 
-  // get currentDate$(): Observable<moment.Moment> {
-  //   return this._currentDate.asObservable();
-  // }
+  private _timeMarksSubject$: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
+  private _thisDaysTimeMarks: Subject<TimeMark[]> = new Subject();
+  private thisDaysTimeMarksSubscription: Subscription = this._timeMarksSubject$.subscribe((timeMarks: TimeMark[])=>{
+    console.log("the master variable _timeMarksSubject has changed.  Updating this days time marks.");
+    this._thisDaysTimeMarks.next(this.getThisDaysTimeMarks(timeMarks, this.currentDate));
+  })
+  
+  private getThisDaysTimeMarks(allTimeMarks: TimeMark[], currentDate: moment.Moment): TimeMark[]{
+    console.log("finding this days time marks", allTimeMarks);
+    let thisDaysTimeMarks: TimeMark[] = [];
+    if(allTimeMarks != null){
+      for(let timeMark of allTimeMarks){
+        if(moment(timeMark.startTime).dayOfYear() == currentDate.dayOfYear() || moment(timeMark.endTime).dayOfYear() == currentDate.dayOfYear())
+        thisDaysTimeMarks.push(timeMark);
+      }
+    }
+    return thisDaysTimeMarks;
+  }
+
+
+  get timeMarks$(): Observable<TimeMark[]> {
+    return this._timeMarksSubject$.asObservable();
+  }
+
+  get thisDaysTimeMarks(): Observable<TimeMark[]>{
+    return this._thisDaysTimeMarks;
+  }
 
 
 
   get latestTimeMark(): TimeMark {
-    let timeMarks = this._timeMarksSubject.getValue();
+    let timeMarks = this._timeMarksSubject$.getValue();
     if (timeMarks.length > 0) {
       let latestTimeMark = timeMarks[0];
       for (let timeMark of timeMarks) {
@@ -95,10 +128,10 @@ export class TimelogService {
         return timeMark;
       }))
       .subscribe((timeMark: TimeMark) => {
-        let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+        let timeMarks: TimeMark[] = this._timeMarksSubject$.getValue();
         timeMarks.push(timeMark);
 
-        this._timeMarksSubject.next(timeMarks);
+        this._timeMarksSubject$.next(timeMarks);
         this.updatePrecedingTimeMark(timeMark);
       })
   }
@@ -114,7 +147,7 @@ export class TimelogService {
     */
     let precedingTimeMarkId = latestTimeMark.precedingTimeMarkId;
     let precedingTimeMark: TimeMark;
-    let currentTimeMarks = this._timeMarksSubject.getValue();
+    let currentTimeMarks = this._timeMarksSubject$.getValue();
 
     precedingTimeMark = currentTimeMarks.find((timeMark) => {
       return timeMark.id == precedingTimeMarkId;
@@ -139,12 +172,12 @@ export class TimelogService {
           return timeMark;
         }))
         .subscribe((updatedTimeMark: TimeMark) => {
-          let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+          let timeMarks: TimeMark[] = this._timeMarksSubject$.getValue();
           let precedingTimeMarkIndex = timeMarks.findIndex((timeMark) => {
             return timeMark.id == updatedTimeMark.id;
           })
           timeMarks[precedingTimeMarkIndex] = updatedTimeMark;
-          this._timeMarksSubject.next(timeMarks);
+          this._timeMarksSubject$.next(timeMarks);
         })
     }
   }
@@ -183,10 +216,10 @@ export class TimelogService {
       //   return timeMark;
       // }))
       .subscribe((response) => {
-        let timeMarks: TimeMark[] = this._timeMarksSubject.getValue();
+        let timeMarks: TimeMark[] = this._timeMarksSubject$.getValue();
         timeMarks.splice(timeMarks.indexOf(timeMark), 1);
         // this.setLatestTimeMark(null);
-        this._timeMarksSubject.next(timeMarks);
+        this._timeMarksSubject$.next(timeMarks);
       })
 
   }
@@ -207,6 +240,7 @@ export class TimelogService {
   // }
 
   private fetchTimeMarksByRange(authenticatedUserId: string, startTime: moment.Moment, endTime: moment.Moment) {
+    
     const getUrl = this.serverUrl + "/api/timeMark/" + authenticatedUserId + "/" + startTime.toISOString() + "/" + endTime.toISOString();
     console.log("Service: getting time marks at url:", getUrl);
     const httpOptions = {
@@ -233,24 +267,30 @@ export class TimelogService {
         })
       }))
       .subscribe((timeMarks: TimeMark[]) => {
-        this._timeMarksSubject.next(timeMarks);
+        console.log("from http request: " , timeMarks)
+        this._timeMarksSubject$.next(timeMarks);
       });
 
   }
 
   scanForChanges(){
-
+    
   }
 
-  timeMarkUpdatesInterval(startTime: moment.Moment, endTime: moment.Moment){
-    // this.fetchMonthsTimeMarks(this.authService.authenticatedUser.id, startTime);
+  onTimeLogComponentInit(date: moment.Moment){
+    /*
+      This will do a fetch for timeMarks in a range of a month.  We could mimic this behavior and define any time range, not just 1 month
+    */
+    console.log("TimelogService: onTimeLogComponentInit()");
+    let startTime: moment.Moment = moment(date).startOf('month');
+    let endTime: moment.Moment = moment(date).endOf('month');
     this.fetchTimeMarksByRange(this.authService.authenticatedUser.id, startTime, endTime);
   }
   
 
 
   private logout() {
-    this._timeMarksSubject.next([]);
+    this._timeMarksSubject$.next([]);
   }
 
 

@@ -32,6 +32,7 @@ export class TimelogCalendarComponent implements OnInit {
   // currentMonth: moment.Moment;
   currentDate: moment.Moment = moment();
   timeMarks: TimeMark[] = [];
+  timeMarksDayCeiling: number = 0;
 
   daySquares: IDaySquare[];
   viewBox: string;
@@ -42,62 +43,55 @@ export class TimelogCalendarComponent implements OnInit {
   // @Input() set thisDate(thisDate: string){
   //   this.currentDate = moment(thisDate);
   // }
-  @Input('thisDate') currentDate$:Observable<moment.Moment>;
+  // @Input('thisDate') currentDate$:Observable<moment.Moment>;
 
   ngOnInit() {
     this.viewBoxHeight = 1600;
     this.viewBoxWidth = 1800;
     this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
 
-    this.currentDate$.subscribe((date)=>{
+    this.timeLogService.currentDate$.subscribe((date)=>{
       this.currentDate = date;
-      this.daySquares = this.buildDaySquares(this.timeMarks, this.currentDate, this.viewBoxWidth, this.viewBoxHeight);
     })
 
     this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[])=>{
+      // console.log("all timeMarks:" , timeMarks)
       this.timeMarks = timeMarks;
-      this.daySquares = this.buildDaySquares(this.timeMarks, this.currentDate, this.viewBoxWidth, this.viewBoxHeight);
+      if(timeMarks != null){
+        // this.timeMarksDayCeiling = this.calculateTimeMarksCountCeiling(timeMarks);
+        this.daySquares = this.buildDaySquares(this.timeMarks, this.currentDate, this.viewBoxWidth, this.viewBoxHeight);
+      }
     })
 
-
-    // let monthDataSubscription: Subscription = new Subscription();
-    // this.timeLogService.currentDate$.subscribe((currentDate: moment.Moment) => {
-    //   monthDataSubscription.unsubscribe();
-    //   this.currentDate = moment(currentDate);
-    //   if (this.currentMonth == null || this.currentMonth.month() != currentDate.month()) {
-    //     this.currentMonth = moment(currentDate);
-    //     monthDataSubscription.unsubscribe();
-    //     this.timeLogService.fetchMonthsTimeMarks(this.currentDate.startOf('day').toISOString()).subscribe((responseData) => {
-    //       console.log("subscribed to the changing month", responseData.data)
-    //       let monthData: Array<{ date: string, timeMarks: number }> = responseData.data;
-    //       this.daySquares = this.buildDaySquares(this.currentDate, this.viewBoxWidth, this.viewBoxHeight, monthData);
-    //       // this.updateMonthData(responseData.data);
-    //     })
-    //   }
-    // })
   }
 
-  // private updateMonthData(monthData: Array<{date: string, timeMarks: number}>){
-  //   for(let daySquare of this.daySquares){
-  //     // console.log(daySquare);
-  //     for(let monthDay of monthData){
-  //       if(daySquare.date.dayOfYear() == moment(monthDay.date).dayOfYear()){
-  //         daySquare.style = {
-  //           "fill": this.daySquareGradient(monthDay.timeMarks),
-  //           "stroke":"none"
-  //         }
-  //       }
-  //     }
+  private calculateTimeMarksCountCeiling(timeMarks: TimeMark[]): number{
+    let currentDate = moment(timeMarks[0].startTimeISO);
+    let currentMax = 0;
+    let tempMax = 0;
+    for(let timeMark of timeMarks){
 
-  //   }
-  // }
+      if(currentDate.dayOfYear() == moment(timeMark.startTimeISO).dayOfYear()){
+        
+        tempMax ++;
+        if(tempMax > currentMax){    
+          currentMax = tempMax;
+        }
+      }else{
+        tempMax = 0;
+      }
+      currentDate = moment(timeMark.startTimeISO)
+    }
+    return currentMax;
+  }
 
-  private daySquareGradient(todaysCount: number, maxCount: number): string {
+  private daySquareGradient(thisDaysCount: number, maxCount: number): string {
+    // console.log(thisDaysCount, maxCount);
     let blueGradient = ['#d2e6ff', '#a9d0ff', '#6cafff', '#308eff', '#0074ff']
-    if (todaysCount == 0) {
+    if (thisDaysCount == 0) {
       return "rgb(230, 230, 230)";
     }else{
-      let index = (Math.ceil((todaysCount/maxCount) * blueGradient.length))-1;
+      let index = (Math.ceil((thisDaysCount/maxCount) * blueGradient.length))-1;
       return blueGradient[index];
     }
   }
@@ -105,6 +99,7 @@ export class TimelogCalendarComponent implements OnInit {
   onClickDaySquare(daySquare: IDaySquare) {
     // this.timeLogService.setCurrentDate(moment(daySquare.date));
     // console.log(daySquare.date);
+    console.log("date changed from calendar")
     this.dateChange.emit(moment(daySquare.date));
   }
   onMouseEnterDaySquare(daySquare: IDaySquare) {
@@ -139,6 +134,11 @@ export class TimelogCalendarComponent implements OnInit {
   }
 
   buildDaySquares(timeMarks: TimeMark[], date: moment.Moment, viewBoxWidth, viewBoxHeight): IDaySquare[] {
+    let maxCount = 0;
+    if(timeMarks.length > 0){
+      maxCount = this.calculateTimeMarksCountCeiling(timeMarks);
+    }
+
     let firstOfMonth = moment(date).date(1);
     let lastOfMonth = moment(date).endOf('month');
     let currentDate: moment.Moment = firstOfMonth;
@@ -151,15 +151,6 @@ export class TimelogCalendarComponent implements OnInit {
     let dayHeight = (viewBoxHeight - (padding * (rows + 1))) / rows;
 
     let daySquares: IDaySquare[] = [];
-
-    let maxCount = 0;
-
-    // for (let monthDay of monthData) {
-    //   if (monthDay.timeMarks > maxCount) {
-    //     maxCount = monthDay.timeMarks;
-    //   }
-    // }
-
 
 
     for (let row = 0; row < rows; row++) {
@@ -176,20 +167,21 @@ export class TimelogCalendarComponent implements OnInit {
           ' Z' +
           '';
 
-        let todaysCount = 0;
-        // for(let monthDay of monthData){
-        //   if (moment(monthDay.date).dayOfYear() == currentDate.dayOfYear()) {
-        //     todaysCount = monthDay.timeMarks;
-        //   }
-        // }
+        let thisDaysTimeMarks = [];
+        for(let timeMark of timeMarks){
+          if(moment(timeMark.startTime).dayOfYear() == moment(date).dayOfYear()){
+            thisDaysTimeMarks.push(timeMark);
+          }
+        }
+        // console.log(thisDaysTimeMarks);
 
 
         let daySquare: IDaySquare = {
           date: currentDate,
           svgPath: path,
           style: {
-            // "fill": this.daySquareGradient(todaysCount, maxCount),
-            "fill": "rgb(230, 230, 230)",
+            "fill": this.daySquareGradient(thisDaysTimeMarks.length, maxCount),
+            // "fill": "rgb(230, 230, 230)",
             "stroke": "none"
           },
           text_x: x + (dayWidth / 2),
