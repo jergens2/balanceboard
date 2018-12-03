@@ -48,18 +48,18 @@ export class TimelogComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._currentDate = this.timeLogService.currentDate;
-    console.log("current Date", this._currentDate.format('YYYY-MM-DD'), this._currentDate)
 
     this.ifLoadingTimeMarks = true;
     this.defaultTimeMarkTileStyle = {};
 
     this.timeLogService.currentDate$.subscribe((changedDate: moment.Moment)=>{
       this._currentDate = moment(changedDate);
-      console.log("current Date is now ", this._currentDate.format('YYYY-MM-DD'), this._currentDate)
+      if(moment(this._currentDate).dayOfYear() != moment().dayOfYear()){
+        this.onCloseForm();
+      }
     })
 
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
-      console.log("time marks for this day: ", timeMarks);
       this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(timeMarks);
       this.ifLoadingTimeMarks = false;
     })

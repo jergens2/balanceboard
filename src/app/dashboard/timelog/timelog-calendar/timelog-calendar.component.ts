@@ -2,8 +2,10 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { TimelogService } from '../timelog.service';
 
 import * as moment from 'moment';
-import { Subscription, Subject, Observable } from 'rxjs';
+import { Subscription, Subject, Observable, merge } from 'rxjs';
 import { TimeMark } from '../time-mark.model';
+
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 export interface IDaySquare {
 
@@ -27,10 +29,10 @@ export class TimelogCalendarComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService) { }
 
-
+  faSpinner = faSpinner;
 
   // currentMonth: moment.Moment;
-  currentDate: moment.Moment = moment();
+  currentDate: moment.Moment;
   timeMarks: TimeMark[] = [];
   timeMarksDayCeiling: number = 0;
 
@@ -39,50 +41,80 @@ export class TimelogCalendarComponent implements OnInit {
   viewBoxHeight: number;
   viewBoxWidth: number
 
+  ifLoadingCalendar: boolean;
+
   @Output() dateChange: EventEmitter<moment.Moment> = new EventEmitter<moment.Moment>();
-  // @Input() set thisDate(thisDate: string){
-  //   this.currentDate = moment(thisDate);
-  // }
-  // @Input('thisDate') currentDate$:Observable<moment.Moment>;
 
   ngOnInit() {
-    this.viewBoxHeight = 1600;
-    this.viewBoxWidth = 1800;
+
+
+
+    this.viewBoxHeight = 600;
+    this.viewBoxWidth = 800;
     this.viewBox = "0 0 " + this.viewBoxWidth + " " + this.viewBoxHeight;
 
+    this.currentDate = moment();
+    this.daySquares = this.buildDaySquares(this.viewBoxWidth, this.viewBoxHeight);
+
+
     this.timeLogService.currentDate$.subscribe((date)=>{
+      if(moment(this.currentDate).month() != moment(date).month()){
+        this.currentDate = date;
+        this.daySquares = this.buildDaySquares(this.viewBoxWidth, this.viewBoxHeight);
+      }
       this.currentDate = date;
     })
 
     this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[])=>{
-      // console.log("all timeMarks:" , timeMarks)
       this.timeMarks = timeMarks;
-      if(timeMarks != null){
-        // this.timeMarksDayCeiling = this.calculateTimeMarksCountCeiling(timeMarks);
-        this.daySquares = this.buildDaySquares(this.timeMarks, this.currentDate, this.viewBoxWidth, this.viewBoxHeight);
-      }
+      this.calculateTimeMarksCountCeiling();
     })
+
+    // merge(this.timeLogService.currentDate$, this.timeLogService.timeMarks$).subscribe((data)=>{
+    //   console.log("merged");
+    //   console.log(this.currentDate, this.timeMarks);
+    //   // if(this.timeMarks != null){
+    //   //   if(this.timeMarks.length > 0){
+    //   //     if(moment(this.currentDate).month() != moment(this.timeMarks[0].startTime).month()){
+    //   //       this.ifLoadingCalendar = true;
+    //   //       this.daySquares = this.buildDaySquares(this.viewBoxWidth, this.viewBoxHeight);
+    //   //       this.ifLoadingCalendar = false;
+    //   //     }
+    //   //   }
+    //   // }
+    //   if(this.currentDate)
+    // });
+
+
 
   }
 
-  private calculateTimeMarksCountCeiling(timeMarks: TimeMark[]): number{
-    let currentDate = moment(timeMarks[0].startTimeISO);
-    let currentMax = 0;
-    let tempMax = 0;
-    for(let timeMark of timeMarks){
-
-      if(currentDate.dayOfYear() == moment(timeMark.startTimeISO).dayOfYear()){
-        
-        tempMax ++;
-        if(tempMax > currentMax){    
-          currentMax = tempMax;
+  private calculateTimeMarksCountCeiling(): number{
+    if(this.timeMarks != null){
+      if(this.timeMarks.length > 0 ){ 
+        let currentDate = moment(this.timeMarks[0].startTimeISO);
+        let currentMax = 0;
+        let tempMax = 0;
+        for(let timeMark of this.timeMarks){
+    
+          if(currentDate.dayOfYear() == moment(timeMark.startTimeISO).dayOfYear()){
+            
+            tempMax ++;
+            if(tempMax > currentMax){    
+              currentMax = tempMax;
+            }
+          }else{
+            tempMax = 0;
+          }
+          currentDate = moment(timeMark.startTimeISO)
         }
+        return currentMax;
       }else{
-        tempMax = 0;
+        return 0;
       }
-      currentDate = moment(timeMark.startTimeISO)
+    }else{
+      return 0;
     }
-    return currentMax;
   }
 
   private daySquareGradient(thisDaysCount: number, maxCount: number): string {
@@ -133,11 +165,13 @@ export class TimelogCalendarComponent implements OnInit {
 
   }
 
-  buildDaySquares(timeMarks: TimeMark[], date: moment.Moment, viewBoxWidth, viewBoxHeight): IDaySquare[] {
-    let maxCount = 0;
-    if(timeMarks.length > 0){
-      maxCount = this.calculateTimeMarksCountCeiling(timeMarks);
-    }
+  buildDaySquares(viewBoxWidth, viewBoxHeight): IDaySquare[] {
+    /*
+      2018-12-03: timeMarks parameter will represent all timeMarks for the entire month.  Therefore we can just make the assumption that any timeMark in timeMarks will
+      be of the month that we want to deal with.
+    */
+    let date: moment.Moment = moment(this.currentDate);
+
 
     let firstOfMonth = moment(date).date(1);
     let lastOfMonth = moment(date).endOf('month');
@@ -146,7 +180,7 @@ export class TimelogCalendarComponent implements OnInit {
     let rows = Math.ceil((lastOfMonth.date()+firstOfMonth.day())/columns);
     // let rows = 6;
 
-    let padding = 15;
+    let padding = 5;
     let dayWidth = (viewBoxWidth - (padding * (columns + 1))) / columns;
     let dayHeight = (viewBoxHeight - (padding * (rows + 1))) / rows;
 
@@ -167,12 +201,12 @@ export class TimelogCalendarComponent implements OnInit {
           ' Z' +
           '';
 
-        let thisDaysTimeMarks = [];
-        for(let timeMark of timeMarks){
-          if(moment(timeMark.startTime).dayOfYear() == moment(date).dayOfYear()){
-            thisDaysTimeMarks.push(timeMark);
-          }
-        }
+        // let thisDaysTimeMarks = [];
+        // for(let timeMark of this.timeMarks){
+        //   if(moment(timeMark.startTime).dayOfYear() == moment(date).dayOfYear()){
+        //     thisDaysTimeMarks.push(timeMark);
+        //   }
+        // }
         // console.log(thisDaysTimeMarks);
 
 
@@ -180,8 +214,8 @@ export class TimelogCalendarComponent implements OnInit {
           date: currentDate,
           svgPath: path,
           style: {
-            "fill": this.daySquareGradient(thisDaysTimeMarks.length, maxCount),
-            // "fill": "rgb(230, 230, 230)",
+            // "fill": this.daySquareGradient(thisDaysTimeMarks.length, this.timeMarksDayCeiling),
+            "fill": "rgb(230, 230, 230)",
             "stroke": "none"
           },
           text_x: x + (dayWidth / 2),

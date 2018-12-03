@@ -12,11 +12,21 @@
     </g>
 
   </svg> -->
-  <svg [attr.viewBox]="viewBox">
-    <g *ngFor="let daySquare of daySquares" (click)="onClickDaySquare(daySquare)" (mouseenter)="onMouseEnterDaySquare(daySquare)"
-      (mouseleave)="onMouseLeaveDaySquare(daySquare)">
-      <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath" />
-      <text [attr.x]="daySquare.text_x" [attr.y]="daySquare.text_y" style="font-size:6em;text-anchor:middle;alignment-baseline:middle;">{{daySquare.date.date()}}</text>
-    </g>
-  </svg>
+
+  <div *ngIf="ifLoadingCalendar" class="">
+    <div >
+      <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+    </div>
+
+  </div>
+  <div *ngIf="!ifLoadingCalendar">
+    <svg [attr.viewBox]="viewBox">
+      <g *ngFor="let daySquare of daySquares" (click)="onClickDaySquare(daySquare)" (mouseenter)="onMouseEnterDaySquare(daySquare)"
+        (mouseleave)="onMouseLeaveDaySquare(daySquare)">
+        <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath" />
+        <text [attr.x]="daySquare.text_x" [attr.y]="daySquare.text_y" style="font-size:3em;text-anchor:middle;alignment-baseline:middle;">{{daySquare.date.date()}}</text>
+      </g>
+    </svg>
+  </div>
+
 </div>

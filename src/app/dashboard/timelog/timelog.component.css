@@ -6,6 +6,7 @@
 }
 .timelog-header{
     width:100%;
+    min-height:100px;
     margin: 0 auto;
     margin-bottom:10px;
     /* justify-content: center; */
@@ -37,7 +38,6 @@
 .timelog-chart{
     margin:5px;
     padding:0px;
-    flex-grow: 1;
     flex-basis: 30%;
     /* border: 1px solid black; */
     border-radius: 2px;
@@ -68,7 +68,6 @@
 .timelog{
     margin:5px;
     padding:0px;
-    flex-grow: 1;
     flex-basis: 70%;
 }
 
@@ -94,7 +93,9 @@
     .adjacent-date{
         font-size:2em;
     }
-
+    .timelog-header{
+        min-height:70px;
+    }
 }
 
 

@@ -21,12 +21,7 @@ export class TimelogService {
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
       if (authStatus.isAuthenticated) {
-        // this.currentDate$.subscribe((date: moment.Moment)=>{
-        //   console.log("date has changed")
-        //   let start = moment(date).startOf('day').toISOString();
-        //   let end = moment(date).endOf('day').toISOString();
-        //   // this.fetchTimeMarks(authStatus.user.id, start, end);
-        // })
+
       } else {
         this.logout();
       }
@@ -70,12 +65,10 @@ export class TimelogService {
   private _timeMarksSubject$: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
   private _thisDaysTimeMarks: Subject<TimeMark[]> = new Subject();
   private thisDaysTimeMarksSubscription: Subscription = this._timeMarksSubject$.subscribe((timeMarks: TimeMark[])=>{
-    // console.log("the master variable _timeMarksSubject has changed.  Updating this days time marks.");
     this._thisDaysTimeMarks.next(this.getThisDaysTimeMarks(timeMarks, this.currentDate));
   })
   
   private getThisDaysTimeMarks(allTimeMarks: TimeMark[], currentDate: moment.Moment): TimeMark[]{
-    // console.log("finding this days time marks", allTimeMarks);
     let thisDaysTimeMarks: TimeMark[] = [];
     if(allTimeMarks != null){
       for(let timeMark of allTimeMarks){
@@ -112,11 +105,6 @@ export class TimelogService {
     }
   }
 
-
-
-  // setCurrentDate(newDate: moment.Moment) {
-  //   this._currentDate.next(newDate);
-  // }
 
 
   saveTimeMark(timeMark: TimeMark) {
@@ -238,7 +226,6 @@ export class TimelogService {
   private fetchTimeMarksByRange(authenticatedUserId: string, startTime: moment.Moment, endTime: moment.Moment) {
     
     const getUrl = this.serverUrl + "/api/timeMark/" + authenticatedUserId + "/" + startTime.toISOString() + "/" + endTime.toISOString();
-    console.log("Service: getting time marks at url:", getUrl);
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -263,7 +250,6 @@ export class TimelogService {
         })
       }))
       .subscribe((timeMarks: TimeMark[]) => {
-        console.log("from http request: " , timeMarks)
         this._timeMarksSubject$.next(timeMarks);
       });
 
@@ -277,7 +263,6 @@ export class TimelogService {
     /*
       This will do a fetch for timeMarks in a range of a month.  We could mimic this behavior and define any time range, not just 1 month
     */
-    console.log("TimelogService: onTimeLogComponentInit()");
     let startTime: moment.Moment = moment(date).startOf('month');
     let endTime: moment.Moment = moment(date).endOf('month');
     this.fetchTimeMarksByRange(this.authService.authenticatedUser.id, startTime, endTime);
