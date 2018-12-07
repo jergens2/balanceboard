@@ -1,5 +1,5 @@
-<nav id="header" class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">balanceboard</a>
+<div class="header" >
+  <a class="navbar-brand">balanceboard</a>
   <div (mouseleave)="onMouseLeaveMenu()" (mouseenter)="onMouseEnterMenu()">
     <button class="btn btn-primary" (click)="onClickMenuButton()">Menu <fa-icon [icon]="faCaretSquareDown"></fa-icon></button>
     <div [ngClass]="{'expanded-menu': menuIsExpanded}" class="menu">
@@ -117,4 +117,4 @@
       </div>
     </div> <!-- Menu -->
   </div> <!-- Menu button & menu-->
-</nav>
+</div>

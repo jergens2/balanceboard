@@ -1,4 +1,4 @@
-#header{
+.header{
     z-index: 999;
     border-bottom: 2px solid #f4f4f4;
     margin-bottom: 10px;
@@ -8,7 +8,7 @@
     display: none;
     position: absolute;
     /* top: 0; */
-    right: 10px;
+    left: 10px;
     border: 1px solid black;
     /* border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px; */
