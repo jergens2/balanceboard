@@ -20,10 +20,13 @@ export class TimelogListComponent implements OnInit {
   timeMarkTiles: ITimeMarkTile[] = [];
   ifLoadingTimeMarks: boolean;
 
+  ifAddTimeMarkButton: boolean = true;
+  ifAddTimeMarkForm: boolean;
+
   faSpinner = faSpinner;
   faCog = faCog;
   faTimes = faTimes;
-  
+
   currentDate: moment.Moment;
 
   private defaultTimeMarkTileStyle: Object;
@@ -31,6 +34,7 @@ export class TimelogListComponent implements OnInit {
   ngOnInit() {
     this.currentDate = moment();
     this.ifLoadingTimeMarks = true;
+    this.ifAddTimeMarkButton = true;
     this.defaultTimeMarkTileStyle = {};
 
     this.timeLogService.currentDate$.subscribe((date) => {
@@ -60,6 +64,26 @@ export class TimelogListComponent implements OnInit {
   /*
       TEMPLATE FUNCTIONS
   */
+
+  ifDateIsTodate(date: moment.Moment){
+    console.log(date);
+    if(moment(date).dayOfYear() == moment().dayOfYear()){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  onClickAddTimeMark() {
+    this.ifAddTimeMarkButton = false;
+    this.ifAddTimeMarkForm = true;
+  }
+
+  onCloseForm(){
+    this.ifAddTimeMarkForm = false;
+    this.ifAddTimeMarkButton = true;
+  }
+
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
 
     // timeMarkTile.deleteButtonIsVisible = true;

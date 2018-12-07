@@ -1,5 +1,16 @@
 <div class="">
-  Time Log
+  <h4>Time Log Entries</h4>  
+  <button *ngIf="ifAddTimeMarkButton" class="btn btn-primary" (click)="onClickAddTimeMark()">
+      Add New Time Mark
+    </button>
+  <div *ngIf="ifAddTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>
+
+      <app-time-mark-form (closeForm)="onCloseForm()" [latestTimeMark]="latestTimeMark">
+      </app-time-mark-form>
+  
+    </div>
+
+  <hr>
   <div *ngIf="ifLoadingTimeMarks" class="text-center" style="font-size:3em;">
     <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
   </div>
@@ -33,8 +44,8 @@
                 </div>
               </div>
               <div style="display:flex; flex-direction: row;">
-                TO DO: Need to add tooltips over the cog and X. e.g. hover over cog and the word "Update" or "Modify
-                pops up"
+                <!-- TO DO: Need to add tooltips over the cog and X. e.g. hover over cog and the word "Update" or "Modify
+                pops up" -->
                 <div class="delete-time-mark-button">
                   <fa-icon [icon]="faCog"></fa-icon>
                 </div>
@@ -58,13 +69,8 @@
       No Time Marks
     </div>
     <hr class='mb-2'>
-    <button *ngIf="!addTimeMarkForm && dateIsToday(currentDateString)" class="btn btn-primary" (click)="onClickNewTimeMark()">Add
-      New Time Mark</button>
-  </div>
-  <div *ngIf="addTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>
-
-    <app-time-mark-form (closeForm)="onCloseForm()" [latestTimeMark]="latestTimeMark">
-    </app-time-mark-form>
 
   </div>
+
+  
 </div>

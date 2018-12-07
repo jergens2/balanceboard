@@ -11,7 +11,7 @@
     grid-row: 1 / span 1;
 
     margin: 0 auto;
-    margin-bottom:10px;
+    margin-bottom:3px;
 
     padding-left: 10px;
     padding-right: 10px;
@@ -32,6 +32,13 @@
     grid-template-rows: auto auto auto;
     grid-template-columns: 2fr 1fr;
 
+}
+
+.timelog-display-component{
+    padding:10px;
+    border: 1px solid rgb(145, 145, 145);
+    margin:10px;
+    box-shadow: 0px 5px 8px rgb(141, 175, 202);
 }
 
 .timelog-chart{

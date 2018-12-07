@@ -1,9 +1,24 @@
 <div class="timelog-chart">
-  <div *ngFor="let tile of timeMarkChartTiles" class="chart-item" [style.height]="tile.styleHeight"
-    (mouseenter)="onMouseEnterChartTile()" (mouseleave)="onMouseLeaveChartTile()">
-    <div *ngFor="let activity of tile.timeMark.activities" style="display:inline;">
-      <!-- [style.display]="styleDisplayActivities(tile.timeMark.duration)" -->
-      {{ activity.name }}
+
+  <div class="chart-hour-labels-grid">
+    <div *ngFor="let hour of hours" class="chart-hour-label">
+      <div>
+        {{ hour }}
+      </div>
+      <div class="ml-2">
+        <hr width="15px">
+      </div>
     </div>
   </div>
+
+  <div class="chart-items">
+    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight">
+      <div *ngIf="ifShowActivities(tile.timeMark)" style="display:flex;">
+        <div *ngFor="let activity of tile.timeMark.activities" class="mr-2">
+          {{activity.name }}
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

@@ -27,8 +27,14 @@ export class TimeMark{
     get startTime(): moment.Moment{
         return moment(this.startTimeISO);
     }
+    set startTime(newStartTime: moment.Moment){
+        this.startTimeISO = moment(newStartTime).toISOString();
+    }
     get endTime(): moment.Moment{
         return moment(this.endTimeISO);
+    }
+    set endTime(newEndTime: moment.Moment){
+        this.endTimeISO = moment(newEndTime).toISOString();
     }
     get durationString(): string{
         let duration = moment.duration(this.endTime.diff(this.startTime));
@@ -47,5 +53,5 @@ export class TimeMark{
         let duration = moment.duration(this.endTime.diff(this.startTime));
         return duration.asMinutes();
     }
-    
+
 }
