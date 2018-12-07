@@ -30,7 +30,7 @@ export class TimeMark{
     get endTime(): moment.Moment{
         return moment(this.endTimeISO);
     }
-    get duration(): string{
+    get durationString(): string{
         let duration = moment.duration(this.endTime.diff(this.startTime));
         let durationString = '';
         if(duration.hours() > 0){
@@ -43,4 +43,9 @@ export class TimeMark{
         }
         return durationString;
     }
+    get duration(): number{
+        let duration = moment.duration(this.endTime.diff(this.startTime));
+        return duration.asMinutes();
+    }
+    
 }

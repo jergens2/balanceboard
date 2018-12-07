@@ -1,12 +1,9 @@
 <div class="timelog-chart">
-  <div class="chart-item">A</div>
-  <div class="chart-item">S</div>
-  <div class="chart-item">D</div>
-  <div class="chart-item">F</div>
-  <div class="chart-item">G</div>
-  <div class="chart-item">H</div>
-  <div class="chart-item">J</div>
-  <div class="chart-item">K</div>
-  <div class="chart-item">L</div>
-  <div class="chart-item">;</div>
+  <div *ngFor="let tile of timeMarkChartTiles" class="chart-item" [style.height]="tile.styleHeight"
+    (mouseenter)="onMouseEnterChartTile()" (mouseleave)="onMouseLeaveChartTile()">
+    <div *ngFor="let activity of tile.timeMark.activities" style="display:inline;">
+      <!-- [style.display]="styleDisplayActivities(tile.timeMark.duration)" -->
+      {{ activity.name }}
+    </div>
+  </div>
 </div>

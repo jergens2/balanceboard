@@ -1,4 +1,9 @@
 <div class="timelog-calendar">
+    <div class="calendar-header">
+        <fa-icon class="adjacent-date-arrow" [icon]="faArrowCircleLeft" (click)="onClickAdjacentDate('left')"></fa-icon>
+        <span style="font-size:1.3em;" class="px-2">{{ dateFormattedDateStringShort(currentDateString) }}</span>
+        <fa-icon class="adjacent-date-arrow" [icon]="faArrowCircleRight" (click)="onClickAdjacentDate('right')"></fa-icon>
+      </div>
   <!-- <svg [attr.viewBox]="viewBox" width="100%">
     <g *ngFor="let daySquare of daySquares" (click)="onClick(daySquare)" (mouseenter)="onMouseEnter(daySquare)"
       (mouseleave)="onMouseLeave(daySquare)">
@@ -14,7 +19,7 @@
   </svg> -->
 
   <div *ngIf="ifLoadingCalendar" class="">
-    <div >
+    <div>
       <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
     </div>
 
@@ -23,6 +28,7 @@
     <svg [attr.viewBox]="viewBox">
       <g *ngFor="let daySquare of daySquares" (click)="onClickDaySquare(daySquare)" (mouseenter)="onMouseEnterDaySquare(daySquare)"
         (mouseleave)="onMouseLeaveDaySquare(daySquare)">
+
         <path [ngStyle]="daySquare.style" [attr.d]="daySquare.svgPath" />
         <text [attr.x]="daySquare.text_x" [attr.y]="daySquare.text_y" style="font-size:3em;text-anchor:middle;alignment-baseline:middle;">{{daySquare.date.date()}}</text>
       </g>

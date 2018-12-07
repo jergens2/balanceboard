@@ -35,6 +35,7 @@ import { ActivitiesComponent } from './timelog/activities/activities.component';
 import { ActivityComponent } from './timelog/activities/activity/activity.component';
 import { TimelogChartComponent } from './timelog/timelog-chart/timelog-chart.component';
 import { TimelogCalendarComponent } from './timelog/timelog-calendar/timelog-calendar.component';
+import { TimelogListComponent } from './timelog/timelog-list/timelog-list.component';
 
 
 
@@ -69,7 +70,8 @@ import { TimelogCalendarComponent } from './timelog/timelog-calendar/timelog-cal
     ActivitiesComponent,
     ActivityComponent,
     TimelogChartComponent,
-    TimelogCalendarComponent
+    TimelogCalendarComponent,
+    TimelogListComponent
   ],
   providers: [
     TimeService, 

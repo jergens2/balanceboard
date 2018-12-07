@@ -5,7 +5,7 @@ import * as moment from 'moment';
 import { Subscription, Subject, Observable, merge } from 'rxjs';
 import { TimeMark } from '../time-mark.model';
 
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faArrowCircleRight, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 
 export interface IDaySquare {
 
@@ -30,6 +30,8 @@ export class TimelogCalendarComponent implements OnInit {
   constructor(private timeLogService: TimelogService) { }
 
   faSpinner = faSpinner;
+  faArrowCircleRight = faArrowCircleRight;
+  faArrowCircleLeft = faArrowCircleLeft;
 
   // currentMonth: moment.Moment;
   currentDate: moment.Moment;
@@ -43,7 +45,6 @@ export class TimelogCalendarComponent implements OnInit {
 
   ifLoadingCalendar: boolean;
 
-  @Output() dateChange: EventEmitter<moment.Moment> = new EventEmitter<moment.Moment>();
 
   ngOnInit() {
 
@@ -57,62 +58,47 @@ export class TimelogCalendarComponent implements OnInit {
     this.daySquares = this.buildDaySquares(this.viewBoxWidth, this.viewBoxHeight);
 
 
-    this.timeLogService.currentDate$.subscribe((date)=>{
-      if(moment(this.currentDate).month() != moment(date).month()){
+    this.timeLogService.currentDate$.subscribe((date) => {
+      if (moment(this.currentDate).month() != moment(date).month()) {
         this.currentDate = date;
         this.daySquares = this.buildDaySquares(this.viewBoxWidth, this.viewBoxHeight);
       }
       this.currentDate = date;
     })
 
-    this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[])=>{
+    this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[]) => {
       this.timeMarks = timeMarks;
       this.calculateTimeMarksCountCeiling();
     })
-
-    // merge(this.timeLogService.currentDate$, this.timeLogService.timeMarks$).subscribe((data)=>{
-    //   console.log("merged");
-    //   console.log(this.currentDate, this.timeMarks);
-    //   // if(this.timeMarks != null){
-    //   //   if(this.timeMarks.length > 0){
-    //   //     if(moment(this.currentDate).month() != moment(this.timeMarks[0].startTime).month()){
-    //   //       this.ifLoadingCalendar = true;
-    //   //       this.daySquares = this.buildDaySquares(this.viewBoxWidth, this.viewBoxHeight);
-    //   //       this.ifLoadingCalendar = false;
-    //   //     }
-    //   //   }
-    //   // }
-    //   if(this.currentDate)
-    // });
 
 
 
   }
 
-  private calculateTimeMarksCountCeiling(): number{
-    if(this.timeMarks != null){
-      if(this.timeMarks.length > 0 ){ 
+  private calculateTimeMarksCountCeiling(): number {
+    if (this.timeMarks != null) {
+      if (this.timeMarks.length > 0) {
         let currentDate = moment(this.timeMarks[0].startTimeISO);
         let currentMax = 0;
         let tempMax = 0;
-        for(let timeMark of this.timeMarks){
-    
-          if(currentDate.dayOfYear() == moment(timeMark.startTimeISO).dayOfYear()){
-            
-            tempMax ++;
-            if(tempMax > currentMax){    
+        for (let timeMark of this.timeMarks) {
+
+          if (currentDate.dayOfYear() == moment(timeMark.startTimeISO).dayOfYear()) {
+
+            tempMax++;
+            if (tempMax > currentMax) {
               currentMax = tempMax;
             }
-          }else{
+          } else {
             tempMax = 0;
           }
           currentDate = moment(timeMark.startTimeISO)
         }
         return currentMax;
-      }else{
+      } else {
         return 0;
       }
-    }else{
+    } else {
       return 0;
     }
   }
@@ -122,47 +108,10 @@ export class TimelogCalendarComponent implements OnInit {
     let blueGradient = ['#d2e6ff', '#a9d0ff', '#6cafff', '#308eff', '#0074ff']
     if (thisDaysCount == 0) {
       return "rgb(230, 230, 230)";
-    }else{
-      let index = (Math.ceil((thisDaysCount/maxCount) * blueGradient.length))-1;
+    } else {
+      let index = (Math.ceil((thisDaysCount / maxCount) * blueGradient.length)) - 1;
       return blueGradient[index];
     }
-  }
-
-  onClickDaySquare(daySquare: IDaySquare) {
-    // this.timeLogService.setCurrentDate(moment(daySquare.date));
-    // console.log(daySquare.date);
-    console.log("date changed from calendar")
-    this.dateChange.emit(moment(daySquare.date));
-  }
-  onMouseEnterDaySquare(daySquare: IDaySquare) {
-    // if(moment().dayOfYear() === moment(daySquare.date).dayOfYear()){
-    //   daySquare.style = {
-    //     "fill":"#2678ff",
-    //     "cursor":"pointer"
-    //   }
-    // }else{
-    //   daySquare.style = {
-    //     "cursor":"pointer",
-    //     "fill":"lightblue",
-    //     "stroke":"#a5c7ff",
-    //     "stroke-width":10
-    //   }
-    // }
-
-  }
-  onMouseLeaveDaySquare(daySquare: IDaySquare) {
-    // if(moment().dayOfYear() === moment(daySquare.date).dayOfYear()){
-    //   daySquare.style = {
-    //     "fill":"#2678ff",
-    //     "stroke":"#a5c7ff",
-    //     "stroke-width":10
-    //   }
-    // }else{
-    //   daySquare.style = { 
-    //     "fill":"#ddeaff",
-    //   }
-    // }
-
   }
 
   buildDaySquares(viewBoxWidth, viewBoxHeight): IDaySquare[] {
@@ -177,7 +126,7 @@ export class TimelogCalendarComponent implements OnInit {
     let lastOfMonth = moment(date).endOf('month');
     let currentDate: moment.Moment = firstOfMonth;
     let columns = 7;
-    let rows = Math.ceil((lastOfMonth.date()+firstOfMonth.day())/columns);
+    let rows = Math.ceil((lastOfMonth.date() + firstOfMonth.day()) / columns);
     // let rows = 6;
 
     let padding = 5;
@@ -249,5 +198,84 @@ export class TimelogCalendarComponent implements OnInit {
     }
     return daySquares;
   }
+
+
+  /*
+      TEMPLATE FUNCTIONS
+  */
+
+  get currentDateString(): string {
+    return this.currentDate.format('YYYY-MM-DD');
+  }
+
+  onClickAdjacentDate(direction: string) {
+
+    // this.onCloseForm();  
+    // close the new time mark form
+
+
+    // this.timeMarkTiles = null;
+    // this.ifLoadingTimeMarks = true;
+
+    // console.log(this._currentDate.format('YYYY-MM-DD'))
+    if (direction == "left") {
+      let newDate = moment(this.currentDate).subtract(1, 'days');
+      // console.log("clicked left, changing to new date:", newDate.format('YYYY-MM-DD'))
+      this.timeLogService.currentDate = newDate;
+    } else if (direction == "right") {
+      let newDate = moment(this.currentDate).add(1, 'days');
+      // console.log("clicked right, changing to new date:", newDate.format('YYYY-MM-DD'))
+      this.timeLogService.currentDate = newDate;
+    }
+
+
+  }
+  dateFormattedDateString(dateYYYYMMDD: string): string {
+    //Used by template to input any date and receive back a formatted date string 
+    return moment(dateYYYYMMDD).format('dddd, MMMM Do, gggg');
+  }
+
+  dateFormattedDateStringShort(dateYYYYMMDD: string): string {
+    //Used by template to input any date and receive back a formatted date string 
+    return moment(dateYYYYMMDD).format('MMMM Do, gggg');
+  }
+
+
+  onClickDaySquare(daySquare: IDaySquare) {
+    this.timeLogService.currentDate = (moment(daySquare.date));
+  }
+  onMouseEnterDaySquare(daySquare: IDaySquare) {
+    // if(moment().dayOfYear() === moment(daySquare.date).dayOfYear()){
+    //   daySquare.style = {
+    //     "fill":"#2678ff",
+    //     "cursor":"pointer"
+    //   }
+    // }else{
+    //   daySquare.style = {
+    //     "cursor":"pointer",
+    //     "fill":"lightblue",
+    //     "stroke":"#a5c7ff",
+    //     "stroke-width":10
+    //   }
+    // }
+
+  }
+  onMouseLeaveDaySquare(daySquare: IDaySquare) {
+    // if(moment().dayOfYear() === moment(daySquare.date).dayOfYear()){
+    //   daySquare.style = {
+    //     "fill":"#2678ff",
+    //     "stroke":"#a5c7ff",
+    //     "stroke-width":10
+    //   }
+    // }else{
+    //   daySquare.style = { 
+    //     "fill":"#ddeaff",
+    //   }
+    // }
+
+  }
+
+
+
 
 }

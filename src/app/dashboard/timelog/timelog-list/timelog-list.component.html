@@ -1,0 +1,70 @@
+<div class="">
+  Time Log
+  <div *ngIf="ifLoadingTimeMarks" class="text-center" style="font-size:3em;">
+    <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+  </div>
+  <div *ngIf="!ifLoadingTimeMarks">
+    <div *ngIf="timeMarkTiles">
+      <div *ngIf="timeMarkTiles.length > 0">
+        <div *ngFor="let timeMarkTile of timeMarkTiles">
+          <div class='m-1 p-1 border border-success time-mark-tile' style="display:flex; flex-direction:column; "
+            [ngStyle]="timeMarkTile.style" (mouseenter)="onMouseEnterTimeMarkTile(timeMarkTile)" (mouseleave)="onMouseLeaveTimeMarkTile(timeMarkTile)">
+
+            <div style="display:flex; flex-direction: row;">
+              <div style="display:flex; flex-direction: column; flex-grow:4; ">
+                <div>
+                  <ul class='m-0  py-0' *ngFor="let activity of timeMarkTile.timeMark.activities">
+                    <li class='m-0 p-0'>{{ activity.name }}</li>
+                  </ul>
+                </div>
+                <div class="p-1" style="display:flex; flex-direction: row;">
+                  <div class="p-1">
+                    <span style="font-size:0.7em;">Start Time</span><br>
+                    {{ timeMarkTile.timeMark.startTime.format('HH:mm') }}
+                  </div>
+                  <div class="p-1">
+                    <span style="font-size:0.7em;">End Time</span><br>
+                    {{ timeMarkTile.timeMark.endTime.format('HH:mm') }}
+                  </div>
+                  <div class="p-1">
+                    <span style="font-size:0.7em;">Duration</span><br>
+                    {{ timeMarkTile.timeMark.durationString }}
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction: row;">
+                TO DO: Need to add tooltips over the cog and X. e.g. hover over cog and the word "Update" or "Modify
+                pops up"
+                <div class="delete-time-mark-button">
+                  <fa-icon [icon]="faCog"></fa-icon>
+                </div>
+                <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">
+                  <fa-icon [icon]="faTimes"></fa-icon>
+                </div>
+              </div>
+            </div>
+            <div>
+              {{ timeMarkTile.timeMark.description }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="timeMarkTiles.length < 1">
+        No time marks for {{ currentDateString }}
+      </div>
+
+    </div>
+    <div *ngIf="!timeMarkTiles">
+      No Time Marks
+    </div>
+    <hr class='mb-2'>
+    <button *ngIf="!addTimeMarkForm && dateIsToday(currentDateString)" class="btn btn-primary" (click)="onClickNewTimeMark()">Add
+      New Time Mark</button>
+  </div>
+  <div *ngIf="addTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>
+
+    <app-time-mark-form (closeForm)="onCloseForm()" [latestTimeMark]="latestTimeMark">
+    </app-time-mark-form>
+
+  </div>
+</div>

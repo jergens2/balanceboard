@@ -1,30 +1,30 @@
 .wrapper {
-    display: flex;
-    flex-direction: row;
     width: 100%;
     height: 100%;
+
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 1fr;
 }
 
-.sidebar{
-    width: 250px;
-    height: 100vh;
-
-    top: 0;
-    left: 0;
-    z-index: 998;
-    background: white;
-    padding-right:20px;
-    border-right: 2px solid #f4f4f4;
+.sidebar-component{
 
 }
 
 @media (max-width: 767px){
-    .sidebar{
+    
+    .wrapper{
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar-component{
         display:none;
     }
+
 }
 
 .content{
-    width:100%;
+    /* flex-grow: 2; */
     height: 100%;
 }
+
