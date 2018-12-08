@@ -8,6 +8,7 @@ export interface ITimeMarkChartTile {
   timeMark: TimeMark,
   style: Object,
   styleHeight: string,
+  styleBackgroundColor: string,
 }
 
 
@@ -66,7 +67,20 @@ export class TimelogChartComponent implements OnInit {
           }
           let hourHeight: string = ((timeMark.duration / 60) * hourHeightPx) + "px";
 
-          let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: hourHeight }
+          let styleColor = "white";
+          if(timeMark.activities.length == 0){
+            styleColor = "white";
+          }else if(timeMark.activities.length == 1){
+            styleColor = timeMark.activities[0].color;
+          }else if(timeMark.activities.length > 1){
+            // TODO need to calculate which activity represents the largest portion of the timeMark and return that activity's color
+            styleColor = timeMark.activities[0].color;
+          }
+
+
+
+
+          let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: hourHeight, styleBackgroundColor: styleColor }
           tiles.push(tile);
         }
       }

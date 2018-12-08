@@ -12,8 +12,8 @@
   </div>
 
   <div class="chart-items">
-    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight">
-      <div *ngIf="ifShowActivities(tile.timeMark)" style="display:flex;">
+    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight" [style.background-color]="tile.styleBackgroundColor">
+      <div *ngIf="ifShowActivities(tile.timeMark)" style="display:flex;" >
         <div *ngFor="let activity of tile.timeMark.activities" class="mr-2">
           {{activity.name }}
         </div>

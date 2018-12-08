@@ -13,7 +13,7 @@
     grid-column: 2 / span 1;
 }
 .chart-item{
-    border:1px solid lightsteelblue;
+    border:1px solid rgb(211, 224, 241);
     border-radius:2px;
     font-size: 0.7em;
     margin-left:10px;
