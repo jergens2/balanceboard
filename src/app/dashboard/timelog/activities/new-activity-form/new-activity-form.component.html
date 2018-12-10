@@ -1,0 +1,35 @@
+<div class="form-root" [style.background-color]="colorPickerValue">
+
+
+  <div [formGroup]="createActivityForm" class="form-grid">
+    <h5>Create New Activity</h5>
+    <hr>
+
+    <label class="form-label" for="formGroupExampleInput">Name</label>
+    <input class="form-input" type="text" formControlName="name">
+
+    <label class="form-label" for="formGroupExampleInput">Description</label>
+    <input class="form-input" type="text" formControlName="description">
+
+    <label class="form-label" for="formGroupExampleInput">Parent Category</label>
+    <div style="grid-column: 2 / span 1; ">
+      <input class="form-input-parent-category" type="text" formControlName="parentCategoryId" (click)="onClickParentCategory()">
+      <div *ngIf="ifShowParentCategories" class="parent-categories-popup">
+        <div *ngFor="let category of formParentCategories">
+          {{ category.name }}
+        </div>
+      </div>
+    </div>
+
+
+    <label class="form-label" for="formGroupExampleInput">Color</label>
+    <div class="form-input color-picker-input" [(colorPicker)]="colorPickerValue" [cpPosition]="'bottom'">
+      {{ colorPickerValue }}
+    </div>
+
+  </div>
+  <div style="display:flex;flex-direction: row; justify-content: flex-end;">
+    <button class="btn btn-success m-1" (click)="onClickSaveActivity()">Save Activity</button>
+    <button class="btn btn-warning m-1" (click)="onClickCancel()">Cancel</button>
+  </div>
+</div>

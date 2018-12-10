@@ -1,6 +1,6 @@
-<div>{{activity.name}}</div>
-<ul>
-  <li *ngFor="let childActivity of activity.children">
-    <app-activity [activity]="childActivity"></app-activity>
-  </li>
-</ul>
+<div class="pl-4">
+    <div>{{activity.name}}</div>
+    <div *ngFor="let childActivity of activity.children" >
+      <app-activity [activity]="childActivity"></app-activity>
+    </div>
+</div>

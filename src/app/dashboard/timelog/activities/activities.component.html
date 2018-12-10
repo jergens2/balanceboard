@@ -7,18 +7,26 @@
   <div class="row">
     <div class="col-12">
 
-      <div class="card" *ngFor="let activity of allActivities">
+      <div class="card" *ngFor="let activity of rootActivities">
         <div>{{activity.name}}</div>
-        <ul>
-          <li *ngFor="let childActivity of activity.children">
-            <app-activity [activity]="childActivity"></app-activity>
-          </li>
-        </ul>
+
+        <div *ngFor="let childActivity of activity.children">
+          <app-activity [activity]="childActivity"></app-activity>
+        </div>
+
       </div>
 
 
 
 
+    </div>
+    <div class="col-12 mt-3">
+      <div *ngIf="ifNewActivityFormButton">
+          <button class="btn btn-primary" (click)=onClickCreateNewActivity()>Create new activity</button>
+      </div>
+      <div *ngIf="ifNewActivityForm">
+          <app-new-activity-form [activitiesList]="rootActivities" (closeForm)="onCloseForm($event)"></app-new-activity-form>
+      </div>
     </div>
   </div>
 </div>

@@ -12,26 +12,47 @@ export class ActivitiesComponent implements OnInit {
 
   constructor(private activitiesService: ActivitiesService) { }
 
-  private aactivityNameFromForm: string = null;
-  allActivities: CategorizedActivity[] = [];
-  private topLevelActivities: CategorizedActivity[] = [];
+  
+  ifNewActivityFormButton: boolean;
+  ifNewActivityForm: boolean;
+
+
+  private activityNameFromForm: string = null;
+  allActivitiesList: CategorizedActivity[] = [];
+  private rootActivities: CategorizedActivity[] = [];
+
+
+
 
   ngOnInit() {
 
+    this.ifNewActivityFormButton = true;
+    this.ifNewActivityForm = false;
+
     let activityNameFromForm: string = this.activitiesService.activityNameFromActivityForm;
     if (activityNameFromForm != null) {
-      this.aactivityNameFromForm = activityNameFromForm;
+      this.activityNameFromForm = activityNameFromForm;
       this.activitiesService.activityNameFromActivityForm = null;
     } else {
       // no activity name was set on the service
     }
 
-    this.activitiesService.activities.subscribe((activities) => {
-      this.allActivities = activities;
+    this.activitiesService.rootActivities.subscribe((activities) => {
+      this.rootActivities = activities;
       
     })
 
 
+  }
+
+  onClickCreateNewActivity(){
+    this.ifNewActivityForm = true;
+    this.ifNewActivityFormButton = false;
+  }
+
+  onCloseForm(event){
+    this.ifNewActivityForm = false;
+    this.ifNewActivityFormButton = true;
   }
 
   

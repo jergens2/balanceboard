@@ -42,7 +42,7 @@ export class ActivityFormComponent implements OnInit {
 
   ngOnInit() {
     this.buildActivityForm();
-    this.activitiesService.activities.subscribe((activities: CategorizedActivity[])=>{
+    this.activitiesService.rootActivities.subscribe((activities: CategorizedActivity[])=>{
       this.categorizedActivities = activities;
     })
   }

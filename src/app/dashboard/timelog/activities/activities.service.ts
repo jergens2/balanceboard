@@ -11,7 +11,7 @@ export class ActivitiesService {
 
 
   private _activityNameFromActivityForm: string = null;
-  private _activities: BehaviorSubject<CategorizedActivity[]> = new BehaviorSubject(this.setActivities());
+  private _rootActivities: BehaviorSubject<CategorizedActivity[]> = new BehaviorSubject(this.setActivities());
   
 
   constructor() {
@@ -64,11 +64,15 @@ export class ActivitiesService {
     return null;
   }
 
+  saveActivity(activity: CategorizedActivity){
+    console.log("saving activity:", activity);
+  }
 
 
 
-  get activities(): Observable<CategorizedActivity[]> {
-    return this._activities.asObservable();
+
+  get rootActivities(): Observable<CategorizedActivity[]> {
+    return this._rootActivities.asObservable();
   }
 
   set activityNameFromActivityForm(name: string){

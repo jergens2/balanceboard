@@ -78,7 +78,7 @@ export class TimelogChartComponent implements OnInit {
           }
 
 
-
+          styleColor = "white"; // remove this line
 
           let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: hourHeight, styleBackgroundColor: styleColor }
           tiles.push(tile);

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 import { TimeService } from './home/time.service';
 import { HomeService } from './home/home.service';
@@ -36,6 +37,8 @@ import { ActivityComponent } from './timelog/activities/activity/activity.compon
 import { TimelogChartComponent } from './timelog/timelog-chart/timelog-chart.component';
 import { TimelogCalendarComponent } from './timelog/timelog-calendar/timelog-calendar.component';
 import { TimelogListComponent } from './timelog/timelog-list/timelog-list.component';
+import { NewActivityFormComponent } from './timelog/activities/new-activity-form/new-activity-form.component';
+import { UpdateActivityFormComponent } from './timelog/activities/update-activity-form/update-activity-form.component';
 
 
 
@@ -45,6 +48,7 @@ import { TimelogListComponent } from './timelog/timelog-list/timelog-list.compon
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,
+    ColorPickerModule,
     NgbModule.forRoot(),
   ],
   declarations: [
@@ -71,7 +75,9 @@ import { TimelogListComponent } from './timelog/timelog-list/timelog-list.compon
     ActivityComponent,
     TimelogChartComponent,
     TimelogCalendarComponent,
-    TimelogListComponent
+    TimelogListComponent,
+    NewActivityFormComponent,
+    UpdateActivityFormComponent
   ],
   providers: [
     TimeService, 
