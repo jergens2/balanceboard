@@ -69,13 +69,13 @@ export class ActivityFormComponent implements OnInit {
       The purpose of this form, therefore, is to simply define a collection of activities performed and how long time was spent on them
     */
     let id = '';
+    let userId = '';
     let name = this.activityForm.get('name').value;;
     let description = this.activityForm.get('description').value;
     let parentActivityId = '';
-    let childActivityIds = [];
     let color = this.activityForm.get('color').value
 
-    let activity: CategorizedActivity = new CategorizedActivity(id, name, description, parentActivityId, childActivityIds, color);
+    let activity: CategorizedActivity = new CategorizedActivity(id,userId, name, description, parentActivityId, color);
 
     this.activitySaved.emit(activity);
   }

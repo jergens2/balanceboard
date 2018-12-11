@@ -12,10 +12,13 @@
     <input class="form-input" type="text" formControlName="description">
 
     <label class="form-label" for="formGroupExampleInput">Parent Category</label>
-    <div style="grid-column: 2 / span 1; ">
-      <input class="form-input-parent-category" type="text" formControlName="parentCategoryId" (click)="onClickParentCategory()">
+    <div style="grid-column: 2 / span 1; " (mouseenter)="onMouseEnterParentCategoriesArea()" (mouseleave)="onMouseLeaveParentCategoriesArea()">
+      <!-- <input class="form-input-parent-category" type="text" formControlName="parentCategoryName" (click)="onClickParentCategory()"> -->
+      <div class="form-input-parent-category" (click)="onClickParentCategory()">
+        {{ selectedParentCategoryName }}
+      </div>
       <div *ngIf="ifShowParentCategories" class="parent-categories-popup">
-        <div *ngFor="let category of formParentCategories">
+        <div *ngFor="let category of formParentCategories" (click)="onClickSelectedCategory(category)" class="parent-category-choice">
           {{ category.name }}
         </div>
       </div>

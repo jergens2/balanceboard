@@ -33,11 +33,13 @@
 }
 .form-input-parent-category{
     width:100%;
+    height:40px;
     border: 1px solid rgb(87, 87, 87);
     grid-column: 1 / span 1;
     padding: 7px;
     border-radius:3px;
     background-color:white;
+    cursor:pointer;
 }
 
 
@@ -45,6 +47,7 @@
     cursor:pointer;
 }
 .parent-categories-popup{
+    z-index: 99;
     min-width:120px;
 
     position: absolute;
@@ -52,4 +55,11 @@
     background-color:white;
     box-shadow: 1px 1px 5px black;
     padding:5px;
+}
+.parent-category-choice{
+    padding: 3px;
+}
+.parent-category-choice:hover{
+    cursor: pointer;
+    background-color: rgb(224, 224, 241);
 }
