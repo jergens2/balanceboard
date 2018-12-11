@@ -18,9 +18,9 @@ export class ActivitiesComponent implements OnInit {
 
 
   private activityNameFromForm: string = null;
-  allActivitiesList: CategorizedActivity[] = [];
-  private rootActivities: CategorizedActivity[] = [];
-
+  // allActivitiesList: CategorizedActivity[] = [];
+  private allActivities: CategorizedActivity[] = [];
+  rootActivities: CategorizedActivity[] = [];
 
 
 
@@ -38,12 +38,54 @@ export class ActivitiesComponent implements OnInit {
     }
 
     this.activitiesService.rootActivities.subscribe((activities) => {
-      this.rootActivities = activities;
+      console.log("activities subscription:", activities)
+      if(activities != null){
+        this.allActivities = activities;
+        this.rootActivities = this.buildActivityTree(this.allActivities);
+        console.log(this.allActivities);
+      }
       
     })
 
 
   }
+
+  
+  private buildActivityTree(allActivities: CategorizedActivity[]): CategorizedActivity[] {
+    /*
+        Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
+    */
+    let rootActivities: CategorizedActivity[] = [];
+
+    for(let activity of allActivities){
+      if(activity.parentTreeId.endsWith("TOP_LEVEL")){
+        rootActivities.push(activity)
+      }
+    }
+
+    for(let rootActivity of rootActivities){
+      rootActivity = this.findChildActivities(rootActivity, allActivities);
+    }
+
+    console.log("root activities: ", rootActivities);
+
+    return rootActivities;
+  }
+
+  findChildActivities(activityNode: CategorizedActivity, allActivities: CategorizedActivity[]) : CategorizedActivity{
+    for(let activity of allActivities){
+      if(activity.parentTreeId == activityNode.treeId){
+        activityNode.addChild(activity);
+      }
+    }
+    for(let childNode of activityNode.children){
+      this.findChildActivities(childNode, allActivities);
+    }
+    return activityNode;
+  }
+
+
+
 
   onClickCreateNewActivity(){
     this.ifNewActivityForm = true;

@@ -75,7 +75,7 @@ export class ActivityFormComponent implements OnInit {
     let parentActivityId = '';
     let color = this.activityForm.get('color').value
 
-    let activity: CategorizedActivity = new CategorizedActivity(id,userId, name, description, parentActivityId, color);
+    let activity: CategorizedActivity = new CategorizedActivity(id,userId, '', name, description, parentActivityId, color);
 
     this.activitySaved.emit(activity);
   }

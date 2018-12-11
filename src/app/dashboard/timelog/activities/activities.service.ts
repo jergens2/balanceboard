@@ -14,10 +14,6 @@ import { map } from 'rxjs/operators';
 })
 export class ActivitiesService {
 
-
-
-  
-
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
       if (authStatus.isAuthenticated) {
@@ -32,53 +28,10 @@ export class ActivitiesService {
   private serverUrl: string = serverUrl;
   private _activityNameFromActivityForm: string = null;
   private _allUserActivities$: BehaviorSubject<CategorizedActivity[]> = new BehaviorSubject(null);
+
+
+
   
-
-  // private setActivities(): CategorizedActivity[]{
-  //   let activities: CategorizedActivity[] = [];
-  //   this.fetchActivities();
-  //   if(activities == null){
-  //     //no activities from server
-  //     return this.buildActivityTree(defaultActivities);
-  //   }else{
-  //     return activities;
-  //   }
-  // }
-
-  private buildActivityTree(activities: CategorizedActivity[]): CategorizedActivity[] {
-    /*
-        Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
-    */
-    let topLevelActivities: CategorizedActivity[] = [];
-
-    for (let activity of activities) {
-      if (activity.parentActivityId == 'TOP_LEVEL') {
-        let topLevelActivity = activity;
-        topLevelActivity = this.buildChildActivity(topLevelActivity, activities);
-        topLevelActivities.push(topLevelActivity);
-      }
-    }
-    return topLevelActivities;
-  }
-
-  private buildChildActivity(activityTreeNode: CategorizedActivity, allActivities: CategorizedActivity[]): CategorizedActivity {
-    for (let activity of allActivities) {
-      for (let activityId of activityTreeNode.childActivityIds) {
-        if (activity.id == activityId) {
-          activityTreeNode.addChild(activity);
-        }
-      }
-    }
-    if(activityTreeNode.children){
-      for(let childNode of activityTreeNode.children){
-        childNode = this.buildChildActivity(childNode, allActivities);
-      }
-    }
-
-    return activityTreeNode;
-  }
-
-
   private fetchActivities(){
     const getUrl = this.serverUrl + "/api/activity/get/" + this.authService.authenticatedUser.id;
     const httpOptions = {
@@ -92,7 +45,7 @@ export class ActivitiesService {
         let responseData = response.data;
         if(responseData.length > 0){
           let allActivities: CategorizedActivity[] = response.data.map((dataObject) => {
-            let newActivity: CategorizedActivity = new CategorizedActivity(dataObject._id, dataObject.userId, dataObject.name, dataObject.description, dataObject.parentActivityId, dataObject.color)
+            let newActivity: CategorizedActivity = new CategorizedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
             return newActivity
           });
           this._allUserActivities$.next(allActivities);
@@ -104,8 +57,10 @@ export class ActivitiesService {
 
   saveDefaultActivities(defaultActivities: CategorizedActivity[]){
     let userDefaultActivities = defaultActivities.map((activity)=>{
-      let newParentId = this.authService.authenticatedUser.id + "_" + activity.parentActivityId.replace(" ","_");
-      return new CategorizedActivity(activity.id, this.authService.authenticatedUser.id, activity.name, activity.description, newParentId, activity.color);
+      let newTreeId = this.authService.authenticatedUser.id + "_" + activity.treeId;
+      let newParentTreeId = this.authService.authenticatedUser.id + "_" + activity.parentTreeId.replace(" ","_");
+
+      return new CategorizedActivity(activity.id, this.authService.authenticatedUser.id, newTreeId, activity.name, activity.description, newParentTreeId, activity.color);
     })
 
     const postUrl = this.serverUrl + "/api/activity/createDefault";
@@ -118,7 +73,7 @@ export class ActivitiesService {
     this.httpClient.post<{message: string, data: any}>(postUrl, userDefaultActivities, httpOptions)
       .pipe(map((response) => {
         return response.data.map((dataObject) => {
-          let newActivity: CategorizedActivity = new CategorizedActivity(dataObject._id, dataObject.userId, dataObject.name, dataObject.description, dataObject.parentActivityId, dataObject.color)
+          let newActivity: CategorizedActivity = new CategorizedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
           return newActivity
         })
       }))
@@ -131,6 +86,11 @@ export class ActivitiesService {
     console.log(activity)
     let newActivity = activity;
     newActivity.userId = this.authService.authenticatedUser.id;
+
+    /*
+      TODO:  Eventually need to add a check in here to make sure that treeIds are unique per user.
+    */
+    newActivity.treeId = this.authService.authenticatedUser.id + "_" + activity.name.replace(" ", "_");
 
     const postUrl = this.serverUrl + "/api/activity/create";
     const httpOptions = {

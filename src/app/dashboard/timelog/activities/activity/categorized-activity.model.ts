@@ -1,13 +1,14 @@
 
 export class CategorizedActivity {
     public id: string;
+    public treeId: string;
     public name: string;
     public description: string;
 
     public userId: string;
 
-    public parentActivityId: string;
-    public childActivityIds: string[];
+    public parentTreeId: string;
+    public childTreeIds: string[];
 
     private _parent: CategorizedActivity;
     private _children: CategorizedActivity[];
@@ -15,12 +16,13 @@ export class CategorizedActivity {
     public color: string;
     public icon: string;
 
-    constructor(id: string, userId: string, name: string, description: string, parentActivityId: string, color: string) {
+    constructor(id: string, userId: string, treeId:string, name: string, description: string, parentActivityId: string, color: string) {
         this.id = id;
         this.userId = userId;
+        this.treeId = treeId;
         this.name = name;
         this.description = description;
-        this.parentActivityId = parentActivityId;
+        this.parentTreeId = parentActivityId;
         this.color = color;
 
         this._parent = null;
@@ -43,9 +45,9 @@ export class CategorizedActivity {
     get children(): CategorizedActivity[] {
         return this._children;
     }
-    set children(children: CategorizedActivity[]) {
-        this._children = children;
-    }
+    // set children(children: CategorizedActivity[]) {
+    //     this._children = children;
+    // }
 
     addChild(childCategory: CategorizedActivity) {
         this._children.push(childCategory);

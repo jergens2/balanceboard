@@ -34,7 +34,8 @@ export class NewActivityFormComponent implements OnInit {
 
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Input('activitiesList') set formParentCategories(activities: CategorizedActivity[]){
-    this._formParentCategories = this.buildActivitiesList(activities);
+    // this._formParentCategories = this.buildActivitiesList(activities);
+    this._formParentCategories = activities;
   }
   get formParentCategories(): CategorizedActivity[]{
     return this._formParentCategories;
@@ -99,7 +100,7 @@ export class NewActivityFormComponent implements OnInit {
 
   onClickSaveActivity(){
     if(this.createActivityForm.valid && this.selectedParentCategory != null){
-      let newActivity: CategorizedActivity = new CategorizedActivity("","",this.createActivityForm.get('name').value, this.createActivityForm.get('description').value, this.selectedParentCategory.id, this.colorPickerValue);
+      let newActivity: CategorizedActivity = new CategorizedActivity("","", "", this.createActivityForm.get('name').value, this.createActivityForm.get('description').value, this.selectedParentCategory.id, this.colorPickerValue);
       this.activitiesService.saveActivity(newActivity);
     }
     else{
