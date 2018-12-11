@@ -18,8 +18,14 @@
         {{ selectedParentCategoryName }}
       </div>
       <div *ngIf="ifShowParentCategories" class="parent-categories-popup">
-        <div *ngFor="let category of formParentCategories" (click)="onClickSelectedCategory(category)" class="parent-category-choice">
-          {{ category.name }}
+        <div *ngFor="let category of formParentCategories"  >
+          <div class="parent-category-choice" (click)="onClickSelectedCategory(category)">
+              {{ category.name }}
+          </div>
+          <div *ngFor="let child of category.children"> 
+            <app-activity-list-item [activity]="child" (categoryClicked)="onClickSelectedCategory($event)"></app-activity-list-item>
+          </div>
+          
         </div>
       </div>
     </div>

@@ -100,7 +100,8 @@ export class NewActivityFormComponent implements OnInit {
 
   onClickSaveActivity(){
     if(this.createActivityForm.valid && this.selectedParentCategory != null){
-      let newActivity: CategorizedActivity = new CategorizedActivity("","", "", this.createActivityForm.get('name').value, this.createActivityForm.get('description').value, this.selectedParentCategory.id, this.colorPickerValue);
+
+      let newActivity: CategorizedActivity = new CategorizedActivity("","", "", this.createActivityForm.get('name').value, this.createActivityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
       this.activitiesService.saveActivity(newActivity);
     }
     else{

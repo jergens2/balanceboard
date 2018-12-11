@@ -39,6 +39,7 @@ import { TimelogCalendarComponent } from './timelog/timelog-calendar/timelog-cal
 import { TimelogListComponent } from './timelog/timelog-list/timelog-list.component';
 import { NewActivityFormComponent } from './timelog/activities/new-activity-form/new-activity-form.component';
 import { UpdateActivityFormComponent } from './timelog/activities/update-activity-form/update-activity-form.component';
+import { ActivityListItemComponent } from './timelog/activities/new-activity-form/activity-list-item/activity-list-item.component';
 
 
 
@@ -77,7 +78,8 @@ import { UpdateActivityFormComponent } from './timelog/activities/update-activit
     TimelogCalendarComponent,
     TimelogListComponent,
     NewActivityFormComponent,
-    UpdateActivityFormComponent
+    UpdateActivityFormComponent,
+    ActivityListItemComponent
   ],
   providers: [
     TimeService, 

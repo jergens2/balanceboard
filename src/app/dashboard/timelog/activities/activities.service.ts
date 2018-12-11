@@ -27,9 +27,7 @@ export class ActivitiesService {
 
   private serverUrl: string = serverUrl;
   private _activityNameFromActivityForm: string = null;
-  private _allUserActivities$: BehaviorSubject<CategorizedActivity[]> = new BehaviorSubject(null);
-
-
+  private _activitiesTree$: BehaviorSubject<CategorizedActivity[]> = new BehaviorSubject(null);
 
   
   private fetchActivities(){
@@ -48,7 +46,7 @@ export class ActivitiesService {
             let newActivity: CategorizedActivity = new CategorizedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
             return newActivity
           });
-          this._allUserActivities$.next(allActivities);
+          this._activitiesTree$.next(this.buildActivityTree(allActivities));
         }else{
           this.saveDefaultActivities(defaultActivities)
         }
@@ -78,12 +76,11 @@ export class ActivitiesService {
         })
       }))
       .subscribe((activities: CategorizedActivity[])=>{
-        this._allUserActivities$.next(activities);
+        this._activitiesTree$.next(this.buildActivityTree(activities));
       })
   }
 
   saveActivity(activity: CategorizedActivity){
-    console.log(activity)
     let newActivity = activity;
     newActivity.userId = this.authService.authenticatedUser.id;
 
@@ -91,6 +88,8 @@ export class ActivitiesService {
       TODO:  Eventually need to add a check in here to make sure that treeIds are unique per user.
     */
     newActivity.treeId = this.authService.authenticatedUser.id + "_" + activity.name.replace(" ", "_");
+
+    console.log("saving activity", activity)
 
     const postUrl = this.serverUrl + "/api/activity/create";
     const httpOptions = {
@@ -100,45 +99,58 @@ export class ActivitiesService {
       })
     };
 
-    // this.httpClient.post<any>(postUrl, activity, httpOptions)
-    //   .subscribe((httpRequest)=>{
-    //     console.log("from http post request, ", httpRequest)
-    //   })
-    /*
-let newTimeMark: TimeMark = timeMark;
-    newTimeMark.userId = this.authService.authenticatedUser.id;
-    const postUrl = this.serverUrl + "/api/timeMark/create";
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'
-      })
-    };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeMark, httpOptions)
-      .pipe<TimeMark>(map((response) => {
-        let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
-        timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
-        timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
-        timeMark.description = response.data.description;
-        timeMark.activities = response.data.activities as CategorizedActivity[];
-        return timeMark;
+    this.httpClient.post<{message: string, data: any}>(postUrl, activity, httpOptions)
+      .pipe<CategorizedActivity>(map((response)=>{
+        let data = response.data;
+        let activity = new CategorizedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
+        return activity;
       }))
-      .subscribe((timeMark: TimeMark) => {
-        let timeMarks: TimeMark[] = this._timeMarksSubject$.getValue();
-        timeMarks.push(timeMark);
-
-        this._timeMarksSubject$.next(timeMarks);
-        this.updatePrecedingTimeMark(timeMark);
+      .subscribe((activity)=>{
+        let activities: CategorizedActivity[] = this._activitiesTree$.getValue();
+        activities.push(activity);
+        console.log("before building tree", activities);
+        //todo:  build activity tree here
+        this._activitiesTree$.next(this.buildActivityTree(activities));
       })
+  }
 
+  private buildActivityTree(allActivities: CategorizedActivity[]): CategorizedActivity[] {
+    /*
+        Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
     */
+    let rootActivities: CategorizedActivity[] = [];
+
+    for(let activity of allActivities){
+      if(activity.parentTreeId.endsWith("TOP_LEVEL")){
+        rootActivities.push(activity)
+      }
+    }
+
+    for(let rootActivity of rootActivities){
+      rootActivity = this.findChildActivities(rootActivity, allActivities);
+      
+    }
+
+    // console.log("tree build activities: ", newActivities);
+
+    return rootActivities;
+  }
+
+  findChildActivities(activityNode: CategorizedActivity, allActivities: CategorizedActivity[]) : CategorizedActivity{
+    for(let activity of allActivities){
+      if(activity.parentTreeId == activityNode.treeId){
+        activityNode.addChild(activity);
+      }
+    }
+    for(let childNode of activityNode.children){
+      childNode = this.findChildActivities(childNode, allActivities);
+    }
+    return activityNode;
   }
 
 
-
-
-  get rootActivities(): Observable<CategorizedActivity[]> {
-    return this._allUserActivities$.asObservable();
+  get activitiesTree$(): Observable<CategorizedActivity[]> {
+    return this._activitiesTree$.asObservable();
   }
 
   set activityNameFromActivityForm(name: string){
@@ -151,7 +163,7 @@ let newTimeMark: TimeMark = timeMark;
 
   
   private logout() {
-    this._allUserActivities$.next([]);
+    this._activitiesTree$.next([]);
   }
 
 }
