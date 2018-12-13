@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivitiesService } from './activities.service';
-import { CategorizedActivity } from './activity/categorized-activity.model';
+import { CategorizedActivity } from './categorized-activity.model';
 import { IActivityTile } from './activity-tile.interface';
+import { ActivityTree } from './activity-tree.model';
 
 
 @Component({
@@ -22,6 +23,8 @@ export class ActivitiesComponent implements OnInit {
   rootActivityTiles: IActivityTile[] = [];
   rootActivities: CategorizedActivity[];
 
+  activityTree: ActivityTree = null;
+
   modifyActivity: CategorizedActivity;
 
 
@@ -38,10 +41,12 @@ export class ActivitiesComponent implements OnInit {
       // no activity name was set on the service
     }
 
-    this.activitiesService.activitiesTree$.subscribe((activities) => {
-      if(activities != null){
-        this.rootActivities = activities;
-        this.rootActivityTiles = activities.map((activity)=>{
+    this.activitiesService.activitiesTree$.subscribe((tree) => {
+      if(tree != null){
+        this.activityTree = tree;
+        console.log("activity tree root activities:", this.activityTree.rootActivities);
+        this.rootActivities = this.activityTree.rootActivities;
+        this.rootActivityTiles = this.rootActivities.map((activity)=>{
           return {activity: activity, ifShowActivityControls: false};
         });
       }

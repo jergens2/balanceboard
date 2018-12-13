@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CategorizedActivity } from './activity/categorized-activity.model';
+import { CategorizedActivity } from './categorized-activity.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { defaultActivities } from './default-activities';
@@ -8,6 +8,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AuthenticationService } from '../../../authentication/authentication.service';
 import { AuthStatus } from '../../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
+import { ActivityTree } from './activity-tree.model';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class ActivitiesService {
 
   private serverUrl: string = serverUrl;
   private _activityNameFromActivityForm: string = null;
-  private _activitiesTree$: BehaviorSubject<CategorizedActivity[]> = new BehaviorSubject(null);
+  private _activitiesTree$: BehaviorSubject<ActivityTree> = new BehaviorSubject(null);
 
   
   private fetchActivities(){
@@ -46,7 +47,8 @@ export class ActivitiesService {
             let newActivity: CategorizedActivity = new CategorizedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
             return newActivity
           });
-          this._activitiesTree$.next(this.buildActivityTree(allActivities));
+          let tree: ActivityTree = new ActivityTree(allActivities);
+          this._activitiesTree$.next(tree);
         }else{
           this.saveDefaultActivities(defaultActivities)
         }
@@ -75,8 +77,9 @@ export class ActivitiesService {
           return newActivity
         })
       }))
-      .subscribe((activities: CategorizedActivity[])=>{
-        this._activitiesTree$.next(this.buildActivityTree(activities));
+      .subscribe((allActivities: CategorizedActivity[])=>{
+        let tree: ActivityTree = new ActivityTree(allActivities);
+        this._activitiesTree$.next(tree);
       })
   }
 
@@ -104,9 +107,34 @@ export class ActivitiesService {
         return activity;
       }))
       .subscribe((activity: CategorizedActivity)=>{
-        let activities: CategorizedActivity[] = this._activitiesTree$.getValue();
-        activities.push(activity);
-        this._activitiesTree$.next(this.buildActivityTree(activities));
+        let activityTree: ActivityTree = this._activitiesTree$.getValue();
+        activityTree.addActivityToTree(activity);
+        this._activitiesTree$.next(activityTree);
+      })
+  }
+
+  updateActivity(unsentActivity: CategorizedActivity){
+    console.log("updating activity", unsentActivity);
+    const updateUrl = this.serverUrl + "/api/activity/update";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    this.httpClient.post(updateUrl,unsentActivity, httpOptions)
+      .pipe<CategorizedActivity>(map((response: {message: string, data: any})=>{
+        console.log("response", response);
+        let data = response.data;
+        let updatedActivity = new CategorizedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
+        return updatedActivity;
+      }))
+      .subscribe((updatedActivity: CategorizedActivity)=>{
+        console.log("subscribe:");
+        let activityTree: ActivityTree = this._activitiesTree$.getValue();
+        activityTree.pruneActivityFromTree(unsentActivity);
+        activityTree.addActivityToTree(updatedActivity);
+        this._activitiesTree$.next(activityTree);
       })
   }
 
@@ -121,57 +149,17 @@ export class ActivitiesService {
     this.httpClient.post(deleteUrl,activity, httpOptions)
       .subscribe((response: {message: string, status: string, data: any})=>{
         if(response.status == "SUCCESS"){
-          let activities = this._activitiesTree$.getValue();
-          activities = this.removeActivityFromTree(activity, activities);
-
-          this._activitiesTree$.next(activities);
+          let activityTree: ActivityTree = this._activitiesTree$.getValue();
+          activityTree.pruneActivityFromTree(activity);
+          this._activitiesTree$.next(activityTree);
         }
       })
   }
 
-  private removeActivityFromTree(activityRemove: CategorizedActivity, tree: CategorizedActivity[]): CategorizedActivity[]{
-    for(let rootActivity of tree){
-      rootActivity.removeChild(activityRemove);
-    }
-    return tree;
-  }
-
-  private buildActivityTree(allActivities: CategorizedActivity[]): CategorizedActivity[] {
-    /*
-        Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
-    */
-    let rootActivities: CategorizedActivity[] = [];
-
-    for(let activity of allActivities){
-      if(activity.parentTreeId.endsWith("TOP_LEVEL")){
-        rootActivities.push(activity)
-      }
-    }
-
-    for(let rootActivity of rootActivities){
-      rootActivity = this.findChildActivities(rootActivity, allActivities);
-      
-    }
-
-    // console.log("tree build activities: ", newActivities);
-
-    return rootActivities;
-  }
-
-  findChildActivities(activityNode: CategorizedActivity, allActivities: CategorizedActivity[]) : CategorizedActivity{
-    for(let activity of allActivities){
-      if(activity.parentTreeId == activityNode.treeId){
-        activityNode.addChild(activity);
-      }
-    }
-    for(let childNode of activityNode.children){
-      childNode = this.findChildActivities(childNode, allActivities);
-    }
-    return activityNode;
-  }
 
 
-  get activitiesTree$(): Observable<CategorizedActivity[]> {
+
+  get activitiesTree$(): Observable<ActivityTree> {
     return this._activitiesTree$.asObservable();
   }
 
@@ -185,7 +173,7 @@ export class ActivitiesService {
 
   
   private logout() {
-    this._activitiesTree$.next([]);
+    this._activitiesTree$.next(null);
   }
 
 }

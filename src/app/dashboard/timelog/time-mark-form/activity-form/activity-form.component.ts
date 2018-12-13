@@ -1,11 +1,12 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CategorizedActivity } from '../../activities/activity/categorized-activity.model';
+import { CategorizedActivity } from '../../activities/categorized-activity.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subscription, fromEvent } from 'rxjs';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { faCircle } from '@fortawesome/free-regular-svg-icons';
 import { Router } from '@angular/router';
 import { ActivitiesService } from '../../activities/activities.service';
+import { ActivityTree } from '../../activities/activity-tree.model';
 
 @Component({
   selector: 'app-activity-form',
@@ -19,7 +20,7 @@ export class ActivityFormComponent implements OnInit {
   faCheckCircle = faCheckCircle;
   faCircle = faCircle;
 
-  categorizedActivities: CategorizedActivity[] = [];
+  activityTree: ActivityTree;
   categorizedActivitiesSearchResults: CategorizedActivity[] = [];
 
   activityForm: FormGroup;
@@ -42,8 +43,8 @@ export class ActivityFormComponent implements OnInit {
 
   ngOnInit() {
     this.buildActivityForm();
-    this.activitiesService.activitiesTree$.subscribe((activities: CategorizedActivity[])=>{
-      this.categorizedActivities = activities;
+    this.activitiesService.activitiesTree$.subscribe((activities: ActivityTree)=>{
+      this.activityTree = activities;
     })
   }
 
@@ -89,8 +90,16 @@ export class ActivityFormComponent implements OnInit {
 
   private searchForCategorizedActivities(inputValue: string) {
     let searchResults: CategorizedActivity[] = [];
+
+    let activities = null
+    //
+    // need to convert activity tree here to list of activities.  could be a method of said tree.
+    //
+    //
+
+
     if (inputValue !== null && inputValue !== "") {
-      for (let activity of this.categorizedActivities) {
+      for (let activity of activities) {
         if (activity.name.toLowerCase().match(inputValue.toLowerCase())) {
           searchResults.push(activity);
         }

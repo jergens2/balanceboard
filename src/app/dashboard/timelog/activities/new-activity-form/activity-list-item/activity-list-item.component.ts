@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CategorizedActivity } from '../../activity/categorized-activity.model';
+import { CategorizedActivity } from '../../categorized-activity.model';
 
 @Component({
   selector: 'app-activity-list-item',

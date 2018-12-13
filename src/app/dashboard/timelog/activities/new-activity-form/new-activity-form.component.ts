@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { CategorizedActivity } from '../activity/categorized-activity.model';
+import { CategorizedActivity } from '../categorized-activity.model';
 import { ActivitiesService } from '../activities.service';
 import { Subscription, fromEvent, Observable } from 'rxjs';
 
@@ -21,6 +21,8 @@ export class NewActivityFormComponent implements OnInit {
   activityForm: FormGroup;
   colorPickerValue: string;
   selectedParentCategory: CategorizedActivity;
+
+  saveAction: string = "NEW";
 
   get selectedParentCategoryName(): string {
     if (this.selectedParentCategory != null) {
@@ -51,6 +53,7 @@ export class NewActivityFormComponent implements OnInit {
 
     if (this.modifyActivity) {
       this.activityForm = this.modifyActivityForm(this.modifyActivity);
+      this.saveAction = "MODIFY";
     } else {
       this.activityForm = this.newActivityForm();
     }
@@ -143,11 +146,17 @@ export class NewActivityFormComponent implements OnInit {
     this.ifShowParentCategories = false;
   }
 
-  onClickSaveActivity() {
+  onClickSaveActivity(saveAction: string) {
     if (this.activityForm.valid && this.selectedParentCategory != null) {
+      if(saveAction == "NEW"){
+        let newActivity = new CategorizedActivity("", "", "", this.activityForm.get('name').value, this.activityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
+        this.activitiesService.saveActivity(newActivity);
+      }else if(saveAction == "MODIFY"){
+        let modifiedActivity = new CategorizedActivity(this.modifyActivity.id, this.modifyActivity.userId, this.modifyActivity.treeId, this.activityForm.get('name').value, this.activityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
+        this.activitiesService.updateActivity(modifiedActivity);
+      }
 
-      let newActivity: CategorizedActivity = new CategorizedActivity("", "", "", this.activityForm.get('name').value, this.activityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
-      this.activitiesService.saveActivity(newActivity);
+      
       this.closeForm.emit(true);
     }
     else {

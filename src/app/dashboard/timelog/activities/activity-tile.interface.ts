@@ -1,4 +1,4 @@
-import { CategorizedActivity } from "./activity/categorized-activity.model";
+import { CategorizedActivity } from "./categorized-activity.model";
 
 export interface IActivityTile {
     activity: CategorizedActivity,

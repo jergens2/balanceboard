@@ -6,7 +6,7 @@ import { Subscription, fromEvent } from 'rxjs';
 import * as moment from 'moment';
 import { faCheckCircle, faCircle, IconDefinition } from '@fortawesome/free-regular-svg-icons'; 
 
-import { CategorizedActivity } from '../activities/activity/categorized-activity.model';
+import { CategorizedActivity } from '../activities/categorized-activity.model';
 import { TimeMark } from '../time-mark.model';
 import { TimelogService } from '../timelog.service';
 

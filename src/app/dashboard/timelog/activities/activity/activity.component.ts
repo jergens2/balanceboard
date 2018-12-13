@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { faTimes, faCog } from '@fortawesome/free-solid-svg-icons';
-import { CategorizedActivity } from './categorized-activity.model';
+import { CategorizedActivity } from '../categorized-activity.model';
 import { IActivityTile } from '../activity-tile.interface';
 
 @Component({
