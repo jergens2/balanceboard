@@ -89,8 +89,6 @@ export class ActivitiesService {
     */
     newActivity.treeId = this.authService.authenticatedUser.id + "_" + activity.name.replace(" ", "_");
 
-    console.log("saving activity", activity)
-
     const postUrl = this.serverUrl + "/api/activity/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -105,13 +103,37 @@ export class ActivitiesService {
         let activity = new CategorizedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
         return activity;
       }))
-      .subscribe((activity)=>{
+      .subscribe((activity: CategorizedActivity)=>{
         let activities: CategorizedActivity[] = this._activitiesTree$.getValue();
         activities.push(activity);
-        console.log("before building tree", activities);
-        //todo:  build activity tree here
         this._activitiesTree$.next(this.buildActivityTree(activities));
       })
+  }
+
+  deleteActivity(activity: CategorizedActivity){
+    const deleteUrl = this.serverUrl + "/api/activity/delete";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    this.httpClient.post(deleteUrl,activity, httpOptions)
+      .subscribe((response: {message: string, status: string, data: any})=>{
+        if(response.status == "SUCCESS"){
+          let activities = this._activitiesTree$.getValue();
+          activities = this.removeActivityFromTree(activity, activities);
+
+          this._activitiesTree$.next(activities);
+        }
+      })
+  }
+
+  private removeActivityFromTree(activityRemove: CategorizedActivity, tree: CategorizedActivity[]): CategorizedActivity[]{
+    for(let rootActivity of tree){
+      rootActivity.removeChild(activityRemove);
+    }
+    return tree;
   }
 
   private buildActivityTree(allActivities: CategorizedActivity[]): CategorizedActivity[] {

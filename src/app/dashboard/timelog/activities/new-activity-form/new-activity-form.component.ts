@@ -18,49 +18,93 @@ export class NewActivityFormComponent implements OnInit {
   showParentCategoriesSubscription: Subscription;
 
 
-  createActivityForm: FormGroup;
+  activityForm: FormGroup;
   colorPickerValue: string;
   selectedParentCategory: CategorizedActivity;
 
   get selectedParentCategoryName(): string {
-    if(this.selectedParentCategory != null){
+    if (this.selectedParentCategory != null) {
       return this.selectedParentCategory.name
-    }else{
+    } else {
       return "";
     }
   }
 
-  _formParentCategories: CategorizedActivity[];
+  private _formParentCategories: CategorizedActivity[];
 
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Input('activitiesList') set formParentCategories(activities: CategorizedActivity[]){
+  @Input('activitiesList') set formParentCategories(activities: CategorizedActivity[]) {
     // this._formParentCategories = this.buildActivitiesList(activities);
     this._formParentCategories = activities;
   }
-  get formParentCategories(): CategorizedActivity[]{
+  @Input() modifyActivity: CategorizedActivity;
+
+  get formParentCategories(): CategorizedActivity[] {
     return this._formParentCategories;
   }
+
 
   ngOnInit() {
 
     this.showParentCategoriesSubscription = new Subscription();
     this.ifShowParentCategories = false;
-    this.colorPickerValue = "#c0c0c0";
-    this.createActivityForm = new FormGroup({
-      'name': new FormControl(null, Validators.required),
-      'description': new FormControl(null, Validators.required)
-    });
 
-    this.createActivityForm.valueChanges.subscribe((stuff) => {
+    if (this.modifyActivity) {
+      this.activityForm = this.modifyActivityForm(this.modifyActivity);
+    } else {
+      this.activityForm = this.newActivityForm();
+    }
+
+
+
+
+
+    // delete this
+    this.activityForm.valueChanges.subscribe((stuff) => {
       console.log("form value changes: ", stuff);
     })
   }
 
-  buildActivitiesList(activities: CategorizedActivity[]){
+
+  modifyActivityForm(activity: CategorizedActivity): FormGroup {
+    let modifyForm: FormGroup = new FormGroup({
+      'name': new FormControl(activity.name, Validators.required),
+      'description': new FormControl(activity.description, Validators.required)
+    });
+    this.colorPickerValue = activity.color;
+    this.selectedParentCategory = this.findActivityParent(activity, this.formParentCategories);
+    return modifyForm;
+  }
+
+  newActivityForm(): FormGroup {
+    this.colorPickerValue = "#c0c0c0";
+    return new FormGroup({
+      'name': new FormControl(null, Validators.required),
+      'description': new FormControl(null, Validators.required)
+    });
+  }
+
+  findActivityParent(childActivity: CategorizedActivity, parents: CategorizedActivity[]): CategorizedActivity {
+    for (let activity of parents) {
+      if (activity.treeId == childActivity.parentTreeId) {
+        return activity;
+      } else {
+        if (activity.children.length > 0) {
+          let parent = this.findActivityParent(childActivity, activity.children);
+          if(parent){
+            return parent;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  buildActivitiesList(activities: CategorizedActivity[]) {
     let list: CategorizedActivity[] = [];
     let children: CategorizedActivity[] = [];
-    for(let activity of activities){
-      if(activity.children.length > 0 ){ 
+    for (let activity of activities) {
+      if (activity.children.length > 0) {
         children = children.concat(this.buildActivitiesList(activity.children));
       }
       list.push(activity)
@@ -69,48 +113,50 @@ export class NewActivityFormComponent implements OnInit {
     return list;
   }
 
-  onMouseLeaveParentCategoriesArea(){
+  onMouseLeaveParentCategoriesArea() {
     this.ifMouseIsInParentCategoriesArea = false;
   }
-  onMouseEnterParentCategoriesArea(){
+  onMouseEnterParentCategoriesArea() {
     this.ifMouseIsInParentCategoriesArea = true;
   }
 
-  onClickParentCategory(){
+  onClickParentCategory() {
     this.showParentCategoriesSubscription.unsubscribe();
-    if(this.ifShowParentCategories){
+    if (this.ifShowParentCategories) {
       this.ifShowParentCategories = false;
-    }else{
+    } else {
       this.ifShowParentCategories = true;
 
       let documentClickListener: Observable<Event> = fromEvent(document, 'click');
-      this.showParentCategoriesSubscription = documentClickListener.subscribe((click)=>{  
-        if(!this.ifMouseIsInParentCategoriesArea){
-          this.ifShowParentCategories = false; 
+      this.showParentCategoriesSubscription = documentClickListener.subscribe((click) => {
+        if (!this.ifMouseIsInParentCategoriesArea) {
+          this.ifShowParentCategories = false;
         }
       })
-  
+
     }
-    
+
   }
-  onClickSelectedCategory(category: CategorizedActivity){
+  onClickSelectedCategory(category: CategorizedActivity) {
     this.selectedParentCategory = category;
+    this.colorPickerValue = category.color;
     this.ifShowParentCategories = false;
   }
 
-  onClickSaveActivity(){
-    if(this.createActivityForm.valid && this.selectedParentCategory != null){
+  onClickSaveActivity() {
+    if (this.activityForm.valid && this.selectedParentCategory != null) {
 
-      let newActivity: CategorizedActivity = new CategorizedActivity("","", "", this.createActivityForm.get('name').value, this.createActivityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
+      let newActivity: CategorizedActivity = new CategorizedActivity("", "", "", this.activityForm.get('name').value, this.activityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
       this.activitiesService.saveActivity(newActivity);
+      this.closeForm.emit(true);
     }
-    else{
+    else {
       console.log("form is invalid.");
     }
 
   }
 
-  onClickCancel(){
+  onClickCancel() {
     this.closeForm.emit(true);
   }
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivitiesService } from './activities.service';
 import { CategorizedActivity } from './activity/categorized-activity.model';
+import { IActivityTile } from './activity-tile.interface';
 
 
 @Component({
@@ -18,8 +19,10 @@ export class ActivitiesComponent implements OnInit {
 
 
   private activityNameFromForm: string = null;
-  rootActivities: CategorizedActivity[] = [];
+  rootActivityTiles: IActivityTile[] = [];
+  rootActivities: CategorizedActivity[];
 
+  modifyActivity: CategorizedActivity;
 
 
   ngOnInit() {
@@ -38,6 +41,9 @@ export class ActivitiesComponent implements OnInit {
     this.activitiesService.activitiesTree$.subscribe((activities) => {
       if(activities != null){
         this.rootActivities = activities;
+        this.rootActivityTiles = activities.map((activity)=>{
+          return {activity: activity, ifShowActivityControls: false};
+        });
       }
     })
 
@@ -56,7 +62,18 @@ export class ActivitiesComponent implements OnInit {
   onCloseForm(event){
     this.ifNewActivityForm = false;
     this.ifNewActivityFormButton = true;
+    this.modifyActivity = null;
   }
+
+  onClickDeleteActivity(activity: CategorizedActivity){
+    this.activitiesService.deleteActivity(activity);
+  }
+  onClickModifyActivity(activity: CategorizedActivity){
+    this.modifyActivity = activity;
+    this.onClickCreateNewActivity();
+  }
+
+
 
   
 }

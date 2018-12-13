@@ -1,0 +1,27 @@
+
+
+.activity-body{
+    display:flex;
+    flex-direction: row; 
+    justify-content: space-between;
+}
+
+
+.activity-list-item{
+    padding: 3px;
+
+    margin: 2px;
+    margin-left: 12px;
+    border-radius:3px;
+    /* border: 1px solid rgb(223, 223, 223); */
+}
+
+.activity-control{
+    color: rgb(126, 126, 126);
+    padding-left:3px;
+    padding-right:3px;
+}
+.activity-control:hover{
+    cursor:pointer;
+    color: lime;
+}

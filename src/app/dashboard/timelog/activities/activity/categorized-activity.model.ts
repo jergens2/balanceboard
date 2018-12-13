@@ -10,7 +10,6 @@ export class CategorizedActivity {
     public parentTreeId: string;
     public childTreeIds: string[];
 
-    private _parent: CategorizedActivity;
     private _children: CategorizedActivity[];
 
     public color: string;
@@ -25,15 +24,8 @@ export class CategorizedActivity {
         this.parentTreeId = parentActivityId;
         this.color = color;
 
-        this._parent = null;
-        this._children = [];
-    }
 
-    get parent(): CategorizedActivity {
-        return this._parent;
-    }
-    set parent(parent: CategorizedActivity) {
-        this._parent = parent;
+        this._children = [];
     }
 
     /*
@@ -56,14 +48,21 @@ export class CategorizedActivity {
         this._children = [];
     }
     removeChild(childCategory: CategorizedActivity) {
-        // let index = -1;
-        // if (this._children.indexOf(childCategory) >= 0) {
-        //     index = this._children.indexOf(childCategory);
-        // }
-        // if(index >= 0){
-        //     this._children.splice(index,1);
-        //     this.childActivityIds.splice(this.childActivityIds.indexOf(childCategory.id));
-        // }
+        if(this._children.length > 0){
+            if(this._children.indexOf(childCategory) > -1){
+                this._children.splice(this._children.indexOf(childCategory),1);
+                return;
+            }else{
+                for(let child of this._children){
+                    if(child.children.length > 0){
+                        child.removeChild(childCategory);
+                    }
+                }
+            }
+        }else{
+            return;
+        }
+        return;
     }
 
 }
