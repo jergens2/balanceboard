@@ -114,7 +114,6 @@ export class ActivitiesService {
   }
 
   updateActivity(unsentActivity: CategorizedActivity){
-    console.log("updating activity", unsentActivity);
     const updateUrl = this.serverUrl + "/api/activity/update";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -124,13 +123,11 @@ export class ActivitiesService {
     };
     this.httpClient.post(updateUrl,unsentActivity, httpOptions)
       .pipe<CategorizedActivity>(map((response: {message: string, data: any})=>{
-        console.log("response", response);
         let data = response.data;
         let updatedActivity = new CategorizedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
         return updatedActivity;
       }))
       .subscribe((updatedActivity: CategorizedActivity)=>{
-        console.log("subscribe:");
         let activityTree: ActivityTree = this._activitiesTree$.getValue();
         activityTree.pruneActivityFromTree(unsentActivity);
         activityTree.addActivityToTree(updatedActivity);

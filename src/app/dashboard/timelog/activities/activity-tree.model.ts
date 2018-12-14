@@ -65,8 +65,12 @@ export class ActivityTree {
     }
 
     pruneActivityFromTree(activityRemove: CategorizedActivity) {
-        console.log("pruning", activityRemove)
-        this._allActivities.splice(this._allActivities.indexOf(activityRemove),1);
+        for(let activity of this._allActivities){
+            if(activity.treeId == activityRemove.treeId){
+                this._allActivities.splice(this._allActivities.indexOf(activity),1);
+            }
+        }
+
         this._rootActivities = this.buildActivityTree(this.allActivities);
     }
 
