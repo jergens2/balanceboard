@@ -2,11 +2,11 @@
 
   <div class="activity-body" (mouseenter)="onMouseEnterActivity(activityTile)" (mouseleave)="onMouseLeaveActivity(activityTile)">
     <div>{{activityTile.activity.name}}</div>
-    <div style="display:flex; flex-direction: row;" *ngIf="activityTile.ifShowActivityControls">
-      <div class="activity-control" (click)="onClickModifyActivity(activityTile.activity)">
+    <div style="display:flex; flex-direction: row;" >
+      <div class="activity-control" (click)="onClickModifyActivity(activityTile.activity)" *ngIf="activityTile.ifShowActivityModify">
         <fa-icon [icon]="faCog"></fa-icon>
       </div>
-      <div class="activity-control" (click)="onClickDeleteActivity(activityTile.activity)">
+      <div class="activity-control" (click)="onClickDeleteActivity(activityTile.activity)" *ngIf="activityTile.ifShowActivityDelete">
         <fa-icon [icon]="faTimes"></fa-icon>
       </div>
     </div>

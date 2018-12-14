@@ -47,7 +47,7 @@ export class ActivitiesComponent implements OnInit {
         console.log("activity tree root activities:", this.activityTree.rootActivities);
         this.rootActivities = this.activityTree.rootActivities;
         this.rootActivityTiles = this.rootActivities.map((activity)=>{
-          return {activity: activity, ifShowActivityControls: false};
+          return {activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false};
         });
       }
     })

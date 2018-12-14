@@ -18,7 +18,7 @@ export class ActivityComponent implements OnInit {
   activityTile: IActivityTile = null;
 
   @Input() set activity(activity: CategorizedActivity){
-    this.activityTile = {activity: activity, ifShowActivityControls: false};
+    this.activityTile = {activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false};
   };
 
 
@@ -37,10 +37,17 @@ export class ActivityComponent implements OnInit {
   }
 
   onMouseEnterActivity(tile : IActivityTile){
-    this.activityTile.ifShowActivityControls = true;
+    if(this.activityTile.activity.children.length > 0){
+      this.activityTile.ifShowActivityDelete = false;
+    }else{
+      this.activityTile.ifShowActivityDelete = true;
+    }
+    this.activityTile.ifShowActivityModify = true;
+    
   }
   onMouseLeaveActivity(tile : IActivityTile){
-    this.activityTile.ifShowActivityControls = false;
+    this.activityTile.ifShowActivityDelete = false;
+    this.activityTile.ifShowActivityModify = false;
   }
 
 
