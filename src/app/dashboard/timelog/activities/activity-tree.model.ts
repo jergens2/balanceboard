@@ -19,7 +19,6 @@ export class ActivityTree {
     }
 
     constructor(allActivities: CategorizedActivity[]) {
-        console.log("constructor: all activities", allActivities)
         this._allActivities = allActivities;
         this._rootActivities = this.buildActivityTree(allActivities);
     }
@@ -39,11 +38,30 @@ export class ActivityTree {
             }
         }
 
+        rootActivities.sort((a1,a2) => {
+            if (a1.name > a2.name) {
+                return 1;
+            }
+            if (a1.name < a2.name) {
+                return -1;
+            }
+            return 0;
+        });
+
         for (let rootActivity of rootActivities) {
             rootActivity = this.findChildActivities(rootActivity, allActivities);
 
         }
         return rootActivities;
+    }
+
+    findActivityById(treeId: string): CategorizedActivity{
+        for(let activity of this._allActivities){
+            if(activity.treeId == treeId){
+                return activity;
+            }
+        }
+        return null;
     }
 
     findChildActivities(activityNode: CategorizedActivity, allActivities: CategorizedActivity[]): CategorizedActivity {
@@ -55,11 +73,19 @@ export class ActivityTree {
         for (let childNode of activityNode.children) {
             childNode = this.findChildActivities(childNode, allActivities);
         }
+        activityNode.children.sort((c1,c2) => {
+            if (c1.name > c2.name) {
+                return 1;
+            }
+            if (c1.name < c2.name) {
+                return -1;
+            }
+            return 0;
+        });
         return activityNode;
     }
 
     addActivityToTree(activity: CategorizedActivity) {
-        console.log("adding", activity)
         this._allActivities.push(activity);
         this._rootActivities = this.buildActivityTree(this.allActivities);
     }

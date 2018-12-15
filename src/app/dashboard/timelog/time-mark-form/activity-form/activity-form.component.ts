@@ -7,6 +7,7 @@ import { faCircle } from '@fortawesome/free-regular-svg-icons';
 import { Router } from '@angular/router';
 import { ActivitiesService } from '../../activities/activities.service';
 import { ActivityTree } from '../../activities/activity-tree.model';
+import { TimeMarkActivity } from '../../time-mark-activity.model';
 
 @Component({
   selector: 'app-activity-form',
@@ -24,22 +25,21 @@ export class ActivityFormComponent implements OnInit {
   categorizedActivitiesSearchResults: CategorizedActivity[] = [];
 
   activityForm: FormGroup;
-
-  activityInputKeyUpSubscription: Subscription = new Subscription();
+  // activityInputKeyUpSubscription: Subscription = new Subscription();
 
   activityNameInputValue: string = '';
 
-  private _activity: CategorizedActivity;
+  // private _activity: CategorizedActivity;
 
-  get activity(){
-    return this._activity;
-  }
-  set activity(activity: CategorizedActivity){
-    this._activity = activity;
-  }
+  // get activity(){
+  //   return this._activity;
+  // }
+  // set activity(activity: CategorizedActivity){
+  //   this._activity = activity;
+  // }
 
   @Output() closeActivityForm: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() activitySaved: EventEmitter<CategorizedActivity> = new EventEmitter();
+  @Output() activitySaved: EventEmitter<TimeMarkActivity> = new EventEmitter();
 
   ngOnInit() {
     this.buildActivityForm();
@@ -52,9 +52,8 @@ export class ActivityFormComponent implements OnInit {
   buildActivityForm() {
 
     this.activityForm = new FormGroup({
-      'name': new FormControl(null, Validators.required),
+      'activityTreeId': new FormControl(null, Validators.required),
       'description': new FormControl(null),
-      'color': new FormControl('blue'),
       'duration': new FormControl(0, Validators.required)
     })
   }
@@ -63,35 +62,31 @@ export class ActivityFormComponent implements OnInit {
     this.closeActivityForm.emit(true);
   }
   onClickSaveActivity() {
-    /*
-      Note: remember, this method is not to create a new kind of categorized activity, 
-      this form is to save an instance of an already defined activity.
 
-      The purpose of this form, therefore, is to simply define a collection of activities performed and how long time was spent on them
-    */
-    let id = '';
-    let userId = '';
-    let name = this.activityForm.get('name').value;;
-    let description = this.activityForm.get('description').value;
-    let parentActivityId = '';
-    let color = this.activityForm.get('color').value
+    if(this.activityForm.valid){
+      let activity: CategorizedActivity = this.activityTree.allActivities.find(activity => activity.treeId === this.activityForm.get('activityTreeId').value);
+  
+      let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(activity);
+      timeMarkActivity.duration = 0;
+  
+      this.activitySaved.emit(timeMarkActivity);
+    }else{
+      console.log("form is invalid");
+    }
 
-    let activity: CategorizedActivity = new CategorizedActivity(id,userId, '', name, description, parentActivityId, color);
-
-    this.activitySaved.emit(activity);
   }
 
 
   onKeyUpActivityName(event: KeyboardEvent) {
     let inputValue = this.activityForm.get('name').value;
-    this.activityInputKeyUpSubscription.unsubscribe();
+    // this.activityInputKeyUpSubscription.unsubscribe();
     this.searchForCategorizedActivities(inputValue);
   }
 
   private searchForCategorizedActivities(inputValue: string) {
     let searchResults: CategorizedActivity[] = [];
 
-    let activities = null
+    let activities = this.activityTree.allActivities;
     //
     // need to convert activity tree here to list of activities.  could be a method of said tree.
     //
@@ -111,37 +106,37 @@ export class ActivityFormComponent implements OnInit {
       }
     } else {
       this.activityNameInputValue = "";
-      this.activityInputKeyUpSubscription.unsubscribe();
+      // this.activityInputKeyUpSubscription.unsubscribe();
     }
     if (searchResults.length > 0) {
-      this.activityInputKeyUpSubscription = fromEvent(document, 'keydown').subscribe((event: KeyboardEvent) => {
+      // this.activityInputKeyUpSubscription = fromEvent(document, 'keydown').subscribe((event: KeyboardEvent) => {
 
-        //
-        // The intention of this subscription is to be able to pick up the users arrow key inputs (up and down) and navigate through the list or results
-        // I might just have to scrap this functionality if it is too cumbersome to implement.
-        //
-        let tabIndex = 0;
+      //   //
+      //   // The intention of this subscription is to be able to pick up the users arrow key inputs (up and down) and navigate through the list or results
+      //   // I might just have to scrap this functionality if it is too cumbersome to implement.
+      //   //
+      //   let tabIndex = 0;
 
-        /*
-          2018-11-14
-          Apparently there does not seem to be an appropriate method in Angular to play with the DOM in this way w/ respect to focus and blur.
-          https://github.com/angular/angular/issues/15674
+      //   /*
+      //     2018-11-14
+      //     Apparently there does not seem to be an appropriate method in Angular to play with the DOM in this way w/ respect to focus and blur.
+      //     https://github.com/angular/angular/issues/15674
 
-          as of right now this code block doesn't really do anything.
+      //     as of right now this code block doesn't really do anything.
 
-        */
-        if (event.key == "ArrowUp") {
-          tabIndex < this.categorizedActivitiesSearchResults.length - 1 ? tabIndex++ : tabIndex = this.categorizedActivitiesSearchResults.length;
-        } else if (event.key == "ArrowDown") {
-          tabIndex > 0 ? tabIndex-- : tabIndex = 0;
-        } else if (event.key == "Escape") {
-          // searchResults = [];
-          // this.renderer.selectRootElement("#activity_name_input").blur();
-        }
+      //   */
+      //   if (event.key == "ArrowUp") {
+      //     tabIndex < this.categorizedActivitiesSearchResults.length - 1 ? tabIndex++ : tabIndex = this.categorizedActivitiesSearchResults.length;
+      //   } else if (event.key == "ArrowDown") {
+      //     tabIndex > 0 ? tabIndex-- : tabIndex = 0;
+      //   } else if (event.key == "Escape") {
+      //     // searchResults = [];
+      //     // this.renderer.selectRootElement("#activity_name_input").blur();
+      //   }
 
-        // this.renderer.selectRootElement("#activity_name_input").blur();
+      //   // this.renderer.selectRootElement("#activity_name_input").blur();
 
-      });
+      // });
     }
     this.categorizedActivitiesSearchResults = searchResults;
   }
@@ -154,12 +149,21 @@ export class ActivityFormComponent implements OnInit {
     this.searchForCategorizedActivities('');
   }
 
-  onClickMakeNewCategoryButton(){
+  onClickCreateNewCategory(){
     //click make new category button
     // navigate to a new page where you can manage categories
     this.activitiesService.activityNameFromActivityForm = this.activityForm.get('name').value;
     this.router.navigate(['/timelog-activities']);
   }
 
+  onActivitySelectionChanged($event){
+    let activityId = $event.target.value;
+    if(activityId == ""){
+      this.activityForm.controls['activityTreeId'].setValue(null);
+    }else{
+      this.activityForm.controls['activityTreeId'].setValue(activityId);
+    }
+
+  }
 
 }

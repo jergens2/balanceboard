@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { ITimeMarkTile } from './timeMarkTile.interface';
+
+
 import { TimelogService } from '../timelog.service';
+import { ActivitiesService } from '../activities/activities.service';
 import { TimeMark } from '../time-mark.model';
+import { ITimeMarkTile } from './timeMarkTile.interface';
 
 import { faSpinner, faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import * as moment from 'moment';
+import { merge } from 'rxjs';
+
 
 
 @Component({
@@ -15,7 +20,7 @@ import * as moment from 'moment';
 })
 export class TimelogListComponent implements OnInit {
 
-  constructor(private timeLogService: TimelogService) { }
+  constructor(private timeLogService: TimelogService, private activitiesService: ActivitiesService) { }
 
   timeMarkTiles: ITimeMarkTile[] = [];
   ifLoadingTimeMarks: boolean;
@@ -42,9 +47,14 @@ export class TimelogListComponent implements OnInit {
     })
 
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
-      this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(timeMarks);
-      this.ifLoadingTimeMarks = false;
+      console.log(timeMarks);
+      if(timeMarks != null){
+        this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(timeMarks);
+        this.ifLoadingTimeMarks = false;
+      }
+
     })
+
 
   }
 
@@ -58,7 +68,9 @@ export class TimelogListComponent implements OnInit {
     return timeMarkTiles;
   }
 
-
+  get latestTimeMark(): TimeMark {
+    return this.timeLogService.latestTimeMark;
+  }
 
 
   /*
@@ -102,5 +114,6 @@ export class TimelogListComponent implements OnInit {
     //Used by template to check if provided date string is Today
     return (moment().format('YYYY-MM-DD') == dateYYYYMMDD);
   }
+
 
 }

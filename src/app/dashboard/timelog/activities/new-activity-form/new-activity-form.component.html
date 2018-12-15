@@ -13,7 +13,13 @@
 
     <label class="form-label" for="formGroupExampleInput">Parent Category</label>
     <div style="grid-column: 2 / span 1; " (mouseenter)="onMouseEnterParentCategoriesArea()" (mouseleave)="onMouseLeaveParentCategoriesArea()">
-      <!-- <input class="form-input-parent-category" type="text" formControlName="parentCategoryName" (click)="onClickParentCategory()"> -->
+      
+      <!-- 
+        TO DO:
+        Need to add a button here for " this activity will be a root activity " (therefore it wouldn't have a parent.)
+
+        parentTreeId: string = "TOP_LEVEL";
+       -->
       <div class="form-input-parent-category" (click)="onClickParentCategory()">
         {{ selectedParentCategoryName }}
       </div>

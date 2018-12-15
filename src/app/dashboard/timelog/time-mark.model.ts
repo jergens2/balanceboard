@@ -1,5 +1,6 @@
 import { CategorizedActivity } from "./activities/categorized-activity.model";
 import * as moment from 'moment';
+import { TimeMarkActivity } from "./time-mark-activity.model";
 
 
 export class TimeMark{
@@ -10,7 +11,7 @@ export class TimeMark{
     public endTimeISO: string;
 
     public description: string;
-    public activities: CategorizedActivity[];
+    public activities: TimeMarkActivity[] = [];
 
     public precedingTimeMarkId: string;
     public followingTimeMarkId: string;
@@ -52,6 +53,15 @@ export class TimeMark{
     get duration(): number{
         let duration = moment.duration(this.endTime.diff(this.startTime));
         return duration.asMinutes();
+    }
+
+    receiveOldActivities(activities: CategorizedActivity[]){
+        console.log("received old activities", activities);
+        this.activities = activities.map((activity)=>{
+            let timeMarkAcitivty: TimeMarkActivity = new TimeMarkActivity(activity);
+            timeMarkAcitivty.duration = 0;
+            return timeMarkAcitivty;
+        })
     }
 
 }

@@ -16,6 +16,7 @@ import { ActivityTree } from './activity-tree.model';
 export class ActivitiesService {
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
+    console.log("activities service constructor");
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
       if (authStatus.isAuthenticated) {
         this.fetchActivities();
@@ -29,6 +30,12 @@ export class ActivitiesService {
   private serverUrl: string = serverUrl;
   private _activityNameFromActivityForm: string = null;
   private _activitiesTree$: BehaviorSubject<ActivityTree> = new BehaviorSubject(null);
+
+  findActivityById(treeId: string): CategorizedActivity{
+    return this._activitiesTree$.getValue().findActivityById(treeId);
+  }
+
+
 
   
   private fetchActivities(){

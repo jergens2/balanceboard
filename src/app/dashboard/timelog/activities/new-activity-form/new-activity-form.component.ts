@@ -61,11 +61,6 @@ export class NewActivityFormComponent implements OnInit {
 
 
 
-
-    // delete this
-    this.activityForm.valueChanges.subscribe((stuff) => {
-      console.log("form value changes: ", stuff);
-    })
   }
 
 

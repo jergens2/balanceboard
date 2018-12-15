@@ -5,7 +5,7 @@
     </button>
   <div *ngIf="ifAddTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>
 
-      <app-time-mark-form (closeForm)="onCloseForm()" [latestTimeMark]="latestTimeMark">
+      <app-time-mark-form (closeForm)="onCloseForm()">
       </app-time-mark-form>
   
     </div>
@@ -24,8 +24,8 @@
             <div style="display:flex; flex-direction: row;">
               <div style="display:flex; flex-direction: column; flex-grow:4; ">
                 <div>
-                  <ul class='m-0  py-0' *ngFor="let activity of timeMarkTile.timeMark.activities">
-                    <li class='m-0 p-0'>{{ activity.name }}</li>
+                  <ul class='m-0  py-0' *ngFor="let timeMarkActivity of timeMarkTile.timeMark.activities">
+                    <li class='m-0 p-0'>{{ timeMarkActivity.activity.name }}</li>
                   </ul>
                 </div>
                 <div class="p-1" style="display:flex; flex-direction: row;">

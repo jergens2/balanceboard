@@ -12,10 +12,10 @@
   </div>
 
   <div class="chart-items">
-    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight" [style.background-color]="tile.styleBackgroundColor">
+    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight" [style.backgroundColor]="tile.styleBackgroundColor">
       <div *ngIf="ifShowActivities(tile.timeMark)" style="display:flex;" >
-        <div *ngFor="let activity of tile.timeMark.activities" class="mr-2">
-          {{activity.name }}
+        <div *ngFor="let timeMarkActivity of tile.timeMark.activities" class="mr-2">
+          {{ timeMarkActivity.activity.name }}
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { TimelogService } from '../timelog.service';
 import { TimeMark } from '../time-mark.model';
 
 import * as moment from 'moment';
+import { ActivitiesService } from '../activities/activities.service';
 
 export interface ITimeMarkChartTile {
   timeMark: TimeMark,
@@ -20,7 +21,7 @@ export interface ITimeMarkChartTile {
 })
 export class TimelogChartComponent implements OnInit {
 
-  constructor(private timeLogService: TimelogService) { }
+  constructor(private timeLogService: TimelogService, private activitiesService: ActivitiesService) { }
 
   timeMarkChartTiles: ITimeMarkChartTile[];
   hours: string[];
@@ -68,19 +69,21 @@ export class TimelogChartComponent implements OnInit {
           let hourHeight: string = ((timeMark.duration / 60) * hourHeightPx) + "px";
 
           let styleColor = "white";
+          console.log(timeMark)
           if(timeMark.activities.length == 0){
             styleColor = "white";
           }else if(timeMark.activities.length == 1){
-            styleColor = timeMark.activities[0].color;
+            
+            console.log(timeMark.activities[0]);
+
+            styleColor =  this.activitiesService.findActivityById(timeMark.activities[0].activityTreeId).color
           }else if(timeMark.activities.length > 1){
             // TODO need to calculate which activity represents the largest portion of the timeMark and return that activity's color
-            styleColor = timeMark.activities[0].color;
+            styleColor =  this.activitiesService.findActivityById(timeMark.activities[0].activityTreeId).color
           }
 
-
-          styleColor = "white"; // remove this line
-
           let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: hourHeight, styleBackgroundColor: styleColor }
+          console.log("tile pushed", tile);
           tiles.push(tile);
         }
       }
@@ -149,5 +152,6 @@ export class TimelogChartComponent implements OnInit {
   onMouseLeaveChartTile() {
 
   }
+
 
 }

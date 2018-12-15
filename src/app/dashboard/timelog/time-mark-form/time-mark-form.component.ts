@@ -9,6 +9,8 @@ import { faCheckCircle, faCircle, IconDefinition } from '@fortawesome/free-regul
 import { CategorizedActivity } from '../activities/categorized-activity.model';
 import { TimeMark } from '../time-mark.model';
 import { TimelogService } from '../timelog.service';
+import { TimeMarkActivity } from '../time-mark-activity.model';
+import { ActivitiesService } from '../activities/activities.service';
 
 export interface ITimeOption {
   icon: IconDefinition,
@@ -28,7 +30,7 @@ export class TimeMarkFormComponent implements OnInit {
 
 
 
-  constructor(private timeLogService: TimelogService, private renderer: Renderer2) { }
+  constructor(private timeLogService: TimelogService, private activitiesService: ActivitiesService) { }
 
   private _durationString: string = '';
   
@@ -53,17 +55,18 @@ export class TimeMarkFormComponent implements OnInit {
 
   timeMarkForm: FormGroup;
 
-
+  latestTimeMark: TimeMark;
   
-  timeMarkActivities: CategorizedActivity[] = [];
+  timeMarkActivities: TimeMarkActivity[] = [];
 
   
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Input() latestTimeMark: TimeMark;
 
   ngOnInit() {
     this.timeMarkActivities = [];
+    this.latestTimeMark = this.timeLogService.latestTimeMark;
     console.log("Latest time mark on form:", this.latestTimeMark);
+
 
 
     this.buildTimeOptions();
@@ -363,7 +366,7 @@ export class TimeMarkFormComponent implements OnInit {
     this.saveTimeMarkDisabled = 'disabled';
   }
 
-  onActivitySaved(activity: CategorizedActivity){
+  onActivitySaved(activity: TimeMarkActivity){
     this.timeMarkActivities.push(activity);
     this.onCloseActivityForm(null);
   }
@@ -373,8 +376,6 @@ export class TimeMarkFormComponent implements OnInit {
     this.ifAddActivityButton = true;
     this.saveTimeMarkDisabled = '';
   }
-
-
 
 
 }

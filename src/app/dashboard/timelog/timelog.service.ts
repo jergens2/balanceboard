@@ -10,6 +10,8 @@ import * as moment from 'moment';
 import { serverUrl } from '../../serverurl';
 import { map } from 'rxjs/operators';
 import { AuthStatus } from '../../authentication/auth-status.model';
+import { TimeMarkActivity } from './time-mark-activity.model';
+import { ActivitiesService } from './activities/activities.service';
 
 
 
@@ -18,26 +20,44 @@ import { AuthStatus } from '../../authentication/auth-status.model';
 })
 export class TimelogService {
 
-  constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
+  constructor(private httpClient: HttpClient, private authService: AuthenticationService, private activitiesService: ActivitiesService) {
+    console.log("timemark service constructor");
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
       if (authStatus.isAuthenticated) {
-
+        this.activitiesService.activitiesTree$.subscribe((tree)=>{
+          if(tree != null){
+            this.initiateService();
+          }
+        })
       } else {
         this.logout();
       }
     })
   }
 
+
+  initiateService(){
+    this.thisDaysTimeMarksSubscription = this._timeMarksSubject$.subscribe((timeMarks: TimeMark[])=>{
+      this._thisDaysTimeMarks.next(this.getThisDaysTimeMarks(timeMarks, this.currentDate));
+    })
+
+    let startTime: moment.Moment = moment().startOf('month');
+    let endTime: moment.Moment = moment().endOf('month');
+    this.fetchTimeMarksByRange(this.authService.authenticatedUser.id, startTime, endTime);
+  }
+
+
   private serverUrl: string = serverUrl;
 
   private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
-  
+  private _timeMarksSubject$: BehaviorSubject<TimeMark[]> = new BehaviorSubject(null);
+
+  private _thisDaysTimeMarks: BehaviorSubject<TimeMark[]> = new BehaviorSubject(null);
+
+  private thisDaysTimeMarksSubscription: Subscription;
 
   get currentDate(): moment.Moment{
     return this._currentDate$.getValue();
-  }
-  get currentDate$(): Observable<moment.Moment>{
-    return this._currentDate$.asObservable();
   }
   set currentDate(date: moment.Moment){
     this._currentDate$.next(date);
@@ -61,12 +81,12 @@ export class TimelogService {
       this._thisDaysTimeMarks.next((this.getThisDaysTimeMarks(this._timeMarksSubject$.getValue(), date)));
     }
   }
+  get currentDate$(): Observable<moment.Moment>{
+    return this._currentDate$.asObservable();
+  }
 
-  private _timeMarksSubject$: BehaviorSubject<TimeMark[]> = new BehaviorSubject<TimeMark[]>(null);
-  private _thisDaysTimeMarks: Subject<TimeMark[]> = new Subject();
-  private thisDaysTimeMarksSubscription: Subscription = this._timeMarksSubject$.subscribe((timeMarks: TimeMark[])=>{
-    this._thisDaysTimeMarks.next(this.getThisDaysTimeMarks(timeMarks, this.currentDate));
-  })
+
+
   
   private getThisDaysTimeMarks(allTimeMarks: TimeMark[], currentDate: moment.Moment): TimeMark[]{
     let thisDaysTimeMarks: TimeMark[] = [];
@@ -99,6 +119,7 @@ export class TimelogService {
           latestTimeMark = timeMark;
         }
       }
+      console.log("Service: latest time mark is ", latestTimeMark);
       return latestTimeMark;
     } else {
       return null;
@@ -110,6 +131,12 @@ export class TimelogService {
   saveTimeMark(timeMark: TimeMark) {
     let newTimeMark: TimeMark = timeMark;
     newTimeMark.userId = this.authService.authenticatedUser.id;
+
+    //the following line exists to remove the activity data from the object
+    let trimmedActivities = newTimeMark.activities.map((activity: TimeMarkActivity)=>{
+      return {activityTreeId: activity.activityTreeId, duration: activity.duration }
+    })
+    newTimeMark.activities = trimmedActivities as TimeMarkActivity[];
     const postUrl = this.serverUrl + "/api/timeMark/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -123,7 +150,7 @@ export class TimelogService {
         timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
         timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
         timeMark.description = response.data.description;
-        timeMark.activities = response.data.activities as CategorizedActivity[];
+        timeMark.activities = this.buildTimeMarkActivities(response.data.activities);
         return timeMark;
       }))
       .subscribe((timeMark: TimeMark) => {
@@ -134,6 +161,18 @@ export class TimelogService {
         this.updatePrecedingTimeMark(timeMark);
       })
   }
+
+  private buildTimeMarkActivities(activitiesData: Array<{activityTreeId: string, duration: number }>): TimeMarkActivity[]{
+    console.log("building activities, data received:", activitiesData);
+    return activitiesData.map((activity) =>{
+      console.log("activity:", activity)
+      let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(this.activitiesService.findActivityById(activity.activityTreeId));
+      timeMarkActivity.duration = activity.duration;
+      return timeMarkActivity;
+    })
+  }
+
+
   private updatePrecedingTimeMark(latestTimeMark: TimeMark) {
     /*
       2018-11-11
@@ -167,7 +206,8 @@ export class TimelogService {
           timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
           timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
           timeMark.description = response.data.description;
-          timeMark.activities = response.data.activities as CategorizedActivity[];
+          timeMark.receiveOldActivities(response.data.activities as CategorizedActivity[])
+          timeMark.activities = this.buildTimeMarkActivities(response.data.activities);
           return timeMark;
         }))
         .subscribe((updatedTimeMark: TimeMark) => {
@@ -245,7 +285,18 @@ export class TimelogService {
            timeMark.startTimeISO = dataObject.timeISO;
           }
           timeMark.description = dataObject.description;
-          timeMark.activities = dataObject.activities as CategorizedActivity[];
+
+          let activities: Array<any> = dataObject.activities as Array<any>;
+          if(activities.length > 0){ 
+            //if the element in the array has a property called .activity , then it is of new type of activity as of 2018-12-13
+            if(activities[0].activityTreeId != null){
+              timeMark.activities = this.buildTimeMarkActivities(activities);
+            }else{
+              timeMark.receiveOldActivities(dataObject.activities as CategorizedActivity[])
+            }
+          }
+
+          
           return timeMark;
         })
       }))
@@ -259,19 +310,20 @@ export class TimelogService {
     
   }
 
-  onTimeLogComponentInit(date: moment.Moment){
-    /*
-      This will do a fetch for timeMarks in a range of a month.  We could mimic this behavior and define any time range, not just 1 month
-    */
-    let startTime: moment.Moment = moment(date).startOf('month');
-    let endTime: moment.Moment = moment(date).endOf('month');
-    this.fetchTimeMarksByRange(this.authService.authenticatedUser.id, startTime, endTime);
-  }
+  // onTimeLogComponentInit(date: moment.Moment){
+  //   /*
+  //     This will do a fetch for timeMarks in a range of a month.  We could mimic this behavior and define any time range, not just 1 month
+  //   */
+  //   let startTime: moment.Moment = moment(date).startOf('month');
+  //   let endTime: moment.Moment = moment(date).endOf('month');
+  //   this.fetchTimeMarksByRange(this.authService.authenticatedUser.id, startTime, endTime);
+  // }
   
 
 
   private logout() {
     this._timeMarksSubject$.next([]);
+    this.thisDaysTimeMarksSubscription.unsubscribe();
   }
 
 

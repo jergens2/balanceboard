@@ -40,15 +40,13 @@ export class TimelogComponent implements OnInit, OnDestroy {
 
 
     //todo:  need to add a subscription that checks for updates on a frequeent basis e.g. every several seconds
-    this.timeLogService.onTimeLogComponentInit(moment(this.currentDate));
+    // this.timeLogService.onTimeLogComponentInit(moment(this.currentDate));
   }
   ngOnDestroy() {
 
   }
 
-  get latestTimeMark(): TimeMark {
-    return this.timeLogService.latestTimeMark;
-  }
+
 
   get currentDate(): moment.Moment{
     return this._currentDate;

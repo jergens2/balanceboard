@@ -128,8 +128,8 @@ New Time Mark
 
   <h6>Activities Prior</h6>
   <div *ngIf="timeMarkActivities">
-    <div *ngFor="let activity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity' style='border-radius:5px;'>
-      Activity: {{ activity.name }}
+    <div *ngFor="let timeMarkActivity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity' style='border-radius:5px;'>
+      Activity: {{ timeMarkActivity.activity.name }}
     </div>
   </div>
   <div *ngIf="ifAddActivityForm" class='border border-warning activity-form-content-container'>
