@@ -47,12 +47,10 @@ export class TimelogListComponent implements OnInit {
     })
 
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
-      console.log(timeMarks);
       if(timeMarks != null){
         this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(timeMarks);
         this.ifLoadingTimeMarks = false;
       }
-
     })
 
 

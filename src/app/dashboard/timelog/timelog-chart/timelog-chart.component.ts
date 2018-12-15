@@ -69,21 +69,18 @@ export class TimelogChartComponent implements OnInit {
           let hourHeight: string = ((timeMark.duration / 60) * hourHeightPx) + "px";
 
           let styleColor = "white";
-          console.log(timeMark)
           if(timeMark.activities.length == 0){
             styleColor = "white";
           }else if(timeMark.activities.length == 1){
             
-            console.log(timeMark.activities[0]);
 
-            styleColor =  this.activitiesService.findActivityById(timeMark.activities[0].activityTreeId).color
+            styleColor =  timeMark.activities[0].activity.color
           }else if(timeMark.activities.length > 1){
             // TODO need to calculate which activity represents the largest portion of the timeMark and return that activity's color
-            styleColor =  this.activitiesService.findActivityById(timeMark.activities[0].activityTreeId).color
+            styleColor =  timeMark.activities[0].activity.color
           }
-
           let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: hourHeight, styleBackgroundColor: styleColor }
-          console.log("tile pushed", tile);
+
           tiles.push(tile);
         }
       }

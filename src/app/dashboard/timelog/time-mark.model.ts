@@ -56,7 +56,7 @@ export class TimeMark{
     }
 
     receiveOldActivities(activities: CategorizedActivity[]){
-        console.log("received old activities", activities);
+        // console.log("received old activities", activities);
         this.activities = activities.map((activity)=>{
             let timeMarkAcitivty: TimeMarkActivity = new TimeMarkActivity(activity);
             timeMarkAcitivty.duration = 0;
