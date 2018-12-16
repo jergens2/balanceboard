@@ -9,6 +9,7 @@ export interface ITimeMarkChartTile {
   timeMark: TimeMark,
   style: Object,
   styleHeight: string,
+  styleMarginTop: string,
   styleBackgroundColor: string,
 }
 
@@ -54,32 +55,58 @@ export class TimelogChartComponent implements OnInit {
 
   buildTimeMarkChartTiles(timeMarks: TimeMark[], hourHeightPx: number): ITimeMarkChartTile[] {
     let tiles: ITimeMarkChartTile[] = [];
+
     if (timeMarks != null) {
+      timeMarks.sort((a, b)=>{
+        if(moment(a.startTime).isBefore(moment(b.startTime))){
+          return 1
+        }else{
+          return 0;
+        }
+      })
       for (let timeMark of timeMarks) {
 
         let templateStartTime = moment(timeMark.startTime).hour(8).minute(0).second(0).millisecond(0);
         let templateEndTime = moment(timeMark.startTime).hour(22).minute(0).second(0).millisecond(0);
+
         if (!moment(timeMark.endTime).isBefore(templateStartTime) && !moment(timeMark.startTime).isAfter(templateEndTime)) {
-          if (moment(timeMark.startTime).isBefore(templateStartTime)) {
-            timeMark.startTime = moment(templateStartTime);
+
+          let marginTop = "";
+
+          if(timeMarks.indexOf(timeMark) == 0){
+            if( moment(timeMark.startTime).isAfter(templateStartTime)) {
+              // In this case, the first time mark starts some time after the template start time (8am) so a top margin is added to accurately reflect
+              // the position in the chart
+              marginTop = (moment(timeMark.startTime).diff(templateStartTime, 'hours') * hourHeightPx) + "px";
+            }
+          }else{
+            if (moment(timeMark.startTime).isBefore(templateStartTime)) {
+              timeMark.startTime = moment(templateStartTime);
+            }
+            if (moment(timeMark.endTime).isAfter(templateEndTime)) {
+              timeMark.endTime = moment(templateEndTime);
+            }
           }
-          if (moment(timeMark.endTime).isAfter(templateEndTime)){
-            timeMark.endTime = moment(templateEndTime);
-          }
+
+
           let hourHeight: string = ((timeMark.duration / 60) * hourHeightPx) + "px";
+          // let topMargin: string = ((moment(timeMark.startTime).diff(moment(templateStartTime), 'hours' )) * hourHeightPx) + "px";
+          let topMargin = "100px";
+          // console.log("topMargin:" , topMargin);
+
 
           let styleColor = "white";
-          if(timeMark.activities.length == 0){
+          if (timeMark.activities.length == 0) {
             styleColor = "white";
-          }else if(timeMark.activities.length == 1){
-            
+          } else if (timeMark.activities.length == 1) {
 
-            styleColor =  timeMark.activities[0].activity.color
-          }else if(timeMark.activities.length > 1){
+
+            styleColor = timeMark.activities[0].activity.color
+          } else if (timeMark.activities.length > 1) {
             // TODO need to calculate which activity represents the largest portion of the timeMark and return that activity's color
-            styleColor =  timeMark.activities[0].activity.color
+            styleColor = timeMark.activities[0].activity.color
           }
-          let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: hourHeight, styleBackgroundColor: styleColor }
+          let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: hourHeight, styleBackgroundColor: styleColor, styleMarginTop: marginTop};
 
           tiles.push(tile);
         }
@@ -117,30 +144,18 @@ export class TimelogChartComponent implements OnInit {
   Template Functions
   */
 
-  //  styleTileHeight(timeMarkDuration: number) : string{
-  //     let startTime = moment().hour(7).minute(30).second(0).millisecond(0);
-  //     let endTime = moment().hour(22).minute(30).second(0).millisecond(0);
-  //     let dayFrameDuration = moment.duration(moment(startTime).diff(moment(endTime))).asMinutes();
-
-  //     dayFrameDuration = Math.abs(dayFrameDuration);
-
-  //     let frameHeight = 500; //500px
-
-  //     let timeMarkHeight = timeMarkDuration / (dayFrameDuration / frameHeight) ;
-
-  //     let result = timeMarkHeight.toFixed(0) + "px";
-  //     return result;
-  //   }
-
-    ifShowActivities(timeMark: TimeMark) : boolean{
-      // console.log("DUration: " , timeMarkDuration);
-      if(timeMark.duration < 30){
+  ifShowActivities(timeMark: TimeMark): boolean {
+    if(timeMark != null){
+      if (timeMark.duration < 30) {
         return false;
-      }else{
+      } else {
         return true;
       }
-
     }
+    // console.log("DUration: " , timeMarkDuration);
+
+
+  }
 
   onMouseEnterChartTile() {
 

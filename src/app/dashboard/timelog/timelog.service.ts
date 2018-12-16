@@ -163,9 +163,7 @@ export class TimelogService {
   }
 
   private buildTimeMarkActivities(activitiesData: Array<{activityTreeId: string, duration: number }>): TimeMarkActivity[]{
-    console.log("building activities, data received:", activitiesData);
     return activitiesData.map((activity) =>{
-      console.log("activity:", activity)
       let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(this.activitiesService.findActivityById(activity.activityTreeId));
       timeMarkActivity.duration = activity.duration;
       return timeMarkActivity;
