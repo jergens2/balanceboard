@@ -67,28 +67,21 @@ export class TimelogComponent implements OnInit, OnDestroy {
     this.timeLogService.currentDate = moment(calendarDate);
   }
 
-  dateNotGreaterThanToday(dateYYYYMMDD: string): boolean {
-    if (moment().format('YYYY-MM-DD') < moment(dateYYYYMMDD).format('YYYY-MM-DD')) {
-      return false;
-    } else {
-      return true;
-    }
-  }
 
-  dateRelevanceToTodayString(dateYYYYMMDD: string): string {
+  dateRelevanceToTodayString(date: moment.Moment): string {
     //Used by the template to input any date and return a colloquialism relative to Today
-    if (moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
+    if (moment(date).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
       return "Today";
-    } else if (moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().add(1, 'days').format('YYYY-MM-DD')) {
+    } else if (moment(date).format('YYYY-MM-DD') == moment().add(1, 'days').format('YYYY-MM-DD')) {
       return "Tomorrow";
-    } else if (moment(dateYYYYMMDD).format('YYYY-MM-DD') == moment().add(-1, 'days').format('YYYY-MM-DD')) {
+    } else if (moment(date).format('YYYY-MM-DD') == moment().add(-1, 'days').format('YYYY-MM-DD')) {
       return "Yesterday";
-    } else if (moment(dateYYYYMMDD).isBefore(moment().startOf('day'))) {
-      let duration = moment.duration(moment().startOf('day').diff(dateYYYYMMDD));
+    } else if (moment(date).isBefore(moment().startOf('day'))) {
+      let duration = moment.duration(moment().startOf('day').diff(date));
       let days = duration.asDays().toFixed(0);
       return "" + days + " days ago";
-    } else if (moment(dateYYYYMMDD).isAfter(moment().endOf('day'))) {
-      let duration = moment.duration(moment(dateYYYYMMDD).diff(moment().startOf('day')));
+    } else if (moment(date).isAfter(moment().endOf('day'))) {
+      let duration = moment.duration(moment(date).diff(moment().startOf('day')));
       let days = duration.asDays().toFixed(0);
       return "" + days + " days from today";
     }
@@ -101,9 +94,9 @@ export class TimelogComponent implements OnInit, OnDestroy {
   //   return moment(dateYYYYMMDD).format('MMM Do');
   // }
 
-  dateFormattedDateString(dateYYYYMMDD: string): string {
+  dateFormattedDateString(date: moment.Moment): string {
     //Used by template to input any date and receive back a formatted date string 
-    return moment(dateYYYYMMDD).format('dddd, MMMM Do, gggg');
+    return moment(date).format('dddd, MMMM Do, gggg');
   }
 
 }

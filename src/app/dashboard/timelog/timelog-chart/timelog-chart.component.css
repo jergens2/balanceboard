@@ -24,7 +24,7 @@
 }
 .chart-item:hover{
     background-color: rgb(172, 255, 172);
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
 .chart-hour-labels-grid{
