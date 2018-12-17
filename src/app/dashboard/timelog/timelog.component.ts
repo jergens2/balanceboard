@@ -22,7 +22,6 @@ export class TimelogComponent implements OnInit, OnDestroy {
   faCog = faCog;
   faSpinner = faSpinner;
 
-  addTimeMarkForm: boolean = false;
   private _currentDate: moment.Moment;
 
 
@@ -32,9 +31,6 @@ export class TimelogComponent implements OnInit, OnDestroy {
 
     this.timeLogService.currentDate$.subscribe((changedDate: moment.Moment)=>{
       this._currentDate = moment(changedDate);
-      if(moment(this._currentDate).dayOfYear() != moment().dayOfYear()){
-        this.onCloseForm();
-      }
     })
 
 
@@ -53,13 +49,6 @@ export class TimelogComponent implements OnInit, OnDestroy {
   }
 
 
-
-  onClickNewTimeMark() {
-    this.addTimeMarkForm = true;
-  }
-  onCloseForm() {
-    this.addTimeMarkForm = false;
-  }
 
   
 

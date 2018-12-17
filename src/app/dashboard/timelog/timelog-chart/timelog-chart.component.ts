@@ -35,7 +35,8 @@ export class TimelogChartComponent implements OnInit {
       Meaning: changing the start hour / end hour reference here would require specific changes to the pre-defined CSS grid.
       at some point it may be wise to set the css programmatically
 
-
+      2018-12-16:  start and end time now exist as variables in the service, but this chart component still uses the statically defined CSS, 
+      and does not refer to the variables in the service to determine the css, but it should.
     */
     this.hourHeight = 28;
     this.hours = [];
@@ -48,7 +49,7 @@ export class TimelogChartComponent implements OnInit {
 
     this.timeMarkChartTiles = [];
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
-
+      console.log("this days time marks", timeMarks)
       this.timeMarkChartTiles = this.buildTimeMarkChartTiles(timeMarks, this.hourHeight);
     })
   }
@@ -64,36 +65,43 @@ export class TimelogChartComponent implements OnInit {
           return 0;
         }
       })
+      let addedMarginPx = 0;
       for (let timeMark of timeMarks) {
 
-        let templateStartTime = moment(timeMark.startTime).hour(8).minute(0).second(0).millisecond(0);
-        let templateEndTime = moment(timeMark.startTime).hour(22).minute(0).second(0).millisecond(0);
+        let templateStartTime = this.timeLogService.userDefinedStartTimeOfDay;
+        let templateEndTime = this.timeLogService.userDefinedEndTimeOfDay;
 
         if (!moment(timeMark.endTime).isBefore(templateStartTime) && !moment(timeMark.startTime).isAfter(templateEndTime)) {
 
-          let marginTop = "";
+          let marginTop = "0px";
+          let hourHeight: string = "0px";
 
           if(timeMarks.indexOf(timeMark) == 0){
+
             if( moment(timeMark.startTime).isAfter(templateStartTime)) {
               // In this case, the first time mark starts some time after the template start time (8am) so a top margin is added to accurately reflect
               // the position in the chart
               marginTop = (moment(timeMark.startTime).diff(templateStartTime, 'hours') * hourHeightPx) + "px";
-            }
-          }else{
-            if (moment(timeMark.startTime).isBefore(templateStartTime)) {
+            }else if (moment(timeMark.startTime).isBefore(templateStartTime)) {
               timeMark.startTime = moment(templateStartTime);
-            }
-            if (moment(timeMark.endTime).isAfter(templateEndTime)) {
-              timeMark.endTime = moment(templateEndTime);
+              
             }
           }
 
+          if (moment(timeMark.startTime).isBefore(templateStartTime)) {
+            timeMark.startTime = moment(templateStartTime);
 
-          let hourHeight: string = ((timeMark.duration / 60) * hourHeightPx) + "px";
-          // let topMargin: string = ((moment(timeMark.startTime).diff(moment(templateStartTime), 'hours' )) * hourHeightPx) + "px";
-          let topMargin = "100px";
-          // console.log("topMargin:" , topMargin);
+          }
+          if (moment(timeMark.startTime).isAfter(templateEndTime) || moment(timeMark.endTime).isBefore(templateStartTime)){
+            break;
+          }
+          if (moment(timeMark.endTime).isAfter(templateEndTime)) {
+            timeMark.endTime = moment(templateEndTime);
+          }
+          
 
+
+          hourHeight = ((timeMark.duration / 60) * hourHeightPx) + "px";
 
           let styleColor = "white";
           if (timeMark.activities.length == 0) {
@@ -165,5 +173,8 @@ export class TimelogChartComponent implements OnInit {
 
   }
 
+  onClickTile(tile: ITimeMarkChartTile){
+    console.log("tile clicked", tile);
+  }
 
 }

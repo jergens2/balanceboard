@@ -21,7 +21,6 @@ import { ActivitiesService } from './activities/activities.service';
 export class TimelogService {
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService, private activitiesService: ActivitiesService) {
-    console.log("timemark service constructor");
     authService.authStatus.subscribe((authStatus: AuthStatus) => {
       if (authStatus.isAuthenticated) {
         this.activitiesService.activitiesTree$.subscribe((tree)=>{
@@ -56,10 +55,19 @@ export class TimelogService {
 
   private thisDaysTimeMarksSubscription: Subscription;
 
+
+  // 2018-12-16:  these 2 following variables are statically defined here in this service, but eventually will be modifyable by the user which will change the behavior of the app
+  private _userDefinedStartTimeOfDay: moment.Moment = moment().hour(8).minute(0).second(0).millisecond(0);
+  private _userDefinedEndTimeOfDay: moment.Moment = moment().hour(22).minute(0).second(0).millisecond(0);
+  get userDefinedStartTimeOfDay(): moment.Moment { return this._userDefinedStartTimeOfDay; }
+  get userDefinedEndTimeOfDay(): moment.Moment { return this._userDefinedEndTimeOfDay; }
+
   get currentDate(): moment.Moment{
     return this._currentDate$.getValue();
   }
   set currentDate(date: moment.Moment){
+    this._userDefinedStartTimeOfDay = moment(date).hour(7).minute(0).second(0).millisecond(0);
+    this._userDefinedEndTimeOfDay= moment(date).hour(22).minute(0).second(0).millisecond(0);
     this._currentDate$.next(date);
     /*
       Do a check here to see if the new date is still in the range.  If not, then perform a GET request to update the master variable
@@ -92,6 +100,14 @@ export class TimelogService {
     let thisDaysTimeMarks: TimeMark[] = [];
     if(allTimeMarks != null){
       for(let timeMark of allTimeMarks){
+        console.log("time mark of all timemarks", timeMark);
+        console.log("startTime, endTime, DayofYear", timeMark.startTimeISO, timeMark.endTimeISO, moment(timeMark.startTimeISO).dayOfYear(), moment(timeMark.endTimeISO).dayOfYear())
+
+        if(moment(timeMark.startTimeISO).dayOfYear() != moment(timeMark.endTimeISO).dayOfYear()){
+          console.log("timemark start time and end time are not the same day of year.")
+        }
+
+
         if(moment(timeMark.startTime).dayOfYear() == currentDate.dayOfYear() || moment(timeMark.endTime).dayOfYear() == currentDate.dayOfYear())
         thisDaysTimeMarks.push(timeMark);
       }

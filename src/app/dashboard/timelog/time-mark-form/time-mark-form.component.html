@@ -1,111 +1,65 @@
 New Time Mark
 <div [formGroup]="timeMarkForm" class="mb-3">
 
-  <!-- 
 
-    Need to add a section here for when if previous time mark exists but is older than 24 hours ago
-   -->
 
-  <div class="time-mark-form-control" style="display:flex; flex-direction:column;">
-    <div>
+  <div class="time-mark-form-control">
+    <div class="time-mark-form-control-label">
       Start Time
     </div>
-    <div *ngIf="" style="color:#f4bc42; font-weight: bold;">
-      No Previous Time Mark
-    </div>
-    <div style="display:flex; flex-direction:row;width:100%; align-items: center;" class="row">
-      <div class="col-12 col-md-6 mb-2" style="display:flex; flex-direction:column;">
-        <div *ngFor="let option of startTimeOptions">
-          <div style="display:flex; flex-direction:row; align-items: center;" class="select-time-radio" (click)="onClickStartOption(option)">
-            <div class="mr-1">
-              <fa-icon [icon]="option.icon" [ngClass]="option.iconClass"></fa-icon>
-            </div>
-            <div>{{ option.label }}</div>
-          </div>
-        </div>
+    <div style="flex-grow:2; padding-right:10px;">
+      <div *ngIf="!ifSpecifyStartTime">
+        {{ calculatedStartTime.format('hh:mm a') }}
       </div>
-      <div class="col-12 col-md-6">
-        <div *ngIf="startTimeAction == 'SPECIFY_TIME' || startTimeAction == 'SPECIFY_NO_PREVIOUS'">
-          <div style="display:flex; flex-direction:column;">
-            <div>Date</div>
-            <input type="date" class="form-control" formControlName="startTimeDate" (keyup)="updateDuration()">
-          </div>
-          <div style="display:flex; flex-direction:column;">
-            <div>Time</div>
-            <input type="time" class="form-control" formControlName="startTime" (keyup)="updateDuration()">
-          </div>
-        </div>
-        <div *ngIf="startTimeAction == 'SPECIFY_DURATION'">
-          <div style="display:flex; flex-direction:column;">
-            <div>Hours Ago</div>
-            <input type="number" class="form-control" formControlName="startTimeDurationHours" (keyup)="onKeyUpStartTimeHours()">
-          </div>
-          <div style="display:flex; flex-direction:column;">
-            <div>Minutes Ago</div>
-            <input type="number" class="form-control" formControlName="startTimeDurationMinutes" (keyup)="onKeyUpStartTimeMinutes()">
-          </div>
-        </div>
-        <div *ngIf="startTimeAction == 'SINCE_PREVIOUS'">
-          {{ this.latestTimeMark.endTime.format('HH:mm') }}
-        </div>
+      <div *ngIf="ifSpecifyStartTime">
+        <input class="form-control" formControlName="startTime" type="time" [value]="calculatedStartTime.format('HH:mm')"/>
+        <input class="form-control" formControlName="startTimeDate" type="date" [value]="now().format('YYYY-MM-DD')"/>
       </div>
 
-
     </div>
+    <div>
+      <button class="btn btn-sm" style="background-color:rgb(255, 212, 121)" (click)="onClickSpecifyStartTime()">
+        <div *ngIf="!ifSpecifyStartTime">
+          Specify
+        </div>
+        <div *ngIf="ifSpecifyStartTime">
+          <fa-icon [icon]="faTimes"></fa-icon>
+        </div>
+      </button>
+    </div>
+
+
   </div>
 
-  <div class="time-mark-form-control" style="display:flex; flex-direction:column;">
-    <div>
+  <div class="time-mark-form-control">
+    <div class="time-mark-form-control-label">
       End Time
     </div>
-    <div style="display:flex; flex-direction:row;width:100%; align-items: center;" class="row">
-      <div class="col-12 col-md-6 mb-2" style="display:flex; flex-direction:column;">
-        <div *ngFor="let option of endTimeOptions">
-          <div style="display:flex; flex-direction:row; align-items: center;" class="select-time-radio" (click)="onClickEndOption(option)">
-            <div class="mr-1">
-              <fa-icon [icon]="option.icon" [ngClass]="option.iconClass"></fa-icon>
-            </div>
-            <div>{{ option.label }}</div>
-          </div>
-        </div>
+
+    <div style="flex-grow:2; padding-right:10px;">
+      <div *ngIf="!ifSpecifyEndTime">
+        {{ now().format('hh:mm a') }}
       </div>
-
-
-      <div class="col-12 col-md-6">
-        <div *ngIf="endTimeAction == 'NOW'">
-          <div style="display:flex; flex-direction:column;">
-            <div>Date</div>
-            <input type="date" class="form-control" formControlName="endTimeDate">
-          </div>
-          <div style="display:flex; flex-direction:column;">
-            <div>Time</div>
-            <input type="time" class="form-control" formControlName="endTime">
-          </div>
-        </div>
-        <div *ngIf="endTimeAction == 'SPECIFY_TIME'">
-          <div style="display:flex; flex-direction:column;">
-            <div>Date</div>
-            <input type="date" class="form-control" formControlName="endTimeDate" (keyup)="updateDuration()">
-          </div>
-          <div style="display:flex; flex-direction:column;">
-            <div>Time</div>
-            <input type="time" class="form-control" formControlName="endTime" (keyup)="updateDuration()">
-          </div>
-        </div>
-        <div *ngIf="endTimeAction == 'SPECIFY_DURATION'">
-          <div style="display:flex; flex-direction:column;">
-            <div>Hours it took</div>
-            <input type="number" class="form-control" formControlName="endTimeDurationHours" (keyup)="onKeyUpEndTimeHours()">
-          </div>
-          <div style="display:flex; flex-direction:column;">
-            <div>Minutes it took</div>
-            <input type="number" class="form-control" formControlName="endTimeDurationMinutes" (keyup)="onKeyUpEndTimeMinutes()">
-          </div>
-        </div>
-
+      <div *ngIf="ifSpecifyEndTime">
+        <input class="form-control" formControlName="endTime" type="time" [value]="now().format('HH:mm')"/>
+        <input class="form-control" formControlName="endTimeDate" type="date" [value]="now().format('YYYY-MM-DD')"/>
       </div>
 
     </div>
+    <div>
+      <button class="btn btn-sm" style="background-color:rgb(255, 212, 121)" (click)="onClickSpecifyEndTime()">
+        <div *ngIf="!ifSpecifyEndTime">
+          Specify
+        </div>
+        <div *ngIf="ifSpecifyEndTime">
+          <fa-icon [icon]="faTimes"></fa-icon>
+        </div>
+      </button>
+    </div>
+
+
+
+
   </div>
 
   <div class="time-mark-form-control">
@@ -128,8 +82,19 @@ New Time Mark
 
   <h6>Activities Prior</h6>
   <div *ngIf="timeMarkActivities">
-    <div *ngFor="let timeMarkActivity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity' style='border-radius:5px;'>
-      Activity: {{ timeMarkActivity.activity.name }}
+    <div *ngFor="let timeMarkActivity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity'
+      style='border-radius:5px;'>
+      <div>
+        Activity: {{ timeMarkActivity.activity.name }}
+      </div>
+      <div style="display:flex;flex-direction: row;" (click)="onClickUpdateTimeMarkActivity(timeMarkActivity)">
+        <div class="time-mark-activity-control">
+          <fa-icon [icon]="faCog"></fa-icon>
+        </div>
+        <div class="time-mark-activity-control" (click)="onClickDeleteTimeMarkActivity(timeMarkActivity)">
+          <fa-icon [icon]="faTimes"></fa-icon>
+        </div>
+      </div>
     </div>
   </div>
   <div *ngIf="ifAddActivityForm" class='border border-warning activity-form-content-container'>

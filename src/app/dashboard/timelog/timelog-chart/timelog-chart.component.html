@@ -12,8 +12,10 @@
   </div>
 
   <div class="chart-items">
-    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight" [style.backgroundColor]="tile.styleBackgroundColor" [style.margin-top]="tile.styleMarginTop">
-      <div *ngIf="ifShowActivities(tile.timeMark)"  >
+    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight"
+      [style.backgroundColor]="tile.styleBackgroundColor" [style.margin-top]="tile.styleMarginTop"
+      (click)="onClickTile(tile)">
+      <div *ngIf="ifShowActivities(tile.timeMark)">
         <div *ngFor="let timeMarkActivity of tile.timeMark.activities">
           {{ timeMarkActivity.activity.name }}
         </div>

@@ -9,7 +9,6 @@ import { ITimeMarkTile } from './timeMarkTile.interface';
 import { faSpinner, faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import * as moment from 'moment';
-import { merge } from 'rxjs';
 
 
 
@@ -42,8 +41,14 @@ export class TimelogListComponent implements OnInit {
     this.ifAddTimeMarkButton = true;
     this.defaultTimeMarkTileStyle = {};
 
-    this.timeLogService.currentDate$.subscribe((date) => {
-      this.currentDate = date;
+    this.timeLogService.currentDate$.subscribe((changedDate: moment.Moment)=>{
+      this.currentDate = moment(changedDate);
+      if(moment(this.currentDate).dayOfYear() != moment().dayOfYear()){
+        this.onCloseForm();
+        this.ifAddTimeMarkButton = false;
+      }else{
+        this.ifAddTimeMarkButton = true;
+      }
     })
 
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
@@ -91,7 +96,7 @@ export class TimelogListComponent implements OnInit {
 
   onCloseForm(){
     this.ifAddTimeMarkForm = false;
-    this.ifAddTimeMarkButton = true;
+    this.ifAddTimeMarkButton = true;    
   }
 
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {

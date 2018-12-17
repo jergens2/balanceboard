@@ -9,8 +9,8 @@
 
 .time-mark-form-control{
     display:flex;
-    flex-direction: column;
-    flex-wrap: wrap;
+    flex-direction: row;
+    /* flex-wrap: wrap; */
     
     margin-top: 5px;
     padding:10px;
@@ -18,6 +18,9 @@
     border: 1px solid rgb(206,212,218);
     background-color: white;
 
+}
+.time-mark-form-control-label{
+    width: 8em;
 }
 
 .select-time-radio:hover{
@@ -27,6 +30,17 @@
 
 .time-mark-activity{
     background-color: #fefff2;
+    display:flex; 
+    flex-direction: row;
+    justify-content: space-between;
+}
+.time-mark-activity-control{
+    margin-left: 4px;
+    margin-right: 4px;
+}
+.time-mark-activity-control:hover{
+    cursor:pointer;
+    color: yellowgreen;
 }
 
 .activity-form-content-container{
