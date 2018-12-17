@@ -7,8 +7,14 @@ export class TimeMark{
 
     public id: string;
 
-    public startTimeISO: string;
-    public endTimeISO: string;
+    private _startTimeISO: string;
+    private _endTimeISO: string;
+    get startTimeISO(): string {
+        return this._startTimeISO;
+    }
+    get endTimeISO(): string {
+        return this._endTimeISO;
+    }
 
     public description: string;
     public activities: TimeMarkActivity[] = [];
@@ -21,24 +27,24 @@ export class TimeMark{
     constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string){
         this.id = id;
         this.userId = userId;
-        this.startTimeISO = startTimeISO;
-        this.endTimeISO = endTimeISO;
+        this._startTimeISO = startTimeISO;
+        this._endTimeISO = endTimeISO;
     }
 
     get startTime(): moment.Moment{
         return moment(this.startTimeISO);
     }
-    set startTime(newStartTime: moment.Moment){
-        this.startTimeISO = moment(newStartTime).toISOString();
-    }
+    // set startTime(newStartTime: moment.Moment){
+    //     this.startTimeISO = moment(newStartTime).toISOString();
+    // }
     get endTime(): moment.Moment{
         return moment(this.endTimeISO);
     }
-    set endTime(newEndTime: moment.Moment){
-        this.endTimeISO = moment(newEndTime).toISOString();
-    }
+    // set endTime(newEndTime: moment.Moment){
+    //     this.endTimeISO = moment(newEndTime).toISOString();
+    // }
     get durationString(): string{
-        let duration = moment.duration(this.endTime.diff(this.startTime));
+        let duration = moment.duration(moment(this.endTime).diff(moment(this.startTime)));
         let durationString = '';
         if(duration.hours() > 0){
           duration.hours() == 1 ? durationString += "1 hour " : durationString += (duration.hours() + " hours ");
@@ -51,17 +57,19 @@ export class TimeMark{
         return durationString;
     }
     get duration(): number{
-        let duration = moment.duration(this.endTime.diff(this.startTime));
+        let duration = moment.duration(moment(this.endTime).diff(moment(this.startTime)));
         return duration.asMinutes();
     }
 
     receiveOldActivities(activities: CategorizedActivity[]){
         // console.log("received old activities", activities);
         this.activities = activities.map((activity)=>{
-            let timeMarkAcitivty: TimeMarkActivity = new TimeMarkActivity(activity);
-            timeMarkAcitivty.duration = 0;
-            timeMarkAcitivty.activity.color = "pink";
-            return timeMarkAcitivty;
+            let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(activity);
+            timeMarkActivity.duration = 0;
+            if(timeMarkActivity.activity.color == "blue"){
+                timeMarkActivity.activity.color = "#fafafa";
+            }
+            return timeMarkActivity;
         })
     }
 

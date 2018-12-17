@@ -160,9 +160,12 @@ export class TimelogService {
         // 'Authorization': 'my-auth-token'
       })
     };
+    console.log(newTimeMark);
     this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeMark, httpOptions)
       .pipe<TimeMark>(map((response) => {
+        console.log(response.data.endTimeISO);
         let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
+        console.log(timeMark);
         timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
         timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
         timeMark.description = response.data.description;
@@ -171,6 +174,7 @@ export class TimelogService {
       }))
       .subscribe((timeMark: TimeMark) => {
         let timeMarks: TimeMark[] = this._timeMarksSubject$.getValue();
+        console.log("timeMark saved:", timeMark);
         timeMarks.push(timeMark);
 
         this._timeMarksSubject$.next(timeMarks);
@@ -295,8 +299,7 @@ export class TimelogService {
               2018-11-23
               This check is here for previous versions of the timeMark where there used to be a property called timeISO.
             */
-           timeMark.endTimeISO = dataObject.timeISO;
-           timeMark.startTimeISO = dataObject.timeISO;
+           timeMark = new TimeMark(dataObject._id, dataObject.userId, dataObject.timeISO, dataObject.timeISO);
           }
           timeMark.description = dataObject.description;
 

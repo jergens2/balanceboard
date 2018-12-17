@@ -40,6 +40,7 @@ import { TimelogListComponent } from './timelog/timelog-list/timelog-list.compon
 import { NewActivityFormComponent } from './timelog/activities/new-activity-form/new-activity-form.component';
 import { UpdateActivityFormComponent } from './timelog/activities/update-activity-form/update-activity-form.component';
 import { ActivityListItemComponent } from './timelog/activities/new-activity-form/activity-list-item/activity-list-item.component';
+import { UpdateTimeMarkComponent } from './timelog/timelog-list/update-time-mark/update-time-mark.component';
 
 
 
@@ -79,7 +80,8 @@ import { ActivityListItemComponent } from './timelog/activities/new-activity-for
     TimelogListComponent,
     NewActivityFormComponent,
     UpdateActivityFormComponent,
-    ActivityListItemComponent
+    ActivityListItemComponent,
+    UpdateTimeMarkComponent
   ],
   providers: [
     TimeService, 

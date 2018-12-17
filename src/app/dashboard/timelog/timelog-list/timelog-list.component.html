@@ -1,14 +1,14 @@
 <div class="">
-  <h4>Time Log Entries</h4>  
+  <h4>Time Log Entries</h4>
   <button *ngIf="ifAddTimeMarkButton" class="btn btn-primary" (click)="onClickAddTimeMark()">
-      Add New Time Mark
-    </button>
+    Add New Time Mark
+  </button>
   <div *ngIf="ifAddTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>
 
-      <app-time-mark-form (closeForm)="onCloseForm()">
-      </app-time-mark-form>
-  
-    </div>
+    <app-time-mark-form (closeForm)="onCloseForm()">
+    </app-time-mark-form>
+
+  </div>
 
   <hr>
   <div *ngIf="ifLoadingTimeMarks" class="text-center" style="font-size:3em;">
@@ -46,18 +46,23 @@
               <div style="display:flex; flex-direction: row;">
                 <!-- TO DO: Need to add tooltips over the cog and X. e.g. hover over cog and the word "Update" or "Modify
                 pops up" -->
-                <div class="delete-time-mark-button">
+                <div class="delete-time-mark-button" (click)="onClickUpdateTimeMark(timeMarkTile)">
                   <fa-icon [icon]="faCog"></fa-icon>
                 </div>
                 <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">
                   <fa-icon [icon]="faTimes"></fa-icon>
                 </div>
               </div>
+
             </div>
             <div>
               {{ timeMarkTile.timeMark.description }}
             </div>
+            <div *ngIf="timeMarkTile.ifUpdateTimeMark" class="m-2">
+              <app-update-time-mark [updateTimeMark]='timeMarkTile'></app-update-time-mark>
+            </div>
           </div>
+
         </div>
       </div>
       <div *ngIf="timeMarkTiles.length < 1">
@@ -72,5 +77,5 @@
 
   </div>
 
-  
+
 </div>

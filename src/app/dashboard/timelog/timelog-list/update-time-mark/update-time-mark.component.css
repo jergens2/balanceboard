@@ -1,0 +1,30 @@
+
+.update-time-mark{
+    border: 1px solid black;
+    background-color: rgb(247, 247, 247);
+    border-radius: 2px;
+    padding: 16px;
+}
+.time-mark-activities{
+    display:flex; 
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+.time-mark-activity{
+    border-radius: 3px;
+    margin: 2px;
+
+    padding: 5px;
+
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.time-mark-activity-name{
+    display:flex;
+    flex-direction: row;
+
+    align-items: center; 
+}
+

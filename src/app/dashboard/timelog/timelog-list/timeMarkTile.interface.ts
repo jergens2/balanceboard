@@ -4,4 +4,5 @@ export interface ITimeMarkTile {
     timeMark: TimeMark,
     style: Object,
     deleteButtonIsVisible: boolean
+    ifUpdateTimeMark: boolean;
 }

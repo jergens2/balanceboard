@@ -123,11 +123,14 @@ export class TimeMarkFormComponent implements OnInit {
           */
 
           if (moment().isBefore(moment(this.timeLogService.userDefinedStartTimeOfDay))) {
-            if (moment().isBefore(moment(this.timeLogService.userDefinedStartTimeOfDay).subtract(2,'hours'))) {
+            console.log("it is before the start of the day")
+            if (moment().isAfter(moment(this.timeLogService.userDefinedStartTimeOfDay).subtract(2,'hours'))) {
+              console.log("it is before the start of the day minus 2 hours")
               // it is possible that this block yields inaccurate time.  it is here in case, say a persons start time is 8am but they woke up early that day,
               // and did some stuff at 7am.  so a 2 hour window has been added here to try and catch this.
               return moment();
             }else{
+              console.log("it is before the start of the day, but after midnight?");
               // in this case, it is some time in the morning like 3 or 4am
               return moment(this.latestTimeMark.endTime);
             }
@@ -197,9 +200,10 @@ export class TimeMarkFormComponent implements OnInit {
 
   onClickSaveTimeMark() {
     let startTime = moment(this.timeMarkForm.get('startTimeDate').value + ' ' + this.timeMarkForm.get('startTime').value).toISOString();
-    let endTime = moment(this.timeMarkForm.get('endTimeDate').value + ' ' + this.timeMarkForm.get('endTime').value).toISOString();
+    let endTime = moment(this.timeMarkForm.get('endTimeDate').value + ' ' + this.timeMarkForm.get('endTime').value);
+    console.log("endTime", endTime)
 
-    let newTimeMark = new TimeMark(null, null, startTime, endTime);
+    let newTimeMark = new TimeMark(null, null, startTime, endTime.toISOString());
     newTimeMark.description = this.timeMarkForm.get('description').value;
     newTimeMark.activities = this.timeMarkActivities;
     if (this.latestTimeMark != null) {
@@ -207,8 +211,12 @@ export class TimeMarkFormComponent implements OnInit {
     } else {
       newTimeMark.precedingTimeMarkId = "NO_PRECEDING_TIME_MARK";
     }
+
     newTimeMark.followingTimeMarkId = "NO_FOLLOWING_TIME_MARK";
 
+
+
+    console.log("sending timemark to service to save, ", newTimeMark);
     this.timeLogService.saveTimeMark(newTimeMark);
     this.timeMarkForm.reset();
 

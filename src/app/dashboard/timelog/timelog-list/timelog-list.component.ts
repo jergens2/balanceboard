@@ -53,7 +53,8 @@ export class TimelogListComponent implements OnInit {
 
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
       if(timeMarks != null){
-        this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(timeMarks);
+        let listTimeMarks = Object.assign([], timeMarks);
+        this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(listTimeMarks);
         this.ifLoadingTimeMarks = false;
       }
     })
@@ -65,7 +66,7 @@ export class TimelogListComponent implements OnInit {
 
     let timeMarkTiles: ITimeMarkTile[] = [];
     for (let timeMark of timeMarks) {
-      let timeMarkTile: ITimeMarkTile = { timeMark: timeMark, style: this.defaultTimeMarkTileStyle, deleteButtonIsVisible: false };
+      let timeMarkTile: ITimeMarkTile = { timeMark: timeMark, style: this.defaultTimeMarkTileStyle, deleteButtonIsVisible: false, ifUpdateTimeMark: false };
       timeMarkTiles.push(timeMarkTile);
     }
     return timeMarkTiles;
@@ -111,6 +112,10 @@ export class TimelogListComponent implements OnInit {
   onClickDeleteTimeMark(timeMark: TimeMark) {
     //to do:  when clicked, prompt for a confirmation:  "Delete this time mark?"
     this.timeLogService.deleteTimeMark(timeMark);
+  }
+
+  onClickUpdateTimeMark(timeMarkTile: ITimeMarkTile){
+    timeMarkTile.ifUpdateTimeMark = !timeMarkTile.ifUpdateTimeMark;
   }
 
   dateIsToday(dateYYYYMMDD: string): boolean {
