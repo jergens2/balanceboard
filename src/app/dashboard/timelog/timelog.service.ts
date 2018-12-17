@@ -100,8 +100,8 @@ export class TimelogService {
     let thisDaysTimeMarks: TimeMark[] = [];
     if(allTimeMarks != null){
       for(let timeMark of allTimeMarks){
-        console.log("time mark of all timemarks", timeMark);
-        console.log("startTime, endTime, DayofYear", timeMark.startTimeISO, timeMark.endTimeISO, moment(timeMark.startTimeISO).dayOfYear(), moment(timeMark.endTimeISO).dayOfYear())
+        // console.log("time mark of all timemarks", timeMark);
+        // console.log("startTime, endTime, DayofYear", timeMark.startTimeISO, timeMark.endTimeISO, moment(timeMark.startTimeISO).dayOfYear(), moment(timeMark.endTimeISO).dayOfYear())
 
         if(moment(timeMark.startTimeISO).dayOfYear() != moment(timeMark.endTimeISO).dayOfYear()){
           console.log("timemark start time and end time are not the same day of year.")

@@ -60,6 +60,7 @@ export class TimeMark{
         this.activities = activities.map((activity)=>{
             let timeMarkAcitivty: TimeMarkActivity = new TimeMarkActivity(activity);
             timeMarkAcitivty.duration = 0;
+            timeMarkAcitivty.activity.color = "pink";
             return timeMarkAcitivty;
         })
     }
