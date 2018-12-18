@@ -81,6 +81,10 @@ export class TimelogListComponent implements OnInit {
       TEMPLATE FUNCTIONS
   */
 
+  onTimeMarkUpdated(timeMark: TimeMark){
+    this.timeLogService.updateTimeMark(timeMark);
+  }
+
   ifDateIsTodate(date: moment.Moment){
     console.log(date);
     if(moment(date).dayOfYear() == moment().dayOfYear()){

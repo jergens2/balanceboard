@@ -142,7 +142,41 @@ export class TimelogService {
     }
   }
 
-
+  updateTimeMark(timeMark: TimeMark){
+    let updatedTimeMark: TimeMark = timeMark;
+    let trimmedActivities = updatedTimeMark.activities.map((activity: TimeMarkActivity)=>{
+      return {activityTreeId: activity.activityTreeId, duration: activity.duration }
+    })
+    
+    updatedTimeMark.activities = trimmedActivities as TimeMarkActivity[];
+    const postUrl = this.serverUrl + "/api/timeMark/update";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    
+    this.httpClient.post<{ message: string, data: any }>(postUrl, updatedTimeMark, httpOptions)
+      .pipe<TimeMark>(map((response) => {
+        let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
+        timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
+        timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
+        timeMark.description = response.data.description;
+        timeMark.activities = this.buildTimeMarkActivities(response.data.activities);
+        return timeMark;
+      }))
+      .subscribe((returnedTimeMark: TimeMark) => {
+        let timeMarks: TimeMark[] = this._timeMarksSubject$.getValue();
+        for(let timeMark of timeMarks){
+          if(timeMark.id == returnedTimeMark.id){
+            timeMarks.splice(timeMarks.indexOf(timeMark), 1, returnedTimeMark)
+          }
+        }
+        this._timeMarksSubject$.next(timeMarks);
+        this.updatePrecedingTimeMark(timeMark);
+      })
+  }
 
   saveTimeMark(timeMark: TimeMark) {
     let newTimeMark: TimeMark = timeMark;
@@ -160,12 +194,10 @@ export class TimelogService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    console.log(newTimeMark);
+    
     this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeMark, httpOptions)
       .pipe<TimeMark>(map((response) => {
-        console.log(response.data.endTimeISO);
         let timeMark = new TimeMark(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
-        console.log(timeMark);
         timeMark.precedingTimeMarkId = response.data.precedingTimeMarkId;
         timeMark.followingTimeMarkId = response.data.followingTimeMarkId;
         timeMark.description = response.data.description;
@@ -174,7 +206,6 @@ export class TimelogService {
       }))
       .subscribe((timeMark: TimeMark) => {
         let timeMarks: TimeMark[] = this._timeMarksSubject$.getValue();
-        console.log("timeMark saved:", timeMark);
         timeMarks.push(timeMark);
 
         this._timeMarksSubject$.next(timeMarks);

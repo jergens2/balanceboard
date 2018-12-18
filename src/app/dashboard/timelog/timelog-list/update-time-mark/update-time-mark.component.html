@@ -17,17 +17,17 @@
 
   Activities
   <div class="time-mark-activities">
-    <div *ngFor="let activity of timeMarkTile.timeMark.activities" [style.background-color]="activityColor(activity)"
+    <div *ngFor="let activity of tileActivities" [style.background-color]="activityColor(activity)"
       class="time-mark-activity">
       <div class="time-mark-activity-name">
         <fa-icon style="font-size: 0.5em" class="mr-3" [icon]="faCircle"></fa-icon>
         {{ activityName(activity) }}
       </div>
       <div style="display:flex;flex-direction: row;">
-        <div class="m-1" >
+        <div class="m-1" (click)="onClickUpdateActivity(activity)">
           <fa-icon [icon]="faCog"></fa-icon>
         </div>
-        <div class="m-1" >
+        <div class="m-1" (click)="onClickDeleteActivity(activity)">
           <fa-icon [icon]="faTimes"></fa-icon>
         </div>
       </div>

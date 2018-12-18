@@ -22,9 +22,22 @@ export class UpdateTimeMarkComponent implements OnInit {
   faTimes = faTimes;
 
   timeMarkTile: ITimeMarkTile;
+  private unsavedTimeMark: TimeMark = null;
+  get tileActivities(): TimeMarkActivity[]{
+    return this.unsavedTimeMark.activities;
+  }
+  
+
+  @Output('update') updatedTimeMark: EventEmitter<TimeMark> = new EventEmitter(); 
   @Output() cancel: EventEmitter<ITimeMarkTile> = new EventEmitter();
   @Input('updateTimeMark') set updateTimeMark(timeMarkTile: ITimeMarkTile) {
     this.timeMarkTile = timeMarkTile;
+    let tileTimeMark = this.timeMarkTile.timeMark;
+    this.unsavedTimeMark = new TimeMark(tileTimeMark.id, tileTimeMark.userId, tileTimeMark.startTimeISO, tileTimeMark.endTimeISO);
+    for(let activity of tileTimeMark.activities){
+      this.unsavedTimeMark.activities.push(new TimeMarkActivity(Object.assign({}, activity.activity)))
+    }
+
   }
 
   ngOnInit() {
@@ -34,9 +47,25 @@ export class UpdateTimeMarkComponent implements OnInit {
   }
 
 
+  onClickDeleteActivity(activity: TimeMarkActivity){
+    let newActivities = this.unsavedTimeMark.activities;
+    newActivities.splice(newActivities.indexOf(activity), 1);
+    this.unsavedTimeMark.activities = newActivities;
+    
+  }
+
+  onClickUpdateActivity(activity: TimeMarkActivity){
+
+  }
+
+
+
+
 
   onClickSaveChanges(){
-
+    this.unsavedTimeMark.description = this.updateTimeMarkForm.get('description').value;
+    this.updatedTimeMark.emit(this.unsavedTimeMark);
+    this.timeMarkTile.ifUpdateTimeMark = false;
   }
 
   onClickCancel(){

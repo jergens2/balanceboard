@@ -59,7 +59,7 @@
               {{ timeMarkTile.timeMark.description }}
             </div>
             <div *ngIf="timeMarkTile.ifUpdateTimeMark" class="m-2">
-              <app-update-time-mark [updateTimeMark]='timeMarkTile'></app-update-time-mark>
+              <app-update-time-mark [updateTimeMark]='timeMarkTile' (update)="onTimeMarkUpdated($event)"></app-update-time-mark>
             </div>
           </div>
 
