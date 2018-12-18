@@ -209,7 +209,7 @@ export class TimelogService {
         timeMarks.push(timeMark);
 
         this._timeMarksSubject$.next(timeMarks);
-        this.updatePrecedingTimeMark(timeMark);
+        // this.updatePrecedingTimeMark(timeMark);
       })
   }
 
