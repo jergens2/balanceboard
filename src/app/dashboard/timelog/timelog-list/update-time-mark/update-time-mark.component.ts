@@ -4,7 +4,7 @@ import { CategorizedActivity } from '../../activities/categorized-activity.model
 import { TimeMark } from '../../time-mark.model';
 import { ITimeMarkTile } from '../timeMarkTile.interface';
 import { TimeMarkActivity } from '../../time-mark-activity.model';
-import { faCircle, faCogs, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faCircle, faTimes, faCog } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-update-time-mark',
@@ -18,7 +18,7 @@ export class UpdateTimeMarkComponent implements OnInit {
   updateTimeMarkForm: FormGroup;
   faCircle = faCircle;
 
-  faCogs = faCogs;
+  faCog = faCog;
   faTimes = faTimes;
 
   timeMarkTile: ITimeMarkTile;

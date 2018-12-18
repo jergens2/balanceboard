@@ -73,7 +73,7 @@ export class TimelogChartComponent implements OnInit {
 
         if (!moment(timeMark.endTime).isBefore(templateStartTime) && !moment(timeMark.startTime).isAfter(templateEndTime)) {
 
-          let marginTop = "0px";
+          let marginTop = "1px";
           let timeMarkHeight: string = "0px";
           timeMarkHeight = ((timeMark.duration / 60) * hourHeightPx) + "px";
 
@@ -126,7 +126,7 @@ export class TimelogChartComponent implements OnInit {
             styleColor = timeMark.activities[0].activity.color
           }
           let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: timeMarkHeight, styleBackgroundColor: styleColor, styleMarginTop: marginTop};
-
+          console.log("pushing tile", tile);
           tiles.push(tile);
         }
       }
