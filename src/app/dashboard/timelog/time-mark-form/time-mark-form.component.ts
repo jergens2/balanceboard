@@ -13,12 +13,6 @@ import { TimeMarkActivity } from '../time-mark-activity.model';
 import { ActivitiesService } from '../activities/activities.service';
 import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 
-export interface ITimeOption {
-  icon: IconDefinition,
-  iconClass: string,
-  label: string,
-  action: string
-}
 
 @Component({
   selector: 'app-time-mark-form',
@@ -45,8 +39,6 @@ export class TimeMarkFormComponent implements OnInit {
   faTimes = faTimes;
 
 
-  startTimeOptions: ITimeOption[];
-  endTimeOptions: ITimeOption[];
 
   // ifPreviousTimeMark: boolean = false;
 

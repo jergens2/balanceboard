@@ -7,7 +7,10 @@ import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { GenericDataType } from '../../generic-data/generic-data-type.model';
 
-@Injectable()
+
+@Injectable({
+  providedIn: 'root'
+})
 export class TaskService {
 
 

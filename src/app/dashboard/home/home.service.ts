@@ -4,7 +4,10 @@ import { GenericDataEntryService } from '../generic-data/generic-data-entry.serv
 import { Subject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 
-@Injectable()
+
+@Injectable({
+  providedIn: 'root'
+})
 export class HomeService {
 
   timeViewSubject: Subject<string> = new Subject<string>();

@@ -7,7 +7,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { GenericDataEntry } from '../generic-data/generic-data-entry.model';
 import { GenericDataType } from '../generic-data/generic-data-type.model';
 
-@Injectable()
+
+@Injectable({
+  providedIn: 'root'
+})
 export class HealthService {
 
 

@@ -17,21 +17,27 @@
 
   Activities
   <div class="time-mark-activities">
-    <div *ngFor="let activity of tileActivities" [style.background-color]="activityColor(activity)"
-      class="time-mark-activity">
-      <div class="time-mark-activity-name">
-        <fa-icon style="font-size: 0.5em" class="mr-3" [icon]="faCircle"></fa-icon>
-        {{ activityName(activity) }}
-      </div>
-      <div style="display:flex;flex-direction: row;">
-        <div class="m-1" (click)="onClickUpdateActivity(activity)">
-          <fa-icon [icon]="faCog"></fa-icon>
+    <div *ngFor="let activity of tileActivities" [style.background-color]="activityColor(activity)" class="time-mark-activity">
+
+      <div style="display:flex; flex-direction:row; justify-content: space-between; align-items: center;">
+        <div class="time-mark-activity-name">
+          <fa-icon style="font-size: 0.5em" class="mr-3" [icon]="faCircle"></fa-icon>
+          {{ activityName(activity) }}
         </div>
-        <div class="m-1" (click)="onClickDeleteActivity(activity)">
-          <fa-icon [icon]="faTimes"></fa-icon>
+        <div style="display:flex;flex-direction: row;">
+          <div class="m-1" (click)="onClickUpdateActivity(activity)">
+            <fa-icon [icon]="faCog"></fa-icon>
+          </div>
+          <div class="m-1" (click)="onClickDeleteActivity(activity)">
+            <fa-icon [icon]="faTimes"></fa-icon>
+          </div>
         </div>
       </div>
 
+
+      <div *ngIf="timeMarkTile.ifUpdateActivity">
+        <!-- <app-activity-form (closeActivityForm)="onCloseActivityForm($event)" (activitySaved)="onActivityUpdated($event)" [activty]=""></app-activity-form> -->
+      </div>
 
     </div>
   </div>

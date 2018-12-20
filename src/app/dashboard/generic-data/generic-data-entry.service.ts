@@ -10,7 +10,10 @@ import { AuthStatus } from '../../authentication/auth-status.model';
 import { GenericDataType } from './generic-data-type.model';
 
 
-@Injectable()
+
+@Injectable({
+  providedIn: 'root'
+})
 export class GenericDataEntryService {
 
 

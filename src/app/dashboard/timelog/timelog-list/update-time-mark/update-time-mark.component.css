@@ -17,9 +17,8 @@
     padding: 5px;
 
     display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    
 }
 .time-mark-activity-name{
     display:flex;

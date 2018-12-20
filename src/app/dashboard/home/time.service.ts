@@ -9,7 +9,10 @@ import { map } from 'rxjs/operators';
 import * as moment from 'moment';
 import { AuthenticationService } from '../../authentication/authentication.service';
 
-@Injectable()
+
+@Injectable({
+  providedIn: 'root'
+})
 export class TimeService {
 
   constructor(private httpClient: HttpClient, private authService: AuthenticationService) {

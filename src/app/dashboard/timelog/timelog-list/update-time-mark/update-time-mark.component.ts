@@ -6,6 +6,12 @@ import { ITimeMarkTile } from '../timeMarkTile.interface';
 import { TimeMarkActivity } from '../../time-mark-activity.model';
 import { faCircle, faTimes, faCog } from '@fortawesome/free-solid-svg-icons';
 
+
+export interface ITimeMarkUpdateActivity{
+  ifUpdateActivity: boolean
+  
+}
+
 @Component({
   selector: 'app-update-time-mark',
   templateUrl: './update-time-mark.component.html',
@@ -55,12 +61,18 @@ export class UpdateTimeMarkComponent implements OnInit {
   }
 
   onClickUpdateActivity(activity: TimeMarkActivity){
-
+    this.ifActivityForm = true;
   }
 
 
+  onActivityUpdated(activity){
+    console.log("activity updated", activity);
+  }
 
-
+  ifActivityForm: boolean = false;
+  onCloseActivityForm($event){
+    this.ifActivityForm = false;
+  }
 
   onClickSaveChanges(){
     this.unsavedTimeMark.description = this.updateTimeMarkForm.get('description').value;

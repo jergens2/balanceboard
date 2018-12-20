@@ -2,14 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ColorPickerModule } from 'ngx-color-picker';
 
-import { TimeService } from './home/time.service';
-import { HomeService } from './home/home.service';
-import { TaskService } from './productivity/ivylee/task.service';
-import { GenericDataEntryService } from './generic-data/generic-data-entry.service';
-import { HealthService } from './health/health.service';
-import { FinanceService } from './finance/finance.service';
 
 import { HomeComponent } from './home/home.component';
 import { MonthViewComponent } from './home/widgets/month-view/month-view.component';
@@ -27,30 +20,20 @@ import { HeightFormComponent } from './health/body-weight/height-form/height-for
 import { FinanceComponent } from './finance/finance.component';
 import { BudgetComponent } from './finance/budget/budget.component';
 import { NetWorthComponent } from './finance/net-worth/net-worth.component';
-import { TimelogComponent } from './timelog/timelog.component';
-import { TimelogService } from './timelog/timelog.service';
-import { TimeMarkFormComponent } from './timelog/time-mark-form/time-mark-form.component';
+
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ActivityFormComponent } from './timelog/time-mark-form/activity-form/activity-form.component';
-import { ActivitiesComponent } from './timelog/activities/activities.component';
-import { ActivityComponent } from './timelog/activities/activity/activity.component';
-import { TimelogChartComponent } from './timelog/timelog-chart/timelog-chart.component';
-import { TimelogCalendarComponent } from './timelog/timelog-calendar/timelog-calendar.component';
-import { TimelogListComponent } from './timelog/timelog-list/timelog-list.component';
-import { NewActivityFormComponent } from './timelog/activities/new-activity-form/new-activity-form.component';
-import { UpdateActivityFormComponent } from './timelog/activities/update-activity-form/update-activity-form.component';
-import { ActivityListItemComponent } from './timelog/activities/new-activity-form/activity-list-item/activity-list-item.component';
-import { UpdateTimeMarkComponent } from './timelog/timelog-list/update-time-mark/update-time-mark.component';
+
+import { TimelogModule } from './timelog/timelog.module';
 
 
 
 
 @NgModule({
   imports: [
+    TimelogModule,
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    ColorPickerModule,
     NgbModule.forRoot(),
   ],
   declarations: [
@@ -70,28 +53,9 @@ import { UpdateTimeMarkComponent } from './timelog/timelog-list/update-time-mark
     FinanceComponent,
     BudgetComponent,
     NetWorthComponent,
-    TimelogComponent,
-    TimeMarkFormComponent,
-    ActivityFormComponent,
-    ActivitiesComponent,
-    ActivityComponent,
-    TimelogChartComponent,
-    TimelogCalendarComponent,
-    TimelogListComponent,
-    NewActivityFormComponent,
-    UpdateActivityFormComponent,
-    ActivityListItemComponent,
-    UpdateTimeMarkComponent
+    
   ],
-  providers: [
-    TimeService, 
-    HomeService,
-    TimelogService,
-    TaskService,
-    GenericDataEntryService,
-    HealthService,
-    FinanceService,
-  ],
+  providers: [],
   entryComponents: [
     EventFormComponent
   ]
