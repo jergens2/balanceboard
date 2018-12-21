@@ -16,7 +16,6 @@ import { TimelogListComponent } from './timelog-list/timelog-list.component';
 import { NewActivityFormComponent } from './activities/new-activity-form/new-activity-form.component';
 import { UpdateActivityFormComponent } from './activities/update-activity-form/update-activity-form.component';
 import { ActivityListItemComponent } from './activities/new-activity-form/activity-list-item/activity-list-item.component';
-import { UpdateTimeMarkComponent } from './timelog-list/update-time-mark/update-time-mark.component';
 
 
 
@@ -40,7 +39,6 @@ import { UpdateTimeMarkComponent } from './timelog-list/update-time-mark/update-
     NewActivityFormComponent,
     UpdateActivityFormComponent,
     ActivityListItemComponent,
-    UpdateTimeMarkComponent
   ],
   providers: []
 })

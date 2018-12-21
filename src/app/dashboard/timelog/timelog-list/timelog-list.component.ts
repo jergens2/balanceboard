@@ -54,6 +54,7 @@ export class TimelogListComponent implements OnInit {
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
       if(timeMarks != null){
         let listTimeMarks = Object.assign([], timeMarks);
+        console.log(listTimeMarks);
         this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(listTimeMarks);
         this.ifLoadingTimeMarks = false;
       }
@@ -81,7 +82,8 @@ export class TimelogListComponent implements OnInit {
       TEMPLATE FUNCTIONS
   */
 
-  onTimeMarkUpdated(timeMark: TimeMark){
+  onTimeMarkUpdated(timeMark: TimeMark, ){
+    console.log("updating timeMark", timeMark);
     this.timeLogService.updateTimeMark(timeMark);
   }
 
@@ -102,6 +104,9 @@ export class TimelogListComponent implements OnInit {
   onCloseForm(){
     this.ifAddTimeMarkForm = false;
     this.ifAddTimeMarkButton = true;    
+  }
+  onCloseUpdateForm(timeMarkTile: ITimeMarkTile){
+    timeMarkTile.ifUpdateTimeMark = false;
   }
 
   onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {

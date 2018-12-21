@@ -61,6 +61,8 @@ export class TimelogComponent implements OnInit, OnDestroy {
      TEMPLATE FUNCTIONS
   */
 
+
+
   
   onDateChange(calendarDate) {
     // this._currentDate$.next(moment(calendarDate))

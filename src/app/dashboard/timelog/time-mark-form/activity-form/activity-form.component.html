@@ -9,11 +9,11 @@
         <label class="input-group-text" >Activity</label>
       </div>
       <select (change)="onActivitySelectionChanged($event)"class="custom-select" *ngIf="activityTree">
-        <option ></option>
+        <option >{{ getUpdateActivityName()}}</option>
         <option *ngFor="let activity of activityTree.allActivities" [value]="activity.treeId">{{ activity.name }}</option>
       </select>
       <select class="custom-select" *ngIf="!activityTree">
-          <option selected ></option>
+          <option selected >{{ getUpdateActivityName() }}</option>
       </select>
     </div>
     <div style="align-self: flex-end;" *ngIf="ifShowCreateNewButton">

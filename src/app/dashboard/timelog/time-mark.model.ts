@@ -17,7 +17,17 @@ export class TimeMark{
     }
 
     public description: string;
-    public activities: TimeMarkActivity[] = [];
+
+    public activities: TimeMarkActivity[] = []
+    // private _activities: TimeMarkActivity[] = [];
+    // get activities(): TimeMarkActivity[]{
+    //     return this._activities;
+    // }
+    // set activities(arr: TimeMarkActivity[]){
+    //     this._activities = [];
+    //     this._activities = Object.assign([], arr);
+    //     console.log(this._activities);
+    // }
 
     public precedingTimeMarkId: string;
     public followingTimeMarkId: string;
@@ -62,9 +72,8 @@ export class TimeMark{
     }
 
     receiveOldActivities(activities: CategorizedActivity[]){
-        // console.log("received old activities", activities);
         this.activities = activities.map((activity)=>{
-            let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(activity);
+            let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(activity, 0, "");
             timeMarkActivity.duration = 0;
             if(timeMarkActivity.activity.color == "blue"){
                 timeMarkActivity.activity.color = "#fafafa";

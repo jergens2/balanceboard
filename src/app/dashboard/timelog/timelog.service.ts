@@ -184,7 +184,7 @@ export class TimelogService {
 
     //the following line exists to remove the activity data from the object
     let trimmedActivities = newTimeMark.activities.map((activity: TimeMarkActivity)=>{
-      return {activityTreeId: activity.activityTreeId, duration: activity.duration }
+      return {activityTreeId: activity.activityTreeId, duration: activity.duration, description: activity.description };
     })
     newTimeMark.activities = trimmedActivities as TimeMarkActivity[];
     const postUrl = this.serverUrl + "/api/timeMark/create";
@@ -213,10 +213,9 @@ export class TimelogService {
       })
   }
 
-  private buildTimeMarkActivities(activitiesData: Array<{activityTreeId: string, duration: number }>): TimeMarkActivity[]{
+  private buildTimeMarkActivities(activitiesData: Array<{activityTreeId: string, duration: number, description: string }>): TimeMarkActivity[]{
     return activitiesData.map((activity) =>{
-      let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(this.activitiesService.findActivityById(activity.activityTreeId));
-      timeMarkActivity.duration = activity.duration;
+      let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(this.activitiesService.findActivityById(activity.activityTreeId), activity.duration, activity.description);
       return timeMarkActivity;
     })
   }

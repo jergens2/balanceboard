@@ -12,6 +12,7 @@ import { TimelogService } from '../timelog.service';
 import { TimeMarkActivity } from '../time-mark-activity.model';
 import { ActivitiesService } from '../activities/activities.service';
 import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { ITimeMarkTile } from '../timelog-list/timeMarkTile.interface';
 
 
 @Component({
@@ -60,16 +61,23 @@ export class TimeMarkFormComponent implements OnInit {
 
 
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
+  // @Output() updatedTimeMark: ITimeMarkTile;
+  @Input() updateTimeMark: ITimeMarkTile;
 
   ngOnInit() {
     this.timeMarkActivities = [];
+    if(this.updateTimeMark){
+      for(let activity of this.updateTimeMark.timeMark.activities){
+        let newActivity = new TimeMarkActivity(activity.activity, activity.duration, activity.description);
+        console.log("activity that was in the time mark, to be updated:", newActivity);
+        this.timeMarkActivities.push(newActivity);
+      }
+    }
     this.latestTimeMark = this.timeLogService.latestTimeMark;
 
 
     this.calculatedStartTime = this.calculateStartTime(this.latestTimeMark);
-    console.log("Latest time mark on form:", this.latestTimeMark);
-    console.log("the calculated time is", this.calculatedStartTime);
-    
+
     // this.buildTimeOptions();
     // this.buildTimeInputs();
     this.buildTimeMarkForm();
@@ -115,14 +123,14 @@ export class TimeMarkFormComponent implements OnInit {
           */
 
           if (moment().isBefore(moment(this.timeLogService.userDefinedStartTimeOfDay))) {
-            console.log("it is before the start of the day")
-            if (moment().isAfter(moment(this.timeLogService.userDefinedStartTimeOfDay).subtract(2,'hours'))) {
-              console.log("it is before the start of the day minus 2 hours")
+            // console.log("it is before the start of the day")
+            if (moment().isAfter(moment(this.timeLogService.userDefinedStartTimeOfDay).subtract(2, 'hours'))) {
+              // console.log("it is before the start of the day minus 2 hours")
               // it is possible that this block yields inaccurate time.  it is here in case, say a persons start time is 8am but they woke up early that day,
               // and did some stuff at 7am.  so a 2 hour window has been added here to try and catch this.
               return moment();
-            }else{
-              console.log("it is before the start of the day, but after midnight?");
+            } else {
+              // console.log("it is before the start of the day, but after midnight?");
               // in this case, it is some time in the morning like 3 or 4am
               return moment(this.latestTimeMark.endTime);
             }
@@ -143,20 +151,30 @@ export class TimeMarkFormComponent implements OnInit {
     return this._durationString;
   }
 
-  get timeNow(): string {
-    return moment().format('HH:mm');
-  }
 
   private buildTimeMarkForm() {
+    if (this.updateTimeMark) {
+      console.log("Building update form.  ", this.updateTimeMark)
+      console.log(this.updateTimeMark.timeMark.startTime);
+      this.timeMarkForm = new FormGroup({
+        'startTime': new FormControl(moment(this.updateTimeMark.timeMark.startTime).format('HH:mm'), Validators.required),
+        'startTimeDate': new FormControl(moment(this.updateTimeMark.timeMark.startTime).format('YYYY-MM-DD'), Validators.required),
+        'endTime': new FormControl(moment(this.updateTimeMark.timeMark.endTime).format('HH:mm').toString(), Validators.required),
+        'endTimeDate': new FormControl(moment(this.updateTimeMark.timeMark.endTime).format('YYYY-MM-DD'), Validators.required),
 
-    this.timeMarkForm = new FormGroup({
-      'startTime': new FormControl( this.calculatedStartTime.format('HH:mm'), Validators.required ),
-      'startTimeDate': new FormControl( this.calculatedStartTime.format('YYYY-MM-DD'), Validators.required ),
-      'endTime': new FormControl( moment().format('HH:mm').toString(), Validators.required),
-      'endTimeDate': new FormControl( moment().format('YYYY-MM-DD'), Validators.required ),
+        'description': new FormControl(this.updateTimeMark.timeMark.description),
+      });
+    } else {
+      this.timeMarkForm = new FormGroup({
+        'startTime': new FormControl(this.calculatedStartTime.format('HH:mm'), Validators.required),
+        'startTimeDate': new FormControl(this.calculatedStartTime.format('YYYY-MM-DD'), Validators.required),
+        'endTime': new FormControl(moment().format('HH:mm').toString(), Validators.required),
+        'endTimeDate': new FormControl(moment().format('YYYY-MM-DD'), Validators.required),
 
-      'description': new FormControl(),
-    });
+        'description': new FormControl(),
+      });
+    }
+
   }
 
 
@@ -168,16 +186,32 @@ export class TimeMarkFormComponent implements OnInit {
     
   */
 
-  now(): moment.Moment{
+  get action(): string {
+    if (this.updateTimeMark) {
+      return "Update";
+    } else {
+      return "New";
+    }
+  }
+
+  now(): moment.Moment {
     return moment();
   }
 
+  get udateTimeMarkEndTime(): string { 
+    return moment(this.updateTimeMark.timeMark.endTime).format('hh:mm a')
+  }
+
+  get udateTimeMarkStartTime(): string { 
+    return moment(this.updateTimeMark.timeMark.startTime).format('hh:mm a')
+  }
+
   ifSpecifyStartTime: boolean = false;
-  onClickSpecifyStartTime(){
+  onClickSpecifyStartTime() {
     this.ifSpecifyStartTime = !this.ifSpecifyStartTime;
   }
   ifSpecifyEndTime: boolean = false;
-  onClickSpecifyEndTime(){
+  onClickSpecifyEndTime() {
     this.ifSpecifyEndTime = !this.ifSpecifyEndTime;
   }
 
@@ -193,27 +227,30 @@ export class TimeMarkFormComponent implements OnInit {
   onClickSaveTimeMark() {
     let startTime = moment(this.timeMarkForm.get('startTimeDate').value + ' ' + this.timeMarkForm.get('startTime').value).toISOString();
     let endTime = moment(this.timeMarkForm.get('endTimeDate').value + ' ' + this.timeMarkForm.get('endTime').value);
-    console.log("endTime", endTime)
 
-    let newTimeMark = new TimeMark(null, null, startTime, endTime.toISOString());
-    newTimeMark.description = this.timeMarkForm.get('description').value;
-    newTimeMark.activities = this.timeMarkActivities;
-    if (this.latestTimeMark != null) {
-      newTimeMark.precedingTimeMarkId = this.latestTimeMark.id;
+    let newTimeMark: TimeMark;
+    if (this.updateTimeMark) {
+      newTimeMark = new TimeMark(this.updateTimeMark.timeMark.id, this.updateTimeMark.timeMark.userId, startTime, endTime.toISOString());
+      newTimeMark.description = this.timeMarkForm.get('description').value;
+      newTimeMark.activities = this.timeMarkActivities;
+      // this.updateTimeMark.timeMark = Object.assign({}, newTimeMark);
+      this.timeLogService.updateTimeMark(newTimeMark);
     } else {
-      newTimeMark.precedingTimeMarkId = "NO_PRECEDING_TIME_MARK";
+      newTimeMark = new TimeMark(null, null, startTime, endTime.toISOString());
+      newTimeMark.description = this.timeMarkForm.get('description').value;
+      newTimeMark.activities = this.timeMarkActivities;
+      if (this.latestTimeMark != null) {
+        newTimeMark.precedingTimeMarkId = this.latestTimeMark.id;
+      } else {
+        newTimeMark.precedingTimeMarkId = "NO_PRECEDING_TIME_MARK";
+      }
+      newTimeMark.followingTimeMarkId = "NO_FOLLOWING_TIME_MARK";
+      this.timeLogService.saveTimeMark(newTimeMark);
+      // this.timeMarkForm.reset();
+
+      // this.buildTimeMarkForm();
+
     }
-
-    newTimeMark.followingTimeMarkId = "NO_FOLLOWING_TIME_MARK";
-
-
-
-    console.log("sending timemark to service to save, ", newTimeMark);
-    this.timeLogService.saveTimeMark(newTimeMark);
-    this.timeMarkForm.reset();
-
-    this.buildTimeMarkForm();
-
     this.closeForm.emit(true);
   }
 
@@ -241,7 +278,7 @@ export class TimeMarkFormComponent implements OnInit {
   }
 
   onClickUpdateTimeMarkActivity(activity: TimeMarkActivity) {
-
+    console.log("updating activity", activity);
   }
 
   onClickDeleteTimeMarkActivity(activity: TimeMarkActivity) {

@@ -5,6 +5,7 @@ export class TimeMarkActivity{
 
     activityTreeId: string;
     duration: number;
+    description: string;
 
     private _activity: CategorizedActivity;
     get activity(): CategorizedActivity{
@@ -14,9 +15,10 @@ export class TimeMarkActivity{
         this._activity = activity;
     }
 
-    constructor(activity: CategorizedActivity, ){
+    constructor(activity: CategorizedActivity, duration: number, description: string){
         this.activityTreeId = activity.treeId;
-        this.duration = 0;
+        this.duration = duration;
+        this.description = description;
         this._activity = activity;
     }
 }

@@ -1,4 +1,4 @@
-New Time Mark
+{{ action }} Time Mark
 <div [formGroup]="timeMarkForm" class="mb-3">
 
 
@@ -8,13 +8,19 @@ New Time Mark
       Start Time
     </div>
     <div style="flex-grow:2; padding-right:10px;">
-      <div *ngIf="!ifSpecifyStartTime">
-        {{ calculatedStartTime.format('hh:mm a') }}
+      <div *ngIf="updateTimeMark">
+        {{ udateTimeMarkStartTime }}
       </div>
-      <div *ngIf="ifSpecifyStartTime">
-        <input class="form-control" formControlName="startTime" type="time" [value]="calculatedStartTime.format('HH:mm')"/>
-        <input class="form-control" formControlName="startTimeDate" type="date" [value]="now().format('YYYY-MM-DD')"/>
+      <div *ngIf="!updateTimeMark">
+        <div *ngIf="!ifSpecifyStartTime">
+          {{ calculatedStartTime.format('hh:mm a') }}
+        </div>
+        <div *ngIf="ifSpecifyStartTime">
+          <input class="form-control" formControlName="startTime" type="time" [value]="calculatedStartTime.format('HH:mm')"/>
+          <input class="form-control" formControlName="startTimeDate" type="date" [value]="now().format('YYYY-MM-DD')"/>
+        </div>
       </div>
+      
 
     </div>
     <div>
@@ -37,13 +43,19 @@ New Time Mark
     </div>
 
     <div style="flex-grow:2; padding-right:10px;">
-      <div *ngIf="!ifSpecifyEndTime">
-        {{ now().format('hh:mm a') }}
+      <div *ngIf="updateTimeMark">
+        {{ udateTimeMarkEndTime }}
       </div>
-      <div *ngIf="ifSpecifyEndTime">
-        <input class="form-control" formControlName="endTime" type="time" [value]="now().format('HH:mm')"/>
-        <input class="form-control" formControlName="endTimeDate" type="date" [value]="now().format('YYYY-MM-DD')"/>
+      <div *ngIf="!updateTimeMark">
+        <div *ngIf="!ifSpecifyEndTime">
+          {{ now().format('hh:mm a') }}
+        </div>
+        <div *ngIf="ifSpecifyEndTime">
+          <input class="form-control" formControlName="endTime" type="time" [value]="now().format('HH:mm')"/>
+          <input class="form-control" formControlName="endTimeDate" type="date" [value]="now().format('YYYY-MM-DD')"/>
+        </div>
       </div>
+      
 
     </div>
     <div>
@@ -87,8 +99,8 @@ New Time Mark
       <div>
         Activity: {{ timeMarkActivity.activity.name }}
       </div>
-      <div style="display:flex;flex-direction: row;" (click)="onClickUpdateTimeMarkActivity(timeMarkActivity)">
-        <div class="time-mark-activity-control">
+      <div style="display:flex;flex-direction: row;" >
+        <div class="time-mark-activity-control" (click)="onClickUpdateTimeMarkActivity(timeMarkActivity)">
           <fa-icon [icon]="faCog"></fa-icon>
         </div>
         <div class="time-mark-activity-control" (click)="onClickDeleteTimeMarkActivity(timeMarkActivity)">

@@ -58,8 +58,9 @@
             <div>
               {{ timeMarkTile.timeMark.description }}
             </div>
-            <div *ngIf="timeMarkTile.ifUpdateTimeMark" class="m-2">
-              <app-update-time-mark [updateTimeMark]='timeMarkTile' (update)="onTimeMarkUpdated($event)"></app-update-time-mark>
+            <div *ngIf="timeMarkTile.ifUpdateTimeMark" class=" border border-secondary new-time-mark m-2 p-3">
+              
+              <app-time-mark-form [updateTimeMark]='timeMarkTile' (update)="onTimeMarkUpdated($event)" (closeForm)="onCloseUpdateForm(timeMarkTile)" ></app-time-mark-form>
             </div>
           </div>
 
