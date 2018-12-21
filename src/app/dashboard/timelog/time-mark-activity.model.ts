@@ -7,6 +7,7 @@ export class TimeMarkActivity{
     duration: number;
     description: string;
 
+
     private _activity: CategorizedActivity;
     get activity(): CategorizedActivity{
         return this._activity;

@@ -54,7 +54,7 @@ export class TimelogListComponent implements OnInit {
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
       if(timeMarks != null){
         let listTimeMarks = Object.assign([], timeMarks);
-        console.log(listTimeMarks);
+        // console.log(listTimeMarks);
         this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(listTimeMarks);
         this.ifLoadingTimeMarks = false;
       }

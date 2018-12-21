@@ -69,7 +69,7 @@ export class TimeMarkFormComponent implements OnInit {
     if(this.updateTimeMark){
       for(let activity of this.updateTimeMark.timeMark.activities){
         let newActivity = new TimeMarkActivity(activity.activity, activity.duration, activity.description);
-        console.log("activity that was in the time mark, to be updated:", newActivity);
+        // console.log("activity that was in the time mark, to be updated:", newActivity);
         this.timeMarkActivities.push(newActivity);
       }
     }
@@ -154,8 +154,8 @@ export class TimeMarkFormComponent implements OnInit {
 
   private buildTimeMarkForm() {
     if (this.updateTimeMark) {
-      console.log("Building update form.  ", this.updateTimeMark)
-      console.log(this.updateTimeMark.timeMark.startTime);
+      // console.log("Building update form.  ", this.updateTimeMark)
+      // console.log(this.updateTimeMark.timeMark.startTime);
       this.timeMarkForm = new FormGroup({
         'startTime': new FormControl(moment(this.updateTimeMark.timeMark.startTime).format('HH:mm'), Validators.required),
         'startTimeDate': new FormControl(moment(this.updateTimeMark.timeMark.startTime).format('YYYY-MM-DD'), Validators.required),
@@ -232,8 +232,13 @@ export class TimeMarkFormComponent implements OnInit {
     if (this.updateTimeMark) {
       newTimeMark = new TimeMark(this.updateTimeMark.timeMark.id, this.updateTimeMark.timeMark.userId, startTime, endTime.toISOString());
       newTimeMark.description = this.timeMarkForm.get('description').value;
-      newTimeMark.activities = this.timeMarkActivities;
+      for(let activity of this.timeMarkActivities){
+        // console.log("pushing activity", activity);
+        newTimeMark.activities.push(activity)
+      }
+      // newTimeMark.activities = this.timeMarkActivities;
       // this.updateTimeMark.timeMark = Object.assign({}, newTimeMark);
+      // console.log("updating time mark", newTimeMark);
       this.timeLogService.updateTimeMark(newTimeMark);
     } else {
       newTimeMark = new TimeMark(null, null, startTime, endTime.toISOString());
@@ -245,6 +250,7 @@ export class TimeMarkFormComponent implements OnInit {
         newTimeMark.precedingTimeMarkId = "NO_PRECEDING_TIME_MARK";
       }
       newTimeMark.followingTimeMarkId = "NO_FOLLOWING_TIME_MARK";
+      
       this.timeLogService.saveTimeMark(newTimeMark);
       // this.timeMarkForm.reset();
 
@@ -267,7 +273,10 @@ export class TimeMarkFormComponent implements OnInit {
   }
 
   onActivitySaved(activity: TimeMarkActivity) {
+    // console.log("saving activity", activity);
     this.timeMarkActivities.push(activity);
+
+    // console.log(this.timeMarkActivities);
     this.onCloseActivityForm(null);
   }
 
@@ -278,7 +287,7 @@ export class TimeMarkFormComponent implements OnInit {
   }
 
   onClickUpdateTimeMarkActivity(activity: TimeMarkActivity) {
-    console.log("updating activity", activity);
+    // console.log("updating activity", activity);
   }
 
   onClickDeleteTimeMarkActivity(activity: TimeMarkActivity) {

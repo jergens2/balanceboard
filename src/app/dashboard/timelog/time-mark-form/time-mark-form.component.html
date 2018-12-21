@@ -96,13 +96,15 @@
   <div *ngIf="timeMarkActivities">
     <div *ngFor="let timeMarkActivity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity'
       style='border-radius:5px;'>
+
       <div>
         Activity: {{ timeMarkActivity.activity.name }}
       </div>
       <div style="display:flex;flex-direction: row;" >
-        <div class="time-mark-activity-control" (click)="onClickUpdateTimeMarkActivity(timeMarkActivity)">
+        
+        <!-- <div *ngIf="!ifAddActivityForm" class="time-mark-activity-control" (click)="onClickUpdateTimeMarkActivity(timeMarkActivity)">
           <fa-icon [icon]="faCog"></fa-icon>
-        </div>
+        </div> -->
         <div class="time-mark-activity-control" (click)="onClickDeleteTimeMarkActivity(timeMarkActivity)">
           <fa-icon [icon]="faTimes"></fa-icon>
         </div>

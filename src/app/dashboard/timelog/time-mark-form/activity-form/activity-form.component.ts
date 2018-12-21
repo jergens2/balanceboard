@@ -82,7 +82,7 @@ export class ActivityFormComponent implements OnInit {
       let activity: CategorizedActivity = this.activityTree.allActivities.find(activity => activity.treeId === this.activityForm.get('activityTreeId').value);
   
       let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(activity, this.activityForm.value.duration, this.activityForm.value.description);
-      console.log(timeMarkActivity);
+      // console.log(timeMarkActivity);
   
       // if(this.updateActivity){
       //   this.updateActivity.timeMarkActivity = timeMarkActivity;
