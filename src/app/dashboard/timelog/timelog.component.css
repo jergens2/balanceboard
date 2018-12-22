@@ -65,29 +65,38 @@
 
 
 
-/* 
-
 @media (max-width: 767px){
     /* small screen sizes up to 767px , e.g. phones */
-    /* 
+
     .root{
         padding:0px;
     }
 
     .content{
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: auto auto auto;
+        grid-template-columns: auto;
     }
     .timelog-chart{
+        grid-column: 1 / span 1;
+        grid-row: 1 / span 1;
         margin:0px;
         margin-bottom:10px;
     }
+    .timelog-calendar{
+        grid-column: 1 / span 1;
+        grid-row: 2 / span 1;
+    }
     .timelog-list{
+        grid-column: 1 / span 1;
+        grid-row: 3 / span 1;
         margin:0px;
     }
+    
     .timelog-header{
         min-height:70px;
     }
-} */
+} 
 
 
 
