@@ -3,6 +3,7 @@
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 70px 1fr;
+    max-width: 768px;
 
 }
 .timelog-header{
@@ -45,7 +46,7 @@
     grid-column: 1 / span 1;
     grid-row: 1 / span 2;
 
-    /* min-height: 300px; */
+    max-width:400px;
 }
 
 .timelog-calendar{

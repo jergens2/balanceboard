@@ -57,8 +57,8 @@ export class TimelogService {
 
 
   // 2018-12-16:  these 2 following variables are statically defined here in this service, but eventually will be modifyable by the user which will change the behavior of the app
-  private _userDefinedStartTimeOfDay: moment.Moment = moment().hour(8).minute(0).second(0).millisecond(0);
-  private _userDefinedEndTimeOfDay: moment.Moment = moment().hour(22).minute(0).second(0).millisecond(0);
+  private _userDefinedStartTimeOfDay: moment.Moment = moment().hour(7).minute(30).second(0).millisecond(0);
+  private _userDefinedEndTimeOfDay: moment.Moment = moment().hour(22).minute(30).second(0).millisecond(0);
   get userDefinedStartTimeOfDay(): moment.Moment { return this._userDefinedStartTimeOfDay; }
   get userDefinedEndTimeOfDay(): moment.Moment { return this._userDefinedEndTimeOfDay; }
 

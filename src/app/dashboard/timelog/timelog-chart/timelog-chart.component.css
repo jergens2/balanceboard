@@ -7,25 +7,7 @@
     padding-right: 15px;
 }
 
-.chart-items{
-    margin-top: 14px;
-    margin-bottom: 15px;
-    grid-column: 2 / span 1;
-}
 
-.chart-item{
-    /* border:1px solid rgb(211, 224, 241); */
-    border-radius:2px;
- 
-    font-size: 0.7em;
-    margin-left:10px;
-    margin-right:10px;
- 
-}
-.chart-item:hover{
-    background-color: rgb(172, 255, 172);
-    /* cursor: pointer; */
-}
 
 .chart-hour-labels-grid{
     grid-column: 1 / span 1;
@@ -33,7 +15,7 @@
     border-right: 1px solid rgb(160, 160, 160);
 
     display: grid;
-    grid-template-rows: repeat(14, 28px);
+    /* grid-template-rows: repeat(14, 28px); */
     grid-template-columns: 50px;
     justify-items: end;
     align-items: center;
@@ -42,6 +24,7 @@
 .chart-hour-label{
     grid-column: 1 / span 2;
 
+    /* height: 35px; */
     font-size: 0.8em;
 
     display: flex;
@@ -49,4 +32,14 @@
     justify-content: flex-end;
     align-items: center;
 
+}
+
+
+.chart-hour-tiles{
+    background-color: rgb(187, 187, 236);
+    grid-column: 2 / span 2;
+}
+.chart-hour-tile{
+    width:100%;
+    background-color:red;
 }
