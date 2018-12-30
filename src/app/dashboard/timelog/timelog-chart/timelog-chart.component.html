@@ -1,9 +1,7 @@
-
 <div class="timelog-chart">
 
-
   <div class="chart-hour-labels-grid">
-    <div *ngFor="let hour of hours" class="chart-hour-label" [style.height]="hourHeightPx">
+    <div *ngFor="let hour of hours" class="chart-hour-label">
       <div>
         {{ hour }}
       </div>
@@ -13,12 +11,16 @@
     </div>
   </div>
 
-  <div class="chart-hour-tiles">
-    <div *ngFor="let tile of chartHourTiles" class="chart-hour-tile" [style.height]="hourHeightPx">
-      from  {{ tile.startTime.format('h:mm a')}}  to {{ tile.endTime.format('h:mm a')}}
+  <div class="chart-items">
+    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight"
+      [style.backgroundColor]="tile.styleBackgroundColor" [style.margin-top]="tile.styleMarginTop"
+      (click)="onClickTile(tile)">
+      <div *ngIf="ifShowActivities(tile.timeMark)">
+        <div *ngFor="let timeMarkActivity of tile.timeMark.activities">
+          {{ timeMarkActivity.activity.name }}
+        </div>
+      </div>
     </div>
   </div>
 
-
-
-</div> 
+</div>
