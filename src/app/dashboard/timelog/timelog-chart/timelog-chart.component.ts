@@ -4,6 +4,7 @@ import { TimeMark } from '../time-mark.model';
 
 import * as moment from 'moment';
 import { ActivitiesService } from '../activities/activities.service';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 export interface ITimeMarkChartTile {
   timeMark: TimeMark,
@@ -12,6 +13,7 @@ export interface ITimeMarkChartTile {
   styleMarginTop: string,
   styleBackgroundColor: string,
 }
+
 
 
 
@@ -27,6 +29,9 @@ export class TimelogChartComponent implements OnInit {
   timeMarkChartTiles: ITimeMarkChartTile[];
   hours: string[];
   hourHeight: number;
+
+  ifLoading: boolean = true;
+  faSpinner = faSpinner;
 
   ngOnInit() {
 
@@ -48,8 +53,17 @@ export class TimelogChartComponent implements OnInit {
 
     this.timeMarkChartTiles = [];
     this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
-      let chartTimeMarks = Object.assign([], timeMarks);
-      this.timeMarkChartTiles = this.buildTimeMarkChartTiles(chartTimeMarks, this.hourHeight);
+      this.timeMarkChartTiles = [];
+      this.ifLoading = true;
+      if(timeMarks != null){
+        if(timeMarks.length > 0){
+          let chartTimeMarks = Object.assign([], timeMarks);
+          this.timeMarkChartTiles = this.buildTimeMarkChartTiles(chartTimeMarks, this.hourHeight);
+          
+        }
+        this.ifLoading = false;
+      }
+      
     })
   }
 
@@ -58,11 +72,14 @@ export class TimelogChartComponent implements OnInit {
 
     if (timeMarks != null) {
       timeMarks.sort((a, b) => {
-        if (moment(a.startTime).isBefore(moment(b.startTime))) {
+        if (moment(a.startTime).isAfter(moment(b.startTime))) {
           return 1
-        } else {
-          return 0;
         }
+        if (moment(a.startTime).isBefore(moment(b.startTime))) {
+          return -1;
+        }
+        return 0;
+
       })
 
       for (let timeMark of timeMarks) {
@@ -74,7 +91,7 @@ export class TimelogChartComponent implements OnInit {
 
           let marginTop = "1px";
           let timeMarkHeight: string = "0px";
-          timeMarkHeight = (((timeMark.duration / 60) * hourHeightPx) - 1)  + "px";
+          timeMarkHeight = (((timeMark.duration / 60) * hourHeightPx) - 1) + "px";
 
 
           if (moment(timeMark.startTime).isBefore(templateStartTime)) {
@@ -82,6 +99,11 @@ export class TimelogChartComponent implements OnInit {
             let pxCut = hoursCut * hourHeightPx;
 
             timeMarkHeight = (((timeMark.duration / 60) * hourHeightPx) - pxCut - 1) + "px";
+          }
+          if (moment(timeMark.startTime).isAfter(templateStartTime) && tiles.length == 0){
+
+            let diff = moment(timeMark.startTime).diff(moment(templateStartTime), 'hours');
+            marginTop = (diff * hourHeightPx) + "px";
           }
 
           if (moment(timeMark.endTime).isAfter(templateEndTime)) {

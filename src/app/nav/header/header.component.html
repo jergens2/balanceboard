@@ -1,7 +1,10 @@
 <div class="header" >
-  <a class="navbar-brand">balanceboard</a>
-  <div (mouseleave)="onMouseLeaveMenu()" (mouseenter)="onMouseEnterMenu()">
-    <button class="btn btn-primary" (click)="onClickMenuButton()">Menu <fa-icon [icon]="faCaretSquareDown"></fa-icon></button>
+  <div class="header-title">balanceboard</div>
+  <div class="header-menu" (mouseleave)="onMouseLeaveMenu()" (mouseenter)="onMouseEnterMenu()">
+    <button class="menu-dropdown-button" (click)="onClickMenuButton()">
+      Menu 
+      <!-- <fa-icon [icon]="faCaretSquareDown"></fa-icon> -->
+    </button>
     <div [ngClass]="{'expanded-menu': menuIsExpanded}" class="menu">
       <div class='menu-item' (click)="onClickMenuItem()" routerLink="/home" routerLinkActive='activeLink'>
         <div class="menu-item-icon">
