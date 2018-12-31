@@ -1,0 +1,103 @@
+.root{
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.daybook {
+    /* background-color: rgb(255, 190, 190); */
+    border: 1px solid black;
+
+    flex-grow: 2;
+/* 
+    width: 468px;
+    height: 624px; */
+
+    padding:10px;
+    margin: 15px;
+
+    background-color: #fdfdfd;
+}
+
+@media (max-width: 767px){
+    .daybook { 
+        min-width: 300px;
+        min-height: 400px;
+
+        width: 100%;
+        height: 90vh;
+
+        max-width: 468px;
+        max-height: 624px;
+
+        margin: 0px;
+        /* background-color: rgb(0, 255, 170); */
+    }
+}
+
+@media  (min-width: 768px) {
+    /* this 767 / 768 number is the cutoff in the main AppComponent for the sidebar */
+    .daybook { 
+        min-width: 468px;
+        min-height: 624px;
+
+        width: 468px;
+        height: 624px;
+
+        max-width: 468px;
+        max-height: 624px;
+
+        /* background-color: rgb(255, 196, 232); */
+    }
+}
+
+@media (min-height: 730px) and (min-width: 806px) {
+    .daybook { 
+        min-width: 525px;
+        min-height: 700px;
+
+        width: 525px;
+        height: 700px;
+
+        max-width: 525px;
+        max-height: 700px;
+
+        /* background-color: rgb(255, 119, 142); */
+    }
+}
+
+@media (min-height: 830px) and (min-width: 880px) {
+    .daybook { 
+        min-width: 600px;
+        min-height: 800px;
+
+        width: 600px;
+        height: 800px;
+
+        max-width: 600px;
+        max-height: 800px;
+
+        /* background-color: rgb(255, 64, 96); */
+    }
+}
+
+@media (min-height: 930px) and (min-width: 970px) {
+
+    .daybook {
+        min-width: 675px;
+        min-height: 900px;
+
+        width: 675px;
+        height: 900px;
+
+        max-width: 675px;
+        max-height: 900px;
+
+        /* background-color: rgb(255, 0, 43); */
+
+    }
+}
+
