@@ -6,102 +6,17 @@
       <!-- <fa-icon [icon]="faCaretSquareDown"></fa-icon> -->
     </button>
     <div [ngClass]="{'expanded-menu': menuIsExpanded}" class="menu">
-      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/home" routerLinkActive='activeLink'>
+
+      <div *ngFor="let navItem of navItems" class='menu-item' (click)="onClickMenuItem()" [routerLink]="navItem.routerLink" routerLinkActive='activeLink'>
         <div class="menu-item-icon">
-          <fa-icon [icon]="faHome"></fa-icon>
+          <fa-icon [icon]="navItem.icon"></fa-icon>
         </div>
         <div class="menu-item-text">
-          Home
+          {{ navItem.title }}
         </div>
       </div>
-      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/timelog" routerLinkActive='activeLink'>
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faCalendarAlt"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Time Log
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()" routerLink='/timelog-activities'>
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faProjectDiagram"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Activities / Categories
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()">
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faProjectDiagram"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Productivity
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/ivyleeCreation" routerLinkActive='activeLink'>
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faListOl"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Work Task List
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()">
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faProjectDiagram"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Ongoing Task List
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()">
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faSyncAlt"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Routine
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()">
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faDollarSign"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Finances
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()">
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faChartPie"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Budget
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/networth" routerLinkActive='activeLink'>
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faChartLine"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Net Worth
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()">
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faBriefcaseMedical"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Health
-        </div>
-      </div>
-      <div class='menu-item' (click)="onClickMenuItem()" routerLink="/bodyWeight" routerLinkActive='activeLink'>
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faWeight"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Body Weight
-        </div>
-      </div>
+
+
       <div class='menu-item' (click)="onClickMenuItem()">
         <div class="menu-item-icon">
           <fa-icon [icon]="faCogs"></fa-icon>

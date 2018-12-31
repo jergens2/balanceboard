@@ -1,10 +1,10 @@
-import { Component, OnInit, ElementRef, OnDestroy } from '@angular/core';
-import { faCalendarAlt, faCaretSquareDown } from '@fortawesome/free-regular-svg-icons';
-import { faHome, faProjectDiagram, faChartBar, faChartPie, faListOl, faSyncAlt, faDollarSign, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { fromEvent, Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../authentication/authentication.service';
+import { NavItem } from '../nav-item.model';
+import { navigationItems } from '../nav-items';
 
 @Component({
   selector: 'app-header',
@@ -14,27 +14,16 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthenticationService, private router: Router) { }
-  faCaretSquareDown = faCaretSquareDown;
-  faHome = faHome;
-  faCalendarAlt = faCalendarAlt;
-  faProjectDiagram = faProjectDiagram;
-  faChartBar = faChartBar;
-  faChartPie = faChartPie;
-  faListOl = faListOl;
-  faSyncAlt = faSyncAlt;
-  faDollarSign = faDollarSign;
-  faChartLine = faChartLine;
-  faBriefcaseMedical = faBriefcaseMedical;
-  faWeight = faWeight;
   faCogs = faCogs;
   faSignOutAlt = faSignOutAlt;
 
   menuIsExpanded: boolean;
   menuSubscription: Subscription;
 
-  // documentClickListener: Observable<Event> = fromEvent(document, 'click');
+  navItems: NavItem[] = [];
 
   ngOnInit() {
+    this.navItems = navigationItems;
     this.menuIsExpanded = false;
     this.menuSubscription = new Subscription();
   }

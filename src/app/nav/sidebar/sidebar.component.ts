@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { HomeService } from '../../dashboard/home/home.service';
 import { Component, OnInit } from '@angular/core';
 
-import { faHome, faProjectDiagram, faListOl, faSyncAlt, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt, faSitemap  } from '@fortawesome/free-solid-svg-icons';
-import { faChartBar, faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
+import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { NavItem } from '../nav-item.model';
+import { navigationItems } from '../nav-items';
 
 @Component({
   selector: 'app-sidebar',
@@ -16,18 +17,7 @@ export class SidebarComponent implements OnInit {
   constructor(private homeService: HomeService, private authService: AuthenticationService, private router: Router) { }
 
 
-  faHome = faHome;
-  faCalendarAlt = faCalendarAlt;
-  faSiteMap = faSitemap;
-  faProjectDiagram = faProjectDiagram;
-  faChartBar = faChartBar;
-  faChartPie = faChartPie;
-  faListOl = faListOl;
-  faSyncAlt = faSyncAlt;
-  faDollarSign = faDollarSign;
-  faChartLine = faChartLine;
-  faBriefcaseMedical = faBriefcaseMedical;
-  faWeight = faWeight;
+
   faCogs = faCogs;
   faSignOutAlt = faSignOutAlt;
 
@@ -36,7 +26,10 @@ export class SidebarComponent implements OnInit {
   loggedInUser: string = '';
   userId: string = '';
 
+  navItems: NavItem[];
+
   ngOnInit() {
+    this.navItems = navigationItems;
     this.loggedInUser = this.authService.authenticatedUser.email;
     this.userId = this.authService.authenticatedUser.id;
   }

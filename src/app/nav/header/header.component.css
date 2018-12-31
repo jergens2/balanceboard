@@ -21,11 +21,13 @@
 .menu-dropdown-button{
     background-color: rgb(173, 173, 173);
     border: none;
+    padding: 3px;
+    padding-top:1px;
 }
 .menu-dropdown-button:focus{
     outline: none;
-    padding: 0px;
-    
+    padding: 3px;
+    padding-top:1px;
 }
 .menu-dropdown-button:hover{
     background-color: rgb(221, 221, 221);
