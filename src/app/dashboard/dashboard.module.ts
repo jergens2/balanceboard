@@ -24,6 +24,7 @@ import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { TimelogModule } from './timelog/timelog.module';
+import { DaybookComponent } from './daybook/daybook.component';
 
 
 
@@ -53,6 +54,7 @@ import { TimelogModule } from './timelog/timelog.module';
     FinanceComponent,
     BudgetComponent,
     NetWorthComponent,
+    DaybookComponent,
     
   ],
   providers: [],
