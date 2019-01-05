@@ -15,7 +15,6 @@ import { AuthenticationService } from './authentication/authentication.service';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './nav/header/header.component';
-import { ContentComponent } from './nav/content/content.component';
 import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
 
@@ -25,8 +24,7 @@ import { AuthenticationComponent } from './authentication/authentication.compone
     AppComponent,
     AuthenticationComponent,
     HeaderComponent,
-    SidebarComponent,
-    ContentComponent
+    SidebarComponent
   ],
   imports: [
     BrowserModule,
