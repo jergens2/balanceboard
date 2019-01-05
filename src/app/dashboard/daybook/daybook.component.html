@@ -4,12 +4,14 @@
     <div class="daybook-header">Today's date.</div>
     <div class="daybook-body" [ngStyle]="daybookBodyStyle">
 
+      <div *ngFor="let bookLine of bookLines" class="book-line" [ngStyle]="bookLine.style">
+
+      </div>
+
       <div *ngFor="let hourLabel of hourLabels" class="hour-label" [ngStyle]="hourLabel.style">
         <div class="hour-label-offset">
           {{ hourLabel.time }}
         </div>
-
-
       </div>
 
     </div>

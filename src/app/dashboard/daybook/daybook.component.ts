@@ -16,17 +16,16 @@ export class DaybookComponent implements OnInit {
 
   private _currentDate: moment.Moment;
 
-  gridSegments: any[] = [];
-
   daybookBodyStyle: any = { "background-color": "red", "border": "10px solid green" };
   hourLabels: any[] = [];
+  bookLines: any[] = [];
 
   ngOnInit() {
 
 
     this.timeLogService.currentDate$.subscribe((changedDate: moment.Moment) => {
       this._currentDate = moment(changedDate);
-      this.dayStartTime = moment(this._currentDate).hour(7).minute(30).second(0).millisecond(0);
+      this.dayStartTime = moment(this._currentDate).hour(6).minute(30).second(0).millisecond(0);
       this.dayEndTime = moment(this._currentDate).hour(22).minute(30).second(0).millisecond(0);
 
       this.buildDisplay();
@@ -52,20 +51,27 @@ export class DaybookComponent implements OnInit {
     let endTime = moment(this.dayEndTime).add(30, 'minutes');
 
     let hourLabels: any[] = [];
+    let gridLines: any[] = [];
 
     let gridIndex: number = 1;
     while (currentTime.isSameOrBefore(endTime)) {
+
+      let gridLine = {
+        "line": gridIndex,
+        "style": { "grid-column": " 2 / span 2", "grid-row": "" + gridIndex + " / span 1"}
+      };
+      gridLines.push(gridLine);
 
       if (currentTime.minute() != 30) {
 
         let hourLabel = {
           "time": currentTime.format("h:mm a"),
-          "style": { "grid-column": "1 / span 1", "grid-row": "" + gridIndex + " / span 2" }
+          "style": { "grid-column": "1 / span 2", "grid-row": "" + gridIndex + " / span 2" }
         };
         if(gridIndex == 1 ){
           hourLabel = {
             "time": '',
-            "style": { "grid-column": "1 / span 1", "grid-row": "" + gridIndex + " / span 2" }
+            "style": { "grid-column": "1 / span 2", "grid-row": "" + gridIndex + " / span 2" }
           };
         }
 
@@ -75,24 +81,9 @@ export class DaybookComponent implements OnInit {
       gridIndex += 1;
     }
 
-    // let endHour: number = this.dayEndTime.hour();
-    // if (this.dayEndTime.minute() >= 30) {
-    //   endHour += 1;
-    // }
-
-    // let hours: number[] = [];
-
-    // while (hour <= endHour) {
-    //   hours.push(hour);
-    //   hour += 1;
-    // }
-
-    // let gridLinesCount: number = hours.length * 2;
-
-
-    // console.log(hours)
-    this.daybookBodyStyle = { "display":"grid", "grid-template-rows": "repeat(" + gridIndex.toFixed(0) + ", 1fr)", "grid-template-columns": "6em auto" }
+    this.daybookBodyStyle = { "display":"grid", "grid-template-rows": "repeat(" + gridIndex.toFixed(0) + ", 1fr)", "grid-template-columns": "5em 6px auto" }
     this.hourLabels = hourLabels;
+    this.bookLines = gridLines;
   }
 
 
