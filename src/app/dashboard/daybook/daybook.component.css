@@ -30,7 +30,6 @@
     justify-content: center;
     /* height:40px; */
 
-    background-color: lime;
     border-bottom: 1px solid rgb(166, 166, 252);
 }
 .daybook-body{
@@ -41,9 +40,15 @@
     grid-column: 1 / span 1;
 
     display:grid;
-    
+    grid-template-columns: 5em 15px auto;
+    /* grid-template-rows controlled by .ts */
     background-color: rgb(250, 250, 250);
     padding:10px;
+}
+.margin-line{
+    grid-row: 2 / -1;
+    grid-column: 1 / span 2;
+    border-right: 1px solid rgb(171, 209, 224);
 }
 .book-line{
     border-bottom: 1px solid rgb(171, 209, 224);
@@ -52,11 +57,47 @@
 .hour-label{
     font-size:1.1em;
     justify-self: end;
+    margin-right:7px;
 }
 .hour-label-offset{
     position: relative;
     top: -0.9em;
-    padding-right:10px;
+    
+}
+.now-line-container{
+    grid-column: 1 / span 3;
+    /*grid-row controller by .ts */
+
+    /* border: 1px solid blue; */
+    display:grid;
+    grid-template-columns:5em 15px auto;
+    /* grid-template-rows controlled by .ts*/
+}
+.now-line{
+
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 1;
+    border-top: 1px solid red;
+}
+.now-time-container{ 
+  
+    display:grid;
+    grid-template-columns: auto;
+    /* grid-template-rows controlled by .ts */
+}   
+.now-time{
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+
+    z-index: 99;
+    border-radius: 5px;
+    border: 1px solid black;
+    background-color: white;
+    /* min-height: 20px; */
+    padding: 2px;
+    padding-left:4px;
+    position: relative;
+    top: -0.9em;
 }
 
 
@@ -77,6 +118,9 @@
         /* background-color: rgb(0, 255, 170); */
     }
     .hour-label{
+        font-size:0.8em;
+    }
+    .now-time{
         font-size:0.8em;
     }
 }

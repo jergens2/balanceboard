@@ -3,7 +3,7 @@
   <div class="daybook">
     <div class="daybook-header">Today's date.</div>
     <div class="daybook-body" [ngStyle]="daybookBodyStyle">
-
+      <div class="margin-line"></div>
       <div *ngFor="let bookLine of bookLines" class="book-line" [ngStyle]="bookLine.style">
 
       </div>
@@ -13,6 +13,17 @@
           {{ hourLabel.time }}
         </div>
       </div>
+
+
+      <div class="now-time-container" [ngStyle]="nowTimeContainerStyle">
+        <div class="now-time">
+          {{ nowTime.format('h:mm a') }}
+        </div>
+      </div>
+      <div class="now-line-container" [ngStyle]="nowLineContainerStyle">
+        <div class="now-line"> </div>
+      </div>
+
 
     </div>
   </div>
