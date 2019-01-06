@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogService } from '../timelog/timelog.service';
-import { Subscription } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 
 @Component({
   selector: 'app-daybook',
@@ -17,7 +17,7 @@ export class DaybookComponent implements OnInit {
 
   private _currentDate: moment.Moment;
 
-  daybookBodyStyle: any = { "background-color": "red", "border": "10px solid green" };
+  daybookBodyStyle: any = {};
   hourLabels: any[] = [];
   bookLines: any[] = [];
   nowLineContainerStyle: any = {};
@@ -34,7 +34,11 @@ export class DaybookComponent implements OnInit {
       this.dayStartTime = moment(this._currentDate).hour(7).minute(30).second(0).millisecond(0);
       this.dayEndTime = moment(this._currentDate).hour(22).minute(30).second(0).millisecond(0);
 
-      this.buildDisplay();
+      this.nowSubscription.unsubscribe();
+      this.nowSubscription = timer(0,60000).subscribe(()=>{
+        this.buildDisplay();
+      })
+      
     })
 
 
@@ -67,6 +71,9 @@ export class DaybookComponent implements OnInit {
 
     while (currentTime.isSameOrBefore(endTime)) {
 
+      /*
+        There is a bug where if now is greater than dayEndTime then this following if block does not fire and the now line does not display properly. 
+      */
       let segmentEnd = moment(currentTime).add(30,'minutes');
       if(moment(now).isAfter(currentTime) && moment(now).isBefore(segmentEnd)){
         
@@ -97,7 +104,7 @@ export class DaybookComponent implements OnInit {
       if (currentTime.minute() != 30) {
 
         let hourLabel = {
-          "time": currentTime.format("h:mm a"),
+          "time": currentTime.format("h a"),
           "style": { "grid-column": "1 / span 1", "grid-row": "" + gridIndex + " / span 2" }
         };
         if(gridIndex == 1 ){
@@ -123,5 +130,9 @@ export class DaybookComponent implements OnInit {
     this.nowTime = now;
   }
 
+
+  ngOnDestroy(){
+    this.nowSubscription.unsubscribe();
+  }
 
 }
