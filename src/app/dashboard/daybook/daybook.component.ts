@@ -15,6 +15,14 @@ export class DaybookComponent implements OnInit {
   dayStartTime: moment.Moment;
   dayEndTime: moment.Moment;
 
+  
+  /* bed time is the time you start trying to go to sleep */
+  /* fall asleep time is the time that you are aiming to be sleeping by */ 
+  wakeUpTomorrowTime: moment.Moment;
+  bedTime: moment.Moment;
+  fallAsleepTime: moment.Moment;
+
+
   private _currentDate: moment.Moment;
 
   daybookBodyStyle: any = {};
@@ -24,13 +32,21 @@ export class DaybookComponent implements OnInit {
   nowTime: moment.Moment = moment();
   nowTimeContainerStyle: any = {};
 
+  bedTimeStyle: any = {};
+
   nowSubscription: Subscription = new Subscription();
 
   ngOnInit() {
 
+    
+
 
     this.timeLogService.currentDate$.subscribe((changedDate: moment.Moment) => {
       this._currentDate = moment(changedDate);
+
+      // this.fallAsleepTime = moment(this._currentDate).hour(23).minute(30).second(0).millisecond(0);
+      this.bedTime = moment(this._currentDate).hour(22).minute(30).second(0).millisecond(0);
+
       this.dayStartTime = moment(this._currentDate).hour(7).minute(30).second(0).millisecond(0);
       this.dayEndTime = moment(this._currentDate).hour(22).minute(30).second(0).millisecond(0);
 
@@ -59,6 +75,7 @@ export class DaybookComponent implements OnInit {
     }
 
     let endTime = moment(this.dayEndTime).add(30, 'minutes');
+    // let endTime = moment(this.dayEndTime);
 
     let hourLabels: any[] = [];
     let gridLines: any[] = [];
