@@ -25,6 +25,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { TimelogModule } from './timelog/timelog.module';
 import { DaybookComponent } from './daybook/daybook.component';
+import { CalendarComponent } from './daybook/calendar/calendar.component';
 
 
 
@@ -55,6 +56,7 @@ import { DaybookComponent } from './daybook/daybook.component';
     BudgetComponent,
     NetWorthComponent,
     DaybookComponent,
+    CalendarComponent,
     
   ],
   providers: [],

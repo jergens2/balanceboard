@@ -1,7 +1,20 @@
 <div class="root">
 
   <div class="daybook">
-    <div class="daybook-header">Today's date.</div>
+    <div class="daybook-header">
+      <div class="header-margin-item"></div>
+      <div>
+        Today's date.
+      </div>
+      <div class="header-margin-item toggle-inside-calendar-button-container">
+        <div class="toggle-inside-calendar-button" (click)="onClickToggleCalendar()">
+          <fa-icon [icon]="faCalendar"></fa-icon>
+        </div>
+      </div>
+    </div>
+    <div class="calendar-inside" *ngIf="ifCalendarInside">
+      <app-daybook-calendar></app-daybook-calendar>
+    </div>
     <div class="daybook-body" [ngStyle]="daybookBodyStyle">
       <div class="margin-line"></div>
       <div *ngFor="let bookLine of bookLines" class="book-line" [ngStyle]="bookLine.style">
@@ -32,5 +45,8 @@
 
 
     </div>
+  </div>
+  <div class="calendar-outside">
+    <app-daybook-calendar></app-daybook-calendar>
   </div>
 </div>

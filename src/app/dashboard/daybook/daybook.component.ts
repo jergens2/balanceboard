@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogService } from '../timelog/timelog.service';
 import { Subscription, timer } from 'rxjs';
+import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-daybook',
@@ -11,6 +12,9 @@ import { Subscription, timer } from 'rxjs';
 export class DaybookComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService) { }
+
+  faCalendar = faCalendarAlt;
+  ifCalendarInside:boolean = false;
 
   dayStartTime: moment.Moment;
   dayEndTime: moment.Moment;
@@ -35,41 +39,10 @@ export class DaybookComponent implements OnInit {
   bedTimeStyle: any = {};
   bedTimeString: string = "";
 
-  calculateBedTimeString(now: moment.Moment): string{
-    let bedTimeString = "";
-    let minutes = Math.floor(moment(now).diff(moment(this.bedTime),'minutes'));
-    if(minutes < -1){
-      if(minutes > -180){
-        let hours = Math.floor(minutes / 60) 
-        let remainingMinutes = minutes - (hours * 60);
-        bedTimeString = "" + hours + " hours and " + remainingMinutes + " minutes until bedtime";
-      }else{
-        bedTimeString = "Bedtime: " + this.bedTime.format('hh:mm a');
-      }
-    }else if(minutes < 1){
-      bedTimeString = "It's bedtime.";
-    }else{
-      if(minutes < 60){
-        bedTimeString = "It's " + minutes + " minutes past bedtime";
-      }else{
-        let hours = Math.floor(minutes / 60);
-        let remainingMinutes = minutes - (hours * 60);
-        if(hours == 1){
-          bedTimeString = "It's 1 hour and " + remainingMinutes + " minutes past bedtime.";
-        }else{
-          bedTimeString = "It's " + hours + " hours and " + remainingMinutes + " minutes past bedtime.";
-        }
-      }
-      
-    }
-    return bedTimeString ;
-  }
-
   nowSubscription: Subscription = new Subscription();
 
   ngOnInit() {
 
-    
 
 
     this.timeLogService.currentDate$.subscribe((changedDate: moment.Moment) => {
@@ -182,10 +155,64 @@ export class DaybookComponent implements OnInit {
     this.bedTimeStyle = bedTimeStyle;
   }
 
+  calculateBedTimeString(now: moment.Moment): string{
+    let minutes = Math.abs( Math.floor(moment(now).diff(moment(this.bedTime),'minutes')) );
+    let hours = Math.floor(minutes / 60) 
+    minutes = minutes - (hours * 60);
 
+    if(moment(now).isBefore(moment(this.bedTime).subtract(3,'hours'))){
+      return "Bed time: " + moment(this.bedTime).format('hh:mm a');
+    }else if(moment(now).isBefore(moment(this.bedTime).subtract(1,'minutes'))){
+      if(hours > 0 && minutes > 0){
+        return hoursString(hours) + " and " + minutesString(minutes) + " until bed time";
+      }else if(minutes > 0){
+        return minutesString(minutes) + " until bed time";
+      }else if(hours > 0){
+        return hoursString(hours) + " until bed time";
+      }
+    }else if(moment(now).isAfter(moment(this.bedTime).subtract(1,'minutes')) && moment(now).isBefore(moment(this.bedTime).add('1 minutes'))){
+      return "It's bedtime.  Go to bed";
+    }else{
+      if(hours > 0 && minutes > 0){
+        return "It's " + hoursString(hours) + " and " + minutesString(minutes) + " past bed time.  Go to bed.";
+      }else if(minutes > 0){
+        return "It's " + minutesString(minutes) + " past bed time.  Go to bed.";
+      }else if(hours > 0){
+        return "It's " + hoursString(hours) + " past bed time.  Go to bed.";
+      }
+    }
+
+
+
+    function minutesString(minutes: number): string{
+      if(minutes == 0){
+        return "";
+      }else if(minutes == 1){
+        return "1 minute";
+      }else{
+        return "" + minutes + " minutes";
+      }
+    }
+    function hoursString(hours: number): string{
+      if(hours == 0){
+        return "";
+      }else if(hours == 1){
+        return "1 hour";
+      }else{
+        return "" + hours + " hours";
+      }
+    }
+
+
+  }
 
   ngOnDestroy(){
     this.nowSubscription.unsubscribe();
+  }
+
+
+  onClickToggleCalendar(){
+    this.ifCalendarInside = !this.ifCalendarInside;
   }
 
 }
