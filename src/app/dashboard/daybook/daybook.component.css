@@ -9,16 +9,7 @@
 }
 
 .calendar-outside{
-
-    width:280px;
-    height:240px;
-
     margin-left:10px;
-
-    background-color: rgb(190, 219, 199);
-    border: 1px solid rgb(165, 165, 165);
-    box-shadow: 0px 5px 6px rgb(166, 195, 219);
-
     display: none;
 }
 
@@ -79,17 +70,8 @@
     grid-column: 1 / span 1;
     z-index: 11;
 
-    width:280px;
-    height:240px;
-
-    background-color: rgb(190, 219, 199);
-    border: 1px solid rgb(165, 165, 165);
-
     margin:3px;
     margin-left: auto;
-    
-
-    box-shadow: 0px 5px 6px rgb(166, 195, 219);
 }
 .daybook-body{
 
