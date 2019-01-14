@@ -43,11 +43,15 @@ export class CalendarComponent implements OnInit {
 
     while(currentDate.format('YYYY-MM-DD') < lastDate.format('YYYY-MM-DD')){
       let isThisMonth: boolean = false;
+      let isToday: boolean = false;
       if(currentDate.month() == moment(today).month()){
         isThisMonth = true;
       }
+      if(currentDate.dayOfYear() == moment(today).dayOfYear()){
+        isToday = true;
+      }
       let style = { "grid-row": "" + currentRow + " / span 1", "grid-column":"" + (currentDate.day() + 1) + " / span 1" };
-      let calendarDay: ICalendarDay = { date:moment(currentDate) , style: style, isThisMonth: isThisMonth}
+      let calendarDay: ICalendarDay = { date:moment(currentDate) , style: style, isThisMonth: isThisMonth, isToday:isToday}
 
       calendarDays.push(calendarDay);
       currentDate = moment(currentDate).add(1, "days");

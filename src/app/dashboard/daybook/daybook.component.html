@@ -3,8 +3,28 @@
   <div class="daybook">
     <div class="daybook-header">
       <div class="header-margin-item"></div>
-      <div>
-        Today's date.
+      <div class="daybook-header-tabs">
+        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-2)" [ngClass]="{'daybook-header-today': isToday(-2) } ">
+          <div>{{ headerDayRelevance(-2) }}</div>
+          <div>{{ headerDate(-2) }}</div>
+        </div>
+        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-1)" [ngClass]="{'daybook-header-today': isToday(-1) } ">
+          <div>{{ headerDayRelevance(-1) }}</div>
+          <div>{{ headerDate(-1) }}</div>
+        </div>
+        <div class="daybook-header-tab daybook-header-current-day no-select" (click)="onClickHeaderDate(0)" [ngClass]="{'daybook-header-today': isToday(0) } ">
+          <div>{{ headerDayRelevance(0) }}</div>
+          <div>{{ headerDate(0) }}</div>
+        </div>
+        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(1)" [ngClass]="{'daybook-header-today': isToday(1) } ">
+          <div>{{ headerDayRelevance(1) }}</div>
+          <div>{{ headerDate(1) }}</div>
+        </div>
+        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(2)" [ngClass]="{'daybook-header-today': isToday(2) } ">
+          <div>{{ headerDayRelevance(2) }}</div>
+          <div>{{ headerDate(2) }}</div>
+        </div>
+
       </div>
       <div class="header-margin-item toggle-inside-calendar-button-container">
         <div class="toggle-inside-calendar-button" (click)="onClickToggleCalendar()">

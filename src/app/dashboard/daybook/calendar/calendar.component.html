@@ -18,7 +18,14 @@
     <div class="week-day-label" style="grid-row: 2 / span 1; grid-column: 6 / span 1;">Fr</div>
     <div class="week-day-label" style="grid-row: 2 / span 1; grid-column: 7 / span 1;">Sa</div>
 
-    <div *ngFor="let calendarDay of calendarDays" [ngStyle]="calendarDay.style" class="calendar-day" [ngClass]="{ 'day-this-month':calendarDay.isThisMonth, 'day-not-this-month':!calendarDay.isThisMonth }">
+    <div *ngFor="let calendarDay of calendarDays" [ngStyle]="calendarDay.style" class="calendar-day" 
+      [ngClass]="{ 
+        'day-this-month':calendarDay.isThisMonth, 
+        'day-not-this-month':!calendarDay.isThisMonth, 
+        'day-is-today':calendarDay.isToday,
+        'day-not-today':!calendarDay.isToday
+        }"
+      >
       {{ calendarDay.date.format('DD') }}
     </div>
   </div>

@@ -5,5 +5,6 @@ export interface ICalendarDay{
     style: any;
     date: moment.Moment;
     isThisMonth: boolean;
+    isToday: boolean;
 
 }
