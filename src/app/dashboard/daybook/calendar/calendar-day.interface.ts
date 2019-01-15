@@ -6,5 +6,6 @@ export interface ICalendarDay{
     date: moment.Moment;
     isThisMonth: boolean;
     isToday: boolean;
+    isCurrentDay: boolean;
 
 }

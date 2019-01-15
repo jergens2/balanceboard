@@ -217,6 +217,10 @@ export class DaybookComponent implements OnInit {
     this.nowSubscription.unsubscribe();
   }
 
+  onChangeCalendarDate(date: moment.Moment){
+    this.currentDate = date;
+  }
+
   onClickHeaderDate(daysDifference: number){
     let date = moment(this.currentDate).add(daysDifference, 'days');
     this.currentDate = date;

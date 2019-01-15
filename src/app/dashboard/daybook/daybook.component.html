@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="calendar-inside" *ngIf="ifCalendarInside">
-      <app-daybook-calendar></app-daybook-calendar>
+      <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate"></app-daybook-calendar>
     </div>
     <div class="daybook-body" [ngStyle]="daybookBodyStyle">
       <div class="margin-line"></div>
@@ -67,6 +67,6 @@
     </div>
   </div>
   <div class="calendar-outside">
-    <app-daybook-calendar></app-daybook-calendar>
+    <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate"></app-daybook-calendar>
   </div>
 </div>

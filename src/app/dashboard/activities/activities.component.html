@@ -1,26 +1,27 @@
 <div class="root">
-  <div class="activities-header">
-    <h4>Activity Management</h4>
-  </div>
-  <hr>
-  <div class="activities-form">
-    <div *ngIf="ifNewActivityFormButton">
-      <button class="btn btn-primary" (click)=onClickCreateNewActivity()>Create new activity</button>
+  <div class="activities">
+    <div class="activities-header">
+      <h4>Activity Management</h4>
     </div>
-    <div *ngIf="ifNewActivityForm">
-      <app-new-activity-form [activitiesList]="rootActivities" [modifyActivity]="modifyActivity" (closeForm)="onCloseForm($event)"></app-new-activity-form>
+    <hr>
+    <div class="activities-form">
+      <div *ngIf="ifNewActivityFormButton">
+        <button class="btn btn-primary" (click)=onClickCreateNewActivity()>Create new activity</button>
+      </div>
+      <div *ngIf="ifNewActivityForm">
+        <app-new-activity-form [activitiesList]="rootActivities" [modifyActivity]="modifyActivity" (closeForm)="onCloseForm($event)"></app-new-activity-form>
+      </div>
     </div>
-  </div>
-  <hr>
-  <div class="activities-list">
-    <h5>All Activities</h5>
-    <div *ngFor="let tile of rootActivityTiles" class="activity-list-item" [style.background-color]="tile.activity.color">
-      <app-activity [activity]="tile.activity" (activityDeleted)="onClickDeleteActivity($event)" (activityModify)="onClickModifyActivity($event)"></app-activity>
+    <hr>
+    <div class="activities-list">
+      <h5>All Activities</h5>
+      <div *ngFor="let tile of rootActivityTiles" class="activity-list-item" [style.background-color]="tile.activity.color">
+        <app-activity [activity]="tile.activity" (activityDeleted)="onClickDeleteActivity($event)" (activityModify)="onClickModifyActivity($event)"></app-activity>
+      </div>
     </div>
-
-
-
-
   </div>
 
+  <div class="other">
+    other part
+  </div>
 </div>

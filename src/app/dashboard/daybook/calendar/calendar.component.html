@@ -4,7 +4,7 @@
       <
     </div>
     <div class="calendar-header-title">
-      <b>{{  today.format('MMMM YYYY') }}</b>
+      <b>{{  currentDate.format('MMMM YYYY') }}</b>
     </div>
     <div class="calendar-header-right calendar-arrow">
       >
@@ -23,8 +23,11 @@
         'day-this-month':calendarDay.isThisMonth, 
         'day-not-this-month':!calendarDay.isThisMonth, 
         'day-is-today':calendarDay.isToday,
-        'day-not-today':!calendarDay.isToday
+        'day-not-today':!calendarDay.isToday,
+        'day-is-current':calendarDay.isCurrentDay,
+        'day-not-current':!calendarDay.isCurrentDay
         }"
+        (click)="onClickDay(calendarDay)"
       >
       {{ calendarDay.date.format('DD') }}
     </div>

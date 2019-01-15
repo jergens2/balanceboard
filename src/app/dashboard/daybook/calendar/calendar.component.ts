@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ICalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 
@@ -13,7 +13,17 @@ export class CalendarComponent implements OnInit {
 
   calendarDays: ICalendarDay[] = []
 
-  today: moment.Moment = moment();
+  // today: moment.Moment = moment();
+
+  private _currentDate: moment.Moment = moment();
+  @Input() set currentDate(date: moment.Moment){
+    this._currentDate = moment(date);
+    this.calendarDays = this.buildCalendarDays();
+  }
+  get currentDate(): moment.Moment{
+    return this._currentDate;
+  }
+  @Output() changedDate: EventEmitter<moment.Moment> = new EventEmitter(); 
 
   ngOnInit() {
     this.calendarDays = this.buildCalendarDays();
@@ -23,7 +33,7 @@ export class CalendarComponent implements OnInit {
 
     let calendarDays: ICalendarDay[] = [];
 
-    let today = moment(this.today);
+    let today = moment(this.currentDate);
     let firstDate = moment(today).startOf('month');
     let lastDate = moment(today).endOf('month');
 
@@ -44,14 +54,18 @@ export class CalendarComponent implements OnInit {
     while(currentDate.format('YYYY-MM-DD') < lastDate.format('YYYY-MM-DD')){
       let isThisMonth: boolean = false;
       let isToday: boolean = false;
+      let isCurrentDay: boolean = false;
       if(currentDate.month() == moment(today).month()){
         isThisMonth = true;
       }
-      if(currentDate.dayOfYear() == moment(today).dayOfYear()){
+      if(currentDate.dayOfYear() == moment().dayOfYear()){
         isToday = true;
       }
+      if(currentDate.dayOfYear() == moment(this.currentDate).dayOfYear()){
+        isCurrentDay = true;
+      }
       let style = { "grid-row": "" + currentRow + " / span 1", "grid-column":"" + (currentDate.day() + 1) + " / span 1" };
-      let calendarDay: ICalendarDay = { date:moment(currentDate) , style: style, isThisMonth: isThisMonth, isToday:isToday}
+      let calendarDay: ICalendarDay = { date:moment(currentDate) , style: style, isThisMonth: isThisMonth, isToday:isToday, isCurrentDay:isCurrentDay }
 
       calendarDays.push(calendarDay);
       currentDate = moment(currentDate).add(1, "days");
@@ -64,6 +78,8 @@ export class CalendarComponent implements OnInit {
     return calendarDays;
   }
 
-
+  onClickDay(calendarDay: ICalendarDay){
+    this.changedDate.emit(calendarDay.date);
+  }
 
 }
