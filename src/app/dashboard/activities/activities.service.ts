@@ -3,10 +3,10 @@ import { CategorizedActivity } from './categorized-activity.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { defaultActivities } from './default-activities';
-import { serverUrl } from '../../../serverurl';
+import { serverUrl } from '../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../../../authentication/authentication.service';
-import { AuthStatus } from '../../../authentication/auth-status.model';
+import { AuthenticationService } from '../../authentication/authentication.service';
+import { AuthStatus } from '../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.model';
 

@@ -3,7 +3,7 @@ import { TimelogService } from '../timelog.service';
 import { TimeMark } from '../time-mark.model';
 
 import * as moment from 'moment';
-import { ActivitiesService } from '../activities/activities.service';
+import { ActivitiesService } from '../../activities/activities.service';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 export interface ITimeMarkChartTile {

@@ -7,7 +7,7 @@ import { BodyWeightComponent } from "./dashboard/health/body-weight/body-weight.
 import { BuildProfileComponent } from "./dashboard/health/build-profile/build-profile.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
 import { TimelogComponent } from "./dashboard/timelog/timelog.component";
-import { ActivitiesComponent } from "./dashboard/timelog/activities/activities.component";
+import { ActivitiesComponent } from "./dashboard/activities/activities.component";
 import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 
 const appRoutes: Routes = [

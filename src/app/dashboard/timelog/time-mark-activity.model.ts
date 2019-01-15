@@ -1,5 +1,5 @@
-import { CategorizedActivity } from "./activities/categorized-activity.model";
-import { ActivitiesService } from "./activities/activities.service";
+import { CategorizedActivity } from "../activities/categorized-activity.model";
+import { ActivitiesService } from "../activities/activities.service";
 
 export class TimeMarkActivity{
 

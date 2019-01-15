@@ -6,11 +6,10 @@ import { Subscription, fromEvent } from 'rxjs';
 import * as moment from 'moment';
 import { faCheckCircle, faCircle, IconDefinition } from '@fortawesome/free-regular-svg-icons';
 
-import { CategorizedActivity } from '../activities/categorized-activity.model';
 import { TimeMark } from '../time-mark.model';
 import { TimelogService } from '../timelog.service';
 import { TimeMarkActivity } from '../time-mark-activity.model';
-import { ActivitiesService } from '../activities/activities.service';
+import { ActivitiesService } from '../../activities/activities.service';
 import { faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ITimeMarkTile } from '../timelog-list/timeMarkTile.interface';
 

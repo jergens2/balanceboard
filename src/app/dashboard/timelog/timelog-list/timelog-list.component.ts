@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 
 import { TimelogService } from '../timelog.service';
-import { ActivitiesService } from '../activities/activities.service';
+import { ActivitiesService } from '../../activities/activities.service';
 import { TimeMark } from '../time-mark.model';
 import { ITimeMarkTile } from './timeMarkTile.interface';
 

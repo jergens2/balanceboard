@@ -40,10 +40,13 @@
 .daybook-header-tabs{
     align-self: flex-end;
     flex-grow: 2;
-    display:flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-end;
+
+    display:grid;
+    grid-template-rows: auto;
+    grid-template-columns: 2fr 2fr 3fr 2fr 2fr;
+    align-items: end;
+    /* justify-content: center;
+    align-items: flex-end; */
 }
 .daybook-header-tab{
     border-left: 1px solid rgb(166, 166, 252);
@@ -52,7 +55,7 @@
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
 
-    flex-grow:2;
+    /* flex-grow:2; */
     height:35px;
     padding:5px;
     background-color: rgb(238, 238, 238);
@@ -64,7 +67,7 @@
     line-height: 95%;
 }
 .daybook-header-current-day{
-    flex-grow:2;
+    /* flex-grow:2; */
     height: 45px;
 
     font-size: 1em;
@@ -196,15 +199,15 @@
     margin-right: 10px;
     padding-left: 10px;
     padding-right: 10px;
-    background-color: rgba(62, 62, 129, 0.644);
+    background-color: rgba(62, 62, 129, 0.842);
     color: rgb(255, 252, 238);
-    border: 1px solid rgb(62, 62, 129);
+    /* border: 1px solid rgb(62, 62, 129); */
     /* border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom-left-radius: 2px;
     border-bottom-right-radius: 2px; */
 
-    border-radius: 5px;
+    border-radius: 3px;
 
     font-size:1.2em;
 }
@@ -272,6 +275,7 @@
 
         /* background-color: rgb(255, 196, 232); */
     }
+
 }
 
 @media (min-height: 730px) and (min-width: 806px) {

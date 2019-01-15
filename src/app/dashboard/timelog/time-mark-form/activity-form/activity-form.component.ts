@@ -1,12 +1,12 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { CategorizedActivity } from '../../activities/categorized-activity.model';
+import { CategorizedActivity } from '../../../activities/categorized-activity.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { faCircle } from '@fortawesome/free-regular-svg-icons';
 import { Router } from '@angular/router';
-import { ActivitiesService } from '../../activities/activities.service';
-import { ActivityTree } from '../../activities/activity-tree.model';
+import { ActivitiesService } from '../../../activities/activities.service';
+import { ActivityTree } from '../../../activities/activity-tree.model';
 import { TimeMarkActivity } from '../../time-mark-activity.model';
 
 @Component({
