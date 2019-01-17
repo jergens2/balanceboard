@@ -4,11 +4,11 @@ import { CategorizedActivity } from '../categorized-activity.model';
 import { IActivityTile } from '../activity-tile.interface';
 
 @Component({
-  selector: 'app-activity',
-  templateUrl: './activity.component.html',
-  styleUrls: ['./activity.component.css']
+  selector: 'app-activity-list-item',
+  templateUrl: './activity-list-item.component.html',
+  styleUrls: ['./activity-list-item.component.css']
 })
-export class ActivityComponent implements OnInit {
+export class ActivityListItemComponent implements OnInit {
 
   constructor() { }
 
@@ -25,8 +25,13 @@ export class ActivityComponent implements OnInit {
 
   @Output() activityDeleted: EventEmitter<CategorizedActivity> = new EventEmitter<CategorizedActivity>();
   @Output() activityModify: EventEmitter<CategorizedActivity> = new EventEmitter<CategorizedActivity>();
+  @Output() activitySelected: EventEmitter<CategorizedActivity> = new EventEmitter<CategorizedActivity>();
 
   ngOnInit() {
+  }
+
+  onClickActivity(activity){
+    this.activitySelected.emit(activity);
   }
 
   onClickDeleteActivity(activity){

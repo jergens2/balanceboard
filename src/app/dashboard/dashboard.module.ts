@@ -22,10 +22,18 @@ import { BudgetComponent } from './finance/budget/budget.component';
 import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 import { TimelogModule } from './timelog/timelog.module';
 import { DaybookComponent } from './daybook/daybook.component';
 import { CalendarComponent } from './daybook/calendar/calendar.component';
+
+import { ActivitiesComponent } from './activities/activities.component';
+import { ActivityFormListItemComponent } from './activities/new-activity-form/activity-form-list-item/activity-form-list-item.component';
+import { ActivityListItemComponent } from './activities/activity-list-item/activity-list-item.component';
+import { NewActivityFormComponent } from './activities/new-activity-form/new-activity-form.component';
+import { UpdateActivityFormComponent } from './activities/update-activity-form/update-activity-form.component';
+import { ActivityDisplayComponent } from './activities/activity-display/activity-display.component';
 
 
 
@@ -36,6 +44,7 @@ import { CalendarComponent } from './daybook/calendar/calendar.component';
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,
+    ColorPickerModule,
     NgbModule.forRoot(),
   ],
   declarations: [
@@ -57,6 +66,13 @@ import { CalendarComponent } from './daybook/calendar/calendar.component';
     NetWorthComponent,
     DaybookComponent,
     CalendarComponent,
+    ActivitiesComponent,
+    ActivityListItemComponent,
+    ActivityFormListItemComponent,
+    NewActivityFormComponent,
+    UpdateActivityFormComponent,
+    ActivityDisplayComponent,
+    
     
   ],
   providers: [],

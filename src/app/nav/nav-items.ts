@@ -8,7 +8,7 @@ let navItems: NavItem[] = [];
 navItems.push(new NavItem('Home','/home',faHome));
 navItems.push(new NavItem('Daybook','/daybook',faBookOpen));
 navItems.push(new NavItem('Time Log','/timelog',faCalendarAlt));
-navItems.push(new NavItem('Activities','/timelog-activities',faSitemap));
+navItems.push(new NavItem('Activities','/activities',faSitemap));
 navItems.push(new NavItem('Productivity','/productivity',faProjectDiagram));
 navItems.push(new NavItem('Work Task List','/ivyleeCreation',faListOl));
 navItems.push(new NavItem('Finances','/finances',faDollarSign));

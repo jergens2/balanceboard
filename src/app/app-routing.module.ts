@@ -20,7 +20,7 @@ const appRoutes: Routes = [
     { path: 'networth', component: NetWorthComponent },
     { path: 'daybook', component: DaybookComponent },
     { path: 'timelog', component: TimelogComponent },
-    { path: 'timelog-activities', component: ActivitiesComponent }
+    { path: 'activities', component: ActivitiesComponent }
 ];
 
 

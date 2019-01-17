@@ -1,0 +1,18 @@
+<div class="activity pr-2">
+
+  <div class="activity-body" (mouseenter)="onMouseEnterActivity(activityTile)" (mouseleave)="onMouseLeaveActivity(activityTile)">
+    <div>{{activityTile.activity.name}}</div>
+    <!-- <div style="display:flex; flex-direction: row;" > -->
+    <!-- <div class="activity-control" (click)="onClickModifyActivity(activityTile.activity)" *ngIf="activityTile.ifShowActivityModify">
+        <fa-icon [icon]="faCog"></fa-icon>
+      </div> -->
+    <!-- <div class="activity-control" (click)="onClickDeleteActivity(activityTile.activity)" *ngIf="activityTile.ifShowActivityDelete">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </div> -->
+    <!-- </div> -->
+  </div>
+  <div class="activity-list-item" *ngFor="let childActivity of activityTile.activity.children" [style.background-color]="childActivity.color">
+    <app-activity-list-item [activity]="childActivity" (activityDeleted)="onClickDeleteActivity($event)"
+      (activityModify)="onClickModifyActivity($event)" (click)="onClickActivity(childActivity)" ></app-activity-list-item>
+  </div>
+</div>

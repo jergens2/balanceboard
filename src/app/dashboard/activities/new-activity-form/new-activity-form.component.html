@@ -29,7 +29,7 @@
               {{ category.name }}
           </div>
           <div *ngFor="let child of category.children"> 
-            <app-activity-list-item [activity]="child" (categoryClicked)="onClickSelectedCategory($event)"></app-activity-list-item>
+            <app-activity-form-list-item [activity]="child" (categoryClicked)="onClickSelectedCategory($event)"></app-activity-form-list-item>
           </div>
           
         </div>

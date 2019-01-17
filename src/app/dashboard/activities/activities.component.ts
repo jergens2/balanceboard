@@ -18,6 +18,8 @@ export class ActivitiesComponent implements OnInit {
   ifNewActivityFormButton: boolean;
   ifNewActivityForm: boolean;
 
+  ifDisplayActivity: boolean = false;
+  displayedActivity: CategorizedActivity = null;
 
   private activityNameFromForm: string = null;
   rootActivityTiles: IActivityTile[] = [];
@@ -57,7 +59,12 @@ export class ActivitiesComponent implements OnInit {
 
 
 
-
+  onSelectActivity(activity: CategorizedActivity){
+    
+    this.displayedActivity = activity;
+    this.ifDisplayActivity = true;
+    
+  }
 
   onClickCreateNewActivity(){
     this.ifNewActivityForm = true;

@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CategorizedActivity } from '../../categorized-activity.model';
 
 @Component({
-  selector: 'app-activity-list-item',
+  selector: 'app-activity-form-list-item',
   template: `<div class="pl-4">
               <div class="parent-category-choice" (click)="onClickSelectedCategory(activity)" >{{activity.name}}</div>
               <div *ngFor="let childActivity of activity.children" >
@@ -19,7 +19,7 @@ import { CategorizedActivity } from '../../categorized-activity.model';
             }`
           ]
 })
-export class ActivityListItemComponent implements OnInit {
+export class ActivityFormListItemComponent implements OnInit {
 
   constructor() { }
 
