@@ -59,8 +59,8 @@ export class ActivitiesComponent implements OnInit {
 
 
 
-  onSelectActivity(activity: CategorizedActivity){
-    
+  onActivitySelected(activity: CategorizedActivity){
+    console.log("activity was clicked", activity)
     this.displayedActivity = activity;
     this.ifDisplayActivity = true;
     

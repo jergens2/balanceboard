@@ -12,9 +12,8 @@
       </div>
     </div>
 
-    <div *ngFor="let tile of rootActivityTiles" class="activity-list-item" [style.background-color]="tile.activity.color">
-      <app-activity-list-item [activity]="tile.activity" (activityDeleted)="onClickDeleteActivity($event)"
-        (activityModify)="onClickModifyActivity($event)" (activitySelected)="onSelectActivity($event)">
+    <div *ngFor="let tile of rootActivityTiles" class="activity-list-item" >
+      <app-activity-list-item [activity]="tile.activity" (activitySelected)="onActivitySelected($event)">
       </app-activity-list-item>
     </div>
   </div>

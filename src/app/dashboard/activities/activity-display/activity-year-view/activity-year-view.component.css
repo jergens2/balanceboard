@@ -1,0 +1,24 @@
+
+.root{
+    background-color:white;
+    border:1px solid black;
+    border-radius: 2px;
+    padding:10px;
+    display:flex;
+    flex-direction:row;
+    justify-content: center;
+}
+
+.year{
+
+
+    display: grid;
+    grid-template-rows: 30px repeat(7, 12px) 30px;
+    grid-template-columns: 30px repeat(53, 12px);
+
+}
+
+.year-day{
+    margin:1px;
+    background-color: rgb(212, 212, 212);
+}

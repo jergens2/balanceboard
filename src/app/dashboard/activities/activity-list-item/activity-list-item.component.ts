@@ -22,38 +22,19 @@ export class ActivityListItemComponent implements OnInit {
   };
 
 
-
-  @Output() activityDeleted: EventEmitter<CategorizedActivity> = new EventEmitter<CategorizedActivity>();
-  @Output() activityModify: EventEmitter<CategorizedActivity> = new EventEmitter<CategorizedActivity>();
   @Output() activitySelected: EventEmitter<CategorizedActivity> = new EventEmitter<CategorizedActivity>();
 
   ngOnInit() {
+
   }
 
-  onClickActivity(activity){
+
+  onActivitySelected(activity:CategorizedActivity){
     this.activitySelected.emit(activity);
   }
 
-  onClickDeleteActivity(activity){
-    this.activityDeleted.emit(activity);
+  onClickActivity(activity: CategorizedActivity){
+    this.activitySelected.emit(activity);
   }
-  onClickModifyActivity(activity){
-    this.activityModify.emit(activity);
-  }
-
-  onMouseEnterActivity(tile : IActivityTile){
-    if(this.activityTile.activity.children.length > 0){
-      this.activityTile.ifShowActivityDelete = false;
-    }else{
-      this.activityTile.ifShowActivityDelete = true;
-    }
-    this.activityTile.ifShowActivityModify = true;
-    
-  }
-  onMouseLeaveActivity(tile : IActivityTile){
-    this.activityTile.ifShowActivityDelete = false;
-    this.activityTile.ifShowActivityModify = false;
-  }
-
 
 }

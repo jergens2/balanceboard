@@ -34,6 +34,7 @@ import { ActivityListItemComponent } from './activities/activity-list-item/activ
 import { NewActivityFormComponent } from './activities/new-activity-form/new-activity-form.component';
 import { UpdateActivityFormComponent } from './activities/update-activity-form/update-activity-form.component';
 import { ActivityDisplayComponent } from './activities/activity-display/activity-display.component';
+import { ActivityYearViewComponent } from './activities/activity-display/activity-year-view/activity-year-view.component';
 
 
 
@@ -72,6 +73,7 @@ import { ActivityDisplayComponent } from './activities/activity-display/activity
     NewActivityFormComponent,
     UpdateActivityFormComponent,
     ActivityDisplayComponent,
+    ActivityYearViewComponent,
     
     
   ],
