@@ -3,7 +3,7 @@ import { TimelogService } from '../timelog.service';
 
 import * as moment from 'moment';
 import { Subscription, Subject, Observable, merge } from 'rxjs';
-import { TimeMark } from '../time-mark.model';
+import { TimeSegment } from '../time-segment.model';
 
 import { faSpinner, faArrowCircleRight, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -35,8 +35,8 @@ export class TimelogCalendarComponent implements OnInit {
 
   // currentMonth: moment.Moment;
   currentDate: moment.Moment;
-  timeMarks: TimeMark[] = [];
-  timeMarksDayCeiling: number = 0;
+  timeSegments: TimeSegment[] = [];
+  timeSegmentsDayCeiling: number = 0;
 
   daySquares: IDaySquare[];
   viewBox: string;
@@ -66,24 +66,24 @@ export class TimelogCalendarComponent implements OnInit {
       this.currentDate = date;
     })
 
-    this.timeLogService.timeMarks$.subscribe((timeMarks: TimeMark[]) => {
-      this.timeMarks = timeMarks;
-      this.calculateTimeMarksCountCeiling();
+    this.timeLogService.timeSegments$.subscribe((timeSegments: TimeSegment[]) => {
+      this.timeSegments = timeSegments;
+      this.calculateTimeSegmentsCountCeiling();
     })
 
 
 
   }
 
-  private calculateTimeMarksCountCeiling(): number {
-    if (this.timeMarks != null) {
-      if (this.timeMarks.length > 0) {
-        let currentDate = moment(this.timeMarks[0].startTimeISO);
+  private calculateTimeSegmentsCountCeiling(): number {
+    if (this.timeSegments != null) {
+      if (this.timeSegments.length > 0) {
+        let currentDate = moment(this.timeSegments[0].startTimeISO);
         let currentMax = 0;
         let tempMax = 0;
-        for (let timeMark of this.timeMarks) {
+        for (let timeSegment of this.timeSegments) {
 
-          if (currentDate.dayOfYear() == moment(timeMark.startTimeISO).dayOfYear()) {
+          if (currentDate.dayOfYear() == moment(timeSegment.startTimeISO).dayOfYear()) {
 
             tempMax++;
             if (tempMax > currentMax) {
@@ -92,7 +92,7 @@ export class TimelogCalendarComponent implements OnInit {
           } else {
             tempMax = 0;
           }
-          currentDate = moment(timeMark.startTimeISO)
+          currentDate = moment(timeSegment.startTimeISO)
         }
         return currentMax;
       } else {
@@ -116,7 +116,7 @@ export class TimelogCalendarComponent implements OnInit {
 
   buildDaySquares(viewBoxWidth, viewBoxHeight): IDaySquare[] {
     /*
-      2018-12-03: timeMarks parameter will represent all timeMarks for the entire month.  Therefore we can just make the assumption that any timeMark in timeMarks will
+      2018-12-03: timeSegments parameter will represent all timeSegments for the entire month.  Therefore we can just make the assumption that any timeSegment in timeSegments will
       be of the month that we want to deal with.
     */
     let date: moment.Moment = moment(this.currentDate);
@@ -150,20 +150,20 @@ export class TimelogCalendarComponent implements OnInit {
           ' Z' +
           '';
 
-        // let thisDaysTimeMarks = [];
-        // for(let timeMark of this.timeMarks){
-        //   if(moment(timeMark.startTime).dayOfYear() == moment(date).dayOfYear()){
-        //     thisDaysTimeMarks.push(timeMark);
+        // let thisDaysTimeSegments = [];
+        // for(let timeSegment of this.timeSegments){
+        //   if(moment(timeSegment.startTime).dayOfYear() == moment(date).dayOfYear()){
+        //     thisDaysTimeSegments.push(timeSegment);
         //   }
         // }
-        // console.log(thisDaysTimeMarks);
+        // console.log(thisDaysTimeSegments);
 
 
         let daySquare: IDaySquare = {
           date: currentDate,
           svgPath: path,
           style: {
-            // "fill": this.daySquareGradient(thisDaysTimeMarks.length, this.timeMarksDayCeiling),
+            // "fill": this.daySquareGradient(thisDaysTimeSegments.length, this.timeSegmentsDayCeiling),
             "fill": "rgb(230, 230, 230)",
             "stroke": "none"
           },
@@ -211,11 +211,11 @@ export class TimelogCalendarComponent implements OnInit {
   onClickAdjacentDate(direction: string) {
 
     // this.onCloseForm();  
-    // close the new time mark form
+    // close the new time segment form
 
 
-    // this.timeMarkTiles = null;
-    // this.ifLoadingTimeMarks = true;
+    // this.timeSegmentTiles = null;
+    // this.ifLoadingTimeSegments = true;
 
     // console.log(this._currentDate.format('YYYY-MM-DD'))
     if (direction == "left") {

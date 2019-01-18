@@ -7,7 +7,7 @@
 
 /* end of ngClass */
 
-.time-mark-form-control{
+.time-segment-form-control{
     display:flex;
     flex-direction: row;
     /* flex-wrap: wrap; */
@@ -19,7 +19,7 @@
     background-color: white;
 
 }
-.time-mark-form-control-label{
+.time-segment-form-control-label{
     width: 8em;
 }
 
@@ -28,17 +28,17 @@
     color:green;
 }
 
-.time-mark-activity{
+.time-segment-activity{
     background-color: #fefff2;
     display:flex; 
     flex-direction: row;
     justify-content: space-between;
 }
-.time-mark-activity-control{
+.time-segment-activity-control{
     margin-left: 4px;
     margin-right: 4px;
 }
-.time-mark-activity-control:hover{
+.time-segment-activity-control:hover{
     cursor:pointer;
     color: yellowgreen;
 }

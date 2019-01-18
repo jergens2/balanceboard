@@ -1,9 +1,9 @@
 import { CategorizedActivity } from "../activities/categorized-activity.model";
 import * as moment from 'moment';
-import { TimeMarkActivity } from "./time-mark-activity.model";
+import { TimeSegmentActivity } from "./time-segment-activity.model";
 
 
-export class TimeMark{
+export class TimeSegment{
 
     public id: string;
 
@@ -18,19 +18,19 @@ export class TimeMark{
 
     public description: string;
 
-    public activities: TimeMarkActivity[] = []
-    // private _activities: TimeMarkActivity[] = [];
-    // get activities(): TimeMarkActivity[]{
+    public activities: TimeSegmentActivity[] = []
+    // private _activities: TimeSegmentActivity[] = [];
+    // get activities(): TimeSegmentActivity[]{
     //     return this._activities;
     // }
-    // set activities(arr: TimeMarkActivity[]){
+    // set activities(arr: TimeSegmentActivity[]){
     //     this._activities = [];
     //     this._activities = Object.assign([], arr);
     //     console.log(this._activities);
     // }
 
-    public precedingTimeMarkId: string;
-    public followingTimeMarkId: string;
+    public precedingTimeSegmentId: string;
+    public followingTimeSegmentId: string;
 
     public userId: string;
 
@@ -73,12 +73,12 @@ export class TimeMark{
 
     receiveOldActivities(activities: CategorizedActivity[]){
         this.activities = activities.map((activity)=>{
-            let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(activity, 0, "");
-            timeMarkActivity.duration = 0;
-            if(timeMarkActivity.activity.color == "blue"){
-                timeMarkActivity.activity.color = "#fafafa";
+            let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, 0, "");
+            timeSegmentActivity.duration = 0;
+            if(timeSegmentActivity.activity.color == "blue"){
+                timeSegmentActivity.activity.color = "#fafafa";
             }
-            return timeMarkActivity;
+            return timeSegmentActivity;
         })
     }
 

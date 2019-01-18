@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TimelogService } from './timelog.service';
-import { TimeMark } from './time-mark.model';
+import { TimeSegment } from './time-segment.model';
 import { faTimes, faCog, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import * as moment from 'moment';

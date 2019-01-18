@@ -2,17 +2,17 @@
     cursor: pointer;
 }
 
-.new-time-mark{
+.new-time-segment{
     border-radius:5px;
     background-color: #f2f7ff;
 }
 
 
-.time-mark-tile {
+.time-segment-tile {
     border-radius: 5px;
 }
 
-.delete-time-mark-button{
+.delete-time-segment-button{
 
     font-size: 0.75em;
     /* line-height: 26px;
@@ -23,7 +23,7 @@
     margin: 0px;
     color: #cacaca;
 }
-.delete-time-mark-button:hover{
+.delete-time-segment-button:hover{
     cursor: pointer;
     /* border: 1px solid red; */
     color: orange;

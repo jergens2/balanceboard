@@ -16,11 +16,11 @@
       Loading
       <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
     </div>
-    <div *ngFor="let tile of timeMarkChartTiles " class="chart-item" [style.height]="tile.styleHeight"
+    <div *ngFor="let tile of timeSegmentChartTiles " class="chart-item" [style.height]="tile.styleHeight"
       [style.backgroundColor]="tile.styleBackgroundColor" [style.margin-top]="tile.styleMarginTop" (click)="onClickTile(tile)">
-      <div *ngIf="ifShowActivities(tile.timeMark)">
-        <div *ngFor="let timeMarkActivity of tile.timeMark.activities">
-          {{ timeMarkActivity.activity.name }}
+      <div *ngIf="ifShowActivities(tile.timeSegment)">
+        <div *ngFor="let timeSegmentActivity of tile.timeSegment.activities">
+          {{ timeSegmentActivity.activity.name }}
         </div>
       </div>
     </div>

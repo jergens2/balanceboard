@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { TimelogService } from '../timelog.service';
-import { TimeMark } from '../time-mark.model';
+import { TimeSegment } from '../time-segment.model';
 
 import * as moment from 'moment';
 import { ActivitiesService } from '../../activities/activities.service';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-export interface ITimeMarkChartTile {
-  timeMark: TimeMark,
+export interface ITimeSegmentChartTile {
+  timeSegment: TimeSegment,
   style: Object,
   styleHeight: string,
   styleMarginTop: string,
@@ -26,7 +26,7 @@ export class TimelogChartComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService, private activitiesService: ActivitiesService) { }
 
-  timeMarkChartTiles: ITimeMarkChartTile[];
+  timeSegmentChartTiles: ITimeSegmentChartTile[];
   hours: string[];
   hourHeight: number;
 
@@ -51,14 +51,14 @@ export class TimelogChartComponent implements OnInit {
       hour++;
     }
 
-    this.timeMarkChartTiles = [];
-    this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
-      this.timeMarkChartTiles = [];
+    this.timeSegmentChartTiles = [];
+    this.timeLogService.thisDaysTimeSegments.subscribe((timeSegments: TimeSegment[]) => {
+      this.timeSegmentChartTiles = [];
       this.ifLoading = true;
-      if(timeMarks != null){
-        if(timeMarks.length > 0){
-          let chartTimeMarks = Object.assign([], timeMarks);
-          this.timeMarkChartTiles = this.buildTimeMarkChartTiles(chartTimeMarks, this.hourHeight);
+      if(timeSegments != null){
+        if(timeSegments.length > 0){
+          let chartTimeSegments = Object.assign([], timeSegments);
+          this.timeSegmentChartTiles = this.buildTimeSegmentChartTiles(chartTimeSegments, this.hourHeight);
           
         }
         this.ifLoading = false;
@@ -67,11 +67,11 @@ export class TimelogChartComponent implements OnInit {
     })
   }
 
-  buildTimeMarkChartTiles(timeMarks: TimeMark[], hourHeightPx: number): ITimeMarkChartTile[] {
-    let tiles: ITimeMarkChartTile[] = [];
+  buildTimeSegmentChartTiles(timeSegments: TimeSegment[], hourHeightPx: number): ITimeSegmentChartTile[] {
+    let tiles: ITimeSegmentChartTile[] = [];
 
-    if (timeMarks != null) {
-      timeMarks.sort((a, b) => {
+    if (timeSegments != null) {
+      timeSegments.sort((a, b) => {
         if (moment(a.startTime).isAfter(moment(b.startTime))) {
           return 1
         }
@@ -82,52 +82,52 @@ export class TimelogChartComponent implements OnInit {
 
       })
 
-      for (let timeMark of timeMarks) {
+      for (let timeSegment of timeSegments) {
 
         let templateStartTime = this.timeLogService.userDefinedStartTimeOfDay;
         let templateEndTime = this.timeLogService.userDefinedEndTimeOfDay;
 
-        if (!moment(timeMark.endTime).isBefore(templateStartTime) && !moment(timeMark.startTime).isAfter(templateEndTime)) {
+        if (!moment(timeSegment.endTime).isBefore(templateStartTime) && !moment(timeSegment.startTime).isAfter(templateEndTime)) {
 
           let marginTop = "1px";
-          let timeMarkHeight: string = "0px";
-          timeMarkHeight = (((timeMark.duration / 60) * hourHeightPx) - 1) + "px";
+          let timeSegmentHeight: string = "0px";
+          timeSegmentHeight = (((timeSegment.duration / 60) * hourHeightPx) - 1) + "px";
 
 
-          if (moment(timeMark.startTime).isBefore(templateStartTime)) {
-            let hoursCut = moment(templateStartTime).diff((moment(timeMark.startTime)), 'hours');
+          if (moment(timeSegment.startTime).isBefore(templateStartTime)) {
+            let hoursCut = moment(templateStartTime).diff((moment(timeSegment.startTime)), 'hours');
             let pxCut = hoursCut * hourHeightPx;
 
-            timeMarkHeight = (((timeMark.duration / 60) * hourHeightPx) - pxCut - 1) + "px";
+            timeSegmentHeight = (((timeSegment.duration / 60) * hourHeightPx) - pxCut - 1) + "px";
           }
-          if (moment(timeMark.startTime).isAfter(templateStartTime) && tiles.length == 0){
+          if (moment(timeSegment.startTime).isAfter(templateStartTime) && tiles.length == 0){
 
-            let diff = moment(timeMark.startTime).diff(moment(templateStartTime), 'hours');
+            let diff = moment(timeSegment.startTime).diff(moment(templateStartTime), 'hours');
             marginTop = (diff * hourHeightPx) + "px";
           }
 
-          if (moment(timeMark.endTime).isAfter(templateEndTime)) {
-            let endTime = moment(timeMark.endTime);
+          if (moment(timeSegment.endTime).isAfter(templateEndTime)) {
+            let endTime = moment(timeSegment.endTime);
 
-            let hoursCut = moment(timeMark.endTime).diff((moment(templateEndTime)), 'hours');
+            let hoursCut = moment(timeSegment.endTime).diff((moment(templateEndTime)), 'hours');
             let pxCut = hoursCut * hourHeightPx;
-            timeMarkHeight = (((timeMark.duration / 60) * hourHeightPx) - pxCut - 1) + "px";
-            // console.log("timemark height", timeMarkHeight);
+            timeSegmentHeight = (((timeSegment.duration / 60) * hourHeightPx) - pxCut - 1) + "px";
+            // console.log("timeSegment height", timeSegmentHeight);
           }
 
 
           let styleColor = "white";
-          if (timeMark.activities.length == 0) {
+          if (timeSegment.activities.length == 0) {
             styleColor = "white";
-          } else if (timeMark.activities.length == 1) {
+          } else if (timeSegment.activities.length == 1) {
 
 
-            styleColor = timeMark.activities[0].activity.color
-          } else if (timeMark.activities.length > 1) {
-            // TODO need to calculate which activity represents the largest portion of the timeMark and return that activity's color
-            styleColor = timeMark.activities[0].activity.color
+            styleColor = timeSegment.activities[0].activity.color
+          } else if (timeSegment.activities.length > 1) {
+            // TODO need to calculate which activity represents the largest portion of the timeSegment and return that activity's color
+            styleColor = timeSegment.activities[0].activity.color
           }
-          let tile: ITimeMarkChartTile = { timeMark: timeMark, style: {}, styleHeight: timeMarkHeight, styleBackgroundColor: styleColor, styleMarginTop: marginTop };
+          let tile: ITimeSegmentChartTile = { timeSegment: timeSegment, style: {}, styleHeight: timeSegmentHeight, styleBackgroundColor: styleColor, styleMarginTop: marginTop };
           // console.log("pushing tile", tile);
           tiles.push(tile);
         }
@@ -137,14 +137,14 @@ export class TimelogChartComponent implements OnInit {
   }
 
 
-  calculateHeight(timeMark: TimeMark): {} {
+  calculateHeight(timeSegment: TimeSegment): {} {
     let height = 0;
-    height = timeMark.duration;
+    height = timeSegment.duration;
     let str = height.toString() + "px"
     return { "height": str };
   }
 
-  getTileHeight(timeMark: TimeMark): string {
+  getTileHeight(timeSegment: TimeSegment): string {
     let startTime = moment().hour(7).minute(30).second(0).millisecond(0);
     let endTime = moment().hour(22).minute(30).second(0).millisecond(0);
     let dayFrameDuration = moment.duration(moment(startTime).diff(moment(endTime))).asMinutes();
@@ -153,9 +153,9 @@ export class TimelogChartComponent implements OnInit {
 
     let frameHeight = 500; //500px
 
-    let timeMarkHeight = timeMark.duration / (dayFrameDuration / frameHeight);
+    let timeSegmentHeight = timeSegment.duration / (dayFrameDuration / frameHeight);
 
-    let heightStyle = timeMarkHeight.toFixed(0) + "px";
+    let heightStyle = timeSegmentHeight.toFixed(0) + "px";
     return heightStyle;
     // return { 'height': heightStyle };
   }
@@ -165,15 +165,15 @@ export class TimelogChartComponent implements OnInit {
   Template Functions
   */
 
-  ifShowActivities(timeMark: TimeMark): boolean {
-    if (timeMark != null) {
-      if (timeMark.duration < 30) {
+  ifShowActivities(timeSegment: TimeSegment): boolean {
+    if (timeSegment != null) {
+      if (timeSegment.duration < 30) {
         return false;
       } else {
         return true;
       }
     }
-    // console.log("DUration: " , timeMarkDuration);
+    // console.log("DUration: " , timeSegmentDuration);
 
 
   }
@@ -186,7 +186,7 @@ export class TimelogChartComponent implements OnInit {
 
   }
 
-  onClickTile(tile: ITimeMarkChartTile) {
+  onClickTile(tile: ITimeSegmentChartTile) {
     console.log("tile clicked", tile);
   }
 

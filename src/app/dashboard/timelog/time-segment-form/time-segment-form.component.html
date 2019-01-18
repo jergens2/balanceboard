@@ -1,17 +1,17 @@
-{{ action }} Time Mark
-<div [formGroup]="timeMarkForm" class="mb-3">
+{{ action }} Time segment
+<div [formGroup]="timeSegmentForm" class="mb-3">
 
 
 
-  <div class="time-mark-form-control">
-    <div class="time-mark-form-control-label">
+  <div class="time-segment-form-control">
+    <div class="time-segment-form-control-label">
       Start Time
     </div>
     <div style="flex-grow:2; padding-right:10px;">
-      <div *ngIf="updateTimeMark">
-        {{ udateTimeMarkStartTime }}
+      <div *ngIf="updateTimeSegment">
+        {{ udateTimeSegmentStartTime }}
       </div>
-      <div *ngIf="!updateTimeMark">
+      <div *ngIf="!updateTimeSegment">
         <div *ngIf="!ifSpecifyStartTime">
           {{ calculatedStartTime.format('hh:mm a') }}
         </div>
@@ -37,16 +37,16 @@
 
   </div>
 
-  <div class="time-mark-form-control">
-    <div class="time-mark-form-control-label">
+  <div class="time-segment-form-control">
+    <div class="time-segment-form-control-label">
       End Time
     </div>
 
     <div style="flex-grow:2; padding-right:10px;">
-      <div *ngIf="updateTimeMark">
-        {{ udateTimeMarkEndTime }}
+      <div *ngIf="updateTimeSegment">
+        {{ udateTimeSegmentEndTime }}
       </div>
-      <div *ngIf="!updateTimeMark">
+      <div *ngIf="!updateTimeSegment">
         <div *ngIf="!ifSpecifyEndTime">
           {{ now().format('hh:mm a') }}
         </div>
@@ -74,7 +74,7 @@
 
   </div>
 
-  <div class="time-mark-form-control">
+  <div class="time-segment-form-control">
     <div>Total Duration</div>
     <div>
       {{ durationString }}
@@ -93,19 +93,19 @@
   <!-- Activities section. -->
 
   <h6>Activities Prior</h6>
-  <div *ngIf="timeMarkActivities">
-    <div *ngFor="let timeMarkActivity of timeMarkActivities" class='m-1 p-3 border border-warning time-mark-activity'
+  <div *ngIf="timeSegmentActivities">
+    <div *ngFor="let timeSegmentActivity of timeSegmentActivities" class='m-1 p-3 border border-warning time-segment-activity'
       style='border-radius:5px;'>
 
       <div>
-        Activity: {{ timeMarkActivity.activity.name }}
+        Activity: {{ timeSegmentActivity.activity.name }}
       </div>
       <div style="display:flex;flex-direction: row;" >
         
-        <!-- <div *ngIf="!ifAddActivityForm" class="time-mark-activity-control" (click)="onClickUpdateTimeMarkActivity(timeMarkActivity)">
+        <!-- <div *ngIf="!ifAddActivityForm" class="time-segment-activity-control" (click)="onClickUpdateTimeSegmentActivity(timeSegmentActivity)">
           <fa-icon [icon]="faCog"></fa-icon>
         </div> -->
-        <div class="time-mark-activity-control" (click)="onClickDeleteTimeMarkActivity(timeMarkActivity)">
+        <div class="time-segment-activity-control" (click)="onClickDeleteTimeSegmentActivity(timeSegmentActivity)">
           <fa-icon [icon]="faTimes"></fa-icon>
         </div>
       </div>
@@ -124,7 +124,7 @@
 </button>
 
 <div class='d-flex flex-row-reverse'>
-  <button class="btn border-warning mx-1" (click)="onClickCancelTimeMark()">Cancel</button>
-  <button class="btn btn-success mx-1" (click)="onClickSaveTimeMark()" [disabled]="saveTimeMarkDisabled">Save Time Mark</button>
+  <button class="btn border-warning mx-1" (click)="onClickCancelTimeSegment()">Cancel</button>
+  <button class="btn btn-success mx-1" (click)="onClickSaveTimeSegment()" [disabled]="saveTimeSegmentDisabled">Save Time segment</button>
 
 </div>

@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { TimelogService } from '../timelog.service';
 import { ActivitiesService } from '../../activities/activities.service';
-import { TimeMark } from '../time-mark.model';
-import { ITimeMarkTile } from './timeMarkTile.interface';
+import { TimeSegment } from '../time-segment.model';
+import { ITimeSegmentTile } from './time-segment-tile.interface';
 
 import { faSpinner, faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 
@@ -21,11 +21,11 @@ export class TimelogListComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService, private activitiesService: ActivitiesService) { }
 
-  timeMarkTiles: ITimeMarkTile[] = [];
-  ifLoadingTimeMarks: boolean;
+  timeSegmentTiles: ITimeSegmentTile[] = [];
+  ifLoadingTimeSegments: boolean;
 
-  ifAddTimeMarkButton: boolean = true;
-  ifAddTimeMarkForm: boolean;
+  ifAddTimeSegmentButton: boolean = true;
+  ifAddTimeSegmentForm: boolean;
 
   faSpinner = faSpinner;
   faCog = faCog;
@@ -33,48 +33,48 @@ export class TimelogListComponent implements OnInit {
 
   currentDate: moment.Moment;
 
-  private defaultTimeMarkTileStyle: Object;
+  private defaultTimeSegmentTileStyle: Object;
 
   ngOnInit() {
     this.currentDate = moment();
-    this.ifLoadingTimeMarks = true;
-    this.ifAddTimeMarkButton = true;
-    this.defaultTimeMarkTileStyle = {};
+    this.ifLoadingTimeSegments = true;
+    this.ifAddTimeSegmentButton = true;
+    this.defaultTimeSegmentTileStyle = {};
 
     this.timeLogService.currentDate$.subscribe((changedDate: moment.Moment)=>{
       this.currentDate = moment(changedDate);
       if(moment(this.currentDate).dayOfYear() != moment().dayOfYear()){
         this.onCloseForm();
-        this.ifAddTimeMarkButton = false;
+        this.ifAddTimeSegmentButton = false;
       }else{
-        this.ifAddTimeMarkButton = true;
+        this.ifAddTimeSegmentButton = true;
       }
     })
 
-    this.timeLogService.thisDaysTimeMarks.subscribe((timeMarks: TimeMark[]) => {
-      if(timeMarks != null){
-        let listTimeMarks = Object.assign([], timeMarks);
-        // console.log(listTimeMarks);
-        this.timeMarkTiles = this.buildThisDaysTimeMarkTiles(listTimeMarks);
-        this.ifLoadingTimeMarks = false;
+    this.timeLogService.thisDaysTimeSegments.subscribe((timeSegments: TimeSegment[]) => {
+      if(timeSegments != null){
+        let listTimeSegments = Object.assign([], timeSegments);
+        // console.log(listTimeSegments);
+        this.timeSegmentTiles = this.buildThisDaysTimeSegmentTiles(listTimeSegments);
+        this.ifLoadingTimeSegments = false;
       }
     })
 
 
   }
 
-  private buildThisDaysTimeMarkTiles(timeMarks: TimeMark[]): ITimeMarkTile[] {
+  private buildThisDaysTimeSegmentTiles(timeSegments: TimeSegment[]): ITimeSegmentTile[] {
 
-    let timeMarkTiles: ITimeMarkTile[] = [];
-    for (let timeMark of timeMarks) {
-      let timeMarkTile: ITimeMarkTile = { timeMark: timeMark, style: this.defaultTimeMarkTileStyle, deleteButtonIsVisible: false, ifUpdateTimeMark: false };
-      timeMarkTiles.push(timeMarkTile);
+    let timeSegmentTiles: ITimeSegmentTile[] = [];
+    for (let timeSegment of timeSegments) {
+      let timeSegmentTile: ITimeSegmentTile = { timeSegment: timeSegment, style: this.defaultTimeSegmentTileStyle, deleteButtonIsVisible: false, ifUpdateTimeSegment: false };
+      timeSegmentTiles.push(timeSegmentTile);
     }
-    return timeMarkTiles;
+    return timeSegmentTiles;
   }
 
-  get latestTimeMark(): TimeMark {
-    return this.timeLogService.latestTimeMark;
+  get latestTimeSegment(): TimeSegment {
+    return this.timeLogService.latestTimeSegment;
   }
 
 
@@ -82,9 +82,9 @@ export class TimelogListComponent implements OnInit {
       TEMPLATE FUNCTIONS
   */
 
-  onTimeMarkUpdated(timeMark: TimeMark, ){
-    console.log("updating timeMark", timeMark);
-    this.timeLogService.updateTimeMark(timeMark);
+  onTimeSegmentUpdated(timeSegment: TimeSegment, ){
+    console.log("updating timeSegment", timeSegment);
+    this.timeLogService.updateTimeSegment(timeSegment);
   }
 
   ifDateIsTodate(date: moment.Moment){
@@ -96,35 +96,35 @@ export class TimelogListComponent implements OnInit {
     }
   }
 
-  onClickAddTimeMark() {
-    this.ifAddTimeMarkButton = false;
-    this.ifAddTimeMarkForm = true;
+  onClickAddTimeSegment() {
+    this.ifAddTimeSegmentButton = false;
+    this.ifAddTimeSegmentForm = true;
   }
 
   onCloseForm(){
-    this.ifAddTimeMarkForm = false;
-    this.ifAddTimeMarkButton = true;    
+    this.ifAddTimeSegmentForm = false;
+    this.ifAddTimeSegmentButton = true;    
   }
-  onCloseUpdateForm(timeMarkTile: ITimeMarkTile){
-    timeMarkTile.ifUpdateTimeMark = false;
-  }
-
-  onMouseEnterTimeMarkTile(timeMarkTile: ITimeMarkTile) {
-
-    // timeMarkTile.deleteButtonIsVisible = true;
+  onCloseUpdateForm(timeSegmentTile: ITimeSegmentTile){
+    timeSegmentTile.ifUpdateTimeSegment = false;
   }
 
-  onMouseLeaveTimeMarkTile(timeMarkTile: ITimeMarkTile) {
-    // timeMarkTile.deleteButtonIsVisible = false;
+  onMouseEnterTimeSegmentTile(timeSegmentTile: ITimeSegmentTile) {
+
+    // timeSegmentTile.deleteButtonIsVisible = true;
   }
 
-  onClickDeleteTimeMark(timeMark: TimeMark) {
-    //to do:  when clicked, prompt for a confirmation:  "Delete this time mark?"
-    this.timeLogService.deleteTimeMark(timeMark);
+  onMouseLeaveTimeSegmentTile(timeSegmentTile: ITimeSegmentTile) {
+    // timeSegmentTile.deleteButtonIsVisible = false;
   }
 
-  onClickUpdateTimeMark(timeMarkTile: ITimeMarkTile){
-    timeMarkTile.ifUpdateTimeMark = !timeMarkTile.ifUpdateTimeMark;
+  onClickDeleteTimeSegment(timeSegment: TimeSegment) {
+    //to do:  when clicked, prompt for a confirmation:  "Delete this time segment?"
+    this.timeLogService.deleteTimeSegment(timeSegment);
+  }
+
+  onClickUpdateTimeSegment(timeSegmentTile: ITimeSegmentTile){
+    timeSegmentTile.ifUpdateTimeSegment = !timeSegmentTile.ifUpdateTimeSegment;
   }
 
   dateIsToday(dateYYYYMMDD: string): boolean {

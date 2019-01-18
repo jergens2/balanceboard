@@ -1,78 +1,78 @@
 <div class="">
   <h4>Time Log Entries</h4>
-  <button *ngIf="ifAddTimeMarkButton" class="btn btn-primary" (click)="onClickAddTimeMark()">
-    Add New Time Mark
+  <button *ngIf="ifAddTimeSegmentButton" class="btn btn-primary" (click)="onClickAddTimeSegment()">
+    Add New Time Segment
   </button>
-  <div *ngIf="ifAddTimeMarkForm" class='m-1 p-3 border border-secondary new-time-mark'>
+  <div *ngIf="ifAddTimeSegmentForm" class='m-1 p-3 border border-secondary new-time-segment'>
 
-    <app-time-mark-form (closeForm)="onCloseForm()">
-    </app-time-mark-form>
+    <app-time-segment-form (closeForm)="onCloseForm()">
+    </app-time-segment-form>
 
   </div>
 
   <hr>
-  <div *ngIf="ifLoadingTimeMarks" class="text-center" style="font-size:3em;">
+  <div *ngIf="ifLoadingTimeSegments" class="text-center" style="font-size:3em;">
     <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
   </div>
-  <div *ngIf="!ifLoadingTimeMarks">
-    <div *ngIf="timeMarkTiles">
-      <div *ngIf="timeMarkTiles.length > 0">
-        <div *ngFor="let timeMarkTile of timeMarkTiles">
-          <div class='m-1 p-1 border border-success time-mark-tile' style="display:flex; flex-direction:column; "
-            [ngStyle]="timeMarkTile.style" (mouseenter)="onMouseEnterTimeMarkTile(timeMarkTile)" (mouseleave)="onMouseLeaveTimeMarkTile(timeMarkTile)">
+  <div *ngIf="!ifLoadingTimeSegments">
+    <div *ngIf="timeSegmentTiles">
+      <div *ngIf="timeSegmentTiles.length > 0">
+        <div *ngFor="let timeSegmentTile of timeSegmentTiles">
+          <div class='m-1 p-1 border border-success time-segment-tile' style="display:flex; flex-direction:column; "
+            [ngStyle]="timeSegmentTile.style" (mouseenter)="onMouseEnterTimeSegmentTile(timeSegmentTile)" (mouseleave)="onMouseLeaveTimeSegmentTile(timeSegmentTile)">
 
             <div style="display:flex; flex-direction: row;">
               <div style="display:flex; flex-direction: column; flex-grow:4; ">
                 <div>
-                  <ul class='m-0  py-0' *ngFor="let timeMarkActivity of timeMarkTile.timeMark.activities">
-                    <li class='m-0 p-0'>{{ timeMarkActivity.activity.name }}</li>
+                  <ul class='m-0  py-0' *ngFor="let timeSegmentActivity of timeSegmentTile.timeSegment.activities">
+                    <li class='m-0 p-0'>{{ timeSegmentActivity.activity.name }}</li>
                   </ul>
                 </div>
                 <div class="p-1" style="display:flex; flex-direction: row;">
                   <div class="p-1">
                     <span style="font-size:0.7em;">Start Time</span><br>
-                    {{ timeMarkTile.timeMark.startTime.format('HH:mm') }}
+                    {{ timeSegmentTile.timeSegment.startTime.format('HH:mm') }}
                   </div>
                   <div class="p-1">
                     <span style="font-size:0.7em;">End Time</span><br>
-                    {{ timeMarkTile.timeMark.endTime.format('HH:mm') }}
+                    {{ timeSegmentTile.timeSegment.endTime.format('HH:mm') }}
                   </div>
                   <div class="p-1">
                     <span style="font-size:0.7em;">Duration</span><br>
-                    {{ timeMarkTile.timeMark.durationString }}
+                    {{ timeSegmentTile.timeSegment.durationString }}
                   </div>
                 </div>
               </div>
               <div style="display:flex; flex-direction: row;">
                 <!-- TO DO: Need to add tooltips over the cog and X. e.g. hover over cog and the word "Update" or "Modify
                 pops up" -->
-                <div class="delete-time-mark-button" (click)="onClickUpdateTimeMark(timeMarkTile)">
+                <div class="delete-time-segment-button" (click)="onClickUpdateTimeSegment(timeSegmentTile)">
                   <fa-icon [icon]="faCog"></fa-icon>
                 </div>
-                <div class="delete-time-mark-button" (click)="onClickDeleteTimeMark(timeMarkTile.timeMark)">
+                <div class="delete-time-segment-button" (click)="onClickDeleteTimeSegment(timeSegmentTile.timeSegment)">
                   <fa-icon [icon]="faTimes"></fa-icon>
                 </div>
               </div>
 
             </div>
             <div>
-              {{ timeMarkTile.timeMark.description }}
+              {{ timeSegmentTile.timeSegment.description }}
             </div>
-            <div *ngIf="timeMarkTile.ifUpdateTimeMark" class=" border border-secondary new-time-mark m-2 p-3">
+            <div *ngIf="timeSegmentTile.ifUpdateTimeSegment" class=" border border-secondary new-time-segment m-2 p-3">
               
-              <app-time-mark-form [updateTimeMark]='timeMarkTile' (update)="onTimeMarkUpdated($event)" (closeForm)="onCloseUpdateForm(timeMarkTile)" ></app-time-mark-form>
+              <app-time-segment-form [updateTimeSegment]='timeSegmentTile' (update)="onTimeSegmentUpdated($event)" (closeForm)="onCloseUpdateForm(timeSegmentTile)" ></app-time-segment-form>
             </div>
           </div>
 
         </div>
       </div>
-      <div *ngIf="timeMarkTiles.length < 1">
-        No time marks for {{ currentDateString }}
+      <div *ngIf="timeSegmentTiles.length < 1">
+        No time segments for {{ currentDateString }}
       </div>
 
     </div>
-    <div *ngIf="!timeMarkTiles">
-      No Time Marks
+    <div *ngIf="!timeSegmentTiles">
+      No Time Segments
     </div>
     <hr class='mb-2'>
 

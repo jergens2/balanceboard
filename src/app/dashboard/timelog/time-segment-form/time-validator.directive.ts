@@ -1,8 +1,8 @@
 import { ValidatorFn, AbstractControl } from "@angular/forms";
 import * as moment from 'moment';
-import { TimeMark } from "../time-mark.model";
+import { TimeSegment } from "../time-segment.model";
 
-export function startTimeValidator(latestTimeMark: TimeMark, startTime: moment.Moment, endTime: moment.Moment): ValidatorFn {
+export function startTimeValidator(latestTimeSegment: TimeSegment, startTime: moment.Moment, endTime: moment.Moment): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
 
         // start time cant be after end time.

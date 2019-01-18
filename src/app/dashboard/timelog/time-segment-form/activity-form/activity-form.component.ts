@@ -7,7 +7,7 @@ import { faCircle } from '@fortawesome/free-regular-svg-icons';
 import { Router } from '@angular/router';
 import { ActivitiesService } from '../../../activities/activities.service';
 import { ActivityTree } from '../../../activities/activity-tree.model';
-import { TimeMarkActivity } from '../../time-mark-activity.model';
+import { TimeSegmentActivity } from '../../time-segment-activity.model';
 
 @Component({
   selector: 'app-activity-form',
@@ -39,9 +39,9 @@ export class ActivityFormComponent implements OnInit {
   // }
 
   @Output() closeActivityForm: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() activitySaved: EventEmitter<TimeMarkActivity> = new EventEmitter();
+  @Output() activitySaved: EventEmitter<TimeSegmentActivity> = new EventEmitter();
 
-  // @Input('updateActivity') updateActivity: IUpdateTimeMarkActivityTile;
+  // @Input('updateActivity') updateActivity: IUpdateTimeSegmentActivityTile;
 
   ngOnInit() {
     this.buildActivityForm();
@@ -54,9 +54,9 @@ export class ActivityFormComponent implements OnInit {
   buildActivityForm() {
     // if(this.updateActivity){
     //   this.activityForm = new FormGroup({
-    //     'activityTreeId': new FormControl(this.updateActivity.timeMarkActivity.activityTreeId, Validators.required),
-    //     'description': new FormControl(this.updateActivity.timeMarkActivity.description),
-    //     'duration': new FormControl(this.updateActivity.timeMarkActivity.duration, Validators.required)
+    //     'activityTreeId': new FormControl(this.updateActivity.timeSegmentActivity.activityTreeId, Validators.required),
+    //     'description': new FormControl(this.updateActivity.timeSegmentActivity.description),
+    //     'duration': new FormControl(this.updateActivity.timeSegmentActivity.duration, Validators.required)
     //   })
     // }else{
       this.activityForm = new FormGroup({
@@ -81,14 +81,14 @@ export class ActivityFormComponent implements OnInit {
     if(this.activityForm.valid){
       let activity: CategorizedActivity = this.activityTree.allActivities.find(activity => activity.treeId === this.activityForm.get('activityTreeId').value);
   
-      let timeMarkActivity: TimeMarkActivity = new TimeMarkActivity(activity, this.activityForm.value.duration, this.activityForm.value.description);
-      // console.log(timeMarkActivity);
+      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, this.activityForm.value.duration, this.activityForm.value.description);
+      // console.log(timeSegmentActivity);
   
       // if(this.updateActivity){
-      //   this.updateActivity.timeMarkActivity = timeMarkActivity;
+      //   this.updateActivity.timeSegmentActivity = timeSegmentActivity;
       //   this.updateActivity.ifShowActivity = false;
       // }else{
-        this.activitySaved.emit(timeMarkActivity);
+        this.activitySaved.emit(timeSegmentActivity);
       // }
       
     }else{
@@ -99,7 +99,7 @@ export class ActivityFormComponent implements OnInit {
 
   getUpdateActivityName(): string{ 
     // if( this.updateActivity ){ 
-    //   return this.updateActivity.timeMarkActivity.activity.name
+    //   return this.updateActivity.timeSegmentActivity.activity.name
     // }else{
       return "";
     // }
