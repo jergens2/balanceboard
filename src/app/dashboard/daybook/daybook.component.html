@@ -48,21 +48,36 @@
       </div>
 
 
-      <div class="now-time-container" [ngStyle]="nowTimeContainerStyle">
-        <div class="now-time">
-          {{ nowTime.format('h:mm a') }}
+      <div *ngIf="ifNowLine">
+        <div class="now-time-container" [ngStyle]="nowTimeContainerStyle">
+          <div class="now-time">
+            {{ nowTime.format('h:mm a') }}
+          </div>
         </div>
-      </div>
-      <div class="now-line-container" [ngStyle]="nowLineContainerStyle">
-        <div class="now-line"> </div>
-      </div>
-
-      <div class="bed-time-container" [ngStyle]="bedTimeStyle">
-        <div class="bed-time">
-          {{ bedTimeString }}
+        <div class="now-line-container" [ngStyle]="nowLineContainerStyle">
+          <div class="now-line"> </div>
         </div>
       </div>
 
+      <div *ngIf="ifBedTime">
+        <div class="bed-time-container" [ngStyle]="bedTimeStyle">
+          <div class="bed-time">
+            {{ bedTimeString }}
+          </div>
+        </div>
+      </div>
+
+      <!-- <div *ngIf="timeSegmentTiles.length > 0">
+
+      </div> -->
+      <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="timeSegmentTile.style">
+        <div class="time-segment-start" ></div>
+        <div class="time-segment-duration" [style.background-color]="timeSegmentTile.timeSegment.activities[0].activity.color">
+            {{ timeSegmentTile.timeSegment.activities[0].activity.name }}
+        </div>
+        <div class="time-segment-end"></div>
+        
+      </div>
 
     </div>
   </div>

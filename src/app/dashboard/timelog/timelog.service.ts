@@ -105,6 +105,7 @@ export class TimelogService {
 
         if(moment(timeSegment.startTimeISO).dayOfYear() != moment(timeSegment.endTimeISO).dayOfYear()){
           console.log("timeSegment start time and end time are not the same day of year.")
+          // this happens when UTC time rolls over 23:59
         }
 
 
@@ -261,6 +262,37 @@ export class TimelogService {
         // this.setLatestTimeSegment(null);
         this._timeSegmentsSubject$.next(timeSegments);
       })
+
+  }
+
+  fetchTimeSegmentsByDay(date: moment.Moment){
+    const getUrl = this.serverUrl + "/api/timeSegment/" + this.authService.authenticatedUser.id + "/" + moment(date).startOf('day').toISOString() + "/" + moment(date).endOf('day').toISOString();
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'  
+      })
+    };
+    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+      .pipe(map((response) => {
+        return response.data.map((dataObject) => {
+          let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO);
+          timeSegment.description = dataObject.description;
+
+          let activities: Array<any> = dataObject.activities as Array<any>;
+          if(activities.length > 0){ 
+            //if the element in the array has a property called .activity , then it is of new type of activity as of 2018-12-13
+            if(activities[0].activityTreeId != null){
+              timeSegment.activities = this.buildTimeSegmentActivities(activities);
+            }else{
+              timeSegment.receiveOldActivities(dataObject.activities as CategorizedActivity[])
+            }
+          }
+          return timeSegment;
+        })
+      }))
+
 
   }
 

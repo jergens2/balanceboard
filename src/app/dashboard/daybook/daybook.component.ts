@@ -3,6 +3,8 @@ import * as moment from 'moment';
 import { TimelogService } from '../timelog/timelog.service';
 import { Subscription, timer, Subject } from 'rxjs';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
+import { TimeSegment } from '../timelog/time-segment.model';
+import { ITimeSegmentTile } from './time-segment-tile.interface';
 
 @Component({
   selector: 'app-daybook',
@@ -16,8 +18,8 @@ export class DaybookComponent implements OnInit {
   faCalendar = faCalendarAlt;
   ifCalendarInside: boolean = false;
 
-  dayStartTime: moment.Moment;
-  dayEndTime: moment.Moment;
+  // dayStartTime: moment.Moment;
+  // dayEndTime: moment.Moment;
 
 
   /* bed time is the time you start trying to go to sleep */
@@ -32,48 +34,159 @@ export class DaybookComponent implements OnInit {
   daybookBodyStyle: any = {};
   hourLabels: any[] = [];
   bookLines: any[] = [];
+
   nowLineContainerStyle: any = {};
   nowTime: moment.Moment = moment();
   nowTimeContainerStyle: any = {};
+  ifNowLine: boolean = false;
 
   bedTimeStyle: any = {};
   bedTimeString: string = "";
+  ifBedTime: boolean = false;
 
   nowSubscription: Subscription = new Subscription();
 
+
+  timeSegmentTiles: ITimeSegmentTile[] = [];
+
   private _currentDate: moment.Moment;
-  get currentDate(): moment.Moment{
+  get currentDate(): moment.Moment {
     return this._currentDate
   }
-  set currentDate(newDate){
+  set currentDate(newDate) {
     this._currentDate = moment(newDate);
     this._currentDate$.next(this._currentDate);
   }
   private _currentDate$: Subject<moment.Moment> = new Subject();
+  timeSegments: TimeSegment[] = [];
 
   ngOnInit() {
+    this.currentDate = moment();
+    let dayStartTime = moment(this.currentDate).hour(7).minute(30).second(0).millisecond(0);
+    let dayEndTime = moment(this.currentDate).hour(22).minute(30).second(0).millisecond(0);
+    this.buildDisplay(dayStartTime, dayEndTime);
 
-    this._currentDate$.subscribe((date)=>{
-      this.bedTime = moment(date).hour(22).minute(30).second(0).millisecond(0);
+    this.timeLogService.fetchTimeSegmentsByDay(this.currentDate).subscribe((timeSegments) => {
+      this.timeSegments = timeSegments;
+      this.displayTimeSegments(this.timeSegments, dayStartTime, dayEndTime);
+    });
 
-      this.dayStartTime = moment(date).hour(7).minute(30).second(0).millisecond(0);
-      this.dayEndTime = moment(date).hour(22).minute(30).second(0).millisecond(0);
-  
+    this._currentDate$.subscribe((date) => {
+
       this.nowSubscription.unsubscribe();
       this.nowSubscription = timer(0, 60000).subscribe(() => {
-        this.buildDisplay();
+        this.buildDisplay(dayStartTime, dayEndTime);
       })
+      this.timeLogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
+        console.log(timeSegments);
+        this.timeSegments = timeSegments;
+        this.displayTimeSegments(this.timeSegments, dayStartTime, dayEndTime);
+      });
+
     })
 
-    this.currentDate = moment();
+
+
 
   }
 
-  buildDisplay() {
-    let hour: number = 0;
-    hour = this.dayStartTime.hour();
+  displayTimeSegments(timeSegments: TimeSegment[], dayStartTime: moment.Moment, dayEndTime: moment.Moment) {
+    let startTime = moment(dayStartTime).subtract(30, 'minutes');
+    if (startTime.minute() <= 15) {
+      startTime.minute(0);
+    } else if (startTime.minute() > 15 && startTime.minute() <= 45) {
+      startTime.minute(30);
+    } else {
+      startTime.minute(60);
+    }
+    let endTime = moment(dayEndTime).add(30, 'minutes');
+    /*
+      2018-01-19
+      The following is not a robust way of properly calculating the grids, but it works under the current defined start and end time.
 
-    let currentTime = moment(this.dayStartTime).subtract(30, 'minutes');
+      maybe a better way to do it is just grab the information from the style variable dayBookBodyStyle
+
+      start time is 7:00am at gridIndex 1;
+      7:00 to 7:30 would be 1 / span 1
+      8:00 to 8:30 would be 3 / span 1
+      10:00 to 11:30 would be 7 / span 3
+
+    */
+    let gridSegments: number = ((endTime.diff(startTime, 'hours')) + 1) * 2;
+
+    function gridStart(segmentStart: moment.Moment): number {
+      let gridIndex = 0;
+      let difference = segmentStart.diff(startTime);
+      if (difference < 0) {
+        console.log("segmentStart is before start time")
+        return 0;
+      } else {
+        let currentTime = moment(startTime);
+        while (currentTime.isSameOrBefore(segmentStart)) {
+          gridIndex++;
+          currentTime = moment(currentTime).add(30, 'minutes');
+        }
+        return gridIndex;
+      }
+
+    }
+
+    let tiles: ITimeSegmentTile[] = [];
+
+    for (let timeSegment of timeSegments) {
+      let segmentStart = moment(timeSegment.startTime);
+      let gridLineStart = gridStart(segmentStart);
+      if (gridLineStart > 0) {
+        let segmentEnd = moment(timeSegment.endTime);
+        let duration = segmentEnd.diff(segmentStart, 'minutes');
+
+        //below line:  
+        // I subtracted 2 because:  subtract 1 because grid-rows starts at index 1, but also because as above, the "real" start time is the defined startTime minus an additional 30 minutes (1 grid row/segment)
+        let gridStartTime = moment(dayStartTime).add((30 * (gridLineStart-2)), 'minutes');
+        
+        let gridSpan = Math.ceil(segmentEnd.diff(gridStartTime, 'minutes') / 30);
+        let span = gridSpan * 30;
+
+        let percentStart = (moment(segmentStart).diff(gridStartTime, 'minutes') / span) * 100;
+        let percentDuration = (duration / span) * 100;
+        let percentEnd = 100 - (percentStart + percentDuration);
+
+        let style = {
+          "grid-row": "" + gridLineStart + " / span " + gridSpan,
+          "grid-template-rows": + percentStart + "% " + percentDuration + "% " + percentEnd + "%"
+        };
+
+
+        let tile: ITimeSegmentTile = { timeSegment: timeSegment, style: style };
+        tiles.push(tile);
+
+      } else {
+        // dont add the tile because it is before the day start time.
+        /*
+          At some point it might be diligent to add kind of a secondary section of the daybook, for times when a person stays up past midnight the previous evening.
+          e.g.:  you go to bed at 1:00am and wake up at 9:00 am.  the duration of time between 1 and 9 is a "squished" section because what's the point of being able
+          to visualize 8 hours of sleep in this context?  not very useful
+
+          so it would be like 2 seconds of daybook, e.g.
+
+          | prior to sleep | 12:00am
+          |________________|  1:00am
+          |                |  9:00am
+          | after sleep    | 10:00am
+
+          something like this
+        */
+      }
+
+    }
+    this.timeSegmentTiles = tiles;
+  }
+
+  buildDisplay(dayStartTime: moment.Moment, dayEndTime: moment.Moment) {
+    let hour: number = 0;
+    hour = dayStartTime.hour();
+
+    let currentTime = moment(dayStartTime).subtract(30, 'minutes');
     if (currentTime.minute() <= 15) {
       currentTime.minute(0);
     } else if (currentTime.minute() > 15 && currentTime.minute() <= 45) {
@@ -82,7 +195,7 @@ export class DaybookComponent implements OnInit {
       currentTime.minute(60);
     }
 
-    let endTime = moment(this.dayEndTime).add(30, 'minutes');
+    let endTime = moment(dayEndTime).add(30, 'minutes');
     // let endTime = moment(this.dayEndTime);
 
     let hourLabels: any[] = [];
@@ -93,7 +206,7 @@ export class DaybookComponent implements OnInit {
     let now = moment();
     let nowLineContainerStyle: any = {};
     let nowTimeContainerStyle: any = {};
-    let bedTimeStyle: any = {};
+    // let bedTimeStyle: any = {};
 
     function getGridTemplateRowsStyle(referenceTime: moment.Moment, currentSegmentTime: moment.Moment, rows: number): string {
       let percentage: number = 1;
@@ -106,9 +219,7 @@ export class DaybookComponent implements OnInit {
     }
 
     while (currentTime.isSameOrBefore(endTime)) {
-      /*
-        There is a bug where if now is greater than dayEndTime then this following if block does not fire and the now line does not display properly. 
-      */
+
       let segmentEnd = moment(currentTime).add(30, 'minutes');
       if(moment(now).format('YYYY-MM-DD') != moment(currentTime).format('YYYY-MM-DD')){
         nowLineContainerStyle = {"display":"none"};
@@ -120,9 +231,9 @@ export class DaybookComponent implements OnInit {
         }
       }
 
-      if (moment(this.bedTime).isAfter(currentTime) && moment(this.bedTime).isSameOrBefore(segmentEnd)) {
-        bedTimeStyle = { "grid-row": "" + (gridIndex + 1) + " / -1 ", "grid-template-rows": getGridTemplateRowsStyle(this.bedTime, currentTime, 1) }
-      }
+      // if (moment(this.bedTime).isAfter(currentTime) && moment(this.bedTime).isSameOrBefore(segmentEnd)) {
+      //   bedTimeStyle = { "grid-row": "" + (gridIndex + 1) + " / -1 ", "grid-template-rows": getGridTemplateRowsStyle(this.bedTime, currentTime, 1) }
+      // }
 
       let gridLine = {
         "line": gridIndex,
@@ -147,8 +258,7 @@ export class DaybookComponent implements OnInit {
       gridIndex += 1;
     }
 
-
-    this.daybookBodyStyle = { "display": "grid", "grid-template-rows": "repeat(" + gridIndex.toFixed(0) + ", 1fr)" }
+    this.daybookBodyStyle = { "grid-template-rows": "repeat(" + gridIndex.toFixed(0) + ", 1fr)" }
     this.hourLabels = hourLabels;
     this.bookLines = gridLines;
 
@@ -157,9 +267,9 @@ export class DaybookComponent implements OnInit {
     this.nowTime = now;
 
 
-    this.bedTimeString = this.calculateBedTimeString(now);
+    // this.bedTimeString = this.calculateBedTimeString(now);
 
-    this.bedTimeStyle = bedTimeStyle;
+    // this.bedTimeStyle = bedTimeStyle;
   }
 
   calculateBedTimeString(now: moment.Moment): string {
@@ -217,11 +327,11 @@ export class DaybookComponent implements OnInit {
     this.nowSubscription.unsubscribe();
   }
 
-  onChangeCalendarDate(date: moment.Moment){
+  onChangeCalendarDate(date: moment.Moment) {
     this.currentDate = date;
   }
 
-  onClickHeaderDate(daysDifference: number){
+  onClickHeaderDate(daysDifference: number) {
     let date = moment(this.currentDate).add(daysDifference, 'days');
     this.currentDate = date;
   }
@@ -230,30 +340,30 @@ export class DaybookComponent implements OnInit {
     this.ifCalendarInside = !this.ifCalendarInside;
   }
 
-  headerDate(daysDifference: number): string{
+  headerDate(daysDifference: number): string {
     let date = moment(this.currentDate).add(daysDifference, 'days');
     return date.format('MMM Do')
 
   }
-  headerDayRelevance(daysDifference: number): string{
+  headerDayRelevance(daysDifference: number): string {
     let date = moment(this.currentDate).add(daysDifference, 'days');
 
-    if(moment(date).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')){
+    if (moment(date).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
       return "Today";
-    }else if(moment(date).format('YYYY-MM-DD') == moment().add(1,'days').format('YYYY-MM-DD')){
+    } else if (moment(date).format('YYYY-MM-DD') == moment().add(1, 'days').format('YYYY-MM-DD')) {
       return "Tomorrow";
-    }else if(moment(date).format('YYYY-MM-DD') == moment().subtract(1,'days').format('YYYY-MM-DD')){
+    } else if (moment(date).format('YYYY-MM-DD') == moment().subtract(1, 'days').format('YYYY-MM-DD')) {
       return "Yesterday";
-    }else{
+    } else {
       return date.format('ddd');
-    }   
+    }
 
   }
 
-  isToday(daysDifference: number): boolean{
+  isToday(daysDifference: number): boolean {
     let date = moment(this.currentDate).add(daysDifference, 'days');
     let isToday: boolean = false;
-    if(date.format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')){
+    if (date.format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
       isToday = true;
     }
     return isToday;
