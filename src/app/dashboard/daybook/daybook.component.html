@@ -48,7 +48,7 @@
       </div>
 
 
-      <div *ngIf="ifNowLine">
+      <!-- <div *ngIf="ifNowLine">
         <div class="now-time-container" [ngStyle]="nowTimeContainerStyle">
           <div class="now-time">
             {{ nowTime.format('h:mm a') }}
@@ -65,15 +65,17 @@
             {{ bedTimeString }}
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- <div *ngIf="timeSegmentTiles.length > 0">
 
       </div> -->
-      <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="timeSegmentTile.style">
+      <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="timeSegmentTile.containerStyle">
         <div class="time-segment-start" ></div>
-        <div class="time-segment-duration" [style.background-color]="timeSegmentTile.timeSegment.activities[0].activity.color">
-            {{ timeSegmentTile.timeSegment.activities[0].activity.name }}
+        <div class="time-segment-duration" [style.border]="'3px solid ' + timeSegmentTile.timeSegment.activities[0].activity.color" [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)" >
+          <div class="time-segment-text" [ngStyle]="timeSegmentTile.durationStyle">
+              {{ timeSegmentTile.timeSegment.activities[0].activity.name }}
+          </div>
         </div>
         <div class="time-segment-end"></div>
         

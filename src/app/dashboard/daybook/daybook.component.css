@@ -229,10 +229,11 @@
 }
 .time-segment-duration{
     grid-row: 2 / span 1;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
     border-radius: 5px;
     border-bottom: 2px solid white;
+
 }
 .time-segment-end{
     grid-row: 3 / span 1;
