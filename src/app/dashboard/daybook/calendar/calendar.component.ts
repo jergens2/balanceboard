@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ICalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
+import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-daybook-calendar',
@@ -10,6 +11,10 @@ import * as moment from 'moment';
 export class CalendarComponent implements OnInit {
 
   constructor() { }
+
+
+  faArrowRight = faArrowRight;
+  faArrowLeft = faArrowLeft;
 
   calendarDays: ICalendarDay[] = []
 

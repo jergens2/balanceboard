@@ -229,11 +229,17 @@
 }
 .time-segment-duration{
     grid-row: 2 / span 1;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top:1px;
+    margin-bottom: 2px;
     border-radius: 5px;
-    border-bottom: 2px solid white;
-
+    /* border-bottom: 2px solid white; */
+    /* box-shadow: 0px 0px 5px rgb(97, 97, 97); */
+    border: 1px solid rgba(133, 133, 133, 0.493);
+    /* border: 1px solid white; */
 }
 .time-segment-end{
     grid-row: 3 / span 1;
@@ -256,6 +262,9 @@
 
 
 @media (max-width: 767px){
+    .root{
+        padding-top: 0px;
+    }
     .daybook { 
         min-width: 300px;
         min-height: 624px;
@@ -290,6 +299,7 @@
 
 @media  (min-width: 768px) {
     /* this 767 / 768 number is the cutoff in the main AppComponent for the sidebar */
+
     .daybook { 
         min-width: 468px;
         min-height: 624px;
@@ -306,6 +316,7 @@
 }
 
 @media (min-height: 730px) and (min-width: 806px) {
+
     .daybook { 
         min-width: 525px;
         min-height: 700px;

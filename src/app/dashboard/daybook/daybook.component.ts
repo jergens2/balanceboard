@@ -65,6 +65,10 @@ export class DaybookComponent implements OnInit {
     let dayStartTime = moment(this.currentDate).hour(7).minute(30).second(0).millisecond(0);
     let dayEndTime = moment(this.currentDate).hour(22).minute(30).second(0).millisecond(0);
     this.buildDisplay(dayStartTime, dayEndTime);
+    this.nowSubscription.unsubscribe();
+    this.nowSubscription = timer(0, 60000).subscribe(() => {
+      this.buildDisplay(dayStartTime, dayEndTime);
+    })
 
     this.timeLogService.fetchTimeSegmentsByDay(this.currentDate).subscribe((timeSegments) => {
       this.timeSegments = timeSegments;
@@ -81,7 +85,6 @@ export class DaybookComponent implements OnInit {
         this.buildDisplay(dayStartTime, dayEndTime);
       })
       this.timeLogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
-        console.log(timeSegments);
         this.timeSegments = timeSegments;
         this.displayTimeSegments(this.timeSegments, dayStartTime, dayEndTime);
       });
@@ -146,32 +149,35 @@ export class DaybookComponent implements OnInit {
         let segmentEnd = moment(timeSegment.endTime);
         let duration = segmentEnd.diff(segmentStart, 'minutes');
 
-        //below line:  
-        // I subtracted 2 because:  subtract 1 because grid-rows starts at index 1, but also because as above, the "real" start time is the defined startTime minus an additional 30 minutes (1 grid row/segment)
-        let gridStartTime = moment(dayStartTime).add((30 * (gridLineStart - 2)), 'minutes');
+        if (duration >= 10) {
+          //below line:  
+          // I subtracted 2 because:  subtract 1 because grid-rows starts at index 1, but also because as above, the "real" start time is the defined startTime minus an additional 30 minutes (1 grid row/segment)
+          let gridStartTime = moment(dayStartTime).add((30 * (gridLineStart - 2)), 'minutes');
 
-        let gridSpan = Math.ceil(segmentEnd.diff(gridStartTime, 'minutes') / 30);
-        let span = gridSpan * 30;
+          let gridSpan = Math.ceil(segmentEnd.diff(gridStartTime, 'minutes') / 30);
+          let span = gridSpan * 30;
 
-        let percentStart = (moment(segmentStart).diff(gridStartTime, 'minutes') / span) * 100;
-        let percentDuration = (duration / span) * 100;
-        let percentEnd = 100 - (percentStart + percentDuration);
+          let percentStart = (moment(segmentStart).diff(gridStartTime, 'minutes') / span) * 100;
+          let percentDuration = (duration / span) * 100;
+          let percentEnd = 100 - (percentStart + percentDuration);
 
-        let containerStyle = {
-          "grid-row": "" + gridLineStart + " / span " + gridSpan,
-          "grid-template-rows": + percentStart + "% " + percentDuration + "% " + percentEnd + "%"
-        };
-        let durationStyle = {};
-        if (duration < 30) {
-          durationStyle = { "display": "none" };
-        } else if (duration >= 30) {
-          durationStyle = {};
+          let containerStyle = {
+            "grid-row": "" + gridLineStart + " / span " + gridSpan,
+            "grid-template-rows": + percentStart + "% " + percentDuration + "% " + percentEnd + "%"
+          };
+          let durationStyle = {};
+          if (duration < 30) {
+            durationStyle = { "display": "none" };
+          } else if (duration >= 30) {
+            durationStyle = {};
+          }
+
+
+
+          let tile: ITimeSegmentTile = { timeSegment: timeSegment, containerStyle: containerStyle, durationStyle: durationStyle };
+          tiles.push(tile);
         }
 
-
-
-        let tile: ITimeSegmentTile = { timeSegment: timeSegment, containerStyle: containerStyle, durationStyle: durationStyle };
-        tiles.push(tile);
 
       } else {
         // dont add the tile because it is before the day start time.
@@ -275,9 +281,9 @@ export class DaybookComponent implements OnInit {
     this.hourLabels = hourLabels;
     this.bookLines = gridLines;
 
-    // this.nowLineContainerStyle = nowLineContainerStyle;
-    // this.nowTimeContainerStyle = nowTimeContainerStyle;
-    // this.nowTime = now;
+    this.nowLineContainerStyle = nowLineContainerStyle;
+    this.nowTimeContainerStyle = nowTimeContainerStyle;
+    this.nowTime = now;
 
 
     // this.bedTimeString = this.calculateBedTimeString(now);
