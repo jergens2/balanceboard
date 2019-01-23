@@ -186,7 +186,7 @@ export class DaybookComponent implements OnInit {
           e.g.:  you go to bed at 1:00am and wake up at 9:00 am.  the duration of time between 1 and 9 is a "squished" section because what's the point of being able
           to visualize 8 hours of sleep in this context?  not very useful
 
-          so it would be like 2 seconds of daybook, e.g.
+          so it would be like 2 sections of daybook, e.g.
 
           | prior to sleep | 12:00am
           |________________|  1:00am

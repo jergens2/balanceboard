@@ -161,8 +161,8 @@ export class TimelogService {
     this.httpClient.post<{ message: string, data: any }>(postUrl, updatedTimeSegment, httpOptions)
       .pipe<TimeSegment>(map((response) => {
         let timeSegment = new TimeSegment(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
-        timeSegment.precedingTimeSegmentId = response.data.precedingTimeSegmentId;
-        timeSegment.followingTimeSegmentId = response.data.followingTimeSegmentId;
+        // timeSegment.precedingTimeSegmentId = response.data.precedingTimeSegmentId;
+        // timeSegment.followingTimeSegmentId = response.data.followingTimeSegmentId;
         timeSegment.description = response.data.description;
         timeSegment.activities = this.buildTimeSegmentActivities(response.data.activities);
         return timeSegment;
@@ -198,8 +198,8 @@ export class TimelogService {
     this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeSegment, httpOptions)
       .pipe<TimeSegment>(map((response) => {
         let timeSegment = new TimeSegment(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
-        timeSegment.precedingTimeSegmentId = response.data.precedingTimeSegmentId;
-        timeSegment.followingTimeSegmentId = response.data.followingTimeSegmentId;
+        // timeSegment.precedingTimeSegmentId = response.data.precedingTimeSegmentId;
+        // timeSegment.followingTimeSegmentId = response.data.followingTimeSegmentId;
         timeSegment.description = response.data.description;
         timeSegment.activities = this.buildTimeSegmentActivities(response.data.activities);
         return timeSegment;

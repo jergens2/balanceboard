@@ -24,7 +24,17 @@
     grid-row: 1 / span 1;
     grid-column: 2 / 7;
     justify-self: center;
-    
+
+    padding-left: 10px;
+    padding-right: 10px;
+    margin:1px;
+    border-radius:5px;
+
+    vertical-align: middle;
+}
+.calendar-header-title:hover{
+    cursor:pointer;
+    background-color:white;
 }
 .calendar-header-right{
     grid-row: 1 / span 1;

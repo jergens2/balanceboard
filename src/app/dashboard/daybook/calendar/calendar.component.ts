@@ -87,4 +87,17 @@ export class CalendarComponent implements OnInit {
     this.changedDate.emit(calendarDay.date);
   }
 
+  onClickMonthHeader(){
+
+  }
+
+  onClickCalendarLeft(){
+
+
+  }
+
+  onClickCalendarRight(){
+
+  }
+
 }

@@ -12,7 +12,7 @@
           <div>{{ headerDayRelevance(-1) }}</div>
           <div>{{ headerDate(-1) }}</div>
         </div>
-        <div class="daybook-header-tab daybook-header-current-day no-select" (click)="onClickHeaderDate(0)" [ngClass]="{'daybook-header-today': isToday(0) } ">
+        <div class="daybook-header-current-day no-select" [ngClass]="{'daybook-header-today': isToday(0) } ">
           <div>{{ headerDayRelevance(0) }}</div>
           <div>{{ headerDate(0) }}</div>
         </div>
