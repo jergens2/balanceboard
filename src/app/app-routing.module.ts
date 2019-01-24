@@ -10,6 +10,7 @@ import { TimelogComponent } from "./dashboard/timelog/timelog.component";
 import { ActivitiesComponent } from "./dashboard/activities/activities.component";
 import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 import { MonthPlannerComponent } from "./dashboard/month-planner/month-planner.component";
+import { YearPlannerComponent } from "./dashboard/year-planner/year-planner.component";
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
@@ -21,6 +22,7 @@ const appRoutes: Routes = [
     { path: 'networth', component: NetWorthComponent },
     { path: 'daybook', component: DaybookComponent },
     { path: 'month_planner', component: MonthPlannerComponent },
+    { path: 'year_planner', component: YearPlannerComponent },
     { path: 'timelog', component: TimelogComponent },
     { path: 'activities', component: ActivitiesComponent }
 ];

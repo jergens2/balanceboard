@@ -30,6 +30,7 @@ import { UpdateActivityFormComponent } from './activities/update-activity-form/u
 import { ActivityDisplayComponent } from './activities/activity-display/activity-display.component';
 import { ActivityYearViewComponent } from './activities/activity-display/activity-year-view/activity-year-view.component';
 import { MonthPlannerComponent } from './month-planner/month-planner.component';
+import { YearPlannerComponent } from './year-planner/year-planner.component';
 
 
 
@@ -64,6 +65,7 @@ import { MonthPlannerComponent } from './month-planner/month-planner.component';
     ActivityDisplayComponent,
     ActivityYearViewComponent,
     MonthPlannerComponent,
+    YearPlannerComponent,
     
     
   ],

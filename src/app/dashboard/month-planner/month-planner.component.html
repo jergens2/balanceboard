@@ -1,16 +1,31 @@
 <div class="root">
-  <div class="month-planner">
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
+  <div class="month-view-container">
+    <div class="month-view">
+      <div class="month-view-header">
+        <h1>January 2019</h1>
+      </div>
+
+      <div class="month-view-weekday">Sun</div>
+      <div class="month-view-weekday">Mon</div>
+      <div class="month-view-weekday">Tue</div>
+      <div class="month-view-weekday">Wed</div>
+      <div class="month-view-weekday">Thu</div>
+      <div class="month-view-weekday">Fri</div>
+      <div class="month-view-weekday">Sat</div>
+
+      <div *ngFor="let dayOfMonth of daysOfMonth" class="day-of-month" [ngClass]="{ 
+        'day-this-month':dayOfMonth.isThisMonth, 
+        'day-not-this-month':!dayOfMonth.isThisMonth
+        }">
+
+        {{ dayOfMonth.date.format('DD')}}
+
+      </div>
+
+
+
+    </div>
   </div>
+
+
 </div>
