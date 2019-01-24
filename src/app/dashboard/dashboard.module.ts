@@ -5,14 +5,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 import { HomeComponent } from './home/home.component';
-import { MonthViewComponent } from './home/widgets/month-view/month-view.component';
-import { DayViewComponent } from './home/widgets/day-view/day-view.component';
-import { YearViewComponent } from './home/widgets/year-view/year-view.component';
-import { EventFormComponent } from './home/widgets/day-view/event-form/event-form.component';
 import { IvyleeCreationComponent } from './productivity/ivylee/ivylee-creation/ivylee-creation.component';
 import { IvyleeManageComponent } from './productivity/ivylee/ivylee-manage/ivylee-manage.component';
-import { IvyleeWidgetComponent } from './home/widgets/ivylee-widget/ivylee-widget.component';
-import { BodyWeightWidgetComponent } from './home/widgets/body-weight/body-weight-widget.component';
 import { HealthComponent } from './health/health.component';
 import { BodyWeightComponent } from './health/body-weight/body-weight.component';
 import { BuildProfileComponent } from './health/build-profile/build-profile.component';
@@ -35,6 +29,7 @@ import { NewActivityFormComponent } from './activities/new-activity-form/new-act
 import { UpdateActivityFormComponent } from './activities/update-activity-form/update-activity-form.component';
 import { ActivityDisplayComponent } from './activities/activity-display/activity-display.component';
 import { ActivityYearViewComponent } from './activities/activity-display/activity-year-view/activity-year-view.component';
+import { MonthPlannerComponent } from './month-planner/month-planner.component';
 
 
 
@@ -50,14 +45,8 @@ import { ActivityYearViewComponent } from './activities/activity-display/activit
   ],
   declarations: [
     HomeComponent,
-    MonthViewComponent,
-    DayViewComponent,
-    YearViewComponent,
-    EventFormComponent,
     IvyleeCreationComponent,
     IvyleeManageComponent,
-    IvyleeWidgetComponent,
-    BodyWeightWidgetComponent,
     HealthComponent,
     BodyWeightComponent,
     BuildProfileComponent,
@@ -74,12 +63,11 @@ import { ActivityYearViewComponent } from './activities/activity-display/activit
     UpdateActivityFormComponent,
     ActivityDisplayComponent,
     ActivityYearViewComponent,
+    MonthPlannerComponent,
     
     
   ],
   providers: [],
-  entryComponents: [
-    EventFormComponent
-  ]
+  entryComponents: []
 })
 export class DashboardModule { }

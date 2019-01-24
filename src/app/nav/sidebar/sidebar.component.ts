@@ -1,6 +1,5 @@
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
-import { HomeService } from '../../dashboard/home/home.service';
 import { Component, OnInit } from '@angular/core';
 
 import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +13,7 @@ import { navigationItems } from '../nav-items';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor(private homeService: HomeService, private authService: AuthenticationService, private router: Router) { }
+  constructor(private authService: AuthenticationService, private router: Router) { }
 
 
 
@@ -34,10 +33,6 @@ export class SidebarComponent implements OnInit {
     this.userId = this.authService.authenticatedUser.id;
   }
 
-  onClickTimeFrameButton(selectedView){
-    this.homeService.setView(selectedView);
-    this.router.navigate(['/']);
-  }
 
   onClick(button: string){
     this.router.navigate(['/' + button]);

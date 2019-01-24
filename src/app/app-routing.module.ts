@@ -9,6 +9,7 @@ import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.compo
 import { TimelogComponent } from "./dashboard/timelog/timelog.component";
 import { ActivitiesComponent } from "./dashboard/activities/activities.component";
 import { DaybookComponent } from "./dashboard/daybook/daybook.component";
+import { MonthPlannerComponent } from "./dashboard/month-planner/month-planner.component";
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
@@ -19,6 +20,7 @@ const appRoutes: Routes = [
     { path: 'healthProfile', component: BuildProfileComponent },
     { path: 'networth', component: NetWorthComponent },
     { path: 'daybook', component: DaybookComponent },
+    { path: 'month_planner', component: MonthPlannerComponent },
     { path: 'timelog', component: TimelogComponent },
     { path: 'activities', component: ActivitiesComponent }
 ];

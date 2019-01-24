@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ICalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-daybook-calendar',
@@ -10,7 +11,7 @@ import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 })
 export class CalendarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
 
   faArrowRight = faArrowRight;
@@ -18,12 +19,14 @@ export class CalendarComponent implements OnInit {
 
   calendarDays: ICalendarDay[] = []
 
+  calendarMonthDate: moment.Moment = moment();
+
   // today: moment.Moment = moment();
 
   private _currentDate: moment.Moment = moment();
   @Input() set currentDate(date: moment.Moment){
     this._currentDate = moment(date);
-    this.calendarDays = this.buildCalendarDays();
+    this.calendarDays = this.buildCalendarDays(this._currentDate);
   }
   get currentDate(): moment.Moment{
     return this._currentDate;
@@ -31,14 +34,14 @@ export class CalendarComponent implements OnInit {
   @Output() changedDate: EventEmitter<moment.Moment> = new EventEmitter(); 
 
   ngOnInit() {
-    this.calendarDays = this.buildCalendarDays();
+    this.calendarDays = this.buildCalendarDays(this.currentDate);
   }
 
-  buildCalendarDays(): ICalendarDay[]{
+  buildCalendarDays(referenceDate: moment.Moment): ICalendarDay[]{
 
     let calendarDays: ICalendarDay[] = [];
 
-    let today = moment(this.currentDate);
+    let today = moment(referenceDate);
     let firstDate = moment(today).startOf('month');
     let lastDate = moment(today).endOf('month');
 
@@ -88,16 +91,26 @@ export class CalendarComponent implements OnInit {
   }
 
   onClickMonthHeader(){
-
+    
+    if(this.calendarMonthDate.month() == moment().month()){
+      this.router.navigate(['/month_planner']);
+    }else{
+      this.calendarMonthDate = moment();
+      this.calendarDays = this.buildCalendarDays(this.calendarMonthDate);
+    }
+    //first click:  set the month back to current month
+    //if it's already on the current month then do the router.navigate()
+    
   }
 
   onClickCalendarLeft(){
-
-
+    this.calendarMonthDate = moment(this.calendarMonthDate).subtract(1,'month');
+    this.calendarDays = this.buildCalendarDays(this.calendarMonthDate);
   }
 
   onClickCalendarRight(){
-
+    this.calendarMonthDate = moment(this.calendarMonthDate).add(1,'month');
+    this.calendarDays = this.buildCalendarDays(this.calendarMonthDate);
   }
 
 }
