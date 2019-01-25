@@ -1,5 +1,5 @@
 import { NavItem } from "./nav-item.model";
-import { faHome, faSitemap, faProjectDiagram, faListOl, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt, faBookOpen } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faSitemap, faProjectDiagram, faListOl, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt, faBookOpen, faCog } from "@fortawesome/free-solid-svg-icons";
 import { faCalendarAlt } from "@fortawesome/free-regular-svg-icons";
 
 
@@ -18,6 +18,7 @@ navItems.push(new NavItem('Budget','/budget',faChartPie));
 navItems.push(new NavItem('Net Worth','/networth', faChartLine));
 navItems.push(new NavItem('Health','/health',faBriefcaseMedical));
 navItems.push(new NavItem('Body Weight','/bodyWeight',faWeight));
+navItems.push(new NavItem('Settings','/user_settings',faCogs));
 
 
 export const navigationItems: NavItem[] = navItems;

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { IDayOfMonth } from './day-of-month.interface';
 import * as moment from 'moment';
+import * as gFonts from 'google-fonts';
+
 
 @Component({
   selector: 'app-month-planner',

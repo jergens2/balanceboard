@@ -1,4 +1,4 @@
-<div class="sidebar-content">
+<div class="sidebar-content" [ngClass]="{'sidebar-content-night-mode':nightMode }">
   <div class="sidebar-header">
     <h3 class="mb-5">balanceboard </h3>
     Logged in as <span style='color:dodgerblue'>{{ loggedInUser }}</span><br>
@@ -16,12 +16,12 @@
   </div>
 
 
-  <div class="sidebar-button mt-5">
+  <!-- <div class="sidebar-button mt-5">
     <div style="width:30px;margin-right:3px;">
       <fa-icon [icon]="faCogs"></fa-icon>
     </div>
     Settings
-  </div>
+  </div> -->
 
   <div class="sidebar-button" (click)="onClickLogout()">
     <div style="width:30px;margin-right:3px;">

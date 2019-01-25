@@ -17,6 +17,7 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './nav/header/header.component';
 import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
+import { UserSettingsComponent } from './user-settings/user-settings.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { AuthenticationComponent } from './authentication/authentication.compone
     AppComponent,
     AuthenticationComponent,
     HeaderComponent,
-    SidebarComponent
+    SidebarComponent,
+    UserSettingsComponent
   ],
   imports: [
     BrowserModule,

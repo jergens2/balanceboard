@@ -5,6 +5,7 @@ import { Component, OnInit } from '@angular/core';
 import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { NavItem } from '../nav-item.model';
 import { navigationItems } from '../nav-items';
+import { StylesService } from '../../user-settings/styles.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,7 +14,7 @@ import { navigationItems } from '../nav-items';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor(private authService: AuthenticationService, private router: Router) { }
+  constructor(private authService: AuthenticationService, private stylesService: StylesService, private router: Router) { }
 
 
 
@@ -27,10 +28,18 @@ export class SidebarComponent implements OnInit {
 
   navItems: NavItem[];
 
+
+  nightMode: boolean = false;
+
   ngOnInit() {
     this.navItems = navigationItems;
     this.loggedInUser = this.authService.authenticatedUser.email;
     this.userId = this.authService.authenticatedUser.id;
+
+    this.stylesService.nightMode$.subscribe((nightModeValue)=>{
+      this.nightMode = nightModeValue;
+      console.log(this.nightMode);
+    })
   }
 
 
