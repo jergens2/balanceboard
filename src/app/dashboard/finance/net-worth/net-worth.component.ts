@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GenericDataEntry } from '../../generic-data/generic-data-entry.model';
+// import { GenericDataEntry } from '../../generic-data/generic-data-entry.model';
 import { FinanceService } from '../finance.service';
 import { FinanceProfile } from '../finance-profile.model';
 import { NetWorthProfile } from './net-worth-profile.model';
@@ -16,7 +16,7 @@ import * as moment from 'moment';
 export class NetWorthComponent implements OnInit {
 
 
-  financeEntry: GenericDataEntry;
+  // financeEntry: GenericDataEntry;
   financeProfile: FinanceProfile;
   netWorthProfile: NetWorthProfile;
   assets: NetWorthItem[];
@@ -30,29 +30,29 @@ export class NetWorthComponent implements OnInit {
   constructor(private financeService: FinanceService) { }
 
   ngOnInit() {
-    this.financeService.financeProfile.subscribe((financeEntry: GenericDataEntry)=>{
-      console.log("networthcomponent: financeProfile", financeEntry);
-      if(financeEntry){
-        this.financeEntry = financeEntry;
-        this.financeProfile = this.financeEntry.dataObject as FinanceProfile;  
-        if(this.financeProfile.netWorthProfile){
-          this.calculatedNetWorth = 0;
-          this.netWorthProfile = this.financeProfile.netWorthProfile;
-          this.assets = this.netWorthProfile.assets;
-          this.liabilities = this.netWorthProfile.liabilities;
-          for(let asset of this.assets){
-            this.calculatedNetWorth += asset.value;
-          }
-        }
-      }}
-    )
-    this.addAssetForm = new FormGroup({
-      'title' : new FormControl(null, Validators.required),
-      'description': new FormControl(null),
-      'value': new FormControl(0, [Validators.min(0), Validators.required]),
-      'quantity': new FormControl(1, [Validators.min(0)]),
-      'type': new FormControl(null),
-    });
+    // this.financeService.financeProfile.subscribe((financeEntry: GenericDataEntry)=>{
+    //   console.log("networthcomponent: financeProfile", financeEntry);
+    //   if(financeEntry){
+    //     this.financeEntry = financeEntry;
+    //     this.financeProfile = this.financeEntry.dataObject as FinanceProfile;  
+    //     if(this.financeProfile.netWorthProfile){
+    //       this.calculatedNetWorth = 0;
+    //       this.netWorthProfile = this.financeProfile.netWorthProfile;
+    //       this.assets = this.netWorthProfile.assets;
+    //       this.liabilities = this.netWorthProfile.liabilities;
+    //       for(let asset of this.assets){
+    //         this.calculatedNetWorth += asset.value;
+    //       }
+    //     }
+    //   }}
+    // )
+    // this.addAssetForm = new FormGroup({
+    //   'title' : new FormControl(null, Validators.required),
+    //   'description': new FormControl(null),
+    //   'value': new FormControl(0, [Validators.min(0), Validators.required]),
+    //   'quantity': new FormControl(1, [Validators.min(0)]),
+    //   'type': new FormControl(null),
+    // });
   }
 
   onClickSaveAsset(){
@@ -84,15 +84,15 @@ export class NetWorthComponent implements OnInit {
 
 
   private saveProfile(netWorthProfile: NetWorthProfile){
-    if(!this.financeProfile){
-      let newFinanceProfile: FinanceProfile = new FinanceProfile(moment().toISOString());
-      newFinanceProfile.netWorthProfile = netWorthProfile;
-      this.financeService.saveFinanceProfile(newFinanceProfile);
-    }else{
-      this.financeProfile.dateUpdatedISO = moment().toISOString();
-      this.financeProfile.netWorthProfile = netWorthProfile;
-      this.financeService.updateFinanceProfile(this.financeProfile);
-    }
+    // if(!this.financeProfile){
+    //   let newFinanceProfile: FinanceProfile = new FinanceProfile(moment().toISOString());
+    //   newFinanceProfile.netWorthProfile = netWorthProfile;
+    //   this.financeService.saveFinanceProfile(newFinanceProfile);
+    // }else{
+    //   this.financeProfile.dateUpdatedISO = moment().toISOString();
+    //   this.financeProfile.netWorthProfile = netWorthProfile;
+    //   this.financeService.updateFinanceProfile(this.financeProfile);
+    // }
   }
 
   onClickAddAsset(){

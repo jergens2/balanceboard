@@ -99,7 +99,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   onClickContinueRegistration() {
     if (this.registrationForm.valid) {
       this.setAction("waiting");
-      this.authService.checkForExistingAccount(this.registrationForm.controls['emailAddress'].value).subscribe((response: any) => {
+      this.authService.checkForExistingAccount$(this.registrationForm.controls['emailAddress'].value).subscribe((response: any) => {
         if (response.data == null) {
           this.setAction("confirm_registration");
         } else {
@@ -135,7 +135,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
       let defaultSettings: UserSetting[] = this.userSettingsService.createDefaultSettings();
       let newUser = new User(null, this.registrationForm.controls['emailAddress'].value, defaultSettings);
       this.authData = { user: newUser, password: this.registrationForm.controls['password'].value };
-      this.authService.registerUser(this.authData).subscribe((response: { data: any, message: string }) => {
+      this.authService.registerUser$(this.authData).subscribe((response: { data: any, message: string }) => {
         if (response != null) {
           this.setAction("successful_registration");
         } else {

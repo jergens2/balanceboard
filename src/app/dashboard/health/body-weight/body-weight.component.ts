@@ -1,8 +1,6 @@
 import { BodyWeight } from '../body-weight.model';
 import { HealthProfile } from '../health-profile.model';
 import { Router } from '@angular/router';
-import { HealthService } from '../health.service';
-import { GenericDataEntry } from '../../generic-data/generic-data-entry.model';
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { FormGroup, FormControl } from '@angular/forms';
@@ -27,13 +25,12 @@ export class BodyWeightComponent implements OnInit {
   */
 
 
-  constructor(private router: Router, private healthService: HealthService) { }
+  constructor(private router: Router) { }
 
 
   loadingHealthProfile: boolean = true;
   updateHeight:boolean = false;
 
-  healthProfiles: GenericDataEntry[];
   currentHealthProfile: HealthProfile;
 
   todayBodyWeightEntered: boolean = false;
@@ -67,24 +64,24 @@ export class BodyWeightComponent implements OnInit {
     });
     
     
-    this.healthService.todayHealthProfile.subscribe((healthProfile)=>{
-      if(healthProfile){
-        this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
-        if(this.currentHealthProfile.bodyWeight){
-          this.todayBodyWeightEntered = true;
-        }
-        if(this.currentHealthProfile.heightInMeters){
-          this.heightIsSet = true;
-        }
-        if(this.todayBodyWeightEntered && this.heightIsSet){
-          this.canCalculateBMI = true;
-          this.calculatedBMI = this.calculateBMI(this.currentHealthProfile.bodyWeight.weightInKg, this.currentHealthProfile.heightInMeters);
-          this.weightClassification = this.getWeightClassification(this.calculatedBMI);
-        }
-      }
-      this.loadingHealthProfile = false;
-      this.updateHeight = false;
-    })
+    // this.healthService.todayHealthProfile.subscribe((healthProfile)=>{
+    //   if(healthProfile){
+    //     this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
+    //     if(this.currentHealthProfile.bodyWeight){
+    //       this.todayBodyWeightEntered = true;
+    //     }
+    //     if(this.currentHealthProfile.heightInMeters){
+    //       this.heightIsSet = true;
+    //     }
+    //     if(this.todayBodyWeightEntered && this.heightIsSet){
+    //       this.canCalculateBMI = true;
+    //       this.calculatedBMI = this.calculateBMI(this.currentHealthProfile.bodyWeight.weightInKg, this.currentHealthProfile.heightInMeters);
+    //       this.weightClassification = this.getWeightClassification(this.calculatedBMI);
+    //     }
+    //   }
+    //   this.loadingHealthProfile = false;
+    //   this.updateHeight = false;
+    // })
   }
 
   private calculateBMI(kg, m):number {
@@ -138,11 +135,11 @@ export class BodyWeightComponent implements OnInit {
     if(!this.currentHealthProfile){
       //if there is no profile, create a new one.
       this.currentHealthProfile = new HealthProfile(bodyWeight, 0, moment().toISOString());
-      this.healthService.saveHealthProfile(this.currentHealthProfile);
+      // this.healthService.saveHealthProfile(this.currentHealthProfile);
     }else{
       this.currentHealthProfile.dateSetISO = moment().toISOString();
       this.currentHealthProfile.bodyWeight = bodyWeight;
-      this.healthService.updateCurrentHealthProfile(this.currentHealthProfile);
+      // this.healthService.updateCurrentHealthProfile(this.currentHealthProfile);
     }
 
     

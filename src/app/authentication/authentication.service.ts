@@ -18,7 +18,7 @@ export class AuthenticationService {
   // private authStatus: AuthStatus;
   private _authStatusSubject: BehaviorSubject<AuthStatus> = new BehaviorSubject<AuthStatus>(new AuthStatus(null, null, false));
 
-  get authStatus(): Observable<AuthStatus> {
+  get authStatus$(): Observable<AuthStatus> {
     return this._authStatusSubject.asObservable();
   }
 
@@ -32,14 +32,10 @@ export class AuthenticationService {
     return this._authStatusSubject.getValue().token;
   }
 
-  get authenticatedUser(): User {
-    return this._authStatusSubject.getValue().user;
-  }
 
 
 
-
-  registerUser(authData: AuthData): Observable<Object> {
+  registerUser$(authData: AuthData): Observable<Object> {
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)
   }
 
@@ -106,7 +102,7 @@ export class AuthenticationService {
 
   }
 
-  getUserById(userId: string): Observable<User> {
+  getUserById$(userId: string): Observable<User> {
     return this.http.get<{ message: string, data: any }>(this.serverUrl + "/api/authentication/getUserById/" + userId)
       .pipe(map((response) => {
         let settings: any[] = Object.assign([], response.data.userSettings);
@@ -119,7 +115,7 @@ export class AuthenticationService {
       }))
   }
 
-  checkForExistingAccount(email: string): Observable<Object> {
+  checkForExistingAccount$(email: string): Observable<Object> {
     return this.http.get(this.serverUrl + "/api/authentication/validateNewEmail/" + email)
   }
 

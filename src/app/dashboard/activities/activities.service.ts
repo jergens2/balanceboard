@@ -56,6 +56,7 @@ export class ActivitiesService {
       this might become a bit of a mess if not managed properly
 
     */
+    console.log("finding activity by treeId", treeId);
     return this._activitiesTree.findActivityById(treeId);
   }
 

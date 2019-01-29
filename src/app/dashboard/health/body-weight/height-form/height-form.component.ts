@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { HealthProfile } from '../../health-profile.model';
-import { HealthService } from '../../health.service';
+// import { HealthService } from '../../health.service';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
@@ -11,7 +11,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeightFormComponent implements OnInit {
 
-  constructor(private healthService: HealthService) { }
+  constructor() { }
 
   heightForm: FormGroup;
   heightUnits: string = 'Imperial';
@@ -32,13 +32,13 @@ export class HeightFormComponent implements OnInit {
       'heightCm' : new FormControl(null)
     });
 
-    this.healthService.todayHealthProfile.subscribe((healthProfile)=>{
-      if(healthProfile){
-        this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
-        this.heightInMeters = this.currentHealthProfile.heightInMeters;
-      }
+    // this.healthService.todayHealthProfile.subscribe((healthProfile)=>{
+    //   if(healthProfile){
+    //     this.currentHealthProfile = healthProfile.dataObject as HealthProfile;
+    //     this.heightInMeters = this.currentHealthProfile.heightInMeters;
+    //   }
 
-    })
+    // })
 
   }
 
@@ -86,14 +86,14 @@ export class HeightFormComponent implements OnInit {
   }
 
   saveHealthProfile(){
-    if(!this.currentHealthProfile){
-      const healthProfile = new HealthProfile(null, this.heightInMeters, moment().toISOString());
-      this.healthService.saveHealthProfile(healthProfile);
-    }else{
-      this.currentHealthProfile.heightInMeters = this.heightInMeters;
-      this.currentHealthProfile.dateSetISO = moment().toISOString();
-      this.healthService.updateCurrentHealthProfile(this.currentHealthProfile);
-    }
+    // if(!this.currentHealthProfile){
+    //   const healthProfile = new HealthProfile(null, this.heightInMeters, moment().toISOString());
+    //   this.healthService.saveHealthProfile(healthProfile);
+    // }else{
+    //   this.currentHealthProfile.heightInMeters = this.heightInMeters;
+    //   this.currentHealthProfile.dateSetISO = moment().toISOString();
+    //   this.healthService.updateCurrentHealthProfile(this.currentHealthProfile);
+    // }
     
   }
 

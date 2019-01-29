@@ -1,11 +1,9 @@
 import * as moment from 'moment';
-import { GenericDataEntry } from '../../generic-data/generic-data-entry.model';
-import { GenericDataEntryService } from '../../generic-data/generic-data-entry.service';
+
 import { Injectable } from '@angular/core';
 import { IvyLeeTaskList } from './ivyleeTaskList.model';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import { GenericDataType } from '../../generic-data/generic-data-type.model';
 
 
 @Injectable({
@@ -14,22 +12,22 @@ import { GenericDataType } from '../../generic-data/generic-data-type.model';
 export class TaskService {
 
 
-  constructor(private router: Router, private dataService: GenericDataEntryService) {
+  constructor(private router: Router) {
     console.log("Task service constructor has been called");
-    this.dataService.allUserDataEntries.subscribe((dataEntries: GenericDataEntry[]) => {
-      this._allIvyLeeTaskLists.next(this.findIvyLeeTaskLists(dataEntries));
-      // console.log(this._allIvyLeeTaskLists.getValue());
-    });
+    // this.dataService.allUserDataEntries.subscribe((dataEntries: GenericDataEntry[]) => {
+    //   this._allIvyLeeTaskLists.next(this.findIvyLeeTaskLists(dataEntries));
+    //   // console.log(this._allIvyLeeTaskLists.getValue());
+    // });
   }
 
-  get ivyLeeTaskLists(): Observable<GenericDataEntry[]> {
-    return this._allIvyLeeTaskLists.asObservable();
-  }
+  // get ivyLeeTaskLists(): Observable<GenericDataEntry[]> {
+  //   return this._allIvyLeeTaskLists.asObservable();
+  // }
 
   private buildListForDate: moment.Moment = moment().add(1, 'days');
   private manageListForDate: moment.Moment = moment();
 
-  private _allIvyLeeTaskLists: BehaviorSubject<GenericDataEntry[]> = new BehaviorSubject([]);
+  // private _allIvyLeeTaskLists: BehaviorSubject<GenericDataEntry[]> = new BehaviorSubject([]);
 
 
 
@@ -48,26 +46,26 @@ export class TaskService {
   }
 
 
-  private findIvyLeeTaskLists(dataEntries: GenericDataEntry[]): GenericDataEntry[] {
-    let ivyLeeTaskLists: GenericDataEntry[] = [];
-    for (let dataEntry of dataEntries) {
-      if (dataEntry.dataType === 'IvyLeeTaskList') {
-        ivyLeeTaskLists.push(dataEntry);
-      }
-    }
-    return ivyLeeTaskLists;
-  }
+  // private findIvyLeeTaskLists(dataEntries: GenericDataEntry[]): GenericDataEntry[] {
+  //   let ivyLeeTaskLists: GenericDataEntry[] = [];
+  //   for (let dataEntry of dataEntries) {
+  //     if (dataEntry.dataType === 'IvyLeeTaskList') {
+  //       ivyLeeTaskLists.push(dataEntry);
+  //     }
+  //   }
+  //   return ivyLeeTaskLists;
+  // }
 
-  submitIvyLeeTasks(taskList: IvyLeeTaskList) {
+  // submitIvyLeeTasks(taskList: IvyLeeTaskList) {
 
-    let dataObject: GenericDataEntry = new GenericDataEntry(null, null, moment().toISOString(), GenericDataType.IvyLeeTaskList, taskList);
-    this.dataService.saveDataObject(dataObject);
-    this.router.navigate(['/']);
-  }
+  //   let dataObject: GenericDataEntry = new GenericDataEntry(null, null, moment().toISOString(), GenericDataType.IvyLeeTaskList, taskList);
+  //   this.dataService.saveDataObject(dataObject);
+  //   this.router.navigate(['/']);
+  // }
 
-  updateTaskList(dataEntry: GenericDataEntry) {
-    this.dataService.updateDataEntryDataObject(dataEntry);
-  }
+  // updateTaskList(dataEntry: GenericDataEntry) {
+  //   this.dataService.updateDataEntryDataObject(dataEntry);
+  // }
 
 
 

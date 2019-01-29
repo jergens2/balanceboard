@@ -68,7 +68,7 @@ export class IvyleeCreationComponent implements OnInit {
     taskArray.push(new IvyLeeTask(6, this.buildTaskForm.get('task6').value));
 
     this.workingTaskList = new IvyLeeTaskList(taskArray, this.forDate.toISOString());
-    this.taskService.submitIvyLeeTasks(this.workingTaskList);
+    // this.taskService.submitIvyLeeTasks(this.workingTaskList);
 
   }
 }

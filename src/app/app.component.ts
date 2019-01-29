@@ -20,7 +20,7 @@ export class AppComponent implements OnInit{
 
   ngOnInit(){
     
-    this.authService.authStatus.subscribe(
+    this.authService.authStatus$.subscribe(
       (authStatus: AuthStatus) => {
         console.log("authstatus", authStatus);
         if(authStatus.isAuthenticated){

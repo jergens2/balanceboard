@@ -6,6 +6,8 @@ import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { NavItem } from '../nav-item.model';
 import { navigationItems } from '../nav-items';
 import { StylesService } from '../../user-settings/styles.service';
+import { AuthStatus } from '../../authentication/auth-status.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -23,6 +25,8 @@ export class SidebarComponent implements OnInit {
 
 
   activeLink = { color: 'red' };
+  private authStatus: AuthStatus = null;
+  private authSubscription: Subscription = new Subscription();
   loggedInUser: string = '';
   userId: string = '';
 
@@ -33,8 +37,16 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit() {
     this.navItems = navigationItems;
-    this.loggedInUser = this.authService.authenticatedUser.email;
-    this.userId = this.authService.authenticatedUser.id;
+
+    let authSubscription = this.authService.authStatus$.subscribe((authStatus: AuthStatus)=>{
+      if(authStatus != null){
+        if(authStatus.user != null){
+          this.authStatus = authStatus;
+          this.loggedInUser = this.authStatus.user.email;
+          this.userId = this.authStatus.user.id;
+        }
+      }
+    })
 
     this.stylesService.nightMode$.subscribe((nightModeValue)=>{
       this.nightMode = nightModeValue;
@@ -49,6 +61,8 @@ export class SidebarComponent implements OnInit {
   onClickLogout(){
     this.userId = "";
     this.loggedInUser = "";
+    this.authStatus = null;
+    this.authSubscription.unsubscribe();
     this.authService.logout();
   }
 

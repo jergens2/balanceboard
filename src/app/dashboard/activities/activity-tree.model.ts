@@ -56,11 +56,15 @@ export class ActivityTree {
     }
 
     findActivityById(treeId: string): UserDefinedActivity{
+        
         for(let activity of this._allActivities){
+            // console.log(activity);
             if(activity.treeId == treeId){
+                // console.log("returning activity ", activity);
                 return activity;
             }
         }
+
         return null;
     }
 

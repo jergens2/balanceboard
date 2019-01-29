@@ -219,6 +219,7 @@ export class TimelogService {
   }
 
   private buildTimeSegmentActivities(activitiesData: Array<{activityTreeId: string, duration: number, description: string }>): TimeSegmentActivity[]{
+    console.log("building time segment activities");
     return activitiesData.map((activity) =>{
       let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.activitiesService.findActivityById(activity.activityTreeId), activity.duration, activity.description);
       return timeSegmentActivity;
@@ -268,6 +269,7 @@ export class TimelogService {
             if(activities[0].activityTreeId != null){
               timeSegment.activities = this.buildTimeSegmentActivities(activities);
             }else{
+              console.log("receiving old activities")
               timeSegment.receiveOldActivities(dataObject.activities as UserDefinedActivity[])
             }
           }
