@@ -1,5 +1,5 @@
 
-export class CategorizedActivity {
+export class UserDefinedActivity {
     public id: string;
     public treeId: string;
     public name: string;
@@ -10,7 +10,7 @@ export class CategorizedActivity {
     public parentTreeId: string;
     public childTreeIds: string[];
 
-    private _children: CategorizedActivity[];
+    private _children: UserDefinedActivity[];
 
     public color: string;
     public icon: string;
@@ -34,20 +34,20 @@ export class CategorizedActivity {
 
     */
 
-    get children(): CategorizedActivity[] {
+    get children(): UserDefinedActivity[] {
         return this._children;
     }
     // set children(children: CategorizedActivity[]) {
     //     this._children = children;
     // }
 
-    addChild(childCategory: CategorizedActivity) {
+    addChild(childCategory: UserDefinedActivity) {
         this._children.push(childCategory);
     }
     removeChildren(){
         this._children = [];
     }
-    removeChild(childCategory: CategorizedActivity) {
+    removeChild(childCategory: UserDefinedActivity) {
         if(this._children.length > 0){
             if(this._children.indexOf(childCategory) > -1){
                 this._children.splice(this._children.indexOf(childCategory),1);

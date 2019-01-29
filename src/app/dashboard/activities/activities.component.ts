@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivitiesService } from './activities.service';
-import { CategorizedActivity } from './categorized-activity.model';
+import { UserDefinedActivity } from './user-defined-activity.model';
 import { IActivityTile } from './activity-tile.interface';
 import { ActivityTree } from './activity-tree.model';
 
@@ -19,15 +19,15 @@ export class ActivitiesComponent implements OnInit {
   ifNewActivityForm: boolean;
 
   ifDisplayActivity: boolean = false;
-  displayedActivity: CategorizedActivity = null;
+  displayedActivity: UserDefinedActivity = null;
 
   private activityNameFromForm: string = null;
   rootActivityTiles: IActivityTile[] = [];
-  rootActivities: CategorizedActivity[];
+  rootActivities: UserDefinedActivity[];
 
   activityTree: ActivityTree = null;
 
-  modifyActivity: CategorizedActivity;
+  modifyActivity: UserDefinedActivity;
 
 
   ngOnInit() {
@@ -46,7 +46,7 @@ export class ActivitiesComponent implements OnInit {
     this.activitiesService.activitiesTree$.subscribe((tree) => {
       if(tree != null){
         this.activityTree = tree;
-        console.log("activity tree root activities:", this.activityTree.rootActivities);
+        console.log("activity tree:", this.activityTree);
         this.rootActivities = this.activityTree.rootActivities;
         this.rootActivityTiles = this.rootActivities.map((activity)=>{
           return {activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false};
@@ -59,7 +59,7 @@ export class ActivitiesComponent implements OnInit {
 
 
 
-  onActivitySelected(activity: CategorizedActivity){
+  onActivitySelected(activity: UserDefinedActivity){
     console.log("activity was clicked", activity)
     this.displayedActivity = activity;
     this.ifDisplayActivity = true;
@@ -77,10 +77,10 @@ export class ActivitiesComponent implements OnInit {
     this.modifyActivity = null;
   }
 
-  onClickDeleteActivity(activity: CategorizedActivity){
+  onClickDeleteActivity(activity: UserDefinedActivity){
     this.activitiesService.deleteActivity(activity);
   }
-  onClickModifyActivity(activity: CategorizedActivity){
+  onClickModifyActivity(activity: UserDefinedActivity){
     this.modifyActivity = activity;
     this.onClickCreateNewActivity();
   }

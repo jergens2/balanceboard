@@ -1,7 +1,7 @@
 import { serverUrl } from '../../serverurl';
 import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { User } from '../models/user.model';
+import { User } from '../../authentication/user.model';
 import { GenericDataEntry } from './generic-data-entry.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';

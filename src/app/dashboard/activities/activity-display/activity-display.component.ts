@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { CategorizedActivity } from '../categorized-activity.model';
+import { UserDefinedActivity } from '../user-defined-activity.model';
 
 @Component({
   selector: 'app-activity-display',
@@ -10,9 +10,9 @@ export class ActivityDisplayComponent implements OnInit {
 
   constructor() { }
 
-  activity: CategorizedActivity = null;
+  activity: UserDefinedActivity = null;
 
-  @Input() set selectedActivity(activity: CategorizedActivity){
+  @Input() set selectedActivity(activity: UserDefinedActivity){
     this.activity = activity;
   }
   ngOnInit() {

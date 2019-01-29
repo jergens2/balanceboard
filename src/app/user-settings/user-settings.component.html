@@ -2,14 +2,21 @@
   <div class="user-settings">
     <h3>User Settings</h3>
     <hr>
-    <div class="user-setting" >
-      <div class="user-setting-label">
-        Night Mode
+      <div *ngIf="ifLoading">
+        Loading
       </div>
-      <div class="user-setting-switch" (click)="onClickNightMode()">
-        <input type="checkbox" class="toggle-button">
-        <!-- <span class="slider round"></span> -->
+      <div *ngIf="!ifLoading">
+        <div class="user-setting" >
+          <div class="user-setting-label">
+            Night Mode
+          </div>
+          <div class="user-setting-switch" (click)="onClickNightMode()">
+            <input type="checkbox" class="toggle-button" [checked]="nightModeSetting.booleanValuie">
+            <!-- <span class="slider round"></span> -->
+          </div>
+        </div>
       </div>
-    </div>
+      
+    
   </div>
 </div>

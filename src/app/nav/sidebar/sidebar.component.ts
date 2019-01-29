@@ -38,7 +38,6 @@ export class SidebarComponent implements OnInit {
 
     this.stylesService.nightMode$.subscribe((nightModeValue)=>{
       this.nightMode = nightModeValue;
-      console.log(this.nightMode);
     })
   }
 
@@ -48,6 +47,8 @@ export class SidebarComponent implements OnInit {
   }
 
   onClickLogout(){
+    this.userId = "";
+    this.loggedInUser = "";
     this.authService.logout();
   }
 

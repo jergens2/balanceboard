@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CategorizedActivity } from '../../categorized-activity.model';
+import { UserDefinedActivity } from '../../user-defined-activity.model';
 
 @Component({
   selector: 'app-activity-form-list-item',
@@ -23,13 +23,13 @@ export class ActivityFormListItemComponent implements OnInit {
 
   constructor() { }
 
-  @Input() activity: CategorizedActivity;
-  @Output() categoryClicked: EventEmitter<CategorizedActivity> = new EventEmitter<CategorizedActivity>();
+  @Input() activity: UserDefinedActivity;
+  @Output() categoryClicked: EventEmitter<UserDefinedActivity> = new EventEmitter<UserDefinedActivity>();
 
   ngOnInit() {
   }
 
-  onClickSelectedCategory(activity: CategorizedActivity){
+  onClickSelectedCategory(activity: UserDefinedActivity){
     this.categoryClicked.emit(activity);
   }
 

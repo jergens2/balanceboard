@@ -47,6 +47,9 @@
     cursor:pointer;
     background: #f4f4f4;
 }
+.sidebar-button-night-mode{
+    color: #d4d4d4;
+}
 
 
 .activeLink{
@@ -54,6 +57,9 @@
 }
 .activeLink:hover{
     background: #ddeaff;
+}
+.active-link-night-mode{
+    background: #464a50;
 }
 
 .fa{

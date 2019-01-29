@@ -7,7 +7,7 @@
   </div>
 
 
-  <div *ngFor="let navItem of navItems" class="sidebar-button" [routerLink]="navItem.routerLink" routerLinkActive='activeLink'>
+  <div *ngFor="let navItem of navItems" class="sidebar-button" [routerLink]="navItem.routerLink" routerLinkActive='activeLink' [ngClass]="{'sidebar-button-night-mode':nightMode }">
 
     <div style="width:30px;margin-right:3px;">
       <fa-icon [icon]="navItem.icon"></fa-icon>
@@ -23,7 +23,7 @@
     Settings
   </div> -->
 
-  <div class="sidebar-button" (click)="onClickLogout()">
+  <div class="sidebar-button" (click)="onClickLogout()" [ngClass]="{'sidebar-button-night-mode':nightMode }">
     <div style="width:30px;margin-right:3px;">
       <fa-icon [icon]="faSignOutAlt"></fa-icon>
     </div>

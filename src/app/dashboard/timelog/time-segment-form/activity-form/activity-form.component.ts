@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { CategorizedActivity } from '../../../activities/categorized-activity.model';
+import { UserDefinedActivity } from '../../../activities/user-defined-activity.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
@@ -22,19 +22,19 @@ export class ActivityFormComponent implements OnInit {
   faCircle = faCircle;
 
   activityTree: ActivityTree;
-  categorizedActivitiesSearchResults: CategorizedActivity[] = [];
+  categorizedActivitiesSearchResults: UserDefinedActivity[] = [];
 
   activityForm: FormGroup;
   // activityInputKeyUpSubscription: Subscription = new Subscription();
 
   activityNameInputValue: string = '';
 
-  // private _activity: CategorizedActivity;
+  // private _activity: UserDefinedActivity;
 
   // get activity(){
   //   return this._activity;
   // }
-  // set activity(activity: CategorizedActivity){
+  // set activity(activity: UserDefinedActivity){
   //   this._activity = activity;
   // }
 
@@ -79,7 +79,7 @@ export class ActivityFormComponent implements OnInit {
   }
   onClickSaveActivity() {
     if(this.activityForm.valid){
-      let activity: CategorizedActivity = this.activityTree.allActivities.find(activity => activity.treeId === this.activityForm.get('activityTreeId').value);
+      let activity: UserDefinedActivity = this.activityTree.allActivities.find(activity => activity.treeId === this.activityForm.get('activityTreeId').value);
   
       let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, this.activityForm.value.duration, this.activityForm.value.description);
       // console.log(timeSegmentActivity);

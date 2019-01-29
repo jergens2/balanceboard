@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StylesService {
 
-  constructor() { }
+
+  constructor( private authService: AuthenticationService) { 
+
+  }
 
   
   // private _nightMode: boolean = false;

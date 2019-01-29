@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { CategorizedActivity } from '../categorized-activity.model';
+import { UserDefinedActivity } from '../user-defined-activity.model';
 import { ActivitiesService } from '../activities.service';
 import { Subscription, fromEvent, Observable } from 'rxjs';
 
@@ -20,7 +20,7 @@ export class NewActivityFormComponent implements OnInit {
 
   activityForm: FormGroup;
   colorPickerValue: string;
-  selectedParentCategory: CategorizedActivity;
+  selectedParentCategory: UserDefinedActivity;
 
   saveAction: string = "NEW";
 
@@ -32,16 +32,16 @@ export class NewActivityFormComponent implements OnInit {
     }
   }
 
-  private _formParentCategories: CategorizedActivity[];
+  private _formParentCategories: UserDefinedActivity[];
 
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Input('activitiesList') set formParentCategories(activities: CategorizedActivity[]) {
+  @Input('activitiesList') set formParentCategories(activities: UserDefinedActivity[]) {
     // this._formParentCategories = this.buildActivitiesList(activities);
     this._formParentCategories = activities;
   }
-  @Input() modifyActivity: CategorizedActivity;
+  @Input() modifyActivity: UserDefinedActivity;
 
-  get formParentCategories(): CategorizedActivity[] {
+  get formParentCategories(): UserDefinedActivity[] {
     return this._formParentCategories;
   }
 
@@ -64,7 +64,7 @@ export class NewActivityFormComponent implements OnInit {
   }
 
 
-  modifyActivityForm(activity: CategorizedActivity): FormGroup {
+  modifyActivityForm(activity: UserDefinedActivity): FormGroup {
     let modifyForm: FormGroup = new FormGroup({
       'name': new FormControl(activity.name, Validators.required),
       'description': new FormControl(activity.description, Validators.required)
@@ -82,7 +82,7 @@ export class NewActivityFormComponent implements OnInit {
     });
   }
 
-  findActivityParent(childActivity: CategorizedActivity, parents: CategorizedActivity[]): CategorizedActivity {
+  findActivityParent(childActivity: UserDefinedActivity, parents: UserDefinedActivity[]): UserDefinedActivity {
     for (let activity of parents) {
       if (activity.treeId == childActivity.parentTreeId) {
         return activity;
@@ -98,9 +98,9 @@ export class NewActivityFormComponent implements OnInit {
     return null;
   }
 
-  buildActivitiesList(activities: CategorizedActivity[]) {
-    let list: CategorizedActivity[] = [];
-    let children: CategorizedActivity[] = [];
+  buildActivitiesList(activities: UserDefinedActivity[]) {
+    let list: UserDefinedActivity[] = [];
+    let children: UserDefinedActivity[] = [];
     for (let activity of activities) {
       if (activity.children.length > 0) {
         children = children.concat(this.buildActivitiesList(activity.children));
@@ -135,7 +135,7 @@ export class NewActivityFormComponent implements OnInit {
     }
 
   }
-  onClickSelectedCategory(category: CategorizedActivity) {
+  onClickSelectedCategory(category: UserDefinedActivity) {
     this.selectedParentCategory = category;
     this.colorPickerValue = category.color;
     this.ifShowParentCategories = false;
@@ -144,10 +144,10 @@ export class NewActivityFormComponent implements OnInit {
   onClickSaveActivity(saveAction: string) {
     if (this.activityForm.valid && this.selectedParentCategory != null) {
       if(saveAction == "NEW"){
-        let newActivity = new CategorizedActivity("", "", "", this.activityForm.get('name').value, this.activityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
+        let newActivity = new UserDefinedActivity("", "", "", this.activityForm.get('name').value, this.activityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
         this.activitiesService.saveActivity(newActivity);
       }else if(saveAction == "MODIFY"){
-        let modifiedActivity = new CategorizedActivity(this.modifyActivity.id, this.modifyActivity.userId, this.modifyActivity.treeId, this.activityForm.get('name').value, this.activityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
+        let modifiedActivity = new UserDefinedActivity(this.modifyActivity.id, this.modifyActivity.userId, this.modifyActivity.treeId, this.activityForm.get('name').value, this.activityForm.get('description').value, this.selectedParentCategory.treeId, this.colorPickerValue);
         this.activitiesService.updateActivity(modifiedActivity);
       }
 

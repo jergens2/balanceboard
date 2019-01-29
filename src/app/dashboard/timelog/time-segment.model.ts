@@ -1,4 +1,4 @@
-import { CategorizedActivity } from "../activities/categorized-activity.model";
+import { UserDefinedActivity } from "../activities/user-defined-activity.model";
 import * as moment from 'moment';
 import { TimeSegmentActivity } from "./time-segment-activity.model";
 
@@ -71,7 +71,7 @@ export class TimeSegment{
         return duration.asMinutes();
     }
 
-    receiveOldActivities(activities: CategorizedActivity[]){
+    receiveOldActivities(activities: UserDefinedActivity[]){
         this.activities = activities.map((activity)=>{
             let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, 0, "");
             timeSegmentActivity.duration = 0;

@@ -1,4 +1,6 @@
+import { User } from "./user.model";
+
 export interface AuthData { 
-    email: string;
+    user: User;
     password: string;
 }

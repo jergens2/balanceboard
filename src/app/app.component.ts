@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from './authentication/authentication.service';
 import { AuthStatus } from './authentication/auth-status.model';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,10 @@ import { AuthStatus } from './authentication/auth-status.model';
 export class AppComponent implements OnInit{
   title = 'app';
 
+  faSpinner = faSpinner;
+
   authenticated: boolean = false;
+  loading: boolean = true; 
 
   constructor(private authService: AuthenticationService){}
 
@@ -18,13 +22,24 @@ export class AppComponent implements OnInit{
     
     this.authService.authStatus.subscribe(
       (authStatus: AuthStatus) => {
-        this.authenticated = authStatus.isAuthenticated;
+        console.log("authstatus", authStatus);
+        if(authStatus.isAuthenticated){
+          this.loading = false;
+          this.authenticated = true;
+        }else{
+          this.authenticated = false;
+        }
       }
     )
-    if(this.authService.checkLocalStorage()){
-      //localStorage has token and userId value, so the view will automatically load 
-    }else{
-      //localStorage does not have token or User ID, so the view will automatically go to auth.
-    };
+    this.authService.checkLocalStorage$.subscribe((isPresent: boolean)=>{
+      console.log("is local storage presnet? ", isPresent);
+      if(isPresent){
+
+      }else{
+        this.loading = false;
+      }
+    })
+    this.authService.checkLocalStorage();
+
   }
 }

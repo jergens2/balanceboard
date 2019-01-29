@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CategorizedActivity } from './categorized-activity.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { UserDefinedActivity } from './user-defined-activity.model';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import { defaultActivities } from './default-activities';
 import { serverUrl } from '../../serverurl';
@@ -15,31 +15,59 @@ import { ActivityTree } from './activity-tree.model';
 })
 export class ActivitiesService {
 
-  constructor(private httpClient: HttpClient, private authService: AuthenticationService) {
-    console.log("activities service constructor");
-    authService.authStatus.subscribe((authStatus: AuthStatus) => {
-      if (authStatus.isAuthenticated) {
-        this.fetchActivities();
-      } else {
-        this.logout();
-      }
-    });
-    
-  }
+  constructor(private httpClient: HttpClient) {}
 
-  private serverUrl: string = serverUrl;
+  private _serverUrl: string = serverUrl;
+
+  private _authStatus: AuthStatus = null;
+
   private _activityNameFromActivityForm: string = null;
-  private _activitiesTree$: BehaviorSubject<ActivityTree> = new BehaviorSubject(null);
 
-  findActivityById(treeId: string): CategorizedActivity{
-    return this._activitiesTree$.getValue().findActivityById(treeId);
+  private _activitiesTree: ActivityTree = null;
+  private _activitiesTree$: Subject<ActivityTree> = new Subject();
+  get activitiesTree$(): Observable<ActivityTree> {
+    return this._activitiesTree$.asObservable();
   }
 
+  
 
 
   
+  findActivityById(treeId: string): UserDefinedActivity{
+    /*
+      2019-01-28
+      Warning: 
+
+      there is currently no error handling for a certain case / context
+
+      when I renamed categorizedActivity to userDefinedActivity in the server, then requests were being sent to a newly created table, which did not contain
+      all of the already defined activities in the previous table, which was called categorizedActivity.
+
+      When that happened, then when this method tried to find, it was unable to find them in the new table because they did not exist in the new table, 
+      and it yielded some hard-to-debug errors.
+
+      This leads me to believe that there may come a time when I come back to this method when I am exieriencing app issues where activities cannot be found by ID.
+
+      Example case:  User creates a new definedActivity, then creates timeSegments with that activity, then later deletes this defineActivity.  but the timesegment still exists,
+      and will try to do a search for this activity even though it doesn't exist.  currently I don't think there is any handling of that case.
+
+      I think the app will need to handle the management of definedActivities so that if you delete one, all of the timeSegments know its a deleted activity ?
+
+      this might become a bit of a mess if not managed properly
+
+    */
+    return this._activitiesTree.findActivityById(treeId);
+  }
+
+  login$(authStatus: AuthStatus){
+    this._authStatus = authStatus;
+    this.fetchActivities();
+    return this.activitiesTree$;
+  }
+
+  
   private fetchActivities(){
-    const getUrl = this.serverUrl + "/api/activity/get/" + this.authService.authenticatedUser.id;
+    const getUrl = this._serverUrl + "/api/activity/get/" + this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -50,27 +78,27 @@ export class ActivitiesService {
       .subscribe((response: any) => {
         let responseData = response.data;
         if(responseData.length > 0){
-          let allActivities: CategorizedActivity[] = response.data.map((dataObject) => {
-            let newActivity: CategorizedActivity = new CategorizedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
+          let allActivities: UserDefinedActivity[] = response.data.map((dataObject) => {
+            let newActivity: UserDefinedActivity = new UserDefinedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
             return newActivity
           });
-          let tree: ActivityTree = new ActivityTree(allActivities);
-          this._activitiesTree$.next(tree);
+          this._activitiesTree = new ActivityTree(allActivities);
+          this._activitiesTree$.next(this._activitiesTree);
         }else{
           this.saveDefaultActivities(defaultActivities)
         }
       });
   }
 
-  saveDefaultActivities(defaultActivities: CategorizedActivity[]){
+  saveDefaultActivities(defaultActivities: UserDefinedActivity[]){
     let userDefaultActivities = defaultActivities.map((activity)=>{
-      let newTreeId = this.authService.authenticatedUser.id + "_" + activity.treeId;
-      let newParentTreeId = this.authService.authenticatedUser.id + "_" + activity.parentTreeId.replace(" ","_");
+      let newTreeId = this._authStatus.user.id + "_" + activity.treeId;
+      let newParentTreeId = this._authStatus.user.id + "_" + activity.parentTreeId.replace(" ","_");
 
-      return new CategorizedActivity(activity.id, this.authService.authenticatedUser.id, newTreeId, activity.name, activity.description, newParentTreeId, activity.color);
+      return new UserDefinedActivity(activity.id, this._authStatus.user.id, newTreeId, activity.name, activity.description, newParentTreeId, activity.color);
     })
 
-    const postUrl = this.serverUrl + "/api/activity/createDefault";
+    const postUrl = this._serverUrl + "/api/activity/createDefault";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -80,26 +108,26 @@ export class ActivitiesService {
     this.httpClient.post<{message: string, data: any}>(postUrl, userDefaultActivities, httpOptions)
       .pipe(map((response) => {
         return response.data.map((dataObject) => {
-          let newActivity: CategorizedActivity = new CategorizedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
+          let newActivity: UserDefinedActivity = new UserDefinedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
           return newActivity
         })
       }))
-      .subscribe((allActivities: CategorizedActivity[])=>{
-        let tree: ActivityTree = new ActivityTree(allActivities);
-        this._activitiesTree$.next(tree);
+      .subscribe((allActivities: UserDefinedActivity[])=>{
+        this._activitiesTree = new ActivityTree(allActivities);
+        this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  saveActivity(activity: CategorizedActivity){
+  saveActivity(activity: UserDefinedActivity){
     let newActivity = activity;
-    newActivity.userId = this.authService.authenticatedUser.id;
+    newActivity.userId = this._authStatus.user.id;
 
     /*
       TODO:  Eventually need to add a check in here to make sure that treeIds are unique per user.
     */
-    newActivity.treeId = this.authService.authenticatedUser.id + "_" + activity.name.replace(" ", "_");
+    newActivity.treeId = this._authStatus.user.id + "_" + activity.name.replace(" ", "_");
 
-    const postUrl = this.serverUrl + "/api/activity/create";
+    const postUrl = this._serverUrl + "/api/activity/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -108,20 +136,19 @@ export class ActivitiesService {
     };
 
     this.httpClient.post<{message: string, data: any}>(postUrl, activity, httpOptions)
-      .pipe<CategorizedActivity>(map((response)=>{
+      .pipe<UserDefinedActivity>(map((response)=>{
         let data = response.data;
-        let activity = new CategorizedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
+        let activity = new UserDefinedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
         return activity;
       }))
-      .subscribe((activity: CategorizedActivity)=>{
-        let activityTree: ActivityTree = this._activitiesTree$.getValue();
-        activityTree.addActivityToTree(activity);
-        this._activitiesTree$.next(activityTree);
+      .subscribe((activity: UserDefinedActivity)=>{
+        this._activitiesTree.addActivityToTree(activity);
+        this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  updateActivity(unsentActivity: CategorizedActivity){
-    const updateUrl = this.serverUrl + "/api/activity/update";
+  updateActivity(unsentActivity: UserDefinedActivity){
+    const updateUrl = this._serverUrl + "/api/activity/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -129,21 +156,20 @@ export class ActivitiesService {
       })
     };
     this.httpClient.post(updateUrl,unsentActivity, httpOptions)
-      .pipe<CategorizedActivity>(map((response: {message: string, data: any})=>{
+      .pipe<UserDefinedActivity>(map((response: {message: string, data: any})=>{
         let data = response.data;
-        let updatedActivity = new CategorizedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
+        let updatedActivity = new UserDefinedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
         return updatedActivity;
       }))
-      .subscribe((updatedActivity: CategorizedActivity)=>{
-        let activityTree: ActivityTree = this._activitiesTree$.getValue();
-        activityTree.pruneActivityFromTree(unsentActivity);
-        activityTree.addActivityToTree(updatedActivity);
-        this._activitiesTree$.next(activityTree);
+      .subscribe((updatedActivity: UserDefinedActivity)=>{
+        this._activitiesTree.pruneActivityFromTree(unsentActivity);
+        this._activitiesTree.addActivityToTree(updatedActivity);
+        this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  deleteActivity(activity: CategorizedActivity){
-    const deleteUrl = this.serverUrl + "/api/activity/delete";
+  deleteActivity(activity: UserDefinedActivity){
+    const deleteUrl = this._serverUrl + "/api/activity/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -153,19 +179,14 @@ export class ActivitiesService {
     this.httpClient.post(deleteUrl,activity, httpOptions)
       .subscribe((response: {message: string, status: string, data: any})=>{
         if(response.status == "SUCCESS"){
-          let activityTree: ActivityTree = this._activitiesTree$.getValue();
-          activityTree.pruneActivityFromTree(activity);
-          this._activitiesTree$.next(activityTree);
+          this._activitiesTree.pruneActivityFromTree(activity);
+          this._activitiesTree$.next(this._activitiesTree);
         }
       })
   }
 
 
 
-
-  get activitiesTree$(): Observable<ActivityTree> {
-    return this._activitiesTree$.asObservable();
-  }
 
   set activityNameFromActivityForm(name: string){
     this._activityNameFromActivityForm = name;

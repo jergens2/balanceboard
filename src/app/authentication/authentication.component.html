@@ -1,76 +1,101 @@
-<div class="container p-5">
-  <div class="row mt-5">
-    <!-- <div class="col-md-3"></div> -->
-    <div class="col "></div>
-    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
-
-        <div class="jumbotron  border border-secondary">
-          <h4 class="text-center">Welcome to balanceboard</h4>
-          <hr>
-          <div *ngIf="action === 'initial'">
-              <button class="btn btn-block btn-primary" (click)="onClickLogIn()">Log in</button>
-              <button class="btn btn-block btn-secondary" (click)="onClickRegister()">Register</button>
-          </div>
-          <div *ngIf="action === 'waiting'">
-              <div class="text-center">
-                <h2 style="color:limegreen"><i class="fa fa-spinner fa-spin"></i></h2>
-              </div>
-  
-          </div>
-          <div *ngIf="action === 'authenticate'">
-              <form [formGroup]="authenticationForm">
-                  <div class="form-group my-1">
-                    <input class="form-control" type="email" formControlName="email" placeholder="email">
-                  </div>
-                  <div class="form-group mb-1">
-                    <input class="form-control" type="password" formControlName="password" placeholder="password">
-                  </div>
-                  <div *ngIf="errorMessage" class="error-message mb-3">
-                    {{ errorMessage }}
-                  </div>
-                  <button class="btn btn-white border-primary" (click)="onContinueAuthentication()">Log In</button>
-                  <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
-                  
-                </form>
-
-          </div>
-          <div *ngIf="action === 'final'">
-              <h6 class="text-center">{{ actionMessage }}</h6>
-              <button class="btn btn-success" (click)="onContinueAuthentication()">Continue</button>
-          </div>
-          <div *ngIf="action === 'register'">
-              <form [formGroup]="registrationForm">
-                  <div class="form-group my-1">
-                    <input class="form-control" type="email" formControlName="email" placeholder="email">
-                  </div>
-                  <div class="form-group mb-1">
-                    <input class="form-control" type="password" formControlName="password" placeholder="password">
-                  </div>
-                  <div *ngIf="errorMessage" class="error-message mb-3">
-                    {{ errorMessage }}
-                  </div>
-                  <button class="btn btn-white border-primary" (click)="onContinueRegistration()">Continue</button>
-                  <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
-                  
-                </form>
-  
-          </div>
-          <div *ngIf="action === 'confirmRegistration'">
-              <form [formGroup]="confirmRegistrationForm">
-                  <div class="form-group mb-1">
-                    <input class="form-control" type="password" formControlName="password" placeholder="confirm password">
-                  </div>
-                  <div *ngIf="errorMessage" class="error-message mb-3">
-                      {{ errorMessage }}
-                  </div>
-                  <button class="btn btn-success" (click)="onSubmitRegistration()">Register</button>
-                  <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
-                  
-                </form>
-  
-          </div>
-        </div>
+<div class="root">
+  <div class="authentication">
+    <div class="title">
+      balanceboard
     </div>
-    <div class="col "></div>
+    <hr class="mb-1">
+    <div class="form-message">
+      {{ formMessage }}
+    </div>
+
+    <div class="form-area">
+      <div *ngIf="action == 'welcome'">
+        <button class="btn btn-block btn-primary" style="grid-row:1 / span 1; grid-column: 1 / -1;" (click)="this.action = 'login'">
+          Login
+        </button>
+        <button class="btn btn-block btn-secondary" style="grid-row:2 / span 1; grid-column: 1 / -1;" (click)="this.action = 'register'">
+          Sign Up
+        </button>
+
+
+      </div>
+
+      <div *ngIf="action == 'login'" [formGroup]="loginForm">
+        <div class="input-container">
+          <input formControlName="emailAddress" type="email" class="form-control" placeholder="email" style="grid-row:1 / span 1; grid-column: 1 / -1;">
+          <fa-icon [icon]="faUser" class="auth-icon" style="grid-row:1 / span 1; grid-column: 2 / span 1;"></fa-icon>
+          <input formControlName="password" type="password" class="form-control" placeholder="password" style="grid-row:2 / span 1; grid-column: 1 / -1;">
+          <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
+        </div>
+
+        <div class="action-buttons-container">
+          <button class="btn btn-sm btn-primary mx-1" (click)="onClickLogin()">Login <fa-icon [icon]="faUnlock" class="auth-icon"></fa-icon>
+          </button>
+          <button class="btn btn-sm btn-secondary mx-1" (click)="this.action  = 'welcome'">Cancel</button>
+        </div>
+      </div>
+
+      <div *ngIf="action == 'register'" [formGroup]="registrationForm">
+        <div class="input-container">
+          <input formControlName="emailAddress" type="email" class="form-control" placeholder="email" style="grid-row:1 / span 1; grid-column: 1 / -1;">
+          <fa-icon [icon]="faUser" class="auth-icon" style="grid-row:1 / span 1; grid-column: 2 / span 1;"></fa-icon>
+          <input formControlName="password" type="password" class="form-control" placeholder="password" style="grid-row:2 / span 1; grid-column: 1 / -1;">
+          <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
+        </div>
+
+
+        <div class="action-buttons-container">
+          <button class="btn btn-sm btn-primary mx-1" (click)="onClickContinueRegistration()">Continue
+          </button>
+          <button class="btn btn-sm btn-secondary mx-1" (click)="onClickCancelRegistration()">Cancel</button>
+        </div>
+      </div>
+
+      <div *ngIf="action == 'confirm_registration'" [formGroup]="confirmRegistrationForm">
+        <div class="input-container">
+          <div style="grid-row:1 / span 1; grid-column: 1 / -1;">
+            {{ registrationForm.controls['emailAddress'].value.toLowerCase() }}
+          </div>
+          <input formControlName="password" type="password" class="form-control" placeholder="confirm password" style="grid-row:2 / span 1; grid-column: 1 / -1;">
+          <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
+        </div>
+        <div class="action-buttons-container">
+          <button class="btn btn-sm btn-primary mx-1" (click)="onClickFinishRegistration()">Finish
+          </button>
+          <button class="btn btn-sm btn-secondary mx-1" (click)="this.action  = 'register'">Back</button>
+        </div>
+      </div>
+
+
+      <div *ngIf="action == 'successful_registration'">
+        <div class="successful-registration">
+          Woohoo! <br>
+          {{ authData.user.email }} has been successfully registered.
+        </div>
+        <div class="action-buttons-container">
+          <button class="btn btn-sm btn-primary mx-1" (click)="onClickContinuePostRegistration()">Login <fa-icon [icon]="faUnlock"
+              class="auth-icon"></fa-icon>
+          </button>
+        </div>
+      </div>
+
+
+      <div *ngIf="action == 'waiting'" class="waiting">
+        <fa-icon [icon]="faSpinner" [spin]="true" class="waiting-icon"></fa-icon>
+      </div>
+
+
+      <div *ngIf="action == 'error'">
+        <div>There has been an error</div>
+        <div>{{errorMessage}}</div>
+        <div class="action-buttons-container">
+          <button class="btn btn-sm btn-primary mx-1" (click)="this.action = 'welcome'">Quit
+          </button>
+        </div>
+      </div>
+
+
+
+    </div>
   </div>
 </div>

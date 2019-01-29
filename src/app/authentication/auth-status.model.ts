@@ -1,4 +1,4 @@
-import { User } from "../dashboard/models/user.model";
+import { User } from "./user.model";
 
 export class AuthStatus{
     public token: string;

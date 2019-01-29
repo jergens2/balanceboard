@@ -1,4 +1,4 @@
-import { CategorizedActivity } from "./categorized-activity.model";
+import { UserDefinedActivity } from "./user-defined-activity.model";
 
 export class ActivityTree {
     /*
@@ -6,31 +6,31 @@ export class ActivityTree {
     */
 
 
-    private _rootActivities: CategorizedActivity[];
+    private _rootActivities: UserDefinedActivity[];
 
-    get rootActivities(): CategorizedActivity[] {
+    get rootActivities(): UserDefinedActivity[] {
         return this._rootActivities;
     }
 
-    private _allActivities: CategorizedActivity[];
+    private _allActivities: UserDefinedActivity[];
 
-    get allActivities(): CategorizedActivity[] {
+    get allActivities(): UserDefinedActivity[] {
         return this._allActivities;
     }
 
-    constructor(allActivities: CategorizedActivity[]) {
+    constructor(allActivities: UserDefinedActivity[]) {
         this._allActivities = allActivities;
         this._rootActivities = this.buildActivityTree(allActivities);
     }
 
-    private buildActivityTree(allActivities: CategorizedActivity[]): CategorizedActivity[] {
+    private buildActivityTree(allActivities: UserDefinedActivity[]): UserDefinedActivity[] {
         /*
             Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
         */
         for(let activity of allActivities){
             activity.removeChildren();
         }
-        let rootActivities: CategorizedActivity[] = [];
+        let rootActivities: UserDefinedActivity[] = [];
 
         for (let activity of allActivities) {
             if (activity.parentTreeId.endsWith("TOP_LEVEL")) {
@@ -55,7 +55,7 @@ export class ActivityTree {
         return rootActivities;
     }
 
-    findActivityById(treeId: string): CategorizedActivity{
+    findActivityById(treeId: string): UserDefinedActivity{
         for(let activity of this._allActivities){
             if(activity.treeId == treeId){
                 return activity;
@@ -64,7 +64,7 @@ export class ActivityTree {
         return null;
     }
 
-    findChildActivities(activityNode: CategorizedActivity, allActivities: CategorizedActivity[]): CategorizedActivity {
+    findChildActivities(activityNode: UserDefinedActivity, allActivities: UserDefinedActivity[]): UserDefinedActivity {
         for (let activity of allActivities) {
             if (activity.parentTreeId == activityNode.treeId) {
                 activityNode.addChild(activity);
@@ -85,12 +85,12 @@ export class ActivityTree {
         return activityNode;
     }
 
-    addActivityToTree(activity: CategorizedActivity) {
+    addActivityToTree(activity: UserDefinedActivity) {
         this._allActivities.push(activity);
         this._rootActivities = this.buildActivityTree(this.allActivities);
     }
 
-    pruneActivityFromTree(activityRemove: CategorizedActivity) {
+    pruneActivityFromTree(activityRemove: UserDefinedActivity) {
         /*
             2018-12-13
             Warning: this method works but there is a flaw:  when you click delete on an activity that has children, only the clicked activity is deleted, and not its children

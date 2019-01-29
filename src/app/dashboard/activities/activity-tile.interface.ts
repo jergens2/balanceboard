@@ -1,7 +1,7 @@
-import { CategorizedActivity } from "./categorized-activity.model";
+import { UserDefinedActivity } from "./user-defined-activity.model";
 
 export interface IActivityTile {
-    activity: CategorizedActivity,
+    activity: UserDefinedActivity,
     ifShowActivityDelete: boolean,
     ifShowActivityModify: boolean,
 }

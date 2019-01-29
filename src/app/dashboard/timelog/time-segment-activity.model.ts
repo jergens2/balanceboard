@@ -1,4 +1,4 @@
-import { CategorizedActivity } from "../activities/categorized-activity.model";
+import { UserDefinedActivity } from "../activities/user-defined-activity.model";
 import { ActivitiesService } from "../activities/activities.service";
 
 export class TimeSegmentActivity{
@@ -8,15 +8,15 @@ export class TimeSegmentActivity{
     description: string;
 
 
-    private _activity: CategorizedActivity;
-    get activity(): CategorizedActivity{
+    private _activity: UserDefinedActivity;
+    get activity(): UserDefinedActivity{
         return this._activity;
     }
-    set activity(activity: CategorizedActivity){
+    set activity(activity: UserDefinedActivity){
         this._activity = activity;
     }
 
-    constructor(activity: CategorizedActivity, duration: number, description: string){
+    constructor(activity: UserDefinedActivity, duration: number, description: string){
         this.activityTreeId = activity.treeId;
         this.duration = duration;
         this.description = description;

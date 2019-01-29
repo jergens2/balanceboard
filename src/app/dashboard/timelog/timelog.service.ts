@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { TimeSegment } from './time-segment.model';
-import { CategorizedActivity } from '../activities/categorized-activity.model';
+import { UserDefinedActivity } from '../activities/user-defined-activity.model';
 
 import * as moment from 'moment';
 
@@ -20,40 +20,45 @@ import { ActivitiesService } from '../activities/activities.service';
 })
 export class TimelogService {
 
-  constructor(private httpClient: HttpClient, private authService: AuthenticationService, private activitiesService: ActivitiesService) {
-    authService.authStatus.subscribe((authStatus: AuthStatus) => {
-      if (authStatus.isAuthenticated) {
-        this.activitiesService.activitiesTree$.subscribe((tree)=>{
-          if(tree != null){
-            this.initiateService();
-          }
-        })
-      } else {
-        this.logout();
-      }
-    })
+  private _authStatus: AuthStatus = null;
+
+  constructor(private httpClient: HttpClient, private activitiesService: ActivitiesService) {
+  }
+
+  login$(authStatus: AuthStatus): Observable<TimeSegment[]>{
+    this._authStatus = authStatus;
+    /*
+      The following function just uses this.currentDate, which will always default to today.  but there may be times when, for example, 
+      maybe the user navigates to a specific day, and then quits the app, and then returns at another time, and maybe wants to return to that specific day ?
+    */
+    return this.fetchTimeSegmentsByDay(this.currentDate);
   }
 
 
-  initiateService(){
-    this.thisDaysTimeSegmentsSubscription = this._timeSegmentsSubject$.subscribe((timeSegments: TimeSegment[])=>{
-      this._thisDaysTimeSegments.next(this.getThisDaysTimeSegments(timeSegments, this.currentDate));
-    })
+  // initiateService(){
+  //   this.thisDaysTimeSegmentsSubscription = this._timeSegmentsSubject$.subscribe((timeSegments: TimeSegment[])=>{
+  //     if(timeSegments != null){
+  //       this._thisDaysTimeSegments.next(this.getThisDaysTimeSegments(timeSegments, this.currentDate));
+  //     }else{
+  //       console.log("timelogService: timeSegments is null");
+  //     }
+      
+  //   })
 
-    let startTime: moment.Moment = moment().startOf('month');
-    let endTime: moment.Moment = moment().endOf('month');
-    this.fetchTimeSegmentsByRange(this.authService.authenticatedUser.id, startTime, endTime);
-  }
+  //   let startTime: moment.Moment = moment().startOf('month');
+  //   let endTime: moment.Moment = moment().endOf('month');
+  //   this.fetchTimeSegmentsByRange(this.authService.authenticatedUser.id, startTime, endTime);
+  // }
 
 
-  private serverUrl: string = serverUrl;
+  private _serverUrl: string = serverUrl;
 
   private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
   private _timeSegmentsSubject$: BehaviorSubject<TimeSegment[]> = new BehaviorSubject(null);
 
   private _thisDaysTimeSegments: BehaviorSubject<TimeSegment[]> = new BehaviorSubject(null);
 
-  private thisDaysTimeSegmentsSubscription: Subscription;
+  private _thisDaysTimeSegmentsSubscription: Subscription = new Subscription();
 
 
   // 2018-12-16:  these 2 following variables are statically defined here in this service, but eventually will be modifyable by the user which will change the behavior of the app
@@ -84,7 +89,7 @@ export class TimelogService {
     }
 
     if(outOfRange){
-      this.fetchTimeSegmentsByRange(this.authService.authenticatedUser.id, moment(date).startOf('month'), moment(date).endOf('month'));
+      this.fetchTimeSegmentsByRange(this._authStatus.user.id, moment(date).startOf('month'), moment(date).endOf('month'));
     }else{
       this._thisDaysTimeSegments.next((this.getThisDaysTimeSegments(this._timeSegmentsSubject$.getValue(), date)));
     }
@@ -150,7 +155,7 @@ export class TimelogService {
     })
     
     updatedTimeSegment.activities = trimmedActivities as TimeSegmentActivity[];
-    const postUrl = this.serverUrl + "/api/timeSegment/update";
+    const postUrl = this._serverUrl + "/api/timeSegment/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -180,14 +185,14 @@ export class TimelogService {
 
   saveTimeSegment(timeSegment: TimeSegment) {
     let newTimeSegment: TimeSegment = timeSegment;
-    newTimeSegment.userId = this.authService.authenticatedUser.id;
+    newTimeSegment.userId = this._authStatus.user.id;
 
     //the following line exists to remove the activity data from the object
     let trimmedActivities = newTimeSegment.activities.map((activity: TimeSegmentActivity)=>{
       return {activityTreeId: activity.activityTreeId, duration: activity.duration, description: activity.description };
     })
     newTimeSegment.activities = trimmedActivities as TimeSegmentActivity[];
-    const postUrl = this.serverUrl + "/api/timeSegment/create";
+    const postUrl = this._serverUrl + "/api/timeSegment/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -224,24 +229,7 @@ export class TimelogService {
   
 
   deleteTimeSegment(timeSegment: TimeSegment) {
-    /*
-      2018-11-11  
-      To do: unresolved issue: if timeSegment get's deleted, we need to update other time Segments in the DB?
-      For example, there are 3 sequential time segments A, B, C
-      A points to next which is B, B points back to A and forward to C, and C points backward to B.
-
-      timeSegment B gets deleted(), but A is still pointing to what used to be B but B no longer exists, and similar with C.
-
-      Doesn't really break the app, but does mean that timeSegments are pointing to non-existing items.
-
-      How to fix?  Should A and C just start pointing to each other then?
-        What about the time gap that is left now that B has been deleted?  
-
-    */
-    // console.log("TimeLogService: deleteTimeSegment() function disabled");
-
-
-    const postUrl = this.serverUrl + "/api/timeSegment/delete";
+    const postUrl = this._serverUrl + "/api/timeSegment/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -250,12 +238,6 @@ export class TimelogService {
     };
 
     this.httpClient.post<{ message: string, data: any }>(postUrl, timeSegment, httpOptions)
-      // .pipe(map((response) => {
-      //   let timeSegment = new TimeSegment(response.data._id, response.data.userId, response.data.timeISO);
-      //   timeSegment.description = response.data.description;
-      //   timeSegment.activities = response.data.activities as CategorizedActivity[];
-      //   return timeSegment;
-      // }))
       .subscribe((response) => {
         let timeSegments: TimeSegment[] = this._timeSegmentsSubject$.getValue();
         timeSegments.splice(timeSegments.indexOf(timeSegment), 1);
@@ -265,8 +247,8 @@ export class TimelogService {
 
   }
 
-  fetchTimeSegmentsByDay(date: moment.Moment){
-    const getUrl = this.serverUrl + "/api/timeSegment/" + this.authService.authenticatedUser.id + "/" + moment(date).startOf('day').toISOString() + "/" + moment(date).endOf('day').toISOString();
+  fetchTimeSegmentsByDay(date: moment.Moment): Observable<TimeSegment[]>{
+    const getUrl = this._serverUrl + "/api/timeSegment/" + this._authStatus.user.id + "/" + moment(date).startOf('day').toISOString() + "/" + moment(date).endOf('day').toISOString();
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -275,7 +257,7 @@ export class TimelogService {
       })
     };
     return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe(map((response) => {
+      .pipe<TimeSegment[]>(map((response) => {
         return response.data.map((dataObject) => {
           let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO);
           timeSegment.description = dataObject.description;
@@ -286,7 +268,7 @@ export class TimelogService {
             if(activities[0].activityTreeId != null){
               timeSegment.activities = this.buildTimeSegmentActivities(activities);
             }else{
-              timeSegment.receiveOldActivities(dataObject.activities as CategorizedActivity[])
+              timeSegment.receiveOldActivities(dataObject.activities as UserDefinedActivity[])
             }
           }
           return timeSegment;
@@ -298,7 +280,7 @@ export class TimelogService {
 
   private fetchTimeSegmentsByRange(authenticatedUserId: string, startTime: moment.Moment, endTime: moment.Moment) {
     
-    const getUrl = this.serverUrl + "/api/timeSegment/" + authenticatedUserId + "/" + startTime.toISOString() + "/" + endTime.toISOString();
+    const getUrl = this._serverUrl + "/api/timeSegment/" + authenticatedUserId + "/" + startTime.toISOString() + "/" + endTime.toISOString();
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -324,7 +306,7 @@ export class TimelogService {
             if(activities[0].activityTreeId != null){
               timeSegment.activities = this.buildTimeSegmentActivities(activities);
             }else{
-              timeSegment.receiveOldActivities(dataObject.activities as CategorizedActivity[])
+              timeSegment.receiveOldActivities(dataObject.activities as UserDefinedActivity[])
             }
           }
 
@@ -338,24 +320,10 @@ export class TimelogService {
 
   }
 
-  scanForChanges(){
-    
-  }
-
-  // onTimeLogComponentInit(date: moment.Moment){
-  //   /*
-  //     This will do a fetch for timeSegments in a range of a month.  We could mimic this behavior and define any time range, not just 1 month
-  //   */
-  //   let startTime: moment.Moment = moment(date).startOf('month');
-  //   let endTime: moment.Moment = moment(date).endOf('month');
-  //   this.fetchTimeSegmentsByRange(this.authService.authenticatedUser.id, startTime, endTime);
-  // }
-  
-
 
   private logout() {
     this._timeSegmentsSubject$.next([]);
-    this.thisDaysTimeSegmentsSubscription.unsubscribe();
+    this._thisDaysTimeSegmentsSubscription.unsubscribe();
   }
 
 
