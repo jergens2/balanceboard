@@ -78,13 +78,15 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     if (this.loginForm.valid) {
       let loginUser = new User('', this.loginForm.controls['emailAddress'].value, []);
       this.authData = { user: loginUser, password: this.loginForm.controls['password'].value }
-      this.authService.authStatus.subscribe((authStatus: AuthStatus) => {
-        // console.log("authStatus" , authStatus)
-        if (authStatus.isAuthenticated == false && authStatus.user != null) {
+      this.authService.loginAttempt$.subscribe((successful: boolean) => {
+        if(successful){
+          this.setAction("waiting");
+          this.formMessage = "Logging in...";
+        }else{
           this.setAction("login");
-          this.formMessage = "Error: bad username or password.";
+          this.formMessage = "Bad username or password";
         }
-      })
+      });
       this.attemptLogin();
     } else {
       this.formMessage = "Form is invalid";
@@ -119,6 +121,14 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   }
 
   onClickFinishRegistration() {
+
+    /*
+      2019-01-28
+
+      What is the proper way to do authentication?  checking in the front end, or make another request with the newly typed password to check with the server?
+      is it safe to have that information in the front end at all ?
+
+    */
 
     if (this.registrationForm.controls['password'].value == this.confirmRegistrationForm.controls['password'].value) {
       this.setAction("waiting");

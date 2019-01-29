@@ -43,7 +43,7 @@ export class AuthenticationService {
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)
   }
 
-  // login$: Subject<any> = new Subject();
+  loginAttempt$: Subject<boolean> = new Subject();
 
   loginAttempt(authData: AuthData) {
     this.http.post<{ message: string, data: any }>(this.serverUrl + "/api/authentication/authenticate", authData)
@@ -58,10 +58,11 @@ export class AuthenticationService {
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
+        this.loginAttempt$.next(true);
         this.loginRoutine(authStatus);
         
       }, (error) => {
-        console.log("Error authenticating: ", error);
+        this.loginAttempt$.next(false);
       })
   }
 
