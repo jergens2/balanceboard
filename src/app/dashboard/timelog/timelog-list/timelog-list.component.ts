@@ -51,15 +51,11 @@ export class TimelogListComponent implements OnInit {
       }
     })
 
-    this.timeLogService.thisDaysTimeSegments.subscribe((timeSegments: TimeSegment[]) => {
-      if(timeSegments != null){
-        let listTimeSegments = Object.assign([], timeSegments);
-        // console.log(listTimeSegments);
-        this.timeSegmentTiles = this.buildThisDaysTimeSegmentTiles(listTimeSegments);
-        this.ifLoadingTimeSegments = false;
-      }
-    })
 
+    this.timeLogService.fetchTimeSegmentsByDay(this.currentDate).subscribe((timeSegments) => {
+      this.timeSegmentTiles = this.buildThisDaysTimeSegmentTiles(timeSegments);
+      this.ifLoadingTimeSegments = false;
+    });
 
   }
 

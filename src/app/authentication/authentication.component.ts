@@ -9,11 +9,7 @@ import { UserSetting } from '../user-settings/user-setting.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
 import { ActivitiesService } from '../dashboard/activities/activities.service';
 import { TimelogService } from '../dashboard/timelog/timelog.service';
-import { StylesService } from '../user-settings/styles.service';
-import { ActivityTree } from '../dashboard/activities/activity-tree.model';
-import { TimeSegment } from '../dashboard/timelog/time-segment.model';
-import { interval, merge } from 'rxjs';
-import { zip, combineLatest } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-authentication',
@@ -42,7 +38,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   continueDisabled: boolean = true;
 
 
-  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private activitiesService: ActivitiesService, private timelogService: TimelogService, private stylesService: StylesService) { }
+  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService) { }
 
   attemptLogin() {
     this.setAction("waiting");

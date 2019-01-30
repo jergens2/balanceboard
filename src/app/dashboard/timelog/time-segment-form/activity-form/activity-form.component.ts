@@ -109,7 +109,7 @@ export class ActivityFormComponent implements OnInit {
   onClickCreateNewCategory(){
     //click make new category button
     // navigate to a new page where you can manage categories
-    this.activitiesService.activityNameFromActivityForm = this.activityForm.get('name').value;
+    // this.activitiesService.activityNameFromActivityForm = this.activityForm.get('name').value;
     this.router.navigate(['/timelog-activities']);
   }
 

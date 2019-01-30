@@ -35,15 +35,16 @@ export class ActivitiesComponent implements OnInit {
     this.ifNewActivityFormButton = true;
     this.ifNewActivityForm = false;
 
-    let activityNameFromForm: string = this.activitiesService.activityNameFromActivityForm;
-    if (activityNameFromForm != null) {
-      this.activityNameFromForm = activityNameFromForm;
-      this.activitiesService.activityNameFromActivityForm = null;
-    } else {
-      // no activity name was set on the service
-    }
+    // let activityNameFromForm: string = this.activitiesService.activityNameFromActivityForm;
+    // if (activityNameFromForm != null) {
+    //   this.activityNameFromForm = activityNameFromForm;
+    //   this.activitiesService.activityNameFromActivityForm = null;
+    // } else {
+    //   // no activity name was set on the service
+    // }
 
     this.activitiesService.activitiesTree$.subscribe((tree) => {
+      console.log("subscribing to tree", tree)
       if(tree != null){
         this.activityTree = tree;
         console.log("activity tree:", this.activityTree);
@@ -51,6 +52,8 @@ export class ActivitiesComponent implements OnInit {
         this.rootActivityTiles = this.rootActivities.map((activity)=>{
           return {activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false};
         });
+
+        console.log(this.rootActivityTiles);
       }
     })
 

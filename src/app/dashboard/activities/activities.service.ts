@@ -21,10 +21,9 @@ export class ActivitiesService {
 
   private _authStatus: AuthStatus = null;
 
-  private _activityNameFromActivityForm: string = null;
-
   private _activitiesTree: ActivityTree = null;
-  private _activitiesTree$: Subject<ActivityTree> = new Subject();
+  private _activitiesTree$: BehaviorSubject<ActivityTree> = new BehaviorSubject<ActivityTree>(null);
+
   get activitiesTree$(): Observable<ActivityTree> {
     return this._activitiesTree$.asObservable();
   }
@@ -56,7 +55,7 @@ export class ActivitiesService {
       this might become a bit of a mess if not managed properly
 
     */
-    console.log("finding activity by treeId", treeId);
+    // console.log("finding activity by treeId", treeId);
     return this._activitiesTree.findActivityById(treeId);
   }
 
@@ -64,6 +63,11 @@ export class ActivitiesService {
     this._authStatus = authStatus;
     this.fetchActivities();
     return this.activitiesTree$;
+  }
+
+  logout() {
+    this._authStatus = null;
+    this._activitiesTree$.next(null);
   }
 
   
@@ -77,6 +81,7 @@ export class ActivitiesService {
     };
     this.httpClient.get<{message: string, data: Array<any>}>(getUrl, httpOptions)
       .subscribe((response: any) => {
+        // console.log("response is ", response);
         let responseData = response.data;
         if(responseData.length > 0){
           let allActivities: UserDefinedActivity[] = response.data.map((dataObject) => {
@@ -84,8 +89,10 @@ export class ActivitiesService {
             return newActivity
           });
           this._activitiesTree = new ActivityTree(allActivities);
+          // console.log("nexting ", this._activitiesTree);
           this._activitiesTree$.next(this._activitiesTree);
         }else{
+          // console.log("response data was 0 or less... creating default activities")
           this.saveDefaultActivities(defaultActivities)
         }
       });
@@ -186,20 +193,5 @@ export class ActivitiesService {
       })
   }
 
-
-
-
-  set activityNameFromActivityForm(name: string){
-    this._activityNameFromActivityForm = name;
-  } 
-
-  get activityNameFromActivityForm() : string{
-    return this._activityNameFromActivityForm;
-  }
-
-  
-  private logout() {
-    this._activitiesTree$.next(null);
-  }
 
 }

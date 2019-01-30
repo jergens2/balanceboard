@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { UserSetting } from './user-setting.model';
 import { UserSettingsService } from './user-settings.service';
-import { StylesService } from './styles.service';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { User } from '../authentication/user.model';
+import { AuthStatus } from '../authentication/auth-status.model';
 
 @Component({
   selector: 'app-user-settings',
@@ -12,7 +12,7 @@ import { User } from '../authentication/user.model';
 })
 export class UserSettingsComponent implements OnInit {
 
-  constructor(private authService: AuthenticationService,  private settingsService: UserSettingsService, private stylesService: StylesService ) { }
+  constructor(private settingsService: UserSettingsService) { }
 
   ifLoading: boolean = true;
 
@@ -20,35 +20,31 @@ export class UserSettingsComponent implements OnInit {
 
   nightModeSetting: UserSetting = new UserSetting("night_mode", false, null, null);
 
-  authenticatedUser: User;
+  authenticatedUser: User = null;
 
   ngOnInit() {
-    // this.authenticatedUser = this.authService.authenticatedUser;
 
-    for(let userSetting of this.authenticatedUser.userSettings){
-      this.userSettings.push(userSetting);
-    }
-    
-    for(let setting of this.userSettings){
-      if(setting.name == "night_mode"){
-        this.nightModeSetting = setting;
+    this.settingsService.userSettings$.subscribe((userSettings: UserSetting[]) => {
+      this.userSettings = Object.assign([], userSettings);
+      for (let setting of this.userSettings) {
+        if (setting.name == "night_mode") {
+          // console.log("onInit: setting nightmode setting to ", setting);
+          this.nightModeSetting.booleanValue = setting.booleanValue;
+        }
       }
-    }
-    this.ifLoading = false;
-    }
+      this.ifLoading = false;
+
+    })
+  }
 
 
-  onClickNightMode(){
-    /*
-      Todo:  change setting type from string into a Setting class object
-    */
+
+  onClickNightMode() {
 
     this.nightModeSetting.booleanValue = !this.nightModeSetting.booleanValue;
-    this.stylesService.nightMode = this.nightModeSetting.booleanValue;
-    // this.settingsService.changeSetting(this.nightModeSetting)
 
-    console.log("saving to settingsService")
-    this.settingsService.saveNightMode(this.nightModeSetting.booleanValue);
+    // console.log("saving to settingsService", this.nightModeSetting);
+    this.settingsService.saveSetting(this.nightModeSetting);
   }
 
 }

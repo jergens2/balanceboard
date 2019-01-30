@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { UserSetting } from './user-setting.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { serverUrl } from '../serverurl';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { User } from '../authentication/user.model';
 import { map } from 'rxjs/operators';
 import { defaultUserSettings } from './default-user-settings';
+import { AuthStatus } from '../authentication/auth-status.model';
 
 
 @Injectable({
@@ -14,15 +15,36 @@ import { defaultUserSettings } from './default-user-settings';
 })
 export class UserSettingsService {
 
+  constructor(private httpClient: HttpClient) { }
 
-  private _userSettings: BehaviorSubject<UserSetting[]> = new BehaviorSubject<UserSetting[]>([]);
-  get userSettings(): Observable<UserSetting[]> {
-    return this._userSettings.asObservable();
+  /*
+    you cannot have two services each with a reference to one another, becuase this is circular.
+    auth service already has userSettings Service, therefore this service cannot have an auth service property,
+    therefore, this service must do the HTTP requests for updating usersettings.
+
+  */
+
+  private _authStatus: AuthStatus;
+  // private _userSettings: UserSetting[] = [];
+  private _userSettings$: BehaviorSubject<UserSetting[]> = new BehaviorSubject<UserSetting[]>([]);
+  get userSettings$(): Observable<UserSetting[]> {
+    return this._userSettings$.asObservable();
+  }
+  set userSettings( userSettings: UserSetting[]){ 
+    // this._userSettings = userSettings;
+    this._userSettings$.next(userSettings);
   }
 
   private serverUrl: string = serverUrl;
 
-  constructor(private authService: AuthenticationService, private httpClient: HttpClient) { }
+
+
+
+  login(authStatus: AuthStatus){
+    this._authStatus = authStatus;
+    console.log("login(): setting user settings to ", this._authStatus.user.userSettings);
+    this.userSettings = this._authStatus.user.userSettings;
+  }
 
 
   createDefaultSettings(): UserSetting[]{
@@ -33,27 +55,20 @@ export class UserSettingsService {
 
 
 
-  saveNightMode(nightModeSetting: boolean){
-    // let currentUser = this.authService.authenticatedUser;
-    
-    // let settingFound: boolean = false;
-    // for(let setting of currentUser.userSettings){
-    //   if(setting.name == "night_mode"){
-    //     settingFound = true;
-    //     setting.booleanValue = nightModeSetting;
-    //   }
-    // }
-    // if(!settingFound){
-    //   let setting = new UserSetting("night_mode", false, null, null);
-    //   setting.booleanValue = nightModeSetting;
-    //   currentUser.userSettings.push(setting);
-    // }
+  saveSetting(changedSetting: UserSetting){ 
+    let currentSettings = this._userSettings$.getValue()
+    for(let setting of currentSettings){
+      if(setting.name == changedSetting.name){
+        setting.booleanValue = changedSetting.booleanValue;
+        setting.numericValue = changedSetting.numericValue;
+        setting.stringValue = changedSetting.stringValue;
+      }
+    }
 
-    // this.saveSettings(currentUser);
-    
-  }
+    this.saveSettings(currentSettings);
+  } 
 
-  saveSettings(user: User) {
+  private saveSettings(currentSettings: UserSetting[]) {
     const settingsPostUrl: string = this.serverUrl + "/api/user/save_settings";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -62,13 +77,16 @@ export class UserSettingsService {
       })
     };
 
+    let user = this._authStatus.user;
+    user.userSettings = currentSettings;
+
     this.httpClient.post<{ message: string, data: any }>(settingsPostUrl, user, httpOptions)
       .pipe<User>(map((response) => {
         let updatedUser = new User(response.data._id, response.data.email, response.data.userSettings);
         return updatedUser;
       }))
       .subscribe((updatedUser: User)=>{
-        this.authService.updateUserSettings(updatedUser);
+        this.userSettings = updatedUser.userSettings;
       })
 
   }

@@ -35,28 +35,10 @@ export class TimelogService {
   }
 
 
-  // initiateService(){
-  //   this.thisDaysTimeSegmentsSubscription = this._timeSegmentsSubject$.subscribe((timeSegments: TimeSegment[])=>{
-  //     if(timeSegments != null){
-  //       this._thisDaysTimeSegments.next(this.getThisDaysTimeSegments(timeSegments, this.currentDate));
-  //     }else{
-  //       console.log("timelogService: timeSegments is null");
-  //     }
-      
-  //   })
-
-  //   let startTime: moment.Moment = moment().startOf('month');
-  //   let endTime: moment.Moment = moment().endOf('month');
-  //   this.fetchTimeSegmentsByRange(this.authService.authenticatedUser.id, startTime, endTime);
-  // }
-
-
   private _serverUrl: string = serverUrl;
 
   private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
   private _timeSegmentsSubject$: BehaviorSubject<TimeSegment[]> = new BehaviorSubject(null);
-
-  private _thisDaysTimeSegments: BehaviorSubject<TimeSegment[]> = new BehaviorSubject(null);
 
   private _thisDaysTimeSegmentsSubscription: Subscription = new Subscription();
 
@@ -91,43 +73,16 @@ export class TimelogService {
     if(outOfRange){
       this.fetchTimeSegmentsByRange(this._authStatus.user.id, moment(date).startOf('month'), moment(date).endOf('month'));
     }else{
-      this._thisDaysTimeSegments.next((this.getThisDaysTimeSegments(this._timeSegmentsSubject$.getValue(), date)));
+      // this._thisDaysTimeSegments.next((this.getThisDaysTimeSegments(this._timeSegmentsSubject$.getValue(), date)));
     }
   }
   get currentDate$(): Observable<moment.Moment>{
     return this._currentDate$.asObservable();
   }
 
-
-
   
-  private getThisDaysTimeSegments(allTimeSegments: TimeSegment[], currentDate: moment.Moment): TimeSegment[]{
-    let thisDaysTimeSegments: TimeSegment[] = [];
-    if(allTimeSegments != null){
-      for(let timeSegment of allTimeSegments){
-        // console.log("time segment of all timeSegments", timeSegment);
-        // console.log("startTime, endTime, DayofYear", timeSegment.startTimeISO, timeSegment.endTimeISO, moment(timeSegment.startTimeISO).dayOfYear(), moment(timeSegment.endTimeISO).dayOfYear())
-
-        if(moment(timeSegment.startTimeISO).dayOfYear() != moment(timeSegment.endTimeISO).dayOfYear()){
-          console.log("timeSegment start time and end time are not the same day of year.")
-          // this happens when UTC time rolls over 23:59
-        }
-
-
-        if(moment(timeSegment.startTime).dayOfYear() == currentDate.dayOfYear() || moment(timeSegment.endTime).dayOfYear() == currentDate.dayOfYear())
-        thisDaysTimeSegments.push(timeSegment);
-      }
-    }
-    return thisDaysTimeSegments;
-  }
-
-
   get timeSegments$(): Observable<TimeSegment[]> {
     return this._timeSegmentsSubject$.asObservable();
-  }
-
-  get thisDaysTimeSegments(): Observable<TimeSegment[]>{
-    return this._thisDaysTimeSegments;
   }
 
 
@@ -219,7 +174,7 @@ export class TimelogService {
   }
 
   private buildTimeSegmentActivities(activitiesData: Array<{activityTreeId: string, duration: number, description: string }>): TimeSegmentActivity[]{
-    console.log("building time segment activities");
+    // console.log("building time segment activities");
     return activitiesData.map((activity) =>{
       let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.activitiesService.findActivityById(activity.activityTreeId), activity.duration, activity.description);
       return timeSegmentActivity;
@@ -323,7 +278,8 @@ export class TimelogService {
   }
 
 
-  private logout() {
+  logout() {
+    this._authStatus = null;
     this._timeSegmentsSubject$.next([]);
     this._thisDaysTimeSegmentsSubscription.unsubscribe();
   }

@@ -5,9 +5,11 @@ import { Component, OnInit } from '@angular/core';
 import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { NavItem } from '../nav-item.model';
 import { navigationItems } from '../nav-items';
-import { StylesService } from '../../user-settings/styles.service';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { Subscription } from 'rxjs';
+import { UserSettingsService } from '../../user-settings/user-settings.service';
+import { UserSetting } from '../../user-settings/user-setting.model';
+import { User } from '../../authentication/user.model';
 
 @Component({
   selector: 'app-sidebar',
@@ -16,7 +18,7 @@ import { Subscription } from 'rxjs';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor(private authService: AuthenticationService, private stylesService: StylesService, private router: Router) { }
+  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private router: Router) { }
 
 
 
@@ -27,30 +29,41 @@ export class SidebarComponent implements OnInit {
   activeLink = { color: 'red' };
   private authStatus: AuthStatus = null;
   private authSubscription: Subscription = new Subscription();
-  loggedInUser: string = '';
-  userId: string = '';
+  user: User = null;
 
   navItems: NavItem[];
 
 
-  nightMode: boolean = false;
+  nightMode: UserSetting = null;
 
   ngOnInit() {
     this.navItems = navigationItems;
 
-    let authSubscription = this.authService.authStatus$.subscribe((authStatus: AuthStatus)=>{
+    this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[])=>{
+      // console.log("usersettings", userSettings);
+
+      for(let setting of userSettings){
+        if(setting.name == "night_mode"){
+          // console.log("sidebar:  setting nightmode to ", setting);
+          this.nightMode = setting;
+        }
+      }
+    })
+    // console.log("sidebar: this.nightMode = " , this.nightMode)
+
+    this.authSubscription = this.authService.authStatus$.subscribe((authStatus: AuthStatus)=>{
       if(authStatus != null){
         if(authStatus.user != null){
+          // console.log("receiving authstatus from authService", authStatus.user.email);
           this.authStatus = authStatus;
-          this.loggedInUser = this.authStatus.user.email;
-          this.userId = this.authStatus.user.id;
+          this.user = this.authStatus.user;
         }
       }
     })
 
-    this.stylesService.nightMode$.subscribe((nightModeValue)=>{
-      this.nightMode = nightModeValue;
-    })
+    // this.stylesService.nightMode$.subscribe((nightModeValue)=>{
+    //   this.nightMode = nightModeValue;
+    // })
   }
 
 
@@ -59,11 +72,13 @@ export class SidebarComponent implements OnInit {
   }
 
   onClickLogout(){
-    this.userId = "";
-    this.loggedInUser = "";
+    
+    this.user = null;
     this.authStatus = null;
     this.authSubscription.unsubscribe();
     this.authService.logout();
+
+    // console.clear();
   }
 
 }

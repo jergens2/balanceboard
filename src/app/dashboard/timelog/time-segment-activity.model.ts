@@ -10,7 +10,7 @@ export class TimeSegmentActivity{
 
     private _activity: UserDefinedActivity;
     get activity(): UserDefinedActivity{
-        console.log("returning activity", this._activity)
+        // console.log("returning activity", this._activity)
         return this._activity;
     }
     set activity(activity: UserDefinedActivity){

@@ -8,34 +8,34 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'app';
 
   faSpinner = faSpinner;
 
   authenticated: boolean = false;
-  loading: boolean = true; 
+  loading: boolean = true;
 
-  constructor(private authService: AuthenticationService){}
+  constructor(private authService: AuthenticationService) { }
 
-  ngOnInit(){
-    
+  ngOnInit() {
+
     this.authService.authStatus$.subscribe(
       (authStatus: AuthStatus) => {
-        console.log("authstatus", authStatus);
-        if(authStatus.isAuthenticated){
+        // console.log("authstatus", authStatus);
+        if (authStatus.isAuthenticated) {
           this.loading = false;
           this.authenticated = true;
-        }else{
+        } else {
           this.authenticated = false;
         }
       }
     )
-    this.authService.checkLocalStorage$.subscribe((isPresent: boolean)=>{
-      console.log("is local storage presnet? ", isPresent);
-      if(isPresent){
+    this.authService.checkLocalStorage$.subscribe((isPresent: boolean) => {
+      // console.log("is local storage presnet? ", isPresent);
+      if (isPresent) {
 
-      }else{
+      } else {
         this.loading = false;
       }
     })

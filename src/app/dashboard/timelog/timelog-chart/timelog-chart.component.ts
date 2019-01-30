@@ -33,6 +33,8 @@ export class TimelogChartComponent implements OnInit {
   ifLoading: boolean = true;
   faSpinner = faSpinner;
 
+  currentDate: moment.Moment = moment();
+
   ngOnInit() {
 
     /*
@@ -52,7 +54,15 @@ export class TimelogChartComponent implements OnInit {
     }
 
     this.timeSegmentChartTiles = [];
-    this.timeLogService.thisDaysTimeSegments.subscribe((timeSegments: TimeSegment[]) => {
+
+
+    
+    this.timeLogService.currentDate$.subscribe((changedDate: moment.Moment)=>{
+      this.currentDate = moment(changedDate);
+    })
+
+
+    this.timeLogService.fetchTimeSegmentsByDay(this.currentDate).subscribe((timeSegments) => {
       this.timeSegmentChartTiles = [];
       this.ifLoading = true;
       if(timeSegments != null){
@@ -63,8 +73,8 @@ export class TimelogChartComponent implements OnInit {
         }
         this.ifLoading = false;
       }
-      
-    })
+    });
+
   }
 
   buildTimeSegmentChartTiles(timeSegments: TimeSegment[], hourHeightPx: number): ITimeSegmentChartTile[] {

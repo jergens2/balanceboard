@@ -1,13 +1,16 @@
-<div class="sidebar-content" [ngClass]="{'sidebar-content-night-mode':nightMode }">
+<div class="sidebar-content" [ngClass]="{'sidebar-content-night-mode':nightMode.booleanValue }">
   <div class="sidebar-header">
     <h3 class="mb-5">balanceboard </h3>
-    Logged in as <span style='color:dodgerblue'>{{ loggedInUser }}</span><br>
-    {{ userId }}
+    <div style="font-size:0.85em;height:62px;">
+        Logged in as <span style='color:dodgerblue'>{{ user.email }}</span><br>
+        {{ user.id }}
+    </div>
+
 
   </div>
 
 
-  <div *ngFor="let navItem of navItems" class="sidebar-button" [routerLink]="navItem.routerLink" routerLinkActive='activeLink' [ngClass]="{'sidebar-button-night-mode':nightMode }">
+  <div *ngFor="let navItem of navItems" class="sidebar-button" [routerLink]="navItem.routerLink" routerLinkActive='activeLink' [ngClass]="{'sidebar-button-night-mode':nightMode.booleanValue }">
 
     <div style="width:30px;margin-right:3px;">
       <fa-icon [icon]="navItem.icon"></fa-icon>
@@ -23,7 +26,7 @@
     Settings
   </div> -->
 
-  <div class="sidebar-button" (click)="onClickLogout()" [ngClass]="{'sidebar-button-night-mode':nightMode }">
+  <div class="sidebar-button" (click)="onClickLogout()" [ngClass]="{'sidebar-button-night-mode':nightMode.booleanValue }">
     <div style="width:30px;margin-right:3px;">
       <fa-icon [icon]="faSignOutAlt"></fa-icon>
     </div>
