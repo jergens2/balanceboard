@@ -180,6 +180,7 @@ export class AuthenticationService {
 
     this.timelogService.logout();
     this.activitiesService.logout();
+    this.userSettingsService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));

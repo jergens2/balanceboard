@@ -5,6 +5,7 @@ import { Subscription, timer, Subject } from 'rxjs';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { TimeSegment } from '../timelog/time-segment.model';
 import { ITimeSegmentTile } from './time-segment-tile.interface';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-daybook',
@@ -15,11 +16,12 @@ export class DaybookComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService) { }
 
+  faSpinner = faSpinner;
   faCalendar = faCalendarAlt;
   ifCalendarInside: boolean = false;
 
-  // dayStartTime: moment.Moment;
-  // dayEndTime: moment.Moment;
+
+  ifLoading: boolean = true;
 
 
   /* bed time is the time you start trying to go to sleep */
@@ -33,7 +35,12 @@ export class DaybookComponent implements OnInit {
 
   daybookBodyStyle: any = {};
   hourLabels: any[] = [];
-  bookLines: any[] = [];
+  bookLines: {
+    line: number,
+    style: any,
+    startTime: moment.Moment,
+    endTime: moment.Moment
+  }[] = [];
 
   nowLineContainerStyle: any = {};
   nowTime: moment.Moment = moment();
@@ -45,11 +52,15 @@ export class DaybookComponent implements OnInit {
   ifBedTime: boolean = false;
 
   nowSubscription: Subscription = new Subscription();
-
+  fetchTimeSegmentsSubscription: Subscription = new Subscription();
 
   timeSegmentTiles: ITimeSegmentTile[] = [];
+  nextTimeSegment: ITimeSegmentTile = null;
 
-  private _currentDate: moment.Moment;
+  private _currentDate: moment.Moment = moment();
+  private _currentDate$: Subject<moment.Moment> = new Subject();
+
+
   get currentDate(): moment.Moment {
     return this._currentDate
   }
@@ -57,146 +68,103 @@ export class DaybookComponent implements OnInit {
     this._currentDate = moment(newDate);
     this._currentDate$.next(this._currentDate);
   }
-  private _currentDate$: Subject<moment.Moment> = new Subject();
+
+
+  private dayStartTime: moment.Moment = moment(this.currentDate).hour(7).minute(30).second(0).millisecond(0);
+  private dayEndTime = moment(this.currentDate).hour(22).minute(30).second(0).millisecond(0);
+
+
   timeSegments: TimeSegment[] = [];
 
   ngOnInit() {
-    this.currentDate = moment();
-    let dayStartTime = moment(this.currentDate).hour(7).minute(30).second(0).millisecond(0);
-    let dayEndTime = moment(this.currentDate).hour(22).minute(30).second(0).millisecond(0);
-    this.buildDisplay(dayStartTime, dayEndTime);
-    this.nowSubscription.unsubscribe();
-    this.nowSubscription = timer(0, 60000).subscribe(() => {
-      this.buildDisplay(dayStartTime, dayEndTime);
-    })
 
-    this.timeLogService.fetchTimeSegmentsByDay(this.currentDate).subscribe((timeSegments) => {
-      this.timeSegments = timeSegments;
-      this.displayTimeSegments(this.timeSegments, dayStartTime, dayEndTime);
-    });
+    this.dayStartTime = moment(this.currentDate).hour(7).minute(30).second(0).millisecond(0);
+    this.dayEndTime = moment(this.currentDate).hour(22).minute(30).second(0).millisecond(0);
+
+    this.buildDisplay(this.dayStartTime, this.dayEndTime);
+    this.ifLoading = false;
+
+    this.nowSubscription.unsubscribe();
+    this.fetchTimeSegmentsSubscription.unsubscribe();
 
     this._currentDate$.subscribe((date) => {
-
-      let dayStartTime = moment(this.currentDate).hour(7).minute(30).second(0).millisecond(0);
-      let dayEndTime = moment(this.currentDate).hour(22).minute(30).second(0).millisecond(0);
+      let dayStartTime = moment(date).hour(7).minute(30).second(0).millisecond(0);
+      let dayEndTime = moment(date).hour(22).minute(30).second(0).millisecond(0);
+      this.buildDisplay(dayStartTime, dayEndTime);
 
       this.nowSubscription.unsubscribe();
       this.nowSubscription = timer(0, 60000).subscribe(() => {
+        this.fetchTimeSegmentsSubscription.unsubscribe();
+        this.fetchTimeSegmentsSubscription = this.timeLogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
+          this.timeSegments = timeSegments;
+          this.displayTimeSegments(this.timeSegments);
+          this.ifLoading = false;
+        });
         this.buildDisplay(dayStartTime, dayEndTime);
       })
-      this.timeLogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
-        this.timeSegments = timeSegments;
-        this.displayTimeSegments(this.timeSegments, dayStartTime, dayEndTime);
-      });
 
     })
 
-
+    this.currentDate = moment();
 
 
   }
 
-  displayTimeSegments(timeSegments: TimeSegment[], dayStartTime: moment.Moment, dayEndTime: moment.Moment) {
-    let startTime = moment(dayStartTime).subtract(30, 'minutes');
-    if (startTime.minute() <= 15) {
-      startTime.minute(0);
-    } else if (startTime.minute() > 15 && startTime.minute() <= 45) {
-      startTime.minute(30);
-    } else {
-      startTime.minute(60);
-    }
-    let endTime = moment(dayEndTime).add(30, 'minutes');
-    /*
-      2018-01-19
-      The following is not a robust way of properly calculating the grids, but it works under the current defined start and end time.
-
-      maybe a better way to do it is just grab the information from the style variable dayBookBodyStyle
-
-      start time is 7:00am at gridIndex 1;
-      7:00 to 7:30 would be 1 / span 1
-      8:00 to 8:30 would be 3 / span 1
-      10:00 to 11:30 would be 7 / span 3
-
-    */
-    let gridSegments: number = ((endTime.diff(startTime, 'hours')) + 1) * 2;
-
-    function gridStart(segmentStart: moment.Moment): number {
-      let gridIndex = 0;
-      let difference = segmentStart.diff(startTime);
-      if (difference < 0) {
-        //segment start is before the daybook start time.
-        return 0;
-      } else {
-        let currentTime = moment(startTime);
-        while (currentTime.isSameOrBefore(segmentStart)) {
-          gridIndex++;
-          currentTime = moment(currentTime).add(30, 'minutes');
-        }
-        return gridIndex;
+  drawTimeSegmentTile(timeSegment: TimeSegment): ITimeSegmentTile {
+    let tile: ITimeSegmentTile = null;
+    let segmentStart: moment.Moment = moment(timeSegment.startTime);
+    let segmentEnd: moment.Moment = moment(timeSegment.endTime);
+    let duration = segmentEnd.diff(segmentStart, 'minutes');
+    let lineStart: {
+      line: number,
+      style: any,
+      startTime: moment.Moment,
+      endTime: moment.Moment
+    } = null;
+    let lineEnd: {
+      line: number,
+      style: any,
+      startTime: moment.Moment,
+      endTime: moment.Moment
+    } = null;
+    let gridMax: number = 1;
+    for (let gridLine of this.bookLines) {
+      if (moment(segmentStart).isSameOrAfter(moment(gridLine.startTime))) {
+        lineStart = gridLine;
       }
-
+      if (moment(segmentEnd).isSameOrBefore(moment(gridLine.endTime)) && moment(segmentEnd).isSameOrAfter(moment(gridLine.startTime))) {
+        lineEnd = this.bookLines[this.bookLines.indexOf(gridLine) + 1];
+      }
+      if (gridLine.line > gridMax) {
+        gridMax = gridLine.line;
+      }
     }
 
+    let containerSpan = moment(lineEnd.startTime).diff(lineStart.startTime, 'minutes');
+
+    let percentStart = (moment(segmentStart).diff(lineStart.startTime, 'minutes') / containerSpan) * 100;
+    let percentDuration = (duration / containerSpan) * 100;
+    let percentEnd = 100 - (percentStart + percentDuration);
+
+    let containerStyle = {
+      "grid-row": "" + lineStart.line + " / " + lineEnd.line,
+      "grid-template-rows": + percentStart + "% " + percentDuration + "% " + percentEnd + "%"
+    };
+    let durationStyle = {};
+    if (duration < 30) {
+      durationStyle = { "display": "none" };
+    } else if (duration >= 30) {
+      durationStyle = {};
+    }
+    tile = { timeSegment: timeSegment, containerStyle: containerStyle, durationStyle: durationStyle };
+    return tile;
+  }
+
+
+  displayTimeSegments(timeSegments: TimeSegment[]) {
     let tiles: ITimeSegmentTile[] = [];
-
     for (let timeSegment of timeSegments) {
-      let segmentStart = moment(timeSegment.startTime);
-      let gridLineStart = gridStart(segmentStart);
-      if (gridLineStart > 0 && gridLineStart < 34) {
-        //that 34 number above needs to be dynamically referenced at some point and not a static number of 34.  this will change when the user 
-        //changes their preferences for day start and end time.
-
-        let segmentEnd = moment(timeSegment.endTime);
-        let duration = segmentEnd.diff(segmentStart, 'minutes');
-
-        if (duration >= 10) {
-          //below line:  
-          // I subtracted 2 because:  subtract 1 because grid-rows starts at index 1, but also because as above, the "real" start time is the defined startTime minus an additional 30 minutes (1 grid row/segment)
-          let gridStartTime = moment(dayStartTime).add((30 * (gridLineStart - 2)), 'minutes');
-
-          let gridSpan = Math.ceil(segmentEnd.diff(gridStartTime, 'minutes') / 30);
-          let span = gridSpan * 30;
-
-          let percentStart = (moment(segmentStart).diff(gridStartTime, 'minutes') / span) * 100;
-          let percentDuration = (duration / span) * 100;
-          let percentEnd = 100 - (percentStart + percentDuration);
-
-          let containerStyle = {
-            "grid-row": "" + gridLineStart + " / span " + gridSpan,
-            "grid-template-rows": + percentStart + "% " + percentDuration + "% " + percentEnd + "%"
-          };
-          let durationStyle = {};
-          if (duration < 30) {
-            durationStyle = { "display": "none" };
-          } else if (duration >= 30) {
-            durationStyle = {};
-          }
-
-
-
-          let tile: ITimeSegmentTile = { timeSegment: timeSegment, containerStyle: containerStyle, durationStyle: durationStyle };
-          tiles.push(tile);
-        }
-
-
-      } else {
-        // dont add the tile because it is before the day start time.
-        /*
-          At some point it might be diligent to add kind of a secondary section of the daybook, for times when a person stays up past midnight the previous evening.
-          e.g.:  you go to bed at 1:00am and wake up at 9:00 am.  the duration of time between 1 and 9 is a "squished" section because what's the point of being able
-          to visualize 8 hours of sleep in this context?  not very useful
-
-          so it would be like 2 sections of daybook, e.g.
-
-          | prior to sleep | 12:00am
-          |________________|  1:00am
-          |                |  9:00am
-          | after sleep    | 10:00am
-
-          something like this
-        */
-      }
-
+      tiles.push(this.drawTimeSegmentTile(timeSegment));
     }
     this.timeSegmentTiles = tiles;
   }
@@ -218,7 +186,12 @@ export class DaybookComponent implements OnInit {
     // let endTime = moment(this.dayEndTime);
 
     let hourLabels: any[] = [];
-    let gridLines: any[] = [];
+    let gridLines: {
+      line: number,
+      style: any,
+      startTime: moment.Moment,
+      endTime: moment.Moment
+    }[] = [];
 
     let gridIndex: number = 1;
 
@@ -241,12 +214,14 @@ export class DaybookComponent implements OnInit {
 
       let segmentEnd = moment(currentTime).add(30, 'minutes');
       if (moment(now).format('YYYY-MM-DD') != moment(currentTime).format('YYYY-MM-DD')) {
+        this.ifNowLine = false;
         nowLineContainerStyle = { "display": "none" };
         nowTimeContainerStyle = { "display": "none" };
       } else {
         if (moment(now).isAfter(currentTime) && moment(now).isSameOrBefore(segmentEnd)) {
           nowLineContainerStyle = { "grid-row": "" + gridIndex + " / span 1", "grid-template-rows": getGridTemplateRowsStyle(now, currentTime, 1) };
-          nowTimeContainerStyle = { "grid-row": "" + (gridIndex - 1) + " / span 3", "grid-column": "1 / span 1", "grid-template-rows": getGridTemplateRowsStyle(now, moment(currentTime).subtract(30, 'minutes'), 3) };
+          nowTimeContainerStyle = { "grid-row": "" + (gridIndex - 1) + " / span 3", "grid-column": "1 / span 2", "grid-template-rows": getGridTemplateRowsStyle(now, moment(currentTime).subtract(30, 'minutes'), 3) };
+          this.ifNowLine = true;
         }
       }
 
@@ -255,8 +230,10 @@ export class DaybookComponent implements OnInit {
       // }
 
       let gridLine = {
-        "line": gridIndex,
-        "style": { "grid-column": " 2 / span 2", "grid-row": "" + gridIndex + " / span 1" }
+        line: gridIndex,
+        style: { "grid-column": " 2 / span 2", "grid-row": "" + gridIndex + " / span 1" },
+        startTime: moment(currentTime),
+        endTime: moment(currentTime).add(30, 'minutes')
       };
       gridLines.push(gridLine);
 
@@ -289,6 +266,11 @@ export class DaybookComponent implements OnInit {
     // this.bedTimeString = this.calculateBedTimeString(now);
 
     // this.bedTimeStyle = bedTimeStyle;
+  }
+
+  logIt(any) {
+    console.log("line: " + any.line + " - " + any.startTime.format('h:mm a') + " to " + any.endTime.format('h:mm a'))
+    return "";
   }
 
 
@@ -369,6 +351,7 @@ export class DaybookComponent implements OnInit {
   }
 
   ngOnDestroy() {
+    this.fetchTimeSegmentsSubscription.unsubscribe();
     this.nowSubscription.unsubscribe();
   }
 

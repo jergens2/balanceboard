@@ -15,6 +15,7 @@
 .sidebar-content-night-mode{
     /* background-color: rgb(30, 30, 30); */
     background-color:black;
+    border-right: 1px solid #0a0a0a;
     color: white;
 }
 
@@ -47,19 +48,28 @@
     cursor:pointer;
     background: #f4f4f4;
 }
+
 .sidebar-button-night-mode{
     color: #d4d4d4;
+    background: black;
+}
+.sidebar-button-night-mode:hover{
+    background: rgb(20, 41, 158);
 }
 
 
-.activeLink{
+.active-link{
     background: #ddeaff;
 }
-.activeLink:hover{
+.active-link:hover{
     background: #ddeaff;
 }
+
 .active-link-night-mode{
-    background: #464a50;
+    background: rgb(15, 30, 117);
+}
+.active-link-night-mode:hover{
+    background: rgb(20, 41, 158);
 }
 
 .fa{

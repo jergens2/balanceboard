@@ -42,8 +42,11 @@ export class UserSettingsService {
 
   login(authStatus: AuthStatus){
     this._authStatus = authStatus;
-    console.log("login(): setting user settings to ", this._authStatus.user.userSettings);
+    // console.log("login(): setting user settings to ", this._authStatus.user.userSettings);
     this.userSettings = this._authStatus.user.userSettings;
+  }
+  logout(){
+    this._authStatus = null;
   }
 
 

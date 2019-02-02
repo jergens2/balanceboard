@@ -66,6 +66,14 @@ export class SidebarComponent implements OnInit {
     // })
   }
 
+  get routerLinkActiveClass(): string {
+    if(this.nightMode.booleanValue){
+      return "active-link-night-mode";
+    }else{
+      return "active-link";
+    }
+  }
+
 
   onClick(button: string){
     this.router.navigate(['/' + button]);

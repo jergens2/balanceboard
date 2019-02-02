@@ -1,18 +1,21 @@
 <div class="root">
 
   <div class="daybook">
+
+
     <div class="daybook-header">
       <div class="header-margin-item"></div>
       <div class="daybook-header-tabs">
-        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-2)" [ngClass]="{'daybook-header-today': isToday(-2) } ">
+
+        <!-- <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-2)" [ngClass]="{'daybook-header-today': isToday(-2) } ">
           <div>{{ headerDayRelevance(-2) }}</div>
           <div>{{ headerDate(-2) }}</div>
-        </div>
+        </div> -->
         <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-1)" [ngClass]="{'daybook-header-today': isToday(-1) } ">
           <div>{{ headerDayRelevance(-1) }}</div>
           <div>{{ headerDate(-1) }}</div>
         </div>
-        <div class="daybook-header-current-day no-select" [ngClass]="{'daybook-header-today': isToday(0) } ">
+        <div class="daybook-header-tab daybook-header-current-day no-select" [ngClass]="{'daybook-header-today': isToday(0) } ">
           <div>{{ headerDayRelevance(0) }}</div>
           <div>{{ headerDate(0) }}</div>
         </div>
@@ -20,10 +23,10 @@
           <div>{{ headerDayRelevance(1) }}</div>
           <div>{{ headerDate(1) }}</div>
         </div>
-        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(2)" [ngClass]="{'daybook-header-today': isToday(2) } ">
+        <!-- <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(2)" [ngClass]="{'daybook-header-today': isToday(2) } ">
           <div>{{ headerDayRelevance(2) }}</div>
           <div>{{ headerDate(2) }}</div>
-        </div>
+        </div> -->
 
       </div>
       <div class="header-margin-item toggle-inside-calendar-button-container">
@@ -32,13 +35,28 @@
         </div>
       </div>
     </div>
+    <!-- End of header -->
+
     <div class="calendar-inside" *ngIf="ifCalendarInside">
       <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate"></app-daybook-calendar>
     </div>
-    <div class="daybook-body" [ngStyle]="daybookBodyStyle">
-      <div class="margin-line"></div>
-      <div *ngFor="let bookLine of bookLines" class="book-line" [ngStyle]="bookLine.style">
 
+    <div class="daybook-body" [ngStyle]="daybookBodyStyle">
+
+      <!-- 
+        daybook-body is where the main grid is.  The main grid is built in the .ts file 
+        
+      -->
+
+
+      <div *ngIf="ifLoading" class="loading">
+        <fa-icon class="loading-spinner" [icon]="faSpinner" [spin]="true"></fa-icon>
+      </div>
+
+      <div class="margin-line"></div>
+
+
+      <div *ngFor="let bookLine of bookLines" class="book-line" [ngStyle]="bookLine.style">
       </div>
 
       <div *ngFor="let hourLabel of hourLabels" class="hour-label" [ngStyle]="hourLabel.style">
@@ -48,16 +66,19 @@
       </div>
 
 
-      <!-- <div *ngIf="ifNowLine"> -->
-        <div class="now-time-container" [ngStyle]="nowTimeContainerStyle">
-          <div class="now-time">
-            {{ nowTime.format('h:mm a') }}
-          </div>
+
+
+      <div class="now-time-container" [ngStyle]="nowTimeContainerStyle" *ngIf="ifNowLine">
+        <div class="now-time">
+          {{ nowTime.format('h:mm a') }}
         </div>
-        <div class="now-line-container" [ngStyle]="nowLineContainerStyle">
-          <div class="now-line"> </div>
-        </div>
-      <!-- </div> -->
+      </div>
+      <div class="now-line-container" [ngStyle]="nowLineContainerStyle" *ngIf="ifNowLine">
+        <div class="now-line"> </div>
+      </div>
+
+
+
       <!--
       <div *ngIf="ifBedTime">
         <div class="bed-time-container" [ngStyle]="bedTimeStyle">
@@ -67,25 +88,44 @@
         </div>
       </div> -->
 
+
       <!-- <div *ngIf="timeSegmentTiles.length > 0">
 
       </div> -->
-      <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="timeSegmentTile.containerStyle">
-        <div class="time-segment-start" ></div>
-        <div class="time-segment-duration"  
 
-          [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)" >
+
+      <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="timeSegmentTile.containerStyle">
+        <div class="time-segment-start"></div>
+        <div class="time-segment-duration" [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)">
           <div class="time-segment-text" [ngStyle]="timeSegmentTile.durationStyle">
-              {{ timeSegmentTile.timeSegment.activities[0].activity.name }}
+            {{ timeSegmentTile.timeSegment.activities[0].activity.name }}
           </div>
         </div>
         <div class="time-segment-end"></div>
-        
       </div>
 
-    </div>
+      <!-- 
+      <div *ngIf="nextTimeSegment">
+        <div class="next-time-segment-container" class="time-segment-tile" [ngStyle]="nextTimeSegment.containerStyle">
+          <div class="time-segment-start"></div>
+          <div class="time-segment-duration" style="background-color:rgb(253, 253, 253);">
+            <div class="time-segment-text" [ngStyle]="nextTimeSegment.durationStyle">
+              {{ nextTimeSegment.timeSegment.activities[0].activity.name }}
+            </div>
+          </div>
+          <div class="time-segment-end"></div>
+        </div>
+      </div> -->
+
+
+    </div><!-- end of body -->
+
   </div>
+
+
+
   <div class="calendar-outside">
     <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate"></app-daybook-calendar>
   </div>
+
 </div>

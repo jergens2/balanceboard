@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from './authentication/authentication.service';
 import { AuthStatus } from './authentication/auth-status.model';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { UserSettingsService } from './user-settings/user-settings.service';
+import { UserSetting } from './user-settings/user-setting.model';
 
 @Component({
   selector: 'app-root',
@@ -16,9 +18,22 @@ export class AppComponent implements OnInit {
   authenticated: boolean = false;
   loading: boolean = true;
 
-  constructor(private authService: AuthenticationService) { }
+  nightMode: UserSetting = null;
+
+  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService) { }
 
   ngOnInit() {
+
+    this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[])=>{
+      // console.log("usersettings", userSettings);
+
+      for(let setting of userSettings){
+        if(setting.name == "night_mode"){
+          // console.log("sidebar:  setting nightmode to ", setting);
+          this.nightMode = setting;
+        }
+      }
+    })
 
     this.authService.authStatus$.subscribe(
       (authStatus: AuthStatus) => {

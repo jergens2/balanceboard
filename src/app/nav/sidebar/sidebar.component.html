@@ -10,7 +10,7 @@
   </div>
 
 
-  <div *ngFor="let navItem of navItems" class="sidebar-button" [routerLink]="navItem.routerLink" routerLinkActive='activeLink' [ngClass]="{'sidebar-button-night-mode':nightMode.booleanValue }">
+  <div *ngFor="let navItem of navItems" class="sidebar-button" [routerLink]="navItem.routerLink" [routerLinkActive]='routerLinkActiveClass' [ngClass]="{'sidebar-button-night-mode':nightMode.booleanValue }">
 
     <div style="width:30px;margin-right:3px;">
       <fa-icon [icon]="navItem.icon"></fa-icon>
