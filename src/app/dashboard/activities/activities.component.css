@@ -1,9 +1,9 @@
 
 .root{
     display: grid;
-    grid-template-rows: 50px 1fr;
-    grid-template-columns: 300px 1fr;
-    max-height: 100vh;
+    grid-template-rows: 50px auto;
+    grid-template-columns: 300px auto;
+
     width:100%;
 }
 .activities-header{
@@ -32,16 +32,21 @@
 
 
 
-.activities-list{
+.activities-list{    
     grid-row: 2 / span 1;
     grid-column: 1 / span 1;
-    overflow-y: auto;
 }
 
 .activities-list-header{
+    grid-column: 1 / span 1;
+
     display:flex;
     flex-direction:row;
     justify-content: space-between;
+}
+
+.activities-list-items{
+    grid-column: 1 / span 1;
 }
 
 .activity-list-item{

@@ -1,0 +1,19 @@
+<div class="root">
+  <div class="body">
+    <div class="header-item">Week of</div>
+    <div class="header-item">Sun</div>
+    <div class="header-item">Mon</div>
+    <div class="header-item">Tue</div>
+    <div class="header-item">Wed</div>
+    <div class="header-item">Thu</div>
+    <div class="header-item">Fri</div>
+    <div class="header-item">Sat</div>
+    <div *ngFor="let weekOf of weeksOf" [ngStyle]="weekOfStyle(weekOf)" class="week-of">
+        {{ weekOf }}
+      </div>
+
+    <div *ngFor="let tile of tiles" class="day-tile">
+      {{ tileHours(tile) }}
+    </div>
+  </div>
+</div>

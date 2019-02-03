@@ -55,7 +55,13 @@ export class DaybookComponent implements OnInit {
   fetchTimeSegmentsSubscription: Subscription = new Subscription();
 
   timeSegmentTiles: ITimeSegmentTile[] = [];
-  nextTimeSegment: ITimeSegmentTile = null;
+  nextTimeSegmentTile: ITimeSegmentTile = null;
+
+  timeSegmentFormContainer: any = null;
+
+
+
+
 
   private _currentDate: moment.Moment = moment();
   private _currentDate$: Subject<moment.Moment> = new Subject();
@@ -98,6 +104,11 @@ export class DaybookComponent implements OnInit {
         this.fetchTimeSegmentsSubscription = this.timeLogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
           this.timeSegments = timeSegments;
           this.displayTimeSegments(this.timeSegments);
+          this.displayNextTimeSegment(this.timeSegments);
+
+          
+
+
           this.ifLoading = false;
         });
         this.buildDisplay(dayStartTime, dayEndTime);
@@ -108,6 +119,21 @@ export class DaybookComponent implements OnInit {
     this.currentDate = moment();
 
 
+  }
+
+
+  displayNextTimeSegment(timeSegments: TimeSegment[]){
+    if (moment(this.currentDate).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
+      let lastEndTime = this.getLastEndTime(timeSegments);
+      if(moment().diff(lastEndTime, 'minutes') > 5){
+        let nextTimeSegment: TimeSegment = new TimeSegment('NEXT_TIME_SEGMENT', '', lastEndTime, moment().toISOString())
+        this.nextTimeSegmentTile = this.drawTimeSegmentTile(nextTimeSegment);
+      }else{
+        this.nextTimeSegmentTile = null;
+      }
+    }else{
+      this.nextTimeSegmentTile = null;
+    }
   }
 
   drawTimeSegmentTile(timeSegment: TimeSegment): ITimeSegmentTile {
@@ -128,16 +154,45 @@ export class DaybookComponent implements OnInit {
       endTime: moment.Moment
     } = null;
     let gridMax: number = 1;
+
+    console.log(this.bookLines[0].startTime.format('YYYY-MM-DD h:mm a'))
+
+    /*
+      getting "lineEnd is undefined"
+      
+      need to set some parameters.
+
+
+      perhaps here is a good place to implement the long-scrolling daybook, where a window of some size is available, e.g., 12 hours, 14 hours, 16 hours, however the person wants 
+      to customize it.  maybe default of 14 or 16 hours
+
+      then, load the entire thing but make it hidden behind the rest of the app and scrollable
+
+
+
+    */
+
     for (let gridLine of this.bookLines) {
       if (moment(segmentStart).isSameOrAfter(moment(gridLine.startTime))) {
         lineStart = gridLine;
       }
       if (moment(segmentEnd).isSameOrBefore(moment(gridLine.endTime)) && moment(segmentEnd).isSameOrAfter(moment(gridLine.startTime))) {
-        lineEnd = this.bookLines[this.bookLines.indexOf(gridLine) + 1];
+        let index = this.bookLines.indexOf(gridLine) + 1;
+        if(index > this.bookLines.length){
+          index = this.bookLines.length-1;
+        }
+        lineEnd = this.bookLines[index];
       }
+
       if (gridLine.line > gridMax) {
         gridMax = gridLine.line;
       }
+    }
+
+    if(lineEnd == null){
+      console.log("its null", timeSegment.startTime.format('h:mm a'), timeSegment.endTime.format('h:mm a'))
+      console.log(timeSegment);
+      console.log(this.bookLines);
     }
 
     let containerSpan = moment(lineEnd.startTime).diff(lineStart.startTime, 'minutes');
@@ -229,9 +284,16 @@ export class DaybookComponent implements OnInit {
       //   bedTimeStyle = { "grid-row": "" + (gridIndex + 1) + " / -1 ", "grid-template-rows": getGridTemplateRowsStyle(this.bedTime, currentTime, 1) }
       // }
 
+
+      let gridBorderBottom: string = "";
+      if(moment(currentTime).minute() == 30){
+        gridBorderBottom = "1px solid rgb(150, 200, 220)";
+      }else{
+        gridBorderBottom = "1px solid rgb(205, 230, 240)";
+      }
       let gridLine = {
         line: gridIndex,
-        style: { "grid-column": " 2 / span 2", "grid-row": "" + gridIndex + " / span 1" },
+        style: { "grid-column": " 2 / span 2", "grid-row": "" + gridIndex + " / span 1", "border-bottom": gridBorderBottom },
         startTime: moment(currentTime),
         endTime: moment(currentTime).add(30, 'minutes')
       };
@@ -268,10 +330,17 @@ export class DaybookComponent implements OnInit {
     // this.bedTimeStyle = bedTimeStyle;
   }
 
-  logIt(any) {
-    console.log("line: " + any.line + " - " + any.startTime.format('h:mm a') + " to " + any.endTime.format('h:mm a'))
-    return "";
+
+  getLastEndTime(timeSegments: TimeSegment[]): string {
+    let latestTime = moment(timeSegments[0].endTime);
+    for (let timeSegment of timeSegments) {
+      if (moment(timeSegment.endTime).isAfter(latestTime)) {
+        latestTime = moment(timeSegment.endTime);
+      }
+    }
+    return latestTime.toISOString();
   }
+
 
 
   segmentBackgroundColor(timeSegment: TimeSegment): string {
@@ -299,56 +368,61 @@ export class DaybookComponent implements OnInit {
 
 
 
-  calculateBedTimeString(now: moment.Moment): string {
-    let minutes = Math.abs(Math.floor(moment(now).diff(moment(this.bedTime), 'minutes')));
-    let hours = Math.floor(minutes / 60)
-    minutes = minutes - (hours * 60);
-
-    if (moment(now).isBefore(moment(this.bedTime).subtract(3, 'hours'))) {
-      return "Bed time: " + moment(this.bedTime).format('hh:mm a');
-    } else if (moment(now).isBefore(moment(this.bedTime).subtract(1, 'minutes'))) {
-      if (hours > 0 && minutes > 0) {
-        return hoursString(hours) + " and " + minutesString(minutes) + " until bed time";
-      } else if (minutes > 0) {
-        return minutesString(minutes) + " until bed time";
-      } else if (hours > 0) {
-        return hoursString(hours) + " until bed time";
-      }
-    } else if (moment(now).isAfter(moment(this.bedTime).subtract(1, 'minutes')) && moment(now).isBefore(moment(this.bedTime).add('1 minutes'))) {
-      return "It's bedtime.  Go to bed";
-    } else {
-      if (hours > 0 && minutes > 0) {
-        return "It's " + hoursString(hours) + " and " + minutesString(minutes) + " past bed time.  Go to bed.";
-      } else if (minutes > 0) {
-        return "It's " + minutesString(minutes) + " past bed time.  Go to bed.";
-      } else if (hours > 0) {
-        return "It's " + hoursString(hours) + " past bed time.  Go to bed.";
-      }
-    }
-
-
-
-    function minutesString(minutes: number): string {
-      if (minutes == 0) {
-        return "";
-      } else if (minutes == 1) {
-        return "1 minute";
-      } else {
-        return "" + minutes + " minutes";
-      }
-    }
-    function hoursString(hours: number): string {
-      if (hours == 0) {
-        return "";
-      } else if (hours == 1) {
-        return "1 hour";
-      } else {
-        return "" + hours + " hours";
-      }
-    }
-
-
+  onClickNextTimeSegment(timeSegment: TimeSegment) {
+    console.log("timeSegment", timeSegment);
   }
+
+
+  // calculateBedTimeString(now: moment.Moment): string {
+  //   let minutes = Math.abs(Math.floor(moment(now).diff(moment(this.bedTime), 'minutes')));
+  //   let hours = Math.floor(minutes / 60)
+  //   minutes = minutes - (hours * 60);
+
+  //   if (moment(now).isBefore(moment(this.bedTime).subtract(3, 'hours'))) {
+  //     return "Bed time: " + moment(this.bedTime).format('hh:mm a');
+  //   } else if (moment(now).isBefore(moment(this.bedTime).subtract(1, 'minutes'))) {
+  //     if (hours > 0 && minutes > 0) {
+  //       return hoursString(hours) + " and " + minutesString(minutes) + " until bed time";
+  //     } else if (minutes > 0) {
+  //       return minutesString(minutes) + " until bed time";
+  //     } else if (hours > 0) {
+  //       return hoursString(hours) + " until bed time";
+  //     }
+  //   } else if (moment(now).isAfter(moment(this.bedTime).subtract(1, 'minutes')) && moment(now).isBefore(moment(this.bedTime).add('1 minutes'))) {
+  //     return "It's bedtime.  Go to bed";
+  //   } else {
+  //     if (hours > 0 && minutes > 0) {
+  //       return "It's " + hoursString(hours) + " and " + minutesString(minutes) + " past bed time.  Go to bed.";
+  //     } else if (minutes > 0) {
+  //       return "It's " + minutesString(minutes) + " past bed time.  Go to bed.";
+  //     } else if (hours > 0) {
+  //       return "It's " + hoursString(hours) + " past bed time.  Go to bed.";
+  //     }
+  //   }
+
+
+
+  //   function minutesString(minutes: number): string {
+  //     if (minutes == 0) {
+  //       return "";
+  //     } else if (minutes == 1) {
+  //       return "1 minute";
+  //     } else {
+  //       return "" + minutes + " minutes";
+  //     }
+  //   }
+  //   function hoursString(hours: number): string {
+  //     if (hours == 0) {
+  //       return "";
+  //     } else if (hours == 1) {
+  //       return "1 hour";
+  //     } else {
+  //       return "" + hours + " hours";
+  //     }
+  //   }
+
+
+  // }
 
   ngOnDestroy() {
     this.fetchTimeSegmentsSubscription.unsubscribe();

@@ -88,12 +88,6 @@
         </div>
       </div> -->
 
-
-      <!-- <div *ngIf="timeSegmentTiles.length > 0">
-
-      </div> -->
-
-
       <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="timeSegmentTile.containerStyle">
         <div class="time-segment-start"></div>
         <div class="time-segment-duration" [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)">
@@ -104,21 +98,26 @@
         <div class="time-segment-end"></div>
       </div>
 
-      <!-- 
-      <div *ngIf="nextTimeSegment">
-        <div class="next-time-segment-container" class="time-segment-tile" [ngStyle]="nextTimeSegment.containerStyle">
-          <div class="time-segment-start"></div>
-          <div class="time-segment-duration" style="background-color:rgb(253, 253, 253);">
-            <div class="time-segment-text" [ngStyle]="nextTimeSegment.durationStyle">
-              {{ nextTimeSegment.timeSegment.activities[0].activity.name }}
-            </div>
+
+
+      <div *ngIf="nextTimeSegmentTile" class="time-segment-tile next-time-segment-container" [ngStyle]="nextTimeSegmentTile.containerStyle">
+        <div class="time-segment-start"></div>
+        <div class="time-segment-duration" (click)="onClickNextTimeSegment(nextTimeSegmentTile.timeSegment)">
+          <div class="time-segment-text no-select" [ngStyle]="nextTimeSegmentTile.durationStyle">
+            next time segment
           </div>
-          <div class="time-segment-end"></div>
         </div>
-      </div> -->
+        <div class="time-segment-end"></div>
+      </div>
+
+
 
 
     </div><!-- end of body -->
+
+    <div *ngIf="timeSegmentFormContainer" class="time-segment-form-container">
+
+    </div>
 
   </div>
 

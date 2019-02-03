@@ -12,10 +12,13 @@
       </div>
     </div>
 
-    <div *ngFor="let tile of rootActivityTiles" class="activity-list-item" >
-      <app-activity-list-item [activity]="tile.activity" (activitySelected)="onActivitySelected($event)">
-      </app-activity-list-item>
+    <div class="activities-list-items">
+      <div *ngFor="let tile of rootActivityTiles" class="activity-list-item">
+        <app-activity-list-item [activity]="tile.activity" (activitySelected)="onActivitySelected($event)">
+        </app-activity-list-item>
+      </div>
     </div>
+
   </div>
 
   <div class="activities-form" *ngIf="ifNewActivityForm">

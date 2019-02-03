@@ -29,7 +29,17 @@ export class ActivitiesService {
   }
 
   
-
+  getActivityData(activity: UserDefinedActivity): Observable<any>{
+    console.log("activitiesService:  getting data for activity", activity.name);
+    const getUrl = this._serverUrl + "/api/timeSegment/activity_data/" + activity.treeId;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'  
+      })
+    };
+    return this.httpClient.get<{message: string, data: Array<any>}>(getUrl, httpOptions)
+  }
 
   
   findActivityById(treeId: string): UserDefinedActivity{

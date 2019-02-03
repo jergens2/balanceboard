@@ -31,6 +31,7 @@ import { ActivityDisplayComponent } from './activities/activity-display/activity
 import { ActivityYearViewComponent } from './activities/activity-display/activity-year-view/activity-year-view.component';
 import { MonthPlannerComponent } from './month-planner/month-planner.component';
 import { YearPlannerComponent } from './year-planner/year-planner.component';
+import { ActivitySixWeekViewComponent } from './activities/activity-display/activity-six-week-view/activity-six-week-view.component';
 
 
 
@@ -66,6 +67,7 @@ import { YearPlannerComponent } from './year-planner/year-planner.component';
     ActivityYearViewComponent,
     MonthPlannerComponent,
     YearPlannerComponent,
+    ActivitySixWeekViewComponent,
     
     
   ],

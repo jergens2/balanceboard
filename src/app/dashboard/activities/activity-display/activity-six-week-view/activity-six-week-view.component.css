@@ -1,0 +1,31 @@
+.root{
+    /* width: 600px; */
+    background-color: rgba(255, 230, 234, 0.76);
+    border: 1px solid rgb(170, 170, 170);
+    padding: 20px;
+}
+
+.body{
+    display:grid;
+
+    grid-template-rows: 40px repeat(6, 60px);
+    grid-template-columns: 100px repeat(7, 60px);
+}
+.header-item{
+    grid-row: 1 / span 1;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+.week-of{
+    display:flex;
+    align-items: center;
+}
+
+.day-tile{
+    border: 1px solid gray;
+    background-color: #fefefe;
+    border-radius: 2px;
+    margin: 2px;
+    padding: 2px;
+}

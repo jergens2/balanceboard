@@ -156,7 +156,7 @@
     border-right: 1px solid rgb(171, 209, 224);
 }
 .book-line{
-    border-bottom: 1px solid rgb(171, 209, 224);
+
 }
 
 .hour-label{
@@ -256,8 +256,8 @@
     margin-left: 10px;
     margin-right: 10px;
     /* margin-top:1px; */
-    margin-bottom: 1px;
-    border-radius: 5px;
+    margin-top: 1px;
+    border-radius: 3px;
     /* border-bottom: 2px solid white; */
     /* box-shadow: 0px 0px 5px rgb(97, 97, 97); */
     border: 1px solid rgba(133, 133, 133, 0.493);
@@ -265,6 +265,16 @@
 }
 .time-segment-end{
     grid-row: 3 / span 1;
+}
+
+.next-time-segment-container:hover > .time-segment-duration{
+    cursor: pointer;
+    background-color: rgba(221, 221, 221, 0.288);
+    border: 1px solid black;
+}
+
+.time-segment-form-container{
+    
 }
 
 

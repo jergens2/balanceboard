@@ -63,10 +63,9 @@ export class ActivitiesComponent implements OnInit {
 
 
   onActivitySelected(activity: UserDefinedActivity){
-    console.log("activity was clicked", activity)
     this.displayedActivity = activity;
     this.ifDisplayActivity = true;
-    
+
   }
 
   onClickCreateNewActivity(){
