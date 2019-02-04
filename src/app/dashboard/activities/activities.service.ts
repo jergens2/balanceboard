@@ -30,7 +30,7 @@ export class ActivitiesService {
 
   
   getActivityData(activity: UserDefinedActivity): Observable<any>{
-    console.log("activitiesService:  getting data for activity", activity.name);
+    // console.log("activitiesService:  getting data for activity", activity.name);
     const getUrl = this._serverUrl + "/api/timeSegment/activity_data/" + activity.treeId;
     const httpOptions = {
       headers: new HttpHeaders({

@@ -93,6 +93,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
     let color = this._activity.color;
     let gradient: string[] = this.getColorGradient(color);
 
+    console.log("maxhours is ", maxHours);
     for (let tile of tiles) {
       let style: any = {};
       let percent: number = tile.hours / maxHours;
@@ -105,6 +106,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
     this.weeksOf = weeksOf;
     this.tiles = tiles;
 
+    console.log(this.tiles);
 
   }
 
@@ -149,7 +151,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
   }
 
   getColorGradient(startColor: string): string[] {
-    function hexToRGB(hex: string, alpha: number) {
+    function hexToRGB(hex: string, alpha: number) : string{
       var r = parseInt(hex.slice(1, 3), 16),
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
@@ -160,13 +162,26 @@ export class ActivitySixWeekViewComponent implements OnInit {
         return "rgb(" + r + ", " + g + ", " + b + ")";
       }
     }
+    function returnRGBA(rgb: string, alpha: number) : string{
+      let matches = rgb.match(/[0-9.]+/g);
+      return "rgba(" + matches[0] + "," + matches[1] + "," + matches[2] + "," + alpha + ")";
+    }
+
 
     let colors: string[] = [];
     let gradientCount: number = 5;
-    for (let i = 1; i < gradientCount; i++) {
-      colors.push(hexToRGB(startColor, i / gradientCount));
+
+    if(startColor.slice(0,4).toLowerCase() == "rgba" || startColor.slice(0,3).toLowerCase() == "rgb"){
+      for (let i = 1; i < gradientCount; i++) {
+        colors.push(returnRGBA(startColor, i / gradientCount));
+      }
+      colors.push(returnRGBA(startColor, 1));
+    }else{
+      for (let i = 1; i < gradientCount; i++) {
+        colors.push(hexToRGB(startColor, i / gradientCount));
+      }
+      colors.push(hexToRGB(startColor, 1));
     }
-    colors.push(hexToRGB(startColor, 1));
 
     return colors;
   }

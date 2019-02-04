@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { IActivityInstance } from './activity-instance.interface';
 import * as moment from 'moment';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-activity-display',
@@ -14,6 +15,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 export class ActivityDisplayComponent implements OnInit, OnDestroy {
 
   faSpinner = faSpinner;
+  faEdit = faEdit;
 
   constructor(private activitiesService: ActivitiesService) { }
 
@@ -25,12 +27,15 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
 
   private activityDataSubscription: Subscription = new Subscription();
 
+  action: string = "view";
+
   @Input() set selectedActivity(activity: UserDefinedActivity){
+    this.action = "view";
     this.activity = activity;
     this.getActivityData();
   }
   ngOnInit() {
-    
+    this.action = "view";
   }
 
   private getActivityData(){
@@ -52,13 +57,17 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
         let instance: IActivityInstance = { startTime: startTime, endTime: endTime, durationHours: durationHours, activityTreeId: this.activity.treeId }
         this.activityInstances.push(instance);
       }
-
-
-
-
       this.ifLoading = false;
     });
     
+  }
+
+  onClickEdit(){
+    this.action = "edit";
+  }
+
+  onFormClosed(val: boolean){
+    this.action = "view";
   }
 
   ngOnDestroy(){

@@ -44,16 +44,16 @@ export class ActivitiesComponent implements OnInit {
     // }
 
     this.activitiesService.activitiesTree$.subscribe((tree) => {
-      console.log("subscribing to tree", tree)
+      // console.log("subscribing to tree", tree)
       if(tree != null){
         this.activityTree = tree;
-        console.log("activity tree:", this.activityTree);
+        // console.log("activity tree:", this.activityTree);
         this.rootActivities = this.activityTree.rootActivities;
         this.rootActivityTiles = this.rootActivities.map((activity)=>{
           return {activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false};
         });
 
-        console.log(this.rootActivityTiles);
+        // console.log(this.rootActivityTiles);
       }
     })
 
@@ -63,6 +63,7 @@ export class ActivitiesComponent implements OnInit {
 
 
   onActivitySelected(activity: UserDefinedActivity){
+    this.ifDisplayActivity = false;
     this.displayedActivity = activity;
     this.ifDisplayActivity = true;
 
