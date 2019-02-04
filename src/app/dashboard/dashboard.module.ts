@@ -25,8 +25,6 @@ import { CalendarComponent } from './daybook/calendar/calendar.component';
 import { ActivitiesComponent } from './activities/activities.component';
 import { ActivityFormListItemComponent } from './activities/new-activity-form/activity-form-list-item/activity-form-list-item.component';
 import { ActivityListItemComponent } from './activities/activity-list-item/activity-list-item.component';
-import { NewActivityFormComponent } from './activities/new-activity-form/new-activity-form.component';
-import { UpdateActivityFormComponent } from './activities/update-activity-form/update-activity-form.component';
 import { ActivityDisplayComponent } from './activities/activity-display/activity-display.component';
 import { ActivityYearViewComponent } from './activities/activity-display/activity-year-view/activity-year-view.component';
 import { MonthPlannerComponent } from './month-planner/month-planner.component';
@@ -61,8 +59,6 @@ import { ActivitySixWeekViewComponent } from './activities/activity-display/acti
     ActivitiesComponent,
     ActivityListItemComponent,
     ActivityFormListItemComponent,
-    NewActivityFormComponent,
-    UpdateActivityFormComponent,
     ActivityDisplayComponent,
     ActivityYearViewComponent,
     MonthPlannerComponent,

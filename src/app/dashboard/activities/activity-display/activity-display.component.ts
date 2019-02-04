@@ -4,6 +4,7 @@ import { ActivitiesService } from '../activities.service';
 import { Subscription } from 'rxjs';
 import { IActivityInstance } from './activity-instance.interface';
 import * as moment from 'moment';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-activity-display',
@@ -11,6 +12,8 @@ import * as moment from 'moment';
   styleUrls: ['./activity-display.component.css']
 })
 export class ActivityDisplayComponent implements OnInit, OnDestroy {
+
+  faSpinner = faSpinner;
 
   constructor(private activitiesService: ActivitiesService) { }
 

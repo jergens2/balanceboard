@@ -12,7 +12,7 @@
         {{ weekOf }}
       </div>
 
-    <div *ngFor="let tile of tiles" class="day-tile">
+    <div *ngFor="let tile of tiles" class="day-tile" [ngStyle]="tile.style">
       {{ tileHours(tile) }}
     </div>
   </div>

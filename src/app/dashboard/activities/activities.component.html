@@ -21,10 +21,6 @@
 
   </div>
 
-  <div class="activities-form" *ngIf="ifNewActivityForm">
-    <app-new-activity-form [activitiesList]="rootActivities" [modifyActivity]="modifyActivity" (closeForm)="onCloseForm($event)"></app-new-activity-form>
-  </div>
-
   <div class="activity-display" *ngIf="ifDisplayActivity">
     <app-activity-display [selectedActivity]="displayedActivity"></app-activity-display>
   </div>

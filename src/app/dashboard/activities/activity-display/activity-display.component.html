@@ -7,7 +7,7 @@
 
     <div class="activity-body">
       <div *ngIf="ifLoading">
-        loading
+        <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
       </div>
       <div *ngIf="!ifLoading">
         <app-activity-six-week-view [activityInstances]="activityInstances"></app-activity-six-week-view>
