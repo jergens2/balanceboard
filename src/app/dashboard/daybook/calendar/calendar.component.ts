@@ -27,6 +27,7 @@ export class CalendarComponent implements OnInit {
   @Input() set currentDate(date: moment.Moment){
     this._currentDate = moment(date);
     this.calendarDays = this.buildCalendarDays(this._currentDate);
+    this.calendarMonthDate = moment(this._currentDate);
   }
   get currentDate(): moment.Moment{
     return this._currentDate;

@@ -4,7 +4,9 @@
 
 
     <div class="daybook-header">
-      <div class="header-margin-item"></div>
+      <div class="header-margin-item daybook-menu-button">
+        <fa-icon [icon]="faCaretSquareDown"></fa-icon>
+      </div>
       <div class="daybook-header-tabs">
 
         <!-- <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-2)" [ngClass]="{'daybook-header-today': isToday(-2) } ">
@@ -92,7 +94,7 @@
         <div class="time-segment-start"></div>
         <div class="time-segment-duration" [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)">
           <div class="time-segment-text" [ngStyle]="timeSegmentTile.durationStyle">
-            {{ timeSegmentTile.timeSegment.activities[0].activity.name }}
+            {{ activityName(timeSegmentTile) }}
           </div>
         </div>
         <div class="time-segment-end"></div>

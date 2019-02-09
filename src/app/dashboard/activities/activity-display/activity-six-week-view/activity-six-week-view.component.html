@@ -9,11 +9,20 @@
     <div class="header-item">Fri</div>
     <div class="header-item">Sat</div>
     <div *ngFor="let weekOf of weeksOf" [ngStyle]="weekOfStyle(weekOf)" class="week-of">
-        {{ weekOf }}
-      </div>
+      {{ weekOf }}
+    </div>
 
     <div *ngFor="let tile of tiles" class="day-tile" [ngStyle]="tile.style">
-      {{ tileHours(tile) }}
+      <div class="tile-date">
+
+          {{ tileDate(tile) }}
+
+
+      </div>
+      <div class="tile-hours">
+        {{ tileHours(tile) }}
+      </div>
+      <div class="tile-bottom-padding"></div>
     </div>
   </div>
 </div>

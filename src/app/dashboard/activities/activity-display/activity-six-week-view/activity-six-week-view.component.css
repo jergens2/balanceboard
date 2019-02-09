@@ -27,13 +27,31 @@
     background-color: #fefefe;
     border-radius: 2px;
     margin: 2px;
-    padding: 2px;
+   
     
-    font-size: 0.8em;
     
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
 
+}
+.tile-date{
+
+    font-size: 0.6em;
+
+    width: 100%;
+    padding-right: 3px;
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: flex-start;
+
+}
+.tile-hours{
+    font-size: 0.8em;
+}
+.tile-bottom-padding{
+    font-size: 0.7em;
+    min-height: 12px;
 }

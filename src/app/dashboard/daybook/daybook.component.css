@@ -87,6 +87,12 @@
     margin:8px;
     width:36px;
 }
+.daybook-menu-button{
+    font-size:1em;
+    align-self: flex-start;
+    vertical-align: top;
+}
+
 .toggle-inside-calendar-button-container{
     display:flex;
     align-items: center;

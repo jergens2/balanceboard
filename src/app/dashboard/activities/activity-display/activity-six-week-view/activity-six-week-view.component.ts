@@ -121,6 +121,14 @@ export class ActivitySixWeekViewComponent implements OnInit {
 
   }
 
+  tileDate(tile: ISixWeekDayTile): string {
+    if(moment(tile.date).date() == 1 || (moment(tile.date).endOf('month').date() == moment(tile.date).date())){
+      return moment(tile.date).format("MMM D")
+    }else {
+      return moment(tile.date).format("D");
+    }
+  }
+
   weekOfStyle(weekOf: string): any {
     //first one yields:
     // grid-row 2 / span 1

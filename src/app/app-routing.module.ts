@@ -22,6 +22,7 @@ const appRoutes: Routes = [
     { path: 'healthProfile', component: BuildProfileComponent },
     { path: 'networth', component: NetWorthComponent },
     { path: 'daybook', component: DaybookComponent },
+    { path: 'daybook/:isoDate', component: DaybookComponent },
     { path: 'month_planner', component: MonthPlannerComponent },
     { path: 'year_planner', component: YearPlannerComponent },
     { path: 'timelog', component: TimelogComponent },
