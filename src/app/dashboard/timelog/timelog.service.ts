@@ -38,7 +38,7 @@ export class TimelogService {
   private _serverUrl: string = serverUrl;
 
   private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
-  private _timeSegmentsSubject$: BehaviorSubject<TimeSegment[]> = new BehaviorSubject(null);
+  private _timeSegmentsSubject$: BehaviorSubject<TimeSegment[]> = new BehaviorSubject([]);
 
   private _thisDaysTimeSegmentsSubscription: Subscription = new Subscription();
 
@@ -87,21 +87,22 @@ export class TimelogService {
 
 
 
-  get latestTimeSegment(): TimeSegment {
-    let timeSegments = this._timeSegmentsSubject$.getValue();
-    if (timeSegments.length > 0) {
-      let latestTimeSegment = timeSegments[0];
-      for (let timeSegment of timeSegments) {
-        if (timeSegment.endTimeISO > latestTimeSegment.endTimeISO) {
-          latestTimeSegment = timeSegment;
-        }
-      }
-      console.log("Service: latest time segment is ", latestTimeSegment);
-      return latestTimeSegment;
-    } else {
-      return null;
-    }
-  }
+  // get latestTimeSegment(): TimeSegment {
+  //   console.log("timelog service", this._timeSegmentsSubject$.getValue())
+  //   let timeSegments = this._timeSegmentsSubject$.getValue();
+  //   if (timeSegments.length > 0) {
+  //     let latestTimeSegment = timeSegments[0];
+  //     for (let timeSegment of timeSegments) {
+  //       if (timeSegment.endTimeISO > latestTimeSegment.endTimeISO) {
+  //         latestTimeSegment = timeSegment;
+  //       }
+  //     }
+  //     console.log("Service: latest time segment is ", latestTimeSegment);
+  //     return latestTimeSegment;
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   updateTimeSegment(timeSegment: TimeSegment){
     let updatedTimeSegment: TimeSegment = timeSegment;
@@ -120,7 +121,7 @@ export class TimelogService {
     
     this.httpClient.post<{ message: string, data: any }>(postUrl, updatedTimeSegment, httpOptions)
       .pipe<TimeSegment>(map((response) => {
-        let timeSegment = new TimeSegment(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
+        let timeSegment = new TimeSegment(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO, response.data.description);
         // timeSegment.precedingTimeSegmentId = response.data.precedingTimeSegmentId;
         // timeSegment.followingTimeSegmentId = response.data.followingTimeSegmentId;
         timeSegment.description = response.data.description;
@@ -157,7 +158,7 @@ export class TimelogService {
     
     this.httpClient.post<{ message: string, data: any }>(postUrl, newTimeSegment, httpOptions)
       .pipe<TimeSegment>(map((response) => {
-        let timeSegment = new TimeSegment(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO);
+        let timeSegment = new TimeSegment(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO, response.data.description);
         // timeSegment.precedingTimeSegmentId = response.data.precedingTimeSegmentId;
         // timeSegment.followingTimeSegmentId = response.data.followingTimeSegmentId;
         timeSegment.description = response.data.description;
@@ -215,8 +216,7 @@ export class TimelogService {
     return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<TimeSegment[]>(map((response) => {
         return response.data.map((dataObject) => {
-          let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO);
-          timeSegment.description = dataObject.description;
+          let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description);
 
           let activities: Array<any> = dataObject.activities as Array<any>;
           if(activities.length > 0){ 
@@ -247,13 +247,13 @@ export class TimelogService {
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe(map((response) => {
         return response.data.map((dataObject) => {
-          let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO);
+          let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description);
           if(dataObject.timeISO){
             /* 
               2018-11-23
               This check is here for previous versions of the timeSegment where there used to be a property called timeISO.
             */
-           timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.timeISO, dataObject.timeISO);
+           timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.timeISO, dataObject.timeISO, dataObject.description);
           }
           timeSegment.description = dataObject.description;
 

@@ -5,7 +5,14 @@
 
     <div class="daybook-header">
       <div class="header-margin-item daybook-menu-button">
-        <fa-icon [icon]="faCaretSquareDown"></fa-icon>
+        <button class="btn btn-sm menu-button" (click)="onClickDayBookMenu()">
+          <fa-icon [icon]="faBars"></fa-icon>
+        </button>
+        <div class="daybook-menu" *ngIf="ifDaybookMenu">
+          <button class="btn btn-sm daybook-menu-item " (click)="onClickAddNewTimeSegment()">
+            Log new time segment
+          </button >
+        </div>
       </div>
       <div class="daybook-header-tabs">
 
@@ -41,6 +48,10 @@
 
     <div class="calendar-inside" *ngIf="ifCalendarInside">
       <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate"></app-daybook-calendar>
+    </div>
+
+    <div class="time-segment-form-container" *ngIf="ifTimeSegmentForm">
+      <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment" [action]="timeSegmentFormAction" (cancel)="ifTimeSegmentForm = false"></app-time-segment-form>
     </div>
 
     <div class="daybook-body" [ngStyle]="daybookBodyStyle">
@@ -92,8 +103,8 @@
 
       <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="timeSegmentTile.containerStyle">
         <div class="time-segment-start"></div>
-        <div class="time-segment-duration" [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)">
-          <div class="time-segment-text" [ngStyle]="timeSegmentTile.durationStyle">
+        <div class="time-segment-duration" [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)" (click)="onClickTimeSegmentTile(timeSegmentTile)">
+          <div class="time-segment-text no-select" [ngStyle]="timeSegmentTile.durationStyle">
             {{ activityName(timeSegmentTile) }}
           </div>
         </div>

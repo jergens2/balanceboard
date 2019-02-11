@@ -53,7 +53,7 @@ export class TimeSegmentFormComponent implements OnInit {
 
   timeSegmentForm: FormGroup;
 
-  latestTimeSegment: TimeSegment;
+
   calculatedStartTime: moment.Moment;
 
   timeSegmentActivities: TimeSegmentActivity[] = [];
@@ -62,6 +62,7 @@ export class TimeSegmentFormComponent implements OnInit {
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter<boolean>();
   // @Output() updatedTimeSegment: ITimeSegmentTile;
   @Input() updateTimeSegment: ITimeSegmentTile;
+  @Input() latestTimeSegment: TimeSegment;
 
   ngOnInit() {
     this.timeSegmentActivities = [];
@@ -72,8 +73,9 @@ export class TimeSegmentFormComponent implements OnInit {
         this.timeSegmentActivities.push(newActivity);
       }
     }
-    this.latestTimeSegment = this.timeLogService.latestTimeSegment;
 
+
+    console.log("latest time segment is ", this.latestTimeSegment);
 
     this.calculatedStartTime = this.calculateStartTime(this.latestTimeSegment);
 
@@ -197,11 +199,11 @@ export class TimeSegmentFormComponent implements OnInit {
     return moment();
   }
 
-  get udateTimeSegmentEndTime(): string { 
+  get updateTimeSegmentEndTime(): string { 
     return moment(this.updateTimeSegment.timeSegment.endTime).format('hh:mm a')
   }
 
-  get udateTimeSegmentStartTime(): string { 
+  get updateTimeSegmentStartTime(): string { 
     return moment(this.updateTimeSegment.timeSegment.startTime).format('hh:mm a')
   }
 
@@ -229,8 +231,7 @@ export class TimeSegmentFormComponent implements OnInit {
 
     let newTimeSegment: TimeSegment;
     if (this.updateTimeSegment) {
-      newTimeSegment = new TimeSegment(this.updateTimeSegment.timeSegment.id, this.updateTimeSegment.timeSegment.userId, startTime, endTime.toISOString());
-      newTimeSegment.description = this.timeSegmentForm.get('description').value;
+      newTimeSegment = new TimeSegment(this.updateTimeSegment.timeSegment.id, this.updateTimeSegment.timeSegment.userId, startTime, endTime.toISOString(), this.timeSegmentForm.get('description').value);
       for(let activity of this.timeSegmentActivities){
         // console.log("pushing activity", activity);
         newTimeSegment.activities.push(activity)
@@ -240,8 +241,8 @@ export class TimeSegmentFormComponent implements OnInit {
       // console.log("updating time segment", newTimeSegment);
       this.timeLogService.updateTimeSegment(newTimeSegment);
     } else {
-      newTimeSegment = new TimeSegment(null, null, startTime, endTime.toISOString());
-      newTimeSegment.description = this.timeSegmentForm.get('description').value;
+      newTimeSegment = new TimeSegment(null, null, startTime, endTime.toISOString(), this.timeSegmentForm.get('description').value);
+
       newTimeSegment.activities = this.timeSegmentActivities;
 
       

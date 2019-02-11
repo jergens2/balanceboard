@@ -35,6 +35,8 @@ export class TimelogListComponent implements OnInit {
 
   private defaultTimeSegmentTileStyle: Object;
 
+  latestTimeSegment: TimeSegment = null;
+
   ngOnInit() {
     this.currentDate = moment();
     this.ifLoadingTimeSegments = true;
@@ -55,8 +57,28 @@ export class TimelogListComponent implements OnInit {
     this.timeLogService.fetchTimeSegmentsByDay(this.currentDate).subscribe((timeSegments) => {
       this.timeSegmentTiles = this.buildThisDaysTimeSegmentTiles(timeSegments);
       this.ifLoadingTimeSegments = false;
+
+      this.latestTimeSegment = this.findLatestTimeSegment(timeSegments);
     });
 
+  }
+
+
+
+  private findLatestTimeSegment(timeSegments): TimeSegment{
+    if(timeSegments.length > 0){
+      let latestTimeSegment = timeSegments[0];
+      for (let timeSegment of timeSegments) {
+        if (timeSegment.endTimeISO > latestTimeSegment.endTimeISO) {
+          latestTimeSegment = timeSegment;
+        }
+      }
+      // console.log("Service: latest time segment is ", latestTimeSegment);
+      return latestTimeSegment;
+    }else{
+      console.log("latest time segment is null because there are no time segments.");
+      return null;
+    }
   }
 
   private buildThisDaysTimeSegmentTiles(timeSegments: TimeSegment[]): ITimeSegmentTile[] {
@@ -69,9 +91,9 @@ export class TimelogListComponent implements OnInit {
     return timeSegmentTiles;
   }
 
-  get latestTimeSegment(): TimeSegment {
-    return this.timeLogService.latestTimeSegment;
-  }
+  // get latestTimeSegment(): TimeSegment {
+  //   return this.timeLogService.latestTimeSegment;
+  // }
 
 
   /*

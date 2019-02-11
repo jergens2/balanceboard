@@ -34,11 +34,12 @@ export class TimeSegment{
 
     public userId: string;
 
-    constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string){
+    constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string, description: string){
         this.id = id;
         this.userId = userId;
         this._startTimeISO = startTimeISO;
         this._endTimeISO = endTimeISO;
+        this.description = description;
     }
 
     get startTime(): moment.Moment{

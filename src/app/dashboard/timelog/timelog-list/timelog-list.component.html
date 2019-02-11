@@ -5,7 +5,7 @@
   </button>
   <div *ngIf="ifAddTimeSegmentForm" class='m-1 p-3 border border-secondary new-time-segment'>
 
-    <app-time-segment-form (closeForm)="onCloseForm()">
+    <app-time-segment-form (closeForm)="onCloseForm()" [latestTimeSegment]="latestTimeSegment">
     </app-time-segment-form>
 
   </div>
@@ -60,7 +60,7 @@
             </div>
             <div *ngIf="timeSegmentTile.ifUpdateTimeSegment" class=" border border-secondary new-time-segment m-2 p-3">
               
-              <app-time-segment-form [updateTimeSegment]='timeSegmentTile' (update)="onTimeSegmentUpdated($event)" (closeForm)="onCloseUpdateForm(timeSegmentTile)" ></app-time-segment-form>
+              <app-time-segment-form [updateTimeSegment]='timeSegmentTile' [latestTimeSegment]="latestTimeSegment" (update)="onTimeSegmentUpdated($event)" (closeForm)="onCloseUpdateForm(timeSegmentTile)" ></app-time-segment-form>
             </div>
           </div>
 

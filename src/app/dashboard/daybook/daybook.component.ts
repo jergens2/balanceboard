@@ -5,7 +5,7 @@ import { Subscription, timer, Subject } from 'rxjs';
 import { faCalendarAlt, faCaretSquareDown } from '@fortawesome/free-regular-svg-icons';
 import { TimeSegment } from '../timelog/time-segment.model';
 import { ITimeSegmentTile } from './time-segment-tile.interface';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faBars } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 
@@ -18,12 +18,13 @@ export class DaybookComponent implements OnInit {
 
   constructor(private timeLogService: TimelogService, private route: ActivatedRoute, private router: Router) { }
 
+  faBars = faBars;
   faCaretSquareDown = faCaretSquareDown;
   faSpinner = faSpinner;
   faCalendar = faCalendarAlt;
+  
   ifCalendarInside: boolean = false;
-
-
+  ifTimeSegmentForm: boolean = false;
   ifLoading: boolean = true;
 
 
@@ -50,6 +51,8 @@ export class DaybookComponent implements OnInit {
   nowTimeContainerStyle: any = {};
   ifNowLine: boolean = false;
 
+  ifDaybookMenu: boolean = false;
+
   bedTimeStyle: any = {};
   bedTimeString: string = "";
   ifBedTime: boolean = false;
@@ -59,10 +62,13 @@ export class DaybookComponent implements OnInit {
 
   timeSegmentTiles: ITimeSegmentTile[] = [];
   nextTimeSegmentTile: ITimeSegmentTile = null;
+  nextTimeSegment: TimeSegment = null
+
+  reviewTimeSegment:TimeSegment = null;
 
   timeSegmentFormContainer: any = null;
 
-
+  timeSegmentFormAction: string = "New";
 
 
 
@@ -105,11 +111,9 @@ export class DaybookComponent implements OnInit {
         this.fetchTimeSegmentsSubscription = this.timeLogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
           this.timeSegments = timeSegments;
           this.displayTimeSegments(this.timeSegments);
-          // this.displayNextTimeSegment(this.timeSegments);
+          this.displayNextTimeSegment();
 
           
-
-
           this.ifLoading = false;
         });
         this.buildDisplay(this.dayStartTime, this.dayEndTime);
@@ -129,12 +133,12 @@ export class DaybookComponent implements OnInit {
   }
 
 
-  displayNextTimeSegment(timeSegments: TimeSegment[]){
+  displayNextTimeSegment(){
     if (moment(this.currentDate).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
-      let lastEndTime = this.getLastEndTime(timeSegments);
+      let lastEndTime = this.getLastEndTime();
+      this.nextTimeSegment = new TimeSegment('NEXT_TIME_SEGMENT', '', lastEndTime, moment().toISOString(), '');
       if(moment().diff(lastEndTime, 'minutes') > 5){
-        let nextTimeSegment: TimeSegment = new TimeSegment('NEXT_TIME_SEGMENT', '', lastEndTime, moment().toISOString())
-        this.nextTimeSegmentTile = this.buildTimeSegmentTile(nextTimeSegment);
+        this.nextTimeSegmentTile = this.buildTimeSegmentTile(this.nextTimeSegment);
       }else{
         this.nextTimeSegmentTile = null;
       }
@@ -147,11 +151,8 @@ export class DaybookComponent implements OnInit {
     let tile: ITimeSegmentTile = null;
     let segmentStart: moment.Moment = moment(timeSegment.startTime);
     let segmentEnd: moment.Moment = moment(timeSegment.endTime);
-    // console.log("segmentStart is  ", segmentStart.format('YYYY-MM-DD hh:mm a')) 
-    // console.log("segmentEnd is  ", segmentEnd.format('YYYY-MM-DD hh:mm a')) 
     
     if(segmentStart.isSameOrAfter(this.dayEndTime) || segmentEnd.isSameOrBefore(this.dayStartTime)){
-      // console.log("returning null because reasons")
       return null;
     }
     if(segmentStart.isBefore(this.dayStartTime) && segmentEnd.isAfter(this.dayStartTime) && segmentEnd.isSameOrBefore(this.dayEndTime)){
@@ -162,7 +163,6 @@ export class DaybookComponent implements OnInit {
     }
 
     let duration = segmentEnd.diff(segmentStart, 'minutes');
-    // console.log("duration is "+  duration + " minutes" );
     
     
     let lineStart: {
@@ -179,23 +179,6 @@ export class DaybookComponent implements OnInit {
     } = null;
     let gridMax: number = 1;
 
-    // console.log(this.bookLines[0].startTime.format('YYYY-MM-DD h:mm a'))
-    
-
-    /*
-      getting "lineEnd is undefined"
-      
-      need to set some parameters.
-
-
-      perhaps here is a good place to implement the long-scrolling daybook, where a window of some size is available, e.g., 12 hours, 14 hours, 16 hours, however the person wants 
-      to customize it.  maybe default of 14 or 16 hours
-
-      then, load the entire thing but make it hidden behind the rest of the app and scrollable
-
-
-
-    */
 
     for (let gridLine of this.bookLines) {
       if (moment(segmentStart).isSameOrAfter(moment(gridLine.startTime))) {
@@ -214,12 +197,6 @@ export class DaybookComponent implements OnInit {
       }
     }
 
-    if(lineEnd == null){
-      // console.log("its null", timeSegment.startTime.format('h:mm a'), timeSegment.endTime.format('h:mm a'))
-      // console.log(timeSegment);
-      // console.log(this.bookLines);
-    }
-
     let containerSpan = moment(lineEnd.startTime).diff(lineStart.startTime, 'minutes');
 
     let percentStart = (moment(segmentStart).diff(lineStart.startTime, 'minutes') / containerSpan) * 100;
@@ -236,6 +213,7 @@ export class DaybookComponent implements OnInit {
     } else if (duration >= 30) {
       durationStyle = {};
     }
+    
     tile = { timeSegment: timeSegment, containerStyle: containerStyle, durationStyle: durationStyle };
     return tile;
   }
@@ -359,14 +337,19 @@ export class DaybookComponent implements OnInit {
   }
 
 
-  getLastEndTime(timeSegments: TimeSegment[]): string {
-    let latestTime = moment(timeSegments[0].endTime);
-    for (let timeSegment of timeSegments) {
-      if (moment(timeSegment.endTime).isAfter(latestTime)) {
-        latestTime = moment(timeSegment.endTime);
+  private getLastEndTime(): string {
+    if(this.timeSegments.length > 0){
+      let latestTime = moment(this.timeSegments[0].endTime);
+      for (let timeSegment of this.timeSegments) {
+        if (moment(timeSegment.endTime).isAfter(latestTime)) {
+          latestTime = moment(timeSegment.endTime);
+        }
       }
+      return latestTime.toISOString();
+    }else{
+      moment().toISOString();
     }
-    return latestTime.toISOString();
+    
   }
 
 
@@ -396,71 +379,23 @@ export class DaybookComponent implements OnInit {
 
 
   activityName(tile :ITimeSegmentTile): string{
-
     if (tile.timeSegment.activities.length > 0) {
       return tile.timeSegment.activities[0].activity.name;
     } else {
       return "";
     }
-    // console.log(tile.timeSegment.activities[0].activity.name)
   }
 
 
-  onClickNextTimeSegment(timeSegment: TimeSegment) {
-    console.log("timeSegment", timeSegment);
+  onClickNextTimeSegment() {
+    this.timeSegmentFormAction = "New";
+    this.ifTimeSegmentForm = true;
+    this.ifDaybookMenu = false;
   }
 
 
-  // calculateBedTimeString(now: moment.Moment): string {
-  //   let minutes = Math.abs(Math.floor(moment(now).diff(moment(this.bedTime), 'minutes')));
-  //   let hours = Math.floor(minutes / 60)
-  //   minutes = minutes - (hours * 60);
-
-  //   if (moment(now).isBefore(moment(this.bedTime).subtract(3, 'hours'))) {
-  //     return "Bed time: " + moment(this.bedTime).format('hh:mm a');
-  //   } else if (moment(now).isBefore(moment(this.bedTime).subtract(1, 'minutes'))) {
-  //     if (hours > 0 && minutes > 0) {
-  //       return hoursString(hours) + " and " + minutesString(minutes) + " until bed time";
-  //     } else if (minutes > 0) {
-  //       return minutesString(minutes) + " until bed time";
-  //     } else if (hours > 0) {
-  //       return hoursString(hours) + " until bed time";
-  //     }
-  //   } else if (moment(now).isAfter(moment(this.bedTime).subtract(1, 'minutes')) && moment(now).isBefore(moment(this.bedTime).add('1 minutes'))) {
-  //     return "It's bedtime.  Go to bed";
-  //   } else {
-  //     if (hours > 0 && minutes > 0) {
-  //       return "It's " + hoursString(hours) + " and " + minutesString(minutes) + " past bed time.  Go to bed.";
-  //     } else if (minutes > 0) {
-  //       return "It's " + minutesString(minutes) + " past bed time.  Go to bed.";
-  //     } else if (hours > 0) {
-  //       return "It's " + hoursString(hours) + " past bed time.  Go to bed.";
-  //     }
-  //   }
 
 
-
-  //   function minutesString(minutes: number): string {
-  //     if (minutes == 0) {
-  //       return "";
-  //     } else if (minutes == 1) {
-  //       return "1 minute";
-  //     } else {
-  //       return "" + minutes + " minutes";
-  //     }
-  //   }
-  //   function hoursString(hours: number): string {
-  //     if (hours == 0) {
-  //       return "";
-  //     } else if (hours == 1) {
-  //       return "1 hour";
-  //     } else {
-  //       return "" + hours + " hours";
-  //     }
-  //   }
-
-
-  // }
 
   ngOnDestroy() {
     this.fetchTimeSegmentsSubscription.unsubscribe();
@@ -480,9 +415,27 @@ export class DaybookComponent implements OnInit {
     this.ifCalendarInside = !this.ifCalendarInside;
   }
 
+  onClickDayBookMenu() {
+    this.ifDaybookMenu = !this.ifDaybookMenu;
+  }
+
+
+  onClickTimeSegmentTile(timeSegmentTile: ITimeSegmentTile){
+    this.timeSegmentFormAction = "Review";
+    this.reviewTimeSegment = new TimeSegment(timeSegmentTile.timeSegment.id, timeSegmentTile.timeSegment.userId, timeSegmentTile.timeSegment.startTimeISO, timeSegmentTile.timeSegment.endTimeISO, timeSegmentTile.timeSegment.description);
+    this.ifTimeSegmentForm = true;
+    this.ifDaybookMenu = false;
+  }
+
+  onClickAddNewTimeSegment(){
+    this.timeSegmentFormAction = "New";
+    this.ifTimeSegmentForm = true;
+    this.ifDaybookMenu = false;
+  }
+
   headerDate(daysDifference: number): string {
     let date = moment(this.currentDate).add(daysDifference, 'days');
-    return date.format('MMM Do')
+    return date.format('MMM Do');
 
   }
   headerDayRelevance(daysDifference: number): string {

@@ -1,0 +1,33 @@
+<div class="root">
+  <div class="header">
+    {{ action }} Time Segment
+  </div>
+  <div class="time-segment-form" [formGroup]="timeSegmentForm">
+
+    <div class="time-segment-form-row" style="display:flex; justify-content: space-evenly;">
+      <div>
+        Start Time
+        <input type="time" formControlName="startTime">
+      </div>
+      <div>
+        End Time
+        <input type="time" formControlName="endTime">
+      </div>
+    </div>
+    <div class="time-segment-form-row">
+      <textarea rows="5" class="form-textarea" placeholder="Description" formControlName="description">
+      </textarea>
+
+    </div>
+    <hr>
+    <div class="time-segment-form-row">
+      <div style="font-size:1.2em;">Activities in the last {{ duration }}</div>
+
+    </div>
+    <hr>
+    <div class="time-segment-form-row" style="display:flex;flex-direction:row;justify-content: flex-end;">
+      <button class="btn btn-primary mx-2">Save</button>
+      <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
+    </div>
+  </div>
+</div>

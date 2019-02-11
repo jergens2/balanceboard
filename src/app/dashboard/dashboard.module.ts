@@ -31,6 +31,8 @@ import { MonthPlannerComponent } from './month-planner/month-planner.component';
 import { YearPlannerComponent } from './year-planner/year-planner.component';
 import { ActivitySixWeekViewComponent } from './activities/activity-display/activity-six-week-view/activity-six-week-view.component';
 import { UserDefinedActivityFormComponent } from './activities/activity-display/user-defined-activity-form/user-defined-activity-form.component';
+import { NewActivityFormComponent } from './activities/new-activity-form/new-activity-form.component';
+import { TimeSegmentFormComponent } from './daybook/time-segment-form/time-segment-form.component';
 
 
 
@@ -66,6 +68,8 @@ import { UserDefinedActivityFormComponent } from './activities/activity-display/
     YearPlannerComponent,
     ActivitySixWeekViewComponent,
     UserDefinedActivityFormComponent,
+    NewActivityFormComponent,
+    TimeSegmentFormComponent
     
     
   ],

@@ -1,3 +1,19 @@
+
+/*
+    z-indexes:
+
+    
+    .daybook-menu: 99;
+    .calendar-inside: 11;
+    .time-segment-form-container: 20;
+    .now-time: 9;
+    .time-segment-duration: 5;
+
+
+*/
+
+
+
 .root{
     /* width: 100%; */
 
@@ -92,6 +108,28 @@
     align-self: flex-start;
     vertical-align: top;
 }
+.daybook-menu{
+    background-color: white;
+    padding:3px;
+    position:relative;
+    border: 1px solid gray;
+    width: 200px;
+    z-index: 99;
+
+}
+.daybook-menu-item{
+    width:100%;
+}
+.daybook-menu-item:hover{
+    cursor: pointer;
+    background-color: rgb(207, 207, 207);
+}
+
+
+.menu-button{
+    border: 1px solid gray;
+    border-radius: 2px;
+}
 
 .toggle-inside-calendar-button-container{
     display:flex;
@@ -122,15 +160,24 @@
     grid-column: 1 / span 1;
     z-index: 11;
 
-    margin:3px;
     margin-left: auto;
 }
-.daybook-body{
 
-    
+.time-segment-form-container{
+    grid-row: 2 / span 1;
+    grid-column: 1 / span 1;
+
+    z-index: 20;
+
+    background-color: white;
+}
+
+.daybook-body{
 
     grid-row: 2 / span 1;
     grid-column: 1 / span 1;
+
+
 
     display:grid;
     grid-template-columns: 80px 15px auto;
@@ -268,6 +315,8 @@
     /* box-shadow: 0px 0px 5px rgb(97, 97, 97); */
     border: 1px solid rgba(133, 133, 133, 0.493);
     /* border: 1px solid white; */
+
+    z-index: 5;
 }
 .time-segment-end{
     grid-row: 3 / span 1;
