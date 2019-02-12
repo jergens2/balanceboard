@@ -56,7 +56,7 @@
 
     <div class="time-segment-form-container" *ngIf="ifTimeSegmentForm">
       <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment"
-        [action]="timeSegmentFormAction" (cancel)="ifTimeSegmentForm = false"></app-time-segment-form>
+        [action]="timeSegmentFormAction" (closeForm)="onCloseForm($event)"></app-time-segment-form>
     </div>
 
     <div class="daybook-body" [ngStyle]="daybookBodyStyle">

@@ -92,6 +92,8 @@ export class DaybookComponent implements OnInit {
 
   timeSegments: TimeSegment[] = [];
 
+  private updateTimeSegmentSubject: Subject<TimeSegment> = new Subject();
+
   ngOnInit() {
 
 
@@ -111,17 +113,13 @@ export class DaybookComponent implements OnInit {
         this.fetchTimeSegmentsSubscription.unsubscribe();
         this.fetchTimeSegmentsSubscription = this.timeLogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
           this.timeSegments = timeSegments;
-          console.log(this.timeSegments);
           this.displayTimeSegments(this.timeSegments);
           this.displayNextTimeSegment();
-
-          
           this.ifLoading = false;
         });
         this.buildDisplay(this.dayStartTime, this.dayEndTime);
-      })
-
-    })
+      });
+    });
 
     let dateRegExp: RegExp = new RegExp(/[0-9]{4}(-[0-9]{2}){2}/);
     let date: string = this.route.snapshot.paramMap.get('isoDate');
@@ -233,6 +231,14 @@ export class DaybookComponent implements OnInit {
   }
 
   buildDisplay(dayStartTime: moment.Moment, dayEndTime: moment.Moment) {
+
+    if(moment().isSameOrAfter(moment(dayStartTime)) && moment().isSameOrBefore(moment(dayEndTime))){
+      this.ifNowLine = true;
+    }else{
+      this.ifNowLine = false;
+    }
+
+
     let hour: number = 0;
     hour = dayStartTime.hour();
 
@@ -277,14 +283,12 @@ export class DaybookComponent implements OnInit {
 
       let segmentEnd = moment(currentTime).add(30, 'minutes');
       if (moment(now).format('YYYY-MM-DD') != moment(currentTime).format('YYYY-MM-DD')) {
-        this.ifNowLine = false;
         nowLineContainerStyle = { "display": "none" };
         nowTimeContainerStyle = { "display": "none" };
       } else {
         if (moment(now).isAfter(currentTime) && moment(now).isSameOrBefore(segmentEnd)) {
           nowLineContainerStyle = { "grid-row": "" + gridIndex + " / span 1", "grid-template-rows": getGridTemplateRowsStyle(now, currentTime, 1) };
           nowTimeContainerStyle = { "grid-row": "" + (gridIndex - 1) + " / span 3", "grid-column": "1 / span 2", "grid-template-rows": getGridTemplateRowsStyle(now, moment(currentTime).subtract(30, 'minutes'), 3) };
-          this.ifNowLine = true;
         }
       }
 
@@ -434,6 +438,16 @@ export class DaybookComponent implements OnInit {
     this.timeSegmentFormAction = "New";
     this.ifTimeSegmentForm = true;
     this.ifDaybookMenu = false;
+  }
+
+
+  onCloseForm($event: any){
+    this.ifTimeSegmentForm = false;
+    /*
+      This is a bit of a cheater method, where instead of rebuilding the changed tile manually we just 
+      reset the date to today which will fire the rebuild subscriptions in ngOnInit()
+    */
+    this.currentDate = moment(this.currentDate);
   }
 
 
