@@ -6,5 +6,4 @@ export interface ITimeSegmentTile{
     containerStyle: any;
     durationStyle: any;
 
-
 }

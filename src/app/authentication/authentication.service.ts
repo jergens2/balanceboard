@@ -65,7 +65,6 @@ export class AuthenticationService {
   }
 
   private loginRoutine(authStatus: AuthStatus) {
-    // console.log("loginRoutine(): ", authStatus.user.email)
     /*
       This is where we can execute things that need to be loaded for the user before displaying the app.
       This mostly includes async tasks like fetching data from the server.

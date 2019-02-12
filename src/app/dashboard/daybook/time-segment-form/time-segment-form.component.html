@@ -15,18 +15,78 @@
       </div>
     </div>
     <div class="time-segment-form-row">
+      <div>{{ durationString }}</div>
+    </div>
+    <div class="time-segment-form-row">
       <textarea rows="5" class="form-textarea" placeholder="Description" formControlName="description">
       </textarea>
 
     </div>
-    <hr>
-    <div class="time-segment-form-row">
-      <div style="font-size:1.2em;">Activities in the last {{ duration }}</div>
 
+
+
+    <div class="time-segment-form-row">
+      <hr>
     </div>
-    <hr>
-    <div class="time-segment-form-row" style="display:flex;flex-direction:row;justify-content: flex-end;">
-      <button class="btn btn-primary mx-2">Save</button>
+
+
+
+
+    <div class="time-segment-form-row">
+      <div style="font-size:1.15em">
+        Activities
+      </div>
+      <div *ngIf="timeSegmentActivities.length > 0">
+        <div *ngFor="let timeSegmentActivity of timeSegmentActivities" class="time-segment-activity"
+          [style.background-color]="timeSegmentActivity.activity.color">
+          {{ timeSegmentActivity.activity.name }}
+        </div>
+      </div>
+      <div class="mt-1">
+        <button *ngIf="!ifAddActivity" class="btn btn-sm btn-primary" style="border-radius:15px;"
+          (click)="onClickAddActivityButton()">
+          <fa-icon [icon]="faPlus" style="font-size:0.8em;"></fa-icon> <span class="px-2">Add Activity</span>
+        </button>
+        <div *ngIf="ifAddActivity" class="add-activity-form">
+
+            <div class="activity-input-container">
+              <div class="activity-prepend">
+                Activity
+              </div>
+              <input type="text" class="activity-text-input" style="width:100%;" placeholder="Search for activity"
+                [value]="activityTextInputValue" (keyup)="onActivityInputKeyUp($event)">
+              <fa-icon class="activity-dropdown-button" [icon]="faCaretDown" (click)="onClickActivityDropdown()">
+              </fa-icon>
+            </div>
+            <div *ngIf="activitiesDropDownList.length > 0" class="activity-dropdown-list"
+              [style.height]="activityDropdownHeight">
+              <div *ngFor="let activity of activitiesDropDownList" (click)="onClickActivityDropdownItem(activity)"
+                class="activity-dropdown-list-item">
+                {{ activity.name }}
+              </div>
+            </div>
+
+
+          <div class="activity-action-buttons p-2">
+            <button class="btn btn-primary btn-sm mx-2" (click)="onClickSaveActivity()">Save Activity</button>
+            <button class="btn btn-secondary btn-sm" (click)="onClickCancelActivity()">Cancel</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <div class="time-segment-form-row">
+      <hr>
+    </div>
+
+
+    <div class="time-segment-form-row"
+      style="display:flex;flex-direction:row;justify-content: flex-end; justify-self: flex-end;">
+      <button class="btn btn-primary mx-2">Save Time Segment</button>
       <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
     </div>
   </div>

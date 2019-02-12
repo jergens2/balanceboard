@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogService } from '../timelog/timelog.service';
 import { Subscription, timer, Subject } from 'rxjs';
-import { faCalendarAlt, faCaretSquareDown } from '@fortawesome/free-regular-svg-icons';
+import { faCalendarAlt, faCaretSquareDown, faEdit } from '@fortawesome/free-regular-svg-icons';
 import { TimeSegment } from '../timelog/time-segment.model';
 import { ITimeSegmentTile } from './time-segment-tile.interface';
 import { faSpinner, faBars } from '@fortawesome/free-solid-svg-icons';
@@ -22,6 +22,7 @@ export class DaybookComponent implements OnInit {
   faCaretSquareDown = faCaretSquareDown;
   faSpinner = faSpinner;
   faCalendar = faCalendarAlt;
+  faEdit = faEdit;
   
   ifCalendarInside: boolean = false;
   ifTimeSegmentForm: boolean = false;
@@ -110,6 +111,7 @@ export class DaybookComponent implements OnInit {
         this.fetchTimeSegmentsSubscription.unsubscribe();
         this.fetchTimeSegmentsSubscription = this.timeLogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
           this.timeSegments = timeSegments;
+          console.log(this.timeSegments);
           this.displayTimeSegments(this.timeSegments);
           this.displayNextTimeSegment();
 
@@ -422,7 +424,8 @@ export class DaybookComponent implements OnInit {
 
   onClickTimeSegmentTile(timeSegmentTile: ITimeSegmentTile){
     this.timeSegmentFormAction = "Review";
-    this.reviewTimeSegment = new TimeSegment(timeSegmentTile.timeSegment.id, timeSegmentTile.timeSegment.userId, timeSegmentTile.timeSegment.startTimeISO, timeSegmentTile.timeSegment.endTimeISO, timeSegmentTile.timeSegment.description);
+    // this.reviewTimeSegment = new TimeSegment(timeSegmentTile.timeSegment.id, timeSegmentTile.timeSegment.userId, timeSegmentTile.timeSegment.startTimeISO, timeSegmentTile.timeSegment.endTimeISO, timeSegmentTile.timeSegment.description);
+    this.reviewTimeSegment = timeSegmentTile.timeSegment;
     this.ifTimeSegmentForm = true;
     this.ifDaybookMenu = false;
   }
@@ -432,6 +435,10 @@ export class DaybookComponent implements OnInit {
     this.ifTimeSegmentForm = true;
     this.ifDaybookMenu = false;
   }
+
+
+
+
 
   headerDate(daysDifference: number): string {
     let date = moment(this.currentDate).add(daysDifference, 'days');

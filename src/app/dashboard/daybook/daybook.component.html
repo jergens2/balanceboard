@@ -11,7 +11,7 @@
         <div class="daybook-menu" *ngIf="ifDaybookMenu">
           <button class="btn btn-sm daybook-menu-item " (click)="onClickAddNewTimeSegment()">
             Log new time segment
-          </button >
+          </button>
         </div>
       </div>
       <div class="daybook-header-tabs">
@@ -20,15 +20,18 @@
           <div>{{ headerDayRelevance(-2) }}</div>
           <div>{{ headerDate(-2) }}</div>
         </div> -->
-        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-1)" [ngClass]="{'daybook-header-today': isToday(-1) } ">
+        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-1)"
+          [ngClass]="{'daybook-header-today': isToday(-1) } ">
           <div>{{ headerDayRelevance(-1) }}</div>
           <div>{{ headerDate(-1) }}</div>
         </div>
-        <div class="daybook-header-tab daybook-header-current-day no-select" [ngClass]="{'daybook-header-today': isToday(0) } ">
+        <div class="daybook-header-tab daybook-header-current-day no-select"
+          [ngClass]="{'daybook-header-today': isToday(0) } ">
           <div>{{ headerDayRelevance(0) }}</div>
           <div>{{ headerDate(0) }}</div>
         </div>
-        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(1)" [ngClass]="{'daybook-header-today': isToday(1) } ">
+        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(1)"
+          [ngClass]="{'daybook-header-today': isToday(1) } ">
           <div>{{ headerDayRelevance(1) }}</div>
           <div>{{ headerDate(1) }}</div>
         </div>
@@ -47,11 +50,13 @@
     <!-- End of header -->
 
     <div class="calendar-inside" *ngIf="ifCalendarInside">
-      <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate"></app-daybook-calendar>
+      <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate">
+      </app-daybook-calendar>
     </div>
 
     <div class="time-segment-form-container" *ngIf="ifTimeSegmentForm">
-      <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment" [action]="timeSegmentFormAction" (cancel)="ifTimeSegmentForm = false"></app-time-segment-form>
+      <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment"
+        [action]="timeSegmentFormAction" (cancel)="ifTimeSegmentForm = false"></app-time-segment-form>
     </div>
 
     <div class="daybook-body" [ngStyle]="daybookBodyStyle">
@@ -101,9 +106,13 @@
         </div>
       </div> -->
 
-      <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="timeSegmentTile.containerStyle">
+      <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile"
+        [ngStyle]="timeSegmentTile.containerStyle">
         <div class="time-segment-start"></div>
-        <div class="time-segment-duration" [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)" (click)="onClickTimeSegmentTile(timeSegmentTile)">
+        <div class="time-segment-duration"
+          [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)"
+          (click)="onClickTimeSegmentTile(timeSegmentTile)"
+          >
           <div class="time-segment-text no-select" [ngStyle]="timeSegmentTile.durationStyle">
             {{ activityName(timeSegmentTile) }}
           </div>
@@ -113,7 +122,8 @@
 
 
 
-      <div *ngIf="nextTimeSegmentTile" class="time-segment-tile next-time-segment-container" [ngStyle]="nextTimeSegmentTile.containerStyle">
+      <div *ngIf="nextTimeSegmentTile" class="time-segment-tile next-time-segment-container"
+        [ngStyle]="nextTimeSegmentTile.containerStyle">
         <div class="time-segment-start"></div>
         <div class="time-segment-duration" (click)="onClickNextTimeSegment(nextTimeSegmentTile.timeSegment)">
           <div class="time-segment-text no-select" [ngStyle]="nextTimeSegmentTile.durationStyle">
@@ -137,7 +147,8 @@
 
 
   <div class="calendar-outside">
-    <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate"></app-daybook-calendar>
+    <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate">
+    </app-daybook-calendar>
   </div>
 
 </div>

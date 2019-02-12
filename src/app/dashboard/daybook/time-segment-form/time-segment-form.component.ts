@@ -2,6 +2,11 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { TimeSegment } from '../../timelog/time-segment.model';
+import { TimeSegmentActivity } from '../../timelog/time-segment-activity.model';
+import { faPlus, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { ActivitiesService } from '../../activities/activities.service';
+import { ActivityTree } from '../../activities/activity-tree.model';
+import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
 
 
 @Component({
@@ -11,15 +16,16 @@ import { TimeSegment } from '../../timelog/time-segment.model';
 })
 export class TimeSegmentFormComponent implements OnInit {
 
-  constructor() { }
+
+  faPlus = faPlus;
+  faCaretDown = faCaretDown;
+
+
+  constructor(private activitiesService: ActivitiesService) { }
 
   previousTimeSegmentEnd: moment.Moment;
 
   @Input() action: string = "New";
-
-  @Input() set lastEndTime(lastTime: string) {
-    this.previousTimeSegmentEnd = moment(lastTime);
-  }
   @Input() newTimeSegment: TimeSegment = null;
   @Input() reviewTimeSegment: TimeSegment;
 
@@ -27,58 +33,146 @@ export class TimeSegmentFormComponent implements OnInit {
 
   timeSegmentForm: FormGroup = null;
 
+  timeSegmentActivities: TimeSegmentActivity[] = [];
+
+  ifAddActivity: boolean = false;
+
+  activityTextInputValue: string = "";
+  private selectedActivity: UserDefinedActivity = null;
+  private activitiesTree: ActivityTree = null;
+  activitiesDropDownList: UserDefinedActivity[] = [];
+  
+
 
   ngOnInit() {
 
-    console.log("action is ", this.action)
+    this.activitiesTree = this.activitiesService.activitiesTree;
 
-    if(this.action == "New"){
+
+
+    if (this.action == "New") {
       this.timeSegmentForm = new FormGroup({
         'startTime': new FormControl(moment(this.newTimeSegment.startTime).format('HH:mm'), Validators.required),
-        // 'startTimeDate': new FormControl(moment(this.updateTimeSegment.timeSegment.startTime).format('YYYY-MM-DD'), Validators.required),
         'endTime': new FormControl(moment(this.newTimeSegment.endTime).format('HH:mm'), Validators.required),
-        // 'endTimeDate': new FormControl(moment(this.updateTimeSegment.timeSegment.endTime).format('YYYY-MM-DD'), Validators.required),
-    
-        'description': new FormControl("this is a new time segment from el clickeroony",),
+        'description': new FormControl(),
       });
-    }else if(this.action == "Review"){
-      console.log("action is review:", this.reviewTimeSegment);
-      
-      console.log("setting the start time to ", this.reviewTimeSegment.startTime)
-      console.log("setting the endTime to ", this.reviewTimeSegment.endTime)
+    } else if (this.action == "Review") {
       this.timeSegmentForm = new FormGroup({
         'startTime': new FormControl(this.reviewTimeSegment.startTime.format('HH:mm'), Validators.required),
-        // 'startTimeDate': new FormControl(moment(this.updateTimeSegment.timeSegment.startTime).format('YYYY-MM-DD'), Validators.required),
         'endTime': new FormControl(this.reviewTimeSegment.endTime.format('HH:mm'), Validators.required),
-        // 'endTimeDate': new FormControl(moment(this.updateTimeSegment.timeSegment.endTime).format('YYYY-MM-DD'), Validators.required),
-    
         'description': new FormControl(this.reviewTimeSegment.description),
       });
-    }else{
-      console.log("bad action");
+      this.timeSegmentActivities = Object.assign([], this.reviewTimeSegment.activities);
+    } else {
+      // bad action
     }
 
-    
+
   }
 
 
-  get duration(): string{
+  get durationString(): string {
     let startTimeValue: string = this.timeSegmentForm.controls['startTime'].value;
-    let startHour = parseInt(startTimeValue.substr(0,2));
-    let startMinute = parseInt(startTimeValue.substr(3,2));
+    let startHour = parseInt(startTimeValue.substr(0, 2));
+    let startMinute = parseInt(startTimeValue.substr(3, 2));
     let startTime: moment.Moment = moment().hour(startHour).minute(startMinute);
 
-    
+
     let endTimeValue: string = this.timeSegmentForm.controls['endTime'].value;
-    let endHour = parseInt(endTimeValue.substr(0,2));
-    let endMinute = parseInt(endTimeValue.substr(3,2));
+    let endHour = parseInt(endTimeValue.substr(0, 2));
+    let endMinute = parseInt(endTimeValue.substr(3, 2));
     let endTime: moment.Moment = moment().hour(endHour).minute(endMinute);
 
-    let duration = moment(endTime).diff(moment(startTime), "minutes");
-    return ""+ duration + " minutes";
+    let durationMinutes = moment(endTime).diff(moment(startTime), "minutes");
+
+    if (this.action == "New") {
+      return "Activities in the last " + durationMinutes + " minutes";
+    } else if (this.action = "Review") {
+      return "The duration of this time segment was " + durationMinutes + " minutes";
+    }
+
   }
 
-  onClickCancel(){
+
+  private searchForActivities(searchValue: string) {
+    if (searchValue.length > 0) {
+      let searchResults: UserDefinedActivity[] = [];
+      let activitiesArray: UserDefinedActivity[] = Object.assign([], this.activitiesTree.allActivities);
+      for (let activity of activitiesArray) {
+        if (activity.name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
+          searchResults.push(Object.assign({}, activity));
+        }
+      }
+      this.activitiesDropDownList = searchResults;
+    } else {
+      this.activitiesDropDownList = [];
+    }
+
+  }
+
+  get activityDropdownHeight(): string {
+    let px = this.activitiesDropDownList.length * 30;
+    if(px <= 30){
+      return "30px";
+    }else if(px >= 200){
+      return "200px";
+    }else{
+      return "" + px + "px";
+    }
+    
+  }
+
+
+  onClickAddActivityButton() {
+    this.ifAddActivity = !this.ifAddActivity;
+  }
+
+  onClickActivityDropdown() {
+    if(this.activitiesDropDownList.length > 0){
+      this.activitiesDropDownList = [];
+    }else{
+      if(this.activityTextInputValue.length > 0){
+        this.searchForActivities(this.activityTextInputValue);
+      }else{
+        this.viewTreeList();
+      }
+    }
+  }
+
+  private viewTreeList(){
+    let rootActivities: UserDefinedActivity[] = Object.assign([], this.activitiesTree.rootActivities);
+    
+    for(let activity of rootActivities){
+
+    }
+
+    this.activitiesDropDownList = Object.assign([], rootActivities);
+  }
+
+  onClickActivityDropdownItem(activity: UserDefinedActivity){
+    
+    this.activityTextInputValue = activity.name;
+    this.selectedActivity = activity;
+    this.activitiesDropDownList = [];
+  }
+
+  onActivityInputKeyUp($event) {
+    let searchValue: string = $event.target.value;
+    this.searchForActivities(searchValue);
+  }
+
+
+  onClickSaveActivity(){
+    this.activityTextInputValue = "";
+    this.timeSegmentActivities.push(new TimeSegmentActivity(this.selectedActivity, 0, ''));
+    this.ifAddActivity = false;
+  }
+  onClickCancelActivity(){
+    this.ifAddActivity = false;
+  }
+
+
+  onClickCancel() {
     this.cancel.emit();
   }
 

@@ -27,10 +27,16 @@ export class ActivitiesService {
   get activitiesTree$(): Observable<ActivityTree> {
     return this._activitiesTree$.asObservable();
   }
+  get activitiesTree(): ActivityTree {
+    return this._activitiesTree;
+  }
 
   
   getActivityData(activity: UserDefinedActivity): Observable<any>{
-    // console.log("activitiesService:  getting data for activity", activity.name);
+    /*
+      This method grabs activity data from the server to display over a period of time, 
+      e.g. over a six week view.
+    */
     const getUrl = this._serverUrl + "/api/timeSegment/activity_data/" + activity.treeId;
     const httpOptions = {
       headers: new HttpHeaders({
