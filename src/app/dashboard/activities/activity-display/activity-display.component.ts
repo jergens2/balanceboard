@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { UserDefinedActivity } from '../user-defined-activity.model';
 import { ActivitiesService } from '../activities.service';
 import { Subscription } from 'rxjs';
@@ -28,6 +28,8 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   private activityDataSubscription: Subscription = new Subscription();
 
   action: string = "view";
+
+  @Output() displayClosed: EventEmitter<boolean> = new EventEmitter();
 
   @Input() set selectedActivity(activity: UserDefinedActivity){
     this.action = "view";
@@ -73,5 +75,10 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   ngOnDestroy(){
     this.activityDataSubscription.unsubscribe();
   }
+
+  onClickCloseActivity(){
+    this.displayClosed.emit();
+    this.ngOnDestroy();
+  } 
 
 }

@@ -30,12 +30,42 @@
 }
 
 .daybook {
-    /* background-color: rgb(255, 190, 190); */
-    border: 1px solid rgb(165, 165, 165);
-    /* border-bottom: none; */
-    box-shadow: 0px 5px 6px rgb(166, 195, 219);
+    display: grid;
+    grid-template-columns: auto 40px;
+    grid-template-rows: auto;
+}
 
-    background-color: #e2e2e2;
+.daybook-tabs{
+    grid-row: 1 / -1;
+    grid-column: 2 / span 1;
+
+    display:grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 40px;
+    
+}
+
+.daybook-tab{
+
+    background-color: #fdfdfd;
+    border: 1px solid gray;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tab-img{
+    max-width:18px;
+}
+
+
+.daybook-body{
+
+    border: 1px solid rgb(165, 165, 165);
+    box-shadow: 0px 5px 6px rgb(166, 195, 219);
 
     display: grid;
     grid-template-columns: auto;
@@ -44,6 +74,7 @@
 
 .daybook-header{
 
+    background-color: #fdfdfd;
     grid-column: 1 / span 1;
     grid-row: 1 / span 1;
 
@@ -172,7 +203,10 @@
     background-color: white;
 }
 
-.daybook-body{
+
+
+
+.daybook-content{
 
     grid-row: 2 / span 1;
     grid-column: 1 / span 1;

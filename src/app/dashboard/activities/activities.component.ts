@@ -14,11 +14,11 @@ export class ActivitiesComponent implements OnInit {
 
   constructor(private activitiesService: ActivitiesService) { }
 
-  
-  ifNewActivityFormButton: boolean;
-  ifNewActivityForm: boolean;
 
-  ifDisplayActivity: boolean = false;
+
+  action: string = "default";
+  formAction: string = "new";
+
   displayedActivity: UserDefinedActivity = null;
 
   private activityNameFromForm: string = null;
@@ -31,64 +31,33 @@ export class ActivitiesComponent implements OnInit {
 
 
   ngOnInit() {
+    this.activityTree = this.activitiesService.activitiesTree;
 
-    this.ifNewActivityFormButton = true;
-    this.ifNewActivityForm = false;
+    this.rootActivities = this.activityTree.rootActivities;
+    this.rootActivityTiles = this.rootActivities.map((activity) => {
+      return { activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false };
+    });
 
-    // let activityNameFromForm: string = this.activitiesService.activityNameFromActivityForm;
-    // if (activityNameFromForm != null) {
-    //   this.activityNameFromForm = activityNameFromForm;
-    //   this.activitiesService.activityNameFromActivityForm = null;
-    // } else {
-    //   // no activity name was set on the service
-    // }
-
-    this.activitiesService.activitiesTree$.subscribe((tree) => {
-      // console.log("subscribing to tree", tree)
-      if(tree != null){
-        this.activityTree = tree;
-        // console.log("activity tree:", this.activityTree);
-        this.rootActivities = this.activityTree.rootActivities;
-        this.rootActivityTiles = this.rootActivities.map((activity)=>{
-          return {activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false};
-        });
-
-        // console.log(this.rootActivityTiles);
-      }
-    })
-
-
+    // console.log(this.rootActivityTiles);
   }
 
+  onDisplayClosed() {
+    this.action = "default";
+  }
+  onFormClosed(){
+    this.action = "default";
+  }
 
-
-  onActivitySelected(activity: UserDefinedActivity){
-    this.ifDisplayActivity = false;
+  onActivitySelected(activity: UserDefinedActivity) {
     this.displayedActivity = activity;
-    this.ifDisplayActivity = true;
-
+    this.action = "display";
   }
 
-  onClickCreateNewActivity(){
-    this.ifNewActivityForm = true;
-    this.ifNewActivityFormButton = false;
-  }
-
-  onCloseForm(event){
-    this.ifNewActivityForm = false;
-    this.ifNewActivityFormButton = true;
-    this.modifyActivity = null;
-  }
-
-  onClickDeleteActivity(activity: UserDefinedActivity){
-    this.activitiesService.deleteActivity(activity);
-  }
-  onClickModifyActivity(activity: UserDefinedActivity){
-    this.modifyActivity = activity;
-    this.onClickCreateNewActivity();
+  onClickCreateNewActivity() {
+    this.formAction = "new";
+    this.action = "form";
   }
 
 
 
-  
 }

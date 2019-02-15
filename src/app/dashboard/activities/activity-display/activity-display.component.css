@@ -3,6 +3,12 @@
     padding:10px;
     width:100%;
 }
+.action-buttons{
+    grid-row: 3 / span 1;
+    grid-column: auto;
+    margin-left: auto; 
+    margin-right: 10px;   
+}
 
 .activity-display{
 
@@ -13,7 +19,7 @@
     min-height: 600px;
  
     display: grid;
-    grid-template-rows: 50px 1fr;
+    grid-template-rows: 50px 1fr 50px;
     grid-template-columns: auto;
 
 

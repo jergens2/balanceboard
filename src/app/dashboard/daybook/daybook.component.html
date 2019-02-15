@@ -3,101 +3,114 @@
   <div class="daybook">
 
 
-    <div class="daybook-header">
-      <div class="header-margin-item daybook-menu-button">
-        <button class="btn btn-sm menu-button" (click)="onClickDayBookMenu()">
-          <fa-icon [icon]="faBars"></fa-icon>
-        </button>
-        <div class="daybook-menu" *ngIf="ifDaybookMenu">
-          <button class="btn btn-sm daybook-menu-item " (click)="onClickAddNewTimeSegment()">
-            Log new time segment
+    <div class="daybook-tabs">
+      <div class="daybook-tab" style="background-color: rgb(232, 255, 232);" >
+          <img class="tab-img" [src]="'assets/timelog-title.png'"/>
+      </div>
+      <div class="daybook-tab" style="background-color: rgb(230, 241, 255);">
+          <img class="tab-img" [src]="'assets/daily-task-list-title.png'"/>
+      </div>
+      <div class="daybook-tab" style="background-color: rgb(254, 255, 225);" >
+        <img class="tab-img" [src]="'assets/journal-title.png'"/>
+      </div>
+
+    </div>
+
+
+    <div class="daybook-body">
+
+      <div class="calendar-inside" *ngIf="ifCalendarInside">
+        <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate">
+        </app-daybook-calendar>
+      </div>
+
+
+
+      <div class="daybook-header">
+        <div class="header-margin-item daybook-menu-button">
+          <button class="btn btn-sm menu-button" (click)="onClickDayBookMenu()">
+            <fa-icon [icon]="faBars"></fa-icon>
           </button>
+          <div class="daybook-menu" *ngIf="ifDaybookMenu">
+            <button class="btn btn-sm daybook-menu-item " (click)="onClickAddNewTimeSegment()">
+              Log new time segment
+            </button>
+          </div>
+        </div>
+        <div class="daybook-header-tabs">
+
+          <!-- <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-2)" [ngClass]="{'daybook-header-today': isToday(-2) } ">
+            <div>{{ headerDayRelevance(-2) }}</div>
+            <div>{{ headerDate(-2) }}</div>
+          </div> -->
+          <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-1)"
+            [ngClass]="{'daybook-header-today': isToday(-1) } ">
+            <div>{{ headerDayRelevance(-1) }}</div>
+            <div>{{ headerDate(-1) }}</div>
+          </div>
+          <div class="daybook-header-tab daybook-header-current-day no-select"
+            [ngClass]="{'daybook-header-today': isToday(0) } ">
+            <div>{{ headerDayRelevance(0) }}</div>
+            <div>{{ headerDate(0) }}</div>
+          </div>
+          <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(1)"
+            [ngClass]="{'daybook-header-today': isToday(1) } ">
+            <div>{{ headerDayRelevance(1) }}</div>
+            <div>{{ headerDate(1) }}</div>
+          </div>
+          <!-- <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(2)" [ngClass]="{'daybook-header-today': isToday(2) } ">
+            <div>{{ headerDayRelevance(2) }}</div>
+            <div>{{ headerDate(2) }}</div>
+          </div> -->
+
+        </div>
+        <div class="header-margin-item toggle-inside-calendar-button-container">
+          <div class="toggle-inside-calendar-button" (click)="onClickToggleCalendar()">
+            <fa-icon [icon]="faCalendar"></fa-icon>
+          </div>
         </div>
       </div>
-      <div class="daybook-header-tabs">
+      <!-- End of header -->
 
-        <!-- <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-2)" [ngClass]="{'daybook-header-today': isToday(-2) } ">
-          <div>{{ headerDayRelevance(-2) }}</div>
-          <div>{{ headerDate(-2) }}</div>
-        </div> -->
-        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(-1)"
-          [ngClass]="{'daybook-header-today': isToday(-1) } ">
-          <div>{{ headerDayRelevance(-1) }}</div>
-          <div>{{ headerDate(-1) }}</div>
-        </div>
-        <div class="daybook-header-tab daybook-header-current-day no-select"
-          [ngClass]="{'daybook-header-today': isToday(0) } ">
-          <div>{{ headerDayRelevance(0) }}</div>
-          <div>{{ headerDate(0) }}</div>
-        </div>
-        <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(1)"
-          [ngClass]="{'daybook-header-today': isToday(1) } ">
-          <div>{{ headerDayRelevance(1) }}</div>
-          <div>{{ headerDate(1) }}</div>
-        </div>
-        <!-- <div class="daybook-header-tab no-select" (click)="onClickHeaderDate(2)" [ngClass]="{'daybook-header-today': isToday(2) } ">
-          <div>{{ headerDayRelevance(2) }}</div>
-          <div>{{ headerDate(2) }}</div>
-        </div> -->
+      <div class="daybook-content" [ngStyle]="daybookContentStyle">
 
-      </div>
-      <div class="header-margin-item toggle-inside-calendar-button-container">
-        <div class="toggle-inside-calendar-button" (click)="onClickToggleCalendar()">
-          <fa-icon [icon]="faCalendar"></fa-icon>
-        </div>
-      </div>
-    </div>
-    <!-- End of header -->
-
-    <div class="calendar-inside" *ngIf="ifCalendarInside">
-      <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate">
-      </app-daybook-calendar>
-    </div>
-
-    <div class="time-segment-form-container" *ngIf="ifTimeSegmentForm">
-      <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment"
-        [action]="timeSegmentFormAction" (closeForm)="onCloseForm($event)"></app-time-segment-form>
-    </div>
-
-    <div class="daybook-body" [ngStyle]="daybookBodyStyle">
-
-      <!-- 
-        daybook-body is where the main grid is.  The main grid is built in the .ts file 
+        <!-- 
+        daybook-content is where the main grid is for the daybook timelog.  The main grid is built in the .ts file 
         
       -->
 
 
-      <div *ngIf="ifLoading" class="loading">
-        <fa-icon class="loading-spinner" [icon]="faSpinner" [spin]="true"></fa-icon>
-      </div>
-
-      <div class="margin-line"></div>
-
-
-      <div *ngFor="let bookLine of bookLines" class="book-line" [ngStyle]="bookLine.style">
-      </div>
-
-      <div *ngFor="let hourLabel of hourLabels" class="hour-label" [ngStyle]="hourLabel.style">
-        <div class="hour-label-offset">
-          {{ hourLabel.time }}
+        <div *ngIf="ifLoading" class="loading">
+          <fa-icon class="loading-spinner" [icon]="faSpinner" [spin]="true"></fa-icon>
         </div>
-      </div>
+
+        <div class="margin-line"></div>
 
 
-
-
-      <div class="now-time-container" [ngStyle]="nowTimeContainerStyle" *ngIf="ifNowLine">
-        <div class="now-time">
-          {{ nowTime.format('h:mm a') }}
+        <div *ngFor="let bookLine of bookLines" class="book-line" [ngStyle]="bookLine.style">
         </div>
-      </div>
-      <div class="now-line-container" [ngStyle]="nowLineContainerStyle" *ngIf="ifNowLine">
-        <div class="now-line"> </div>
-      </div>
+
+        <div *ngFor="let hourLabel of hourLabels" class="hour-label" [ngStyle]="hourLabel.style">
+          <div class="hour-label-offset">
+            {{ hourLabel.time }}
+          </div>
+        </div>
 
 
 
-      <!--
+
+        <div class="now-time-container" [ngStyle]="nowTimeContainerStyle" *ngIf="ifNowLine">
+          <div class="now-time">
+            {{ nowTime.format('h:mm a') }}
+          </div>
+        </div>
+        <div class="now-line-container" [ngStyle]="nowLineContainerStyle" *ngIf="ifNowLine">
+          <div class="now-line"> </div>
+        </div>
+
+
+
+        <!--
       <div *ngIf="ifBedTime">
         <div class="bed-time-container" [ngStyle]="bedTimeStyle">
           <div class="bed-time">
@@ -106,43 +119,43 @@
         </div>
       </div> -->
 
-      <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile"
-        [ngStyle]="timeSegmentTile.containerStyle">
-        <div class="time-segment-start"></div>
-        <div class="time-segment-duration"
-          [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)"
-          (click)="onClickTimeSegmentTile(timeSegmentTile)"
-          >
-          <div class="time-segment-text no-select" [ngStyle]="timeSegmentTile.durationStyle">
-            {{ activityName(timeSegmentTile) }}
+        <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile"
+          [ngStyle]="timeSegmentTile.containerStyle">
+          <div class="time-segment-start"></div>
+          <div class="time-segment-duration"
+            [style.background-color]="segmentBackgroundColor(timeSegmentTile.timeSegment)"
+            (click)="onClickTimeSegmentTile(timeSegmentTile)">
+            <div class="time-segment-text no-select" [ngStyle]="timeSegmentTile.durationStyle">
+              {{ activityName(timeSegmentTile) }}
+            </div>
           </div>
+          <div class="time-segment-end"></div>
         </div>
-        <div class="time-segment-end"></div>
+
+
+
+        <div *ngIf="nextTimeSegmentTile" class="time-segment-tile next-time-segment-container"
+          [ngStyle]="nextTimeSegmentTile.containerStyle">
+          <div class="time-segment-start"></div>
+          <div class="time-segment-duration" (click)="onClickNextTimeSegment(nextTimeSegmentTile.timeSegment)">
+            <div class="time-segment-text no-select" [ngStyle]="nextTimeSegmentTile.durationStyle">
+              next time segment
+            </div>
+          </div>
+          <div class="time-segment-end"></div>
+        </div>
+
+
+
+
+      </div><!-- end of daybook-content -->
+      <div class="time-segment-form-container" *ngIf="ifTimeSegmentForm">
+        <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment"
+          [action]="timeSegmentFormAction" (closeForm)="onCloseForm($event)"></app-time-segment-form>
       </div>
 
-
-
-      <div *ngIf="nextTimeSegmentTile" class="time-segment-tile next-time-segment-container"
-        [ngStyle]="nextTimeSegmentTile.containerStyle">
-        <div class="time-segment-start"></div>
-        <div class="time-segment-duration" (click)="onClickNextTimeSegment(nextTimeSegmentTile.timeSegment)">
-          <div class="time-segment-text no-select" [ngStyle]="nextTimeSegmentTile.durationStyle">
-            next time segment
-          </div>
-        </div>
-        <div class="time-segment-end"></div>
-      </div>
-
-
-
-
-    </div><!-- end of body -->
-
-    <div *ngIf="timeSegmentFormContainer" class="time-segment-form-container">
-
-    </div>
-
-  </div>
+    </div> <!-- end of daybook-body -->
+  </div> <!-- end of daybook-->
 
 
 

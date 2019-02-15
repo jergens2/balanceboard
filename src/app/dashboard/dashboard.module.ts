@@ -23,16 +23,19 @@ import { DaybookComponent } from './daybook/daybook.component';
 import { CalendarComponent } from './daybook/calendar/calendar.component';
 
 import { ActivitiesComponent } from './activities/activities.component';
-import { ActivityFormListItemComponent } from './activities/new-activity-form/activity-form-list-item/activity-form-list-item.component';
 import { ActivityListItemComponent } from './activities/activity-list-item/activity-list-item.component';
 import { ActivityDisplayComponent } from './activities/activity-display/activity-display.component';
 import { ActivityYearViewComponent } from './activities/activity-display/activity-year-view/activity-year-view.component';
 import { MonthPlannerComponent } from './month-planner/month-planner.component';
 import { YearPlannerComponent } from './year-planner/year-planner.component';
 import { ActivitySixWeekViewComponent } from './activities/activity-display/activity-six-week-view/activity-six-week-view.component';
-import { UserDefinedActivityFormComponent } from './activities/activity-display/user-defined-activity-form/user-defined-activity-form.component';
-import { NewActivityFormComponent } from './activities/new-activity-form/new-activity-form.component';
+import { UserDefinedActivityFormComponent } from './activities/user-defined-activity-form/user-defined-activity-form.component';
 import { TimeSegmentFormComponent } from './daybook/time-segment-form/time-segment-form.component';
+import { ActivitiesDefaultViewComponent } from './activities/default-view/default-view.component';
+import { IdeaLogComponent } from './idea-log/idea-log.component';
+import { TimeLogComponent } from './daybook/time-log/time-log.component';
+import { DailyTaskListComponent } from './daybook/daily-task-list/daily-task-list.component';
+import { JournalComponent } from './daybook/journal/journal.component';
 
 
 
@@ -61,15 +64,18 @@ import { TimeSegmentFormComponent } from './daybook/time-segment-form/time-segme
     CalendarComponent,
     ActivitiesComponent,
     ActivityListItemComponent,
-    ActivityFormListItemComponent,
     ActivityDisplayComponent,
     ActivityYearViewComponent,
     MonthPlannerComponent,
     YearPlannerComponent,
     ActivitySixWeekViewComponent,
     UserDefinedActivityFormComponent,
-    NewActivityFormComponent,
-    TimeSegmentFormComponent
+    TimeSegmentFormComponent,
+    ActivitiesDefaultViewComponent,
+    IdeaLogComponent,
+    TimeLogComponent,
+    DailyTaskListComponent,
+    JournalComponent
     
     
   ],

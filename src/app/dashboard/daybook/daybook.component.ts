@@ -38,7 +38,7 @@ export class DaybookComponent implements OnInit {
 
 
 
-  daybookBodyStyle: any = {};
+  daybookContentStyle: any = {};
   hourLabels: any[] = [];
   bookLines: {
     line: number,
@@ -67,7 +67,6 @@ export class DaybookComponent implements OnInit {
 
   reviewTimeSegment:TimeSegment = null;
 
-  timeSegmentFormContainer: any = null;
 
   timeSegmentFormAction: string = "New";
 
@@ -328,7 +327,7 @@ export class DaybookComponent implements OnInit {
       gridIndex += 1;
     }
 
-    this.daybookBodyStyle = { "grid-template-rows": "repeat(" + gridIndex.toFixed(0) + ", 1fr)" }
+    this.daybookContentStyle = { "grid-template-rows": "repeat(" + gridIndex.toFixed(0) + ", 1fr)" }
     this.hourLabels = hourLabels;
     this.bookLines = gridLines;
 

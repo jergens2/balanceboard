@@ -179,7 +179,6 @@ export class TimeSegmentFormComponent implements OnInit {
   onClickSaveTimeSegment() {
     let startTime = moment(this.timeSegmentForm.get('startTimeDate').value + ' ' + this.timeSegmentForm.get('startTime').value).toISOString();
     let endTime = moment(this.timeSegmentForm.get('endTimeDate').value + ' ' + this.timeSegmentForm.get('endTime').value).toISOString();
-
     let newTimeSegment: TimeSegment;
     if (this.action == "New") {
       newTimeSegment = new TimeSegment(null, null, startTime, endTime, this.timeSegmentForm.get('description').value);

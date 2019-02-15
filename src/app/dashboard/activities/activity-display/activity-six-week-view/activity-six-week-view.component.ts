@@ -5,6 +5,7 @@ import { ISixWeekDayTile } from './six-week-day-tile.interface';
 import * as moment from 'moment';
 import { ActivitiesService } from '../../activities.service';
 import { UserDefinedActivity } from '../../user-defined-activity.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-activity-six-week-view',
@@ -28,7 +29,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
 
   }
 
-  constructor(private activitiesService: ActivitiesService) { }
+  constructor(private activitiesService: ActivitiesService, private router: Router) { }
 
   ngOnInit() {
 
@@ -110,6 +111,9 @@ export class ActivitySixWeekViewComponent implements OnInit {
 
   }
 
+  onClickTile(tile: ISixWeekDayTile){
+    this.router.navigate(['/daybook/'+tile.date.format('YYYY-MM-DD')]);
+  }
 
 
   tileHours(tile: ISixWeekDayTile): string {

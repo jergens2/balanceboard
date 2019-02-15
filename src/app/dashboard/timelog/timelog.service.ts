@@ -105,9 +105,10 @@ export class TimelogService {
   // }
 
   updateTimeSegment(timeSegment: TimeSegment){
+    
     let updatedTimeSegment: TimeSegment = timeSegment;
     let trimmedActivities = updatedTimeSegment.activities.map((activity: TimeSegmentActivity)=>{
-      return {activityTreeId: activity.activityTreeId, duration: activity.duration }
+      return {activityTreeId: activity.activityTreeId, duration: activity.duration, description: activity.description }
     })
     
     updatedTimeSegment.activities = trimmedActivities as TimeSegmentActivity[];
@@ -118,7 +119,7 @@ export class TimelogService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    
+    console.log("Updating timesegment:", updatedTimeSegment)
     this.httpClient.post<{ message: string, data: any }>(postUrl, updatedTimeSegment, httpOptions)
       .pipe<TimeSegment>(map((response) => {
         let timeSegment = new TimeSegment(response.data._id, response.data.userId, response.data.startTimeISO, response.data.endTimeISO, response.data.description);
