@@ -19,6 +19,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
   private _activity: UserDefinedActivity = null;
   tiles: ISixWeekDayTile[] = [];
   weeksOf: string[] = [];
+  weekSums: string[] = [];
 
   @Input() set activityInstances(activityInstances: IActivityInstance[]) {
     this._activityInstances = activityInstances;
@@ -61,11 +62,16 @@ export class ActivitySixWeekViewComponent implements OnInit {
 
     let maxHours: number = 0;
 
+    let currentWeekSum = 0;
+    let weekSums: number[] = [];
+
+
     let currentDate = moment().startOf('week').subtract(5, 'weeks');
     while (currentDate.format('YYYY-MM-DD') <= moment().format('YYYY-MM-DD')) {
       if (currentDate.day() == 0) {
         weeksOf.push(currentDate.format('YYYY MMM DD'));
       }
+
 
       let hours = 0;
       for (let activity of this._activityInstances) {
@@ -83,6 +89,15 @@ export class ActivitySixWeekViewComponent implements OnInit {
         }
       }
 
+
+      currentWeekSum += hours; 
+      if (currentDate.day() == 6){
+        weekSums.push(currentWeekSum);
+        currentWeekSum = 0; 
+      }
+
+
+
       let tile: ISixWeekDayTile = { date: moment(currentDate), hours: hours, style: {} }
       if (hours > maxHours) {
         maxHours = hours;
@@ -94,7 +109,6 @@ export class ActivitySixWeekViewComponent implements OnInit {
     let color = this._activity.color;
     let gradient: string[] = this.getColorGradient(color);
 
-    console.log("maxhours is ", maxHours);
     for (let tile of tiles) {
       let style: any = {};
       let percent: number = tile.hours / maxHours;
@@ -104,10 +118,13 @@ export class ActivitySixWeekViewComponent implements OnInit {
       tile.style = style;
     }
 
+    this.weekSums = weekSums.map((weekSum)=>{
+      return "" + weekSum.toFixed(1) + " hrs";
+    })
+    console.log(this.weekSums)
     this.weeksOf = weeksOf;
     this.tiles = tiles;
 
-    console.log(this.tiles);
 
   }
 
@@ -138,6 +155,13 @@ export class ActivitySixWeekViewComponent implements OnInit {
     // grid-row 2 / span 1
 
     let row = this.weeksOf.indexOf(weekOf) + 2;
+    let style = { "grid-row": "" + row + " / span 1" };
+
+    return style;
+  }
+
+  weekSumStyle(weekSum: string): any{
+    let row = this.weekSums.indexOf(weekSum) + 2;
     let style = { "grid-row": "" + row + " / span 1" };
 
     return style;

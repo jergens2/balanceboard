@@ -3,17 +3,10 @@
     <div class="year-view-header">
         asdf        
     </div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
-    <div class="month"></div>
+
+    <div *ngFor="let month of months" class="month">
+      <app-month-of-year [month]="month"></app-month-of-year>
+    </div>
+  
   </div>
 </div>

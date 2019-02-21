@@ -20,6 +20,8 @@ export class AppComponent implements OnInit {
 
   nightMode: UserSetting = null;
 
+  sideBarOpen: boolean = false;
+
   constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService) { }
 
   ngOnInit() {
@@ -56,5 +58,10 @@ export class AppComponent implements OnInit {
     })
     this.authService.checkLocalStorage();
 
+  }
+
+
+  onHeaderSidebarButtonClicked(){
+    this.sideBarOpen = !this.sideBarOpen;
   }
 }

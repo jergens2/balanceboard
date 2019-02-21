@@ -36,6 +36,7 @@ import { IdeaLogComponent } from './idea-log/idea-log.component';
 import { TimeLogComponent } from './daybook/time-log/time-log.component';
 import { DailyTaskListComponent } from './daybook/daily-task-list/daily-task-list.component';
 import { JournalComponent } from './daybook/journal/journal.component';
+import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year.component';
 
 
 
@@ -75,7 +76,8 @@ import { JournalComponent } from './daybook/journal/journal.component';
     IdeaLogComponent,
     TimeLogComponent,
     DailyTaskListComponent,
-    JournalComponent
+    JournalComponent,
+    MonthOfYearComponent
     
     
   ],

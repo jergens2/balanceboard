@@ -1,0 +1,10 @@
+<div class="root">
+  <div *ngFor="let menuItem of openMenu.menuItems" class='menu-item' [routerLink]="menuItem.routerLink" routerLinkActive='activeLink'>
+    <div class="menu-item-icon">
+      <fa-icon [icon]="menuItem.icon"></fa-icon>
+    </div>
+    <div class="menu-item-text">
+      {{ menuItem.title }}
+    </div>
+  </div>
+</div>

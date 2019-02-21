@@ -8,8 +8,13 @@
     <div class="header-item">Thu</div>
     <div class="header-item">Fri</div>
     <div class="header-item">Sat</div>
+    <div class="header-item">Sum</div>
     <div *ngFor="let weekOf of weeksOf" [ngStyle]="weekOfStyle(weekOf)" class="week-of">
       {{ weekOf }}
+    </div>
+
+    <div *ngFor="let weekSum of weekSums" [ngStyle]="weekSumStyle(weekSum)" class="week-sum">
+      {{ weekSum }}
     </div>
 
     <div *ngFor="let tile of tiles" class="day-tile" [ngStyle]="tile.style" (click)="onClickTile(tile)">

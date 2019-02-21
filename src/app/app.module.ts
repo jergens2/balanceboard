@@ -18,6 +18,7 @@ import { HeaderComponent } from './nav/header/header.component';
 import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
 import { UserSettingsComponent } from './user-settings/user-settings.component';
+import { HeaderMenuComponent } from './nav/header/header-menu/header-menu.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { UserSettingsComponent } from './user-settings/user-settings.component';
     AuthenticationComponent,
     HeaderComponent,
     SidebarComponent,
-    UserSettingsComponent
+    UserSettingsComponent,
+    HeaderMenuComponent
   ],
   imports: [
     BrowserModule,

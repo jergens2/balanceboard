@@ -1,29 +1,22 @@
 <div *ngIf="loading" class="loading">
-  <div style="font-size:4em">
-    <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
-  </div>
+    <div style="font-size:4em">
+        <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+    </div>
 </div>
 <div *ngIf="!loading">
     <div *ngIf="!authenticated">
         <app-authentication></app-authentication>
     </div>
 
-    <div *ngIf="authenticated">
-        <div class="d-inline d-md-none">
-            <app-header></app-header>
+    <div *ngIf="authenticated" class="app-container">
+        <div class="header">
+            <app-header (sidebarButtonClicked)="onHeaderSidebarButtonClicked()"></app-header>
         </div>
-        <div class="wrapper"  [ngClass]="{'wrapper-night-mode':nightMode.booleanValue }">
-
-            <!-- <div class="d-none d-md-inline" > -->
-            <div class="sidebar-component">
-                <app-sidebar></app-sidebar>
-            </div>
-            <!-- <div class="d-none d-md-inline sidebar-margin"></div> -->
-            <div class="content">
-                <router-outlet></router-outlet>
-            </div>
-
+        <div class="sidebar" *ngIf="sideBarOpen">
+            <app-sidebar></app-sidebar>
         </div>
-
+        <div class="content">
+            <router-outlet></router-outlet>
+        </div>
     </div>
 </div>

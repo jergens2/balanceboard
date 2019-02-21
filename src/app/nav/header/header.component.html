@@ -1,38 +1,20 @@
-<div class="header" >
-  <!-- <div class="header-title">balanceboard</div> -->
-  <div class="header-menu" (mouseleave)="onMouseLeaveMenu()" (mouseenter)="onMouseEnterMenu()">
-    <button class="menu-dropdown-button" (click)="onClickMenuButton()">
-      Menu 
-      <!-- <fa-icon [icon]="faCaretSquareDown"></fa-icon> -->
-    </button>
-    <div [ngClass]="{'expanded-menu': menuIsExpanded}" class="menu">
+<div class="header">
+  <div class="balanceboard-title">
+    balanceboard
+  </div>
+  <div class="sidebar-button" (click)="onClickSidebarMenuButton()">
+    <fa-icon [icon]="faBars"></fa-icon>
+  </div>
+  <div *ngFor="let headerMenu of headerMenus" class="header-menu" (click)="onClickHeaderMenu(headerMenu)"
+    (mouseover)="onMouseOverHeaderMenu(headerMenu)" (mouseleave)="onMouseLeaveHeaderMenu(headerMenu)">
+    <div class="menu-name">
+      {{ headerMenu.name }}
+    </div>
+    
+    <div *ngIf="headerMenu.isOpen" class="open-menu">
+      <app-header-menu [openMenu]="headerMenu"></app-header-menu>
+    </div>
+  </div>
+  
 
-      <div *ngFor="let navItem of navItems" class='menu-item' (click)="onClickMenuItem()" [routerLink]="navItem.routerLink" routerLinkActive='activeLink'>
-        <div class="menu-item-icon">
-          <fa-icon [icon]="navItem.icon"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          {{ navItem.title }}
-        </div>
-      </div>
-
-
-      <!-- <div class='menu-item' (click)="onClickMenuItem()">
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faCogs"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Settings
-        </div>
-      </div> -->
-      <div class='menu-item' (click)="onClickLogout()">
-        <div class="menu-item-icon">
-          <fa-icon [icon]="faSignOutAlt"></fa-icon>
-        </div>
-        <div class="menu-item-text">
-          Logout
-        </div>
-      </div>
-    </div> <!-- Menu -->
-  </div> <!-- Menu button & menu-->
 </div>

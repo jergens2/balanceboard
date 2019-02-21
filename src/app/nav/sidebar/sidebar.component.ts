@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { NavItem } from '../nav-item.model';
-import { navigationItems } from '../nav-items';
+import { appMenuItems } from '../app-menu-items';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { Subscription } from 'rxjs';
 import { UserSettingsService } from '../../user-settings/user-settings.service';
@@ -37,7 +37,7 @@ export class SidebarComponent implements OnInit {
   nightMode: UserSetting = null;
 
   ngOnInit() {
-    this.navItems = navigationItems;
+    this.navItems = appMenuItems;
 
     this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[])=>{
       // console.log("usersettings", userSettings);

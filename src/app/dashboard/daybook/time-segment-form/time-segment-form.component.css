@@ -60,11 +60,15 @@
     border-radius: 4px;
 }
 .activity-prepend{
-    padding:8px;
+    padding-left: 8px;
+    padding-right: 8px;
     background-color:rgb(238, 238, 238); 
     border-right: 1px solid gray;
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
+    
+    display:flex;
+    align-items: center;
 }
 .activity-text-input{
     padding-left:12px; 

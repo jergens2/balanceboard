@@ -10,6 +10,8 @@
     border-right: 1px solid #fcfcfc;
     /* box-shadow: 1px 0px 3px rgb(110, 110, 110); */
     padding-right: 10px;
+
+    background-color: #fdfdfd;
 }
 
 .sidebar-content-night-mode{
