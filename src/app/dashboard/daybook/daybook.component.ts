@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogService } from '../timelog/timelog.service';
 import { Subscription, timer, Subject } from 'rxjs';
@@ -8,15 +8,18 @@ import { ITimeSegmentTile } from './time-segment-tile.interface';
 import { faSpinner, faBars } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
+import { HeaderService } from '../../nav/header/header.service';
+import { IHeaderMenu } from '../../nav/header/header-menu/header-menu.interface';
+import { NavItem } from '../..//nav/nav-item.model';
 
 @Component({
   selector: 'app-daybook',
   templateUrl: './daybook.component.html',
   styleUrls: ['./daybook.component.css']
 })
-export class DaybookComponent implements OnInit {
+export class DaybookComponent implements OnInit, OnDestroy {
 
-  constructor(private timeLogService: TimelogService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private timeLogService: TimelogService, private route: ActivatedRoute, private router: Router, private headerService: HeaderService) { }
 
   faBars = faBars;
   faCaretSquareDown = faCaretSquareDown;
@@ -70,6 +73,7 @@ export class DaybookComponent implements OnInit {
 
   timeSegmentFormAction: string = "New";
 
+  newTimeSegmentNavItemSubscription: Subscription = new Subscription();
 
 
   private _currentDate: moment.Moment = moment();
@@ -93,8 +97,20 @@ export class DaybookComponent implements OnInit {
 
   private updateTimeSegmentSubject: Subject<TimeSegment> = new Subject();
 
+
+
   ngOnInit() {
 
+    let newTimeSegmentNavItem = new NavItem("New Time Segment", "", null);
+    this.newTimeSegmentNavItemSubscription = newTimeSegmentNavItem.clickEmitted.subscribe((clicked)=>{
+      this.onClickNextTimeSegment();
+    })
+
+    let daybookHeaderMenuItems: NavItem[] = [];
+    daybookHeaderMenuItems.push(newTimeSegmentNavItem);
+    let daybookHeaderMenu: IHeaderMenu = { name:"Daybook" , isOpen: false, menuOpenSubscription: new Subscription() , menuItems: daybookHeaderMenuItems }
+
+    this.headerService.setCurrentMenu(daybookHeaderMenu);
 
     this.buildDisplay(this.dayStartTime, this.dayEndTime);
     this.ifLoading = false;
@@ -405,6 +421,8 @@ export class DaybookComponent implements OnInit {
   ngOnDestroy() {
     this.fetchTimeSegmentsSubscription.unsubscribe();
     this.nowSubscription.unsubscribe();
+    this.newTimeSegmentNavItemSubscription.unsubscribe();
+    this.headerService.setCurrentMenu(null);
   }
 
   onChangeCalendarDate(date: moment.Moment) {

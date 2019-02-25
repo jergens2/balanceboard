@@ -4,6 +4,7 @@ import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent } from 'rxjs';
 import { faBars, faCogs } from '@fortawesome/free-solid-svg-icons';
 import { NavItem } from '../nav-item.model';
+import { HeaderService } from './header.service';
 
 @Component({
   selector: 'app-header',
@@ -12,7 +13,7 @@ import { NavItem } from '../nav-item.model';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor() { }
+  constructor(private headerService: HeaderService) { }
 
   faBars = faBars;
   faCogs = faCogs;
@@ -34,15 +35,33 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
+    
+    this.headerMenus = this.buildHeaderMenus();
+    this.headerService.activeBalanceBoardComponentMenu$.subscribe((componentMenu: IHeaderMenu)=>{
+      if(componentMenu != null){
+        this.headerMenus = this.buildHeaderMenus(componentMenu);
+      }else{
+        this.headerMenus = this.buildHeaderMenus();
+      }
+    })
 
+    
+
+  }
+
+  private buildHeaderMenus(currentComponentMenu?: IHeaderMenu): IHeaderMenu[]{
+    let newMenu: IHeaderMenu[] = [];
     let accountMenuItems: NavItem[] = [];
     accountMenuItems.push(new NavItem('Settings','/user_settings',faCogs));
     accountMenuItems.push(new NavItem('Sign Out','',null));
 
-    this.headerMenus.push({ name: "Menu", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: appMenuItems});
-    this.headerMenus.push({ name: "Account", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: accountMenuItems});
-    this.headerMenus.push({ name: "Daybook", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: appMenuItems});
-
+    newMenu.push({ name: "Menu", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: appMenuItems});
+    newMenu.push({ name: "Account", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: accountMenuItems});
+    if(currentComponentMenu){
+      newMenu.push(currentComponentMenu);
+    }
+    
+    return newMenu;
   }
 
 

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IHeaderMenu } from './header-menu.interface';
+import { NavItem } from '../../nav-item.model';
 
 @Component({
   selector: 'app-header-menu',
@@ -14,6 +15,10 @@ export class HeaderMenuComponent implements OnInit {
 
   ngOnInit() {
     
+  }
+
+  onClickHeaderMenuItem(menuItem: NavItem){
+    menuItem.onClick();
   }
 
 }
