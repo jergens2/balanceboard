@@ -11,7 +11,17 @@
     justify-content: flex-start;
 }
 
+.title-section{
+    display:flex;
+    flex-direction:row;
+    justify-content: space-between;
+    width:250px;
+}
+
 .balanceboard-title{
+    flex-grow: 2;
+    text-align: center;
+    padding: auto;
     font-weight:bold;
     padding: 3px;
     padding-left:10px;
@@ -22,6 +32,7 @@
 .sidebar-button{
     padding:3px;
     padding-left:10px;
+    padding-right: 10px;
     cursor: pointer;
 }
 .sidebar-button:hover{

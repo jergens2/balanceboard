@@ -19,7 +19,6 @@ menuItems.push(new NavItem('Budget','/budget',faChartPie));
 menuItems.push(new NavItem('Net Worth','/networth', faChartLine));
 menuItems.push(new NavItem('Health','/health',faBriefcaseMedical));
 menuItems.push(new NavItem('Body Weight','/bodyWeight',faWeight));
-menuItems.push(new NavItem('Settings','/user_settings',faCogs));
 
 
 export const appMenuItems: NavItem[] = menuItems;

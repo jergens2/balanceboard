@@ -1,20 +1,22 @@
 <div class="header">
-  <div class="balanceboard-title">
-    balanceboard
+  <div class="title-section">
+    <div class="balanceboard-title">
+      balanceboard
+    </div>
+    <div class="sidebar-button" (click)="onClickSidebarMenuButton()">
+      <fa-icon [icon]="faBars"></fa-icon>
+    </div>
   </div>
-  <div class="sidebar-button" (click)="onClickSidebarMenuButton()">
-    <fa-icon [icon]="faBars"></fa-icon>
-  </div>
+
   <div *ngFor="let headerMenu of headerMenus" class="header-menu" (click)="onClickHeaderMenu(headerMenu)"
     (mouseover)="onMouseOverHeaderMenu(headerMenu)" (mouseleave)="onMouseLeaveHeaderMenu(headerMenu)">
     <div class="menu-name">
       {{ headerMenu.name }}
     </div>
-    
+
     <div *ngIf="headerMenu.isOpen" class="open-menu">
       <app-header-menu [openMenu]="headerMenu"></app-header-menu>
     </div>
   </div>
-  
 
 </div>

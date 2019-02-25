@@ -11,15 +11,12 @@ import { UserSetting } from './user-settings/user-setting.model';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'app';
 
   faSpinner = faSpinner;
 
   authenticated: boolean = false;
   loading: boolean = true;
-
   nightMode: UserSetting = null;
-
   sideBarOpen: boolean = false;
 
   constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService) { }
@@ -27,19 +24,15 @@ export class AppComponent implements OnInit {
   ngOnInit() {
 
     this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[])=>{
-      // console.log("usersettings", userSettings);
-
       for(let setting of userSettings){
         if(setting.name == "night_mode"){
-          // console.log("sidebar:  setting nightmode to ", setting);
           this.nightMode = setting;
         }
       }
-    })
+    });
 
     this.authService.authStatus$.subscribe(
       (authStatus: AuthStatus) => {
-        // console.log("authstatus", authStatus);
         if (authStatus.isAuthenticated) {
           this.loading = false;
           this.authenticated = true;
@@ -49,7 +42,6 @@ export class AppComponent implements OnInit {
       }
     )
     this.authService.checkLocalStorage$.subscribe((isPresent: boolean) => {
-      // console.log("is local storage presnet? ", isPresent);
       if (isPresent) {
 
       } else {
@@ -58,10 +50,16 @@ export class AppComponent implements OnInit {
     })
     this.authService.checkLocalStorage();
 
+    if(localStorage.getItem("sidebar_is_open") == "true"){
+      this.sideBarOpen = true;
+    }
   }
 
 
   onHeaderSidebarButtonClicked(){
     this.sideBarOpen = !this.sideBarOpen;
+    localStorage.setItem("sidebar_is_open", this.sideBarOpen.toString());
   }
+
+
 }

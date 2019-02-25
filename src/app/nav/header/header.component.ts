@@ -2,7 +2,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { IHeaderMenu } from './header-menu/header-menu.interface';
 import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent } from 'rxjs';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCogs } from '@fortawesome/free-solid-svg-icons';
+import { NavItem } from '../nav-item.model';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,7 @@ export class HeaderComponent implements OnInit {
   constructor() { }
 
   faBars = faBars;
+  faCogs = faCogs;
 
   activeAppTool: string = null;
 
@@ -33,9 +35,13 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
 
+    let accountMenuItems: NavItem[] = [];
+    accountMenuItems.push(new NavItem('Settings','/user_settings',faCogs));
+    accountMenuItems.push(new NavItem('Sign Out','',null));
+
     this.headerMenus.push({ name: "Menu", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: appMenuItems});
-    this.headerMenus.push({ name: "Account", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: []});
-    this.headerMenus.push({ name: "Daybook", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: []});
+    this.headerMenus.push({ name: "Account", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: accountMenuItems});
+    this.headerMenus.push({ name: "Daybook", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: appMenuItems});
 
   }
 
