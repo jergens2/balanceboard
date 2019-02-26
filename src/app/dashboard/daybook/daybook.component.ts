@@ -101,16 +101,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    let newTimeSegmentNavItem = new NavItem("New Time Segment", "", null);
-    this.newTimeSegmentNavItemSubscription = newTimeSegmentNavItem.clickEmitted.subscribe((clicked)=>{
-      this.onClickNextTimeSegment();
-    })
-
-    let daybookHeaderMenuItems: NavItem[] = [];
-    daybookHeaderMenuItems.push(newTimeSegmentNavItem);
-    let daybookHeaderMenu: IHeaderMenu = { name:"Daybook" , isOpen: false, menuOpenSubscription: new Subscription() , menuItems: daybookHeaderMenuItems }
-
-    this.headerService.setCurrentMenu(daybookHeaderMenu);
+    this.buildHeaderMenu();
 
     this.buildDisplay(this.dayStartTime, this.dayEndTime);
     this.ifLoading = false;
@@ -160,6 +151,19 @@ export class DaybookComponent implements OnInit, OnDestroy {
     }else{
       this.nextTimeSegmentTile = null;
     }
+  }
+
+  private buildHeaderMenu(){
+    let newTimeSegmentNavItem = new NavItem("New Time Segment", null, null);
+    this.newTimeSegmentNavItemSubscription = newTimeSegmentNavItem.clickEmitted$.subscribe((clicked)=>{
+      this.onClickNextTimeSegment();
+    })
+
+    let daybookHeaderMenuItems: NavItem[] = [];
+    daybookHeaderMenuItems.push(newTimeSegmentNavItem);
+    let daybookHeaderMenu: IHeaderMenu = { name:"Daybook" , isOpen: false, menuOpenSubscription: new Subscription() , menuItems: daybookHeaderMenuItems }
+
+    this.headerService.setCurrentMenu(daybookHeaderMenu);
   }
 
   buildTimeSegmentTile(timeSegment: TimeSegment): ITimeSegmentTile {

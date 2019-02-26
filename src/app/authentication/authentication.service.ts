@@ -119,7 +119,7 @@ export class AuthenticationService {
     // console.log("completeLogin(): ", authStatus.user.email);
     if (authStatus.isAuthenticated) {
 
-      localStorage.clear();
+      
       localStorage.setItem("token", authStatus.token);
       localStorage.setItem("user", JSON.stringify(authStatus.user));
       // console.log("completing login, authStatus", authStatus.user.email)

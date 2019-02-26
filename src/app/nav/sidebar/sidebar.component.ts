@@ -80,13 +80,15 @@ export class SidebarComponent implements OnInit {
   }
 
   onClickLogout(){
+    this.logout();
     
+  }
+
+  private logout(){
     this.user = null;
     this.authStatus = null;
     this.authSubscription.unsubscribe();
     this.authService.logout();
-
-    // console.clear();
   }
 
 }

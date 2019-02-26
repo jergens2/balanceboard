@@ -4,11 +4,13 @@
     <h4>Activity Management</h4>
   </div>
 
-  <div class="activities-list">
+  <!-- <div class="activities-list">
+
+  </div> -->
+
+  <div class="activity-display" *ngIf="action == 'activities_list'">
     <div class="activities-list-header">
       <h5>All Activities</h5>
-    
-
     </div>
 
     <div class="activities-list-items">
@@ -20,7 +22,8 @@
   </div>
 
   <div class="activity-display" *ngIf="action == 'display'">
-    <app-activity-display [selectedActivity]="displayedActivity" (displayClosed)="onDisplayClosed()"></app-activity-display>
+    <app-activity-display [selectedActivity]="displayedActivity" (displayClosed)="onDisplayClosed()">
+    </app-activity-display>
   </div>
 
   <div class="activity-display" *ngIf="action == 'default'">
@@ -28,7 +31,8 @@
   </div>
 
   <div class="activity-display" *ngIf="action == 'form'">
-      <app-user-defined-activity-form [formAction]="formAction" [activity]="editActivity" (formClosed)="onFormClosed()"></app-user-defined-activity-form>
+    <app-user-defined-activity-form [formAction]="formAction" [activity]="editActivity" (formClosed)="onFormClosed()">
+    </app-user-defined-activity-form>
   </div>
 
 </div>

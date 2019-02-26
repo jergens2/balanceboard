@@ -1,6 +1,5 @@
 <div class="root">
-  <!-- [routerLink]="menuItem.routerLink" -->
-  <div *ngFor="let menuItem of openMenu.menuItems" class='menu-item' 
+  <div *ngFor="let menuItem of openMenu.menuItems" class='menu-item'
     routerLinkActive='activeLink' (click)="onClickHeaderMenuItem(menuItem)">
     <div class="menu-item-icon">
       <div *ngIf="menuItem.icon != null">

@@ -1,8 +1,10 @@
 .root{
     width:100%;
-}
-.default-view{
+
     display:flex;
     flex-direction: row;
-    justify-content: center;
+}
+.default-view{
+
+
 }

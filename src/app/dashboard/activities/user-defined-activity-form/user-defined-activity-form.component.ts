@@ -3,6 +3,7 @@ import { UserDefinedActivity } from '../user-defined-activity.model';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivitiesService } from '../activities.service';
 import { ActivityTree } from '../activity-tree.model';
+import { faCheckCircle, faCircle  } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-user-defined-activity-form',
@@ -11,6 +12,11 @@ import { ActivityTree } from '../activity-tree.model';
 })
 export class UserDefinedActivityFormComponent implements OnInit {
 
+
+  faCheckCircle = faCheckCircle;
+  faCircle = faCircle;
+
+  ifTopLevelActivity: boolean = true;
 
   private _activity: UserDefinedActivity = null;
   private _action: string = "new";
@@ -51,6 +57,13 @@ export class UserDefinedActivityFormComponent implements OnInit {
     console.log("action is ", this._action);
   }
 
+  get headerAction(): string{
+    if(this._action == "new"){
+      return "Create New Activity";
+    }else if(this._action == "edit"){
+      return "Edit Activity: " + this._activity.name;
+    }
+  }
 
   onClickCancel(){
     this.formClosed.emit(true);

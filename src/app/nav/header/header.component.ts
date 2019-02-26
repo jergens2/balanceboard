@@ -5,6 +5,8 @@ import { Subscription, Observable, fromEvent } from 'rxjs';
 import { faBars, faCogs } from '@fortawesome/free-solid-svg-icons';
 import { NavItem } from '../nav-item.model';
 import { HeaderService } from './header.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -13,7 +15,7 @@ import { HeaderService } from './header.service';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private headerService: HeaderService) { }
+  constructor(private headerService: HeaderService, private authService: AuthenticationService, private router: Router) { }
 
   faBars = faBars;
   faCogs = faCogs;
@@ -45,15 +47,28 @@ export class HeaderComponent implements OnInit {
       }
     })
 
-    
+    this.router.events.subscribe((event)=>{
+      /*
+        I don't really know what router.events puts out, specifically, but anyways this fixes an issue where:
+        If a menu is open, and then you navigate to a different url via using the sidebar, for example, the menu's become locked shut, because of some issue with the state of menu.isOpen not being properly closed.
+
+        This, therefore, solves that, with closeMenus() any time the router does an event, resetting the menus.
+      */
+      this.closeMenus();
+    })
 
   }
 
   private buildHeaderMenus(currentComponentMenu?: IHeaderMenu): IHeaderMenu[]{
     let newMenu: IHeaderMenu[] = [];
     let accountMenuItems: NavItem[] = [];
+
+    let signOutMenuItem = new NavItem('Sign Out',null,null);
+    signOutMenuItem.clickEmitted$.subscribe(()=>{
+      this.authService.logout();
+    })
     accountMenuItems.push(new NavItem('Settings','/user_settings',faCogs));
-    accountMenuItems.push(new NavItem('Sign Out','',null));
+    accountMenuItems.push(signOutMenuItem);
 
     newMenu.push({ name: "Menu", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: appMenuItems});
     newMenu.push({ name: "Account", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: accountMenuItems});

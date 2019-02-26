@@ -1,7 +1,46 @@
 <div class="root">
-  form 
-  <!-- <div [formGroup]="activityForm">
+  <div class="form-component">
+    <div class="form-header">
+      {{ headerAction }}
+    </div>
+    <div [formGroup]="activityForm" class="activity-form">
+      <div class="form-row">
+        <div class="form-row-label">Name</div>
+        <input class="form-control form-row-input" type="text" placeholder="Name">
 
-  </div> -->
-  <button class="btn btn-secondary btn-sm" (click)="onClickCancel()">Cancel</button>
+      </div>
+      <div class="form-row">
+        <div class="form-row-label">Description</div>
+        <input class="form-control form-row-input" type="text" placeholder="Description">
+
+      </div>
+      <div class="form-row">
+
+        <div class="form-row-label">Parent Activity</div>
+        <div class="form-row-input" (click)="this.ifTopLevelActivity = true" style="cursor: pointer;">
+          <fa-icon [icon]="faCircle" *ngIf="!ifTopLevelActivity"></fa-icon>
+          <fa-icon [icon]="faCheckCircle" style="color:green" *ngIf="ifTopLevelActivity"></fa-icon>
+          Top-Level Activity
+        </div>
+        <div class="form-row-input" (click)="this.ifTopLevelActivity = false" style="cursor: pointer;">
+          <fa-icon [icon]="faCircle" *ngIf="ifTopLevelActivity"></fa-icon>
+          <fa-icon [icon]="faCheckCircle" style="color:green" *ngIf="!ifTopLevelActivity"></fa-icon>
+          Sub-Activity Of:
+        </div>
+        <input class="form-row-input" *ngIf="!ifTopLevelActivity" class="form-control form-row-input" type="text"
+          placeholder="Parent">
+      </div>
+      <div class="form-row">
+        <div class="form-row-label">Color</div>
+        <input class="form-control form-row-input" type="text" placeholder="Color">
+      </div>
+
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-primary btn-sm m-1" (click)="onClickSaveActivity()">Save Activity</button>
+      <button class="btn btn-secondary btn-sm m-1" (click)="onClickCancel()">Cancel</button>
+    </div>
+
+  </div>
 </div>
