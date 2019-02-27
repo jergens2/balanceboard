@@ -44,18 +44,29 @@ export class UserDefinedActivityFormComponent implements OnInit {
     this.activityTree = this.activitiesService.activitiesTree;
 
     if(this._action == "new"){
-
+      this.activityForm = new FormGroup({
+        'name': new FormControl(null, Validators.required),
+        'description': new FormControl(),
+        'parent': new FormControl(null, Validators.required),
+        'color': new FormControl(null, Validators.required)
+  
+      });
     }else if(this._action == "edit"){
       this.activityForm = new FormGroup({
         'name': new FormControl(this.activity.name, Validators.required),
+        'description': new FormControl(),
         'parent': new FormControl(this.activityTree.findActivityById(this.activity.parentTreeId).name, Validators.required),
-        'color': new FormControl(this.activity.color)
+        'color': new FormControl(this.activity.color, Validators.required)
   
       });
     }
-    
-    console.log("action is ", this._action);
   }
+
+
+  onActivityInputDropdownValueChanged(activity: UserDefinedActivity){
+    console.log("activity value changed from input:", activity);
+  }
+
 
   get headerAction(): string{
     if(this._action == "new"){

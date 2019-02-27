@@ -37,6 +37,7 @@ import { TimeLogComponent } from './daybook/time-log/time-log.component';
 import { DailyTaskListComponent } from './daybook/daily-task-list/daily-task-list.component';
 import { JournalComponent } from './daybook/journal/journal.component';
 import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year.component';
+import { ActivityInputDropdownComponent } from './activities/activity-input-dropdown/activity-input-dropdown.component';
 
 
 
@@ -77,7 +78,8 @@ import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year
     TimeLogComponent,
     DailyTaskListComponent,
     JournalComponent,
-    MonthOfYearComponent
+    MonthOfYearComponent,
+    ActivityInputDropdownComponent
     
     
   ],

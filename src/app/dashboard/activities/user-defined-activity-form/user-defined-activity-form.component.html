@@ -6,12 +6,12 @@
     <div [formGroup]="activityForm" class="activity-form">
       <div class="form-row">
         <div class="form-row-label">Name</div>
-        <input class="form-control form-row-input" type="text" placeholder="Name">
+        <input class="form-control form-row-input" type="text" placeholder="Name" formControlName="name">
 
       </div>
       <div class="form-row">
         <div class="form-row-label">Description</div>
-        <input class="form-control form-row-input" type="text" placeholder="Description">
+        <input class="form-control form-row-input" type="text" placeholder="Description" formControlName="description">
 
       </div>
       <div class="form-row">
@@ -25,14 +25,17 @@
         <div class="form-row-input" (click)="this.ifTopLevelActivity = false" style="cursor: pointer;">
           <fa-icon [icon]="faCircle" *ngIf="ifTopLevelActivity"></fa-icon>
           <fa-icon [icon]="faCheckCircle" style="color:green" *ngIf="!ifTopLevelActivity"></fa-icon>
-          Sub-Activity Of:
+          Sub-Activity of:
         </div>
-        <input class="form-row-input" *ngIf="!ifTopLevelActivity" class="form-control form-row-input" type="text"
-          placeholder="Parent">
+        <div *ngIf="!ifTopLevelActivity" class="form-row-input">
+          <app-activity-input-dropdown (valueChanged)="onActivityInputDropdownValueChanged($event)"></app-activity-input-dropdown>
+        </div>
+        <!-- <input class="form-row-input"  class="form-control form-row-input" type="hidden" placeholder="Parent" formControlName="parent">  -->
+        
       </div>
       <div class="form-row">
         <div class="form-row-label">Color</div>
-        <input class="form-control form-row-input" type="text" placeholder="Color">
+        <input class="form-control form-row-input" type="text" placeholder="Color" formControlName="color">
       </div>
 
     </div>
