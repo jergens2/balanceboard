@@ -21,13 +21,11 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
 
   action: string = "default";
-  // formAction: string = "new";
 
   displayedActivity: UserDefinedActivity = null;
 
-  private activityNameFromForm: string = null;
-  rootActivityTiles: IActivityTile[] = [];
-  rootActivities: UserDefinedActivity[];
+  // rootActivityTiles: IActivityTile[] = [];
+  // rootActivities: UserDefinedActivity[];
 
   activityTree: ActivityTree = null;
 
@@ -36,16 +34,12 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.buildHeaderMenu();
 
-    this.activityTree = this.activitiesService.activitiesTree;
-    this.activitiesService.activitiesTree$.subscribe((changedTree)=>{
-      this.activityTree = changedTree;
-    })
 
-    this.rootActivities = this.activityTree.rootActivities;
-    this.rootActivityTiles = this.rootActivities.map((activity) => {
-      return { activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false };
-    });
 
+    // this.rootActivities = this.activityTree.rootActivities;
+    // this.rootActivityTiles = this.rootActivities.map((activity) => {
+    //   return { activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false };
+    // });
     // console.log(this.rootActivityTiles);
   }
 
@@ -68,6 +62,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
     this.headerService.setCurrentMenu(daybookHeaderMenu);
   }
+
 
   onClickShowActivitiesList(){
     this.action = "activities_list";

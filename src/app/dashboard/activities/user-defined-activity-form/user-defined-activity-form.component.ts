@@ -34,7 +34,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
       this.parentActivity = null;
     } else {
       this.ifTopLevelActivity = false;
-      this.parentActivity = this.activitiesService.findActivityById(activity.parentTreeId);
+      this.parentActivity = this.activitiesService.findActivityByTreeId(activity.parentTreeId);
     }
 
     this.colorPickerValue = activity.color;
@@ -51,7 +51,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
     return this._action;
   }
 
-  @Output() formClosed: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() formClosed: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private activitiesService: ActivitiesService, private modalService: ModalService) { }
 
@@ -111,7 +111,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
   }
 
   onClickCancel() {
-    this.formClosed.emit(true);
+    this.formClosed.emit("CANCEL");
   }
 
   onClickSaveActivity() {
@@ -138,7 +138,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
 
         let saveNewActivity: UserDefinedActivity = new UserDefinedActivity('', '', '', this.activityForm.controls['name'].value, this.activityForm.controls['description'].value, parentActivityId, this.activityForm.controls['color'].value);
         this.activitiesService.saveActivity(saveNewActivity);
-        this.formClosed.emit(true);
+        this.formClosed.emit("SAVE_NEW");
       } else {
         console.log("Is parentActivityID null ? ", parentActivityId);
         console.log("Error : Form is invalid.");
@@ -154,7 +154,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
         modifyActivity.parentTreeId = parentActivityId;
         modifyActivity.color =  this.activityForm.controls['color'].value;
         this.activitiesService.updateActivity(modifyActivity);
-        this.formClosed.emit(true);
+        this.formClosed.emit("SAVE_EDIT");
       } else {
         console.log("Error : Form is invalid.")
       }
@@ -167,8 +167,15 @@ export class UserDefinedActivityFormComponent implements OnInit {
   onClickDeleteActivity(){   
     let modalOptions: string[] = ["Yes", "No"];     
     let modal: Modal = new Modal("Confirm: Delete Activity?", modalOptions);
-    let modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: any)=>{
-      console.log("option selected was: ", selectedOption);
+    let modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: string)=>{
+      if(selectedOption == "Yes"){
+        this.activitiesService.deleteActivity(this.activity);
+        this.formClosed.emit("DELETE");
+      }else if(selectedOption == "No"){
+
+      }else{
+        //error 
+      }
     });
     this.modalService.activeModal = modal;
   }

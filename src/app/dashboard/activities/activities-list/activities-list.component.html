@@ -1,0 +1,13 @@
+
+<div class="root">
+  <div class="activities-list-header">
+    <h5>All Activities</h5>
+  </div>
+  
+  <div class="activities-list-items">
+    <div *ngFor="let tile of rootActivityTiles" class="activity-list-item">
+      <app-activity-list-item [activity]="tile.activity" (activitySelected)="onActivitySelected($event)">
+      </app-activity-list-item>
+    </div>
+  </div>
+</div>

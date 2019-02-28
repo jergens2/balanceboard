@@ -55,7 +55,7 @@ export class ActivityTree {
         return rootActivities;
     }
 
-    findActivityById(treeId: string): UserDefinedActivity{
+    findActivityByTreeId(treeId: string): UserDefinedActivity{
         
         for(let activity of this._allActivities){
             // console.log(activity);

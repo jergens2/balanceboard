@@ -52,7 +52,7 @@ export class ActivitiesService {
   }
 
   
-  findActivityById(treeId: string): UserDefinedActivity{
+  findActivityByTreeId(treeId: string): UserDefinedActivity{
     /*
       2019-01-28
       Warning: 
@@ -76,7 +76,7 @@ export class ActivitiesService {
 
     */
     // console.log("finding activity by treeId", treeId);
-    return this._activitiesTree.findActivityById(treeId);
+    return this._activitiesTree.findActivityByTreeId(treeId);
   }
 
   login$(authStatus: AuthStatus){

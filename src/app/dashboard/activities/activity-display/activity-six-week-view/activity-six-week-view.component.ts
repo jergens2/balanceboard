@@ -24,7 +24,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
   @Input() set activityInstances(activityInstances: IActivityInstance[]) {
     this._activityInstances = activityInstances;
     if (this._activityInstances.length > 0) {
-      this._activity = this.activitiesService.findActivityById(this._activityInstances[0].activityTreeId);
+      this._activity = this.activitiesService.findActivityByTreeId(this._activityInstances[0].activityTreeId);
     }
 
 

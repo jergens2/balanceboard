@@ -178,7 +178,7 @@ export class TimelogService {
   private buildTimeSegmentActivities(activitiesData: Array<{activityTreeId: string, duration: number, description: string }>): TimeSegmentActivity[]{
     // console.log("building time segment activities");
     return activitiesData.map((activity) =>{
-      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.activitiesService.findActivityById(activity.activityTreeId), activity.duration, activity.description);
+      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.activitiesService.findActivityByTreeId(activity.activityTreeId), activity.duration, activity.description);
       return timeSegmentActivity;
     })
   }

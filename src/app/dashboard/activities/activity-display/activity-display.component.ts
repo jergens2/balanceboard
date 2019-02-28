@@ -6,6 +6,7 @@ import { IActivityInstance } from './activity-instance.interface';
 import * as moment from 'moment';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { ActivityTree } from '../activity-tree.model';
 
 @Component({
   selector: 'app-activity-display',
@@ -46,7 +47,7 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
     this.activityDataSubscription.unsubscribe();
     this.activityDataSubscription = this.activitiesService.getActivityData(this.activity).subscribe((response: {data: any, message: string})=>{
       console.log("response from activities service: ", response)
-      /*2222
+      /*
         data is of type TimeSegment[] from server
 
         need to map data to interface type IActivityInstance
@@ -68,8 +69,12 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
     this.action = "edit";
   }
 
-  onFormClosed(val: boolean){
+  onFormClosed(val: string){
     this.action = "view";
+    if(val == "DELETE"){
+      this.displayClosed.emit();
+    }
+    
   }
 
   ngOnDestroy(){

@@ -38,6 +38,7 @@ import { DailyTaskListComponent } from './daybook/daily-task-list/daily-task-lis
 import { JournalComponent } from './daybook/journal/journal.component';
 import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year.component';
 import { ActivityInputDropdownComponent } from './activities/activity-input-dropdown/activity-input-dropdown.component';
+import { ActivitiesListComponent } from './activities/activities-list/activities-list.component';
 
 
 
@@ -79,7 +80,8 @@ import { ActivityInputDropdownComponent } from './activities/activity-input-drop
     DailyTaskListComponent,
     JournalComponent,
     MonthOfYearComponent,
-    ActivityInputDropdownComponent
+    ActivityInputDropdownComponent,
+    ActivitiesListComponent
     
     
   ],

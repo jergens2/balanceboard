@@ -9,16 +9,7 @@
   </div> -->
 
   <div class="activity-display" *ngIf="action == 'activities_list'">
-    <div class="activities-list-header">
-      <h5>All Activities</h5>
-    </div>
-
-    <div class="activities-list-items">
-      <div *ngFor="let tile of rootActivityTiles" class="activity-list-item">
-        <app-activity-list-item [activity]="tile.activity" (activitySelected)="onActivitySelected($event)">
-        </app-activity-list-item>
-      </div>
-    </div>
+    <app-activities-list (activitySelected)="onActivitySelected($event)"></app-activities-list>
   </div>
 
   <div class="activity-display" *ngIf="action == 'display'">

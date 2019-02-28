@@ -1,0 +1,32 @@
+.activities-list{    
+    grid-row: 2 / span 1;
+    grid-column: 1 / span 1;
+
+    height:100%;
+    overflow-y: hidden;
+}
+.activities-list:hover{
+    overflow-y: auto;
+}
+
+
+.activities-list-header{
+    grid-column: 1 / span 1;
+
+    display:flex;
+    flex-direction:row;
+    justify-content: space-between;
+}
+
+.activities-list-items{
+    grid-column: 1 / span 1;
+}
+
+.activity-list-item{
+    padding: 3px;
+
+    margin: 2px;
+    margin-left: 12px;
+    border-radius:3px;
+    /* border: 1px solid rgb(223, 223, 223); */
+}
