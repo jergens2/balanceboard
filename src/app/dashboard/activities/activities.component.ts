@@ -21,7 +21,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
 
   action: string = "default";
-  formAction: string = "new";
+  // formAction: string = "new";
 
   displayedActivity: UserDefinedActivity = null;
 
@@ -31,13 +31,15 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   activityTree: ActivityTree = null;
 
-  modifyActivity: UserDefinedActivity;
   private menuItemSubscriptions: Subscription[] = [];
 
   ngOnInit() {
     this.buildHeaderMenu();
 
     this.activityTree = this.activitiesService.activitiesTree;
+    this.activitiesService.activitiesTree$.subscribe((changedTree)=>{
+      this.activityTree = changedTree;
+    })
 
     this.rootActivities = this.activityTree.rootActivities;
     this.rootActivityTiles = this.rootActivities.map((activity) => {
@@ -84,7 +86,6 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   }
 
   onClickCreateNewActivity() {
-    this.formAction = "new";
     this.action = "form";
   }
 

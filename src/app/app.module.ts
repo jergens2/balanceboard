@@ -19,6 +19,7 @@ import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
 import { UserSettingsComponent } from './user-settings/user-settings.component';
 import { HeaderMenuComponent } from './nav/header/header-menu/header-menu.component';
+import { ModalComponent } from './modal/modal.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { HeaderMenuComponent } from './nav/header/header-menu/header-menu.compon
     HeaderComponent,
     SidebarComponent,
     UserSettingsComponent,
-    HeaderMenuComponent
+    HeaderMenuComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,

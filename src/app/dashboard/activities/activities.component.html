@@ -31,7 +31,7 @@
   </div>
 
   <div class="activity-display" *ngIf="action == 'form'">
-    <app-user-defined-activity-form [formAction]="formAction" [activity]="editActivity" (formClosed)="onFormClosed()">
+    <app-user-defined-activity-form (formClosed)="onFormClosed()">
     </app-user-defined-activity-form>
   </div>
 

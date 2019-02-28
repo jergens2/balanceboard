@@ -1,9 +1,10 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 import { UserDefinedActivity } from '../user-defined-activity.model';
 import { ActivityTree } from '../activity-tree.model';
 import { ActivitiesService } from '../activities.service';
 import { IActivityDropdownListItem } from './activity-dropdown-list-item.interface';
+import { Subscription, Observable, fromEvent } from 'rxjs';
 
 @Component({
   selector: 'app-activity-input-dropdown',
@@ -24,8 +25,16 @@ export class ActivityInputDropdownComponent implements OnInit {
   private activitiesTree: ActivityTree = null;
   private selectedActivity: UserDefinedActivity = null;
 
+  private dropdownMenuSubscription: Subscription = new Subscription();
+
 
   @Output() valueChanged: EventEmitter<UserDefinedActivity> = new EventEmitter<UserDefinedActivity>();
+  @Input('initialValue') set initialValue(providedParent: UserDefinedActivity)  {
+    if(providedParent != null){
+      this.activityTextInputValue = providedParent.name;
+    }
+    
+  }; 
 
   constructor(private activitiesService: ActivitiesService) { }
 
@@ -87,6 +96,7 @@ export class ActivityInputDropdownComponent implements OnInit {
       }
     }
   }
+
   onClickActivityDropdownItem(listItem: IActivityDropdownListItem) {
 
     this.activityTextInputValue = listItem.activity.name;
@@ -119,21 +129,21 @@ export class ActivityInputDropdownComponent implements OnInit {
     }
 
 
-    if (this.activitiesDropDownList.length > 0) {
-      let updatedDropdownList: IActivityDropdownListItem[] = [];
-      for (let listItem of this.activitiesDropDownList) {
-        updatedDropdownList.push(listItem);
-        updatedDropdownList.push(...getChildListItems(listItem))
-      }
-      this.activitiesDropDownList = Object.assign([], updatedDropdownList);
-    } else {
+    // if (this.activitiesDropDownList.length > 0) {
+    //   let updatedDropdownList: IActivityDropdownListItem[] = [];
+    //   for (let listItem of this.activitiesDropDownList) {
+    //     updatedDropdownList.push(listItem);
+    //     updatedDropdownList.push(...getChildListItems(listItem))
+    //   }
+    //   this.activitiesDropDownList = Object.assign([], updatedDropdownList);
+    // } else {
       let updatedDropdownList: IActivityDropdownListItem[] = [];
       for (let listItem of this.dropdownListTree) {
         updatedDropdownList.push(listItem);
         updatedDropdownList.push(...getChildListItems(listItem))
       }
       this.activitiesDropDownList = Object.assign([], updatedDropdownList);
-    }
+    // }
 
   }
 
@@ -167,6 +177,21 @@ export class ActivityInputDropdownComponent implements OnInit {
 
     this.activitiesDropDownList = searchResults;
 
+  }
+
+  onMouseLeaveDropdownList(){
+    if(this.activitiesDropDownList.length > 0){
+      this.dropdownMenuSubscription.unsubscribe();
+      let documentClickListener: Observable<Event> = fromEvent(document, 'click');
+      this.dropdownMenuSubscription = documentClickListener.subscribe((click)=>{  
+        this.activitiesDropDownList = [];
+      })
+    }else{
+
+    }
+  }
+  onMouseEnterDropdownList(){
+    this.dropdownMenuSubscription.unsubscribe();
   }
 
   activityHasChildren(listItem: IActivityDropdownListItem) {

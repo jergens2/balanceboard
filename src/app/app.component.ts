@@ -4,6 +4,8 @@ import { AuthStatus } from './authentication/auth-status.model';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { UserSettingsService } from './user-settings/user-settings.service';
 import { UserSetting } from './user-settings/user-setting.model';
+import { ModalService } from './modal/modal.service';
+import { Modal } from './modal/modal.model';
 
 @Component({
   selector: 'app-root',
@@ -19,9 +21,20 @@ export class AppComponent implements OnInit {
   nightMode: UserSetting = null;
   sideBarOpen: boolean = false;
 
-  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService) { }
+  ifModal: boolean = false;
+
+
+  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private modalService: ModalService) { }
 
   ngOnInit() {
+
+    this.modalService.activeModal$.subscribe((modal: Modal)=>{
+      if(modal){
+        this.ifModal = true;
+      }else{
+        this.ifModal = false;
+      }
+    })
 
     this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[])=>{
       for(let setting of userSettings){

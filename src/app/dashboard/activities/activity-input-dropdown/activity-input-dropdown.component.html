@@ -7,7 +7,7 @@
     <fa-icon class="activity-dropdown-button" [icon]="faCaretDown" (click)="onClickActivityDropdownArrow()">
     </fa-icon>
   </div>
-  <div *ngIf="activitiesDropDownList.length > 0" class="activity-dropdown-list" [style.height]="activityDropdownHeight">
+  <div *ngIf="activitiesDropDownList.length > 0" class="activity-dropdown-list" [style.height]="activityDropdownHeight" (mouseleave)="onMouseLeaveDropdownList()" (mouseenter)="onMouseEnterDropdownList()">
     <div *ngFor="let listItem of activitiesDropDownList" 
       class="activity-dropdown-list-item" [style.margin-left]="dropdownListItemMarginLeft(listItem)">
       <div class="activity-dropdown-list-item-arrow" (click)="onClickActivityDropdownItemArrow(listItem)">

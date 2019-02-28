@@ -5,7 +5,7 @@
     grid-template-columns: auto;
 
     width:100%;
-    height:100vh;
+    /* height:100vh; */
 }
 .activities-header{
     grid-row: 1 / span 1;

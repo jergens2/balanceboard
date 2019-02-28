@@ -31,6 +31,10 @@ export class ActivitiesService {
     return this._activitiesTree;
   }
 
+  get userId(): string {
+    return this._authStatus.user.id;
+  }
+
   
   getActivityData(activity: UserDefinedActivity): Observable<any>{
     /*

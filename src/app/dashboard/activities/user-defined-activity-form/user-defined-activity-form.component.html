@@ -1,8 +1,18 @@
 <div class="root">
   <div class="form-component">
     <div class="form-header">
-      {{ headerAction }}
+
+      <div class="header-name">
+        <span>{{ headerAction }}</span><span style="font-weight:bold;font-size:1.1em;">{{ activityName }}</span>
+      </div>
+      <div class="header-margin">
+        <button *ngIf="this.action == 'edit'" class="btn btn-sm btn-danger header-delete-button"
+          (click)="onClickDeleteActivity()">Delete Activity</button>
+      </div>
+
+
     </div>
+    <!-- <hr style="margin-bottom:10px;height:1px;color:black;"> -->
     <div [formGroup]="activityForm" class="activity-form">
       <div class="form-row">
         <div class="form-row-label">Name</div>
@@ -28,14 +38,18 @@
           Sub-Activity of:
         </div>
         <div *ngIf="!ifTopLevelActivity" class="form-row-input">
-          <app-activity-input-dropdown (valueChanged)="onActivityInputDropdownValueChanged($event)"></app-activity-input-dropdown>
+          <app-activity-input-dropdown (valueChanged)="onActivityInputDropdownValueChanged($event)"
+            [initialValue]="parentActivity"></app-activity-input-dropdown>
         </div>
         <!-- <input class="form-row-input"  class="form-control form-row-input" type="hidden" placeholder="Parent" formControlName="parent">  -->
-        
+
       </div>
       <div class="form-row">
         <div class="form-row-label">Color</div>
-        <input class="form-control form-row-input" type="text" placeholder="Color" formControlName="color">
+        <input class="form-control form-row-input" type="text" placeholder="Color" formControlName="color"
+          [style.background]="colorPickerValue" [(colorPicker)]="colorPickerValue" [value]="colorPickerValue"
+          [cpPosition]="'bottom'">
+
       </div>
 
     </div>
