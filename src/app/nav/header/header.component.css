@@ -29,6 +29,9 @@
     font-size:0.9em;
     color: #1247da;
 }
+.balanceboard-icon{
+    display:none;
+}
 .sidebar-button{
     padding:3px;
     padding-left:10px;
@@ -62,4 +65,21 @@
     position: absolute;
     border: 1px solid gray;
     background-color: white;
+}
+
+
+@media (max-width: 768px) {
+    .title-section{
+        width:20px;
+    }
+    
+    .balanceboard-title{
+        display:none;
+    }
+    .balanceboard-icon{
+        display:inline;
+    }
+    .sidebar-button{
+        display:none;
+    }
 }

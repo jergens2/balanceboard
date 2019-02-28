@@ -13,7 +13,7 @@
     width:100%;
     height: 100vh;
     display:grid;
-    grid-template-rows: 29px 1fr;
+    grid-template-rows: 29px auto;
     grid-template-columns: 250px 1fr 250px;
 }
 
@@ -46,7 +46,7 @@
 }
 
 @media (min-width: 1200px){
-    .wrapper{
+    .app-container{
         /* The following will apply a right-hand margin to match the size of the sidebar on the left
             for the purpose of putting the content in the literal center of the screen
         */
@@ -60,21 +60,19 @@
 
 @media (max-width: 767px){
     /*  Small Screens  */
-    .wrapper{
+    .app-container{
         display:grid;
+        grid-template-rows: 29px auto;
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr;
-        padding-top:0px;
     }
-    
-    .sidebar-component{
+    .sidebar{
         display:none;
         grid-column: 0 / span 0;
         grid-row: 0 / span 0;
     }
     .content{
         grid-column-start: 1;
-        grid-column-end: 2;
+        grid-column-end: -1;
         padding:0px;
     }
 

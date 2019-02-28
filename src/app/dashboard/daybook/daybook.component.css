@@ -15,9 +15,10 @@
 
 
 .root{
-    /* width: 100%; */
+    width: 100%;
+    height:100%;
 
-    padding-top: 10px;
+    padding-top: 8px;
 
     display: flex;
     flex-direction: row;
@@ -398,10 +399,15 @@
         max-height: 624px;
 
         margin: 0px;
+
+        grid-template-columns: auto;
         /* background-color: rgb(0, 255, 170); */
     }
+    .daybook-tabs{
+        display:none;
+    }
     .daybook-body {
-        grid-template-columns: 52px 10px auto;
+        /* grid-template-columns: 52px 10px auto; */
         padding: 1px;
     }
     .daybook-header-tab{
