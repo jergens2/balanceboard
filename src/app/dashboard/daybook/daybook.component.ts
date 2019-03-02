@@ -34,14 +34,14 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
   /* bed time is the time you start trying to go to sleep */
   /* fall asleep time is the time that you are aiming to be sleeping by */
-  wakeUpTomorrowTime: moment.Moment;
-  bedTime: moment.Moment;
-  fallAsleepTime: moment.Moment;
+  // wakeUpTomorrowTime: moment.Moment;
+  // bedTime: moment.Moment;
+  // fallAsleepTime: moment.Moment;
 
 
 
 
-  daybookContentStyle: any = {};
+  timelogViewStyle: any = {};
   hourLabels: any[] = [];
   bookLines: {
     line: number,
@@ -73,7 +73,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
   timeSegmentFormAction: string = "New";
 
-  newTimeSegmentNavItemSubscription: Subscription = new Subscription();
+  private headerMenuSubscriptions: Subscription[] = [];
 
 
   private _currentDate: moment.Moment = moment();
@@ -95,7 +95,8 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
   timeSegments: TimeSegment[] = [];
 
-  private updateTimeSegmentSubject: Subject<TimeSegment> = new Subject();
+  currentView: string = "timelog"; 
+
 
 
 
@@ -154,16 +155,34 @@ export class DaybookComponent implements OnInit, OnDestroy {
   }
 
   private buildHeaderMenu(){
-    let newTimeSegmentNavItem = new NavItem("New Time Segment", null, null);
-    this.newTimeSegmentNavItemSubscription = newTimeSegmentNavItem.clickEmitted$.subscribe((clicked)=>{
-      this.onClickNextTimeSegment();
-    })
-
     let daybookHeaderMenuItems: NavItem[] = [];
+
+    let newTimeSegmentNavItem = new NavItem("New Time Segment", null, null);
+    this.headerMenuSubscriptions.push(newTimeSegmentNavItem.clickEmitted$.subscribe((clicked)=>{
+      this.onClickNextTimeSegment();
+    }));
+
+    let timelogViewNavItem = new NavItem("Time Log View", null, null);
+    this.headerMenuSubscriptions.push(timelogViewNavItem.clickEmitted$.subscribe((clicked)=>{
+      this.changeView("timelog");
+    }));
+
+    let heatmapViewNavItem = new NavItem("Heat Map View", null, null);
+    this.headerMenuSubscriptions.push(heatmapViewNavItem.clickEmitted$.subscribe((clicked)=>{
+      this.changeView("heatmap");
+    }));
+
     daybookHeaderMenuItems.push(newTimeSegmentNavItem);
+    daybookHeaderMenuItems.push(timelogViewNavItem);
+    daybookHeaderMenuItems.push(heatmapViewNavItem);    
+    
     let daybookHeaderMenu: IHeaderMenu = { name:"Daybook" , isOpen: false, menuOpenSubscription: new Subscription() , menuItems: daybookHeaderMenuItems }
 
     this.headerService.setCurrentMenu(daybookHeaderMenu);
+  }
+
+  private changeView(newView: string){
+    this.currentView = newView;
   }
 
   buildTimeSegmentTile(timeSegment: TimeSegment): ITimeSegmentTile {
@@ -347,7 +366,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
       gridIndex += 1;
     }
 
-    this.daybookContentStyle = { "grid-template-rows": "repeat(" + gridIndex.toFixed(0) + ", 1fr)" }
+    this.timelogViewStyle = { "grid-template-rows": "repeat(" + gridIndex.toFixed(0) + ", 1fr)" }
     this.hourLabels = hourLabels;
     this.bookLines = gridLines;
 
@@ -425,7 +444,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.fetchTimeSegmentsSubscription.unsubscribe();
     this.nowSubscription.unsubscribe();
-    this.newTimeSegmentNavItemSubscription.unsubscribe();
+    this.headerMenuSubscriptions.forEach((sub: Subscription)=>{
+      sub.unsubscribe();
+    });
     this.headerService.setCurrentMenu(null);
   }
 

@@ -72,13 +72,12 @@
       </div>
       <!-- End of header -->
 
-      <div class="daybook-content" [ngStyle]="daybookContentStyle">
 
-        <!-- 
-        daybook-content is where the main grid is for the daybook timelog.  The main grid is built in the .ts file 
-        
-      -->
+      <div class="heatmap-view" *ngIf="currentView == 'heatmap'">
+        <app-heatmap-view [currentDate]="currentDate"></app-heatmap-view>
+      </div>
 
+      <div class="timelog-view" [ngStyle]="timelogViewStyle" *ngIf="currentView == 'timelog'">
 
         <div *ngIf="ifLoading" class="loading">
           <fa-icon class="loading-spinner" [icon]="faSpinner" [spin]="true"></fa-icon>
@@ -109,16 +108,6 @@
         </div>
 
 
-
-        <!--
-      <div *ngIf="ifBedTime">
-        <div class="bed-time-container" [ngStyle]="bedTimeStyle">
-          <div class="bed-time">
-            {{ bedTimeString }}
-          </div>
-        </div>
-      </div> -->
-
         <div *ngFor="let timeSegmentTile of timeSegmentTiles" class="time-segment-tile"
           [ngStyle]="timeSegmentTile.containerStyle">
           <div class="time-segment-start"></div>
@@ -148,7 +137,8 @@
 
 
 
-      </div><!-- end of daybook-content -->
+      </div><!-- end of timelog view -->
+
       <div class="time-segment-form-container" *ngIf="ifTimeSegmentForm">
         <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment"
           [action]="timeSegmentFormAction" (closeForm)="onCloseForm($event)"></app-time-segment-form>

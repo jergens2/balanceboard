@@ -39,6 +39,12 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.action = "view";
+
+    this.activitiesService.activitiesTree$.subscribe((newTree: ActivityTree)=>{
+      let foundActivity = newTree.findActivityByTreeId(this.activity.treeId);
+      this.activity = Object.assign({}, foundActivity);
+      this.getActivityData();
+    })
   }
 
   private getActivityData(){

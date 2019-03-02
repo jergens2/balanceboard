@@ -39,6 +39,7 @@ import { JournalComponent } from './daybook/journal/journal.component';
 import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year.component';
 import { ActivityInputDropdownComponent } from './activities/activity-input-dropdown/activity-input-dropdown.component';
 import { ActivitiesListComponent } from './activities/activities-list/activities-list.component';
+import { HeatmapViewComponent } from './daybook/heatmap-view/heatmap-view.component';
 
 
 
@@ -81,7 +82,8 @@ import { ActivitiesListComponent } from './activities/activities-list/activities
     JournalComponent,
     MonthOfYearComponent,
     ActivityInputDropdownComponent,
-    ActivitiesListComponent
+    ActivitiesListComponent,
+    HeatmapViewComponent
     
     
   ],
