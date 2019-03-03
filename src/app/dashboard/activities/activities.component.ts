@@ -3,9 +3,9 @@ import { ActivitiesService } from './activities.service';
 import { UserDefinedActivity } from './user-defined-activity.model';
 import { IActivityTile } from './activity-tile.interface';
 import { ActivityTree } from './activity-tree.model';
-import { NavItem } from '../../nav/nav-item.model';
+import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
 import { Subscription } from 'rxjs';
-import { IHeaderMenu } from '../../nav/header/header-menu/header-menu.interface';
+import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { HeaderService } from '../../nav/header/header.service';
 
 
@@ -45,20 +45,20 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   
   private buildHeaderMenu(){
-    let newActivityNavItem = new NavItem("Create New Activity", null, null);
-    this.menuItemSubscriptions.push(newActivityNavItem.clickEmitted$.subscribe((clicked)=>{
+    let newActivityMenuItem = new MenuItem("Create New Activity", null, null);
+    this.menuItemSubscriptions.push(newActivityMenuItem.clickEmitted$.subscribe((clicked)=>{
       this.onClickCreateNewActivity();
     }));
-    let activitiesListNavItem = new NavItem("Activities List", null, null);
-    this.menuItemSubscriptions.push(activitiesListNavItem.clickEmitted$.subscribe((clicked)=>{
+    let activitiesListMenuItem = new MenuItem("Activities List", null, null);
+    this.menuItemSubscriptions.push(activitiesListMenuItem.clickEmitted$.subscribe((clicked)=>{
       this.onClickShowActivitiesList();
     }));
 
-    let activitiesHeaderMenuItems: NavItem[] = [];
-    activitiesHeaderMenuItems.push(newActivityNavItem);
-    activitiesHeaderMenuItems.push(activitiesListNavItem);
+    let activitiesHeaderMenuItems: MenuItem[] = [];
+    activitiesHeaderMenuItems.push(newActivityMenuItem);
+    activitiesHeaderMenuItems.push(activitiesListMenuItem);
 
-    let daybookHeaderMenu: IHeaderMenu = { name:"Activities" , isOpen: false, menuOpenSubscription: new Subscription() , menuItems: activitiesHeaderMenuItems }
+    let daybookHeaderMenu: HeaderMenu = new HeaderMenu('Activities', activitiesHeaderMenuItems);
 
     this.headerService.setCurrentMenu(daybookHeaderMenu);
   }

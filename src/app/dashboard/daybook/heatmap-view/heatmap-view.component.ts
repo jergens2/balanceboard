@@ -1,10 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { TimelogService } from '../../timelog/timelog.service';
+import { TimelogService } from '../time-log/timelog.service';
 
 import * as moment from 'moment';
 import { Subject, Subscription } from 'rxjs';
-import { TimeSegment } from '../../timelog/time-segment.model';
+import { TimeSegment } from '../time-log/time-segment.model';
 import { IHeatmapContentItem } from './heatmap-content-item.interface';
 
 @Component({
@@ -32,12 +32,9 @@ export class HeatmapViewComponent implements OnInit {
   contentItems: IHeatmapContentItem[] = [];
 
   ngOnInit() {
-    
-    
-    
 
     this._currentDate$.subscribe((changedDate: moment.Moment) => {
-      
+      this.ifLoading = true;
       this.timeSegmentsSubscription.unsubscribe();
       this.timelogService.fetchTimeSegmentsByDay(changedDate).subscribe((timeSegments) => {
         this.buildTemplateItems(changedDate, timeSegments);
@@ -49,16 +46,16 @@ export class HeatmapViewComponent implements OnInit {
   }
 
 
-  private buildTemplateItems(currentDate: moment.Moment, timeSegments: TimeSegment[]){
-    function getActivityColor(startTime: moment.Moment, endTime: moment.Moment): string{
-      for(let timeSegment of timeSegments){
-        if(moment(timeSegment.startTime).isSameOrBefore(startTime) && moment(timeSegment.endTime).isSameOrAfter(endTime)){
-          if(timeSegment.activities.length > 0){
+  private buildTemplateItems(currentDate: moment.Moment, timeSegments: TimeSegment[]) {
+    function getActivityColor(startTime: moment.Moment, endTime: moment.Moment): string {
+      for (let timeSegment of timeSegments) {
+        if (moment(timeSegment.startTime).isSameOrBefore(startTime) && moment(timeSegment.endTime).isSameOrAfter(endTime)) {
+          if (timeSegment.activities.length > 0) {
             return timeSegment.activities[0].activity.color;
-          }else{
+          } else {
             return "";
           }
-        }else{
+        } else {
           // if it does not encapsulate the full 5 minutes:
         }
       }
@@ -73,18 +70,17 @@ export class HeatmapViewComponent implements OnInit {
     let currentGridColumn: number = 2;
     let currentStartTime: moment.Moment = moment(currentDate).hour(0).minute(0).second(0).millisecond(0);
 
-    while(itemsRemaining > 0){
+    while (itemsRemaining > 0) {
 
 
       let startTime: moment.Moment = moment(currentStartTime);
       let endTime: moment.Moment = moment(currentStartTime).add(4, 'minutes').add(59, 'seconds').add(999, 'milliseconds');
       let backgroundColor: string = getActivityColor(startTime, endTime);
-      console.log("backgroundColor is ", backgroundColor);
 
       let itemStyle: any = {
-        "grid-row":""+currentGridRow+" / span 1",
-        "grid-column":""+currentGridColumn+" / span 1",
-        "background-color":backgroundColor
+        "grid-row": "" + currentGridRow + " / span 1",
+        "grid-column": "" + currentGridColumn + " / span 1",
+        "background-color": backgroundColor
       };
 
       let contentItem: IHeatmapContentItem = {
@@ -96,12 +92,12 @@ export class HeatmapViewComponent implements OnInit {
 
 
       this.contentItems.push(contentItem)
-      
+
       currentStartTime = moment(currentStartTime).add(5, 'minutes');
       currentGridColumn++;
-      if(currentGridColumn == 14){
+      if (currentGridColumn == 14) {
         currentGridColumn = 2;
-        currentGridRow ++;
+        currentGridRow++;
       }
       itemsRemaining -= 1;
     }

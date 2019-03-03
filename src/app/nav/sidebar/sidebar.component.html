@@ -10,12 +10,12 @@
   </div>
 
 
-  <div *ngFor="let navItem of navItems" class="sidebar-button" [routerLink]="navItem.routerLink" [routerLinkActive]='routerLinkActiveClass' [ngClass]="{'sidebar-button-night-mode':nightMode.booleanValue }">
+  <div *ngFor="let menuItem of menuItems" class="sidebar-button" [routerLink]="menuItem.routerLink" [routerLinkActive]='routerLinkActiveClass' [ngClass]="{'sidebar-button-night-mode':nightMode.booleanValue }">
 
     <div style="width:30px;margin-right:3px;">
-      <fa-icon [icon]="navItem.icon"></fa-icon>
+      <fa-icon [icon]="menuItem.icon"></fa-icon>
     </div>
-    {{ navItem.title }}
+    {{ menuItem.title }}
   </div>
 
 

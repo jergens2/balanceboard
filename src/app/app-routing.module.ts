@@ -6,7 +6,6 @@ import { IvyleeManageComponent } from "./dashboard/productivity/ivylee/ivylee-ma
 import { BodyWeightComponent } from "./dashboard/health/body-weight/body-weight.component";
 import { BuildProfileComponent } from "./dashboard/health/build-profile/build-profile.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
-import { TimelogComponent } from "./dashboard/timelog/timelog.component";
 import { ActivitiesComponent } from "./dashboard/activities/activities.component";
 import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 import { MonthPlannerComponent } from "./dashboard/month-planner/month-planner.component";
@@ -26,7 +25,6 @@ const appRoutes: Routes = [
     { path: 'daybook/:isoDate', component: DaybookComponent },
     { path: 'month_planner', component: MonthPlannerComponent },
     { path: 'year_planner', component: YearPlannerComponent },
-    { path: 'timelog', component: TimelogComponent },
     { path: 'activities', component: ActivitiesComponent },
     { path: 'idea_log', component: IdeaLogComponent },
     { path: 'user_settings', component: UserSettingsComponent }

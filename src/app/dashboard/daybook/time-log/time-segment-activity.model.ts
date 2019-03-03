@@ -1,5 +1,5 @@
-import { UserDefinedActivity } from "../activities/user-defined-activity.model";
-import { ActivitiesService } from "../activities/activities.service";
+import { UserDefinedActivity } from "../../activities/user-defined-activity.model";
+import { ActivitiesService } from "../../activities/activities.service";
 
 export class TimeSegmentActivity{
 

@@ -51,19 +51,22 @@
 }
 
 .header-menu{
-    flex-grow: 0;
-    flex-shrink: 0;
+    /* flex-grow: 0;
+    flex-shrink: 0; */
 }
 
 .header-menu:hover{
     cursor: pointer;
     background-color: #dddddd;
 }
+.header-is-open{
+    background-color: #dddddd;
+}
 
 
 .open-menu{
     position: absolute;
-    border: 1px solid gray;
+    /* border: 1px solid gray; */
     background-color: white;
 }
 

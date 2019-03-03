@@ -1,4 +1,4 @@
-import { UserDefinedActivity } from "../activities/user-defined-activity.model";
+import { UserDefinedActivity } from "../../activities/user-defined-activity.model";
 import * as moment from 'moment';
 import { TimeSegmentActivity } from "./time-segment-activity.model";
 

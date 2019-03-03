@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { IHeaderMenu } from './header-menu/header-menu.interface';
+import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
-import { Subscription, Observable, fromEvent } from 'rxjs';
+import { Subscription, Observable, fromEvent, Subscriber } from 'rxjs';
 import { faBars, faCogs } from '@fortawesome/free-solid-svg-icons';
-import { NavItem } from '../nav-item.model';
+import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
@@ -22,14 +22,16 @@ export class HeaderComponent implements OnInit {
 
   activeAppTool: string = null;
 
-  headerMenus: IHeaderMenu[] = [];
+  headerMenus: HeaderMenu[] = [];
+  private activeSubscriptions: Subscription[] = [];
+  private closeMenuSubscription: Subscription = new Subscription();
 
   @Output() sidebarButtonClicked: EventEmitter<boolean> = new EventEmitter();
 
-  private get menuIsOpen(): boolean{
+  private get menuIsOpen(): boolean {
     let anyOpen = false;
-    for(let headerMenu of this.headerMenus){
-      if(headerMenu.isOpen){ 
+    for (let headerMenu of this.headerMenus) {
+      if (headerMenu.isOpen) {
         return headerMenu.isOpen;
       }
     }
@@ -37,93 +39,100 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    
+
     this.headerMenus = this.buildHeaderMenus();
-    this.headerService.activeBalanceBoardComponentMenu$.subscribe((componentMenu: IHeaderMenu)=>{
-      if(componentMenu != null){
-        this.headerMenus = this.buildHeaderMenus(componentMenu);
-      }else{
-        this.headerMenus = this.buildHeaderMenus();
-      }
-    })
-
-    this.router.events.subscribe((event)=>{
-      /*
-        I don't really know what router.events puts out, specifically, but anyways this fixes an issue where:
-        If a menu is open, and then you navigate to a different url via using the sidebar, for example, the menu's become locked shut, because of some issue with the state of menu.isOpen not being properly closed.
-
-        This, therefore, solves that, with closeMenus() any time the router does an event, resetting the menus.
-      */
+    this.headerService.activeBalanceBoardComponentMenu$.subscribe((componentMenu: HeaderMenu) => {
       this.closeMenus();
+
+      this.closeMenuSubscription.unsubscribe();
+      if (componentMenu != null) {
+        this.headerMenus = this.buildHeaderMenus(componentMenu);
+
+      } else {
+
+        this.headerMenus = this.buildHeaderMenus();
+
+      }
+
+    });
+    this.closeMenuSubscription = this.headerService.closeMenus$.subscribe((value: boolean) => {
+      console.log("closing menu subscri[diasdoadjo")
+      this.closeMenus();
+
     })
 
   }
 
-  private buildHeaderMenus(currentComponentMenu?: IHeaderMenu): IHeaderMenu[]{
-    let newMenu: IHeaderMenu[] = [];
-    let accountMenuItems: NavItem[] = [];
-
-    let signOutMenuItem = new NavItem('Sign Out',null,null);
-    signOutMenuItem.clickEmitted$.subscribe(()=>{
-      this.authService.logout();
+  private buildHeaderMenus(currentComponentMenu?: HeaderMenu): HeaderMenu[] {
+    this.activeSubscriptions.forEach((sub: Subscription) => {
+      sub.unsubscribe();
     })
-    accountMenuItems.push(new NavItem('Settings','/user_settings',faCogs));
+    this.activeSubscriptions = [];
+
+    let newMenus: HeaderMenu[] = [];
+    let accountMenuItems: MenuItem[] = [];
+
+    let signOutMenuItem = new MenuItem('Sign Out', null, null);
+    this.activeSubscriptions.push(signOutMenuItem.clickEmitted$.subscribe(() => {
+      this.authService.logout();
+    }));
+    accountMenuItems.push(new MenuItem('Settings', '/user_settings', faCogs));
     accountMenuItems.push(signOutMenuItem);
 
-    newMenu.push({ name: "Menu", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: appMenuItems});
-    newMenu.push({ name: "Account", isOpen: false, menuOpenSubscription: new Subscription(), menuItems: accountMenuItems});
-    if(currentComponentMenu){
-      newMenu.push(currentComponentMenu);
+    newMenus.push(new HeaderMenu('Menu', appMenuItems));
+    newMenus.push(new HeaderMenu('Account', accountMenuItems));
+    if (currentComponentMenu) {
+      newMenus.push(currentComponentMenu);
     }
-    
-    return newMenu;
+
+    return newMenus;
   }
 
 
-  onClickSidebarMenuButton(){
+  onClickSidebarMenuButton() {
     this.sidebarButtonClicked.emit();
   }
 
 
-  onClickHeaderMenu(headerMenu: IHeaderMenu){
-    
-    if(this.menuIsOpen){
+  onClickHeaderMenu(headerMenu: HeaderMenu) {
+    if (this.menuIsOpen) {
       this.closeMenus();
-    }else{
+    } else {
       this.openMenu(headerMenu);
     }
   }
-  onMouseOverHeaderMenu(headerMenu: IHeaderMenu){
-    if(this.menuIsOpen){
+
+  onMouseOverHeaderMenu(headerMenu: HeaderMenu) {
+    if (this.menuIsOpen) {
       this.openMenu(headerMenu);
-    }else{
+    } else {
 
     }
   }
-  onMouseLeaveHeaderMenu(headerMenu: IHeaderMenu){
-    if(this.menuIsOpen){
+  onMouseLeaveHeaderMenu(headerMenu: HeaderMenu) {
+    if (this.menuIsOpen) {
       headerMenu.menuOpenSubscription.unsubscribe();
       let documentClickListener: Observable<Event> = fromEvent(document, 'click');
-      headerMenu.menuOpenSubscription = documentClickListener.subscribe((click)=>{  
+      headerMenu.menuOpenSubscription = documentClickListener.subscribe((click) => {
         this.closeMenus();
       })
-    }else{
+    } else {
 
     }
   }
 
-  private openMenu(headerMenu: IHeaderMenu){
-    for(let menu of this.headerMenus){
+  private openMenu(headerMenu: HeaderMenu) {
+    for (let menu of this.headerMenus) {
       menu.isOpen = false;
     }
     headerMenu.isOpen = true;
 
-  } 
-  private closeMenus(){
-    for(let menu of this.headerMenus){
-      menu.isOpen = false;
-      menu.menuOpenSubscription.unsubscribe();
-    }
+  }
+
+  private closeMenus() {
+    this.headerMenus.forEach((headerMenu: HeaderMenu) => {
+      headerMenu.closeMenu();
+    });
   }
 
 

@@ -18,7 +18,6 @@ import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ColorPickerModule } from 'ngx-color-picker';
 
-import { TimelogModule } from './timelog/timelog.module';
 import { DaybookComponent } from './daybook/daybook.component';
 import { CalendarComponent } from './daybook/calendar/calendar.component';
 
@@ -46,7 +45,6 @@ import { HeatmapViewComponent } from './daybook/heatmap-view/heatmap-view.compon
 
 @NgModule({
   imports: [
-    TimelogModule,
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,

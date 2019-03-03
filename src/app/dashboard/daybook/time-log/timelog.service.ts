@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthenticationService } from '../../authentication/authentication.service';
+import { AuthenticationService } from '../../../authentication/authentication.service';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { TimeSegment } from './time-segment.model';
-import { UserDefinedActivity } from '../activities/user-defined-activity.model';
+import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
 
 import * as moment from 'moment';
 
-import { serverUrl } from '../../serverurl';
+import { serverUrl } from '../../../serverurl';
 import { map } from 'rxjs/operators';
-import { AuthStatus } from '../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.model';
 import { TimeSegmentActivity } from './time-segment-activity.model';
-import { ActivitiesService } from '../activities/activities.service';
+import { ActivitiesService } from '../../activities/activities.service';
 
 
 

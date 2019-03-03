@@ -1,6 +1,7 @@
 <div class="root">
-  <div *ngFor="let menuItem of openMenu.menuItems" class='menu-item'
-    routerLinkActive='activeLink' (click)="onClickHeaderMenuItem(menuItem)">
+  <div *ngFor="let menuItem of openMenu.menuItems" class='menu-item' routerLinkActive='activeLink'
+    (click)="onClickHeaderMenuItem(menuItem)" (mouseover)="onMouseOverHeaderMenuItem(menuItem)"
+    (mouseleave)="onMouseLeaveHeaderMenuItem(menuItem)">
     <div class="menu-item-icon">
       <div *ngIf="menuItem.icon != null">
         <fa-icon [icon]="menuItem.icon"></fa-icon>
@@ -11,5 +12,12 @@
     <div class="menu-item-text">
       {{ menuItem.title }}
     </div>
+    <div class="menu-item-chevron" *ngIf="menuItem.subMenu != null">
+      <fa-icon [icon]="faChevronRight"></fa-icon>
+    </div>
+    <div class="sub-menu" *ngIf="(menuItem.subMenu != null) && (menuItem.subMenu.isOpen)">
+      <app-header-menu [openMenu]="menuItem.subMenu"></app-header-menu>
+    </div>
+
   </div>
 </div>

@@ -1,13 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { TimeSegment } from '../../timelog/time-segment.model';
-import { TimeSegmentActivity } from '../../timelog/time-segment-activity.model';
+import { TimeSegment } from '../time-log/time-segment.model';
+import { TimeSegmentActivity } from '../time-log/time-segment-activity.model';
 import { faPlus, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ActivitiesService } from '../../activities/activities.service';
 import { ActivityTree } from '../../activities/activity-tree.model';
 import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
-import { TimelogService } from '../../timelog/timelog.service';
+import { TimelogService } from '../time-log/timelog.service';
 
 
 @Component({

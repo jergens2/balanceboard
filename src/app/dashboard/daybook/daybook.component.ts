@@ -1,16 +1,15 @@
-import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { TimelogService } from '../timelog/timelog.service';
+import { TimelogService } from './time-log/timelog.service';
 import { Subscription, timer, Subject } from 'rxjs';
 import { faCalendarAlt, faCaretSquareDown, faEdit } from '@fortawesome/free-regular-svg-icons';
-import { TimeSegment } from '../timelog/time-segment.model';
+import { TimeSegment } from './time-log/time-segment.model';
 import { ITimeSegmentTile } from './time-segment-tile.interface';
 import { faSpinner, faBars } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
 import { HeaderService } from '../../nav/header/header.service';
-import { IHeaderMenu } from '../../nav/header/header-menu/header-menu.interface';
-import { NavItem } from '../..//nav/nav-item.model';
+import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
+import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
 
 @Component({
   selector: 'app-daybook',
@@ -155,28 +154,28 @@ export class DaybookComponent implements OnInit, OnDestroy {
   }
 
   private buildHeaderMenu(){
-    let daybookHeaderMenuItems: NavItem[] = [];
+    let daybookHeaderMenuItems: MenuItem[] = [];
 
-    let newTimeSegmentNavItem = new NavItem("New Time Segment", null, null);
-    this.headerMenuSubscriptions.push(newTimeSegmentNavItem.clickEmitted$.subscribe((clicked)=>{
+    let newTimeSegmentMenuItem = new MenuItem("New Time Segment", null, null);
+    this.headerMenuSubscriptions.push(newTimeSegmentMenuItem.clickEmitted$.subscribe((clicked)=>{
       this.onClickNextTimeSegment();
     }));
 
-    let timelogViewNavItem = new NavItem("Time Log View", null, null);
-    this.headerMenuSubscriptions.push(timelogViewNavItem.clickEmitted$.subscribe((clicked)=>{
+    let timelogViewMenuItem = new MenuItem("Time Log View", null, null);
+    this.headerMenuSubscriptions.push(timelogViewMenuItem.clickEmitted$.subscribe((clicked)=>{
       this.changeView("timelog");
     }));
 
-    let heatmapViewNavItem = new NavItem("Heat Map View", null, null);
-    this.headerMenuSubscriptions.push(heatmapViewNavItem.clickEmitted$.subscribe((clicked)=>{
+    let heatmapViewMenuItem = new MenuItem("Heat Map View", null, null);
+    this.headerMenuSubscriptions.push(heatmapViewMenuItem.clickEmitted$.subscribe((clicked)=>{
       this.changeView("heatmap");
     }));
 
-    daybookHeaderMenuItems.push(newTimeSegmentNavItem);
-    daybookHeaderMenuItems.push(timelogViewNavItem);
-    daybookHeaderMenuItems.push(heatmapViewNavItem);    
+    daybookHeaderMenuItems.push(newTimeSegmentMenuItem);
+    daybookHeaderMenuItems.push(timelogViewMenuItem);
+    daybookHeaderMenuItems.push(heatmapViewMenuItem);    
     
-    let daybookHeaderMenu: IHeaderMenu = { name:"Daybook" , isOpen: false, menuOpenSubscription: new Subscription() , menuItems: daybookHeaderMenuItems }
+    let daybookHeaderMenu: HeaderMenu = new HeaderMenu('Daybook', daybookHeaderMenuItems);
 
     this.headerService.setCurrentMenu(daybookHeaderMenu);
   }

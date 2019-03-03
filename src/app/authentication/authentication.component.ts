@@ -8,7 +8,7 @@ import { User } from './user.model';
 import { UserSetting } from '../user-settings/user-setting.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
 import { ActivitiesService } from '../dashboard/activities/activities.service';
-import { TimelogService } from '../dashboard/timelog/timelog.service';
+import { TimelogService } from '../dashboard/daybook/time-log/timelog.service';
 
 
 @Component({

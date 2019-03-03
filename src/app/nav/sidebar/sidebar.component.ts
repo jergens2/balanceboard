@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 
 import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
-import { NavItem } from '../nav-item.model';
+import { MenuItem } from '../header/header-menu/menu-item.model';
 import { appMenuItems } from '../app-menu-items';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { Subscription } from 'rxjs';
@@ -31,39 +31,32 @@ export class SidebarComponent implements OnInit {
   private authSubscription: Subscription = new Subscription();
   user: User = null;
 
-  navItems: NavItem[];
+  menuItems: MenuItem[];
 
 
   nightMode: UserSetting = null;
 
   ngOnInit() {
-    this.navItems = appMenuItems;
+    this.menuItems = appMenuItems;
 
     this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[])=>{
-      // console.log("usersettings", userSettings);
 
       for(let setting of userSettings){
         if(setting.name == "night_mode"){
-          // console.log("sidebar:  setting nightmode to ", setting);
           this.nightMode = setting;
         }
       }
     })
-    // console.log("sidebar: this.nightMode = " , this.nightMode)
 
     this.authSubscription = this.authService.authStatus$.subscribe((authStatus: AuthStatus)=>{
       if(authStatus != null){
         if(authStatus.user != null){
-          // console.log("receiving authstatus from authService", authStatus.user.email);
           this.authStatus = authStatus;
           this.user = this.authStatus.user;
         }
       }
     })
 
-    // this.stylesService.nightMode$.subscribe((nightModeValue)=>{
-    //   this.nightMode = nightModeValue;
-    // })
   }
 
   get routerLinkActiveClass(): string {
