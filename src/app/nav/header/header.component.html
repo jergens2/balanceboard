@@ -11,13 +11,13 @@
     </div>
   </div>
 
-  <div *ngFor="let headerMenu of headerMenus" class="header-menu" [ngClass]="{'header-is-open':headerMenu.isOpen}" (click)="onClickHeaderMenu(headerMenu)"
+  <div *ngFor="let headerMenu of headerMenus" class="header-menu" [ngClass]="{'header-is-open':headerMenu.isOpen}" 
     (mouseover)="onMouseOverHeaderMenu(headerMenu)" (mouseleave)="onMouseLeaveHeaderMenu(headerMenu)">
-    <div class="menu-name">
+    <div class="menu-name" (click)="onClickHeaderMenuName(headerMenu)">
       {{ headerMenu.name }}
     </div>
 
-    <div *ngIf="headerMenu.isOpen" class="open-menu">
+    <div *ngIf="headerMenu.isOpen == true" class="open-menu">
       <app-header-menu [openMenu]="headerMenu"></app-header-menu>
     </div>
   </div>

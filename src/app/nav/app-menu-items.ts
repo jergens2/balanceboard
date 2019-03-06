@@ -16,18 +16,18 @@ menuItems.push(new MenuItem('Idea Log','/idea_log',faLightbulb));
 menuItems.push(new MenuItem('Productivity','/productivity',faProjectDiagram));
 menuItems.push(new MenuItem('Work Task List','/ivyleeCreation',faListOl));
 
-let financeMenu = new MenuItem('Finances','/finances',faDollarSign)
-let financeSubMenuItems: MenuItem[] = [];
-financeSubMenuItems.push(new MenuItem('Budget','/budget',faChartPie));
-financeSubMenuItems.push(new MenuItem('Net Worth','/networth', faChartLine));
-financeMenu.subMenu = new HeaderMenu('Finance submenu', financeSubMenuItems); 
-menuItems.push(financeMenu);
+// let financeMenu = new MenuItem('Finances','/finances',faDollarSign)
+// let financeSubMenuItems: MenuItem[] = [];
+// financeSubMenuItems.push(new MenuItem('Budget','/budget',faChartPie));
+// financeSubMenuItems.push(new MenuItem('Net Worth','/networth', faChartLine));
+// financeMenu.subMenu = new HeaderMenu('Finance submenu', financeSubMenuItems); 
+// menuItems.push(financeMenu);
 
-let healthMenu = new MenuItem('Health','/health',faBriefcaseMedical);
-let healthSubMenuItems: MenuItem[] = [];
-healthSubMenuItems.push(new MenuItem('Body Weight','/bodyWeight',faWeight))
-healthMenu.subMenu = new HeaderMenu('Health submenu', healthSubMenuItems);
-menuItems.push(healthMenu);
+// let healthMenu = new MenuItem('Health','/health',faBriefcaseMedical);
+// let healthSubMenuItems: MenuItem[] = [];
+// healthSubMenuItems.push(new MenuItem('Body Weight','/bodyWeight',faWeight))
+// healthMenu.subMenu = new HeaderMenu('Health submenu', healthSubMenuItems);
+// menuItems.push(healthMenu);
 
 
 export const appMenuItems: MenuItem[] = menuItems;

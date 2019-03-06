@@ -1,18 +1,18 @@
 <div class="root">
   <div *ngFor="let menuItem of openMenu.menuItems" class='menu-item' routerLinkActive='activeLink'
-    (click)="onClickHeaderMenuItem(menuItem)" (mouseover)="onMouseOverHeaderMenuItem(menuItem)"
+     (mouseover)="onMouseOverHeaderMenuItem(menuItem)"
     (mouseleave)="onMouseLeaveHeaderMenuItem(menuItem)">
-    <div class="menu-item-icon">
+    <div class="menu-item-icon" (click)="onClickHeaderMenuItem(menuItem)">
       <div *ngIf="menuItem.icon != null">
         <fa-icon [icon]="menuItem.icon"></fa-icon>
 
       </div>
 
     </div>
-    <div class="menu-item-text">
+    <div class="menu-item-text" (click)="onClickHeaderMenuItem(menuItem)">
       {{ menuItem.title }}
     </div>
-    <div class="menu-item-chevron" *ngIf="menuItem.subMenu != null">
+    <div class="menu-item-chevron" *ngIf="menuItem.subMenu != null" (click)="onClickHeaderMenuItem(menuItem)">
       <fa-icon [icon]="faChevronRight"></fa-icon>
     </div>
     <div class="sub-menu" *ngIf="(menuItem.subMenu != null) && (menuItem.subMenu.isOpen)">

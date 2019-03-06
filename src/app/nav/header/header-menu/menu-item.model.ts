@@ -17,7 +17,7 @@ export class MenuItem {
 
     public clickEmitted$: EventEmitter<boolean> = new EventEmitter();
 
-    onClick() {
+    click() {
         this.clickEmitted$.emit(true);
     }
 

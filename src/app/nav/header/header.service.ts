@@ -23,12 +23,13 @@ export class HeaderService {
     this._activeBalanceBoardComponentMenu$.next(this._activeBalanceBoardComponentMenu);
   }
 
-  private _closeMenus: Subject<boolean> = new Subject();
-  public get closeMenus$(): Observable<boolean> {
-    return this._closeMenus.asObservable();
-  }
-  public closeMenus(value: boolean){
-    this._closeMenus.next(value);
-  }
+  // private _closeMenus: Subject<boolean> = new Subject();
+  // public get closeMenus$(): Observable<boolean> {
+  //   return this._closeMenus.asObservable();
+  // }
+  // public closeMenus(value: boolean){
+  //   console.log("Service: Closing Menus")
+  //   this._closeMenus.next(value);
+  // }
   
 }

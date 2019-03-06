@@ -17,7 +17,7 @@ export class HeaderMenuComponent implements OnInit {
   constructor(private router: Router, private headerService: HeaderService) { }
 
   @Input() openMenu: HeaderMenu;
-  @Output() closeMenu: EventEmitter<HeaderMenu> = new EventEmitter<HeaderMenu>();
+  // @Output() closeMenu: EventEmitter<HeaderMenu> = new EventEmitter<HeaderMenu>();
 
 
   ngOnInit() {
@@ -25,21 +25,12 @@ export class HeaderMenuComponent implements OnInit {
   }
 
   onClickHeaderMenuItem(menuItem: MenuItem) {
-
-
-    /*
-      onClick() will emit an event, which is subscribed to by the component,
-      and the actual logic is executed by whichever component subscribes to the onClick()
-      For example, in HeaderComponent, signout menu item subscription will execute signout method.
-    */
-
-
     
-    menuItem.onClick();
+    menuItem.click();
     if (menuItem.routerLink != null && menuItem.routerLink != '') {
       this.router.navigate([menuItem.routerLink]);
     }
-    this.headerService.closeMenus(true);
+    // this.headerService.closeMenus(true);
   }
 
   onMouseOverHeaderMenuItem(menuItem: MenuItem) {
@@ -50,8 +41,12 @@ export class HeaderMenuComponent implements OnInit {
   }
   onMouseLeaveHeaderMenuItem(menuItem: MenuItem) {
     if (menuItem.subMenu) {
-      menuItem.subMenu.closeMenu();
+      menuItem.closeSubMenu();
     }
+    // if (menuItem.subMenu) {
+    //   menuItem.subMenu.isOpen = false;
+    // }
+    
   }
 
 
