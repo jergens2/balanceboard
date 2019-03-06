@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private headerService: HeaderService, private authService: AuthenticationService, private cdRef:ChangeDetectorRef) { }
+  constructor(private headerService: HeaderService, private authService: AuthenticationService, private cdRef: ChangeDetectorRef) { }
 
   faBars = faBars;
   faCogs = faCogs;
@@ -24,7 +24,7 @@ export class HeaderComponent implements OnInit {
 
   headerMenus: HeaderMenu[] = [];
   private activeSubscriptions: Subscription[] = [];
-  private closeMenuSubscription: Subscription = new Subscription();
+  // private closeMenuSubscription: Subscription = new Subscription();
   private documentClickListener: Observable<Event> = fromEvent(document, 'click');
 
   @Output() sidebarButtonClicked: EventEmitter<boolean> = new EventEmitter();
@@ -41,29 +41,18 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
 
-    
-
-    // this.closeMenuSubscription.unsubscribe();
-    // this.closeMenuSubscription = this.headerService.closeMenus$.subscribe((value: boolean) => {
-      // console.log("Header service closeMenus$ clicked")
-      this.closeMenus();
-      this.headerService.activeBalanceBoardComponentMenu$.subscribe((componentMenu: HeaderMenu) => {  
-        this.closeMenuSubscription.unsubscribe();
-        if (componentMenu != null) {
-          this.headerMenus = this.buildHeaderMenus(componentMenu);
-  
-        } else {
-  
-          this.headerMenus = this.buildHeaderMenus();
-   
-        }
-  
-      });
-    // });
+    this.headerService.activeBalanceBoardComponentMenu$.subscribe((componentMenu: HeaderMenu) => {
+      if (componentMenu != null) {
+        this.headerMenus = Object.assign([], this.buildHeaderMenus(componentMenu)) ;
+      } else {
+        this.headerMenus = Object.assign([], this.buildHeaderMenus());
+      }
+    });
     this.headerMenus = Object.assign([], this.buildHeaderMenus());
   }
 
   private buildHeaderMenus(currentComponentMenu?: HeaderMenu): HeaderMenu[] {
+    this.closeMenus();
     this.activeSubscriptions.forEach((sub: Subscription) => {
       sub.unsubscribe();
     })
@@ -102,7 +91,7 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  onMouseOverHeaderMenu(headerMenu: HeaderMenu) {
+  onMouseOverHeaderMenuName(headerMenu: HeaderMenu) {
     headerMenu.menuOpenSubscription.unsubscribe();
     if (this.menuIsOpen) {
       this.openMenu(headerMenu);
@@ -110,12 +99,11 @@ export class HeaderComponent implements OnInit {
 
     }
   }
-  onMouseLeaveHeaderMenu(headerMenu: HeaderMenu) {
+  onMouseLeaveHeaderMenuName(headerMenu: HeaderMenu) {
 
     if (this.menuIsOpen) {
       headerMenu.menuOpenSubscription.unsubscribe();
       headerMenu.menuOpenSubscription = this.documentClickListener.subscribe((click) => {
-        console.log("closing because of click away")
         this.closeMenus();
       })
     } else {
@@ -125,25 +113,17 @@ export class HeaderComponent implements OnInit {
 
   private openMenu(headerMenu: HeaderMenu) {
     for (let menu of this.headerMenus) {
-      // menu.isOpen = false;
-      menu.closeMenu();
+      if (menu.name != headerMenu.name) {
+        menu.closeMenu();
+      }
     }
     headerMenu.isOpen = true;
-
   }
 
   private closeMenus() {
-    console.log("Closing Menus")
-    for(let headerMenu of this.headerMenus){
-      // headerMenu.isOpen = false;
+    for (let headerMenu of this.headerMenus) {
       headerMenu.closeMenu();
     }
-    // this.headerMenus.forEach((headerMenu: HeaderMenu) => {
-    //   // headerMenu.closeMenu();
-    //   headerMenu.isOpen = false;
-    // });
-    // console.log("Is this.menuIsOpen?" , this.menuIsOpen);
-    // this.cdRef.detectChanges();
   }
 
 

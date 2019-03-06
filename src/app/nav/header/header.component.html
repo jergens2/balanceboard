@@ -12,8 +12,8 @@
   </div>
 
   <div *ngFor="let headerMenu of headerMenus" class="header-menu" [ngClass]="{'header-is-open':headerMenu.isOpen}" 
-    (mouseover)="onMouseOverHeaderMenu(headerMenu)" (mouseleave)="onMouseLeaveHeaderMenu(headerMenu)">
-    <div class="menu-name" (click)="onClickHeaderMenuName(headerMenu)">
+    >
+    <div class="menu-name" (click)="onClickHeaderMenuName(headerMenu)" (mouseover)="onMouseOverHeaderMenuName(headerMenu)" (mouseleave)="onMouseLeaveHeaderMenuName(headerMenu)">
       {{ headerMenu.name }}
     </div>
 
