@@ -56,7 +56,23 @@ export class HeatmapViewComponent implements OnInit {
             return "";
           }
         } else {
-          // if it does not encapsulate the full 5 minutes:
+          /*
+              This block is not necessarily robust, but does the job for now.
+          */
+          let halfwayPoint = moment(startTime).add(2,'minutes').add(30,'seconds');
+          if( moment(timeSegment.startTime).isSameOrBefore(startTime) && moment(timeSegment.endTime).isSameOrAfter(halfwayPoint)){
+            if (timeSegment.activities.length > 0) {
+              return timeSegment.activities[0].activity.color;
+            } else {
+              return "";
+            }
+          }else if( moment(timeSegment.startTime).isSameOrAfter(halfwayPoint) && moment(timeSegment.endTime).isSameOrAfter(endTime)){
+            if (timeSegment.activities.length > 0) {
+              return timeSegment.activities[0].activity.color;
+            } else {
+              return "";
+            }
+          }
         }
       }
       return "";
