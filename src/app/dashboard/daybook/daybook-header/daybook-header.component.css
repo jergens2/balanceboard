@@ -1,0 +1,68 @@
+.root{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgb(0, 73, 141);
+}
+
+.daybook-header-tabs{
+    align-self: flex-end;
+    flex-grow: 2;
+
+    display:grid;
+    grid-template-rows: auto;
+    grid-template-columns: 2fr 3fr 2fr;
+    align-items: end;
+    /* justify-content: center;
+    align-items: flex-end; */
+}
+.daybook-header-tab{
+    border: 1px solid rgb(0, 73, 141);
+    border-bottom: none;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+
+    /* flex-grow:2; */
+    height:35px;
+    padding:5px;
+    background-color: rgb(238, 238, 238);
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-size: 0.85em;
+    line-height: 95%;
+}
+.daybook-header-current-day{
+
+    height: 45px;
+    font-size: 1em;
+    line-height: 100%;
+}
+.daybook-header-today{
+
+
+}
+.daybook-header-tab:hover{
+    cursor: pointer;
+    background-color: rgb(0, 103, 199);
+}
+.daybook-header-current-day:hover{
+    cursor: default;
+    background-color: rgb(238, 238, 238);
+}
+.header-margin-item{
+    margin:8px;
+    width:36px;
+}
+
+.no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  }

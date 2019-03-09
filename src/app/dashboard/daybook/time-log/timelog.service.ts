@@ -105,7 +105,7 @@ export class TimelogService {
   // }
 
   updateTimeSegment(timeSegment: TimeSegment){
-    
+    console.log("Updating time segment: ", timeSegment);
     let updatedTimeSegment: TimeSegment = timeSegment;
     let trimmedActivities = updatedTimeSegment.activities.map((activity: TimeSegmentActivity)=>{
       return {activityTreeId: activity.activityTreeId, duration: activity.duration, description: activity.description }

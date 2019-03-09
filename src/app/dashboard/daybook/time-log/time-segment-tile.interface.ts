@@ -1,4 +1,4 @@
-import { TimeSegment } from "./time-log/time-segment.model";
+import { TimeSegment } from "./time-segment.model";
 
 
 export interface ITimeSegmentTile{
