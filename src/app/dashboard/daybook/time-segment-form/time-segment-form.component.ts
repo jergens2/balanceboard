@@ -49,8 +49,8 @@ export class TimeSegmentFormComponent implements OnInit {
 
     this.activitiesTree = this.activitiesService.activitiesTree;
 
-
-
+    console.log("this.action is ", this.action);
+    console.log("new time segment is ", this.newTimeSegment);
     if (this.action == "New") {
       this.timeSegmentForm = new FormGroup({
         'startTime': new FormControl(moment(this.newTimeSegment.startTime).format('HH:mm'), Validators.required),

@@ -51,7 +51,6 @@ export class DaybookComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.buildHeaderMenu();
-
     let dateRegExp: RegExp = new RegExp(/[0-9]{4}(-[0-9]{2}){2}/);
     let date: string = this.route.snapshot.paramMap.get('isoDate');
     if(dateRegExp.test(date)){
@@ -59,8 +58,6 @@ export class DaybookComponent implements OnInit, OnDestroy {
     }else{
       this.currentDate = moment();
     }
-
-
   }
 
   private buildHeaderMenu(){
@@ -103,6 +100,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
   newTimeSegment: TimeSegment = null;
   onNextTimeSegmentClicked(timeSegment: TimeSegment){
+    console.log("onNextTimeSegmentClicked, ", timeSegment)
     this.newTimeSegment = timeSegment;
     this.timeSegmentFormAction = "New";
     this.changeView("form");
@@ -117,7 +115,6 @@ export class DaybookComponent implements OnInit, OnDestroy {
   }
 
   onChangeCalendarDate(date: moment.Moment) {
-    console.log("receiving changed date, ", date)
     this.currentDate = date;
   }
 

@@ -25,8 +25,8 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   ifLoading: boolean = true;
 
-  nowSubscription: Subscription = new Subscription();
-  fetchTimeSegmentsSubscription: Subscription = new Subscription();
+  private _nowSubscription: Subscription = new Subscription();
+  private _fetchTimeSegmentsSubscription: Subscription = new Subscription();
 
   timeSegmentTiles: ITimeSegmentTile[] = [];
   nextTimeSegmentTile: ITimeSegmentTile = null;
@@ -46,6 +46,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
   private _currentDate$: Subject<moment.Moment> = new Subject();
+  private _currentDateSubscription: Subscription = new Subscription();
 
   @Input() set currentDate(date: moment.Moment) {
     this._currentDate$.next(moment(date));
@@ -54,49 +55,56 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   @Output() clickNextTimeSegment: EventEmitter<TimeSegment> = new EventEmitter();
 
 
-  private dayStartTime: moment.Moment;
-  private dayEndTime: moment.Moment;
+  private _timeWindow$: Subject<{ startTime: moment.Moment, endTime: moment.Moment }> = new Subject();
+  private _timeWindowSubscription: Subscription = new Subscription();
+
+  private setTimeWindow(startTime: moment.Moment, endTime: moment.Moment) {
+    this._timeWindow$.next({ startTime: startTime, endTime: endTime });
+  }
 
   timeSegments: TimeSegment[] = [];
 
   ngOnInit() {
 
-    this.dayStartTime = moment().hour(7).minute(30).second(0).millisecond(0);
-    this.dayEndTime = moment().hour(22).minute(30).second(0).millisecond(0);
-
-    this.nowSubscription.unsubscribe();
-    this.fetchTimeSegmentsSubscription.unsubscribe();
+    this._nowSubscription.unsubscribe();
+    this._fetchTimeSegmentsSubscription.unsubscribe();
 
 
 
 
     this._currentDate$.subscribe((date: moment.Moment) => {
-      this.ifLoading = true;
-      this.dayStartTime = moment(date).hour(7).minute(30).second(0).millisecond(0);
-      this.dayEndTime = moment(date).hour(22).minute(30).second(0).millisecond(0);
-      this.buildDisplay(this.dayStartTime, this.dayEndTime);
-      this.nowSubscription.unsubscribe();
-      this.nowSubscription = timer(0, 60000).subscribe(() => {
-        this.fetchTimeSegmentsSubscription.unsubscribe();
-        this.fetchTimeSegmentsSubscription = this.timelogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
-          this.timeSegments = timeSegments;
-          this.displayTimeSegments(this.timeSegments);
-          this.displayNextTimeSegment();
-          this.ifLoading = false;
+
+      this._timeWindowSubscription.unsubscribe();
+      this._timeWindowSubscription = this._timeWindow$.subscribe(({ startTime, endTime }) => {
+        this.ifLoading = true;
+        this.buildDisplay(startTime, endTime);
+        this._nowSubscription.unsubscribe();
+        this._nowSubscription = timer(0, 60000).subscribe(() => {
+          this._fetchTimeSegmentsSubscription.unsubscribe();
+          this._fetchTimeSegmentsSubscription = this.timelogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
+            this.timeSegments = timeSegments;
+            this.displayTimeSegments(this.timeSegments, startTime, endTime);
+            this.displayNextTimeSegment(startTime, endTime);
+            this.ifLoading = false;
+          });
+          this.buildDisplay(startTime, endTime);
         });
-        this.buildDisplay(this.dayStartTime, this.dayEndTime);
       });
+
+      this.setTimeWindow(moment(date).hour(7).minute(30).second(0).millisecond(0), moment(date).hour(22).minute(30).second(0).millisecond(0));
+
+
     });
     this._currentDate$.next(moment());
 
   }
 
-  private displayNextTimeSegment() {
+  private displayNextTimeSegment(startTime: moment.Moment, endTime: moment.Moment) {
     if (moment(this.currentDate).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
       let lastEndTime = this.getLastEndTime();
       this.nextTimeSegment = new TimeSegment('NEXT_TIME_SEGMENT', '', lastEndTime, moment().toISOString(), '');
       if (moment().diff(lastEndTime, 'minutes') > 5) {
-        this.nextTimeSegmentTile = this.buildTimeSegmentTile(this.nextTimeSegment);
+        this.nextTimeSegmentTile = this.buildTimeSegmentTile(this.nextTimeSegment, startTime, endTime);
       } else {
         this.nextTimeSegmentTile = null;
       }
@@ -120,19 +128,19 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   }
 
-  private buildTimeSegmentTile(timeSegment: TimeSegment): ITimeSegmentTile {
+  private buildTimeSegmentTile(timeSegment: TimeSegment, startTime: moment.Moment, endTime: moment.Moment): ITimeSegmentTile {
     let tile: ITimeSegmentTile = null;
     let segmentStart: moment.Moment = moment(timeSegment.startTime);
     let segmentEnd: moment.Moment = moment(timeSegment.endTime);
 
-    if (segmentStart.isSameOrAfter(this.dayEndTime) || segmentEnd.isSameOrBefore(this.dayStartTime)) {
+    if (segmentStart.isSameOrAfter(endTime) || segmentEnd.isSameOrBefore(startTime)) {
       return null;
     }
-    if (segmentStart.isBefore(this.dayStartTime) && segmentEnd.isAfter(this.dayStartTime) && segmentEnd.isSameOrBefore(this.dayEndTime)) {
-      segmentStart = moment(this.dayStartTime);
+    if (segmentStart.isBefore(startTime) && segmentEnd.isAfter(startTime) && segmentEnd.isSameOrBefore(endTime)) {
+      segmentStart = moment(startTime);
     }
-    if (segmentEnd.isAfter(this.dayEndTime) && segmentStart.isBefore(this.dayEndTime) && segmentStart.isSameOrAfter(this.dayStartTime)) {
-      segmentEnd = moment(this.dayEndTime);
+    if (segmentEnd.isAfter(endTime) && segmentStart.isBefore(endTime) && segmentStart.isSameOrAfter(startTime)) {
+      segmentEnd = moment(endTime);
     }
 
     let duration = segmentEnd.diff(segmentStart, 'minutes');
@@ -192,10 +200,10 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   }
 
 
-  private displayTimeSegments(timeSegments: TimeSegment[]) {
+  private displayTimeSegments(timeSegments: TimeSegment[], startTime: moment.Moment, endTime: moment.Moment) {
     let tiles: ITimeSegmentTile[] = [];
     for (let timeSegment of timeSegments) {
-      let timeSegmentTile: ITimeSegmentTile = this.buildTimeSegmentTile(timeSegment);
+      let timeSegmentTile: ITimeSegmentTile = this.buildTimeSegmentTile(timeSegment, startTime, endTime);
       if (timeSegmentTile) {
         tiles.push(timeSegmentTile);
       }
@@ -324,8 +332,11 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.fetchTimeSegmentsSubscription.unsubscribe();
-    this.nowSubscription.unsubscribe();
+    this._fetchTimeSegmentsSubscription.unsubscribe();
+    this._nowSubscription.unsubscribe();
+    this._currentDateSubscription.unsubscribe();
+    this._timeWindowSubscription.unsubscribe();
+
   }
 
   segmentBackgroundColor(timeSegment: TimeSegment): string {
