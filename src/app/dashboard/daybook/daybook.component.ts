@@ -106,7 +106,6 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.changeView("form");
   }
 
-
   ngOnDestroy() {
     this.headerMenuSubscriptions.forEach((sub: Subscription)=>{
       sub.unsubscribe();
@@ -118,8 +117,6 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.currentDate = date;
   }
 
-
-
   onClickToggleCalendar() {
     this.ifCalendarInside = !this.ifCalendarInside;
   }
@@ -128,9 +125,6 @@ export class DaybookComponent implements OnInit, OnDestroy {
   onClickDayBookMenu() {
     this.ifDaybookMenu = !this.ifDaybookMenu;
   }
-
-
-
 
   onClickAddNewTimeSegment(){
     this.timeSegmentFormAction = "New";
@@ -147,11 +141,5 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.currentDate = moment(this.currentDate);
     this.changeView("timelog");
   }
-
-
-
-
-
-
 
 }

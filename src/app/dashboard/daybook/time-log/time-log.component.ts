@@ -4,7 +4,7 @@ import { Subscription, timer, Subject } from 'rxjs';
 import { ITimeSegmentTile } from './time-segment-tile.interface';
 import { TimeSegment } from './time-segment.model';
 import { TimelogService } from './timelog.service';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-time-log',
@@ -16,6 +16,8 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   constructor(private timelogService: TimelogService) { }
 
   faSpinner = faSpinner;
+  faCaretUp = faCaretUp;
+  faCaretDown = faCaretDown;
 
   nowLineContainerStyle: any = {};
   nowTime: moment.Moment = moment();
@@ -33,9 +35,9 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   nextTimeSegment: TimeSegment = null
 
 
-
   timelogViewStyle: any = {};
-  hourLabels: any[] = [];
+  hourLabels: {hour:string, style:any}[] = [];
+  hourLines: { time: moment.Moment , style: any }[] = [];
   bookLines: {
     line: number,
     style: any,
@@ -54,12 +56,13 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   @Output() clickTimeSegment: EventEmitter<ITimeSegmentTile> = new EventEmitter();
   @Output() clickNextTimeSegment: EventEmitter<TimeSegment> = new EventEmitter();
 
-
+  private _timeWindow: { startTime: moment.Moment, endTime: moment.Moment } = { startTime: moment().hour(7).minute(30).second(0).millisecond(0), endTime: moment().hour(22).minute(30).second(0).millisecond(0)};
   private _timeWindow$: Subject<{ startTime: moment.Moment, endTime: moment.Moment }> = new Subject();
   private _timeWindowSubscription: Subscription = new Subscription();
 
-  private setTimeWindow(startTime: moment.Moment, endTime: moment.Moment) {
-    this._timeWindow$.next({ startTime: startTime, endTime: endTime });
+  private setTimeWindow(timeWindow: { startTime: moment.Moment, endTime: moment.Moment }) {
+    this._timeWindow = timeWindow;
+    this._timeWindow$.next(this._timeWindow);
   }
 
   timeSegments: TimeSegment[] = [];
@@ -70,34 +73,97 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     this._fetchTimeSegmentsSubscription.unsubscribe();
 
 
-
+    this.ifLoading = false;
 
     this._currentDate$.subscribe((date: moment.Moment) => {
 
       this._timeWindowSubscription.unsubscribe();
       this._timeWindowSubscription = this._timeWindow$.subscribe(({ startTime, endTime }) => {
-        this.ifLoading = true;
+
+
         this.buildDisplay(startTime, endTime);
-        this._nowSubscription.unsubscribe();
-        this._nowSubscription = timer(0, 60000).subscribe(() => {
-          this._fetchTimeSegmentsSubscription.unsubscribe();
-          this._fetchTimeSegmentsSubscription = this.timelogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
-            this.timeSegments = timeSegments;
-            this.displayTimeSegments(this.timeSegments, startTime, endTime);
-            this.displayNextTimeSegment(startTime, endTime);
-            this.ifLoading = false;
-          });
-          this.buildDisplay(startTime, endTime);
-        });
+
+        // this.ifLoading = true;
+        // this.buildDisplay(startTime, endTime);
+        // this._nowSubscription.unsubscribe();
+        // this._nowSubscription = timer(0, 60000).subscribe(() => {
+        //   this._fetchTimeSegmentsSubscription.unsubscribe();
+        //   this._fetchTimeSegmentsSubscription = this.timelogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
+        //     this.timeSegments = timeSegments;
+        //     this.displayTimeSegments(this.timeSegments, startTime, endTime);
+        //     this.displayNextTimeSegment(startTime, endTime);
+        //     this.ifLoading = false;
+        //   });
+        //   this.buildDisplay(startTime, endTime);
+        // });
       });
 
-      this.setTimeWindow(moment(date).hour(7).minute(30).second(0).millisecond(0), moment(date).hour(22).minute(30).second(0).millisecond(0));
+      this.setTimeWindow(this._timeWindow);
 
 
     });
     this._currentDate$.next(moment());
 
   }
+
+  private buildDisplay(startTime: moment.Moment, endTime: moment.Moment){
+    console.log("Building display from " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'));
+
+    endTime = moment(endTime).subtract(30,'minutes');
+    /*
+      as of now,
+      the incoming startTime and endTime variables should always be an exact half-hour, e.g. 8:00am or 8:30am.  
+      This method is not concerned with conforming the variables to that requirement, they must come in that way.
+    */
+
+    let halfHours: number = moment(endTime).diff(moment(startTime), 'minutes') / 30;
+
+
+    
+    let hourLabels: {hour:string, style: any}[] = []
+    let hourLines: {time:moment.Moment, style: any}[] = [];
+    let currentHalfHour:moment.Moment = moment(startTime);
+
+    let labelRowCount: number = 1;
+    let lineRowCount: number = 1;
+
+    while(moment(currentHalfHour).isSameOrBefore(moment(endTime))){
+      let labelGridRowStyle: string = "" + labelRowCount + " / span 2";
+      let lineGridRowStyle: string = "" + lineRowCount + " / span 1";
+
+      let lastLineBorderBottom: string = "none";
+      if(moment(currentHalfHour).isSame(moment(endTime))){
+        lastLineBorderBottom = "1px solid rgb(220, 253, 255)";
+      }
+
+      hourLines.push({time: currentHalfHour, style: { "grid-row": lineGridRowStyle , "border-bottom":lastLineBorderBottom }});
+      if(currentHalfHour.minute() == 0){
+        hourLabels.push({hour: moment(currentHalfHour).format('h a'), style: { "grid-row": labelGridRowStyle}});
+        labelRowCount += 2;
+      }
+      currentHalfHour = moment(currentHalfHour).add(30,'minutes');
+      lineRowCount ++; 
+    }
+
+    this.hourLabels = hourLabels;
+    this.hourLines = hourLines;
+  }
+
+  onClickCaret(direction: string){
+
+    let timeWindow: {startTime: moment.Moment, endTime: moment.Moment} = this._timeWindow;
+
+    if(direction == "UP"){
+      timeWindow.startTime = moment(timeWindow.startTime).subtract(1,'hour');
+      timeWindow.endTime = moment(timeWindow.endTime).subtract(1,'hour');
+    }else if(direction == "DOWN"){
+      timeWindow.startTime = moment(timeWindow.startTime).add(1,'hour');
+      timeWindow.endTime = moment(timeWindow.endTime).add(1,'hour');
+    }
+    this.setTimeWindow(timeWindow);
+  }
+
+
 
   private displayNextTimeSegment(startTime: moment.Moment, endTime: moment.Moment) {
     if (moment(this.currentDate).format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')) {
@@ -211,7 +277,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     this.timeSegmentTiles = tiles;
   }
 
-  private buildDisplay(dayStartTime: moment.Moment, dayEndTime: moment.Moment) {
+  private buildDisplayOld(dayStartTime: moment.Moment, dayEndTime: moment.Moment) {
 
     if (moment().isSameOrAfter(moment(dayStartTime)) && moment().isSameOrBefore(moment(dayEndTime))) {
       this.ifNowLine = true;
