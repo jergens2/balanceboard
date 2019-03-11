@@ -58,15 +58,17 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   @Output() clickNextTimeSegment: EventEmitter<TimeSegment> = new EventEmitter();
   @Output() changedDate: EventEmitter<moment.Moment> = new EventEmitter();
 
-  private _timeWindow: { startTime: moment.Moment, endTime: moment.Moment } = { startTime: moment().hour(7).minute(30).second(0).millisecond(0), endTime: moment().hour(22).minute(30).second(0).millisecond(0)};
+  private _timeWindow: { startTime: moment.Moment, endTime: moment.Moment } = null;
   private _timeWindow$: Subject<{ startTime: moment.Moment, endTime: moment.Moment }> = new Subject();
   private _timeWindowSubscription: Subscription = new Subscription();
+
+  private _windowLapsedDay: boolean = false;
 
   private setTimeWindow(timeWindow: { startTime: moment.Moment, endTime: moment.Moment }) {
     this._timeWindow = timeWindow;
     this._timeWindow$.next(this._timeWindow);
     if(moment(this._timeWindow.startTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')){
-      console.log("The time has rolled past midnight, so changing the date.");
+      this._windowLapsedDay = true;
       this.changedDate.emit(this._timeWindow.startTime);
     }
   }
@@ -77,43 +79,28 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
     this._nowSubscription.unsubscribe();
     this._fetchTimeSegmentsSubscription.unsubscribe();
-
-
     this.ifLoading = false;
 
-    this._currentDate$.subscribe((date: moment.Moment) => {
-
+    this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
+      let defaultTimeWindow: { startTime: moment.Moment, endTime: moment.Moment } = { startTime: moment(date).hour(7).minute(30).second(0).millisecond(0), endTime: moment(date).hour(22).minute(30).second(0).millisecond(0)};
+    
       this._timeWindowSubscription.unsubscribe();
       this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow:  {startTime: moment.Moment, endTime: moment.Moment }) => {
-
-
         this.buildDisplay(timeWindow.startTime, timeWindow.endTime);
-
-        // this.ifLoading = true;
-        // this.buildDisplay(startTime, endTime);
-        // this._nowSubscription.unsubscribe();
-        // this._nowSubscription = timer(0, 60000).subscribe(() => {
-        //   this._fetchTimeSegmentsSubscription.unsubscribe();
-        //   this._fetchTimeSegmentsSubscription = this.timelogService.fetchTimeSegmentsByDay(date).subscribe((timeSegments) => {
-        //     this.timeSegments = timeSegments;
-        //     this.displayTimeSegments(this.timeSegments, startTime, endTime);
-        //     this.displayNextTimeSegment(startTime, endTime);
-        //     this.ifLoading = false;
-        //   });
-        //   this.buildDisplay(startTime, endTime);
-        // });
       });
-
-      this.setTimeWindow(this._timeWindow);
-
-
+      if(this._windowLapsedDay){
+        this._windowLapsedDay = false;
+      }else{
+        this.setTimeWindow(defaultTimeWindow);
+      }
+      
     });
     this._currentDate$.next(moment());
 
   }
 
   private buildDisplay(startTime: moment.Moment, endTime: moment.Moment){
-    console.log("Building display from " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'));
+    // console.log("Building display from " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'));
 
     endTime = moment(endTime).subtract(30,'minutes');
     /*
