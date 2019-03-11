@@ -82,15 +82,24 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     this.ifLoading = false;
 
     this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
-      let defaultTimeWindow: { startTime: moment.Moment, endTime: moment.Moment } = { startTime: moment(date).hour(7).minute(30).second(0).millisecond(0), endTime: moment(date).hour(22).minute(30).second(0).millisecond(0)};
+      let defaultTimeWindow: { startTime: moment.Moment, endTime: moment.Moment } = { startTime: moment(date).hour(7).minute(30).second(0).millisecond(0), endTime: moment(date).hour(22).minute(50).second(0).millisecond(0)};
     
       this._timeWindowSubscription.unsubscribe();
       this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow:  {startTime: moment.Moment, endTime: moment.Moment }) => {
-        this.buildDisplay(timeWindow.startTime, timeWindow.endTime);
+        this.buildDisplay(timeWindow);
       });
+
       if(this._windowLapsedDay){
         this._windowLapsedDay = false;
       }else{
+        // if(moment().format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD') ){
+        //   if(moment().isBefore(moment(defaultTimeWindow.startTime).add(1, 'hour'))){
+            
+        //     let windowStart: moment.Moment = moment().
+        //   }else if(moment().isAfter(moment(defaultTimeWindow.endTime).subtract(1,'hour'))){
+
+        //   }
+        // }
         this.setTimeWindow(defaultTimeWindow);
       }
       
@@ -99,34 +108,54 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   }
 
-  private buildDisplay(startTime: moment.Moment, endTime: moment.Moment){
+  private buildDisplay(timeWindow: {startTime: moment.Moment, endTime: moment.Moment}){
     // console.log("Building display from " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'));
 
-    endTime = moment(endTime).subtract(30,'minutes');
-    /*
-      as of now,
-      the incoming startTime and endTime variables should always be an exact half-hour, e.g. 8:00am or 8:30am.  
-      This method is not concerned with conforming the variables to that requirement, they must come in that way.
-    */
+    function roundTimes(timeWindow){
+      /*
+        The simple approach here is to retain a single layout shape, which is one where the hourLabels are offset directly in the center
+        of where the bottom of one of the hourLines are.  By doing this, we need to start the frame above by a half hour and below by a half hour of a given hour.
 
-    let halfHours: number = moment(endTime).diff(moment(startTime), 'minutes') / 30;
+        An alternative solution, to start at exactly 8:00am and not 7:30am, would be to design a different layout to accommodate that, but as of now, the approach is that
+        if the day start time is 8:00am, then it gets rounded down to 7:30am to retain the layout shape.
+      */
+      let startTime:moment.Moment = moment(timeWindow.startTime);
+      let earliestStart = (moment(startTime).hour(startTime.hour()).minute(0).second(0).millisecond(0)).subtract(30,'minutes');
+      if(startTime.isBefore(moment(earliestStart).add(1,'hour'))){
+        startTime = moment(earliestStart);
+      }else if(startTime.isSameOrAfter(moment(earliestStart).add(1,'hour'))){
+        startTime = moment(earliestStart).add(1,'hour');
+      }
+      let endTime: moment.Moment = moment(timeWindow.endTime);
+      let latestEnd = (moment(endTime).hour(endTime.hour()).minute(0).second(0).millisecond(0)).add(1,'hour').add(30,'minutes');
+      if(endTime.isSameOrBefore(moment(latestEnd).subtract(1,'hour'))){
+        endTime = moment(latestEnd).subtract(1,'hour');
+      }else if(endTime.isAfter(moment(latestEnd).subtract(1,'hour'))){
+        endTime = moment(latestEnd);
+      }
+      return {startTime: startTime, endTime: endTime};
+    }
+    timeWindow = roundTimes(timeWindow);
+    
+
+    // let halfHours: number = moment(timeWindow.endTime).diff(moment(timeWindow.startTime), 'minutes') / 30;
 
 
     
     let hourLabels: {hour:string, style: any}[] = []
     let hourLines: {time:moment.Moment, style: any}[] = [];
-    let currentHalfHour:moment.Moment = moment(startTime);
+    let currentHalfHour:moment.Moment = moment(timeWindow.startTime);
 
     let labelRowCount: number = 1;
     let lineRowCount: number = 1;
 
-    while(moment(currentHalfHour).isSameOrBefore(moment(endTime))){
+    while(moment(currentHalfHour).isSameOrBefore(moment(timeWindow.endTime))){
       let labelGridRowStyle: string = "" + labelRowCount + " / span 2";
       let lineGridRowStyle: string = "" + lineRowCount + " / span 1";
 
       let lastLineBorderBottom: string = "none";
       let midnightBorderTop: string = "1px solid rgb(220, 253, 255);";
-      if(moment(currentHalfHour).isSame(moment(endTime))){
+      if(moment(currentHalfHour).isSame(moment(timeWindow.endTime))){
         lastLineBorderBottom = "1px solid rgb(220, 253, 255)";
       }
       if(moment(currentHalfHour).hour() == 0 && moment(currentHalfHour).minute() == 0){
