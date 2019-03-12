@@ -28,6 +28,7 @@
 .hour-line{
     grid-column: 2 / span 1;
     border-top: 1px solid rgb(220, 253, 255);
+    /* border-top: 1px solid rgb(202, 238, 255); */
 }
 .caret-container{
     width:100%; 
