@@ -20,10 +20,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   faCaretUp = faCaretUp;
   faCaretDown = faCaretDown;
 
-  nowLineContainerStyle: any = {};
-  nowTime: moment.Moment = moment();
-  nowTimeContainerStyle: any = {};
-  ifNowLine: boolean = false;
+
 
 
   ifLoading: boolean = false;
@@ -37,9 +34,10 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   timeSegments: TimeSegment[] = [];
 
-  timelogViewStyle: any = {};
   hourLabels: { hour: string, style: any }[] = [];
   hourLines: { time: moment.Moment, style: any }[] = [];
+  nowLine: { containerStyle: any } = null;
+
 
   @Output() clickTimeSegment: EventEmitter<ITimeSegmentTile> = new EventEmitter();
   @Output() clickNextTimeSegment: EventEmitter<TimeSegment> = new EventEmitter();
@@ -61,108 +59,11 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   private _defaultTimeWindow: ITimeWindow = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0), referenceFrom: "TOP" };
 
   private _caretClicked: boolean = false;
-  // private _dateChangedExternally: boolean = false;
   private _dateChangedInternally: boolean = false;
   private _manualDateChangeSubscription: Subscription = new Subscription();
-  private _usingActiveWindow: boolean = false;
 
 
   private set timeWindow(timeWindow: ITimeWindow) {
-    this._timeWindow = timeWindow;
-    this._timeWindow$.next(this._timeWindow);
-    if (this._caretClicked) {
-      this._caretClicked = false;
-      if (timeWindow.referenceFrom == "TOP") {
-        if (moment(this._timeWindow.startTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
-          this._dateChangedInternally = true;
-          this.changedDate.emit(this._timeWindow.startTime);
-        }
-      } else if (timeWindow.referenceFrom == "BOTTOM") {
-        if (moment(this._timeWindow.endTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
-          this._dateChangedInternally = true;
-          this.changedDate.emit(this._timeWindow.endTime);
-        }
-      }
-    } 
-    
-
-  }
-
-
-  ngOnInit() {
-    this._fetchTimeSegmentsSubscription.unsubscribe();
-
-    this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
-      this.startViewModeTimer();
-      this._timeWindowSubscription.unsubscribe();
-      this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: ITimeWindow) => {
-        this.buildDisplay(timeWindow);
-        // this.ifLoading = false;
-      });
-      this.setTimeWindowFromDate(date);
-    });
-    this._currentDate$.next(moment());
-  }
-
-  private setTimeWindowFromDate(date: moment.Moment) {
-
-    /*
-      Three possible sources of date change:
-      1. From external click (e.g. calendar)
-      2. From internal click (e.g. Caret)
-      3. From automatic time change (e.g. 11:59 rolls over past midnight)
-    */
-
-
-    if (this._dateChangedInternally) {
-      this._dateChangedInternally = false;
-    } else {
-      if (moment().format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')) {
-        this.timeWindow = this.activeTimeWindow;
-      } else {
-        this.timeWindow = this._defaultTimeWindow;
-      }
-    }
-
-  }
-
-  private get activeTimeWindow(): ITimeWindow {
-    console.log("Setting the active window");
-    // this._caretClicked = true;
-    let defaultWindowSizeHours: number = moment(this._defaultTimeWindow.endTime).diff(moment(this._defaultTimeWindow.startTime), 'hours');
-    let newWindow: ITimeWindow = this._defaultTimeWindow;
-
-    let now: moment.Moment = moment().hour(1).minute(45);
-    now = moment().hour(0).minute(50);
-    if (moment(now).isSameOrAfter(moment(newWindow.startTime)) && moment(now).isSameOrBefore(moment(newWindow.endTime))) {
-      return newWindow;
-    } else {
-      if (moment(now).isAfter(moment(newWindow.endTime))) {
-        newWindow.endTime = moment(now);
-        newWindow.startTime = moment(now).subtract(defaultWindowSizeHours, "hours");
-        return newWindow;
-      } else if (moment(now).isBefore(moment(newWindow.startTime))) {
-        let cutOffTime: moment.Moment = moment(newWindow.startTime).hour(4).minute(0).second(0).millisecond(0);
-        if (moment(now).isBefore(moment(cutOffTime))) {
-          newWindow.endTime = moment(now);
-          newWindow.startTime = moment(now).subtract(defaultWindowSizeHours, "hours");
-          return newWindow;
-        } else if (moment(now).isSameOrAfter(moment(cutOffTime))) {
-          newWindow.startTime = moment(now);
-          newWindow.endTime = moment(now).add(defaultWindowSizeHours, "hours");
-          return newWindow;
-        }
-        // console.log("    -Active window is before regular window. ")
-        //in this case, logically, we must be after Midnight
-      }
-    }
-
-    return newWindow;
-
-  }
-
-
-  private buildDisplay(timeWindow: ITimeWindow) {
     function roundTimes(timeWindow): ITimeWindow {
       /*
         The simple approach here is to retain a single layout shape, which is one where the hourLabels are offset directly in the center
@@ -200,7 +101,90 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       }
       return { startTime: startTime, endTime: endTime, referenceFrom: "TOP" };
     }
-    timeWindow = roundTimes(timeWindow);
+
+
+    this._timeWindow = roundTimes(timeWindow);
+    this._timeWindow$.next(this._timeWindow);
+    if (this._caretClicked) {
+      this._caretClicked = false;
+      if (timeWindow.referenceFrom == "TOP") {
+        if (moment(this._timeWindow.startTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
+          this._dateChangedInternally = true;
+          this.changedDate.emit(this._timeWindow.startTime);
+        }
+      } else if (timeWindow.referenceFrom == "BOTTOM") {
+        if (moment(this._timeWindow.endTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
+          this._dateChangedInternally = true;
+          this.changedDate.emit(this._timeWindow.endTime);
+        }
+      }
+    }
+
+
+  }
+
+
+  ngOnInit() {
+    this._fetchTimeSegmentsSubscription.unsubscribe();
+
+    this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
+      this.startViewModeTimer();
+      this._timeWindowSubscription.unsubscribe();
+      this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: ITimeWindow) => {
+        this.buildDisplay(timeWindow);
+        // this.ifLoading = false;
+      });
+      this.setTimeWindowFromDate(date);
+    });
+    this._currentDate$.next(moment());
+  }
+
+  private setTimeWindowFromDate(date: moment.Moment) {
+
+    if (this._dateChangedInternally) {
+      this._dateChangedInternally = false;
+    } else {
+      if (moment().format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')) {
+        this.timeWindow = this.activeTimeWindow;
+      } else {
+        this.timeWindow = this._defaultTimeWindow;
+      }
+    }
+
+  }
+
+  private get activeTimeWindow(): ITimeWindow {
+    let defaultWindowSizeHours: number = moment(this._defaultTimeWindow.endTime).diff(moment(this._defaultTimeWindow.startTime), 'hours');
+    let newWindow: ITimeWindow = this._defaultTimeWindow;
+
+    let now: moment.Moment = moment();
+    if (moment(now).isSameOrAfter(moment(newWindow.startTime)) && moment(now).isSameOrBefore(moment(newWindow.endTime))) {
+      return newWindow;
+    } else {
+      if (moment(now).isAfter(moment(newWindow.endTime).subtract(15, 'minutes'))) {
+        newWindow.endTime = moment(now);
+        newWindow.startTime = moment(now).subtract(defaultWindowSizeHours, "hours");
+        return newWindow;
+      } else if (moment(now).isBefore(moment(newWindow.startTime).add(15, 'minutes'))) {
+        let cutOffTime: moment.Moment = moment(newWindow.startTime).hour(4).minute(0).second(0).millisecond(0);
+        if (moment(now).isBefore(moment(cutOffTime))) {
+          newWindow.endTime = moment(now);
+          newWindow.startTime = moment(now).subtract(defaultWindowSizeHours, "hours");
+          return newWindow;
+        } else if (moment(now).isSameOrAfter(moment(cutOffTime))) {
+          newWindow.startTime = moment(now);
+          newWindow.endTime = moment(now).add(defaultWindowSizeHours, "hours");
+          return newWindow;
+        }
+      }
+    }
+
+    return newWindow;
+
+  }
+
+
+  private buildDisplay(timeWindow: ITimeWindow) {
 
 
     // let halfHours: number = moment(timeWindow.endTime).diff(moment(timeWindow.startTime), 'minutes') / 30;
@@ -241,6 +225,29 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
     this.hourLabels = hourLabels;
     this.hourLines = hourLines;
+
+
+    this.drawNowLine();
+
+
+  }
+
+  private drawNowLine() {
+    let currentView: ITimeWindow = this._timeWindow;
+    if (moment().isSameOrAfter(moment(currentView.startTime)) && moment().isSameOrBefore(moment(currentView.endTime))) {
+      let totalDuration: number = moment(currentView.endTime).diff(moment(currentView.startTime), 'minutes');
+      let nowTimeDuration: number = moment().diff(moment(currentView.startTime), 'minutes');
+      let percentage = (nowTimeDuration / totalDuration) * 100;
+      let style: any = {
+        "display": "grid",
+        "grid-template-rows": percentage + "% " + (100 - percentage) + "%"
+      };
+      this.nowLine = { containerStyle: style };
+    } else {
+      this.nowLine = null;
+    }
+
+
   }
 
   onClickCaret(direction: string) {
@@ -262,7 +269,6 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   }
 
   private startViewModeTimer() {
-    console.log("Re-setting the viewModeTimer");
     this._nowSubscription.unsubscribe();
     this._manualDateChangeSubscription.unsubscribe();
     this._manualDateChangeSubscription = timer(5 * 60 * 1000).subscribe(() => {
@@ -271,31 +277,13 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     })
   }
 
-  // private automateView() {
-  //   let currentTime = moment();
-  //   this._nowSubscription.unsubscribe();
-  //   this._nowSubscription = timer(5000, 5000).subscribe(() => {
-  //     currentTime = moment();
-
-
-  //     // console.log("Current time is now " + currentTime.format('YYYY-MM-DD hh:mm a'))
-  //     // if (moment(currentTime).format('YYYY-MM-DD') != moment(this._currentDate).format('YYYY-MM-DD')) {
-  //     //   console.log("We are now in automatic mode, and in automatic mode the date has changed.  So we are going to emit this change.")
-  //     //   this.changedDate.emit(moment(currentTime));
-  //     // }
-
-
-
-  //   })
-  // }
-
-
 
   ngOnDestroy() {
     this._fetchTimeSegmentsSubscription.unsubscribe();
     this._nowSubscription.unsubscribe();
     this._currentDateSubscription.unsubscribe();
     this._timeWindowSubscription.unsubscribe();
+    this._manualDateChangeSubscription.unsubscribe();
 
   }
 

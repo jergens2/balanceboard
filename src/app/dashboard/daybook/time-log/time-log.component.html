@@ -9,17 +9,26 @@
 
 
     </div>
-    <div class="timelog-grid">
-      <div *ngFor="let hourLabel of hourLabels" class="hour-label" [ngStyle]="hourLabel.style">
-        <span style="padding-right:5px; color:rgb(63, 63, 63); font-size: 0.9em;">{{ hourLabel.hour }} </span>
-      </div>
-      <div *ngFor="let hourLine of hourLines" class="hour-line" [ngStyle]="hourLine.style">
+    <div class="timelog-grid-container">
+      <div class="timelog-grid">
+        <div *ngFor="let hourLabel of hourLabels" class="hour-label" [ngStyle]="hourLabel.style">
+          <span style="padding-right:5px; color:rgb(63, 63, 63); font-size: 0.9em;">{{ hourLabel.hour }} </span>
+        </div>
+        <div *ngFor="let hourLine of hourLines" class="hour-line" [ngStyle]="hourLine.style">
+        </div>
       </div>
 
 
+      <div *ngIf="nowLine" class="now-line-container" [ngStyle]="nowLine.containerStyle">
+        <div class="now-line"></div>
+      </div>
     </div>
+
+
+
     <div class="caret-container">
       <fa-icon [icon]="faCaretDown" class="caret" (click)="onClickCaret('DOWN')"></fa-icon>
     </div>
+
   </div>
 </div>
