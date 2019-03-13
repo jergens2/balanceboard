@@ -9,7 +9,7 @@
       </div>
 
     </div>
-    <div class="menu-item-text" (click)="onClickHeaderMenuItem(menuItem)">
+    <div class="menu-item-text no-select" (click)="onClickHeaderMenuItem(menuItem)">
       {{ menuItem.title }}
     </div>
     <div class="menu-item-chevron" *ngIf="menuItem.subMenu != null" (click)="onClickHeaderMenuItem(menuItem)">

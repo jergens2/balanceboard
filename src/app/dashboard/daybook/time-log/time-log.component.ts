@@ -5,6 +5,7 @@ import { ITimeSegmentTile } from './time-segment-tile.interface';
 import { TimeSegment } from './time-segment.model';
 import { TimelogService } from './timelog.service';
 import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { ITimeWindow } from './time-window.interface';
 
 @Component({
   selector: 'app-time-log',
@@ -34,6 +35,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   nextTimeSegmentTile: ITimeSegmentTile = null;
   nextTimeSegment: TimeSegment = null
 
+  timeSegments: TimeSegment[] = [];
 
   timelogViewStyle: any = {};
   hourLabels: { hour: string, style: any }[] = [];
@@ -44,10 +46,8 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   @Output() changedDate: EventEmitter<moment.Moment> = new EventEmitter();
 
   @Input() set currentDate(date: moment.Moment) {
-    //Date change comes from external component
-    this._dateChangedExternally = true;
     this._currentDate = moment(date);
-    this._defaultTimeWindow = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0) };
+    this._defaultTimeWindow = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0), referenceFrom: "TOP" };
     this._currentDate$.next(moment(this._currentDate));
   }
 
@@ -55,105 +55,115 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   private _currentDate$: Subject<moment.Moment> = new Subject();
   private _currentDateSubscription: Subscription = new Subscription();
 
-  private _timeWindow: { startTime: moment.Moment, endTime: moment.Moment } = null;
-  private _timeWindow$: Subject<{ startTime: moment.Moment, endTime: moment.Moment }> = new Subject();
+  private _timeWindow: ITimeWindow = null;
+  private _timeWindow$: Subject<ITimeWindow> = new Subject();
   private _timeWindowSubscription: Subscription = new Subscription();
-  private _defaultTimeWindow: { startTime: moment.Moment, endTime: moment.Moment } = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0) };
+  private _defaultTimeWindow: ITimeWindow = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0), referenceFrom: "TOP" };
 
   private _caretClicked: boolean = false;
-  private _dateChangedExternally: boolean = false;
+  // private _dateChangedExternally: boolean = false;
   private _dateChangedInternally: boolean = false;
   private _manualDateChangeSubscription: Subscription = new Subscription();
+  private _usingActiveWindow: boolean = false;
 
 
-  private set timeWindow(timeWindow: { startTime: moment.Moment, endTime: moment.Moment }) {
-    console.log("Setting timeWindow: " + timeWindow.startTime.format('hh:mm a') + " to " + timeWindow.endTime.format('hh:mm a'));
+  private set timeWindow(timeWindow: ITimeWindow) {
     this._timeWindow = timeWindow;
     this._timeWindow$.next(this._timeWindow);
-    if (moment(this._timeWindow.startTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
-      this._dateChangedInternally = true;
-      this.changedDate.emit(this._timeWindow.startTime);
-    }
+    if (this._caretClicked) {
+      this._caretClicked = false;
+      if (timeWindow.referenceFrom == "TOP") {
+        if (moment(this._timeWindow.startTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
+          this._dateChangedInternally = true;
+          this.changedDate.emit(this._timeWindow.startTime);
+        }
+      } else if (timeWindow.referenceFrom == "BOTTOM") {
+        if (moment(this._timeWindow.endTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
+          this._dateChangedInternally = true;
+          this.changedDate.emit(this._timeWindow.endTime);
+        }
+      }
+    } 
+    
+
   }
 
-  timeSegments: TimeSegment[] = [];
 
   ngOnInit() {
     this._fetchTimeSegmentsSubscription.unsubscribe();
-    
+
     this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
       this.startViewModeTimer();
       this._timeWindowSubscription.unsubscribe();
-      this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: { startTime: moment.Moment, endTime: moment.Moment }) => {
+      this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: ITimeWindow) => {
         this.buildDisplay(timeWindow);
         // this.ifLoading = false;
       });
-      this.setTimeWindow(date);
+      this.setTimeWindowFromDate(date);
     });
     this._currentDate$.next(moment());
   }
 
-  private setTimeWindow(date: moment.Moment){
-    if (!this._caretClicked) {
-      if (this._dateChangedExternally) {
-        this._dateChangedExternally = false;
-        if (moment().format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')) {
-          this.timeWindow = this.activeTimeWindow;
-        } else {
-          this.timeWindow = this._defaultTimeWindow;
-        }
-      } else {
-        /*
-          The time change was not from a caret click or from Input(), so it therefore must have been from the only other cause, 
-          which is from the nowSubscription / the current time has lapsed over midnight, causing the date to have changed.
-        */ 
-        this.timeWindow = this.activeTimeWindow;
-      }
+  private setTimeWindowFromDate(date: moment.Moment) {
+
+    /*
+      Three possible sources of date change:
+      1. From external click (e.g. calendar)
+      2. From internal click (e.g. Caret)
+      3. From automatic time change (e.g. 11:59 rolls over past midnight)
+    */
+
+
+    if (this._dateChangedInternally) {
+      this._dateChangedInternally = false;
     } else {
-      this._caretClicked = false;
-      if (this._dateChangedInternally) {
-        this._dateChangedInternally = false;
+      if (moment().format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')) {
+        this.timeWindow = this.activeTimeWindow;
       } else {
         this.timeWindow = this._defaultTimeWindow;
       }
     }
+
   }
 
-  private get activeTimeWindow(): { startTime: moment.Moment, endTime: moment.Moment } {
+  private get activeTimeWindow(): ITimeWindow {
+    console.log("Setting the active window");
+    // this._caretClicked = true;
     let defaultWindowSizeHours: number = moment(this._defaultTimeWindow.endTime).diff(moment(this._defaultTimeWindow.startTime), 'hours');
-    let newWindow: { startTime: moment.Moment, endTime: moment.Moment } = this._defaultTimeWindow;
+    let newWindow: ITimeWindow = this._defaultTimeWindow;
+
+    let now: moment.Moment = moment().hour(1).minute(45);
+    now = moment().hour(0).minute(50);
+    if (moment(now).isSameOrAfter(moment(newWindow.startTime)) && moment(now).isSameOrBefore(moment(newWindow.endTime))) {
+      return newWindow;
+    } else {
+      if (moment(now).isAfter(moment(newWindow.endTime))) {
+        newWindow.endTime = moment(now);
+        newWindow.startTime = moment(now).subtract(defaultWindowSizeHours, "hours");
+        return newWindow;
+      } else if (moment(now).isBefore(moment(newWindow.startTime))) {
+        let cutOffTime: moment.Moment = moment(newWindow.startTime).hour(4).minute(0).second(0).millisecond(0);
+        if (moment(now).isBefore(moment(cutOffTime))) {
+          newWindow.endTime = moment(now);
+          newWindow.startTime = moment(now).subtract(defaultWindowSizeHours, "hours");
+          return newWindow;
+        } else if (moment(now).isSameOrAfter(moment(cutOffTime))) {
+          newWindow.startTime = moment(now);
+          newWindow.endTime = moment(now).add(defaultWindowSizeHours, "hours");
+          return newWindow;
+        }
+        // console.log("    -Active window is before regular window. ")
+        //in this case, logically, we must be after Midnight
+      }
+    }
+
     return newWindow;
 
-    //   console.log("today is the same as the date variable")
-
-    //   if (moment(currentTime).isBefore(moment(defaultTimeWindow.startTime))) {
-    //     console.log("now is before default start time")
-    //     newWindow.startTime = moment(currentTime);
-    //     newWindow.endTime = moment(currentTime).add(defaultWindowSizeHours, "hours");
-    //   } else if (moment(currentTime).isAfter(moment(defaultTimeWindow.endTime))) {
-
-    //     newWindow.endTime = moment(currentTime);
-    //     newWindow.startTime = moment(currentTime).subtract(defaultWindowSizeHours, "hours");
-
-    //     console.log("now is after default end time, " + newWindow.startTime.format('YYYY-MM-DD hh:mm a') + " to " + newWindow.endTime.format('YYYY-MM-DD hh:mm a'))
-    //   } else {
-    //     console.log("now is neither before start time, nor after end time")
-    //   }
-
-
-    //   this.setTimeWindow(newWindow);
-
-
-    // } else if (moment(currentTime).format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')) {
-    //   // If the current date is tomorrow
-    //   console.log("the current time is tomorrow.  wut")
-
-    // return null;
   }
 
 
-  private buildDisplay(timeWindow: { startTime: moment.Moment, endTime: moment.Moment }) {
-    function roundTimes(timeWindow) {
+  private buildDisplay(timeWindow: ITimeWindow) {
+    function roundTimes(timeWindow): ITimeWindow {
       /*
         The simple approach here is to retain a single layout shape, which is one where the hourLabels are offset directly in the center
         of where the bottom of one of the hourLines are.  
@@ -188,7 +198,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       } else if (endTime.isAfter(moment(latestEnd).subtract(1, 'hour'))) {
         endTime = moment(latestEnd);
       }
-      return { startTime: startTime, endTime: endTime };
+      return { startTime: startTime, endTime: endTime, referenceFrom: "TOP" };
     }
     timeWindow = roundTimes(timeWindow);
 
@@ -235,14 +245,16 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   onClickCaret(direction: string) {
 
-    let timeWindow: { startTime: moment.Moment, endTime: moment.Moment } = this._timeWindow;
+    let timeWindow: ITimeWindow = this._timeWindow;
 
     if (direction == "UP") {
       timeWindow.startTime = moment(timeWindow.startTime).subtract(1, 'hour');
       timeWindow.endTime = moment(timeWindow.endTime).subtract(1, 'hour');
+      timeWindow.referenceFrom = "TOP";
     } else if (direction == "DOWN") {
       timeWindow.startTime = moment(timeWindow.startTime).add(1, 'hour');
       timeWindow.endTime = moment(timeWindow.endTime).add(1, 'hour');
+      timeWindow.referenceFrom = "BOTTOM";
     }
     this._caretClicked = true;
     this.startViewModeTimer();
@@ -255,21 +267,27 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     this._manualDateChangeSubscription.unsubscribe();
     this._manualDateChangeSubscription = timer(5 * 60 * 1000).subscribe(() => {
       //every five minutes
-      this.automateView();
+      this.timeWindow = this.activeTimeWindow;
     })
   }
 
-  private automateView() {
-    let currentTime = moment();
-    this._nowSubscription.unsubscribe();
-    this._nowSubscription = timer(5000, 5000).subscribe(() => {
-      console.log("Current time is now " + currentTime.format('YYYY-MM-DD hh:mm a'))
-      if (moment(currentTime).format('YYYY-MM-DD') != moment(this._currentDate).format('YYYY-MM-DD')) {
-        console.log("We are now in automatic mode, and in automatic mode the date has changed.  So we are going to emit this change.")
-        this.changedDate.emit(moment(currentTime));
-      }
-    })
-  }
+  // private automateView() {
+  //   let currentTime = moment();
+  //   this._nowSubscription.unsubscribe();
+  //   this._nowSubscription = timer(5000, 5000).subscribe(() => {
+  //     currentTime = moment();
+
+
+  //     // console.log("Current time is now " + currentTime.format('YYYY-MM-DD hh:mm a'))
+  //     // if (moment(currentTime).format('YYYY-MM-DD') != moment(this._currentDate).format('YYYY-MM-DD')) {
+  //     //   console.log("We are now in automatic mode, and in automatic mode the date has changed.  So we are going to emit this change.")
+  //     //   this.changedDate.emit(moment(currentTime));
+  //     // }
+
+
+
+  //   })
+  // }
 
 
 
