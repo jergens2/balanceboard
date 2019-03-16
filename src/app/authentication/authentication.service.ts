@@ -33,9 +33,9 @@ export class AuthenticationService {
   }
 
 
-  timeSegmentsSubscription: Subscription = new Subscription();
+
   activitiesSubscription: Subscription = new Subscription();
-  
+
 
   registerUser$(authData: AuthData): Observable<Object> {
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)
@@ -58,7 +58,7 @@ export class AuthenticationService {
       .subscribe((authStatus: AuthStatus) => {
         this.loginAttempt$.next(true);
         this.loginRoutine(authStatus);
-        
+
       }, (error) => {
         this.loginAttempt$.next(false);
       })
@@ -75,29 +75,24 @@ export class AuthenticationService {
 
     if (authStatus.isAuthenticated) {
 
-      this.userSettingsService.userSettings$.subscribe((changedSettings: UserSetting[])=>{
+      this.userSettingsService.userSettings$.subscribe((changedSettings: UserSetting[]) => {
         let currentStatus = this._authStatusSubject$.getValue();
-        if(currentStatus.user != null){
+        if (currentStatus.user != null) {
           let authStatus = Object.assign({}, currentStatus);
           authStatus.user.userSettings = changedSettings;
           // console.log("AuthService: updating authStatus after settings have been changed:", authStatus);
           this._authStatusSubject$.next(authStatus);
         }
-        
+
       })
       this.userSettingsService.login(authStatus);
 
       this.activitiesSubscription = this.activitiesService.login$(authStatus).subscribe((activityTree: ActivityTree) => {
         if (activityTree != null) {
-          this.timeSegmentsSubscription = this.timelogService.login$(authStatus).subscribe((timeSegments: TimeSegment[]) => {
-            if (timeSegments != null) {
-              // console.log("activities and timesegments have loaded.", activityTree, timeSegments);
-              this.completeLogin(authStatus);
+          this.timelogService.login(authStatus)
 
-            } else {
-              // console.log("timesegments was null");
-            }
-          });
+          this.completeLogin(authStatus);
+
 
 
         } else {
@@ -108,18 +103,18 @@ export class AuthenticationService {
 
 
 
-    }else{
+    } else {
       console.log("Cannot execute login routine because the authStatus.isAuthenticated == false");
       this.completeLogin(authStatus);
     }
 
   }
 
-  completeLogin(authStatus: AuthStatus) { 
+  completeLogin(authStatus: AuthStatus) {
     // console.log("completeLogin(): ", authStatus.user.email);
     if (authStatus.isAuthenticated) {
 
-      
+
       localStorage.setItem("token", authStatus.token);
       localStorage.setItem("user", JSON.stringify(authStatus.user));
       // console.log("completing login, authStatus", authStatus.user.email)
@@ -174,7 +169,7 @@ export class AuthenticationService {
   logout() {
     // console.log("logging out of auth service");
     localStorage.clear();
-    this.timeSegmentsSubscription.unsubscribe();
+
     this.activitiesSubscription.unsubscribe();
 
     this.timelogService.logout();

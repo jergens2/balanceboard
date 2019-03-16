@@ -10,7 +10,7 @@
 
     </div>
     <div class="timelog-grid-container">
-      <div class="timelog-grid">
+      <div class="grid-object">
         <div *ngFor="let hourLabel of hourLabels" class="hour-label" [ngStyle]="hourLabel.style">
           <span style="padding-right:5px; color:rgb(63, 63, 63); font-size: 0.9em;">{{ hourLabel.hour }} </span>
         </div>
@@ -18,8 +18,14 @@
         </div>
       </div>
 
+      <div class="grid-object" *ngIf="timeSegmentsContainer" [ngStyle]="timeSegmentsContainer.style" >
+        <div *ngFor="let tile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="tile.style" (click)="onClickTile(tile)">
+          <span style="padding-left:3px;">{{activityName(tile)}}</span>
+        </div>
+      </div>
+      
 
-      <div *ngIf="nowLine" class="now-line-container" [ngStyle]="nowLine.containerStyle">
+      <div *ngIf="nowLine" class="grid-object" [ngStyle]="nowLine.containerStyle">
         <div class="now-line"></div>
       </div>
     </div>

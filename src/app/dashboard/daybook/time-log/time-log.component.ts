@@ -20,23 +20,21 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   faCaretUp = faCaretUp;
   faCaretDown = faCaretDown;
 
-
-
-
   ifLoading: boolean = false;
 
-  private _nowSubscription: Subscription = new Subscription();
+
   private _fetchTimeSegmentsSubscription: Subscription = new Subscription();
 
-  timeSegmentTiles: ITimeSegmentTile[] = [];
-  nextTimeSegmentTile: ITimeSegmentTile = null;
-  nextTimeSegment: TimeSegment = null
 
-  timeSegments: TimeSegment[] = [];
+
+  private _timeSegments: TimeSegment[] = [];
+  timeSegmentTiles: ITimeSegmentTile[] = [];
+  timeSegmentsContainer: { style: any } = null;
 
   hourLabels: { hour: string, style: any }[] = [];
   hourLines: { time: moment.Moment, style: any }[] = [];
   nowLine: { containerStyle: any } = null;
+  private _nowLineSubscription: Subscription = new Subscription();
 
 
   @Output() clickTimeSegment: EventEmitter<ITimeSegmentTile> = new EventEmitter();
@@ -125,18 +123,325 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-    this._fetchTimeSegmentsSubscription.unsubscribe();
+    
 
     this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
+      console.log("date changed")
       this.startViewModeTimer();
       this._timeWindowSubscription.unsubscribe();
       this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: ITimeWindow) => {
+        this.timelogService.fetchTimeSegmentsByRange(moment(timeWindow.startTime).subtract(1, 'day'), moment(timeWindow.endTime).add(1, 'day'));
         this.buildDisplay(timeWindow);
-        // this.ifLoading = false;
+        this.drawTimeSegments();
       });
       this.setTimeWindowFromDate(date);
+      // this.timelogService.fetchTimeSegmentsByRange(moment(date).subtract(1, 'day'), moment(date).add(1, 'day'));
     });
     this._currentDate$.next(moment());
+    
+    let firstDraw: boolean = true;
+    this._fetchTimeSegmentsSubscription.unsubscribe();
+    this._fetchTimeSegmentsSubscription = this.timelogService.timeSegments$.subscribe((receivedTimeSegments: TimeSegment[]) => {
+      console.log("receiving time segments");
+      this.receiveTimeSegments(receivedTimeSegments);
+      if(firstDraw){
+        this.drawTimeSegments();
+        firstDraw = false;
+      }
+    });
+
+    
+
+
+  }
+
+  private receiveTimeSegments(timeSegments: TimeSegment[]) {
+    for (let timeSegment of timeSegments) {
+      let alreadyExists: boolean = false;
+      this._timeSegments.forEach((existingTimeSegment) => {
+        if (existingTimeSegment.id == timeSegment.id) {
+          alreadyExists = true;
+        }
+      });
+
+      if (!alreadyExists) {
+        this._timeSegments.push(timeSegment);
+      }
+    }
+
+    this._timeSegments.sort((a, b) => {
+      if (a.startTimeISO > b.startTimeISO) {
+        return 1;
+      }
+      if (a.startTimeISO < b.startTimeISO) {
+        return -1;
+      }
+      return 0;
+    });
+    // this.drawTimeSegments();
+  }
+
+  private drawTimeSegments() {
+
+    if (this._timeSegments.length > 0 && this._timeWindow) {
+
+      let windowTimeSegments: TimeSegment[] = [];
+
+      for (let timeSegment of this._timeSegments) {
+        if ((moment(timeSegment.startTime).isSameOrBefore(moment(this._timeWindow.startTime)) && moment(timeSegment.endTime).isAfter(moment(this._timeWindow.startTime)))
+          || (moment(timeSegment.startTime).isSameOrAfter(moment(this._timeWindow.startTime)) && moment(timeSegment.endTime).isSameOrBefore(moment(this._timeWindow.endTime)))
+          || (moment(timeSegment.startTime).isBefore(moment(this._timeWindow.endTime)) && moment(timeSegment.endTime).isSameOrAfter(moment(this._timeWindow.endTime)))
+        ) {
+          windowTimeSegments.push(timeSegment);
+        }
+      }
+      //  At this point, all time segments will be within the window.
+
+
+
+
+      let increments: { seconds: number, tile: ITimeSegmentTile }[] = [];
+
+      let startTimeMarker: moment.Moment = moment(this._timeWindow.startTime);
+      let endTimeMarker: moment.Moment = moment(this._timeWindow.startTime)
+
+      /*
+        Under this current design, it is not permissable for time Events to overlap 
+        (for example, one event can not start at a time which is prior to the ending of the previous event)
+
+        Should time events be able to overlap ?  or, by their very design, should a time event represent a period of time 
+        which explicitly does not overlap ?
+      */
+
+
+
+      for (let timeSegment of windowTimeSegments) {
+
+
+        if (windowTimeSegments.indexOf(timeSegment) == 0) {
+          //for the first one:
+          if (moment(timeSegment.startTime).isSameOrBefore(this._timeWindow.startTime)) {
+            //theres no gap
+            startTimeMarker = moment(this._timeWindow.startTime);
+            endTimeMarker = moment(timeSegment.endTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: timeSegment,
+                style: {
+                  "border-top-left-radius": "0px",
+                  "border-top-right-radius": "0px",
+                  "border-bottom-left-radius": "4px",
+                  "border-bottom-right-radius": "4px",
+                  "background-color": this.tileBackgroundColor(timeSegment)
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+          } else if (moment(timeSegment.startTime).isAfter(this._timeWindow.startTime)) {
+            //there is a gap;
+            startTimeMarker = moment(this._timeWindow.startTime);
+            endTimeMarker = moment(timeSegment.startTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: new TimeSegment('', '', startTimeMarker.toISOString(), endTimeMarker.toISOString(), ''),
+                style: {
+                  "border-top-left-radius": "0px",
+                  "border-top-right-radius": "0px",
+                  "border-bottom-left-radius": "4px",
+                  "border-bottom-right-radius": "4px",
+                  "background-color": ""
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+
+            startTimeMarker = moment(timeSegment.startTime);
+            endTimeMarker = moment(timeSegment.endTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: timeSegment,
+                style: {
+                  "border-radius": "4px",
+                  "background-color": this.tileBackgroundColor(timeSegment)
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+          }
+        } 
+        else if (windowTimeSegments.indexOf(timeSegment) < windowTimeSegments.length - 1) {
+          //for all but the first one:
+
+          if (moment(timeSegment.startTime).isSame(endTimeMarker)) {
+            //this timeSegment starts where the previous one left off
+            startTimeMarker = moment(timeSegment.startTime);
+            endTimeMarker = moment(timeSegment.endTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: timeSegment,
+                style: {
+                  "border-radius": "4px",
+                  "background-color": this.tileBackgroundColor(timeSegment)
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+          } else if (moment(timeSegment.startTime).isAfter(endTimeMarker)) {
+            //there is a gap
+            startTimeMarker = moment(endTimeMarker);
+            endTimeMarker = moment(timeSegment.startTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: new TimeSegment('', '', startTimeMarker.toISOString(), endTimeMarker.toISOString(), ''),
+                style: {
+                  "border-top-left-radius": "0px",
+                  "border-top-right-radius": "0px",
+                  "border-bottom-left-radius": "4px",
+                  "border-bottom-right-radius": "4px",
+                  "background-color": ""
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+
+            startTimeMarker = moment(timeSegment.startTime);
+            endTimeMarker = moment(timeSegment.endTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: timeSegment,
+                style: {
+                  "border-radius": "4px",
+                  "background-color": this.tileBackgroundColor(timeSegment)
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+          } else {
+            //timesegment starts prior to the end of the last one
+            //i.e. there is an overlap. 
+            //this shouldnt happen, unless... ?
+            console.log("This should never happen unless there is an issue... ");
+          }
+
+        } else if (windowTimeSegments.indexOf(timeSegment) == windowTimeSegments.length - 1) {
+          if (timeSegment.endTime.isAfter(this._timeWindow.endTime)) {
+            startTimeMarker = moment(timeSegment.startTime);
+            endTimeMarker = moment(this._timeWindow.endTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: timeSegment,
+                style: {
+                  "border-top-left-radius": "4px",
+                  "border-top-right-radius": "4px",
+                  "border-bottom-left-radius": "0px",
+                  "border-bottom-right-radius": "0px",
+                  "background-color": this.tileBackgroundColor(timeSegment)
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+          } else if (timeSegment.endTime.isSameOrBefore(this._timeWindow.endTime)) {
+            startTimeMarker = moment(timeSegment.startTime);
+            endTimeMarker = moment(timeSegment.endTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: timeSegment,
+                style: {
+                  "border-radius": "4px",
+                  "background-color": this.tileBackgroundColor(timeSegment)
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+
+            startTimeMarker = moment(endTimeMarker);
+            endTimeMarker = moment(this._timeWindow.endTime);
+            increments.push({
+              seconds: moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds'),
+              tile: {
+                timeSegment: new TimeSegment('', '', startTimeMarker.toISOString(), endTimeMarker.toISOString(), ''),
+                style: {
+                  "border-top-left-radius": "4px",
+                  "border-top-right-radius": "4px",
+                  "border-bottom-left-radius": "0px",
+                  "border-bottom-right-radius": "0px",
+                  "background-color": ""
+                },
+                startTime: startTimeMarker,
+                endTime: endTimeMarker
+              }
+            });
+          }
+        } else {
+          console.log("This should never happen... ?")
+        }
+      }
+
+      let sum: number = 0;
+      for (let increment of increments) {
+        sum += increment.seconds;
+      }
+
+      console.log("Is sum the same as total ?", sum, moment(this._timeWindow.endTime).diff(this._timeWindow.startTime, 'seconds'));
+
+
+      let style: any = {};
+      let percentages: number[] = [];
+      let timeSegmentTiles: ITimeSegmentTile[] = [];
+      for (let increment of increments) {
+        percentages.push((increment.seconds / sum) * 100);
+        timeSegmentTiles.push(increment.tile);
+      }
+
+      let gridTemplateRows: string = "";
+      for (let percentage of percentages) {
+        gridTemplateRows += "" + percentage + "% ";
+      }
+      style = { "grid-template-rows": gridTemplateRows };
+
+
+
+      this.timeSegmentTiles = timeSegmentTiles;
+      this.timeSegmentsContainer = { style: style };
+    }
+  }
+
+  private tileBackgroundColor(timeSegment: TimeSegment): string {
+    function hexToRGB(hex: string, alpha: number) {
+      var r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+
+      if (alpha) {
+        return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+      } else {
+        return "rgb(" + r + ", " + g + ", " + b + ")";
+      }
+    }
+
+    if (timeSegment.activities.length > 0) {
+      let color = timeSegment.activities[0].activity.color;
+      return hexToRGB(color, 0.5);
+
+    } else {
+      return hexToRGB("#ffffff", 0.5);;
+    }
   }
 
   private setTimeWindowFromDate(date: moment.Moment) {
@@ -232,22 +537,24 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   }
 
+
   private drawNowLine() {
-    let currentView: ITimeWindow = this._timeWindow;
-    if (moment().isSameOrAfter(moment(currentView.startTime)) && moment().isSameOrBefore(moment(currentView.endTime))) {
-      let totalDuration: number = moment(currentView.endTime).diff(moment(currentView.startTime), 'minutes');
-      let nowTimeDuration: number = moment().diff(moment(currentView.startTime), 'minutes');
-      let percentage = (nowTimeDuration / totalDuration) * 100;
-      let style: any = {
-        "display": "grid",
-        "grid-template-rows": percentage + "% " + (100 - percentage) + "%"
-      };
-      this.nowLine = { containerStyle: style };
-    } else {
-      this.nowLine = null;
-    }
-
-
+    this._nowLineSubscription.unsubscribe();
+    this._nowLineSubscription = timer(0, 60000).subscribe(() => {
+      let currentView: ITimeWindow = this._timeWindow;
+      if (moment().isSameOrAfter(moment(currentView.startTime)) && moment().isSameOrBefore(moment(currentView.endTime))) {
+        let totalDuration: number = moment(currentView.endTime).diff(moment(currentView.startTime), 'minutes');
+        let nowTimeDuration: number = moment().diff(moment(currentView.startTime), 'minutes');
+        let percentage = (nowTimeDuration / totalDuration) * 100;
+        let style: any = {
+          "display": "grid",
+          "grid-template-rows": percentage + "% " + (100 - percentage) + "%"
+        };
+        this.nowLine = { containerStyle: style };
+      } else {
+        this.nowLine = null;
+      }
+    });
   }
 
   onClickCaret(direction: string) {
@@ -269,7 +576,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   }
 
   private startViewModeTimer() {
-    this._nowSubscription.unsubscribe();
+
     this._manualDateChangeSubscription.unsubscribe();
     this._manualDateChangeSubscription = timer(5 * 60 * 1000).subscribe(() => {
       //every five minutes
@@ -280,43 +587,30 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._fetchTimeSegmentsSubscription.unsubscribe();
-    this._nowSubscription.unsubscribe();
     this._currentDateSubscription.unsubscribe();
     this._timeWindowSubscription.unsubscribe();
     this._manualDateChangeSubscription.unsubscribe();
+    this._fetchTimeSegmentsSubscription.unsubscribe();
 
   }
 
-  segmentBackgroundColor(timeSegment: TimeSegment): string {
-
-    function hexToRGB(hex: string, alpha: number) {
-      var r = parseInt(hex.slice(1, 3), 16),
-        g = parseInt(hex.slice(3, 5), 16),
-        b = parseInt(hex.slice(5, 7), 16);
-
-      if (alpha) {
-        return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
-      } else {
-        return "rgb(" + r + ", " + g + ", " + b + ")";
-      }
-    }
-
-    if (timeSegment.activities.length > 0) {
-      let color = timeSegment.activities[0].activity.color;
-      return hexToRGB(color, 0.5);
-
-    } else {
-      return "white";
-    }
-  }
 
 
   activityName(tile: ITimeSegmentTile): string {
-    if (tile.timeSegment.activities.length > 0) {
-      return tile.timeSegment.activities[0].activity.name;
+    if (moment(tile.endTime).diff(moment(tile.startTime), 'minutes') > 15) {
+      if (tile.timeSegment.activities.length > 0) {
+        return tile.timeSegment.activities[0].activity.name;
+      } else {
+        return "";
+      }
     } else {
       return "";
     }
+
+  }
+
+  onClickTile(tile: ITimeSegmentTile) {
+    console.log("Span:" + tile.timeSegment.startTime.format('YYYY-MM-DD hh:mm a') + " to " + tile.timeSegment.endTime.format('YYYY-MM-DD hh:mm a'))
   }
 
 

@@ -9,8 +9,8 @@ let menuItems: MenuItem[] = [];
 
 menuItems.push(new MenuItem('Home','/home',faHome));
 menuItems.push(new MenuItem('Daybook','/daybook',faBookOpen));
-menuItems.push(new MenuItem('Month Planner', '/month_planner', faCalendarAlt));
-menuItems.push(new MenuItem('Year Planner', '/year_planner', faCalendarAlt));
+// menuItems.push(new MenuItem('Month Planner', '/month_planner', faCalendarAlt));
+// menuItems.push(new MenuItem('Year Planner', '/year_planner', faCalendarAlt));
 menuItems.push(new MenuItem('Activities','/activities',faSitemap));
 menuItems.push(new MenuItem('Idea Log','/idea_log',faLightbulb));
 menuItems.push(new MenuItem('Productivity','/productivity',faProjectDiagram));
