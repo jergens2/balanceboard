@@ -18,16 +18,17 @@
         </div>
       </div>
 
-      <div class="grid-object" *ngIf="timeSegmentsContainer" [ngStyle]="timeSegmentsContainer.style" >
-        <div *ngFor="let tile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="tile.style" (click)="onClickTile(tile)">
+      <div *ngIf="nowLine" class="grid-object" [ngStyle]="nowLine.containerStyle">
+        <div class="now-line"></div>
+      </div>
+
+      
+      <div class="grid-object" *ngIf="timeSegmentsContainer" [ngStyle]="timeSegmentsContainer.style">
+        <div *ngFor="let tile of timeSegmentTiles" class="time-segment-tile" [ngStyle]="tile.style" (click)="onClickTile(tile)" [ngClass]="{'blank-tile':tile.isBlank}">
           <span style="padding-left:3px;">{{activityName(tile)}}</span>
         </div>
       </div>
       
-
-      <div *ngIf="nowLine" class="grid-object" [ngStyle]="nowLine.containerStyle">
-        <div class="now-line"></div>
-      </div>
     </div>
 
 

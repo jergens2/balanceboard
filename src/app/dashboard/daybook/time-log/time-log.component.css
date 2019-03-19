@@ -4,6 +4,7 @@
 
 }
 .timelog{
+
     width:100%;
     height:100%;
     display:flex;
@@ -18,7 +19,7 @@
     display:grid;
     grid-template-rows: 1fr;
     grid-template-columns: 1fr;
-    z-index: -1;
+
 }
 .grid-object{
     grid-row: 1 / -1;
@@ -29,7 +30,7 @@
     width:100%;
     height:100%;
 
-    z-index: -1;
+
     
 }
 .hour-label{
@@ -59,7 +60,6 @@
     flex-shrink: 2;
     padding:0px;
     line-height: 1;
-
     
 }
 .caret{
@@ -78,7 +78,7 @@
 }
 
 .time-segment-tile{
-    z-index: 20;
+
     margin-left:15px;
     margin-right:15px;
     margin-bottom: 1px;
@@ -87,6 +87,12 @@
     font-size:0.8em;
 } 
 
-.time-segment-tile:hover{
-    background-color:red;
+.blank-tile{
+    border: none;
 }
+.blank-tile:hover{
+    border: 1px solid gray;
+    background-color: #fafafa;
+    cursor: pointer;
+}
+

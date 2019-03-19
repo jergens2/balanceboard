@@ -4,8 +4,8 @@ import { TimelogService } from './time-log/timelog.service';
 import { Subscription, timer, Subject } from 'rxjs';
 import { faCaretSquareDown, faEdit } from '@fortawesome/free-regular-svg-icons';
 import { TimeSegment } from './time-log/time-segment.model';
-import { ITimeSegmentTile } from './time-log/time-segment-tile.interface';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
+
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { HeaderService } from '../../nav/header/header.service';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
@@ -91,20 +91,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.currentView = newView;
   }
 
-  reviewTimeSegment: TimeSegment = null;
-  onTimeSegmentClicked(timeSegmentTile: ITimeSegmentTile){
-    this.reviewTimeSegment = timeSegmentTile.timeSegment;
-    this.timeSegmentFormAction = "Review";
-    this.changeView("form");
-  }
 
-  newTimeSegment: TimeSegment = null;
-  onNextTimeSegmentClicked(timeSegment: TimeSegment){
-    console.log("onNextTimeSegmentClicked, ", timeSegment)
-    this.newTimeSegment = timeSegment;
-    this.timeSegmentFormAction = "New";
-    this.changeView("form");
-  }
 
   ngOnDestroy() {
     this.headerMenuSubscriptions.forEach((sub: Subscription)=>{
