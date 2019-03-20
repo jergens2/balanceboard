@@ -91,7 +91,7 @@
     border: none;
 }
 .blank-tile:hover{
-    border: 1px solid gray;
+    border: 1px solid rgba(128, 128, 128, 0.267);
     background-color: #fafafa;
     cursor: pointer;
 }

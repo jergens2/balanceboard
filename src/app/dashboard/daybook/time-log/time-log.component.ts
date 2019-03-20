@@ -43,7 +43,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   @Input() set currentDate(date: moment.Moment) {
     this._currentDate = moment(date);
-    this._defaultTimeWindow = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0), referenceFrom: "TOP" };
+    this._defaultTimeWindow = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0), referenceFrom: "DEFAULT" };
     this._currentDate$.next(moment(this._currentDate));
   }
 
@@ -54,7 +54,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   private _timeWindow: ITimeWindow = null;
   private _timeWindow$: Subject<ITimeWindow> = new Subject();
   private _timeWindowSubscription: Subscription = new Subscription();
-  private _defaultTimeWindow: ITimeWindow = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0), referenceFrom: "TOP" };
+  private _defaultTimeWindow: ITimeWindow = { startTime: moment(this._currentDate).hour(8).minute(0).second(0).millisecond(0), endTime: moment(this._currentDate).hour(21).minute(30).second(0).millisecond(0), referenceFrom: "DEFAULT" };
 
   private _caretClicked: boolean = false;
   private _dateChangedInternally: boolean = false;
@@ -97,7 +97,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       } else if (endTime.isAfter(moment(latestEnd).subtract(1, 'hour'))) {
         endTime = moment(latestEnd);
       }
-      return { startTime: startTime, endTime: endTime, referenceFrom: "TOP" };
+      return { startTime: startTime, endTime: endTime, referenceFrom: timeWindow.referenceFrom };
     }
 
 
@@ -311,7 +311,6 @@ export class TimeLogComponent implements OnInit, OnDestroy {
               tile: buildTile(startTimeMarker, endTimeMarker, timeSegment, "MIDDLE")
             });
           } else if (moment(timeSegment.startTime).isAfter(endTimeMarker)) {
-            console.log("  There is a gap, where " + timeSegment.activities[0].activity.name + " starts after previous end marker (" + endTimeMarker.format('hh:mm a') + ")")
             //there is a gap
 
             startTimeMarker = moment(endTimeMarker);
@@ -336,8 +335,6 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
         } else if (windowTimeSegments.indexOf(timeSegment) == windowTimeSegments.length - 1) {
           //the last one
-          console.log(" - - the last one is: ", timeSegment.activities[0].activity.name)
-
           if (timeSegment.startTime.isSameOrBefore(moment(endTimeMarker))) {
             if (timeSegment.endTime.isAfter(this._timeWindow.endTime)) {
 
@@ -415,23 +412,12 @@ export class TimeLogComponent implements OnInit, OnDestroy {
           console.log("This should never happen... ?")
         }
 
-
-        let sum: number = 0;
-        for (let increment of increments) {
-          sum += increment.seconds;
-        }
-
-        console.log("Is sum the same as total ?", sum, moment(moment(endTimeMarker)).diff(this._timeWindow.startTime, 'seconds'), timeSegment.activities[0].activity.name);
-
-
       }
 
       let sum: number = 0;
       for (let increment of increments) {
         sum += increment.seconds;
       }
-
-      console.log("Is sum the same as total ?", sum, moment(this._timeWindow.endTime).diff(this._timeWindow.startTime, 'seconds'));
 
 
       let style: any = {};
@@ -452,8 +438,6 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
       this.timeSegmentTiles = timeSegmentTiles;
       this.timeSegmentsContainer = { style: style };
-
-      console.log(this.timeSegmentTiles);
 
     }
   }
@@ -577,13 +561,20 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
     let timeWindow: ITimeWindow = this._timeWindow;
 
+    let hours: number = 1;
     if (direction == "UP") {
-      timeWindow.startTime = moment(timeWindow.startTime).subtract(1, 'hour');
-      timeWindow.endTime = moment(timeWindow.endTime).subtract(1, 'hour');
+      if(this._timeWindow.referenceFrom == "TOP"){
+        hours = 2;
+      }
+      timeWindow.startTime = moment(timeWindow.startTime).subtract(hours, 'hour');
+      timeWindow.endTime = moment(timeWindow.endTime).subtract(hours, 'hour');
       timeWindow.referenceFrom = "TOP";
     } else if (direction == "DOWN") {
-      timeWindow.startTime = moment(timeWindow.startTime).add(1, 'hour');
-      timeWindow.endTime = moment(timeWindow.endTime).add(1, 'hour');
+      if(this._timeWindow.referenceFrom == "BOTTOM"){
+        hours = 2;
+      }
+      timeWindow.startTime = moment(timeWindow.startTime).add(hours, 'hour');
+      timeWindow.endTime = moment(timeWindow.endTime).add(hours, 'hour');
       timeWindow.referenceFrom = "BOTTOM";
     }
     this._caretClicked = true;
