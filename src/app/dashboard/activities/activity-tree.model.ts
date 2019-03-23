@@ -68,6 +68,41 @@ export class ActivityTree {
         return null;
     }
 
+    findActivityByIdentifier(identifier: string): UserDefinedActivity{
+        for(let activity of this._allActivities){
+            if(activity.treeId == identifier){
+                return activity;
+            }
+        }
+        for(let activity of this._allActivities){
+            if(activity.name == identifier){
+                return activity;
+            }
+        }
+        for(let activity of this._allActivities){
+            if(activity.id == identifier){
+                return activity;
+            }
+        }
+    }
+
+    activityNameIsUnique(checkActivity:UserDefinedActivity):boolean {
+        let namesCount: number = 0;
+        for(let activity of this._allActivities){
+            if(activity.name == checkActivity.name){
+                namesCount++;
+            }
+        }
+        if(namesCount == 1){
+            return true;
+        }else if(namesCount > 1){
+            return false;
+        }else{
+            console.log("How could names count possibly be less than 1 ?")
+            return false;
+        }
+    }
+
     findChildActivities(activityNode: UserDefinedActivity, allActivities: UserDefinedActivity[]): UserDefinedActivity {
         for (let activity of allActivities) {
             if (activity.parentTreeId == activityNode.treeId) {

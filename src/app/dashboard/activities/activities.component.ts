@@ -7,6 +7,7 @@ import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
 import { Subscription } from 'rxjs';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { HeaderService } from '../../nav/header/header.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { HeaderService } from '../../nav/header/header.service';
 })
 export class ActivitiesComponent implements OnInit, OnDestroy {
 
-  constructor(private activitiesService: ActivitiesService, private headerService: HeaderService) { }
+  constructor(private activitiesService: ActivitiesService, private headerService: HeaderService, private route:ActivatedRoute, private router: Router) { }
 
 
 
@@ -25,18 +26,37 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   displayedActivity: UserDefinedActivity = null;
 
   // rootActivityTiles: IActivityTile[] = [];
-  // rootActivities: UserDefinedActivity[];
-
-  activityTree: ActivityTree = null;
+  activitiesTree: ActivityTree = null;
+  treeSubscription: Subscription = new Subscription();
 
   private menuItemSubscriptions: Subscription[] = [];
 
   ngOnInit() {
+    this.activitiesTree = this.activitiesService.activitiesTree;
+    this.treeSubscription = this.activitiesService.activitiesTree$.subscribe((newTree)=>{
+      this.activitiesTree = newTree;
+    });
     this.buildHeaderMenu();
+    let routeParameter: string = this.route.snapshot.paramMap.get('activityIdentifier');
+    if(routeParameter){
+      let foundActivity = this.activitiesTree.findActivityByIdentifier(routeParameter);
+      if(foundActivity){
+        this.displayedActivity = foundActivity;
+        this.action = "display"; 
+      }else{
+        console.log("Error: could not find an activity");
+      }
+
+ 
+    }else{
+      this.action = "default";
+    }
 
 
 
-    // this.rootActivities = this.activityTree.rootActivities;
+
+
+
     // this.rootActivityTiles = this.rootActivities.map((activity) => {
     //   return { activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false };
     // });
@@ -76,8 +96,15 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   }
 
   onActivitySelected(activity: UserDefinedActivity) {
+
+    if(this.activitiesTree.activityNameIsUnique(activity)){
+      this.router.navigate(['/activities/'+activity.name]);
+    }else{
+      this.router.navigate(['/activities/'+activity.treeId]);
+    }
     this.displayedActivity = activity;
-    this.action = "display";
+    this.action = "display"; 
+
   }
 
   onClickCreateNewActivity() {
@@ -85,6 +112,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
+    this.treeSubscription.unsubscribe();
     for(let subscription of this.menuItemSubscriptions){
       subscription.unsubscribe();
     }

@@ -1,18 +1,28 @@
 <div class="root">
   <div class="journal">
-    <div *ngFor="let journalEntry of journalEntries" class="journal-entry">
-      <div class="journal-entry-header">
-        <div>
-            {{ journalEntry.startTime.format('YYYY-MM-DD') }} from {{ journalEntry.startTime.format('h:mm a')}} to {{ endTime(journalEntry) }}
+    <div class="journal-header">
+      Journal
+    </div>
+    <div *ngIf="journalEntries.length > 0">
+      <div *ngFor="let journalEntry of journalEntries" class="journal-entry">
+        <div class="journal-entry-header">
+          <div>
+            {{ journalEntry.startTime.format('YYYY-MM-DD') }} from {{ journalEntry.startTime.format('h:mm a')}} to
+            {{ endTime(journalEntry) }}
+          </div>
+          <div style="text-align:left">
+            {{ durationString(journalEntry) }}
+          </div>
+
         </div>
-        <div style="text-align:left">
-          {{ durationString(journalEntry) }}
+        <div class="journal-entry-body">
+          {{ journalEntry.description }}
         </div>
-        
-      </div>
-      <div class="journal-entry-body">
-        {{ journalEntry.description }}
       </div>
     </div>
+    <div *ngIf="journalEntries.length == 0">
+      There are no journal entries for this activity.
+    </div>
+
   </div>
 </div>

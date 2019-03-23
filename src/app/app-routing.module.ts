@@ -26,9 +26,11 @@ const appRoutes: Routes = [
     { path: 'month_planner', component: MonthPlannerComponent },
     { path: 'year_planner', component: YearPlannerComponent },
     { path: 'activities', component: ActivitiesComponent },
-    { path: 'activities/:treeId', component: ActivitiesComponent },
+    { path: 'activities/:activityIdentifier', component: ActivitiesComponent },
     { path: 'idea_log', component: IdeaLogComponent },
-    { path: 'user_settings', component: UserSettingsComponent }
+    { path: 'user_settings', component: UserSettingsComponent },
+
+    // { path: '**', component: PageNotFoundComponent }
 ];
 
 

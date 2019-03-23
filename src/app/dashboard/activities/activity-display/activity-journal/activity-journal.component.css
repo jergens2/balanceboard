@@ -3,7 +3,12 @@
 }
 .journal{
     width:100%;
-
+    display:flex;
+    flex-direction: column;
+}
+.journal-header{
+    width:100%;
+    font-size:1.1em;
 }
 .journal-entry{
     display:flex;
