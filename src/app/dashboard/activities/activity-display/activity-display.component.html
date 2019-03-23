@@ -8,19 +8,36 @@
       </div>
     </div>
     <div class="activity-body">
+      <div *ngIf="ifLoading">
+        <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+      </div>
 
-      <div *ngIf="action == 'view'">
-        <div *ngIf="ifLoading">
-          <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
-        </div>
-        <div *ngIf="!ifLoading">
-          <app-activity-six-week-view [activityInstances]="activityInstances"></app-activity-six-week-view>
+      <div *ngIf="!ifLoading">
+        <div *ngIf="action == 'view'">
+
+          <div class="activity-body-component">
+            <app-activity-six-week-view [activityInstances]="activityInstances" [activity]="activity"></app-activity-six-week-view>
+          </div>
+
+          <div class="activity-body-component">
+            <app-activity-planning [activityInstances]="activityInstances" [activity]="activity"></app-activity-planning>
+          </div>
+
+          <div class="activity-body-component">
+              <app-activity-journal [activityTimeSegments]="activityTimeSegments" [activity]="activity"></app-activity-journal>
+          </div>
+
+          <div class="activity-body-component">
+              <app-instances-list [activityInstances]="activityInstances" [activity]="activity"></app-instances-list>
+          </div>
+
         </div>
       </div>
 
       <div *ngIf="action == 'edit'">
-          <app-user-defined-activity-form [activity]="activity" (formClosed)="onFormClosed($event)"></app-user-defined-activity-form>
-      </div>  
+        <app-user-defined-activity-form [activity]="activity" (formClosed)="onFormClosed($event)">
+        </app-user-defined-activity-form>
+      </div>
 
 
     </div>
@@ -29,7 +46,7 @@
       <button class="btn btn-sm btn-secondary" (click)="onClickCloseActivity()">Close</button>
     </div>
   </div>
-  
+
 </div>
 
 

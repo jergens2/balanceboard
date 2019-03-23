@@ -9,13 +9,15 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.model';
+import { TimeSegment } from '../daybook/time-log/time-segment.model';
+import { TimeSegmentActivity } from '../daybook/time-log/time-segment-activity.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ActivitiesService {
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) { }
 
   private _serverUrl: string = serverUrl;
 
@@ -35,8 +37,8 @@ export class ActivitiesService {
     return this._authStatus.user.id;
   }
 
-  
-  getActivityData(activity: UserDefinedActivity): Observable<any>{
+
+  getActivityData(activity: UserDefinedActivity): Observable<TimeSegment[]> {
     /*
       This method grabs activity data from the server to display over a period of time, 
       e.g. over a six week view.
@@ -48,11 +50,27 @@ export class ActivitiesService {
         // 'Authorization': 'my-auth-token'  
       })
     };
-    return this.httpClient.get<{message: string, data: Array<any>}>(getUrl, httpOptions)
+    return this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
+      .pipe<TimeSegment[]>(
+        map((response) => {
+          return response.data.map((dataObject) => {
+            let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description);
+            timeSegment.activities = this.buildTimeSegmentActivities(dataObject.activities);
+            return timeSegment;
+          })
+        })
+      );
   }
 
-  
-  findActivityByTreeId(treeId: string): UserDefinedActivity{
+  private buildTimeSegmentActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimeSegmentActivity[] {
+    return activitiesData.map((activity) => {
+      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.findActivityByTreeId(activity.activityTreeId), activity.duration, activity.description);
+      return timeSegmentActivity;
+    })
+  }
+
+
+  findActivityByTreeId(treeId: string): UserDefinedActivity {
     /*
       2019-01-28
       Warning: 
@@ -79,7 +97,7 @@ export class ActivitiesService {
     return this._activitiesTree.findActivityByTreeId(treeId);
   }
 
-  login$(authStatus: AuthStatus){
+  login$(authStatus: AuthStatus) {
     this._authStatus = authStatus;
     this.fetchActivities();
     return this.activitiesTree$;
@@ -90,8 +108,8 @@ export class ActivitiesService {
     this._activitiesTree$.next(null);
   }
 
-  
-  private fetchActivities(){
+
+  private fetchActivities() {
     const getUrl = this._serverUrl + "/api/activity/get/" + this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -99,11 +117,11 @@ export class ActivitiesService {
         // 'Authorization': 'my-auth-token'  
       })
     };
-    this.httpClient.get<{message: string, data: Array<any>}>(getUrl, httpOptions)
+    this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
       .subscribe((response: any) => {
         // console.log("response is ", response);
         let responseData = response.data;
-        if(responseData.length > 0){
+        if (responseData.length > 0) {
           let allActivities: UserDefinedActivity[] = response.data.map((dataObject) => {
             let newActivity: UserDefinedActivity = new UserDefinedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
             return newActivity
@@ -111,17 +129,17 @@ export class ActivitiesService {
           this._activitiesTree = new ActivityTree(allActivities);
           // console.log("nexting ", this._activitiesTree);
           this._activitiesTree$.next(this._activitiesTree);
-        }else{
+        } else {
           // console.log("response data was 0 or less... creating default activities")
           this.saveDefaultActivities(defaultActivities)
         }
       });
   }
 
-  saveDefaultActivities(defaultActivities: UserDefinedActivity[]){
-    let userDefaultActivities = defaultActivities.map((activity)=>{
+  saveDefaultActivities(defaultActivities: UserDefinedActivity[]) {
+    let userDefaultActivities = defaultActivities.map((activity) => {
       let newTreeId = this._authStatus.user.id + "_" + activity.treeId;
-      let newParentTreeId = this._authStatus.user.id + "_" + activity.parentTreeId.replace(" ","_");
+      let newParentTreeId = this._authStatus.user.id + "_" + activity.parentTreeId.replace(" ", "_");
 
       return new UserDefinedActivity(activity.id, this._authStatus.user.id, newTreeId, activity.name, activity.description, newParentTreeId, activity.color);
     })
@@ -133,20 +151,20 @@ export class ActivitiesService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{message: string, data: any}>(postUrl, userDefaultActivities, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, userDefaultActivities, httpOptions)
       .pipe(map((response) => {
         return response.data.map((dataObject) => {
           let newActivity: UserDefinedActivity = new UserDefinedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
           return newActivity
         })
       }))
-      .subscribe((allActivities: UserDefinedActivity[])=>{
+      .subscribe((allActivities: UserDefinedActivity[]) => {
         this._activitiesTree = new ActivityTree(allActivities);
         this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  saveActivity(activity: UserDefinedActivity){
+  saveActivity(activity: UserDefinedActivity) {
     let newActivity = activity;
     newActivity.userId = this._authStatus.user.id;
 
@@ -163,19 +181,19 @@ export class ActivitiesService {
       })
     };
 
-    this.httpClient.post<{message: string, data: any}>(postUrl, activity, httpOptions)
-      .pipe<UserDefinedActivity>(map((response)=>{
+    this.httpClient.post<{ message: string, data: any }>(postUrl, activity, httpOptions)
+      .pipe<UserDefinedActivity>(map((response) => {
         let data = response.data;
         let activity = new UserDefinedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
         return activity;
       }))
-      .subscribe((activity: UserDefinedActivity)=>{
+      .subscribe((activity: UserDefinedActivity) => {
         this._activitiesTree.addActivityToTree(activity);
         this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  updateActivity(unsentActivity: UserDefinedActivity){
+  updateActivity(unsentActivity: UserDefinedActivity) {
     const updateUrl = this._serverUrl + "/api/activity/update";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -183,20 +201,20 @@ export class ActivitiesService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post(updateUrl,unsentActivity, httpOptions)
-      .pipe<UserDefinedActivity>(map((response: {message: string, data: any})=>{
+    this.httpClient.post(updateUrl, unsentActivity, httpOptions)
+      .pipe<UserDefinedActivity>(map((response: { message: string, data: any }) => {
         let data = response.data;
         let updatedActivity = new UserDefinedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
         return updatedActivity;
       }))
-      .subscribe((updatedActivity: UserDefinedActivity)=>{
+      .subscribe((updatedActivity: UserDefinedActivity) => {
         this._activitiesTree.pruneActivityFromTree(unsentActivity);
         this._activitiesTree.addActivityToTree(updatedActivity);
         this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  deleteActivity(activity: UserDefinedActivity){
+  deleteActivity(activity: UserDefinedActivity) {
     const deleteUrl = this._serverUrl + "/api/activity/delete";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -204,9 +222,9 @@ export class ActivitiesService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post(deleteUrl,activity, httpOptions)
-      .subscribe((response: {message: string, status: string, data: any})=>{
-        if(response.status == "SUCCESS"){
+    this.httpClient.post(deleteUrl, activity, httpOptions)
+      .subscribe((response: { message: string, status: string, data: any }) => {
+        if (response.status == "SUCCESS") {
           this._activitiesTree.pruneActivityFromTree(activity);
           this._activitiesTree$.next(this._activitiesTree);
         }

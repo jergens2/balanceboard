@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivityTree } from '../activity-tree.model';
+import { TimeSegment } from '../../daybook/time-log/time-segment.model';
 
 @Component({
   selector: 'app-activity-display',
@@ -23,6 +24,7 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   ifLoading: boolean = true;
 
   activityInstances: IActivityInstance[] = [];
+  activityTimeSegments: TimeSegment[] = [];
 
   activity: UserDefinedActivity = null;
 
@@ -32,7 +34,7 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
 
   @Output() displayClosed: EventEmitter<boolean> = new EventEmitter();
 
-  @Input() set selectedActivity(activity: UserDefinedActivity){
+  @Input() set selectedActivity(activity: UserDefinedActivity) {
     this.action = "view";
     this.activity = activity;
     this.getActivityData();
@@ -40,56 +42,64 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.action = "view";
 
-    this.activitiesService.activitiesTree$.subscribe((newTree: ActivityTree)=>{
+    this.activitiesService.activitiesTree$.subscribe((newTree: ActivityTree) => {
       let foundActivity = newTree.findActivityByTreeId(this.activity.treeId);
       this.activity = Object.assign({}, foundActivity);
       this.getActivityData();
-    })
+    });
+
+
   }
 
-  private getActivityData(){
+  private getActivityData() {
     this.ifLoading = true;
     this.activityInstances = [];
     this.activityDataSubscription.unsubscribe();
-    this.activityDataSubscription = this.activitiesService.getActivityData(this.activity).subscribe((response: {data: any, message: string})=>{
-      console.log("response from activities service: ", response)
-      /*
-        data is of type TimeSegment[] from server
+    this.activityDataSubscription = this.activitiesService.getActivityData(this.activity).subscribe((timeSegments: TimeSegment[]) => {
+      let activityInstances: IActivityInstance[] = [];
+      for (let timeSegment of timeSegments) {
 
-        need to map data to interface type IActivityInstance
-      */
+        let timeForThisActivity: number = 0;
+        if(timeSegment.activities.length > 1){
+          
+          let timeSegmentDuration: number = moment(timeSegment.endTimeISO).diff(moment(timeSegment.startTimeISO), 'minutes');
+          timeForThisActivity =  timeSegmentDuration / timeSegment.activities.length;
 
-      for(let data of response.data){
-        let startTime: moment.Moment = moment(data.startTimeISO);
-        let endTime: moment.Moment = moment(data.endTimeISO);
-        let durationHours = moment(endTime).diff(moment(startTime), 'minutes')  / 60;
-        let instance: IActivityInstance = { startTime: startTime, endTime: endTime, durationHours: durationHours, activityTreeId: this.activity.treeId }
-        this.activityInstances.push(instance);
+        }else{
+          timeForThisActivity = moment(timeSegment.endTimeISO).diff(moment(timeSegment.startTimeISO), 'minutes');
+        }
+
+        let durationHours: number = timeForThisActivity / 60;
+        let instance: IActivityInstance = { startTime: moment(timeSegment.startTime), endTime: moment(timeSegment.endTime), durationHours: durationHours, activityTreeId: this.activity.treeId }
+        activityInstances.push(instance);
       }
+
+      this.activityTimeSegments = timeSegments;
+      this.activityInstances = activityInstances
       this.ifLoading = false;
     });
-    
+
   }
 
-  onClickEdit(){
+  onClickEdit() {
     this.action = "edit";
   }
 
-  onFormClosed(val: string){
+  onFormClosed(val: string) {
     this.action = "view";
-    if(val == "DELETE"){
+    if (val == "DELETE") {
       this.displayClosed.emit();
     }
-    
+
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.activityDataSubscription.unsubscribe();
   }
 
-  onClickCloseActivity(){
+  onClickCloseActivity() {
     this.displayClosed.emit();
     this.ngOnDestroy();
-  } 
+  }
 
 }

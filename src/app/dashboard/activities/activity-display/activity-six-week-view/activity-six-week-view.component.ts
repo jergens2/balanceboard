@@ -23,11 +23,9 @@ export class ActivitySixWeekViewComponent implements OnInit {
 
   @Input() set activityInstances(activityInstances: IActivityInstance[]) {
     this._activityInstances = activityInstances;
-    if (this._activityInstances.length > 0) {
-      this._activity = this.activitiesService.findActivityByTreeId(this._activityInstances[0].activityTreeId);
-    }
-
-
+  }
+  @Input() set activity(activity: UserDefinedActivity) {
+    this._activity = activity;
   }
 
   constructor(private activitiesService: ActivitiesService, private router: Router) { }
@@ -77,23 +75,23 @@ export class ActivitySixWeekViewComponent implements OnInit {
       for (let activity of this._activityInstances) {
         if (moment(activity.startTime).format('YYYY-MM-DD') != moment(currentDate).format('YYYY-MM-DD')
           && moment(activity.endTime).format('YYYY-MM-DD') == moment(currentDate).format('YYYY-MM-DD')) {
-          hours += moment(activity.endTime).diff(moment(activity.endTime).startOf('date'), 'minutes') / 60;
+          hours += activity.durationHours;
         } else if (moment(activity.startTime).format('YYYY-MM-DD') == moment(currentDate).format('YYYY-MM-DD')
           && moment(activity.endTime).format('YYYY-MM-DD') == moment(currentDate).format('YYYY-MM-DD')) {
-          hours += moment(activity.endTime).diff(moment(activity.startTime), 'minutes') / 60;
+          hours += activity.durationHours;
         } else if (moment(activity.startTime).format('YYYY-MM-DD') == moment(currentDate).format('YYYY-MM-DD')
           && moment(activity.endTime).format('YYYY-MM-DD') != moment(currentDate).format('YYYY-MM-DD')) {
-          hours += moment(moment(activity.startTime).endOf('date')).diff(moment(activity.startTime), 'minutes') / 60;
+          hours += activity.durationHours;
         } else {
           //the activity did not occur at all on this day
         }
       }
 
 
-      currentWeekSum += hours; 
-      if (currentDate.day() == 6){
+      currentWeekSum += hours;
+      if (currentDate.day() == 6) {
         weekSums.push(currentWeekSum);
-        currentWeekSum = 0; 
+        currentWeekSum = 0;
       }
 
 
@@ -118,7 +116,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
       tile.style = style;
     }
 
-    this.weekSums = weekSums.map((weekSum)=>{
+    this.weekSums = weekSums.map((weekSum) => {
       return "" + weekSum.toFixed(1) + " hrs";
     })
     console.log(this.weekSums)
@@ -128,8 +126,8 @@ export class ActivitySixWeekViewComponent implements OnInit {
 
   }
 
-  onClickTile(tile: ISixWeekDayTile){
-    this.router.navigate(['/daybook/'+tile.date.format('YYYY-MM-DD')]);
+  onClickTile(tile: ISixWeekDayTile) {
+    this.router.navigate(['/daybook/' + tile.date.format('YYYY-MM-DD')]);
   }
 
 
@@ -143,9 +141,9 @@ export class ActivitySixWeekViewComponent implements OnInit {
   }
 
   tileDate(tile: ISixWeekDayTile): string {
-    if(moment(tile.date).date() == 1 || (moment(tile.date).endOf('month').date() == moment(tile.date).date())){
+    if (moment(tile.date).date() == 1 || (moment(tile.date).endOf('month').date() == moment(tile.date).date())) {
       return moment(tile.date).format("MMM D")
-    }else {
+    } else {
       return moment(tile.date).format("D");
     }
   }
@@ -160,7 +158,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
     return style;
   }
 
-  weekSumStyle(weekSum: string): any{
+  weekSumStyle(weekSum: string): any {
     let row = this.weekSums.indexOf(weekSum) + 2;
     let style = { "grid-row": "" + row + " / span 1" };
 
@@ -187,7 +185,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
   }
 
   getColorGradient(startColor: string): string[] {
-    function hexToRGB(hex: string, alpha: number) : string{
+    function hexToRGB(hex: string, alpha: number): string {
       var r = parseInt(hex.slice(1, 3), 16),
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
@@ -198,7 +196,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
         return "rgb(" + r + ", " + g + ", " + b + ")";
       }
     }
-    function returnRGBA(rgb: string, alpha: number) : string{
+    function returnRGBA(rgb: string, alpha: number): string {
       let matches = rgb.match(/[0-9.]+/g);
       return "rgba(" + matches[0] + "," + matches[1] + "," + matches[2] + "," + alpha + ")";
     }
@@ -207,12 +205,12 @@ export class ActivitySixWeekViewComponent implements OnInit {
     let colors: string[] = [];
     let gradientCount: number = 5;
 
-    if(startColor.slice(0,4).toLowerCase() == "rgba" || startColor.slice(0,3).toLowerCase() == "rgb"){
+    if (startColor.slice(0, 4).toLowerCase() == "rgba" || startColor.slice(0, 3).toLowerCase() == "rgb") {
       for (let i = 1; i < gradientCount; i++) {
         colors.push(returnRGBA(startColor, i / gradientCount));
       }
       colors.push(returnRGBA(startColor, 1));
-    }else{
+    } else {
       for (let i = 1; i < gradientCount; i++) {
         colors.push(hexToRGB(startColor, i / gradientCount));
       }

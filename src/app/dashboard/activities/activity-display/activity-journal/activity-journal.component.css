@@ -1,0 +1,26 @@
+.root{
+    width:100%;
+}
+.journal{
+    width:100%;
+
+}
+.journal-entry{
+    display:flex;
+    flex-direction:column;
+    border: 1px solid rgb(224, 224, 224);
+    background-color:rgb(247, 247, 247);
+    margin-bottom:15px;
+    padding:3px;
+}
+.journal-entry-header{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    font-size: 0.9em;
+    border-bottom: 1px solid rgb(224, 224, 224);
+}
+.journal-entry-body{
+
+}

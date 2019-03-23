@@ -41,6 +41,10 @@ import { ActivitiesListComponent } from './activities/activities-list/activities
 import { HeatmapViewComponent } from './daybook/heatmap-view/heatmap-view.component';
 import { ScheduleComponent } from './daybook/schedule/schedule.component';
 import { DaybookHeaderComponent } from './daybook/daybook-header/daybook-header.component';
+import { ActivityGoalsWidgetComponent } from './activities/default-view/activity-goals-widget/activity-goals-widget.component';
+import { ActivityPlanningComponent } from './activities/activity-display/activity-planning/activity-planning.component';
+import { InstancesListComponent } from './activities/activity-display/instances-list/instances-list.component';
+import { ActivityJournalComponent } from './activities/activity-display/activity-journal/activity-journal.component';
 
 
 
@@ -85,7 +89,11 @@ import { DaybookHeaderComponent } from './daybook/daybook-header/daybook-header.
     ActivitiesListComponent,
     HeatmapViewComponent,
     ScheduleComponent,
-    DaybookHeaderComponent
+    DaybookHeaderComponent,
+    ActivityGoalsWidgetComponent,
+    ActivityPlanningComponent,
+    InstancesListComponent,
+    ActivityJournalComponent
     
     
   ],
