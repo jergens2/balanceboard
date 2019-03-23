@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, BehaviorSubject } from 'rxjs';
 import { TimeSegment } from './time-segment.model';
 import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
 
@@ -23,6 +23,7 @@ export class TimelogService {
   private _authStatus: AuthStatus = null;
   login(authStatus: AuthStatus){
     this._authStatus = authStatus;
+    this.fetchTimeSegmentsByRange(moment().startOf('day').subtract(1,'days'), moment().endOf('day').add(1,'days'));
   }
 
   constructor(private httpClient: HttpClient, private activitiesService: ActivitiesService) {
@@ -31,10 +32,13 @@ export class TimelogService {
   private _serverUrl: string = serverUrl;
 
 
-  private _timeSegments: TimeSegment[] = [];
-  private _timeSegments$: Subject<TimeSegment[]> = new Subject();
+  // private _timeSegments: TimeSegment[] = [];
+  private _timeSegments$: BehaviorSubject<TimeSegment[]> = new BehaviorSubject([]);
   public get timeSegments$(): Observable<TimeSegment[]> { 
     return this._timeSegments$.asObservable();
+  }
+  public get timeSegments(): TimeSegment[] {
+    return this._timeSegments$.getValue();
   }
 
 
@@ -67,7 +71,7 @@ export class TimelogService {
         return timeSegment;
       }))
       .subscribe((returnedTimeSegment: TimeSegment) => {
-        let timeSegments: TimeSegment[] = this._timeSegments;
+        let timeSegments: TimeSegment[] = this._timeSegments$.getValue();
         for(let timeSegment of timeSegments){
           if(timeSegment.id == returnedTimeSegment.id){
             timeSegments.splice(timeSegments.indexOf(timeSegment), 1, returnedTimeSegment)
@@ -104,7 +108,7 @@ export class TimelogService {
         return timeSegment;
       }))
       .subscribe((timeSegment: TimeSegment) => {
-        let timeSegments: TimeSegment[] = this._timeSegments;
+        let timeSegments: TimeSegment[] = this._timeSegments$.getValue();
         timeSegments.push(timeSegment);
 
         this._timeSegments$.next(timeSegments);
@@ -133,7 +137,7 @@ export class TimelogService {
 
     this.httpClient.post<{ message: string, data: any }>(postUrl, timeSegment, httpOptions)
       .subscribe((response) => {
-        let timeSegments: TimeSegment[] = this._timeSegments;
+        let timeSegments: TimeSegment[] = this._timeSegments$.getValue();
         timeSegments.splice(timeSegments.indexOf(timeSegment), 1);
         // this.setLatestTimeSegment(null);
         this._timeSegments$.next(timeSegments);
@@ -187,6 +191,7 @@ export class TimelogService {
 
   logout() {
     this._authStatus = null;
+    this._timeSegments$.next([]);
   }
 
 

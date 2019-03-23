@@ -6,6 +6,7 @@ import { TimeSegment } from './time-segment.model';
 import { TimelogService } from './timelog.service';
 import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
+import { ITimeSegmentFormData } from '../time-segment-form/time-segment-form-data.interface';
 
 @Component({
   selector: 'app-time-log',
@@ -37,8 +38,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   private _nowLineSubscription: Subscription = new Subscription();
 
 
-  @Output() clickTimeSegment: EventEmitter<TimeSegmentTile> = new EventEmitter();
-  @Output() clickNextTimeSegment: EventEmitter<TimeSegment> = new EventEmitter();
+  @Output() timeSegmentFormData: EventEmitter<ITimeSegmentFormData> = new EventEmitter();
   @Output() changedDate: EventEmitter<moment.Moment> = new EventEmitter();
 
   @Input() set currentDate(date: moment.Moment) {
@@ -126,11 +126,10 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
     this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
-      console.log("date changed")
+      this.timelogService.fetchTimeSegmentsByRange(moment(date).startOf('day').subtract(1, 'day'), moment(date).endOf('day').add(1, 'day'));
       this.startViewModeTimer();
       this._timeWindowSubscription.unsubscribe();
       this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: ITimeWindow) => {
-        this.timelogService.fetchTimeSegmentsByRange(moment(timeWindow.startTime).subtract(1, 'day'), moment(timeWindow.endTime).add(1, 'day'));
         this.buildDisplay(timeWindow);
         this.drawTimeSegments();
       });
@@ -139,13 +138,12 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     });
     this._currentDate$.next(moment());
 
-    let firstDraw: boolean = true;
+
     this._fetchTimeSegmentsSubscription.unsubscribe();
     this._fetchTimeSegmentsSubscription = this.timelogService.timeSegments$.subscribe((receivedTimeSegments: TimeSegment[]) => {
-      this.receiveTimeSegments(receivedTimeSegments);
-      if (firstDraw) {
+      if(receivedTimeSegments.length > 0){
+        this.receiveTimeSegments(receivedTimeSegments);
         this.drawTimeSegments();
-        firstDraw = false;
       }
     });
 

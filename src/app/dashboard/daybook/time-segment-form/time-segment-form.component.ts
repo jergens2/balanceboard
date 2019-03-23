@@ -8,6 +8,7 @@ import { ActivitiesService } from '../../activities/activities.service';
 import { ActivityTree } from '../../activities/activity-tree.model';
 import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
 import { TimelogService } from '../time-log/timelog.service';
+import { ITimeSegmentFormData } from './time-segment-form-data.interface';
 
 
 @Component({
@@ -26,9 +27,12 @@ export class TimeSegmentFormComponent implements OnInit {
 
   previousTimeSegmentEnd: moment.Moment;
 
-  @Input() action: string = "New";
-  @Input() newTimeSegment: TimeSegment = null;
-  @Input() reviewTimeSegment: TimeSegment;
+  private _providedFormData: ITimeSegmentFormData = null;
+  @Input() set providedFormData(data: ITimeSegmentFormData) {
+    this._providedFormData = data;
+    this.action = this._providedFormData.action;
+    console.log(this.action)
+  };
 
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter();
 
@@ -43,37 +47,72 @@ export class TimeSegmentFormComponent implements OnInit {
   private activitiesTree: ActivityTree = null;
   activitiesDropDownList: UserDefinedActivity[] = [];
 
+  private timeSegments: TimeSegment[] = [];
+  private action: string = "";
+  public get viewAction(): string {
 
+    if (this.action == "BLANK" || this.action == "NEW") {
+      return "New";
+    } else if (this.action == "REVIEW") {
+      return "Review";
+    } else {
+      return "";
+    }
+  }
 
   ngOnInit() {
 
+
+    this.timeSegments = Object.assign([], this.timelogService.timeSegments);
+
     this.activitiesTree = this.activitiesService.activitiesTree;
 
-    console.log("this.action is ", this.action);
-    console.log("new time segment is ", this.newTimeSegment);
-    if (this.action == "New") {
+    if (this.action == "BLANK") {
+
+      let startTime: moment.Moment = this.findNewStartTime();
+      let endTime: moment.Moment = moment();
+      if (moment(endTime).isBefore(moment(moment(startTime).add(12, 'hours'))) || moment(endTime).format('YYYY-MM-DD') == moment(startTime).format('YYYY-MM-DD')) {
+        endTime = moment();
+      } else {
+        endTime = moment(startTime).add(1, 'hour');
+      }
+
+
       this.timeSegmentForm = new FormGroup({
-        'startTime': new FormControl(moment(this.newTimeSegment.startTime).format('HH:mm'), Validators.required),
-        'startTimeDate': new FormControl(moment(this.newTimeSegment.startTime).format('YYYY-MM-DD')),
-        'endTime': new FormControl(moment(this.newTimeSegment.endTime).format('HH:mm'), Validators.required),
-        'endTimeDate': new FormControl(moment(this.newTimeSegment.endTime).format('YYYY-MM-DD')),
+        'startTime': new FormControl(moment(startTime).format('HH:mm'), Validators.required),
+        'startTimeDate': new FormControl(moment(startTime).format('YYYY-MM-DD')),
+        'endTime': new FormControl(moment(endTime).format('HH:mm'), Validators.required),
+        'endTimeDate': new FormControl(moment(endTime).format('YYYY-MM-DD')),
         'description': new FormControl(),
       });
-    } else if (this.action == "Review") {
+
+    } else if (this.action == "REVIEW" || this.action == "SET") {
       this.timeSegmentForm = new FormGroup({
-        'startTime': new FormControl(this.reviewTimeSegment.startTime.format('HH:mm'), Validators.required),
-        'startTimeDate': new FormControl(this.reviewTimeSegment.startTime.format('YYYY-MM-DD')),
-        'endTime': new FormControl(this.reviewTimeSegment.endTime.format('HH:mm'), Validators.required),
-        'endTimeDate': new FormControl(this.reviewTimeSegment.endTime.format('YYYY-MM-DD')),
-        'description': new FormControl(this.reviewTimeSegment.description),
+        'startTime': new FormControl(this.providedFormData.timeSegment.startTime.format('HH:mm'), Validators.required),
+        'startTimeDate': new FormControl(this.providedFormData.timeSegment.startTime.format('YYYY-MM-DD')),
+        'endTime': new FormControl(this.providedFormData.timeSegment.endTime.format('HH:mm'), Validators.required),
+        'endTimeDate': new FormControl(this.providedFormData.timeSegment.endTime.format('YYYY-MM-DD')),
+        'description': new FormControl(this.providedFormData.timeSegment.description),
       });
-      this.timeSegmentActivities = Object.assign([], this.reviewTimeSegment.activities);
-    } else {
-      // bad action
+      this.timeSegmentActivities = Object.assign([], this.providedFormData.timeSegment.activities);
     }
 
 
   }
+
+  private findNewStartTime() {
+    let latestTime: moment.Moment = null;
+    for (let timeSegment of this.timeSegments) {
+      if (latestTime == null) {
+        latestTime = moment(timeSegment.endTime);
+      }
+      if (moment(timeSegment.endTime).isAfter(moment(latestTime))) {
+        latestTime = moment(timeSegment.endTime);
+      }
+    }
+    return moment(latestTime);
+  }
+
 
 
   get durationString(): string {
@@ -90,9 +129,9 @@ export class TimeSegmentFormComponent implements OnInit {
 
     let durationMinutes = moment(endTime).diff(moment(startTime), "minutes");
 
-    if (this.action == "New") {
+    if (this.action == "NEW") {
       return "Activities in the last " + durationMinutes + " minutes";
-    } else if (this.action = "Review") {
+    } else if (this.action == "REVIEW") {
       return "The duration of this time segment was " + durationMinutes + " minutes";
     }
 
@@ -180,12 +219,12 @@ export class TimeSegmentFormComponent implements OnInit {
     let startTime = moment(this.timeSegmentForm.get('startTimeDate').value + ' ' + this.timeSegmentForm.get('startTime').value).toISOString();
     let endTime = moment(this.timeSegmentForm.get('endTimeDate').value + ' ' + this.timeSegmentForm.get('endTime').value).toISOString();
     let newTimeSegment: TimeSegment;
-    if (this.action == "New") {
+    if (this.action == "NEW" || this.action == "BLANK") {
       newTimeSegment = new TimeSegment(null, null, startTime, endTime, this.timeSegmentForm.get('description').value);
       newTimeSegment.activities = this.timeSegmentActivities;
       this.timelogService.saveTimeSegment(newTimeSegment);
-    } else if (this.action == "Review") {
-      newTimeSegment = new TimeSegment(this.reviewTimeSegment.id, this.reviewTimeSegment.userId, startTime, endTime, this.timeSegmentForm.get('description').value);
+    } else if (this.action == "REVIEW") {
+      newTimeSegment = new TimeSegment(this.providedFormData.timeSegment.id, this.providedFormData.timeSegment.userId, startTime, endTime, this.timeSegmentForm.get('description').value);
       for (let activity of this.timeSegmentActivities) {
         newTimeSegment.activities.push(activity)
       }

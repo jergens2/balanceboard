@@ -10,6 +10,7 @@ import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { HeaderService } from '../../nav/header/header.service';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
+import { ITimeSegmentFormData } from './time-segment-form/time-segment-form-data.interface';
 
 @Component({
   selector: 'app-daybook',
@@ -29,7 +30,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
   ifTimeSegmentForm: boolean = false;
 
 
-  timeSegmentFormAction: string = "New";
+  timeSegmentFormData: {action:string, timeSegment: TimeSegment};
 
   private headerMenuSubscriptions: Subscription[] = [];
 
@@ -65,6 +66,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
     let newTimeSegmentMenuItem = new MenuItem("New Time Segment", null, null);
     this.headerMenuSubscriptions.push(newTimeSegmentMenuItem.clickEmitted$.subscribe((clicked)=>{
+      this.timeSegmentFormData = { action:"BLANK" , timeSegment: null}
       this.currentView = "form";
     }));
 
@@ -91,6 +93,10 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.currentView = newView;
   }
 
+  private onTimeSegmentDataProvided(data: ITimeSegmentFormData){
+    this.timeSegmentFormData = data;
+    this.changeView("form");
+  }
 
 
   ngOnDestroy() {
@@ -108,16 +114,11 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.ifCalendarInside = !this.ifCalendarInside;
   }
 
-  ifDaybookMenu: boolean = false;
-  onClickDayBookMenu() {
-    this.ifDaybookMenu = !this.ifDaybookMenu;
-  }
+  // ifDaybookMenu: boolean = false;
+  // onClickDayBookMenu() {
+  //   this.ifDaybookMenu = !this.ifDaybookMenu;
+  // }
 
-  onClickAddNewTimeSegment(){
-    this.timeSegmentFormAction = "New";
-    this.ifTimeSegmentForm = true;
-    this.ifDaybookMenu = false;
-  }
 
 
   onCloseForm($event: any){
