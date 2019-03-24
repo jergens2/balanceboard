@@ -7,6 +7,7 @@ import { TimelogService } from './timelog.service';
 import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
 import { ITimeSegmentFormData } from '../time-segment-form/time-segment-form-data.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-time-log',
@@ -15,7 +16,7 @@ import { ITimeSegmentFormData } from '../time-segment-form/time-segment-form-dat
 })
 export class TimeLogComponent implements OnInit, OnDestroy {
 
-  constructor(private timelogService: TimelogService) { }
+  constructor(private timelogService: TimelogService, private router: Router) { }
 
   faSpinner = faSpinner;
   faCaretUp = faCaretUp;
@@ -47,7 +48,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     this._currentDate$.next(moment(this._currentDate));
   }
 
-  private _currentDate: moment.Moment = moment();
+  private _currentDate: moment.Moment = null;
   private _currentDate$: Subject<moment.Moment> = new Subject();
   private _currentDateSubscription: Subscription = new Subscription();
 
@@ -109,11 +110,13 @@ export class TimeLogComponent implements OnInit, OnDestroy {
         if (moment(this._timeWindow.startTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
           this._dateChangedInternally = true;
           this.changedDate.emit(this._timeWindow.startTime);
+          // this.router.navigate(['/daybook/' + this._timeWindow.startTime.format('YYYY-MM-DD')]);
         }
       } else if (timeWindow.referenceFrom == "BOTTOM") {
         if (moment(this._timeWindow.endTime).format('YYYY-MM-DD') != this._currentDate.format('YYYY-MM-DD')) {
           this._dateChangedInternally = true;
           this.changedDate.emit(this._timeWindow.endTime);
+          // this.router.navigate(['/daybook/' + this._timeWindow.endTime.format('YYYY-MM-DD')]);
         }
       }
     }
@@ -123,60 +126,63 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-
-
+    console.log("Re-initialized?")
     this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
-      this.timelogService.fetchTimeSegmentsByRange(moment(date).startOf('day').subtract(1, 'day'), moment(date).endOf('day').add(1, 'day'));
-      this.startViewModeTimer();
-      this._timeWindowSubscription.unsubscribe();
-      this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: ITimeWindow) => {
-        this.buildDisplay(timeWindow);
-        this.drawTimeSegments();
-      });
-      this.setTimeWindowFromDate(date);
+      this.dateChanged(date);
       // this.timelogService.fetchTimeSegmentsByRange(moment(date).subtract(1, 'day'), moment(date).add(1, 'day'));
     });
-    this._currentDate$.next(moment());
 
 
     this._fetchTimeSegmentsSubscription.unsubscribe();
     this._fetchTimeSegmentsSubscription = this.timelogService.timeSegments$.subscribe((receivedTimeSegments: TimeSegment[]) => {
       if(receivedTimeSegments.length > 0){
-        this.receiveTimeSegments(receivedTimeSegments);
+        this._timeSegments = Object.assign([], receivedTimeSegments);
         this.drawTimeSegments();
       }
     });
 
-
+    this.dateChanged(this._currentDate);
 
 
   }
 
-  private receiveTimeSegments(timeSegments: TimeSegment[]) {
-    for (let timeSegment of timeSegments) {
-      let alreadyExists: boolean = false;
-      this._timeSegments.forEach((existingTimeSegment) => {
-        if (existingTimeSegment.id == timeSegment.id) {
-          alreadyExists = true;
-        }
-      });
-
-      if (!alreadyExists) {
-        this._timeSegments.push(timeSegment);
-      }
-    }
-
-    this._timeSegments.sort((a, b) => {
-      if (a.startTimeISO > b.startTimeISO) {
-        return 1;
-      }
-      if (a.startTimeISO < b.startTimeISO) {
-        return -1;
-      }
-      return 0;
+  private dateChanged(date: moment.Moment){
+    this.timelogService.fetchTimeSegmentsByRange(moment(date).startOf('day').subtract(1, 'day'), moment(date).endOf('day').add(1, 'day'));
+    this.startViewModeTimer();
+    this._timeWindowSubscription.unsubscribe();
+    this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: ITimeWindow) => {
+      this.buildDisplay(timeWindow);
+      this.drawTimeSegments();
     });
-    // this.drawTimeSegments();
+    this.setTimeWindowFromDate(date);
+
   }
+
+  // private receiveTimeSegments(timeSegments: TimeSegment[]) {
+  //   for (let timeSegment of timeSegments) {
+  //     let alreadyExists: boolean = false;
+  //     this._timeSegments.forEach((existingTimeSegment) => {
+  //       if (existingTimeSegment.id == timeSegment.id) {
+  //         alreadyExists = true;
+  //       }
+  //     });
+
+  //     if (!alreadyExists) {
+  //       this._timeSegments.push(timeSegment);
+  //     }
+  //   }
+
+  //   this._timeSegments.sort((a, b) => {
+  //     if (a.startTimeISO > b.startTimeISO) {
+  //       return 1;
+  //     }
+  //     if (a.startTimeISO < b.startTimeISO) {
+  //       return -1;
+  //     }
+  //     return 0;
+  //   });
+  //   // this.drawTimeSegments();
+  // }
 
   private drawTimeSegments() {
     function tileBackgroundColor(timeSegment: TimeSegment): string {
@@ -602,7 +608,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
   activityName(tile: TimeSegmentTile): string {
-    if (moment(tile.endTime).diff(moment(tile.startTime), 'minutes') > 16) {
+    if (moment(tile.endTime).diff(moment(tile.startTime), 'minutes') > 19) {
       if (tile.timeSegment.activities.length > 0) {
         return tile.timeSegment.activities[0].activity.name;
       } else {

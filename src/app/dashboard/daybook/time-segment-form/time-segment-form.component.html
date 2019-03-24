@@ -5,14 +5,27 @@
   <div class="time-segment-form" [formGroup]="timeSegmentForm">
 
     <div class="time-segment-form-row" style="display:flex; justify-content: space-evenly;">
-      <div>
-        Start Time
-        <input type="time" formControlName="startTime">
+      <div style="display:flex;flex-direction:column;">
+        <div>
+          <input type="date" formControlName="startTimeDate">
+        </div>
+
+        <div>
+          Start Time
+          <input type="time" formControlName="startTime">
+        </div>
       </div>
-      <div>
-        End Time
-        <input type="time" formControlName="endTime">
+      <div style="display:flex;flex-direction:column;">
+        <div>
+          <input type="date" formControlName="endTimeDate">
+        </div>
+        <div>
+          End Time
+          <input type="time" formControlName="endTime">
+        </div>
       </div>
+
+
     </div>
     <div class="time-segment-form-row">
       <div>{{ durationString }}</div>
@@ -49,22 +62,22 @@
         </button>
         <div *ngIf="ifAddActivity" class="add-activity-form">
 
-            <div class="activity-input-container">
-              <div class="activity-prepend">
-                Activity
-              </div>
-              <input type="text" class="activity-text-input" style="width:100%;" placeholder="Search for activity"
-                [value]="activityTextInputValue" (keyup)="onActivityInputKeyUp($event)">
-              <fa-icon class="activity-dropdown-button" [icon]="faCaretDown" (click)="onClickActivityDropdown()">
-              </fa-icon>
+          <div class="activity-input-container">
+            <div class="activity-prepend">
+              Activity
             </div>
-            <div *ngIf="activitiesDropDownList.length > 0" class="activity-dropdown-list"
-              [style.height]="activityDropdownHeight">
-              <div *ngFor="let activity of activitiesDropDownList" (click)="onClickActivityDropdownItem(activity)"
-                class="activity-dropdown-list-item">
-                {{ activity.name }}
-              </div>
+            <input type="text" class="activity-text-input" style="width:100%;" placeholder="Search for activity"
+              [value]="activityTextInputValue" (keyup)="onActivityInputKeyUp($event)">
+            <fa-icon class="activity-dropdown-button" [icon]="faCaretDown" (click)="onClickActivityDropdown()">
+            </fa-icon>
+          </div>
+          <div *ngIf="activitiesDropDownList.length > 0" class="activity-dropdown-list"
+            [style.height]="activityDropdownHeight">
+            <div *ngFor="let activity of activitiesDropDownList" (click)="onClickActivityDropdownItem(activity)"
+              class="activity-dropdown-list-item">
+              {{ activity.name }}
             </div>
+          </div>
 
 
           <div class="activity-action-buttons p-2">

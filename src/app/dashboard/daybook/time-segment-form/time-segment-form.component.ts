@@ -66,6 +66,9 @@ export class TimeSegmentFormComponent implements OnInit {
     this.timeSegments = Object.assign([], this.timelogService.timeSegments);
 
     this.activitiesTree = this.activitiesService.activitiesTree;
+    this.activitiesService.activitiesTree$.subscribe((newTree)=>{
+      this.activitiesTree = newTree;
+    })
 
     if (this.action == "BLANK") {
 
