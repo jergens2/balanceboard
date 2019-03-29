@@ -45,6 +45,7 @@ import { ActivityGoalsWidgetComponent } from './activities/default-view/activity
 import { ActivityPlanningComponent } from './activities/activity-display/activity-planning/activity-planning.component';
 import { InstancesListComponent } from './activities/activity-display/instances-list/instances-list.component';
 import { ActivityJournalComponent } from './activities/activity-display/activity-journal/activity-journal.component';
+import { DayOfWeekComponent } from './activities/default-view/day-of-week/day-of-week.component';
 
 
 
@@ -93,7 +94,8 @@ import { ActivityJournalComponent } from './activities/activity-display/activity
     ActivityGoalsWidgetComponent,
     ActivityPlanningComponent,
     InstancesListComponent,
-    ActivityJournalComponent
+    ActivityJournalComponent,
+    DayOfWeekComponent
     
     
   ],

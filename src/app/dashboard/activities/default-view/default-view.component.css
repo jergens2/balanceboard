@@ -15,9 +15,7 @@
     border-radius:2px;
     background-color: rgb(252, 252, 252);
     margin:5px;
-    padding: 10px;
-    display:flex;
-    flex-direction: column;
+    padding:5px;
 }
 .view-section-header{
     font-size: 1.2em;
@@ -25,10 +23,9 @@
 .seven-day-period{
     display:flex;
     flex-direction: row;
-    justify-content: space-between;
+    width:100%;
 }
 .day-of-period{
-    border: 1px solid rgb(231, 231, 231);
     margin: 3px;
-    width:100%;
+    flex: 1 1 auto;
 }
