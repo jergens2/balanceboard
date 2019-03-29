@@ -1,8 +1,38 @@
 <div class="root">
   <div class="default-view">
+    <div class="top">
+      <h3>Default Activity View</h3>
+      <p>Here is where we will see some useful default info, like "top 5 activities in the last 7 days"</p>
+    </div>
 
-    <h3>Default Activity View</h3>
-    <p>Here is where we will see some useful default info, like "top 5 activities in the last 7 days"</p>
 
+    <div class="view-section">
+      <h3>Activity in the last 7 days</h3>
+    </div>
+    <div class="view-section seven-day-period" *ngIf="daysOfWeek">
+      <div *ngFor="let dayOfWeek of daysOfWeek">
+        <div class="day-of-period">
+          {{ dayOfWeek.activityData.totalHours.toFixed(1) }} hrs
+        </div>
+      </div>
+    </div>
+    <div class="view-section" *ngIf="lastPeriod">
+      <div class="view-section-header">
+        Activity in the last period:  {{ lastPeriod.periodStart.format('ddd, MMM Do') }}  -  {{ lastPeriod.periodEnd.format('ddd, MMM Do')}} 
+      </div> 
+      <div>
+        <table>
+          <tr><td>Activity Name</td><td>Total Hours</td></tr>
+          <tr *ngFor="let activity of lastPeriod.activities">
+            <td>{{ activity.name }}</td>
+            <td>{{ activity.totalHours.toFixed(1) }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="view-section" *ngIf="!lastPeriod">
+      <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+    </div>
   </div>
 </div>

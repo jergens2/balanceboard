@@ -37,7 +37,15 @@ export class ActivitiesService {
     return this._authStatus.user.id;
   }
 
-
+  /*
+  private mergeAndDestroyThisActivity(destroyActivity: UserDefinedActivity, mergeToActivity: UserDefinedActivity){
+    //todo: implement
+  } 
+  
+  
+  */
+  
+  
   getActivityData(activity: UserDefinedActivity): Observable<TimeSegment[]> {
     /*
       This method grabs activity data from the server to display over a period of time, 
