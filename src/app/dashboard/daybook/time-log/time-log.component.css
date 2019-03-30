@@ -48,9 +48,11 @@
 
 
 .now-line{
-    border-top: 1px solid rgb(233, 101, 101);   
+    border-top: 1px solid rgb(233, 101, 101);
+    height:1px;
     grid-column: 2 / span 1;
     grid-row: 2 / span 1;
+    /* box-shadow: 0 0 25px 1px rgb(230, 169, 169); */
 }
 
 .caret-container{
@@ -85,7 +87,28 @@
     grid-column: 2 / span 1;
     border: 1px solid rgb(199, 199, 199);
     font-size:0.8em;
+
+    display:flex;
+    flex-direction:column;
 } 
+.tile-top-row{
+    height: 25px;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.tile-buttons{
+    margin-right:5px;
+}
+.tile-button{
+    margin-right:2px;
+    margin-left:2px;
+    color:gray;
+}
+.tile-button:hover{
+    color:black;
+    cursor:pointer;
+}
 
 .blank-tile{
     border: none;
@@ -94,5 +117,19 @@
     border: 1px solid rgba(128, 128, 128, 0.267);
     background-color: #fafafa;
     cursor: pointer;
+}
+.large-tile{
+
+
+}
+.large-tile:hover{
+
+}
+.small-tile{
+
+}
+.small-tile:hover{
+    cursor:pointer;
+    border: 1px solid black;
 }
 

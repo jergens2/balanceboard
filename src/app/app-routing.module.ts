@@ -12,6 +12,7 @@ import { MonthPlannerComponent } from "./dashboard/month-planner/month-planner.c
 import { YearPlannerComponent } from "./dashboard/year-planner/year-planner.component";
 import { UserSettingsComponent } from "./user-settings/user-settings.component";
 import { IdeaLogComponent } from "./dashboard/idea-log/idea-log.component";
+import { ScheduleComponent } from "./dashboard/daybook/schedule/schedule.component";
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
@@ -27,7 +28,8 @@ const appRoutes: Routes = [
     { path: 'year_planner', component: YearPlannerComponent },
     { path: 'activities', component: ActivitiesComponent },
     { path: 'idea_log', component: IdeaLogComponent },
-    { path: 'user_settings', component: UserSettingsComponent }
+    { path: 'user_settings', component: UserSettingsComponent },
+    { path: 'schedule', component: ScheduleComponent }
 ];
 
 

@@ -16,6 +16,8 @@ export class HeaderMenuComponent implements OnInit {
 
   constructor(private router: Router, private headerService: HeaderService) { }
 
+  private mouseOverSubMenu: boolean = false;
+
   @Input() openMenu: HeaderMenu;
   // @Output() closeMenu: EventEmitter<HeaderMenu> = new EventEmitter<HeaderMenu>();
 
@@ -26,10 +28,15 @@ export class HeaderMenuComponent implements OnInit {
 
   onClickHeaderMenuItem(menuItem: MenuItem) {
     
-    menuItem.click();
-    if (menuItem.routerLink != null && menuItem.routerLink != '') {
-      this.router.navigate([menuItem.routerLink]);
+    if(this.mouseOverSubMenu){
+
+    }else{
+      menuItem.click();
+      if (menuItem.routerLink != null && menuItem.routerLink != '') {
+        this.router.navigate([menuItem.routerLink]);
+      }
     }
+    
     // this.headerService.closeMenus(true);
   }
 
@@ -47,6 +54,13 @@ export class HeaderMenuComponent implements OnInit {
     //   menuItem.subMenu.isOpen = false;
     // }
     
+  }
+
+  onMouseOverSubMenu(){
+    this.mouseOverSubMenu = true;
+  }
+  onMouseLeaveSubMenu(){
+    this.mouseOverSubMenu = false;
   }
 
 

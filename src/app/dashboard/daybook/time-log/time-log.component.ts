@@ -4,10 +4,13 @@ import { Subscription, timer, Subject } from 'rxjs';
 import { TimeSegmentTile } from './time-segment-tile.model';
 import { TimeSegment } from './time-segment.model';
 import { TimelogService } from './timelog.service';
-import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCaretUp, faCaretDown, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
 import { ITimeSegmentFormData } from '../time-segment-form/time-segment-form-data.interface';
-import { Router } from '@angular/router';
+
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { Modal } from '../../../modal/modal.model';
+import { ModalService } from '../../../modal/modal.service';
 
 @Component({
   selector: 'app-time-log',
@@ -16,16 +19,19 @@ import { Router } from '@angular/router';
 })
 export class TimeLogComponent implements OnInit, OnDestroy {
 
-  constructor(private timelogService: TimelogService, private router: Router) { }
+  constructor(private timelogService: TimelogService, private modalService: ModalService) { }
 
   faSpinner = faSpinner;
   faCaretUp = faCaretUp;
   faCaretDown = faCaretDown;
+  faTimes = faTimes;
+  faEdit = faEdit;
 
   ifLoading: boolean = false;
 
 
   private _fetchTimeSegmentsSubscription: Subscription = new Subscription();
+  private _fetchTimeSegmentsTimerSubscription: Subscription = new Subscription();
 
 
 
@@ -97,13 +103,21 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     });
 
 
-    this._fetchTimeSegmentsSubscription.unsubscribe();
-    this._fetchTimeSegmentsSubscription = this.timelogService.timeSegments$.subscribe((receivedTimeSegments: TimeSegment[]) => {
-      if (receivedTimeSegments.length > 0) {
-        this._timeSegments = Object.assign([], receivedTimeSegments);
-        this.drawTimeSegments();
-      }
+    this._fetchTimeSegmentsTimerSubscription.unsubscribe();
+    this._fetchTimeSegmentsTimerSubscription = timer(0, 30000).subscribe(() => { 
+      this._fetchTimeSegmentsSubscription.unsubscribe();
+      this._fetchTimeSegmentsSubscription = this.timelogService.timeSegments$.subscribe((receivedTimeSegments: TimeSegment[]) => {
+        console.log("Received new TimeSegments: ", receivedTimeSegments);
+
+          this._timeSegments = Object.assign([], receivedTimeSegments);
+          this.drawTimeSegments();
+
+      });
     });
+
+    timer(0,30000).subscribe(()=>{
+      console.log("Every 30 seconds: " + moment().format('YYYY-MM-DD hh:mm a'))
+    })
 
     this.dateChanged(this._currentDate);
 
@@ -420,6 +434,9 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       this.timeSegmentTiles = timeSegmentTiles;
       this.timeSegmentsContainer = { style: style };
 
+    }else{
+      this.timeSegmentTiles = [];
+      this.timeSegmentsContainer = { style: {} };
     }
   }
 
@@ -530,7 +547,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   private drawNowLine() {
     this._nowLineSubscription.unsubscribe();
-    this._nowLineSubscription = timer(0, 60000).subscribe(() => {
+    this._nowLineSubscription = timer(0, 30000).subscribe(() => {
       let currentView: ITimeWindow = this._timeWindow;
       if (moment().isSameOrAfter(moment(currentView.startTime)) && moment().isSameOrBefore(moment(currentView.endTime))) {
         let totalDuration: number = moment(currentView.endTime).diff(moment(currentView.startTime), 'minutes');
@@ -588,7 +605,8 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     this._timeWindowSubscription.unsubscribe();
     this._manualDateChangeSubscription.unsubscribe();
     this._fetchTimeSegmentsSubscription.unsubscribe();
-
+    this._fetchTimeSegmentsSubscription.unsubscribe();
+    this._modalSubscription.unsubscribe();
   }
 
 
@@ -607,7 +625,50 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   }
 
   onClickTile(tile: TimeSegmentTile) {
-    console.log("Span:" + tile.timeSegment.startTime.format('YYYY-MM-DD hh:mm a') + " to " + tile.timeSegment.endTime.format('YYYY-MM-DD hh:mm a'))
+    if(!tile.isLarge){
+      this.onClickTileEdit(tile);
+    }else{
+
+    }
+  }
+
+  onMouseOverTile(tile: TimeSegmentTile){
+    tile.mouseOver = true;
+  }
+  onMouseLeaveTile(tile:TimeSegmentTile){
+    tile.mouseOver = false;
+  }
+
+  onClickTileEdit(tile:TimeSegmentTile){
+    let timeSegmentFormData: ITimeSegmentFormData = {
+      action: 'REVIEW',
+      timeSegment: tile.timeSegment,
+      date: moment(tile.timeSegment.startTime)
+    }
+    this.timeSegmentFormData.emit(timeSegmentFormData);
+  }
+
+  private _modalSubscription: Subscription = new Subscription();
+  onClickTileDelete(tile:TimeSegmentTile){
+    this._modalSubscription.unsubscribe();
+    let modalOptions: string[] = ["Yes", "No"];     
+    let modal: Modal = new Modal("Confirm: Delete Time Event?", modalOptions);
+    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: string)=>{
+      if(selectedOption == "Yes"){
+        // try{
+        //   this.timeSegmentTiles.splice(this.timeSegmentTiles.indexOf(tile));
+        // }catch{
+          
+        // }
+        this.timelogService.deleteTimeSegment(tile.timeSegment);
+        
+      }else if(selectedOption == "No"){
+
+      }else{
+        //error 
+      }
+    });
+    this.modalService.activeModal = modal;
   }
 
 

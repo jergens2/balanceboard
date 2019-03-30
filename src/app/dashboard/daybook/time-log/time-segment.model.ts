@@ -19,18 +19,6 @@ export class TimeSegment{
     public description: string;
 
     public activities: TimeSegmentActivity[] = []
-    // private _activities: TimeSegmentActivity[] = [];
-    // get activities(): TimeSegmentActivity[]{
-    //     return this._activities;
-    // }
-    // set activities(arr: TimeSegmentActivity[]){
-    //     this._activities = [];
-    //     this._activities = Object.assign([], arr);
-    //     console.log(this._activities);
-    // }
-
-    public precedingTimeSegmentId: string;
-    public followingTimeSegmentId: string;
 
     public userId: string;
 

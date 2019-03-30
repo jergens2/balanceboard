@@ -29,7 +29,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
   ifTimeSegmentForm: boolean = false;
 
 
-  timeSegmentFormData: ITimeSegmentFormData;
+  timeSegmentFormData: ITimeSegmentFormData = { action:"BLANK" , timeSegment: null, date: null };
 
   private headerMenuSubscriptions: Subscription[] = [];
 
@@ -93,7 +93,8 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.currentView = newView;
   }
 
-  private onTimeSegmentDataProvided(data: ITimeSegmentFormData){
+  onTimeSegmentDataProvided(data: ITimeSegmentFormData){
+    console.log("Timesegment form data RECEIVED BRAH")
     this.timeSegmentFormData = data;
     this.changeView("form");
   }

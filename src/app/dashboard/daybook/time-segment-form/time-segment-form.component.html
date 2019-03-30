@@ -1,35 +1,81 @@
 <div class="root">
-  <div class="header">
-    {{ viewAction }} Time Segment
+  <div class="header-container">
+    <div class="buffer"></div>
+    <div class="header">
+      {{ viewAction }} Time Event
+    </div>
+    <div class="buffer">
+      <div class="delete-button" *ngIf="action == 'REVIEW'" (click)="onClickDeleteTimeEvent()">
+        Delete <fa-icon [icon]="faTimes"></fa-icon>
+      </div>
+    </div>
+
   </div>
+
   <div class="time-segment-form" [formGroup]="timeSegmentForm">
 
-    <div class="time-segment-form-row" style="display:flex; justify-content: space-evenly;">
-      <div style="display:flex;flex-direction:column;">
-        <div>
-          <input type="date" formControlName="startTimeDate">
-        </div>
+    <div class="time-segment-form-row" style="padding:none;">
 
-        <div>
-          Start Time
-          <input type="time" formControlName="startTime">
+
+      <div class="time-section" [ngClass]="{'time-section-error': startTimeError }">
+        <div style="font-size:1.1em;font-weight:bold;margin-bottom:5px;">
+          Start
+        </div>
+        <div style="display:flex;flex-direction:row;height:30px;">
+          <div style="width:50px;">
+            Date:
+          </div>
+          <div *ngIf="!modifyStartDate" class="display-date" (click)="onClickModifyStartDate()">
+            {{ startTimeDate }}
+          </div>
+          <div *ngIf="modifyStartDate">
+            <input type="date" formControlName="startTimeDate">
+            <fa-icon [icon]="faTimes" (click)="onClickModifyStartDate()" class="close-button"></fa-icon>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:row;height:30px;">
+          <div style="width:50px;">
+            Time:
+          </div>
+          <div>
+            <input type="time" formControlName="startTime">
+          </div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;">
-        <div>
-          <input type="date" formControlName="endTimeDate">
+
+
+      <div class="time-section" [ngClass]="{'time-section-error': endTimeError }">
+        <div style="font-size:1.1em;font-weight:bold;margin-bottom:5px;">
+          End
         </div>
-        <div>
-          End Time
-          <input type="time" formControlName="endTime">
+        <div style="display:flex;flex-direction:row;height:30px;">
+          <div style="width:50px;">
+            Date:
+          </div>
+          <div *ngIf="!modifyEndDate" class="display-date" (click)="onClickModifyEndDate()">
+            {{ endTimeDate }}
+          </div>
+          <div *ngIf="modifyEndDate">
+            <input type="date" formControlName="endTimeDate">
+            <fa-icon [icon]="faTimes" (click)="onClickModifyEndDate()" class="close-button"></fa-icon>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:row;height:30px;">
+          <div style="width:50px;">
+            Time:
+          </div>
+          <div>
+            <input type="time" formControlName="endTime">
+          </div>
         </div>
       </div>
+    </div>
+    <div class="time-segment-form-row" style="font-weight:bold;"
+      [ngClass]="{'duration-error': endTimeError, 'duration-error': startTimeError }">
+      {{ durationString }}
+    </div>
 
 
-    </div>
-    <div class="time-segment-form-row">
-      <div>{{ durationString }}</div>
-    </div>
     <div class="time-segment-form-row">
       <textarea rows="5" class="form-textarea" placeholder="Description" formControlName="description">
       </textarea>
@@ -38,14 +84,8 @@
 
 
 
-    <div class="time-segment-form-row">
-      <hr>
-    </div>
 
-
-
-
-    <div class="time-segment-form-row">
+    <div class="time-segment-form-row" style="flex-direction: column;">
       <div style="font-size:1.15em">
         Activities
       </div>
@@ -62,23 +102,8 @@
         </button>
         <div *ngIf="ifAddActivity" class="add-activity-form">
 
-          <div class="activity-input-container">
-            <div class="activity-prepend">
-              Activity
-            </div>
-            <input type="text" class="activity-text-input" style="width:100%;" placeholder="Search for activity"
-              [value]="activityTextInputValue" (keyup)="onActivityInputKeyUp($event)">
-            <fa-icon class="activity-dropdown-button" [icon]="faCaretDown" (click)="onClickActivityDropdown()">
-            </fa-icon>
-          </div>
-          <div *ngIf="activitiesDropDownList.length > 0" class="activity-dropdown-list"
-            [style.height]="activityDropdownHeight">
-            <div *ngFor="let activity of activitiesDropDownList" (click)="onClickActivityDropdownItem(activity)"
-              class="activity-dropdown-list-item">
-              {{ activity.name }}
-            </div>
-          </div>
-
+          <app-activity-input-dropdown (valueChanged)="onActivityInputDropdownValueChanged($event)">
+          </app-activity-input-dropdown>
 
           <div class="activity-action-buttons p-2">
             <button class="btn btn-primary btn-sm mx-2" (click)="onClickSaveActivity()">Save Activity</button>
@@ -89,12 +114,6 @@
       </div>
     </div>
 
-
-
-
-    <div class="time-segment-form-row">
-      <hr>
-    </div>
 
 
     <div class="time-segment-form-row"

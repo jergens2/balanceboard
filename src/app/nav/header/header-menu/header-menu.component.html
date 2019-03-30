@@ -1,7 +1,7 @@
 <div class="root">
   <div *ngFor="let menuItem of openMenu.menuItems" class='menu-item' routerLinkActive='activeLink'
      (mouseover)="onMouseOverHeaderMenuItem(menuItem)"
-    (mouseleave)="onMouseLeaveHeaderMenuItem(menuItem)">
+    (mouseleave)="onMouseLeaveHeaderMenuItem(menuItem)" (click)="onClickHeaderMenuItem(menuItem)">
     <div class="menu-item-icon" (click)="onClickHeaderMenuItem(menuItem)">
       <div *ngIf="menuItem.icon != null">
         <fa-icon [icon]="menuItem.icon"></fa-icon>
@@ -16,7 +16,7 @@
       <fa-icon [icon]="faChevronRight"></fa-icon>
     </div>
     <div class="sub-menu" *ngIf="(menuItem.subMenu != null) && (menuItem.subMenu.isOpen)">
-      <app-header-menu [openMenu]="menuItem.subMenu"></app-header-menu>
+      <app-header-menu [openMenu]="menuItem.subMenu" (mouseover)="onMouseOverSubMenu()" (mouseleave)="onMouseLeaveSubMenu()"></app-header-menu>
     </div>
 
   </div>

@@ -19,6 +19,7 @@ export class ActivityInputDropdownComponent implements OnInit {
 
 
   activitiesDropDownList: IActivityDropdownListItem[] = [];
+  activitiesSearchList: IActivityDropdownListItem[] = [];
   private dropdownListTree: IActivityDropdownListItem[] = [];
   activityTextInputValue: string = "";
 
@@ -79,21 +80,28 @@ export class ActivityInputDropdownComponent implements OnInit {
     if (searchValue.length > 0) {
       this.searchForActivities(searchValue);
     } else {
-      this.activitiesDropDownList = [];
+      this.activitiesSearchList = [];
     }
 
   }
 
   onClickActivityDropdownArrow() {
+    this.dropdownMenuSubscription.unsubscribe();
+    console.log("click");
     if (this.activitiesDropDownList.length > 0) {
+      console.log("its greater than 0")
       //if it's already open (has more than 0 items), clear it.
       this.activitiesDropDownList = [];
+      this.activitiesSearchList = [];
     } else {
-      if (this.activityTextInputValue.length > 0) {
-        this.searchForActivities(this.activityTextInputValue);
-      } else {
+      console.log("we building")
+      // if (this.activityTextInputValue.length > 0) {
+        // this.searchForActivities(this.activityTextInputValue);
+      // } else {
+        this.activitiesSearchList = [];
+        this.activitiesDropDownList = [];
         this.viewTreeList();
-      }
+      // }
     }
   }
 
@@ -102,6 +110,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     this.activityTextInputValue = listItem.activity.name;
     this.selectedActivity = listItem.activity;
     this.activitiesDropDownList = [];
+    this.activitiesSearchList = [];
     this.onValueChanged(this.selectedActivity);
   }
 
@@ -173,18 +182,27 @@ export class ActivityInputDropdownComponent implements OnInit {
       }
     }
 
+    searchResults.sort((a, b)=>{
+      if(a.activity.name > b.activity.name){
+        return 1;
+      }
+      if(a.activity.name < b.activity.name){
+        return -1;
+      }
+      return 0;
+    })
 
-
-    this.activitiesDropDownList = searchResults;
+    this.activitiesSearchList = searchResults;
 
   }
 
   onMouseLeaveDropdownList(){
-    if(this.activitiesDropDownList.length > 0){
+    if(this.activitiesDropDownList.length > 0 || this.activitiesSearchList.length > 0 ){
       this.dropdownMenuSubscription.unsubscribe();
       let documentClickListener: Observable<Event> = fromEvent(document, 'click');
       this.dropdownMenuSubscription = documentClickListener.subscribe((click)=>{  
         this.activitiesDropDownList = [];
+        this.activitiesSearchList = [];
       })
     }else{
 
@@ -201,8 +219,8 @@ export class ActivityInputDropdownComponent implements OnInit {
     return false;
   }
 
-  get activityDropdownHeight(): string {
-    let px = this.activitiesDropDownList.length * 30;
+  activityDropdownHeight(array: any[]): string {
+    let px = array.length * 30;
     if (px <= 30) {
       return "30px";
     } else if (px >= 200) {

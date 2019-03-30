@@ -10,6 +10,8 @@ export class TimeSegmentTile{
     private _isLarge: boolean = false; 
     private _isBlank: boolean = false;
 
+    public mouseOver: boolean = false;
+
 
 
     public get startTime(): moment.Moment { 
@@ -30,7 +32,7 @@ export class TimeSegmentTile{
 
 
     private setIsLarge(){
-        let minutesLimit: number = 16;
+        let minutesLimit: number = 20;
         if(moment(this._endTime).diff(moment(this._startTime),'minutes') > minutesLimit){
             this._isLarge = true;
         }else{
