@@ -62,47 +62,11 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   private _manualDateChangeSubscription: Subscription = new Subscription();
 
 
+
+
+
   private set timeWindow(timeWindow: ITimeWindow) {
-    function roundTimes(timeWindow): ITimeWindow {
-      /*
-        The simple approach here is to retain a single layout shape, which is one where the hourLabels are offset directly in the center
-        of where the bottom of one of the hourLines are.  
-        
-        E.G:
-        _____
-             |
-         8am |------------
-        _____|
-             |
-         9am |------------
-        _____|
-
-        By doing this, we need to start the frame above by a half hour and below by a half hour of a given hour.
-
-        An alternative solution, to start at exactly 8:00am and not 7:30am, would be to design a different layout to accommodate that, but as of now, to retain the layout shape, the approach is that
-        If the day start time is from 7:30am to 8:29am, then it gets rounded down to 7:30am 
-        &
-        If the day end time is from 10:31pm to 11:30pm, then it gets rounded up to 11:30pm 
-      */
-      let startTime: moment.Moment = moment(timeWindow.startTime);
-      let earliestStart = (moment(startTime).hour(startTime.hour()).minute(0).second(0).millisecond(0)).subtract(30, 'minutes');
-      if (startTime.isBefore(moment(earliestStart).add(1, 'hour'))) {
-        startTime = moment(earliestStart);
-      } else if (startTime.isSameOrAfter(moment(earliestStart).add(1, 'hour'))) {
-        startTime = moment(earliestStart).add(1, 'hour');
-      }
-      let endTime: moment.Moment = moment(timeWindow.endTime);
-      let latestEnd = (moment(endTime).hour(endTime.hour()).minute(0).second(0).millisecond(0)).add(1, 'hour').add(30, 'minutes');
-      if (endTime.isSameOrBefore(moment(latestEnd).subtract(1, 'hour'))) {
-        endTime = moment(latestEnd).subtract(1, 'hour');
-      } else if (endTime.isAfter(moment(latestEnd).subtract(1, 'hour'))) {
-        endTime = moment(latestEnd);
-      }
-      return { startTime: startTime, endTime: endTime, referenceFrom: timeWindow.referenceFrom };
-    }
-
-
-    this._timeWindow = roundTimes(timeWindow);
+    this._timeWindow = this.roundTimes(timeWindow);
     this._timeWindow$.next(this._timeWindow);
     if (this._caretClicked) {
       this._caretClicked = false;
@@ -135,7 +99,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
     this._fetchTimeSegmentsSubscription.unsubscribe();
     this._fetchTimeSegmentsSubscription = this.timelogService.timeSegments$.subscribe((receivedTimeSegments: TimeSegment[]) => {
-      if(receivedTimeSegments.length > 0){
+      if (receivedTimeSegments.length > 0) {
         this._timeSegments = Object.assign([], receivedTimeSegments);
         this.drawTimeSegments();
       }
@@ -146,7 +110,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   }
 
-  private dateChanged(date: moment.Moment){
+  private dateChanged(date: moment.Moment) {
     this.timelogService.fetchTimeSegmentsByRange(moment(date).startOf('day').subtract(1, 'day'), moment(date).endOf('day').add(1, 'day'));
     this.startViewModeTimer();
     this._timeWindowSubscription.unsubscribe();
@@ -158,31 +122,44 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   }
 
-  // private receiveTimeSegments(timeSegments: TimeSegment[]) {
-  //   for (let timeSegment of timeSegments) {
-  //     let alreadyExists: boolean = false;
-  //     this._timeSegments.forEach((existingTimeSegment) => {
-  //       if (existingTimeSegment.id == timeSegment.id) {
-  //         alreadyExists = true;
-  //       }
-  //     });
+  private roundTimes(timeWindow): ITimeWindow {
+    /*
+      The simple approach here is to retain a single layout shape, which is one where the hourLabels are offset directly in the center
+      of where the bottom of one of the hourLines are.  
+      
+      E.G:
+      _____ ____________
+           |
+       8am |------------
+      _____|____________
+           |
+       9am |------------
+      _____|____________
 
-  //     if (!alreadyExists) {
-  //       this._timeSegments.push(timeSegment);
-  //     }
-  //   }
+      By doing this, we need to start the frame above by a half hour and below by a half hour of a given hour.
 
-  //   this._timeSegments.sort((a, b) => {
-  //     if (a.startTimeISO > b.startTimeISO) {
-  //       return 1;
-  //     }
-  //     if (a.startTimeISO < b.startTimeISO) {
-  //       return -1;
-  //     }
-  //     return 0;
-  //   });
-  //   // this.drawTimeSegments();
-  // }
+      An alternative solution, to start at exactly 8:00am and not 7:30am, would be to design a different layout to accommodate that, but as of now, to retain the layout shape, the approach is that
+      If the day start time is from 7:30am to 8:29am, then it gets rounded down to 7:30am 
+      &
+      If the day end time is from 10:31pm to 11:30pm, then it gets rounded up to 11:30pm 
+    */
+    let startTime: moment.Moment = moment(timeWindow.startTime);
+    let earliestStart = (moment(startTime).hour(startTime.hour()).minute(0).second(0).millisecond(0)).subtract(30, 'minutes');
+    if (startTime.isBefore(moment(earliestStart).add(1, 'hour'))) {
+      startTime = moment(earliestStart);
+    } else if (startTime.isSameOrAfter(moment(earliestStart).add(1, 'hour'))) {
+      startTime = moment(earliestStart).add(1, 'hour');
+    }
+    let endTime: moment.Moment = moment(timeWindow.endTime);
+    let latestEnd = (moment(endTime).hour(endTime.hour()).minute(0).second(0).millisecond(0)).add(1, 'hour').add(30, 'minutes');
+    if (endTime.isSameOrBefore(moment(latestEnd).subtract(1, 'hour'))) {
+      endTime = moment(latestEnd).subtract(1, 'hour');
+    } else if (endTime.isAfter(moment(latestEnd).subtract(1, 'hour'))) {
+      endTime = moment(latestEnd);
+    }
+    return { startTime: startTime, endTime: endTime, referenceFrom: timeWindow.referenceFrom };
+  }
+
 
   private drawTimeSegments() {
     function tileBackgroundColor(timeSegment: TimeSegment): string {
@@ -454,6 +431,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       this._dateChangedInternally = false;
     } else {
       if (moment().format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')) {
+        // if its today, then use the active window, which might be different from the default window.
         this.timeWindow = this.activeTimeWindow;
       } else {
         this.timeWindow = this._defaultTimeWindow;
@@ -464,25 +442,33 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   private get activeTimeWindow(): ITimeWindow {
     let defaultWindowSizeHours: number = moment(this._defaultTimeWindow.endTime).diff(moment(this._defaultTimeWindow.startTime), 'hours');
-    let newWindow: ITimeWindow = this._defaultTimeWindow;
+    let newWindow: ITimeWindow = this.roundTimes(this._defaultTimeWindow);
 
     let now: moment.Moment = moment();
-    if (moment(now).isSameOrAfter(moment(newWindow.startTime)) && moment(now).isSameOrBefore(moment(newWindow.endTime))) {
+    if (moment(now).isSameOrAfter(moment(newWindow.startTime).add(1, "hour")) && moment(now).isSameOrBefore(moment(newWindow.endTime).subtract(1, "hour"))) {
       return newWindow;
     } else {
-      if (moment(now).isAfter(moment(newWindow.endTime).subtract(15, 'minutes'))) {
-        newWindow.endTime = moment(now);
-        newWindow.startTime = moment(now).subtract(defaultWindowSizeHours, "hours");
+      if (moment(now).isAfter(moment(newWindow.endTime).subtract(1, "hour"))) {
+        newWindow.endTime = moment(now).add(1, "hour");
+        newWindow.startTime = moment(newWindow.endTime).subtract(defaultWindowSizeHours, "hours");
         return newWindow;
-      } else if (moment(now).isBefore(moment(newWindow.startTime).add(15, 'minutes'))) {
+      } else if (moment(now).isBefore(moment(newWindow.startTime).subtract(1, "hour"))) {
         let cutOffTime: moment.Moment = moment(newWindow.startTime).hour(4).minute(0).second(0).millisecond(0);
+        /*
+            cutOffTime is a variable which basically sets the top or bottom of the window, when the time is basically during regular sleeping hours
+            in other words, there is an assumption that if you are viewing the active window at 3:00am (or any time PRIOR to the cutOffTime), you are probably still awake from the previous day, and 
+            if you are viewing the active window AFTER the cutOffTime, then the assumption is that you have woken up and began your new day, even though it is early.
+
+        */
         if (moment(now).isBefore(moment(cutOffTime))) {
-          newWindow.endTime = moment(now);
-          newWindow.startTime = moment(now).subtract(defaultWindowSizeHours, "hours");
+          //therefore it is now between 12:00am and 4:00am
+          newWindow.endTime = moment(now).add(1, "hour");
+          newWindow.startTime = moment(newWindow.endTime).subtract(defaultWindowSizeHours, "hours");
           return newWindow;
         } else if (moment(now).isSameOrAfter(moment(cutOffTime))) {
-          newWindow.startTime = moment(now);
-          newWindow.endTime = moment(now).add(defaultWindowSizeHours, "hours");
+          //it is after 4 am
+          newWindow.startTime = moment(now).subtract(1, "hour");
+          newWindow.endTime = moment(newWindow.startTime).add(defaultWindowSizeHours, "hours");
           return newWindow;
         }
       }
@@ -567,14 +553,14 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
     let hours: number = 1;
     if (direction == "UP") {
-      if(this._timeWindow.referenceFrom == "TOP"){
+      if (this._timeWindow.referenceFrom == "TOP") {
         hours = 2;
       }
       timeWindow.startTime = moment(timeWindow.startTime).subtract(hours, 'hour');
       timeWindow.endTime = moment(timeWindow.endTime).subtract(hours, 'hour');
       timeWindow.referenceFrom = "TOP";
     } else if (direction == "DOWN") {
-      if(this._timeWindow.referenceFrom == "BOTTOM"){
+      if (this._timeWindow.referenceFrom == "BOTTOM") {
         hours = 2;
       }
       timeWindow.startTime = moment(timeWindow.startTime).add(hours, 'hour');
