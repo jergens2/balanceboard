@@ -10,7 +10,7 @@ let menuItems: MenuItem[] = [];
 menuItems.push(new MenuItem('Home','/home',faHome));
 menuItems.push(new MenuItem('Daybook','/daybook',faBookOpen));
 menuItems.push(new MenuItem('Schedule','/schedule', faClock ));
-menuItems.push(new MenuItem('Day Templats','/day-templates', faClock ));
+menuItems.push(new MenuItem('Day Templates','/day-templates', faClock ));
 // menuItems.push(new MenuItem('Month Planner', '/month_planner', faCalendarAlt));
 // menuItems.push(new MenuItem('Year Planner', '/year_planner', faCalendarAlt));
 menuItems.push(new MenuItem('Activities','/activities',faSitemap));

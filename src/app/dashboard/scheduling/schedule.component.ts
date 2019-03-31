@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { DayTemplate } from './day-templates/day-template.model';
 import * as moment from 'moment';
+import { IDayTemplateItem } from './day-templates/day-template-item.interface';
 
 @Component({
   selector: 'app-schedule',
@@ -17,7 +18,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   rotationBodyDisplayStyle: any = null;
 
   formSubscription: Subscription = new Subscription();
-  dayTemplates: DayTemplate[] = [];
+  dayTemplateItems: IDayTemplateItem[] = [];
 
   ngOnInit() {
 
@@ -74,13 +75,19 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
       let startDate: moment.Moment = moment(this.rotationForm.controls['startsOnDate'].value);
       let currentDate: moment.Moment = moment(startDate);
-      let dayTemplates: DayTemplate[] = [];
+      let dayTemplateItems: IDayTemplateItem[] = [];
       for (let i = 0; i < countDays; i++) {
-        dayTemplates.push(new DayTemplate(i + 1, currentDate));
+        // dayTemplateItems.push(new DayTemplate(i + 1, currentDate));
+        let dayTemplateItem: IDayTemplateItem = {
+          dayTemplate: null,
+          dayOfRotation: i+1,
+          date: moment(currentDate).format('YYYY-MM-DD')
+        };
+        dayTemplateItems.push(dayTemplateItem);
         currentDate = moment(currentDate).add(1, 'days');
       }
 
-      this.dayTemplates = dayTemplates;
+      this.dayTemplateItems = dayTemplateItems;
       this.rotationBodyDisplayStyle = style;
     }
 

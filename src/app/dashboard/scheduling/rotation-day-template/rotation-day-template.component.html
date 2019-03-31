@@ -1,17 +1,20 @@
 <div class="day-template">
   <div class="header">
-    Day {{ dayTemplate.dayOfRotation }}
+    Day {{ dayTemplateItem.dayOfRotation }}
   </div>
   <div class="header">
-    {{ dayTemplate.date }}
+    {{ dayTemplateItem.date }}
   </div>
   <div *ngIf="templateIsSpecified" class="template-information">
 
   </div>
   <div *ngIf="!templateIsSpecified" class="template-information">
-    <div class="unspecified-template" (click)="onClickUnspecifiedTemplate()">
-      No template specified
+    <div style="margin-bottom:5px;">
+        No template specified
+    </div>
 
+    <div class="unspecified-template" (click)="onClickUnspecifiedTemplate()">
+      Specify template
     </div>
   </div>
 </div>

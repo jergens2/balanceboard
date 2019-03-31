@@ -12,6 +12,7 @@ import { TimelogService } from '../dashboard/daybook/time-log/timelog.service';
 import { ActivityTree } from '../dashboard/activities/activity-tree.model';
 import { TimeSegment } from '../dashboard/daybook/time-log/time-segment.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
+import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -22,9 +23,13 @@ export class AuthenticationService {
     return this._authStatusSubject$.asObservable();
   }
 
-  constructor(private http: HttpClient, private activitiesService: ActivitiesService, private timelogService: TimelogService, private userSettingsService: UserSettingsService) {
-    // console.log("Authentication service constructor has been called");
-  }
+  constructor(
+    private http: HttpClient, 
+    private activitiesService: ActivitiesService, 
+    private timelogService: TimelogService, 
+    private userSettingsService: UserSettingsService,
+    private dayTemplatesService: DayTemplatesService
+    ) {}
 
   private serverUrl = serverUrl;
 
@@ -86,6 +91,7 @@ export class AuthenticationService {
 
       })
       this.userSettingsService.login(authStatus);
+      this.dayTemplatesService.login(authStatus);
 
       this.activitiesSubscription = this.activitiesService.login$(authStatus).subscribe((activityTree: ActivityTree) => {
         if (activityTree != null) {
@@ -175,6 +181,7 @@ export class AuthenticationService {
     this.timelogService.logout();
     this.activitiesService.logout();
     this.userSettingsService.logout();
+    this.dayTemplatesService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DayTemplate } from '../day-templates/day-template.model';
+import { IDayTemplateItem } from '../day-templates/day-template-item.interface';
 
 @Component({
   selector: 'app-rotation-day-template',
@@ -8,19 +9,22 @@ import { DayTemplate } from '../day-templates/day-template.model';
 })
 export class RotationDayTemplateComponent implements OnInit {
 
-  @Input() dayTemplate: DayTemplate;
+  @Input() dayTemplateItem: IDayTemplateItem;
 
   templateIsSpecified: boolean = false;
 
   constructor() { }
 
   ngOnInit() {
-    if(this.dayTemplate.name){
+    if(this.dayTemplateItem.dayTemplate){
       this.templateIsSpecified = true;
     }else{
       this.templateIsSpecified = false;
     }
   }
 
+  onClickUnspecifiedTemplate(){
+
+  }
 
 }

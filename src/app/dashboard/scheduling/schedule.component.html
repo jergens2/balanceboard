@@ -37,8 +37,8 @@
 
       </div>
       <div *ngIf="rotationBodyDisplayStyle" class="rotation-body-display" [ngStyle]="rotationBodyDisplayStyle">
-        <div *ngFor="let dayTemplate of dayTemplates" class="day-template">
-          <app-rotation-day-template [dayTemplate]="dayTemplate"></app-rotation-day-template>
+        <div *ngFor="let dayTemplateItem of dayTemplateItems" class="day-template-item">
+          <app-rotation-day-template [dayTemplateItem]="dayTemplateItem"></app-rotation-day-template>
         </div>
       </div>
 
