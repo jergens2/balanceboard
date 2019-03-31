@@ -1,0 +1,50 @@
+<div class="root">
+  <div class="schedule">
+
+  </div>
+  <div class="rotation">
+    <div class="rotation-header">
+      Rotation
+    </div>
+    <div class="rotation-explanation">
+      Your rotation is the primary repeating cycle in your life.<br>
+      Almost everyone spends their time in an arrangement which is rotational. For most people, this usually means
+      arranging your time around your scheduled work or school hours. <br>
+      In most cases, this is usually a 7-day rotation<br>
+      By establishing your rotation here, you are simply designating all time into one of three classifications: <br>
+      <ul>
+        <li>Time spent sleeping</li>
+        <li>Time spent doing non-discretionary activities</li>
+        <li>Time spent doing discretionary activities</li>
+      </ul>
+      Where, in this context, discretionary means "free time" to do whatever you please, and non-discretionary
+      activities which, on a day-to-day basis, within the context of an established rotation, you don't have very much
+      choice in how they are layed out.
+    </div>
+    <div class="rotation-body" [formGroup]="rotationForm">
+      <div class="rotation-body-header">
+        <div style="padding:3px;margin-right:5px;">
+          <span style="padding:3px;margin-right:10px;">Rotation repeats every</span>
+          <input style="padding:3px;margin-right:10px;" type="number" formControlName="repititionCount"
+            style="width:50px;">
+          <span style="padding:3px;margin-right:10px;">
+            <input type="radio" formControlName="repititionType" value="Days"> Days
+            <input type="radio" formControlName="repititionType" value="Weeks"> Weeks
+          </span>
+          <span style="padding:3px;margin-right:10px;">Starts on:</span>
+          <input type="date" formControlName="startsOnDate">
+        </div>
+
+      </div>
+      <div *ngIf="rotationBodyDisplayStyle" class="rotation-body-display" [ngStyle]="rotationBodyDisplayStyle">
+        <div *ngFor="let dayTemplate of dayTemplates" class="day-template">
+          <app-rotation-day-template [dayTemplate]="dayTemplate"></app-rotation-day-template>
+        </div>
+      </div>
+
+    </div>
+    <div class="rotation-controls">
+      <button class="btn btn-primary">Save this rotation</button>
+    </div>
+  </div>
+</div>

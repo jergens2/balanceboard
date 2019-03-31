@@ -1,6 +1,7 @@
 import { ScheduleRepitition } from "./schedule-repitition.model";
 import * as moment from 'moment';
-import { UserDefinedActivity } from "../../activities/user-defined-activity.model";
+import { UserDefinedActivity } from "../activities/user-defined-activity.model";
+
 
 export class ScheduledTimeEvent{
 
@@ -26,7 +27,7 @@ export class ScheduledTimeEvent{
     activity: UserDefinedActivity;
 
     constructor(){
-
+        console.log("hello there")
     }
 
 

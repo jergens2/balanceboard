@@ -4,7 +4,7 @@ import { Subscription, timer, Subject } from 'rxjs';
 import { TimeSegmentTile } from './time-segment-tile.model';
 import { TimeSegment } from './time-segment.model';
 import { TimelogService } from './timelog.service';
-import { faSpinner, faCaretUp, faCaretDown, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCaretUp, faCaretDown, faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
 import { ITimeSegmentFormData } from '../time-segment-form/time-segment-form-data.interface';
 
@@ -26,6 +26,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   faCaretDown = faCaretDown;
   faTimes = faTimes;
   faEdit = faEdit;
+  faPlus = faPlus;
 
   ifLoading: boolean = false;
 
@@ -104,21 +105,17 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
     this._fetchTimeSegmentsTimerSubscription.unsubscribe();
-    this._fetchTimeSegmentsTimerSubscription = timer(0, 30000).subscribe(() => { 
+    this._fetchTimeSegmentsTimerSubscription = timer(0, 30000).subscribe(() => {
+      console.log("Every 30 seconds: " + moment().format('YYYY-MM-DD hh:mm a'))
       this._fetchTimeSegmentsSubscription.unsubscribe();
       this._fetchTimeSegmentsSubscription = this.timelogService.timeSegments$.subscribe((receivedTimeSegments: TimeSegment[]) => {
         console.log("Received new TimeSegments: ", receivedTimeSegments);
 
-          this._timeSegments = Object.assign([], receivedTimeSegments);
-          this.drawTimeSegments();
+        this._timeSegments = Object.assign([], receivedTimeSegments);
+        this.drawTimeSegments();
 
       });
     });
-
-    timer(0,30000).subscribe(()=>{
-      console.log("Every 30 seconds: " + moment().format('YYYY-MM-DD hh:mm a'))
-    })
-
     this.dateChanged(this._currentDate);
 
 
@@ -243,6 +240,15 @@ export class TimeLogComponent implements OnInit, OnDestroy {
           windowTimeSegments.push(timeSegment);
         }
       }
+      windowTimeSegments.sort((a, b)=>{
+        if(a.startTime.isAfter(b.startTime)){
+          return 1;
+        }
+        if(a.startTime.isBefore(b.startTime)){
+          return -1;
+        }
+        return 0;
+      })
       //  At this point, all time segments will be within the window.
 
 
@@ -261,6 +267,26 @@ export class TimeLogComponent implements OnInit, OnDestroy {
         which explicitly does not overlap ?
       */
 
+      if (windowTimeSegments.length > 0) {
+
+
+        let currentTime: moment.Moment = moment(windowTimeSegments[0].startTime)
+        for (let timeSegment of windowTimeSegments) {
+
+          if (currentTime.isSame(moment(timeSegment.startTime))) {
+            console.log("CT is same as the start time")
+          } else {
+            console.log("CT is NOT THE SAME : " + currentTime.format('hh:mm:ss a') + " versus the timeSegment:" + timeSegment.startTime.format('hh:mm:ss a'))
+          }
+          currentTime = moment(timeSegment.startTime);
+          console.log("CT: starts at : " + currentTime.format('hh:mm:ss a'))
+
+          currentTime = moment(timeSegment.endTime);
+          console.log("CT: ends at : " + currentTime.format('hh:mm:ss a'))
+
+
+        }
+      }
 
 
       for (let timeSegment of windowTimeSegments) {
@@ -326,6 +352,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
             //i.e. there is an overlap. 
             //this shouldnt happen, unless... ?
             console.log("This should never happen unless there is an issue... ");
+            console.log("the issue is with timeSegment: ", timeSegment);
           }
 
         } else if (windowTimeSegments.indexOf(timeSegment) == windowTimeSegments.length - 1) {
@@ -434,7 +461,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       this.timeSegmentTiles = timeSegmentTiles;
       this.timeSegmentsContainer = { style: style };
 
-    }else{
+    } else {
       this.timeSegmentTiles = [];
       this.timeSegmentsContainer = { style: {} };
     }
@@ -624,22 +651,31 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   }
 
+  timeEventTimesString(tile: TimeSegmentTile): string {
+    return ("" + tile.timeSegment.startTime.format("h:mm a") + " - " + tile.timeSegment.endTime.format('h:mm a'));
+  }
+
   onClickTile(tile: TimeSegmentTile) {
-    if(!tile.isLarge){
-      this.onClickTileEdit(tile);
-    }else{
+    if (!tile.isLarge) {
+      if (tile.isBlank) {
+        this.onClickSetNewTimeSegment(tile);
+      } else {
+        this.onClickTileEdit(tile);
+      }
+
+    } else {
 
     }
   }
 
-  onMouseOverTile(tile: TimeSegmentTile){
+  onMouseOverTile(tile: TimeSegmentTile) {
     tile.mouseOver = true;
   }
-  onMouseLeaveTile(tile:TimeSegmentTile){
+  onMouseLeaveTile(tile: TimeSegmentTile) {
     tile.mouseOver = false;
   }
 
-  onClickTileEdit(tile:TimeSegmentTile){
+  onClickTileEdit(tile: TimeSegmentTile) {
     let timeSegmentFormData: ITimeSegmentFormData = {
       action: 'REVIEW',
       timeSegment: tile.timeSegment,
@@ -649,26 +685,36 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   }
 
   private _modalSubscription: Subscription = new Subscription();
-  onClickTileDelete(tile:TimeSegmentTile){
+  onClickTileDelete(tile: TimeSegmentTile) {
     this._modalSubscription.unsubscribe();
-    let modalOptions: string[] = ["Yes", "No"];     
+    let modalOptions: string[] = ["Yes", "No"];
     let modal: Modal = new Modal("Confirm: Delete Time Event?", modalOptions);
-    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: string)=>{
-      if(selectedOption == "Yes"){
+    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: string) => {
+      if (selectedOption == "Yes") {
         // try{
         //   this.timeSegmentTiles.splice(this.timeSegmentTiles.indexOf(tile));
         // }catch{
-          
+
         // }
         this.timelogService.deleteTimeSegment(tile.timeSegment);
-        
-      }else if(selectedOption == "No"){
 
-      }else{
+      } else if (selectedOption == "No") {
+
+      } else {
         //error 
       }
     });
     this.modalService.activeModal = modal;
+  }
+
+  onClickSetNewTimeSegment(tile: TimeSegmentTile) {
+    console.log("tile is ", tile);
+    let timeSegmentFormData: ITimeSegmentFormData = {
+      action: 'SET',
+      timeSegment: tile.timeSegment,
+      date: moment(tile.timeSegment.startTime)
+    }
+    this.timeSegmentFormData.emit(timeSegmentFormData);
   }
 
 

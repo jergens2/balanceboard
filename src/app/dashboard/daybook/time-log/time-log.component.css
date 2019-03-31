@@ -115,8 +115,7 @@
 }
 .blank-tile:hover{
     border: 1px solid rgba(128, 128, 128, 0.267);
-    background-color: #fafafa;
-    cursor: pointer;
+    background-color: #fafafa4b;
 }
 .large-tile{
 

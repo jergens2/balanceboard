@@ -12,24 +12,26 @@ import { MonthPlannerComponent } from "./dashboard/month-planner/month-planner.c
 import { YearPlannerComponent } from "./dashboard/year-planner/year-planner.component";
 import { UserSettingsComponent } from "./user-settings/user-settings.component";
 import { IdeaLogComponent } from "./dashboard/idea-log/idea-log.component";
-import { ScheduleComponent } from "./dashboard/daybook/schedule/schedule.component";
+import { ScheduleComponent } from "./dashboard/scheduling/schedule.component";
+import { DayTemplatesComponent } from "./dashboard/scheduling/day-templates/day-templates.component";
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'home', component: HomeComponent },
-    { path: 'ivyleeCreation', component: IvyleeCreationComponent },
-    { path: 'ivyleeManagement', component: IvyleeManageComponent },
-    { path: 'bodyWeight', component: BodyWeightComponent },
-    { path: 'healthProfile', component: BuildProfileComponent },
+    { path: 'ivylee-creation', component: IvyleeCreationComponent },
+    { path: 'ivylee-management', component: IvyleeManageComponent },
+    { path: 'body-weight', component: BodyWeightComponent },
+    { path: 'health-profile', component: BuildProfileComponent },
     { path: 'networth', component: NetWorthComponent },
     { path: 'daybook', component: DaybookComponent },
     { path: 'daybook/:isoDate', component: DaybookComponent },
-    { path: 'month_planner', component: MonthPlannerComponent },
-    { path: 'year_planner', component: YearPlannerComponent },
+    { path: 'month-planner', component: MonthPlannerComponent },
+    { path: 'year-planner', component: YearPlannerComponent },
     { path: 'activities', component: ActivitiesComponent },
-    { path: 'idea_log', component: IdeaLogComponent },
-    { path: 'user_settings', component: UserSettingsComponent },
-    { path: 'schedule', component: ScheduleComponent }
+    { path: 'idea-log', component: IdeaLogComponent },
+    { path: 'user-settings', component: UserSettingsComponent },
+    { path: 'schedule', component: ScheduleComponent },
+    { path: 'day-templates', component: DayTemplatesComponent}
 ];
 
 

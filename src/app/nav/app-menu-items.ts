@@ -10,14 +10,15 @@ let menuItems: MenuItem[] = [];
 menuItems.push(new MenuItem('Home','/home',faHome));
 menuItems.push(new MenuItem('Daybook','/daybook',faBookOpen));
 menuItems.push(new MenuItem('Schedule','/schedule', faClock ));
+menuItems.push(new MenuItem('Day Templats','/day-templates', faClock ));
 // menuItems.push(new MenuItem('Month Planner', '/month_planner', faCalendarAlt));
 // menuItems.push(new MenuItem('Year Planner', '/year_planner', faCalendarAlt));
 menuItems.push(new MenuItem('Activities','/activities',faSitemap));
-menuItems.push(new MenuItem('Idea Log','/idea_log',faLightbulb));
+menuItems.push(new MenuItem('Idea Log','/idea-log',faLightbulb));
 menuItems.push(new MenuItem('Productivity','/productivity',faProjectDiagram));
-menuItems.push(new MenuItem('Tasks','/ivyleeCreation',faListOl));
+menuItems.push(new MenuItem('Tasks','/ivylee-creation',faListOl));
 menuItems.push(new MenuItem('Goals','/goals',faTrophy));
-menuItems.push(new MenuItem('Meal Planning','/meal_planning',faAppleAlt));
+menuItems.push(new MenuItem('Meal Planning','/meal-planning',faAppleAlt));
 
 
 let financeMenu = new MenuItem('Finances','/finances',faDollarSign)
@@ -29,7 +30,7 @@ menuItems.push(financeMenu);
 
 let healthMenu = new MenuItem('Health','/health',faBriefcaseMedical);
 let healthSubMenuItems: MenuItem[] = [];
-healthSubMenuItems.push(new MenuItem('Body Weight','/bodyWeight',faWeight))
+healthSubMenuItems.push(new MenuItem('Body Weight','/body-weight',faWeight))
 healthMenu.subMenu = new HeaderMenu('Health submenu', healthSubMenuItems);
 menuItems.push(healthMenu);
 

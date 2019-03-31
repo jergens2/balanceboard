@@ -71,6 +71,7 @@ export class TimelogService {
         return timeSegment;
       }))
       .subscribe((returnedTimeSegment: TimeSegment) => {
+        console.log("returned time segment is ", returnedTimeSegment);
         let timeSegments: TimeSegment[] = this._timeSegments$.getValue();
         for(let timeSegment of timeSegments){
           if(timeSegment.id == returnedTimeSegment.id){
@@ -78,10 +79,11 @@ export class TimelogService {
           }
         }
         this._timeSegments$.next(timeSegments);
-      })
+      });
   }
 
   saveTimeSegment(timeSegment: TimeSegment) {
+    console.log("Saving new timeSegment", timeSegment);
     let newTimeSegment: TimeSegment = timeSegment;
     newTimeSegment.userId = this._authStatus.user.id;
 
@@ -108,6 +110,7 @@ export class TimelogService {
         return timeSegment;
       }))
       .subscribe((timeSegment: TimeSegment) => {
+        console.log("saved time segment was ", timeSegment);
         let timeSegments: TimeSegment[] = this._timeSegments$.getValue();
         timeSegments.push(timeSegment);
 

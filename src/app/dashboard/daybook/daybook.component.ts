@@ -29,7 +29,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
   ifTimeSegmentForm: boolean = false;
 
 
-  timeSegmentFormData: ITimeSegmentFormData = { action:"BLANK" , timeSegment: null, date: null };
+  timeSegmentFormData: ITimeSegmentFormData = { action:"NEW" , timeSegment: null, date: null };
 
   private headerMenuSubscriptions: Subscription[] = [];
 
@@ -66,7 +66,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
     let newTimeSegmentMenuItem = new MenuItem("New Time Segment", null, null);
     this.headerMenuSubscriptions.push(newTimeSegmentMenuItem.clickEmitted$.subscribe((clicked)=>{
-      this.timeSegmentFormData = { action:"BLANK" , timeSegment: null, date: this._currentDate }
+      this.timeSegmentFormData = { action:"NEW" , timeSegment: null, date: this._currentDate }
       this.currentView = "form";
     }));
 

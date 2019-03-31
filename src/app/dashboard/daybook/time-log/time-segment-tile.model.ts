@@ -9,6 +9,7 @@ export class TimeSegmentTile{
     private _endTime: moment.Moment;
     private _isLarge: boolean = false; 
     private _isBlank: boolean = false;
+    private _isScheduled: boolean = false;
 
     public mouseOver: boolean = false;
 
@@ -28,7 +29,7 @@ export class TimeSegmentTile{
     public set endTime(time: moment.Moment){
         this._endTime = moment(time);
         this.setIsLarge();
-    }22
+    }
 
 
     private setIsLarge(){
@@ -45,6 +46,9 @@ export class TimeSegmentTile{
     public get isBlank(): boolean{ 
         return this._isBlank;
     }
+    public get isScheduled(): boolean{
+        return this._isScheduled;
+    }
 
 
 
@@ -55,6 +59,10 @@ export class TimeSegmentTile{
         }else{
             this.timeSegment = new TimeSegment('','', moment(startTime).toISOString(), moment(endTime).toISOString(), '');
             this._isBlank = true;
+        }
+
+        if(moment(startTime).isAfter(moment())){
+            this._isScheduled = true;
         }
         
         this._startTime = moment(startTime);

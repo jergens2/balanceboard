@@ -1,0 +1,32 @@
+.day-template{
+    font-size:0.8em;
+    display:flex;
+    flex-direction: column;
+    margin-left:2px;
+    margin-right:2px;
+    border: 1px solid gray;
+    height:100%;
+    background-color:#fafafa;
+}
+.header{
+    width:100%;
+    text-align: center;
+}
+.template-information{
+    flex-grow:2;
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+    text-align:center;
+}
+.unspecified-template{
+    border-radius:5px;
+    padding:5px;
+    color:gray;
+}
+.unspecified-template:hover{
+    background-color: rgb(206, 206, 206);
+    cursor:pointer;
+    color:black;
+}
