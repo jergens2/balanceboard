@@ -43,6 +43,8 @@ import { ScheduleComponent } from './scheduling/schedule.component';
 import { DaybookHeaderComponent } from './daybook/daybook-header/daybook-header.component';
 import { RotationDayTemplateComponent } from './scheduling/rotation-day-template/rotation-day-template.component';
 import { DayTemplatesComponent } from './scheduling/day-templates/day-templates.component';
+import { RotationFormComponent } from './scheduling/rotation-form/rotation-form.component';
+import { RotationDisplayComponent } from './scheduling/rotation-display/rotation-display.component';
 
 
 
@@ -89,7 +91,9 @@ import { DayTemplatesComponent } from './scheduling/day-templates/day-templates.
     ScheduleComponent,
     DaybookHeaderComponent,
     RotationDayTemplateComponent,
-    DayTemplatesComponent
+    DayTemplatesComponent,
+    RotationFormComponent,
+    RotationDisplayComponent
     
     
   ],

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Modal } from './modal.model';
 import { Subject, Observable } from 'rxjs';
+import { IModalOption } from './modal-option.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,8 @@ export class ModalService {
     return this._activeModal$.asObservable();
   }
 
-  private _modalResponse$: Subject<string> = new Subject();
-  public get modalResponse$(): Observable<string>{ 
+  private _modalResponse$: Subject<IModalOption> = new Subject();
+  public get modalResponse$(): Observable<IModalOption>{ 
     return this._modalResponse$.asObservable();
   }
 
@@ -29,7 +30,7 @@ export class ModalService {
     return this._activeModal;
   }
 
-  optionClicked(option: string){
+  optionClicked(option: IModalOption){
     this._activeModal = null;
     this._modalResponse$.next(option);
     this._activeModal$.next(null);

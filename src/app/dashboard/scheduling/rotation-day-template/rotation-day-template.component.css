@@ -1,16 +1,21 @@
+.root{
+    padding:2px;
+    height:100%;
+}
 .day-template{
+    height:100%;
     font-size:0.8em;
     display:flex;
     flex-direction: column;
-    margin-left:2px;
-    margin-right:2px;
-    border: 1px solid gray;
-    height:100%;
+    border: 1px solid gray; 
     background-color:#fafafa;
 }
 .header{
     width:100%;
     text-align: center;
+    display:flex;
+    flex-direction: column;
+    border-bottom: 1px solid gray;
 }
 .template-information{
     flex-grow:2;

@@ -27,10 +27,12 @@ router.post('/delete', controller.delete);
   */
 
   private _authStatus: AuthStatus;
-  login(authStatus: AuthStatus){
+  login$(authStatus: AuthStatus): Observable<DayTemplate[]>{
     this._authStatus = authStatus;
     this.getTemplatesHTTP();
+    return this.dayTemplates$;
   }
+  
   logout(){
     this._authStatus = null;
     this._dayTemplates = [];
@@ -39,10 +41,10 @@ router.post('/delete', controller.delete);
 
   private _dayTemplates: DayTemplate[] = [];
   private _dayTemplates$: Subject<DayTemplate[]> = new Subject();
-  public dayTemplates(): DayTemplate[] {
+  public get dayTemplates(): DayTemplate[] {
     return Object.assign([], this._dayTemplates);
   }
-  public dayTemplates$(): Observable<DayTemplate[]> { 
+  public get dayTemplates$(): Observable<DayTemplate[]> { 
     return this._dayTemplates$.asObservable();
   }
 
@@ -55,11 +57,11 @@ router.post('/delete', controller.delete);
         // 'Authorization': 'my-auth-token'  
       })
     };
-    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe(map((response) => {
         let rd: any[] = response.data;
         return rd.map((dataObject: any) => {
-          return new DayTemplate(dataObject._id, dataObject.userId, dataObject.name, dataObject.sleepTimeRanges, dataObject.nonDiscretionaryTimeRanges, dataObject.discretionaryTimeRanges);;
+          return new DayTemplate(dataObject._id, dataObject.userId, dataObject.name, dataObject.color, dataObject.sleepTimeRanges, dataObject.nonDiscretionaryTimeRanges, dataObject.discretionaryTimeRanges);;
         })
       }))
       .subscribe((dayTemplates: DayTemplate[]) => {
@@ -89,7 +91,7 @@ router.post('/delete', controller.delete);
     this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate, httpOptions)
       .pipe<DayTemplate>(map((response) => {
         let rd: any = response.data;
-        let newDayTemplate: DayTemplate = new DayTemplate(rd._id, rd.userId, rd.name, rd.sleepTimeRanges, rd.nonDiscretionaryTimeRanges, rd.discretionaryTimeRanges);
+        let newDayTemplate: DayTemplate = new DayTemplate(rd._id, rd.userId, rd.name, rd.color, rd.sleepTimeRanges, rd.nonDiscretionaryTimeRanges, rd.discretionaryTimeRanges);
         return newDayTemplate;
       }))
       .subscribe((updatedTemplate: DayTemplate) => {
@@ -116,7 +118,7 @@ router.post('/delete', controller.delete);
     this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate, httpOptions)
       .pipe<DayTemplate>(map((response) => {
         let rd: any = response.data;
-        return new DayTemplate(rd._id, rd.userId, rd.name, rd.sleepTimeRanges, rd.nonDiscretionaryTimeRanges, rd.discretionaryTimeRanges);
+        return new DayTemplate(rd._id, rd.userId, rd.name, rd.color, rd.sleepTimeRanges, rd.nonDiscretionaryTimeRanges, rd.discretionaryTimeRanges);
       }))
       .subscribe((dayTemplate: DayTemplate) => {
 
@@ -188,8 +190,8 @@ router.post('/delete', controller.delete);
       }
     ]
 
-    let defaultWorkDayTemplate: DayTemplate = new DayTemplate('',this._authStatus.user.id, "Default Template: Work Day", sleepTimeRanges, workDayNonDiscretionaryTimeRanges, workDayDiscretionaryTimeRanges);
-    let defaultRestDayTemplate: DayTemplate = new DayTemplate('',this._authStatus.user.id, "Default Template: Rest Day", sleepTimeRanges, [], restDayDiscretionaryTimeRanges);
+    let defaultWorkDayTemplate: DayTemplate = new DayTemplate('',this._authStatus.user.id, "Default Template: Work Day", "#dbe8ff", sleepTimeRanges, workDayNonDiscretionaryTimeRanges, workDayDiscretionaryTimeRanges);
+    let defaultRestDayTemplate: DayTemplate = new DayTemplate('',this._authStatus.user.id, "Default Template: Rest Day", "#c5ff99", sleepTimeRanges, [], restDayDiscretionaryTimeRanges);
 
 
 

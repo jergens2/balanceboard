@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { DayTemplatesService } from './day-templates.service';
+import { DayTemplate } from './day-template.model';
 
 @Component({
   selector: 'app-day-templates',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DayTemplatesComponent implements OnInit {
 
-  constructor() { }
+  constructor(private dayTemplatesService: DayTemplatesService) { }
+
+
+  dayTemplates: DayTemplate[] = [];
 
   ngOnInit() {
+
+    this.dayTemplates = this.dayTemplatesService.dayTemplates;
+    this.dayTemplatesService.dayTemplates$.subscribe((dayTemplates: DayTemplate[])=>{
+      this.dayTemplates = dayTemplates;
+    })
+
   }
 
 }

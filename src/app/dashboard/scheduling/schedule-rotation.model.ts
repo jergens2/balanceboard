@@ -1,7 +1,7 @@
 import { DayTemplate } from "./day-templates/day-template.model";
 import * as moment from 'moment';
 
-export class Rotation{
+export class ScheduleRotation{
 
     daysCount: number;
     dayTemplates: DayTemplate[] = [];

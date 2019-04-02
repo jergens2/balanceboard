@@ -1,5 +1,5 @@
 <div class="root">
-  <div class="app-modal">
+  <div class="app-modal" [ngStyle]="modal.style">
     <div class="app-modal-header">
       <div class="header-button" (click)="onClickCloseModal()">
         <fa-icon [icon]="faTimes" style="width:15px;height:15px;"></fa-icon>
@@ -11,7 +11,7 @@
       </div>
       <div class="app-modal-buttons" >
         <button class="btn btn-sm border-primary m-2 app-modal-button" *ngFor="let option of modal.modalOptions" (click)="onClickOption(option)">
-          {{ option }}
+          {{ option.value }}
         </button>
       </div>
 

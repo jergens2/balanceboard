@@ -11,6 +11,7 @@ import { ITimeSegmentFormData } from '../time-segment-form/time-segment-form-dat
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { Modal } from '../../../modal/modal.model';
 import { ModalService } from '../../../modal/modal.service';
+import { IModalOption } from '../../../modal/modal-option.interface';
 
 @Component({
   selector: 'app-time-log',
@@ -687,10 +688,19 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   private _modalSubscription: Subscription = new Subscription();
   onClickTileDelete(tile: TimeSegmentTile) {
     this._modalSubscription.unsubscribe();
-    let modalOptions: string[] = ["Yes", "No"];
-    let modal: Modal = new Modal("Confirm: Delete Time Event?", modalOptions);
-    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: string) => {
-      if (selectedOption == "Yes") {
+    let modalOptions: IModalOption[] = [
+      {
+        value: "Yes",
+        dataObject: null
+      },
+      {
+        value: "No",
+        dataObject: null
+      }
+    ];
+    let modal: Modal = new Modal("Confirm: Delete Time Event?", modalOptions, {});
+    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+      if (selectedOption.value == "Yes") {
         // try{
         //   this.timeSegmentTiles.splice(this.timeSegmentTiles.indexOf(tile));
         // }catch{
@@ -698,7 +708,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
         // }
         this.timelogService.deleteTimeSegment(tile.timeSegment);
 
-      } else if (selectedOption == "No") {
+      } else if (selectedOption.value == "No") {
 
       } else {
         //error 

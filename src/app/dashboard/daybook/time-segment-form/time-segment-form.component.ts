@@ -11,6 +11,7 @@ import { ITimeSegmentFormData } from './time-segment-form-data.interface';
 import { Subscription } from 'rxjs';
 import { Modal } from '../../../modal/modal.model';
 import { ModalService } from '../../../modal/modal.service';
+import { IModalOption } from '../../../modal/modal-option.interface';
 
 
 @Component({
@@ -229,14 +230,23 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
   private _modalSubscription: Subscription = new Subscription();
   onClickDeleteTimeEvent(){
     this._modalSubscription.unsubscribe();
-    let modalOptions: string[] = ["Yes", "No"];     
-    let modal: Modal = new Modal("Confirm: Delete Time Event?", modalOptions);
-    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: string)=>{
-      if(selectedOption == "Yes"){
+    let modalOptions: IModalOption[] = [
+      {
+        value: "Yes",
+        dataObject: null
+      },
+      {
+        value: "No",
+        dataObject: null
+      }
+    ];     
+    let modal: Modal = new Modal("Confirm: Delete Time Event?", modalOptions, {});
+    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
+      if(selectedOption.value == "Yes"){
 
         this.timelogService.deleteTimeSegment(this._providedFormData.timeSegment);
         this.closeForm.emit(true);
-      }else if(selectedOption == "No"){
+      }else if(selectedOption.value == "No"){
 
       }else{
         //error 

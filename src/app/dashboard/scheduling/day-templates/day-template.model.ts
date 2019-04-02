@@ -7,6 +7,7 @@ export class DayTemplate{
     id: string;
     name: string; // can be anything, but basic ones will be "Weekend", "Work day", "School day", "Holiday", etc.
     userId: string;
+    color:string;
 
 
 
@@ -22,10 +23,11 @@ export class DayTemplate{
     */
 
 
-    constructor(id: string, userId: string, name: string, sleepTimeRanges:ITemplateTimeRange[], nonDiscretionaryTimeRanges:ITemplateTimeRange[], discretionaryTimeRanges:ITemplateTimeRange[]){
+    constructor(id: string, userId: string, name: string, color: string, sleepTimeRanges:ITemplateTimeRange[], nonDiscretionaryTimeRanges:ITemplateTimeRange[], discretionaryTimeRanges:ITemplateTimeRange[]){
         this.id = id;
         this.userId = userId;
         this.name = name;
+        this.color = color;
         this.sleepTimeRanges = Object.assign([], sleepTimeRanges);
         this.nonDiscretionaryTimeRanges = Object.assign([], nonDiscretionaryTimeRanges);
         this.discretionaryTimeRanges = Object.assign([], discretionaryTimeRanges);

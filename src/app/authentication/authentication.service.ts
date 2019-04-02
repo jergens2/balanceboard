@@ -40,6 +40,7 @@ export class AuthenticationService {
 
 
   activitiesSubscription: Subscription = new Subscription();
+  dayTemplatesSubscription: Subscription = new Subscription();
 
 
   registerUser$(authData: AuthData): Observable<Object> {
@@ -76,6 +77,39 @@ export class AuthenticationService {
 
       Currently, activities service must execute first and retreive the activity tree, because this activity tree must exist, before the
       timeSegments can define their .activities[] property
+
+      There is probably a better way to do some of this, with respect to the async operations.
+      Ultimately, we want each async command executed, and only when all of them are complete do we proceed with the completeLogin() method,
+
+      currently it is set up this way:
+
+      async1 --
+        --when async 1 is completed, 
+        --async2
+          --when async 2 is completed,
+          --async3
+    
+      etc.  is there not a better way to do this?
+
+      another way to do it could be:
+    {
+
+    
+      allTasksComplete: boolean = false;
+      async1.whenFinished(a1complete = true)
+      async2.whenFinished(a2complete = true)
+      async3.whenFinished(a3complete = true)
+      async4.whenFinished(a4complete = true)
+      async5.whenFinished(a5complete = true)
+
+      while(!allTasksComplete){
+        pause for 2 seconds.
+        if a1 through a5 == complete,
+          allTasksComplete = true;
+        
+      }
+
+    }
     */
 
     if (authStatus.isAuthenticated) {
@@ -91,23 +125,20 @@ export class AuthenticationService {
 
       })
       this.userSettingsService.login(authStatus);
-      this.dayTemplatesService.login(authStatus);
-
-      this.activitiesSubscription = this.activitiesService.login$(authStatus).subscribe((activityTree: ActivityTree) => {
-        if (activityTree != null) {
-          this.timelogService.login(authStatus)
-
-          this.completeLogin(authStatus);
-
-
-
-        } else {
-          // console.log("activityTree was null");
-        }
+      this.dayTemplatesService.login$(authStatus).subscribe(()=>{
+        this.activitiesSubscription = this.activitiesService.login$(authStatus).subscribe((activityTree: ActivityTree) => {
+          if (activityTree != null) {
+            this.timelogService.login(authStatus)
+  
+            this.completeLogin(authStatus);
+  
+  
+  
+          } else {
+            // console.log("activityTree was null");
+          }
+        });
       });
-
-
-
 
     } else {
       console.log("Cannot execute login routine because the authStatus.isAuthenticated == false");

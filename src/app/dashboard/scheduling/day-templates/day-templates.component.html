@@ -1,3 +1,17 @@
-<p>
-  day-templates works!
-</p>
+<div class="root">
+
+  By establishing your rotation here, you are simply designating all time into one of three classifications: <br>
+  <ul>
+    <li>Time for sleeping</li>
+    <li>Time for doing non-discretionary activities, such as school or work</li>
+    <li>Time for doing discretionary activities</li>
+  </ul>
+  Where, in this context, discretionary means "free time" to do whatever you please, and non-discretionary
+  activities which, on a day-to-day basis, within the context of an established rotation, you don't have very much
+  choice in how they are layed out.
+
+  <div *ngFor="let template of dayTemplates">
+    {{ template.name }}
+  </div>
+
+</div>
