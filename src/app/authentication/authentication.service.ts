@@ -10,7 +10,7 @@ import { UserSetting } from '../user-settings/user-setting.model';
 import { ActivitiesService } from '../dashboard/activities/activities.service';
 import { TimelogService } from '../dashboard/daybook/time-log/timelog.service';
 import { ActivityTree } from '../dashboard/activities/activity-tree.model';
-import { TimeSegment } from '../dashboard/daybook/time-log/time-segment.model';
+import { TimeSegment } from '../dashboard/daybook/time-log/time-segment-tile/time-segment.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
 import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
 
@@ -125,7 +125,7 @@ export class AuthenticationService {
 
       })
       this.userSettingsService.login(authStatus);
-      this.dayTemplatesService.login$(authStatus).subscribe(()=>{
+      this.dayTemplatesSubscription = this.dayTemplatesService.login$(authStatus).subscribe(()=>{
         this.activitiesSubscription = this.activitiesService.login$(authStatus).subscribe((activityTree: ActivityTree) => {
           if (activityTree != null) {
             this.timelogService.login(authStatus)
@@ -208,6 +208,7 @@ export class AuthenticationService {
     localStorage.clear();
 
     this.activitiesSubscription.unsubscribe();
+    this.dayTemplatesSubscription.unsubscribe();
 
     this.timelogService.logout();
     this.activitiesService.logout();

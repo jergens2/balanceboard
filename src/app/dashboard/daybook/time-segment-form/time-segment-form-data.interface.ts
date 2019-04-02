@@ -1,4 +1,4 @@
-import { TimeSegment } from "../time-log/time-segment.model";
+import { TimeSegment } from "../time-log/time-segment-tile/time-segment.model";
 import * as moment from 'moment';
 
 export interface ITimeSegmentFormData{

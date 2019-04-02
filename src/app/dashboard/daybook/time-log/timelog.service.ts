@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable, Subject, Subscription, BehaviorSubject } from 'rxjs';
-import { TimeSegment } from './time-segment.model';
+import { TimeSegment } from './time-segment-tile/time-segment.model';
 import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
 
 import * as moment from 'moment';

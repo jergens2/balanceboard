@@ -4,7 +4,7 @@ import { TimelogService } from '../time-log/timelog.service';
 
 import * as moment from 'moment';
 import { Subject, Subscription } from 'rxjs';
-import { TimeSegment } from '../time-log/time-segment.model';
+import { TimeSegment } from '../time-log/time-segment-tile/time-segment.model';
 import { IHeatmapContentItem } from './heatmap-content-item.interface';
 
 @Component({

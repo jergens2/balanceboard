@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { TimeSegment } from '../time-log/time-segment.model';
+import { TimeSegment } from '../time-log/time-segment-tile/time-segment.model';
 import { TimeSegmentActivity } from '../time-log/time-segment-activity.model';
 import { faPlus, faCaretDown, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ActivitiesService } from '../../activities/activities.service';

@@ -45,6 +45,7 @@ import { RotationDayTemplateComponent } from './scheduling/rotation-day-template
 import { DayTemplatesComponent } from './scheduling/day-templates/day-templates.component';
 import { RotationFormComponent } from './scheduling/rotation-form/rotation-form.component';
 import { RotationDisplayComponent } from './scheduling/rotation-display/rotation-display.component';
+import { TimeSegmentTileComponent } from './daybook/time-log/time-segment-tile/time-segment-tile.component';
 
 
 
@@ -93,7 +94,8 @@ import { RotationDisplayComponent } from './scheduling/rotation-display/rotation
     RotationDayTemplateComponent,
     DayTemplatesComponent,
     RotationFormComponent,
-    RotationDisplayComponent
+    RotationDisplayComponent,
+    TimeSegmentTileComponent
     
     
   ],

@@ -32,7 +32,7 @@ router.post('/delete', controller.delete);
     this.getTemplatesHTTP();
     return this.dayTemplates$;
   }
-  
+
   logout(){
     this._authStatus = null;
     this._dayTemplates = [];

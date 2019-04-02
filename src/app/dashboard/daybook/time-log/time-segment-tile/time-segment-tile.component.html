@@ -1,0 +1,25 @@
+<div class="tile" (click)="onClickTile(tile)" (mouseover)="onMouseOverTile(tile)" (mouseleave)="onMouseLeaveTile(tile)"
+  [ngStyle]="tile.style" [ngClass]="{'blank-tile':tile.isBlank, 'large-tile':tile.isLarge, 'small-tile':!tile.isLarge}">
+  <div class="tile-top-row" *ngIf="tile.isLarge && !tile.isBlank">
+    <div style="padding-left:5px;">{{activityName(tile)}}<span *ngIf="tile.mouseOver">:
+        {{ timeEventTimesString(tile) }}</span></div>
+    <div class="tile-buttons" *ngIf="tile.mouseOver">
+      <fa-icon [icon]="faEdit" class="tile-button" (click)="onClickTileEdit(tile)"></fa-icon>
+      <fa-icon [icon]="faTimes" class="tile-button" (click)="onClickTileDelete(tile)"></fa-icon>
+    </div>
+  </div>
+
+  <div class="tile-top-row" *ngIf="tile.isLarge && tile.isBlank && tile.mouseOver">
+    <div style="padding-left:5px;">Set time event: {{ timeEventTimesString(tile) }} </div>
+    <div class="tile-buttons">
+      <fa-icon [icon]="faPlus" class="tile-button" (click)="onClickSetNewTimeSegment(tile)"></fa-icon>
+    </div>
+  </div>
+
+  <!-- <div class="tile-top-row" *ngIf="tile.isLarge && tile.isScheduled">
+        <div style="padding-left:5px;">{{activityName(tile)}}<span *ngIf="tile.mouseOver">: {{ timeEventTimesString(tile) }}</span></div>
+        <div class="tile-buttons" *ngIf="tile.mouseOver">
+          <fa-icon [icon]="faCheck" class="tile-button"></fa-icon>
+        </div>
+      </div> -->
+</div>
