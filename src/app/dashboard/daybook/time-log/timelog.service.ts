@@ -32,13 +32,13 @@ export class TimelogService {
   private _serverUrl: string = serverUrl;
 
 
-  // private _timeSegments: TimeSegment[] = [];
-  private _timeSegments$: BehaviorSubject<TimeSegment[]> = new BehaviorSubject([]);
+  private _timeSegments: TimeSegment[] = [];
+  private _timeSegments$: Subject<TimeSegment[]> = new Subject();
   public get timeSegments$(): Observable<TimeSegment[]> { 
     return this._timeSegments$.asObservable();
   }
   public get timeSegments(): TimeSegment[] {
-    return this._timeSegments$.getValue();
+    return this._timeSegments;
   }
 
 
@@ -72,13 +72,14 @@ export class TimelogService {
       }))
       .subscribe((returnedTimeSegment: TimeSegment) => {
         console.log("returned time segment is ", returnedTimeSegment);
-        let timeSegments: TimeSegment[] = this._timeSegments$.getValue();
+        let timeSegments: TimeSegment[] = this._timeSegments;
         for(let timeSegment of timeSegments){
           if(timeSegment.id == returnedTimeSegment.id){
             timeSegments.splice(timeSegments.indexOf(timeSegment), 1, returnedTimeSegment)
           }
         }
-        this._timeSegments$.next(timeSegments);
+        this._timeSegments = Object.assign([],timeSegments);
+        this._timeSegments$.next(this._timeSegments);
       });
   }
 
@@ -111,10 +112,10 @@ export class TimelogService {
       }))
       .subscribe((timeSegment: TimeSegment) => {
         console.log("saved time segment was ", timeSegment);
-        let timeSegments: TimeSegment[] = this._timeSegments$.getValue();
+        let timeSegments: TimeSegment[] = this._timeSegments;
         timeSegments.push(timeSegment);
-
-        this._timeSegments$.next(timeSegments);
+        this._timeSegments = Object.assign([], timeSegments);
+        this._timeSegments$.next(this._timeSegments);
       })
   }
 
@@ -140,9 +141,10 @@ export class TimelogService {
 
     this.httpClient.post<{ message: string, data: any }>(postUrl, timeSegment, httpOptions)
       .subscribe((response) => {
-        let timeSegments: TimeSegment[] = this._timeSegments$.getValue();
+        let timeSegments: TimeSegment[] = this._timeSegments;
         timeSegments.splice(timeSegments.indexOf(timeSegment), 1);
-        // this.setLatestTimeSegment(null);
+        
+        this._timeSegments = Object.assign([], timeSegments);
         this._timeSegments$.next(timeSegments);
       })
 

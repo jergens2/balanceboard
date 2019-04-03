@@ -8,6 +8,8 @@ import { IModalOption } from '../../../../modal/modal-option.interface';
 import { Modal } from '../../../../modal/modal.model';
 import { TimelogService } from '../timelog.service';
 import { ModalService } from '../../../../modal/modal.service';
+import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-time-segment-tile',
@@ -16,12 +18,17 @@ import { ModalService } from '../../../../modal/modal.service';
 })
 export class TimeSegmentTileComponent implements OnInit, OnDestroy {
 
+  faTimes = faTimes;
+  faEdit = faEdit;
+  faPlus = faPlus;
+
   constructor(private timelogService: TimelogService, private modalService: ModalService) { }
 
   @Input() tile: TimeSegmentTile;
   @Output() timeSegmentFormData: EventEmitter<ITimeSegmentFormData> = new EventEmitter();
 
   ngOnInit() {
+    // console.log("tile received:", this.tile)
   }
 
   ngOnDestroy(){
@@ -54,9 +61,11 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
   }
 
   onMouseOverTile(tile: TimeSegmentTile) {
+    console.log("mouseover")
     tile.mouseOver = true;
   }
   onMouseLeaveTile(tile: TimeSegmentTile) {
+    console.log("mouseleave")
     tile.mouseOver = false;
   }
 
@@ -99,6 +108,23 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
       }
     });
     this.modalService.activeModal = modal;
+  }
+
+  activityName(tile: TimeSegmentTile): string {
+    if (moment(tile.endTime).diff(moment(tile.startTime), 'minutes') > 19) {
+      if (tile.timeSegment.activities.length > 0) {
+        return tile.timeSegment.activities[0].activity.name;
+      } else {
+        return "";
+      }
+    } else {
+      return "";
+    }
+
+  }
+
+  timeEventTimesString(tile: TimeSegmentTile): string {
+    return ("" + tile.timeSegment.startTime.format("h:mm a") + " - " + tile.timeSegment.endTime.format('h:mm a'));
   }
 
 }

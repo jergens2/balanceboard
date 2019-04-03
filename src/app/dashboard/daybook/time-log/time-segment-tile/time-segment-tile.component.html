@@ -1,5 +1,5 @@
 <div class="tile" (click)="onClickTile(tile)" (mouseover)="onMouseOverTile(tile)" (mouseleave)="onMouseLeaveTile(tile)"
-  [ngStyle]="tile.style" [ngClass]="{'blank-tile':tile.isBlank, 'large-tile':tile.isLarge, 'small-tile':!tile.isLarge}">
+  [ngClass]="{'blank-tile':tile.isBlank, 'large-tile':tile.isLarge, 'small-tile':!tile.isLarge}">
   <div class="tile-top-row" *ngIf="tile.isLarge && !tile.isBlank">
     <div style="padding-left:5px;">{{activityName(tile)}}<span *ngIf="tile.mouseOver">:
         {{ timeEventTimesString(tile) }}</span></div>
