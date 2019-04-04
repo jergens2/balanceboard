@@ -25,7 +25,7 @@
 
       <div class="grid-object" *ngIf="timeSegmentsContainer" [ngStyle]="timeSegmentsContainer.style">
         <div *ngFor="let tile of timeSegmentTiles" class="time-segment-tile" >
-          <app-time-segment-tile [tile]="tile"></app-time-segment-tile>
+          <app-time-segment-tile [tile]="tile" (timeSegmentFormData)="onTimeSegmentFormDataReceived($event)"></app-time-segment-tile>
         </div>
 
       </div>

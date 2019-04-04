@@ -153,9 +153,10 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
   }
 
   private buildDate(formTime:string, formDate:string): moment.Moment{
-    console.log("building dates for formm", this.timeSegmentForm.value);
+
     let hour: number = parseInt(formTime.substr(0,2));
     let minute: number = parseInt(formTime.substr(3,2));
+    console.log("1st is start, 2nd is end: ", moment(formDate).hour(hour).minute(minute).format('hh:mm a'))
     return moment(formDate).hour(hour).minute(minute);
   }
 
