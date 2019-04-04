@@ -48,6 +48,7 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
   }
 
   onClickTile(tile: TimeSegmentTile) {
+    console.log("tile data: " +  tile.startTime.format('hh:mm:ss a') + " to " + tile.endTime.format('hh:mm:ss a'), tile.timeSegment.activities)
     if (!tile.isLarge) {
       if (tile.isBlank) {
         this.onClickSetNewTimeSegment(tile);
@@ -61,12 +62,10 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
   }
 
   onMouseOverTile(tile: TimeSegmentTile) {
-    console.log("mouseover")
-    tile.mouseOver = true;
+    tile.isMouseOver = true;
   }
   onMouseLeaveTile(tile: TimeSegmentTile) {
-    console.log("mouseleave")
-    tile.mouseOver = false;
+    tile.isMouseOver = false;
   }
 
   onClickTileEdit(tile: TimeSegmentTile) {

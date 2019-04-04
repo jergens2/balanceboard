@@ -171,71 +171,50 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
   private drawTimeSegments() {
 
-    function findOverlaps(timeSegment: TimeSegment, startTime: moment.Moment, endTime: moment.Moment, previousTimeSegmentEnd: moment.Moment): TimeSegmentTile[]{
-      let timeSegmentTiles: TimeSegmentTile[] = []; 
 
-      if(timeSegment.startTime.isBefore(startTime) && timeSegment.endTime.isAfter(startTime)){
-        timeSegmentTiles.push(new TimeSegmentTile(timeSegment, moment(startTime), moment(timeSegment.endTime)));
-        return timeSegmentTiles
-      }
-      let now = moment();
-      if(timeSegment.startTime.isBefore(now) && timeSegment.endTime.isAfter(now)){
-        timeSegmentTiles.push(new TimeSegmentTile(timeSegment, moment(timeSegment.startTime), moment(now)));
-        timeSegmentTiles.push(new TimeSegmentTile(null, moment(now), moment(timeSegment.endTime)));
-        return timeSegmentTiles
-      }
-      if(timeSegment.startTime.isBefore(endTime) && timeSegment.endTime.isAfter(endTime)){
-        timeSegmentTiles.push(new TimeSegmentTile(timeSegment, moment(timeSegment.startTime), moment(endTime)));
-        return timeSegmentTiles
-      }       
-      if(timeSegment.startTime.isBefore(previousTimeSegmentEnd) && timeSegment.endTime.isAfter(previousTimeSegmentEnd)){
-        timeSegmentTiles.push(new TimeSegmentTile(timeSegment, moment(previousTimeSegmentEnd), moment(timeSegment.endTime)));
-      }
-      return null;
-    }
-
-    function findGap(timeSegment: TimeSegment, previousTime: moment.Moment): TimeSegmentTile {
-      if(timeSegment.startTime.isBefore(previousTime)){
-        //this should never happen;
-      }else if(timeSegment.startTime.isSame(previousTime)){
-        return null;
-      }else if(timeSegment.startTime.isAfter(previousTime)){
-        return new TimeSegmentTile(null, previousTime, timeSegment.startTime);
-      }
-      return null
-    }
-
-    function tileBackgroundColor(timeSegment: TimeSegment): string {
-      function hexToRGB(hex: string, alpha: number) {
-        var r = parseInt(hex.slice(1, 3), 16),
-          g = parseInt(hex.slice(3, 5), 16),
-          b = parseInt(hex.slice(5, 7), 16);
-
-        if (alpha) {
-          return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
-        } else {
-          return "rgb(" + r + ", " + g + ", " + b + ")";
+    function earliestOf(times: moment.Moment[]): moment.Moment{
+      times.sort((timeA, timeB)=>{
+        if(timeA.isBefore(timeB)){
+          return -1;
+        }else if(timeA.isAfter(timeB)){
+          return 1;
+        }else {
+          return 0;
         }
-      }
-      if (timeSegment != null) {
-        if (timeSegment.activities.length > 0) {
-          let color = timeSegment.activities[0].activity.color;
-          return hexToRGB(color, 0.5);
-
-        } else {
-          return hexToRGB("#ffffff", 0.5);
-        }
-      } else {
-        return hexToRGB("#ffffff", 0.5);
-      }
-
+        
+      });
+      return moment(times[0]);      
     }
-
 
 
     function buildTile(startTime: moment.Moment, endTime: moment.Moment, timeSegment: TimeSegment, borderNoRadius: string): TimeSegmentTile {
-      if(timeSegment == null){
-        console.log("building a blank timeSegment")
+      function tileBackgroundColor(timeSegment: TimeSegment): string {
+        function hexToRGB(hex: string, alpha: number) {
+          var r = parseInt(hex.slice(1, 3), 16),
+            g = parseInt(hex.slice(3, 5), 16),
+            b = parseInt(hex.slice(5, 7), 16);
+
+          if (alpha) {
+            return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+          } else {
+            return "rgb(" + r + ", " + g + ", " + b + ")";
+          }
+        }
+        if (timeSegment != null) {
+          if (timeSegment.activities.length > 0) {
+            let color = timeSegment.activities[0].activity.color;
+            return hexToRGB(color, 0.5);
+
+          } else {
+            return hexToRGB("#ffffff", 0.5);
+          }
+        } else {
+          return hexToRGB("#ffffff", 0.01);
+        }
+
+      }
+      if (timeSegment == null) {
+        // console.log("building a blank timeSegment")
       }
       let tile: TimeSegmentTile = new TimeSegmentTile(timeSegment, startTime, endTime);
       if (borderNoRadius == "TOP") {
@@ -253,6 +232,11 @@ export class TimeLogComponent implements OnInit, OnDestroy {
           "border-top-right-radius": "4px",
           "border-bottom-left-radius": "0px",
           "border-bottom-right-radius": "0px",
+          "background-color": tileBackgroundColor(timeSegment)
+        };
+      } else if (borderNoRadius == "TOP AND BOTTOM") {
+        tile.style = {
+          "border-radius": "0px",
           "background-color": tileBackgroundColor(timeSegment)
         };
       } else {
@@ -319,51 +303,122 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
       if (windowTimeSegments.length > 0) {
 
-        let currentTime: moment.Moment = moment(startTimeMarker);
-        let tiles: TimeSegmentTile[] = [];
-        for(let timeSegment of windowTimeSegments){
-          let overlap: TimeSegmentTile[] = findOverlaps(timeSegment, startTimeMarker, endTimeMarker, currentTime);
-        
-          if(overlap){
-            // console.log("there is an overlap at index " + windowTimeSegments.indexOf(timeSegment), timeSegment);
-            for(let overlapTile of overlap){
-              tiles.push(overlapTile);
-            }
-          }else{
-            let gap: TimeSegmentTile = findGap(timeSegment, currentTime);
-            if(gap){
-              // console.log("there is a gap at index " + windowTimeSegments.indexOf(timeSegment), timeSegment, currentTime.format('hh:mm a'));
-              tiles.push(gap);
-            }else{
-              // console.log("not a gap, or an overlap.  index " + windowTimeSegments.indexOf(timeSegment), timeSegment)
-              tiles.push(new TimeSegmentTile(timeSegment, timeSegment.startTime, timeSegment.endTime));
-            }
-          }
-          currentTime = moment(timeSegment.endTime);
+        let nextTimeSegmentStart: moment.Moment = moment(endTimeMarker); 
+        if(windowTimeSegments.length > 1){
+          nextTimeSegmentStart = moment(windowTimeSegments[1].startTime);
         }
+
+        let now: moment.Moment = moment(endTimeMarker);
+        if(moment().format('YYYY-MM-DD') == moment(endTimeMarker).format('YYYY-MM-DD') || moment().format('YYYY-MM-DD') == moment(startTimeMarker).format('YYYY-MM-DD')){
+          now = moment().second(0).millisecond(0);
+        }
+
+        let currentStartTimeLimit: moment.Moment = moment(startTimeMarker);
+        let currentEndTimeLimit: moment.Moment = earliestOf([endTimeMarker, now, nextTimeSegmentStart]);
+
+        let tileStartTime: moment.Moment = null;
+        let tileEndTime: moment.Moment = null;
+
+        let tiles: TimeSegmentTile[] = [];
+        
+        for (let timeSegment of windowTimeSegments) {
+          // console.log("for this timesegment, current start LIMIT is : " + currentStartTimeLimit.format('hh:mm a'));
+          // console.log("for this timesegment, current end LIMIT is : " + currentEndTimeLimit.format('hh:mm a'))
+          tileStartTime = moment(timeSegment.startTime);
+          tileEndTime = moment(timeSegment.endTime);
+
+          let startGap: TimeSegmentTile = null;
+          let endGap: TimeSegmentTile = null;
+
+
+          if(timeSegment.startTime.isBefore(currentStartTimeLimit)){
+            // console.log("timesegment waqs before the start time")
+            tileStartTime = moment(currentStartTimeLimit);
+          }else if(timeSegment.startTime.isAfter(currentStartTimeLimit)){
+            // console.log("we building a gap at index" + windowTimeSegments.indexOf(timeSegment))
+            startGap = buildTile(currentStartTimeLimit, timeSegment.startTime, null, "MIDDLE");
+            tileStartTime = moment(timeSegment.startTime);
+          }
+
+
+          
+          if(timeSegment.endTime.isAfter(currentEndTimeLimit)){
+            tileEndTime = moment(currentEndTimeLimit);
+          }else if(timeSegment.endTime.isBefore(currentEndTimeLimit)){
+            console.log("we building end gap at index " + windowTimeSegments.indexOf(timeSegment))
+            endGap = buildTile(timeSegment.endTime, currentEndTimeLimit, null, "MIDDLE");
+          }
+          
+          if(startGap){
+            tiles.push(startGap);
+          }
+          // console.log("tileStart, tileEnd" + tileStartTime.format('hh:mm a') + " to " + tileEndTime.format('hh:mm a'))
+          tiles.push(buildTile(tileStartTime, tileEndTime, timeSegment, "MIDDLE") );
+
+          if(endGap){
+            tiles.push(endGap);
+            tileEndTime = moment(endGap.endTime);
+          }
+
+
+          currentStartTimeLimit = moment(tileEndTime);
+          currentEndTimeLimit = earliestOf([endTimeMarker, now]);
+          if(windowTimeSegments.indexOf(timeSegment) == windowTimeSegments.length-1){
+            //if last one
+            currentEndTimeLimit = earliestOf([endTimeMarker, now]);
+          }else{
+            currentEndTimeLimit = earliestOf([endTimeMarker, now, windowTimeSegments[windowTimeSegments.indexOf(timeSegment)+1].endTime]);
+          }
+          
+          console.log("end time is now: " + tileEndTime.format('hh:mm:ss a'))
+        }
+        if(tileEndTime.isBefore(now)){
+          tiles.push(buildTile(tileEndTime, now, null, "MIDDLE") );
+          if(now.isBefore(endTimeMarker)){
+            tiles.push(buildTile(now, endTimeMarker, null, "MIDDLE") );
+          }
+        }else if(tileEndTime.isBefore(endTimeMarker)){
+          tiles.push(buildTile(tileEndTime, endTimeMarker, null, "MIDDLE") );
+        }
+        /*
+          At this point, all timeSegments are accounted for.  What comes next then, can only be either:
+            -The end time marker
+            -the now line marker
+        */
+        // if(currentTime.isBefore(endTimeMarker)){
+        //   let now: moment.Moment = moment();
+        //   if(currentTime.isBefore(now)){
+        //     tiles.push(buildTile(currentTime, now, null, "MIDDLE"));
+        //     tiles.push(buildTile(now, endTimeMarker, null, "BOTTOM"));
+        //   }else{
+        //     tiles.push(buildTile(currentTime, endTimeMarker, null, "BOTTOM"));
+        //   }
+        // }
+
+
 
         let sum: number = 0;
         let percentages: number[] = [];
-        tiles.forEach((tile)=>{
-          let seconds = (moment(tile.endTime).diff(moment(tile.startTime),'seconds'));
+        tiles.forEach((tile) => {
+          let seconds = (moment(tile.endTime).diff(moment(tile.startTime), 'seconds'));
           sum += seconds;
         })
         let windowSum: number = moment(endTimeMarker).diff(moment(startTimeMarker), 'seconds');
-        if(windowSum != sum){
-          console.log("Error: miscalculation - sum does not add up to window sum");
-          tiles.forEach((tile)=>{
-            console.log("tile: " + tile.startTime.format('hh:mm a') + " to " + tile.endTime.format('hh:mm a'))
+        if (windowSum != sum) {
+          console.log("Error: miscalculation - sum does not add up to window sum.  Sum must add up to " + windowSum + " but is actually " + sum);
+          tiles.forEach((tile) => {
+            console.log("    tile: " + tile.startTime.format('hh:mm:ss a') + " to " + tile.endTime.format('hh:mm:ss a'), tile.timeSegment.activities)
           })
         }
 
-        tiles.forEach((tile)=>{
-          let percent: number = ((moment(tile.endTime).diff(moment(tile.startTime),'seconds')) / sum) * 100;
+        tiles.forEach((tile) => {
+          let percent: number = ((moment(tile.endTime).diff(moment(tile.startTime), 'seconds')) / sum) * 100;
           percentages.push(percent);
         })
 
 
         let gridTemplateRows: string = "";
-        percentages.forEach((percentage: number)=>{ 
+        percentages.forEach((percentage: number) => {
           gridTemplateRows += "" + percentage + "% ";
         })
         let style: any = {

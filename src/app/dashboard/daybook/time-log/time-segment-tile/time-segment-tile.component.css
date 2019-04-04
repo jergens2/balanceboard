@@ -1,8 +1,14 @@
 
 .tile{
+
+    
+
+    border: 1px solid rgb(211, 211, 211);
+    
     font-size:0.8em;
     display:flex;
     flex-direction:column;
+    height:100%;
 }
 
 .tile-top-row{

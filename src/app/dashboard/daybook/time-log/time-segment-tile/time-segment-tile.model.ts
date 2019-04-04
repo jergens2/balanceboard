@@ -11,7 +11,7 @@ export class TimeSegmentTile{
     private _isBlank: boolean = false;
     private _isScheduled: boolean = false;
 
-    public mouseOver: boolean = false;
+    public isMouseOver: boolean = false;
 
 
 

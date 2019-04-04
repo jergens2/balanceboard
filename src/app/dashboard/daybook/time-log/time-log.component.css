@@ -80,13 +80,9 @@
 }
 
 .time-segment-tile{
-
+    grid-column: 2 / span 1;
     margin-left:15px;
     margin-right:15px;
     margin-bottom: 1px;
-    grid-column: 2 / span 1;
-
-    border: 1px solid rgb(211, 211, 211);
-
 } 
 
