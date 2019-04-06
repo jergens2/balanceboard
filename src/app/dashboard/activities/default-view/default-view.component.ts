@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogService } from '../../daybook/time-log/timelog.service';
 import { Subscription } from 'rxjs';
-import { TimeSegment } from '../../daybook/time-log/time-segment.model';
+import { TimeSegment } from '../../daybook/time-log/time-segment-tile/time-segment.model';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { IActivityData } from './activity-data.interface';
 import { TimeSegmentActivity } from '../../daybook/time-log/time-segment-activity.model';

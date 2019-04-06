@@ -28,18 +28,13 @@ const appRoutes: Routes = [
     { path: 'month-planner', component: MonthPlannerComponent },
     { path: 'year-planner', component: YearPlannerComponent },
     { path: 'activities', component: ActivitiesComponent },
-<<<<<<< HEAD
     { path: 'activities/:activityIdentifier', component: ActivitiesComponent },
-    { path: 'idea_log', component: IdeaLogComponent },
     { path: 'user_settings', component: UserSettingsComponent },
 
     // { path: '**', component: PageNotFoundComponent }
-=======
     { path: 'idea-log', component: IdeaLogComponent },
-    { path: 'user-settings', component: UserSettingsComponent },
     { path: 'schedule', component: ScheduleComponent },
     { path: 'day-templates', component: DayTemplatesComponent}
->>>>>>> exporttimelog
 ];
 
 

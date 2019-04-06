@@ -71,7 +71,7 @@
       </div>
     </div>
     <div class="time-segment-form-row" style="font-weight:bold;"
-      [ngClass]="{'duration-error': endTimeError, 'duration-error': startTimeError }">
+      [ngClass]="{'duration-error': endTimeError || startTimeError }">
       {{ durationString }}
     </div>
 

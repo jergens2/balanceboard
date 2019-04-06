@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivityTree } from '../activity-tree.model';
-import { TimeSegment } from '../../daybook/time-log/time-segment.model';
+import { TimeSegment } from '../../daybook/time-log/time-segment-tile/time-segment.model';
 
 @Component({
   selector: 'app-activity-display',

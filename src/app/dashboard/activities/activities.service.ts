@@ -9,7 +9,7 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.model';
-import { TimeSegment } from '../daybook/time-log/time-segment.model';
+import { TimeSegment } from '../daybook/time-log/time-segment-tile/time-segment.model';
 import { TimeSegmentActivity } from '../daybook/time-log/time-segment-activity.model';
 
 @Injectable({

@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { UserDefinedActivity } from '../../user-defined-activity.model';
 import { IActivityJournalItem } from './activity-journal-item.interface';
-import { TimeSegment } from '../../../daybook/time-log/time-segment.model';
+import { TimeSegment } from '../../../daybook/time-log/time-segment-tile/time-segment.model';
 import * as moment from 'moment';
 
 @Component({
