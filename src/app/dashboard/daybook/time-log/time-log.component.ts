@@ -514,7 +514,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
 
-        console.log("final end time of " + tileEndTime.format('hh:mm a'))
+        // console.log("final end time of " + tileEndTime.format('hh:mm a'))
 
         let endGapSeconds: number = 0;
 
@@ -582,14 +582,18 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
       } else {
-        this.timeSegmentTiles = [];
+        
         this.timeSegmentsContainer = null;
+        this.timeSegmentTiles = [];
+        
       }
 
 
     } else {
-      this.timeSegmentTiles = [];
+
       this.timeSegmentsContainer = null;
+      this.timeSegmentTiles = [];
+      
     }
   }
   private drawNowLine() {
