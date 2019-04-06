@@ -1,6 +1,6 @@
-import { UserDefinedActivity } from "../../activities/user-defined-activity.model";
+import { UserDefinedActivity } from "../../../activities/user-defined-activity.model";
 import * as moment from 'moment';
-import { TimeSegmentActivity } from "./time-segment-activity.model";
+import { TimeSegmentActivity } from "../time-segment-activity.model";
 
 
 export class TimeSegment{
@@ -19,18 +19,6 @@ export class TimeSegment{
     public description: string;
 
     public activities: TimeSegmentActivity[] = []
-    // private _activities: TimeSegmentActivity[] = [];
-    // get activities(): TimeSegmentActivity[]{
-    //     return this._activities;
-    // }
-    // set activities(arr: TimeSegmentActivity[]){
-    //     this._activities = [];
-    //     this._activities = Object.assign([], arr);
-    //     console.log(this._activities);
-    // }
-
-    public precedingTimeSegmentId: string;
-    public followingTimeSegmentId: string;
 
     public userId: string;
 

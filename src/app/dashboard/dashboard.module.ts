@@ -39,13 +39,21 @@ import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year
 import { ActivityInputDropdownComponent } from './activities/activity-input-dropdown/activity-input-dropdown.component';
 import { ActivitiesListComponent } from './activities/activities-list/activities-list.component';
 import { HeatmapViewComponent } from './daybook/heatmap-view/heatmap-view.component';
-import { ScheduleComponent } from './daybook/schedule/schedule.component';
+import { ScheduleComponent } from './scheduling/schedule.component';
 import { DaybookHeaderComponent } from './daybook/daybook-header/daybook-header.component';
+
 import { ActivityGoalsWidgetComponent } from './activities/default-view/activity-goals-widget/activity-goals-widget.component';
 import { ActivityPlanningComponent } from './activities/activity-display/activity-planning/activity-planning.component';
 import { InstancesListComponent } from './activities/activity-display/instances-list/instances-list.component';
 import { ActivityJournalComponent } from './activities/activity-display/activity-journal/activity-journal.component';
 import { DayOfWeekComponent } from './activities/default-view/day-of-week/day-of-week.component';
+
+import { RotationDayTemplateComponent } from './scheduling/rotation-day-template/rotation-day-template.component';
+import { DayTemplatesComponent } from './scheduling/day-templates/day-templates.component';
+import { RotationFormComponent } from './scheduling/rotation-form/rotation-form.component';
+import { RotationDisplayComponent } from './scheduling/rotation-display/rotation-display.component';
+import { TimeSegmentTileComponent } from './daybook/time-log/time-segment-tile/time-segment-tile.component';
+
 
 
 
@@ -91,11 +99,19 @@ import { DayOfWeekComponent } from './activities/default-view/day-of-week/day-of
     HeatmapViewComponent,
     ScheduleComponent,
     DaybookHeaderComponent,
+
     ActivityGoalsWidgetComponent,
     ActivityPlanningComponent,
     InstancesListComponent,
     ActivityJournalComponent,
-    DayOfWeekComponent
+    DayOfWeekComponent,
+
+    RotationDayTemplateComponent,
+    DayTemplatesComponent,
+    RotationFormComponent,
+    RotationDisplayComponent,
+    TimeSegmentTileComponent
+
     
     
   ],

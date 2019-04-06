@@ -1,0 +1,32 @@
+<div class="root">
+  <div class="day-template" [ngStyle]="dayTemplateStyle">
+    <div class="header">
+      Day {{ dayTemplateItem.dayOfRotation }}
+      <div>
+        {{ dayTemplateItem.date }}
+      </div>
+      <div>
+        {{ dayOfWeek }}
+      </div>
+    </div>
+    <div *ngIf="templateIsSpecified" class="template-information">
+
+      <div style="margin-bottom:5px;">
+        {{ dayTemplateItem.dayTemplate.name }}
+      </div>
+
+      <div class="unspecified-template" (click)="onClickSelectTemplate()">
+        Select different template
+      </div>
+    </div>
+    <div *ngIf="!templateIsSpecified" class="template-information">
+      <div style="margin-bottom:5px;">
+        No template specified
+      </div>
+
+      <div class="unspecified-template" (click)="onClickSelectTemplate()">
+        Select template
+      </div>
+    </div>
+  </div>
+</div>

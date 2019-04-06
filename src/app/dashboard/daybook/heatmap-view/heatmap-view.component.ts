@@ -4,7 +4,7 @@ import { TimelogService } from '../time-log/timelog.service';
 
 import * as moment from 'moment';
 import { Subject, Subscription } from 'rxjs';
-import { TimeSegment } from '../time-log/time-segment.model';
+import { TimeSegment } from '../time-log/time-segment-tile/time-segment.model';
 import { IHeatmapContentItem } from './heatmap-content-item.interface';
 
 @Component({
@@ -35,11 +35,15 @@ export class HeatmapViewComponent implements OnInit {
 
     this._currentDate$.subscribe((changedDate: moment.Moment) => {
       this.ifLoading = true;
-      this.timeSegmentsSubscription.unsubscribe();
-      this.timelogService.fetchTimeSegmentsByDay(changedDate).subscribe((timeSegments) => {
+
+
+      this.timelogService.timeSegments$.subscribe((timeSegments) => {
         this.buildTemplateItems(changedDate, timeSegments);
         this.ifLoading = false;
       });
+      this.timeSegmentsSubscription.unsubscribe();
+      this.timelogService.fetchTimeSegmentsByRange(moment(changedDate).subtract(1,'day'), moment(changedDate).add(1,'day'));
+
     });
 
     this._currentDate$.next(moment());

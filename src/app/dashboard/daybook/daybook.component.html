@@ -4,14 +4,14 @@
 
 
     <div class="daybook-tabs">
-      <div class="daybook-tab" style="background-color: rgb(232, 255, 232);" >
-          <img class="tab-img" [src]="'assets/timelog-title.png'"/>
+      <div class="daybook-tab" style="background-color: rgb(232, 255, 232);">
+        <!-- <img class="tab-img" [src]="'assets/timelog-title.png'" /> -->
       </div>
       <div class="daybook-tab" style="background-color: rgb(230, 241, 255);">
-          <img class="tab-img" [src]="'assets/daily-task-list-title.png'"/>
+        <!-- <img class="tab-img" [src]="'assets/daily-task-list-title.png'" /> -->
       </div>
-      <div class="daybook-tab" style="background-color: rgb(254, 255, 225);" >
-        <img class="tab-img" [src]="'assets/journal-title.png'"/>
+      <div class="daybook-tab" style="background-color: rgb(254, 255, 225);">
+        <!-- <img class="tab-img" [src]="'assets/journal-title.png'" /> -->
       </div>
 
     </div>
@@ -25,20 +25,25 @@
       </div>
 
       <div class="daybook-header">
-        <app-daybook-header (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate"></app-daybook-header>
+        <app-daybook-header (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate">
+        </app-daybook-header>
       </div>
 
-      <div class="daybook-view" *ngIf="currentView == 'heatmap'"> 
+      <div class="daybook-view" *ngIf="currentView == 'heatmap'">
         <app-heatmap-view [currentDate]="currentDate"></app-heatmap-view>
       </div>
 
-      <div class="daybook-view" [ngStyle]="timelogViewStyle" *ngIf="currentView == 'timelog'">
-        <app-time-log [currentDate]="currentDate" (clickTimeSegment)="onTimeSegmentClicked($event)" (clickNextTimeSegment)="onNextTimeSegmentClicked($event)"></app-time-log>
+      <div class="daybook-view" *ngIf="currentView == 'timelog'">
+        <app-time-log [currentDate]="currentDate" (timeSegmentFormData)="onTimeSegmentDataProvided($event)"
+          (changedDate)="onChangeCalendarDate($event)">
+        </app-time-log>
       </div>
 
       <div class="daybook-view" *ngIf="currentView == 'form'">
-        <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment"
-          [action]="timeSegmentFormAction" (closeForm)="onCloseForm($event)"></app-time-segment-form>
+        <!-- <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment"
+          [action]="timeSegmentFormAction" (closeForm)="onCloseForm($event)"></app-time-segment-form> -->
+        <app-time-segment-form [providedFormData]="timeSegmentFormData" (closeForm)="onCloseForm($event)">
+        </app-time-segment-form>
       </div>
 
     </div>

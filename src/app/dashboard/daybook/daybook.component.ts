@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogService } from './time-log/timelog.service';
-import { Subscription, timer, Subject } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { faCaretSquareDown, faEdit } from '@fortawesome/free-regular-svg-icons';
-import { TimeSegment } from './time-log/time-segment.model';
-import { ITimeSegmentTile } from './time-log/time-segment-tile.interface';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { ActivatedRoute, Router, ParamMap } from '@angular/router';
+
+
+import { ActivatedRoute, Router} from '@angular/router';
 import { HeaderService } from '../../nav/header/header.service';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
+import { ITimeSegmentFormData } from './time-segment-form/time-segment-form-data.interface';
 
 @Component({
   selector: 'app-daybook',
@@ -18,7 +18,7 @@ import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
 })
 export class DaybookComponent implements OnInit, OnDestroy {
 
-  constructor(private timeLogService: TimelogService, private route: ActivatedRoute, private router: Router, private headerService: HeaderService) { }
+  constructor(private timeLogService: TimelogService, private activatedRoute: ActivatedRoute, private router: Router, private headerService: HeaderService) { }
 
 
   faCaretSquareDown = faCaretSquareDown;
@@ -29,7 +29,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
   ifTimeSegmentForm: boolean = false;
 
 
-  timeSegmentFormAction: string = "New";
+  timeSegmentFormData: ITimeSegmentFormData = { action:"NEW" , timeSegment: null, date: null };
 
   private headerMenuSubscriptions: Subscription[] = [];
 
@@ -51,16 +51,14 @@ export class DaybookComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.buildHeaderMenu();
-
     let dateRegExp: RegExp = new RegExp(/[0-9]{4}(-[0-9]{2}){2}/);
-    let date: string = this.route.snapshot.paramMap.get('isoDate');
+    let date: string = this.activatedRoute.snapshot.paramMap.get('isoDate');
+    
     if(dateRegExp.test(date)){
       this.currentDate = moment(date);
     }else{
       this.currentDate = moment();
     }
-
-
   }
 
   private buildHeaderMenu(){
@@ -68,6 +66,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
     let newTimeSegmentMenuItem = new MenuItem("New Time Segment", null, null);
     this.headerMenuSubscriptions.push(newTimeSegmentMenuItem.clickEmitted$.subscribe((clicked)=>{
+      this.timeSegmentFormData = { action:"NEW" , timeSegment: null, date: this._currentDate }
       this.currentView = "form";
     }));
 
@@ -94,17 +93,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.currentView = newView;
   }
 
-  reviewTimeSegment: TimeSegment = null;
-  onTimeSegmentClicked(timeSegmentTile: ITimeSegmentTile){
-    this.reviewTimeSegment = timeSegmentTile.timeSegment;
-    this.timeSegmentFormAction = "Review";
-    this.changeView("form");
-  }
-
-  newTimeSegment: TimeSegment = null;
-  onNextTimeSegmentClicked(timeSegment: TimeSegment){
-    this.newTimeSegment = timeSegment;
-    this.timeSegmentFormAction = "New";
+  onTimeSegmentDataProvided(data: ITimeSegmentFormData){
+    console.log("Timesegment form data RECEIVED BRAH")
+    this.timeSegmentFormData = data;
     this.changeView("form");
   }
 
@@ -117,44 +108,19 @@ export class DaybookComponent implements OnInit, OnDestroy {
   }
 
   onChangeCalendarDate(date: moment.Moment) {
-    console.log("receiving changed date, ", date)
     this.currentDate = date;
+    this.router.navigate(['/daybook/'+date.format('YYYY-MM-DD')]);
+    this.changeView("timelog");
   }
-
-
 
   onClickToggleCalendar() {
     this.ifCalendarInside = !this.ifCalendarInside;
   }
 
-  ifDaybookMenu: boolean = false;
-  onClickDayBookMenu() {
-    this.ifDaybookMenu = !this.ifDaybookMenu;
-  }
-
-
-
-
-  onClickAddNewTimeSegment(){
-    this.timeSegmentFormAction = "New";
-    this.ifTimeSegmentForm = true;
-    this.ifDaybookMenu = false;
-  }
 
 
   onCloseForm($event: any){
-    /*
-      This is a bit of a cheater method, where instead of rebuilding the changed tile manually we just 
-      reset the date to today which will fire the rebuild subscriptions in ngOnInit()
-    */
-    this.currentDate = moment(this.currentDate);
     this.changeView("timelog");
   }
-
-
-
-
-
-
 
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthenticationService } from '../../../authentication/authentication.service';
-import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
-import { TimeSegment } from './time-segment.model';
+
+import { Observable, Subject, Subscription, BehaviorSubject } from 'rxjs';
+import { TimeSegment } from './time-segment-tile/time-segment.model';
 import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
 
 import * as moment from 'moment';
@@ -21,88 +21,29 @@ import { ActivitiesService } from '../../activities/activities.service';
 export class TimelogService {
 
   private _authStatus: AuthStatus = null;
+  login(authStatus: AuthStatus){
+    this._authStatus = authStatus;
+    this.fetchTimeSegmentsByRange(moment().startOf('day').subtract(1,'days'), moment().endOf('day').add(1,'days'));
+  }
 
   constructor(private httpClient: HttpClient, private activitiesService: ActivitiesService) {
   }
 
-  login$(authStatus: AuthStatus): Observable<TimeSegment[]> {
-    this._authStatus = authStatus;
-    /*
-      The following function just uses this.currentDate, which will always default to today.  but there may be times when, for example, 
-      maybe the user navigates to a specific day, and then quits the app, and then returns at another time, and maybe wants to return to that specific day ?
-    */
-    return this.fetchTimeSegmentsByDay(this.currentDate);
-  }
-
-
   private _serverUrl: string = serverUrl;
 
-  private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
-  private _timeSegmentsSubject$: BehaviorSubject<TimeSegment[]> = new BehaviorSubject([]);
 
-  private _thisDaysTimeSegmentsSubscription: Subscription = new Subscription();
-
-
-  // 2018-12-16:  these 2 following variables are statically defined here in this service, but eventually will be modifyable by the user which will change the behavior of the app
-  private _userDefinedStartTimeOfDay: moment.Moment = moment().hour(7).minute(30).second(0).millisecond(0);
-  private _userDefinedEndTimeOfDay: moment.Moment = moment().hour(22).minute(30).second(0).millisecond(0);
-  get userDefinedStartTimeOfDay(): moment.Moment { return this._userDefinedStartTimeOfDay; }
-  get userDefinedEndTimeOfDay(): moment.Moment { return this._userDefinedEndTimeOfDay; }
-
-  get currentDate(): moment.Moment {
-    return this._currentDate$.getValue();
+  private _timeSegments: TimeSegment[] = [];
+  private _timeSegments$: Subject<TimeSegment[]> = new Subject();
+  public get timeSegments$(): Observable<TimeSegment[]> { 
+    return this._timeSegments$.asObservable();
   }
-  set currentDate(date: moment.Moment) {
-    this._userDefinedStartTimeOfDay = moment(date).hour(7).minute(0).second(0).millisecond(0);
-    this._userDefinedEndTimeOfDay = moment(date).hour(22).minute(0).second(0).millisecond(0);
-    this._currentDate$.next(date);
-    /*
-      Do a check here to see if the new date is still in the range.  If not, then perform a GET request to update the master variable
-      otherwise, simply update thisDaysTimeSegments
-    */
-    let outOfRange: boolean = false;
-    for (let timeSegment of this._timeSegmentsSubject$.getValue()) {
-      // at this time, we're just pretending like the time range is always fixed by month.  In the future, we can change this from month to any set variable range,
-      // for example a six week period.
-      if (moment(date).month() != moment(timeSegment.startTime).month()) {
-        outOfRange = true;
-        break;
-      }
-    }
-
-    if (outOfRange) {
-      this.fetchTimeSegmentsByRange(this._authStatus.user.id, moment(date).startOf('month'), moment(date).endOf('month'));
-    } else {
-      // this._thisDaysTimeSegments.next((this.getThisDaysTimeSegments(this._timeSegmentsSubject$.getValue(), date)));
-    }
-  }
-  get currentDate$(): Observable<moment.Moment> {
-    return this._currentDate$.asObservable();
-  }
-
-
-  get timeSegments$(): Observable<TimeSegment[]> {
-    return this._timeSegmentsSubject$.asObservable();
+  public get timeSegments(): TimeSegment[] {
+    return this._timeSegments;
   }
 
 
 
-  // get latestTimeSegment(): TimeSegment {
-  //   console.log("timelog service", this._timeSegmentsSubject$.getValue())
-  //   let timeSegments = this._timeSegmentsSubject$.getValue();
-  //   if (timeSegments.length > 0) {
-  //     let latestTimeSegment = timeSegments[0];
-  //     for (let timeSegment of timeSegments) {
-  //       if (timeSegment.endTimeISO > latestTimeSegment.endTimeISO) {
-  //         latestTimeSegment = timeSegment;
-  //       }
-  //     }
-  //     console.log("Service: latest time segment is ", latestTimeSegment);
-  //     return latestTimeSegment;
-  //   } else {
-  //     return null;
-  //   }
-  // }
+
 
   updateTimeSegment(timeSegment: TimeSegment) {
     console.log("Updating time segment: ", timeSegment);
@@ -130,17 +71,22 @@ export class TimelogService {
         return timeSegment;
       }))
       .subscribe((returnedTimeSegment: TimeSegment) => {
-        let timeSegments: TimeSegment[] = this._timeSegmentsSubject$.getValue();
-        for (let timeSegment of timeSegments) {
-          if (timeSegment.id == returnedTimeSegment.id) {
+
+        console.log("returned time segment is ", returnedTimeSegment);
+        let timeSegments: TimeSegment[] = this._timeSegments;
+        for(let timeSegment of timeSegments){
+          if(timeSegment.id == returnedTimeSegment.id){
+
             timeSegments.splice(timeSegments.indexOf(timeSegment), 1, returnedTimeSegment)
           }
         }
-        this._timeSegmentsSubject$.next(timeSegments);
-      })
+        this._timeSegments = Object.assign([],timeSegments);
+        this._timeSegments$.next(this._timeSegments);
+      });
   }
 
   saveTimeSegment(timeSegment: TimeSegment) {
+    console.log("Saving new timeSegment", timeSegment);
     let newTimeSegment: TimeSegment = timeSegment;
     newTimeSegment.userId = this._authStatus.user.id;
 
@@ -167,11 +113,11 @@ export class TimelogService {
         return timeSegment;
       }))
       .subscribe((timeSegment: TimeSegment) => {
-        let timeSegments: TimeSegment[] = this._timeSegmentsSubject$.getValue();
+        console.log("saved time segment was ", timeSegment);
+        let timeSegments: TimeSegment[] = this._timeSegments;
         timeSegments.push(timeSegment);
-
-        this._timeSegmentsSubject$.next(timeSegments);
-        // this.updatePrecedingTimeSegment(timeSegment);
+        this._timeSegments = Object.assign([], timeSegments);
+        this._timeSegments$.next(this._timeSegments);
       })
   }
 
@@ -197,48 +143,19 @@ export class TimelogService {
 
     this.httpClient.post<{ message: string, data: any }>(postUrl, timeSegment, httpOptions)
       .subscribe((response) => {
-        let timeSegments: TimeSegment[] = this._timeSegmentsSubject$.getValue();
+        let timeSegments: TimeSegment[] = this._timeSegments;
         timeSegments.splice(timeSegments.indexOf(timeSegment), 1);
-        // this.setLatestTimeSegment(null);
-        this._timeSegmentsSubject$.next(timeSegments);
+        
+        this._timeSegments = Object.assign([], timeSegments);
+        this._timeSegments$.next(timeSegments);
       })
 
   }
 
-  fetchTimeSegmentsByDay(date: moment.Moment): Observable<TimeSegment[]> {
-    const getUrl = this._serverUrl + "/api/timeSegment/" + this._authStatus.user.id + "/" + moment(date).startOf('day').toISOString() + "/" + moment(date).endOf('day').toISOString();
+  
 
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'  
-      })
-    };
-    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe<TimeSegment[]>(map((response) => {
-        return response.data.map((dataObject) => {
-          let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description);
-
-          let activities: Array<any> = dataObject.activities as Array<any>;
-          if (activities.length > 0) {
-            //if the element in the array has a property called .activity , then it is of new type of activity as of 2018-12-13
-            if (activities[0].activityTreeId != null) {
-              timeSegment.activities = this.buildTimeSegmentActivities(activities);
-            } else {
-              console.log("receiving old activities")
-              timeSegment.receiveOldActivities(dataObject.activities as UserDefinedActivity[])
-            }
-          }
-          return timeSegment;
-        })
-      }))
-
-
-  }
-
-  private fetchTimeSegmentsByRange(authenticatedUserId: string, startTime: moment.Moment, endTime: moment.Moment) {
-
-    const getUrl = this._serverUrl + "/api/timeSegment/" + authenticatedUserId + "/" + startTime.toISOString() + "/" + endTime.toISOString();
+  fetchTimeSegmentsByRange(startTime: moment.Moment, endTime: moment.Moment) {
+    const getUrl = this._serverUrl + "/api/timeSegment/" + this._authStatus.user.id + "/" + startTime.toISOString() + "/" + endTime.toISOString();
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -273,7 +190,7 @@ export class TimelogService {
         })
       }))
       .subscribe((timeSegments: TimeSegment[]) => {
-        this._timeSegmentsSubject$.next(timeSegments);
+        this._timeSegments$.next(timeSegments);
       });
 
   }
@@ -320,8 +237,7 @@ export class TimelogService {
 
   logout() {
     this._authStatus = null;
-    this._timeSegmentsSubject$.next([]);
-    this._thisDaysTimeSegmentsSubscription.unsubscribe();
+    this._timeSegments$.next([]);
   }
 
 

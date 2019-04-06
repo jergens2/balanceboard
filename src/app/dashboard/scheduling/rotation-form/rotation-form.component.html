@@ -1,0 +1,47 @@
+<div class="root">
+  <div class="rotation-explanation">
+    <h4>Instructions</h4>
+    Your rotation is the primary repeating cycle in your life.<br>
+    Almost everyone spends their time in an arrangement which is rotational. For most people, this usually means
+    arranging your time around your scheduled work or school hours. <br>
+    In most cases, this is usually a 7-day rotation.
+    <hr>
+    <h5>Templates</h5>
+    Your rotation is composed of Day Templates.  For example, a typical work day or school day might look something like this:<br>
+    <ul>
+      <li>Midnight to 7:00am - Sleeping</li>
+      <li>7:00am to 4:00pm - Getting ready, go to work or school, come home (non-discretionary time)</li>
+      <li>4:00pm to 11:00pm - Discretionary time</li>
+      <li>11:00pm to midnight - Sleeping</li>
+    </ul>  
+    You customize your templates, and assign a template to each day of your rotation.  <br>
+    For example, somebody who works Monday through Friday might have a schedule / rotation that looks something like this: <br>
+    Sun: Rest day, Mon: Work day, Tue: Work day, Wed: Work day, Thu: Work day, Fri: Work day, Sat: Rest day
+  </div>
+  <div class="rotation-body" [formGroup]="rotationForm">
+    <div class="rotation-body-header">
+      <div style="padding:3px;margin-right:5px;">
+        <span style="padding:3px;margin-right:10px;">Rotation repeats every</span>
+        <input style="padding:3px;margin-right:10px;" type="number" formControlName="repititionCount"
+          style="width:50px;">
+        <span style="padding:3px;margin-right:10px;">
+          <input type="radio" formControlName="repititionType" value="Days"> Days
+          <input type="radio" formControlName="repititionType" value="Weeks"> Weeks
+        </span>
+        <span style="padding:3px;margin-right:10px;">Starts on:</span>
+        <input type="date" formControlName="startsOnDate">
+      </div>
+
+    </div>
+    <div *ngIf="rotationBodyDisplayStyle" class="rotation-body-display" [ngStyle]="rotationBodyDisplayStyle">
+      <div *ngFor="let dayTemplateItem of dayTemplateItems" class="day-template-item">
+        <app-rotation-day-template [dayTemplateItem]="dayTemplateItem"></app-rotation-day-template>
+      </div>
+    </div>
+
+  </div>
+  <div class="rotation-controls">
+    <button class="btn btn-primary mr-2" [disabled]="formIsValid ? '' :'disabled'">Save this rotation</button>
+    <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
+  </div>
+</div>

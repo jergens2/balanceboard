@@ -1,0 +1,31 @@
+<div class="root">
+  <div class="schedule">
+
+  </div>
+  <div class="rotation">
+    <div class="rotation-header">
+      Rotation
+    </div>
+
+    <div class="rotation-body">
+      <div class="display-rotation" *ngIf="rotation">
+        This is your rotation::
+        <app-rotation-display [rotation]="rotation"></app-rotation-display>
+      </div>
+      <div class="display-rotation" *ngIf="!rotation && !createRotation">
+        You have not defined a schedule rotation. <br>
+        <button class="btn btn-primary" *ngIf="!createRotation" (click)="onClickCreateRotation()">
+          Create Rotation
+        </button>
+
+
+      </div>
+      <div class="display-rotation" *ngIf="createRotation">
+        <app-rotation-form (closeForm)="onCloseForm()"></app-rotation-form>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
