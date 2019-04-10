@@ -1,0 +1,21 @@
+<div class="day-template">
+  <div class="day-template-header">
+    {{ template.name }}
+  </div>
+  <div class="day-template-body" [ngStyle]="bodyStyle">
+    <div *ngFor="let section of timeRangeSections" class="time-range-section">
+      <div class="section-time">
+        {{ sectionTimeRange(section) }}
+      </div>
+      <div class="section-body">
+        <div style="text-align: center;">
+            {{ section.type }}
+        </div>
+      </div>
+
+
+
+
+    </div>
+  </div>
+</div>

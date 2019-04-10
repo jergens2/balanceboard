@@ -1,0 +1,17 @@
+.root{
+
+}
+
+.intro{
+    margin-bottom: 10px;
+}
+
+.templates{
+
+    padding:5px;
+}
+.templates-container{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+}
