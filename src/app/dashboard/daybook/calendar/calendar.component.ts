@@ -94,7 +94,7 @@ export class CalendarComponent implements OnInit {
   onClickMonthHeader(){
     
     if(this.calendarMonthDate.month() == moment().month()){
-      this.router.navigate(['/month_planner']);
+      this.router.navigate(['/month-planner']);
     }else{
       this.calendarMonthDate = moment();
       this.calendarDays = this.buildCalendarDays(this.calendarMonthDate);

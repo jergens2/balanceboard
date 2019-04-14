@@ -10,6 +10,7 @@ import { TimelogService } from '../timelog.service';
 import { ModalService } from '../../../../modal/modal.service';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 
 @Component({
   selector: 'app-time-segment-tile',
@@ -90,7 +91,7 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
         dataObject: null
       }
     ];
-    let modal: Modal = new Modal("Confirm: Delete Time Event?", modalOptions, {});
+    let modal: Modal = new Modal("Confirm: Delete Time Event?", null, modalOptions, {}, ModalComponentType.Default);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Yes") {
         // try{

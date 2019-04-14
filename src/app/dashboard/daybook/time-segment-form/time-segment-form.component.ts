@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 import { Modal } from '../../../modal/modal.model';
 import { ModalService } from '../../../modal/modal.service';
 import { IModalOption } from '../../../modal/modal-option.interface';
+import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 
 
 @Component({
@@ -241,7 +242,7 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
         dataObject: null
       }
     ];     
-    let modal: Modal = new Modal("Confirm: Delete Time Event?", modalOptions, {});
+    let modal: Modal = new Modal("Confirm: Delete Time Event?", null, modalOptions, {}, ModalComponentType.Default);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
       if(selectedOption.value == "Yes"){
 

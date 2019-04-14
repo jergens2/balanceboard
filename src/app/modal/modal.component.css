@@ -17,7 +17,6 @@
 }
 .app-modal{
     /* width:300px; */
-    padding-bottom:30px;
     background-color: white;
     border: 1px solid black;
     border-radius: 5px;
@@ -32,6 +31,10 @@
     flex-direction: row;
     justify-content: flex-end;
 }
+.app-modal-body{
+    padding:30px;
+    padding-top:0px;
+}
 .header-button{
 
     height:15px;
@@ -41,10 +44,7 @@
     cursor:pointer;
     color:gray;
 }
-.app-modal-body{
-    padding-left: 15px;
-    padding-right: 15px;
-}
+
 .app-modal-buttons{
 
     display:flex;

@@ -1,0 +1,38 @@
+<div class="primary-objective-modal">
+  <div class="header">
+    <u>Set Primary Objective</u> or alternatively, select from a list of candidate objectives
+  </div>
+  <div class="body" [formGroup]="primaryObjectiveForm">
+
+    <div class="form-item">
+      <div class="form-item-label">
+        Date
+      </div>
+      <div class="form-item-control">
+        <input type="date" class="form-control" formControlName="startDate" >
+      </div>
+    </div>
+
+    <div class="form-item">
+      <div class="form-item-label">
+        Description
+      </div>
+      <div class="form-item-control">
+        <input type="text" class="form-control" formControlName="description">
+      </div>
+    </div>
+
+    <div class="form-item">
+      <div class="form-item-label">
+        Conditions
+      </div>
+      <div class="form-item-control">
+        ???
+      </div>
+    </div>
+  </div>
+  <div class="modal-buttons">
+    <button class="btn btn-primary btn-sm modal-button" (click)="onClickSave()">Save</button>
+    <button class="btn btn-secondary btn-sm modal-button" (click)="onClickCancel()">Cancel</button>
+  </div>
+</div>

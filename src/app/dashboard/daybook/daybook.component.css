@@ -25,8 +25,11 @@
     justify-content: center;
 }
 
-.calendar-outside{
+.right-side-pane{
     margin-left:10px;
+    /* display:flex; */
+    flex-direction: column;
+    justify-content: flex-start;
     display: none;
 }
 
@@ -278,32 +281,32 @@
 }
 
 @media (max-height: 729px) and (min-width: 1030px){
-    .calendar-outside{
-        display: grid;
+    .right-side-pane{
+        display: flex;
     }
     .toggle-inside-calendar-button, .calendar-inside{
         display:none;
     }
 }
 @media (min-height: 730px) and (max-height: 829px) and (min-width: 1088px){
-    .calendar-outside{
-        display: grid;
+    .right-side-pane{
+        display: flex;
     }
     .toggle-inside-calendar-button, .calendar-inside{
         display:none;
     }
 }
 @media (min-height: 830px) and (max-height: 929px) and (min-width: 1160px){
-    .calendar-outside{
-        display: grid;
+    .right-side-pane{
+        display: flex;
     }
     .toggle-inside-calendar-button, .calendar-inside{
         display:none;
     }
 }
 @media (min-height: 930px) and (min-width: 1235px){
-    .calendar-outside{
-        display: grid;
+    .right-side-pane{
+        display: flex;
     }
     .toggle-inside-calendar-button, .calendar-inside{
         display:none;

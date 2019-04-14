@@ -20,6 +20,8 @@ import { AuthenticationComponent } from './authentication/authentication.compone
 import { UserSettingsComponent } from './user-settings/user-settings.component';
 import { HeaderMenuComponent } from './nav/header/header-menu/header-menu.component';
 import { ModalComponent } from './modal/modal.component';
+import { DefaultModalComponent } from './modal/custom-modals/default-modal/default-modal.component';
+import { PrimaryObjectiveModalComponent } from './modal/custom-modals/primary-objective-modal/primary-objective-modal.component';
 
 
 @NgModule({
@@ -30,7 +32,9 @@ import { ModalComponent } from './modal/modal.component';
     SidebarComponent,
     UserSettingsComponent,
     HeaderMenuComponent,
-    ModalComponent
+    ModalComponent,
+    DefaultModalComponent,
+    PrimaryObjectiveModalComponent
   ],
   imports: [
     BrowserModule,

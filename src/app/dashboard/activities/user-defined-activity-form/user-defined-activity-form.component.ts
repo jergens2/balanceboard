@@ -7,6 +7,7 @@ import { faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
 import { Modal } from '../../../modal/modal.model';
 import { IModalOption } from '../../../modal/modal-option.interface';
+import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 
 @Component({
   selector: 'app-user-defined-activity-form',
@@ -176,7 +177,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
         dataObject: null
       }
     ];  
-    let modal: Modal = new Modal("Confirm: Delete Activity?", modalOptions, {});
+    let modal: Modal = new Modal("Confirm: Delete Activity?", null, modalOptions, {}, ModalComponentType.Default);
     let modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
       if(selectedOption.value == "Yes"){
         this.activitiesService.deleteActivity(this.activity);

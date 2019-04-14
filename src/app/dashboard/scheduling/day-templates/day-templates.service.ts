@@ -17,14 +17,7 @@ export class DayTemplatesService {
   constructor(private httpClient: HttpClient) { }
   private serverUrl = serverUrl;
 
-  /*
-  API: 
-router.get('/:userId', controller.get);
 
-router.post('/create', controller.create);
-router.post('/update', controller.update);
-router.post('/delete', controller.delete);
-  */
 
   private _authStatus: AuthStatus;
   login$(authStatus: AuthStatus): Observable<DayTemplate[]>{
@@ -50,7 +43,7 @@ router.post('/delete', controller.delete);
 
 
   private getTemplatesHTTP(){
-    const getUrl = this.serverUrl + "/api/dayTemplate/" + this._authStatus.user.id;
+    const getUrl = this.serverUrl + "/api/dayScheduleTemplate/" + this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -79,7 +72,7 @@ router.post('/delete', controller.delete);
     console.log("Updating dayTemplate: ", dayTemplate);
 
 
-    const postUrl = this.serverUrl + "/api/dayTemplate/update";
+    const postUrl = this.serverUrl + "/api/dayScheduleTemplate/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -107,7 +100,7 @@ router.post('/delete', controller.delete);
   }
 
   private saveDayTemplateHTTP(dayTemplate: DayTemplate){
-    const postUrl = this.serverUrl + "/api/dayTemplate/create";
+    const postUrl = this.serverUrl + "/api/dayScheduleTemplate/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -128,7 +121,7 @@ router.post('/delete', controller.delete);
   }
 
   private deleteTemplateHTTP(dayTemplate: DayTemplate){
-    const postUrl = this.serverUrl + "/api/dayTemplate/delete";
+    const postUrl = this.serverUrl + "/api/dayScheduleTemplate/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { DaybookModule } from './daybook/daybook.module';
 
 import { HomeComponent } from './home/home.component';
 import { IvyleeCreationComponent } from './productivity/ivylee/ivylee-creation/ivylee-creation.component';
@@ -16,10 +16,7 @@ import { BudgetComponent } from './finance/budget/budget.component';
 import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ColorPickerModule } from 'ngx-color-picker';
 
-import { DaybookComponent } from './daybook/daybook.component';
-import { CalendarComponent } from './daybook/calendar/calendar.component';
 
 import { ActivitiesComponent } from './activities/activities.component';
 import { ActivityListItemComponent } from './activities/activity-list-item/activity-list-item.component';
@@ -29,18 +26,16 @@ import { MonthPlannerComponent } from './month-planner/month-planner.component';
 import { YearPlannerComponent } from './year-planner/year-planner.component';
 import { ActivitySixWeekViewComponent } from './activities/activity-display/activity-six-week-view/activity-six-week-view.component';
 import { UserDefinedActivityFormComponent } from './activities/user-defined-activity-form/user-defined-activity-form.component';
-import { TimeSegmentFormComponent } from './daybook/time-segment-form/time-segment-form.component';
+
 import { ActivitiesDefaultViewComponent } from './activities/default-view/default-view.component';
 import { IdeaLogComponent } from './idea-log/idea-log.component';
-import { TimeLogComponent } from './daybook/time-log/time-log.component';
-import { DailyTaskListComponent } from './daybook/daily-task-list/daily-task-list.component';
-import { JournalComponent } from './daybook/journal/journal.component';
+
 import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year.component';
-import { ActivityInputDropdownComponent } from './activities/activity-input-dropdown/activity-input-dropdown.component';
+
 import { ActivitiesListComponent } from './activities/activities-list/activities-list.component';
-import { HeatmapViewComponent } from './daybook/heatmap-view/heatmap-view.component';
+
 import { ScheduleComponent } from './scheduling/schedule.component';
-import { DaybookHeaderComponent } from './daybook/daybook-header/daybook-header.component';
+
 
 import { ActivityGoalsWidgetComponent } from './activities/default-view/activity-goals-widget/activity-goals-widget.component';
 import { ActivityPlanningComponent } from './activities/activity-display/activity-planning/activity-planning.component';
@@ -52,8 +47,11 @@ import { RotationDayTemplateComponent } from './scheduling/rotation-day-template
 import { DayTemplatesComponent } from './scheduling/day-templates/day-templates.component';
 import { RotationFormComponent } from './scheduling/rotation-form/rotation-form.component';
 import { RotationDisplayComponent } from './scheduling/rotation-display/rotation-display.component';
-import { TimeSegmentTileComponent } from './daybook/time-log/time-segment-tile/time-segment-tile.component';
+
 import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-template-widget/day-template-widget.component';
+
+import { ColorPickerModule } from 'ngx-color-picker';
+
 
 
 
@@ -65,12 +63,15 @@ import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-templ
     ReactiveFormsModule,
     FontAwesomeModule,
     ColorPickerModule,
-    NgbModule.forRoot(),
+    DaybookModule
   ],
   declarations: [
+
     HomeComponent,
+
     IvyleeCreationComponent,
     IvyleeManageComponent,
+
     HealthComponent,
     BodyWeightComponent,
     BuildProfileComponent,
@@ -78,8 +79,9 @@ import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-templ
     FinanceComponent,
     BudgetComponent,
     NetWorthComponent,
-    DaybookComponent,
-    CalendarComponent,
+
+
+
     ActivitiesComponent,
     ActivityListItemComponent,
     ActivityDisplayComponent,
@@ -88,18 +90,15 @@ import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-templ
     YearPlannerComponent,
     ActivitySixWeekViewComponent,
     UserDefinedActivityFormComponent,
-    TimeSegmentFormComponent,
+
     ActivitiesDefaultViewComponent,
+
     IdeaLogComponent,
-    TimeLogComponent,
-    DailyTaskListComponent,
-    JournalComponent,
+
     MonthOfYearComponent,
-    ActivityInputDropdownComponent,
     ActivitiesListComponent,
-    HeatmapViewComponent,
+
     ScheduleComponent,
-    DaybookHeaderComponent,
 
     ActivityGoalsWidgetComponent,
     ActivityPlanningComponent,
@@ -111,8 +110,8 @@ import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-templ
     DayTemplatesComponent,
     RotationFormComponent,
     RotationDisplayComponent,
-    TimeSegmentTileComponent,
-    DayTemplateWidgetComponent
+
+    DayTemplateWidgetComponent,
 
     
     

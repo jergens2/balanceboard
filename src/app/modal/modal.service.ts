@@ -30,6 +30,7 @@ export class ModalService {
     return this._activeModal;
   }
 
+
   optionClicked(option: IModalOption){
     this._activeModal = null;
     this._modalResponse$.next(option);

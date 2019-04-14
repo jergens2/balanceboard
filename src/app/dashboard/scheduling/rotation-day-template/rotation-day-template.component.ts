@@ -9,6 +9,7 @@ import { IModalOption } from '../../../modal/modal-option.interface';
 import { Router } from '@angular/router';
 
 import * as moment from 'moment';
+import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 
 @Component({
   selector: 'app-rotation-day-template',
@@ -79,7 +80,7 @@ export class RotationDayTemplateComponent implements OnInit, OnDestroy {
       "width":"600px"
     };
 
-    let modal: Modal = new Modal("Select a template", modalOptions, modalStyle);
+    let modal: Modal = new Modal("Select a template", null, modalOptions, modalStyle, ModalComponentType.Default);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Create a new template") {
         this.router.navigate(['/day-templates']);

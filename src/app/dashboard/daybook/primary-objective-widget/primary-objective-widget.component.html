@@ -1,0 +1,25 @@
+<div class="root" [ngClass]="{'objective-complete': objectiveComplete, 'objective-failed': objectiveFailed}">
+  <div class="primary-objective-widget">
+    <div class="header">
+      Primary Objective
+    </div>
+    <div class="body" *ngIf="!loading">
+      <div class="objective" *ngIf="objective">
+        <div style="font-size:1.2em;font-weight:bold;">
+            {{ objective.description }}
+        </div>
+        
+      </div>
+      <div class="no-objective" *ngIf="!objective" style="font-size:0.9em;">
+        No objective set for this day.
+        <button class="btn btn-sm btn-primary" (click)="onClickSetObjective()">Set Primary Objective</button>
+      </div>
+    </div>
+
+    <div class="body" *ngIf="loading">
+      <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+    </div>
+
+  </div>
+
+</div>

@@ -35,7 +35,7 @@
 
       <div class="daybook-view" *ngIf="currentView == 'timelog'">
         <app-time-log [currentDate]="currentDate" (timeSegmentFormData)="onTimeSegmentDataProvided($event)"
-          (changedDate)="onChangeCalendarDate($event)">
+          (changedDate)="onChangeDate($event)">
         </app-time-log>
       </div>
 
@@ -51,9 +51,11 @@
 
 
 
-  <div class="calendar-outside">
-    <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate">
+  <div class="right-side-pane">
+    <app-daybook-calendar (changedDate)="onChangeDate($event)" [currentDate]="currentDate" style="margin-bottom:10px;">
     </app-daybook-calendar>
+
+    <app-primary-objective-widget></app-primary-objective-widget>
   </div>
 
 </div>

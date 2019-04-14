@@ -1,0 +1,12 @@
+<div class="default-modal">
+  <div class="app-modal-body">
+    <div style="text-align:center;">
+      {{ modal.message }}
+    </div>
+    <div class="app-modal-buttons">
+      <button class="btn btn-sm border-primary m-2 app-modal-button" *ngFor="let option of modal.modalOptions"
+        (click)="onClickOption(option)">
+        {{ option.value }}
+      </button>
+    </div>
+  </div>
