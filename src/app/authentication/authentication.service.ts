@@ -128,7 +128,7 @@ export class AuthenticationService {
       
       console.log("allComplete?", allComplete);
 
-      timerSubscription = timer(2000,2000).subscribe(()=>{
+      timerSubscription = timer(200,200).subscribe(()=>{
         allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete;
         if(allComplete){
           console.log("all complete.  logging in.")

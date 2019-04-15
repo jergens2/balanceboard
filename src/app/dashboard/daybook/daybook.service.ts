@@ -88,6 +88,9 @@ export class DaybookService {
         let primaryObjective: Objective = null;
         if(poData){
           primaryObjective = new Objective(poData._id, poData.userId, poData.description, moment(poData.startDateISO), moment(poData.dueDateISO));
+          if (poData.isComplete as boolean) {
+            primaryObjective.markComplete(moment(poData.completionDateISO));
+          }
         }else{
 
         }

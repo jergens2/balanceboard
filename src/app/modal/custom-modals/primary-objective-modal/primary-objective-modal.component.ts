@@ -25,12 +25,22 @@ export class PrimaryObjectiveModalComponent implements OnInit {
     this.modal = this.modalService.activeModal;
     this._date = moment(this.modal.modalData.date);
 
-
-    this.primaryObjectiveForm = new FormGroup({
-      'description': new FormControl(null, Validators.required),
-      'startDate': new FormControl({value: this._date.format('YYYY-MM-DD'), disabled: true}, Validators.required),
-      'dueDate': new FormControl(this._date.format('YYYY-MM-DD'))
-    })
+    if(this.modal.modalData.action == "SET"){
+      this.primaryObjectiveForm = new FormGroup({
+        'description': new FormControl(null, Validators.required),
+        'startDate': new FormControl({value: this._date.format('YYYY-MM-DD'), disabled: true}, Validators.required),
+        'dueDate': new FormControl(this._date.format('YYYY-MM-DD'))
+      })
+  
+    }else if(this.modal.modalData.action == "EDIT"){
+      let currentObjective = this.daybookService.currentDay.primaryObjective;
+      this.primaryObjectiveForm = new FormGroup({
+        'description': new FormControl(currentObjective.description, Validators.required),
+        'startDate': new FormControl({value: this._date.format('YYYY-MM-DD'), disabled: true}, Validators.required),
+        'dueDate': new FormControl(this._date.format('YYYY-MM-DD'))
+      })
+  
+    }
 
 
 
@@ -40,16 +50,45 @@ export class PrimaryObjectiveModalComponent implements OnInit {
     this.modalService.closeModal();
   }
 
+  private _saveDisabled: boolean = false;
+  public get saveDisabled(): string{
+    if(this._saveDisabled){
+      return "disabled";
+    }
+    return "";
+  }
+
   onClickSave(){
+    this._saveDisabled = true;
     let description: string = this.primaryObjectiveForm.controls['description'].value;
     let startDate = moment(this._date).startOf("day");
     let dueDate = moment(this._date).endOf("day");
-    let primaryObjective: Objective = new Objective('','',description, startDate, dueDate);
-    this.objectivesService.saveObjectiveHTTP$(primaryObjective).subscribe((savedObjective: Objective)=>{
+
+    let id: string = '';
+    let userId: string = '';
+    let primaryObjective: Objective;
+
+
+    if(this.modal.modalData.action == "EDIT"){
+      let currentObjective = this.daybookService.currentDay.primaryObjective;
+      id = currentObjective.id;
+      userId = currentObjective.userId;
+      primaryObjective = new Objective(id, userId, description, startDate, dueDate);
       
-      this.daybookService.setPrimaryObjective(savedObjective, this._date);
-      this.modalService.closeModal();
-    })
+      this.objectivesService.updateObjectiveHTTP$(primaryObjective).subscribe((updatedObjective: Objective)=>{
+        this.daybookService.setPrimaryObjective(updatedObjective, this._date);
+        this.modalService.closeModal();
+      });
+    }else if(this.modal.modalData.action == "SET"){
+      primaryObjective = new Objective(id, userId, description, startDate, dueDate);
+
+      this.objectivesService.createObjectiveHTTP$(primaryObjective).subscribe((savedObjective: Objective)=>{
+        
+        this.daybookService.setPrimaryObjective(savedObjective, this._date);
+        this.modalService.closeModal();
+      })
+    }
+    
   }
 
 }

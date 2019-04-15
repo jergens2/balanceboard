@@ -36,6 +36,12 @@ export class Objective{
     private _dueDate: moment.Moment;
     private _startDate: moment.Moment;
     private _completionDate: moment.Moment;
+    public get completionDateISO(): string{
+        if(this._completionDate){
+            return this._completionDate.toISOString();
+        }
+        return "";
+    }
 
     description: string;
 

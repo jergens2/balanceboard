@@ -46,14 +46,18 @@ export class ObjectivesService {
     };
     return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<Objective>(map((response: { message: string, data: any }) => {
-        let rd: any = response.data;
-        return new Objective(rd._id, rd.userId, rd.description, moment(rd.startDateISO), moment(rd.dueDate));
-
+        let rd = response.data
+        let objective: Objective = new Objective(rd._id, rd.userId, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO));
+        if (rd.isComplete as boolean) {
+          objective.markComplete(moment(rd.completionDateISO));
+        }
+        console.log("from http get request, returning:", objective)
+        return objective;
       }))
 
   }
 
-  public saveObjectiveHTTP$(objective: Objective): Observable<Objective> {
+  public createObjectiveHTTP$(objective: Objective): Observable<Objective> {
     console.log("Saving objective:", objective);
 
 
@@ -76,8 +80,47 @@ export class ObjectivesService {
     return this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
       .pipe<Objective>(map((response: any) => {
         let rd = response.data
+        let objective: Objective = new Objective(rd._id, rd.userId, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO));
+        if (rd.isComplete as boolean) {
+          objective.markComplete(moment(rd.completionDateISO));
+        }
+        return objective;
+      }));
+  }
+
+  public updateObjectiveHTTP$(objective: Objective): Observable<Objective> {
+    console.log("Updating objective:", objective);
+
+
+
+    let requestBody: any = {
+      id: objective.id,
+      userId: objective.userId,
+      description: objective.description,
+      startDateISO: objective.startDate.toISOString(),
+      dueDateISO: objective.dueDate.toISOString(),
+      completionDateISO: objective.completionDateISO,
+      isComplete: objective.isComplete,
+
+    }
+
+    const postUrl = this._serverUrl + "/api/objective/update";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+
+    return this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
+      .pipe<Objective>(map((response: any) => {
+        let rd = response.data
         console.log("Response Data is : ", rd);
-        return new Objective(rd._id, rd.userId, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO))
+        let objective = new Objective(rd._id, rd.userId, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO))
+        if (rd.isComplete as boolean) {
+          objective.markComplete(moment(rd.completionDateISO));
+        }
+        return objective;
       }));
   }
 

@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="modal-buttons">
-    <button class="btn btn-primary btn-sm modal-button" (click)="onClickSave()">Save</button>
-    <button class="btn btn-secondary btn-sm modal-button" (click)="onClickCancel()">Cancel</button>
+    <button class="btn btn-primary btn-sm modal-button" (click)="onClickSave()" [disabled]="saveDisabled">Save </button>
+    <button class="btn btn-secondary btn-sm modal-button" (click)="onClickCancel()" [disabled]="saveDisabled">Cancel</button>
   </div>
 </div>
