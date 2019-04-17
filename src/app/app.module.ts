@@ -22,6 +22,9 @@ import { HeaderMenuComponent } from './nav/header/header-menu/header-menu.compon
 import { ModalComponent } from './modal/modal.component';
 import { DefaultModalComponent } from './modal/custom-modals/default-modal/default-modal.component';
 import { PrimaryObjectiveModalComponent } from './modal/custom-modals/primary-objective-modal/primary-objective-modal.component';
+import { ToolsComponent } from './tools/tools.component';
+import { NotepadComponent } from './tools/tool-components/notepad/notepad.component';
+
 
 
 @NgModule({
@@ -34,7 +37,9 @@ import { PrimaryObjectiveModalComponent } from './modal/custom-modals/primary-ob
     HeaderMenuComponent,
     ModalComponent,
     DefaultModalComponent,
-    PrimaryObjectiveModalComponent
+    PrimaryObjectiveModalComponent,
+    NotepadComponent,
+    ToolsComponent
   ],
   imports: [
     BrowserModule,

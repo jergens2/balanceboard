@@ -7,6 +7,8 @@ import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
+import { ToolsService } from '../../tools/tools.service';
+import { ToolComponents } from '../../tools/tool-components.enum';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +17,10 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private headerService: HeaderService, private authService: AuthenticationService, private cdRef: ChangeDetectorRef) { }
+  constructor(
+    private headerService: HeaderService, 
+    private authService: AuthenticationService, 
+    private toolsService: ToolsService) { }
 
   faBars = faBars;
   faCogs = faCogs;
@@ -70,10 +75,20 @@ export class HeaderComponent implements OnInit {
 
     newMenus.push(new HeaderMenu('Menu', appMenuItems));
     newMenus.push(new HeaderMenu('Account', accountMenuItems));
+
+
+    let toolsMenuItems: MenuItem[] = [];
+    let notepadMenuItem: MenuItem = new MenuItem('Notepad', null, null);
+    this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(()=>{
+      this.toolsService.openTool(ToolComponents.Notepad);
+    }))
+    toolsMenuItems.push(notepadMenuItem);
+    newMenus.push(new HeaderMenu('Tools', toolsMenuItems));
+
+
     if (currentComponentMenu) {
       newMenus.push(currentComponentMenu);
     }
-
     return newMenus;
   }
 
