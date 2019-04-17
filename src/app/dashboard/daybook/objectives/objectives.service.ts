@@ -124,4 +124,21 @@ export class ObjectivesService {
       }));
   }
 
+
+
+  deleteObjectiveHTTP(objective: Objective){
+    const postUrl = this._serverUrl + "/api/objective/delete";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+
+    this.httpClient.post<{ message: string, data: any }>(postUrl, objective, httpOptions)
+      .subscribe((response) => {
+        console.log("Response from HTTP delete request:", response)
+      })
+  };
+
 }

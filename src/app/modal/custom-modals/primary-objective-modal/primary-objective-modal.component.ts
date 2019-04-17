@@ -19,6 +19,7 @@ export class PrimaryObjectiveModalComponent implements OnInit {
 
   modal: Modal = null;
   primaryObjectiveForm: FormGroup = null;
+  currentObjective: Objective = null;
 
   private _date: moment.Moment = null;
   ngOnInit() {
@@ -33,9 +34,9 @@ export class PrimaryObjectiveModalComponent implements OnInit {
       })
   
     }else if(this.modal.modalData.action == "EDIT"){
-      let currentObjective = this.daybookService.currentDay.primaryObjective;
+      this.currentObjective = this.daybookService.currentDay.primaryObjective;
       this.primaryObjectiveForm = new FormGroup({
-        'description': new FormControl(currentObjective.description, Validators.required),
+        'description': new FormControl(this.currentObjective.description, Validators.required),
         'startDate': new FormControl({value: this._date.format('YYYY-MM-DD'), disabled: true}, Validators.required),
         'dueDate': new FormControl(this._date.format('YYYY-MM-DD'))
       })
@@ -45,6 +46,27 @@ export class PrimaryObjectiveModalComponent implements OnInit {
 
 
   }
+
+
+  confirmDelete: boolean = false;
+  onClickDelete(){
+    this.confirmDelete = true;
+  }
+  onClickConfirmDelete(){
+    this.objectivesService.deleteObjectiveHTTP(this.currentObjective);
+    this.daybookService.setPrimaryObjective(null, this._date);
+    this.modalService.closeModal();
+  }
+  onMouseLeaveConfirmDelete(){
+    this.confirmDelete = false;
+  }
+
+
+
+
+
+
+
 
   onClickCancel(){
     this.modalService.closeModal();
@@ -70,9 +92,9 @@ export class PrimaryObjectiveModalComponent implements OnInit {
 
 
     if(this.modal.modalData.action == "EDIT"){
-      let currentObjective = this.daybookService.currentDay.primaryObjective;
-      id = currentObjective.id;
-      userId = currentObjective.userId;
+      
+      id = this.currentObjective.id;
+      userId = this.currentObjective.userId;
       primaryObjective = new Objective(id, userId, description, startDate, dueDate);
       
       this.objectivesService.updateObjectiveHTTP$(primaryObjective).subscribe((updatedObjective: Objective)=>{

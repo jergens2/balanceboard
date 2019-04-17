@@ -5,6 +5,12 @@
     flex-direction: column;
     /* align-items: center; */
 }
+.delete-button-container{
+    width:100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
 .body{
     width:100%;
     display:flex;

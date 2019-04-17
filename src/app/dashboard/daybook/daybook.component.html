@@ -3,29 +3,29 @@
   <div class="daybook">
 
 
-    <div class="daybook-tabs">
+    <!-- <div class="daybook-tabs">
       <div class="daybook-tab" style="background-color: rgb(232, 255, 232);">
-        <!-- <img class="tab-img" [src]="'assets/timelog-title.png'" /> -->
+        <img class="tab-img" [src]="'assets/timelog-title.png'" />
       </div>
       <div class="daybook-tab" style="background-color: rgb(230, 241, 255);">
-        <!-- <img class="tab-img" [src]="'assets/daily-task-list-title.png'" /> -->
+        <img class="tab-img" [src]="'assets/daily-task-list-title.png'" />
       </div>
       <div class="daybook-tab" style="background-color: rgb(254, 255, 225);">
-        <!-- <img class="tab-img" [src]="'assets/journal-title.png'" /> -->
+        <img class="tab-img" [src]="'assets/journal-title.png'" />
       </div>
 
-    </div>
+    </div> -->
 
 
     <div class="daybook-body">
 
       <div class="calendar-inside" *ngIf="ifCalendarInside">
-        <app-daybook-calendar (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate">
+        <app-daybook-calendar (changedDate)="onChangeDate($event)" [currentDate]="currentDate">
         </app-daybook-calendar>
       </div>
 
       <div class="daybook-header">
-        <app-daybook-header (changedDate)="onChangeCalendarDate($event)" [currentDate]="currentDate">
+        <app-daybook-header (changedDate)="onChangeDate($event)" [currentDate]="currentDate">
         </app-daybook-header>
       </div>
 

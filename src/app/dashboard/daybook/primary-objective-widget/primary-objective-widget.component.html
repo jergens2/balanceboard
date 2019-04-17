@@ -1,11 +1,11 @@
-<div class="root" [ngClass]="{'objective-complete': objectiveComplete, 'objective-failed': objectiveFailed}">
-  <div class="primary-objective-widget">
-    <div class="header">
-      <div style="flex-grow:1;"> </div>
-      <div style="flex-grow:2;">Primary Objective</div>
+<div class="root" [ngClass]="{'objective-complete': objectiveComplete, 'objective-failed': objectiveFailed}" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  <div class="primary-objective-widget" >
+    <div class="header" >
+      <div class="header-item"> </div>
+      <div class="header-item" style="flex-grow:2;">Primary Objective</div>
       
-      <div style="flex-grow:1;">
-        <fa-icon [icon]="faEdit" class="edit-button" (click)="onClickEdit()"></fa-icon>
+      <div class="header-item">
+        <fa-icon *ngIf="showEditButton" [icon]="faEdit" class="edit-button" (click)="onClickEdit()"></fa-icon>
       </div>
     </div>
     <div class="body" *ngIf="!loading">

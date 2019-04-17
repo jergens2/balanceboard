@@ -124,13 +124,19 @@ export class DaybookService {
       })
     };
     let requestBody: any = {};
+    let primaryObjectiveId = ""; 
+    if(day.primaryObjective){
+      primaryObjectiveId = day.primaryObjective.id;
+    }
     if (day.id == "") {
       //Save day
       requestUrl = this.serverUrl + "/api/day/create";
+
+
       requestBody = {
         userId: day.userId,
         dateYYYYMMDD: day.date.format('YYYY-MM-DD'),
-        primaryObjectiveId: day.primaryObjective.id
+        primaryObjectiveId: primaryObjectiveId
       };
     } else {
       //Update day
@@ -139,7 +145,7 @@ export class DaybookService {
         id: day.id,
         userId: day.userId,
         dateYYYYMMDD: day.date.format('YYYY-MM-DD'),
-        primaryObjectiveId: day.primaryObjective.id
+        primaryObjectiveId: primaryObjectiveId
       };
     }
 

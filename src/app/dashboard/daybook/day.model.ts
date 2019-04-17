@@ -23,7 +23,7 @@ export class Day{
     //     return this._dateISO;
     // }
 
-    private _primaryObjective: Objective
+    private _primaryObjective: Objective = null;
     public get primaryObjective(): Objective { 
         return this._primaryObjective;
     }
@@ -42,6 +42,9 @@ export class Day{
         this._date = moment(date);
         // this._dateISO = moment(date).toISOString();
 
+        /*
+            To do in the future: remove primaryObjective from constructor and use methods exclusively
+        */
         this._primaryObjective = primaryObjective;
     }
 }

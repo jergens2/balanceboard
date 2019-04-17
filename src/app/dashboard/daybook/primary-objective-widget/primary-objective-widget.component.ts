@@ -51,6 +51,14 @@ export class PrimaryObjectiveWidgetComponent implements OnInit, OnDestroy {
   }
 
 
+  showEditButton: boolean = false;
+  onMouseEnter(){
+    this.showEditButton = true;
+  }
+  onMouseLeave(){
+    this.showEditButton = false;
+  }
+
   public get objectiveComplete(): boolean {
     if (this.objective) {
       return this.objective.isComplete;
