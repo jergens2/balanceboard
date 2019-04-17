@@ -14,6 +14,7 @@ import { UserSettingsComponent } from "./user-settings/user-settings.component";
 import { IdeaLogComponent } from "./dashboard/idea-log/idea-log.component";
 import { ScheduleComponent } from "./dashboard/scheduling/schedule.component";
 import { DayTemplatesComponent } from "./dashboard/scheduling/day-templates/day-templates.component";
+import { JournalComponent } from "./dashboard/journal/journal.component";
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
@@ -25,6 +26,7 @@ const appRoutes: Routes = [
     { path: 'networth', component: NetWorthComponent },
     { path: 'daybook', component: DaybookComponent },
     { path: 'daybook/:isoDate', component: DaybookComponent },
+    { path: 'journal', component: JournalComponent},
     { path: 'month-planner', component: MonthPlannerComponent },
     { path: 'year-planner', component: YearPlannerComponent },
     { path: 'activities', component: ActivitiesComponent },

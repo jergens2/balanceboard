@@ -1,3 +1,21 @@
-<p>
-  notepad works!
-</p>
+<div class="notepad-root">
+  <div class="notepad-header">
+    <div class="header-item" style="font-size:0.8em;">Notepad</div>
+    <fa-icon [icon]="faTimes" class="icon-button header-item" (click)="onClickCloseNotepad()"></fa-icon>
+  </div>
+  <div class="notepad-body" [formGroup]="notepadForm">
+    <div class="body-row">
+      {{ date }}
+    </div>
+    <div class="body-row">
+      <input type="text" formControlName="title" placeholder="Title" class="notepad-input" style="font-weight:bold;">
+    </div>
+    <div class="body-row" style="flex-grow:2;">
+      <textarea formControlName="noteBody" class="note-body" placeholder="Type something..."></textarea>
+    </div>
+  </div>
+  <div class="notepad-buttons">
+    <button class="btn btn-primary btn-sm" (click)="onClickSaveNote()" [disabled]="saveDisabled">Save</button>
+    <button class="btn btn-secondary btn-sm" (click)="onClickCloseNotepad()" style="margin-left:5px;">Cancel</button> 
+  </div>
+</div>

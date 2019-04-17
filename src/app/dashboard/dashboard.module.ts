@@ -51,6 +51,7 @@ import { RotationDisplayComponent } from './scheduling/rotation-display/rotation
 import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-template-widget/day-template-widget.component';
 
 import { ColorPickerModule } from 'ngx-color-picker';
+import { JournalComponent } from './journal/journal.component';
 
 
 
@@ -112,6 +113,8 @@ import { ColorPickerModule } from 'ngx-color-picker';
     RotationDisplayComponent,
 
     DayTemplateWidgetComponent,
+
+    JournalComponent,
 
     
     

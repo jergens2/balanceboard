@@ -10,12 +10,12 @@ import { UserSetting } from '../user-settings/user-setting.model';
 import { ActivitiesService } from '../dashboard/activities/activities.service';
 import { TimelogService } from '../dashboard/daybook/time-log/timelog.service';
 import { ActivityTree } from '../dashboard/activities/activity-tree.model';
-import { TimeSegment } from '../dashboard/daybook/time-log/time-segment-tile/time-segment.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
 import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
 import { DaybookService } from '../dashboard/daybook/daybook.service';
 import { ObjectivesService } from '../dashboard/daybook/objectives/objectives.service';
 import { Day } from '../dashboard/daybook/day.model';
+import { JournalService } from '../dashboard/journal/journal.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -33,7 +33,8 @@ export class AuthenticationService {
     private userSettingsService: UserSettingsService,
     private dayTemplatesService: DayTemplatesService,
     private daybookService: DaybookService,
-    private objectivesService: ObjectivesService
+    private objectivesService: ObjectivesService,
+    private journalService: JournalService,
     ) {}
 
   private serverUrl = serverUrl;
@@ -97,6 +98,7 @@ export class AuthenticationService {
 
       this.userSettingsService.login(authStatus);
       this.objectivesService.login(authStatus);
+      this.journalService.login(authStatus);
 
 
       let daybookLoginComplete: boolean = false;
@@ -126,12 +128,12 @@ export class AuthenticationService {
       let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete;
       let timerSubscription: Subscription = new Subscription();
       
-      console.log("allComplete?", allComplete);
+
 
       timerSubscription = timer(200,200).subscribe(()=>{
         allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete;
         if(allComplete){
-          console.log("all complete.  logging in.")
+
           this.completeLogin(authStatus);
           timerSubscription.unsubscribe();
         }
@@ -216,6 +218,7 @@ export class AuthenticationService {
     this.dayTemplatesService.logout();
     this.daybookService.logout();
     this.objectivesService.logout();
+    this.journalService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));

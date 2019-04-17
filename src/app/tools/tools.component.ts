@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ToolsService } from './tools.service';
+import { ToolComponents } from './tool-components.enum';
 
 @Component({
   selector: 'app-tools',
@@ -7,9 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ToolsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private toolsService: ToolsService) { }
 
+  ifNotepad: boolean = false;
   ngOnInit() {
+
+    this.toolsService.currentTool$.subscribe((tool: ToolComponents)=>{
+      if(tool != null){
+        if(tool == ToolComponents.Notepad){
+          this.ifNotepad = true;
+        }
+      }
+    })
+
   }
 
 }

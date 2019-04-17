@@ -15,6 +15,14 @@
     display:grid;
     grid-template-rows: 29px auto;
     grid-template-columns: 250px 1fr 250px;
+    z-index:0;
+}
+
+.app-tools-container{
+
+    grid-column: 3 / -1;
+    grid-row: 2 / -1;
+    z-index: 0;
 }
 
 .header{
@@ -43,6 +51,9 @@
     padding-left:15px;
     padding-right:15px;
     /* padding:10px; */
+
+    z-index:0;
+
 }
 
 @media (min-width: 1200px){

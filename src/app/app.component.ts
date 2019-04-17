@@ -6,6 +6,8 @@ import { UserSettingsService } from './user-settings/user-settings.service';
 import { UserSetting } from './user-settings/user-setting.model';
 import { ModalService } from './modal/modal.service';
 import { Modal } from './modal/modal.model';
+import { ToolsService } from './tools/tools.service';
+import { ToolComponents } from './tools/tool-components.enum';
 
 @Component({
   selector: 'app-root',
@@ -22,9 +24,14 @@ export class AppComponent implements OnInit {
   sideBarOpen: boolean = false;
 
   ifModal: boolean = false;
+  ifTools: boolean = false;
 
-
-  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private modalService: ModalService) { }
+  constructor(
+    private authService: AuthenticationService, 
+    private userSettingsService: UserSettingsService, 
+    private modalService: ModalService,
+    private toolsService: ToolsService,
+    ) { }
 
   ngOnInit() {
 
@@ -34,7 +41,16 @@ export class AppComponent implements OnInit {
       }else{
         this.ifModal = false;
       }
+    });
+
+    this.toolsService.currentTool$.subscribe((tool: ToolComponents)=>{
+        if(tool != null){
+          this.ifTools = true;
+        }else{
+          this.ifTools = false;
+        }
     })
+    
 
     this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[])=>{
       for(let setting of userSettings){

@@ -8,7 +8,6 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { TimeSegmentFormComponent } from './time-segment-form/time-segment-form.component';
 import { TimeLogComponent } from './time-log/time-log.component';
 import { DailyTaskListComponent } from './daily-task-list/daily-task-list.component';
-import { JournalComponent } from './journal/journal.component';
 import { DaybookHeaderComponent } from './daybook-header/daybook-header.component';
 import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
 import { PrimaryObjectiveWidgetComponent } from './primary-objective-widget/primary-objective-widget.component';
@@ -29,7 +28,6 @@ import { ActivityInputDropdownComponent } from '../activities/activity-input-dro
     TimeSegmentFormComponent,
     TimeLogComponent,
     DailyTaskListComponent,
-    JournalComponent,
     DaybookHeaderComponent,
     HeatmapViewComponent,
     PrimaryObjectiveWidgetComponent,
