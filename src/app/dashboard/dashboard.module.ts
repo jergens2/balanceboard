@@ -52,6 +52,7 @@ import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-templ
 
 import { ColorPickerModule } from 'ngx-color-picker';
 import { JournalComponent } from './journal/journal.component';
+import { JournalEntryComponent } from './journal/journal-entry/journal-entry.component';
 
 
 
@@ -115,6 +116,8 @@ import { JournalComponent } from './journal/journal.component';
     DayTemplateWidgetComponent,
 
     JournalComponent,
+
+    JournalEntryComponent,
 
     
     

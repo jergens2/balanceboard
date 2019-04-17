@@ -1,4 +1,5 @@
 
 export enum ToolComponents {
-    Notepad
+    Notepad,
+    ToDo,
 }

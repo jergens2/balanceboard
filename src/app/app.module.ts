@@ -24,6 +24,7 @@ import { DefaultModalComponent } from './modal/custom-modals/default-modal/defau
 import { PrimaryObjectiveModalComponent } from './modal/custom-modals/primary-objective-modal/primary-objective-modal.component';
 import { ToolsComponent } from './tools/tools.component';
 import { NotepadComponent } from './tools/tool-components/notepad/notepad.component';
+import { TodoComponent } from './tools/tool-components/todo/todo.component';
 
 
 
@@ -39,7 +40,8 @@ import { NotepadComponent } from './tools/tool-components/notepad/notepad.compon
     DefaultModalComponent,
     PrimaryObjectiveModalComponent,
     NotepadComponent,
-    ToolsComponent
+    ToolsComponent,
+    TodoComponent
   ],
   imports: [
     BrowserModule,

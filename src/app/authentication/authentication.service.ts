@@ -16,6 +16,7 @@ import { DaybookService } from '../dashboard/daybook/daybook.service';
 import { ObjectivesService } from '../dashboard/daybook/objectives/objectives.service';
 import { Day } from '../dashboard/daybook/day.model';
 import { JournalService } from '../dashboard/journal/journal.service';
+import { JournalEntry } from '../dashboard/journal/journal-entry/journal-entry.model';
 
 @Injectable()
 export class AuthenticationService {
@@ -48,6 +49,7 @@ export class AuthenticationService {
   private activitiesSubscription: Subscription = new Subscription();
   private dayTemplatesSubscription: Subscription = new Subscription();
   private daybookSubscription: Subscription = new Subscription();
+  private journalSubscription: Subscription = new Subscription();
 
 
   registerUser$(authData: AuthData): Observable<Object> {
@@ -96,14 +98,23 @@ export class AuthenticationService {
 
       })
 
-      this.userSettingsService.login(authStatus);
-      this.objectivesService.login(authStatus);
-      this.journalService.login(authStatus);
+
 
 
       let daybookLoginComplete: boolean = false;
       let dayTemplatesLoginComplete: boolean = false;
       let activitiesLoginComplete: boolean = false;
+      let journalLoginComplete: boolean = false;
+
+      this.userSettingsService.login(authStatus);
+      this.objectivesService.login(authStatus);
+      
+      
+      this.journalSubscription = this.journalService.login$(authStatus).subscribe((journalEntries: JournalEntry[])=>{
+        if(journalEntries != null){
+          journalLoginComplete = true;
+        }
+      });
 
       this.daybookSubscription = this.daybookService.login$(authStatus).subscribe((day: Day)=>{
         if(day != null){
@@ -125,13 +136,13 @@ export class AuthenticationService {
         }
       });
 
-      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete;
+      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && journalLoginComplete;
       let timerSubscription: Subscription = new Subscription();
       
 
 
       timerSubscription = timer(200,200).subscribe(()=>{
-        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete;
+        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && journalLoginComplete;
         if(allComplete){
 
           this.completeLogin(authStatus);
@@ -210,7 +221,8 @@ export class AuthenticationService {
 
     this.activitiesSubscription.unsubscribe();
     this.dayTemplatesSubscription.unsubscribe();
-    this.dayTemplatesSubscription.unsubscribe();
+    this.daybookSubscription.unsubscribe();
+    this.journalSubscription.unsubscribe();
 
     this.timelogService.logout();
     this.activitiesService.logout();

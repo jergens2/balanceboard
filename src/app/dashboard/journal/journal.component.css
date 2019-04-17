@@ -1,0 +1,17 @@
+
+.journal-root{
+
+}
+
+.journal-entries{
+    display:flex;
+    flex-direction: column;
+    
+}
+
+.journal-entry{
+    border: 1px solid gray;
+    background-color: rgb(252, 252, 252);
+    width:200px;
+    height:100px;
+}

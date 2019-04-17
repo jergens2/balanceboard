@@ -12,12 +12,16 @@ export class ToolsComponent implements OnInit {
   constructor(private toolsService: ToolsService) { }
 
   ifNotepad: boolean = false;
+  ifToDo: boolean = false;
   ngOnInit() {
 
     this.toolsService.currentTool$.subscribe((tool: ToolComponents)=>{
       if(tool != null){
         if(tool == ToolComponents.Notepad){
           this.ifNotepad = true;
+        }
+        if(tool == ToolComponents.ToDo){
+          this.ifToDo = true;
         }
       }
     })

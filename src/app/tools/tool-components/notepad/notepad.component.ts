@@ -5,8 +5,8 @@ import { ToolComponents } from '../../tool-components.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { JournalService } from '../../../dashboard/journal/journal.service';
-import { JournalEntry } from '../../../dashboard/journal/journal-entry.model';
-import { JournalEntryTypes } from '../../../dashboard/journal/journal-entry-types.enum';
+import { JournalEntry } from '../../../dashboard/journal/journal-entry/journal-entry.model';
+import { JournalEntryTypes } from '../../../dashboard/journal/journal-entry/journal-entry-types.enum';
 
 
 @Component({
