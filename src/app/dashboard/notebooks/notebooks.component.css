@@ -1,15 +1,15 @@
 
-.journal-root{
+.notebook-root{
 
 }
 
-.journal-entries{
+.notebook-entries{
     display:flex;
     flex-direction: column;
     
 }
 
-.journal-entry{
+.notebook-entry{
     border: 1px solid gray;
     background-color: rgb(252, 252, 252);
     width:200px;

@@ -20,7 +20,7 @@ export class ToolsComponent implements OnInit {
         if(tool == ToolComponents.Notepad){
           this.ifNotepad = true;
         }
-        if(tool == ToolComponents.ToDo){
+        if(tool == ToolComponents.Todo){
           this.ifToDo = true;
         }
       }

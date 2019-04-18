@@ -15,8 +15,9 @@ import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-t
 import { DaybookService } from '../dashboard/daybook/daybook.service';
 import { ObjectivesService } from '../dashboard/daybook/objectives/objectives.service';
 import { Day } from '../dashboard/daybook/day.model';
-import { JournalService } from '../dashboard/journal/journal.service';
-import { JournalEntry } from '../dashboard/journal/journal-entry/journal-entry.model';
+import { NotebookEntry } from '../dashboard/notebooks/notebook-entry/notebook-entry.model';
+import { NotebooksService } from '../dashboard/notebooks/notebooks.service';
+
 
 @Injectable()
 export class AuthenticationService {
@@ -34,8 +35,8 @@ export class AuthenticationService {
     private userSettingsService: UserSettingsService,
     private dayTemplatesService: DayTemplatesService,
     private daybookService: DaybookService,
+    private notebooksService: NotebooksService,
     private objectivesService: ObjectivesService,
-    private journalService: JournalService,
     ) {}
 
   private serverUrl = serverUrl;
@@ -49,7 +50,7 @@ export class AuthenticationService {
   private activitiesSubscription: Subscription = new Subscription();
   private dayTemplatesSubscription: Subscription = new Subscription();
   private daybookSubscription: Subscription = new Subscription();
-  private journalSubscription: Subscription = new Subscription();
+  private notebookSubscription: Subscription = new Subscription();
 
 
   registerUser$(authData: AuthData): Observable<Object> {
@@ -104,15 +105,15 @@ export class AuthenticationService {
       let daybookLoginComplete: boolean = false;
       let dayTemplatesLoginComplete: boolean = false;
       let activitiesLoginComplete: boolean = false;
-      let journalLoginComplete: boolean = false;
+      let notebookLoginComplete: boolean = false;
 
       this.userSettingsService.login(authStatus);
       this.objectivesService.login(authStatus);
       
       
-      this.journalSubscription = this.journalService.login$(authStatus).subscribe((journalEntries: JournalEntry[])=>{
-        if(journalEntries != null){
-          journalLoginComplete = true;
+      this.notebookSubscription = this.notebooksService.login$(authStatus).subscribe((notebookEntries: NotebookEntry[])=>{
+        if(notebookEntries != null){
+          notebookLoginComplete = true;
         }
       });
 
@@ -136,13 +137,13 @@ export class AuthenticationService {
         }
       });
 
-      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && journalLoginComplete;
+      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete;
       let timerSubscription: Subscription = new Subscription();
       
 
 
       timerSubscription = timer(200,200).subscribe(()=>{
-        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && journalLoginComplete;
+        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete;
         if(allComplete){
 
           this.completeLogin(authStatus);
@@ -222,7 +223,7 @@ export class AuthenticationService {
     this.activitiesSubscription.unsubscribe();
     this.dayTemplatesSubscription.unsubscribe();
     this.daybookSubscription.unsubscribe();
-    this.journalSubscription.unsubscribe();
+    this.notebookSubscription.unsubscribe();
 
     this.timelogService.logout();
     this.activitiesService.logout();
@@ -230,7 +231,7 @@ export class AuthenticationService {
     this.dayTemplatesService.logout();
     this.daybookService.logout();
     this.objectivesService.logout();
-    this.journalService.logout();
+    this.notebooksService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));

@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { ToolsService } from '../../tools.service';
+import { ToolComponents } from '../../tool-components.enum';
 
 @Component({
   selector: 'app-todo',
@@ -7,9 +10,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TodoComponent implements OnInit {
 
-  constructor() { }
+  faTimes = faTimes;
+
+  constructor(private toolsService: ToolsService) { }
 
   ngOnInit() {
+  }
+
+  onClickClose(){ 
+    this.toolsService.closeTool(ToolComponents.Todo)
   }
 
 }

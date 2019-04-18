@@ -28,7 +28,7 @@ import { ActivitySixWeekViewComponent } from './activities/activity-display/acti
 import { UserDefinedActivityFormComponent } from './activities/user-defined-activity-form/user-defined-activity-form.component';
 
 import { ActivitiesDefaultViewComponent } from './activities/default-view/default-view.component';
-import { IdeaLogComponent } from './idea-log/idea-log.component';
+
 
 import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year.component';
 
@@ -51,8 +51,7 @@ import { RotationDisplayComponent } from './scheduling/rotation-display/rotation
 import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-template-widget/day-template-widget.component';
 
 import { ColorPickerModule } from 'ngx-color-picker';
-import { JournalComponent } from './journal/journal.component';
-import { JournalEntryComponent } from './journal/journal-entry/journal-entry.component';
+import { NotebooksComponent } from './notebooks/notebooks.component';
 
 
 
@@ -95,7 +94,6 @@ import { JournalEntryComponent } from './journal/journal-entry/journal-entry.com
 
     ActivitiesDefaultViewComponent,
 
-    IdeaLogComponent,
 
     MonthOfYearComponent,
     ActivitiesListComponent,
@@ -115,10 +113,7 @@ import { JournalEntryComponent } from './journal/journal-entry/journal-entry.com
 
     DayTemplateWidgetComponent,
 
-    JournalComponent,
-
-    JournalEntryComponent,
-
+    NotebooksComponent,
     
     
   ],

@@ -1,0 +1,10 @@
+<div class="notebook-root">
+  <div style="font-size:1.3em;">Notebook Entries</div>
+  <div class="notebook-entries">
+    <div *ngFor="let notebookEntry of notebookEntries" class="notebook-entry">
+      
+      <div>{{ notebookEntry.title }}</div>
+      <div>{{ notebookEntry.textContent }}</div>
+    </div>
+  </div>
+</div>

@@ -9,7 +9,7 @@ let menuItems: MenuItem[] = [];
 
 menuItems.push(new MenuItem('Home','/home',faHome));
 menuItems.push(new MenuItem('Daybook','/daybook',faBookOpen));
-menuItems.push(new MenuItem('Journal','/journal', faBook));
+menuItems.push(new MenuItem('Notebooks','/notebooks', faBook));
 menuItems.push(new MenuItem('Schedule','/schedule', faClock ));
 menuItems.push(new MenuItem('Day Templates','/day-templates', faClock ));
 // menuItems.push(new MenuItem('Month Planner', '/month_planner', faCalendarAlt));

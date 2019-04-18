@@ -1,9 +1,9 @@
 
 
 import * as moment from 'moment';
-import { JournalEntryTypes } from './journal-entry-types.enum';
+import { NotebookEntryTypes } from './notebook-entry-types.enum';
 
-export class JournalEntry {
+export class NotebookEntry {
 
     id: string;
     userId: string;
@@ -12,7 +12,7 @@ export class JournalEntry {
     dateCreated: moment.Moment;
     dateModified: moment.Moment;
 
-    type: JournalEntryTypes;
+    type: NotebookEntryTypes;
 
     textContent: string = "";
     title: string = "";

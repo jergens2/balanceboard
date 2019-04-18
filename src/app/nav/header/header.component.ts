@@ -86,8 +86,10 @@ export class HeaderComponent implements OnInit {
 
     let todoMenuItem: MenuItem = new MenuItem("To do", null, null);
     this.activeSubscriptions.push(todoMenuItem.clickEmitted$.subscribe(()=>{
-      this.toolsService.openTool(ToolComponents.ToDo);
+      this.toolsService.openTool(ToolComponents.Todo);
     }))
+
+    toolsMenuItems.push(todoMenuItem);
     newMenus.push(new HeaderMenu('Tools', toolsMenuItems));
 
 
