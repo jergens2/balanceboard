@@ -52,6 +52,7 @@ import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-templ
 
 import { ColorPickerModule } from 'ngx-color-picker';
 import { NotebooksComponent } from './notebooks/notebooks.component';
+import { NotebookEntryComponent } from './notebooks/notebook-entry/notebook-entry.component';
 
 
 
@@ -114,6 +115,7 @@ import { NotebooksComponent } from './notebooks/notebooks.component';
     DayTemplateWidgetComponent,
 
     NotebooksComponent,
+    NotebookEntryComponent,
     
     
   ],

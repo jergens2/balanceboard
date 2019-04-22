@@ -1,4 +1,4 @@
-import { map, merge } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { User } from './user.model';
 import { Observable, Subject, BehaviorSubject, Subscription, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
@@ -13,7 +13,7 @@ import { ActivityTree } from '../dashboard/activities/activity-tree.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
 import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
 import { DaybookService } from '../dashboard/daybook/daybook.service';
-import { ObjectivesService } from '../dashboard/daybook/objectives/objectives.service';
+import { TaskService } from '../dashboard/tasks/task.service';
 import { Day } from '../dashboard/daybook/day.model';
 import { NotebookEntry } from '../dashboard/notebooks/notebook-entry/notebook-entry.model';
 import { NotebooksService } from '../dashboard/notebooks/notebooks.service';
@@ -36,7 +36,7 @@ export class AuthenticationService {
     private dayTemplatesService: DayTemplatesService,
     private daybookService: DaybookService,
     private notebooksService: NotebooksService,
-    private objectivesService: ObjectivesService,
+    private taskService: TaskService,
     ) {}
 
   private serverUrl = serverUrl;
@@ -108,7 +108,7 @@ export class AuthenticationService {
       let notebookLoginComplete: boolean = false;
 
       this.userSettingsService.login(authStatus);
-      this.objectivesService.login(authStatus);
+      this.taskService.login(authStatus);
       
       
       this.notebookSubscription = this.notebooksService.login$(authStatus).subscribe((notebookEntries: NotebookEntry[])=>{
@@ -230,7 +230,7 @@ export class AuthenticationService {
     this.userSettingsService.logout();
     this.dayTemplatesService.logout();
     this.daybookService.logout();
-    this.objectivesService.logout();
+    this.taskService.logout();
     this.notebooksService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));

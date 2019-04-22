@@ -18,6 +18,7 @@ import { NotebooksComponent } from "./dashboard/notebooks/notebooks.component";
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'home', component: HomeComponent },
+    
     { path: 'ivylee-creation', component: IvyleeCreationComponent },
     { path: 'ivylee-management', component: IvyleeManageComponent },
     { path: 'body-weight', component: BodyWeightComponent },

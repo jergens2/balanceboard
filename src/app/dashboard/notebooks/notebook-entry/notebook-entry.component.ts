@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { NotebookEntry } from './notebook-entry.model';
 
 @Component({
   selector: 'app-notebook-entry',
@@ -6,6 +7,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./notebook-entry.component.css']
 })
 export class NotebookEntryComponent implements OnInit {
+
+
+
+  @Input() notebookEntry: NotebookEntry;
 
   constructor() { }
 

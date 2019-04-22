@@ -5,17 +5,18 @@ import { AuthStatus } from '../../authentication/auth-status.model';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { Day } from './day.model';
 import { map } from 'rxjs/operators';
-import { Objective } from './objectives/objective.model';
+
 
 import * as moment from 'moment';
-import { ObjectivesService } from './objectives/objectives.service';
+import { Task } from '../tasks/task.model';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class DaybookService {
 
-  constructor(private httpClient: HttpClient, private objectivesService: ObjectivesService) { }
+  constructor(private httpClient: HttpClient) { }
 
   private serverUrl = serverUrl;
 
@@ -54,12 +55,15 @@ export class DaybookService {
 
 
 
-  public setPrimaryObjective(objective: Objective, date: moment.Moment) {
-    // console.log("setting primary objective for date:", date.format('YYYY-MM-DD'))
+  public setPrimaryTask(task: Task, date: moment.Moment) {
+    // console.log("setting primary task for date:", date.format('YYYY-MM-DD'))
     if(this._currentDay$.getValue() != null){
       if (this._currentDay$.getValue().date.format('YYYY-MM-DD') == date.format('YYYY-MM-DD')) {
 
-        this._currentDay$.getValue().primaryObjective = objective;
+        let first = this._currentDay$.getValue().primaryTask;
+        this._currentDay$.getValue().primaryTask = task;
+        let second = this._currentDay$.getValue().primaryTask;
+        console.log("Task set, compare first to second: ", first, second);
         this.saveDayHTTP(this._currentDay$.getValue());
   
       } else {
@@ -83,19 +87,19 @@ export class DaybookService {
       .pipe<Day>(map((response: { message: string, data: any }) => {
 
         let dayData: any = response.data.day;
-        let poData: any = response.data.objective;
+        let poData: any = response.data.task;
 
-        let primaryObjective: Objective = null;
+        let primaryTask: Task = null;
         if(poData){
-          primaryObjective = new Objective(poData._id, poData.userId, poData.description, moment(poData.startDateISO), moment(poData.dueDateISO));
+          primaryTask = new Task(poData._id, poData.userId, poData.description, moment(poData.startDateISO), moment(poData.dueDateISO));
           if (poData.isComplete as boolean) {
-            primaryObjective.markComplete(moment(poData.completionDateISO));
+            primaryTask.markComplete(moment(poData.completionDateISO));
           }
         }else{
 
         }
         
-        let day = new Day(dayData._id, dayData._userId, dayData.dateYYYYMMDD, primaryObjective);
+        let day = new Day(dayData._id, dayData._userId, dayData.dateYYYYMMDD, primaryTask);
         return day;
       }))
       .subscribe((day: Day) => {
@@ -124,9 +128,9 @@ export class DaybookService {
       })
     };
     let requestBody: any = {};
-    let primaryObjectiveId = ""; 
-    if(day.primaryObjective){
-      primaryObjectiveId = day.primaryObjective.id;
+    let primaryTaskId = ""; 
+    if(day.primaryTask){
+      primaryTaskId = day.primaryTask.id;
     }
     if (day.id == "") {
       //Save day
@@ -136,7 +140,7 @@ export class DaybookService {
       requestBody = {
         userId: day.userId,
         dateYYYYMMDD: day.date.format('YYYY-MM-DD'),
-        primaryObjectiveId: primaryObjectiveId
+        primaryTaskId: primaryTaskId
       };
     } else {
       //Update day
@@ -145,14 +149,14 @@ export class DaybookService {
         id: day.id,
         userId: day.userId,
         dateYYYYMMDD: day.date.format('YYYY-MM-DD'),
-        primaryObjectiveId: primaryObjectiveId
+        primaryTaskId: primaryTaskId
       };
     }
 
     this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
       .pipe<Day>(map((response) => {
         let rd: any = response.data;
-        return new Day(rd._id, rd.userId, moment(rd.dateYYYYMMDD), day.primaryObjective);
+        return new Day(rd._id, rd.userId, moment(rd.dateYYYYMMDD), day.primaryTask);
       }))
       .subscribe((day: Day) => {
         this._currentDay$.next(day);

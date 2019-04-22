@@ -1,4 +1,4 @@
-<div class="root" [ngClass]="{'objective-complete': objectiveComplete, 'objective-failed': objectiveFailed}" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+<div class="root" [ngClass]="{'objective-complete': taskComplete, 'objective-failed': taskFailed}" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
   <div class="primary-objective-widget" >
     <div class="header" >
       <div class="header-item"> </div>
@@ -12,15 +12,15 @@
 
 
 
-      <div class="objective" *ngIf="objective">
+      <div class="objective" *ngIf="task">
         <div style="font-size:1.3em;font-weight:bold;">
-          {{ objective.description }}
+          {{ task.description }}
         </div>
         <div style="font-size:1.2em;">
-          <div *ngIf="!objective.isComplete">
+          <div *ngIf="!task.isComplete">
               <fa-icon [icon]="faCircle" class="empty-circle" (click)="onClickComplete()"></fa-icon> <span style="cursor: default;margin-left:10px;">Mark Complete</span>
           </div>
-          <div *ngIf="objective.isComplete">
+          <div *ngIf="task.isComplete">
               <fa-icon [icon]="faCheckCircle" class="complete-circle" (click)="onClickUnsetComplete()"></fa-icon>
           </div>
           
@@ -29,7 +29,7 @@
       </div>
 
 
-      <div class="no-objective" *ngIf="!objective" style="font-size:0.9em;">
+      <div class="no-objective" *ngIf="!task" style="font-size:0.9em;">
         No objective set for this day.
         <button class="btn btn-sm btn-primary" (click)="onClickSetObjective()">Set Primary Objective</button>
       </div>

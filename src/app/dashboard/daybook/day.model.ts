@@ -1,4 +1,4 @@
-import { Objective } from "./objectives/objective.model";
+import { Task } from "../tasks/task.model";
 import * as moment from 'moment';
 
 export class Day{
@@ -10,7 +10,7 @@ export class Day{
         for example, 
         -schedule template
         -daily task list (brush teeth, vitamins, etc.)
-        -primary objective (the one thing to do every day)
+        -primary task (the one thing to do every day)
         -
 
 
@@ -23,12 +23,12 @@ export class Day{
     //     return this._dateISO;
     // }
 
-    private _primaryObjective: Objective = null;
-    public get primaryObjective(): Objective { 
-        return this._primaryObjective;
+    private _primaryTask: Task = null;
+    public get primaryTask(): Task { 
+        return this._primaryTask;
     }
-    public set primaryObjective(objective: Objective){
-        this._primaryObjective = objective;
+    public set primaryTask(task: Task){
+        this._primaryTask = task;
     }
 
     private _date: moment.Moment;
@@ -36,15 +36,15 @@ export class Day{
         return moment(this._date);
     }
 
-    constructor(id: string, userId: string, date: moment.Moment, primaryObjective: Objective){
+    constructor(id: string, userId: string, date: moment.Moment, primaryTask: Task){
         this.id = id;
         this.userId = userId;
         this._date = moment(date);
         // this._dateISO = moment(date).toISOString();
 
         /*
-            To do in the future: remove primaryObjective from constructor and use methods exclusively
+            To do in the future: remove primaryTask from constructor and use methods exclusively
         */
-        this._primaryObjective = primaryObjective;
+        this._primaryTask = primaryTask;
     }
 }

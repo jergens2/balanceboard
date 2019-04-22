@@ -1,10 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { TimelogService } from './time-log/timelog.service';
-import { Subscription, Subject, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { faCaretSquareDown, faEdit } from '@fortawesome/free-regular-svg-icons';
-
-
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from '../../nav/header/header.service';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
@@ -12,8 +9,6 @@ import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
 import { ITimeSegmentFormData } from './time-segment-form/time-segment-form-data.interface';
 import { Day } from './day.model';
 import { DaybookService } from './daybook.service';
-import { Objective } from './objectives/objective.model';
-import { ObjectivesService } from './objectives/objectives.service';
 
 @Component({
   selector: 'app-daybook',
@@ -23,11 +18,9 @@ import { ObjectivesService } from './objectives/objectives.service';
 export class DaybookComponent implements OnInit, OnDestroy {
 
   constructor(
-    private timeLogService: TimelogService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private daybookService: DaybookService,
-    private objectivesService: ObjectivesService,
     private headerService: HeaderService) { }
 
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
-import { Objective } from '../objectives/objective.model';
+import { Task } from '../../tasks/task.model';
 
 import * as moment from 'moment';
 import { ModalService } from '../../../modal/modal.service';
@@ -12,16 +12,16 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { DaybookService } from '../daybook.service';
 import { Day } from '../day.model';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
-import { ObjectivesService } from '../objectives/objectives.service';
+import { TaskService } from '../../tasks/task.service';
 
 @Component({
   selector: 'app-primary-objective-widget',
   templateUrl: './primary-objective-widget.component.html',
   styleUrls: ['./primary-objective-widget.component.css']
 })
-export class PrimaryObjectiveWidgetComponent implements OnInit, OnDestroy {
+export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
 
-  constructor(private modalService: ModalService, private daybookService: DaybookService, private objectivesService: ObjectivesService) { }
+  constructor(private modalService: ModalService, private daybookService: DaybookService, private tasksService: TaskService) { }
   faSpinner = faSpinner;
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
@@ -29,7 +29,7 @@ export class PrimaryObjectiveWidgetComponent implements OnInit, OnDestroy {
 
   loading: boolean = true;
 
-  objective: Objective;
+  task: Task;
   private _currentDay: Day = null;
 
 
@@ -39,12 +39,13 @@ export class PrimaryObjectiveWidgetComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._getDaySubscription.unsubscribe();
     this._getDaySubscription = this.daybookService.currentDay$.subscribe((day: Day)=>{
-      // console.log("PrimaryObjectiveWidget:  Day changed", day)
+
+      // console.log("PrimaryTaskWidget:  Day changed", day)
       this.loading = true;
       this._currentDay = day;
       
-      this.objective = this._currentDay.primaryObjective;
-      console.log("updating objective here", this.objective)
+      this.task = this._currentDay.primaryTask;
+      // console.log("updating task here", this.task)
       this.loading = false;
     })
 
@@ -59,24 +60,24 @@ export class PrimaryObjectiveWidgetComponent implements OnInit, OnDestroy {
     this.showEditButton = false;
   }
 
-  public get objectiveComplete(): boolean {
-    if (this.objective) {
-      return this.objective.isComplete;
+  public get taskComplete(): boolean {
+    if (this.task) {
+      return this.task.isComplete;
     }
     return false;
   }
-  public get objectiveFailed(): boolean {
+  public get taskFailed(): boolean {
     return false;
   }
 
   onClickComplete(){
-    this.objective.markComplete(moment());
+    this.task.markComplete(moment());
 
-    console.log("updating objective, it should look like this:", this.objective)
-    this.objectivesService.updateObjectiveHTTP$(this.objective).subscribe((updatedObjective: Objective)=>{
-      this.objective = updatedObjective;
-      console.log("it has been updated, it now looks like this: ", this.objective)
-      // this.daybookService.setPrimaryObjective(this.objective, this._currentDay.date);
+    console.log("updating task, it should look like this:", this.task)
+    this.tasksService.updateTaskHTTP$(this.task).subscribe((updatedTask: Task)=>{
+      this.task = updatedTask;
+      console.log("it has been updated, it now looks like this: ", this.task)
+      // this.daybookService.setPrimaryTask(this.task, this._currentDay.date);
     });
 
   }

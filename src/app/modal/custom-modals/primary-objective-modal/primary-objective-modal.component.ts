@@ -4,8 +4,8 @@ import { Modal } from '../../modal.model';
 
 import * as moment from 'moment';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Objective } from '../../../dashboard/daybook/objectives/objective.model';
-import { ObjectivesService } from '../../../dashboard/daybook/objectives/objectives.service';
+import { Task } from '../../../dashboard/tasks/task.model';
+import { TaskService } from '../../../dashboard/tasks/task.service';
 import { DaybookService } from '../../../dashboard/daybook/daybook.service';
 
 @Component({
@@ -15,11 +15,11 @@ import { DaybookService } from '../../../dashboard/daybook/daybook.service';
 })
 export class PrimaryObjectiveModalComponent implements OnInit {
 
-  constructor(private modalService: ModalService, private objectivesService: ObjectivesService, private daybookService: DaybookService) { }
+  constructor(private modalService: ModalService, private tasksService: TaskService, private daybookService: DaybookService) { }
 
   modal: Modal = null;
-  primaryObjectiveForm: FormGroup = null;
-  currentObjective: Objective = null;
+  primaryTaskForm: FormGroup = null;
+  currentTask: Task = null;
 
   private _date: moment.Moment = null;
   ngOnInit() {
@@ -27,16 +27,16 @@ export class PrimaryObjectiveModalComponent implements OnInit {
     this._date = moment(this.modal.modalData.date);
 
     if(this.modal.modalData.action == "SET"){
-      this.primaryObjectiveForm = new FormGroup({
+      this.primaryTaskForm = new FormGroup({
         'description': new FormControl(null, Validators.required),
         'startDate': new FormControl({value: this._date.format('YYYY-MM-DD'), disabled: true}, Validators.required),
         'dueDate': new FormControl(this._date.format('YYYY-MM-DD'))
       })
   
     }else if(this.modal.modalData.action == "EDIT"){
-      this.currentObjective = this.daybookService.currentDay.primaryObjective;
-      this.primaryObjectiveForm = new FormGroup({
-        'description': new FormControl(this.currentObjective.description, Validators.required),
+      this.currentTask = this.daybookService.currentDay.primaryTask;
+      this.primaryTaskForm = new FormGroup({
+        'description': new FormControl(this.currentTask.description, Validators.required),
         'startDate': new FormControl({value: this._date.format('YYYY-MM-DD'), disabled: true}, Validators.required),
         'dueDate': new FormControl(this._date.format('YYYY-MM-DD'))
       })
@@ -53,8 +53,8 @@ export class PrimaryObjectiveModalComponent implements OnInit {
     this.confirmDelete = true;
   }
   onClickConfirmDelete(){
-    this.objectivesService.deleteObjectiveHTTP(this.currentObjective);
-    this.daybookService.setPrimaryObjective(null, this._date);
+    this.tasksService.deleteTaskHTTP(this.currentTask);
+    this.daybookService.setPrimaryTask(null, this._date);
     this.modalService.closeModal();
   }
   onMouseLeaveConfirmDelete(){
@@ -82,31 +82,31 @@ export class PrimaryObjectiveModalComponent implements OnInit {
 
   onClickSave(){
     this._saveDisabled = true;
-    let description: string = this.primaryObjectiveForm.controls['description'].value;
+    let description: string = this.primaryTaskForm.controls['description'].value;
     let startDate = moment(this._date).startOf("day");
     let dueDate = moment(this._date).endOf("day");
 
     let id: string = '';
     let userId: string = '';
-    let primaryObjective: Objective;
+    let primaryTask: Task;
 
 
     if(this.modal.modalData.action == "EDIT"){
       
-      id = this.currentObjective.id;
-      userId = this.currentObjective.userId;
-      primaryObjective = new Objective(id, userId, description, startDate, dueDate);
+      id = this.currentTask.id;
+      userId = this.currentTask.userId;
+      primaryTask = new Task(id, userId, description, startDate, dueDate);
       
-      this.objectivesService.updateObjectiveHTTP$(primaryObjective).subscribe((updatedObjective: Objective)=>{
-        this.daybookService.setPrimaryObjective(updatedObjective, this._date);
+      this.tasksService.updateTaskHTTP$(primaryTask).subscribe((updatedTask: Task)=>{
+        this.daybookService.setPrimaryTask(updatedTask, this._date);
         this.modalService.closeModal();
       });
     }else if(this.modal.modalData.action == "SET"){
-      primaryObjective = new Objective(id, userId, description, startDate, dueDate);
+      primaryTask = new Task(id, userId, description, startDate, dueDate);
 
-      this.objectivesService.createObjectiveHTTP$(primaryObjective).subscribe((savedObjective: Objective)=>{
+      this.tasksService.createTaskHTTP$(primaryTask).subscribe((savedTask: Task)=>{
         
-        this.daybookService.setPrimaryObjective(savedObjective, this._date);
+        this.daybookService.setPrimaryTask(savedTask, this._date);
         this.modalService.closeModal();
       })
     }

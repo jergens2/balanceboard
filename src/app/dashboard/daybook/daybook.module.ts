@@ -10,9 +10,9 @@ import { TimeLogComponent } from './time-log/time-log.component';
 import { DailyTaskListComponent } from './daily-task-list/daily-task-list.component';
 import { DaybookHeaderComponent } from './daybook-header/daybook-header.component';
 import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
-import { PrimaryObjectiveWidgetComponent } from './primary-objective-widget/primary-objective-widget.component';
 import { TimeSegmentTileComponent } from './time-log/time-segment-tile/time-segment-tile.component';
 import { ActivityInputDropdownComponent } from '../activities/activity-input-dropdown/activity-input-dropdown.component';
+import { PrimaryTaskWidgetComponent } from './primary-objective-widget/primary-objective-widget.component';
 
 
 @NgModule({
@@ -30,7 +30,7 @@ import { ActivityInputDropdownComponent } from '../activities/activity-input-dro
     DailyTaskListComponent,
     DaybookHeaderComponent,
     HeatmapViewComponent,
-    PrimaryObjectiveWidgetComponent,
+    PrimaryTaskWidgetComponent,
     TimeSegmentTileComponent,
     ActivityInputDropdownComponent
   ],
