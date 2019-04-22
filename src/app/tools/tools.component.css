@@ -3,9 +3,12 @@
     z-index: 0;
 
     display: flex;
+    flex-direction: row;
     justify-content: flex-end;
 
 }
+
+
 
 .tool{
     z-index: 999;

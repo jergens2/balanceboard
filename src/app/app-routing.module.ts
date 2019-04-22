@@ -1,8 +1,7 @@
 import { Routes, RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { HomeComponent } from "./dashboard/home/home.component";
-import { IvyleeCreationComponent } from "./dashboard/productivity/ivylee/ivylee-creation/ivylee-creation.component";
-import { IvyleeManageComponent } from "./dashboard/productivity/ivylee/ivylee-manage/ivylee-manage.component";
+
 import { BodyWeightComponent } from "./dashboard/health/body-weight/body-weight.component";
 import { BuildProfileComponent } from "./dashboard/health/build-profile/build-profile.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
@@ -14,13 +13,13 @@ import { UserSettingsComponent } from "./user-settings/user-settings.component";
 import { ScheduleComponent } from "./dashboard/scheduling/schedule.component";
 import { DayTemplatesComponent } from "./dashboard/scheduling/day-templates/day-templates.component";
 import { NotebooksComponent } from "./dashboard/notebooks/notebooks.component";
+import { TasksComponent } from "./dashboard/tasks/tasks.component";
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'home', component: HomeComponent },
-    
-    { path: 'ivylee-creation', component: IvyleeCreationComponent },
-    { path: 'ivylee-management', component: IvyleeManageComponent },
+
+    { path: 'tasks', component: TasksComponent },
     { path: 'body-weight', component: BodyWeightComponent },
     { path: 'health-profile', component: BuildProfileComponent },
     { path: 'networth', component: NetWorthComponent },

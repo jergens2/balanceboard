@@ -5,8 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DaybookModule } from './daybook/daybook.module';
 
 import { HomeComponent } from './home/home.component';
-import { IvyleeCreationComponent } from './productivity/ivylee/ivylee-creation/ivylee-creation.component';
-import { IvyleeManageComponent } from './productivity/ivylee/ivylee-manage/ivylee-manage.component';
+
 import { HealthComponent } from './health/health.component';
 import { BodyWeightComponent } from './health/body-weight/body-weight.component';
 import { BuildProfileComponent } from './health/build-profile/build-profile.component';
@@ -53,6 +52,7 @@ import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-templ
 import { ColorPickerModule } from 'ngx-color-picker';
 import { NotebooksComponent } from './notebooks/notebooks.component';
 import { NotebookEntryComponent } from './notebooks/notebook-entry/notebook-entry.component';
+import { TasksComponent } from './tasks/tasks.component';
 
 
 
@@ -70,9 +70,6 @@ import { NotebookEntryComponent } from './notebooks/notebook-entry/notebook-entr
   declarations: [
 
     HomeComponent,
-
-    IvyleeCreationComponent,
-    IvyleeManageComponent,
 
     HealthComponent,
     BodyWeightComponent,
@@ -117,6 +114,7 @@ import { NotebookEntryComponent } from './notebooks/notebook-entry/notebook-entr
     NotebooksComponent,
     NotebookEntryComponent,
     
+    TasksComponent,
     
   ],
   providers: [],

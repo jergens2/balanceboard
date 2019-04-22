@@ -35,6 +35,7 @@ export class TaskService {
   private _tasks: Task[] = [];
 
 
+  
 
   public getTaskByIdHTTP$(id: string): Observable<Task> {
     const getUrl = this._serverUrl + "/api/task/" + this._authStatus.user.id + "/" + id;
@@ -47,7 +48,7 @@ export class TaskService {
     return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<Task>(map((response: { message: string, data: any }) => {
         let rd = response.data
-        let task: Task = new Task(rd._id, rd.userId, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO));
+        let task: Task = new Task(rd._id, rd.userId, rd.title, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO));
         if (rd.isComplete as boolean) {
           task.markComplete(moment(rd.completionDateISO));
         }
@@ -80,7 +81,7 @@ export class TaskService {
     return this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
       .pipe<Task>(map((response: any) => {
         let rd = response.data
-        let task: Task = new Task(rd._id, rd.userId, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO));
+        let task: Task = new Task(rd._id, rd.userId, rd.title, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO));
         if (rd.isComplete as boolean) {
           task.markComplete(moment(rd.completionDateISO));
         }
@@ -116,7 +117,7 @@ export class TaskService {
       .pipe<Task>(map((response: any) => {
         let rd = response.data
         console.log("Response Data is : ", rd);
-        let task = new Task(rd._id, rd.userId, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO))
+        let task = new Task(rd._id, rd.userId, rd.title, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO))
         if (rd.isComplete as boolean) {
           task.markComplete(moment(rd.completionDateISO));
         }

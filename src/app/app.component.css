@@ -14,15 +14,17 @@
     height: 100vh;
     display:grid;
     grid-template-rows: 29px auto;
-    grid-template-columns: 250px 1fr 250px;
+    grid-template-columns: 250px 1fr 1px;
     z-index:0;
 }
 
 .app-tools-container{
 
-    grid-column: 3 / -1;
-    grid-row: 2 / -1;
+    grid-column: 3 / span 1;
+    grid-row: 2 / span 1;
     z-index: 0;
+    
+    /* height:90vh; */
 }
 
 .header{
@@ -56,17 +58,17 @@
 
 }
 
-@media (min-width: 1200px){
-    .app-container{
+/* @media (min-width: 1200px){ */
+    /* .app-container{ */
         /* The following will apply a right-hand margin to match the size of the sidebar on the left
             for the purpose of putting the content in the literal center of the screen
         */
         /* grid-template-columns: 250px auto 250px; */
-    }
-    .content{
-        
-    }
-}
+    /* } */
+    /* .content{ */
+        /*  */
+    /* } */
+/* } */
 
 
 @media (max-width: 767px){
@@ -82,9 +84,11 @@
         grid-row: 0 / span 0;
     }
     .content{
-        grid-column-start: 1;
-        grid-column-end: -1;
+        grid-column: 1 / span 1;
         padding:0px;
+    }
+    .app-tools-container{
+        grid-column: 1 / span 1;
     }
 
 }

@@ -91,7 +91,7 @@ export class DaybookService {
 
         let primaryTask: Task = null;
         if(poData){
-          primaryTask = new Task(poData._id, poData.userId, poData.description, moment(poData.startDateISO), moment(poData.dueDateISO));
+          primaryTask = new Task(poData._id, poData.userId, poData.title, poData.description, moment(poData.startDateISO), moment(poData.dueDateISO));
           if (poData.isComplete as boolean) {
             primaryTask.markComplete(moment(poData.completionDateISO));
           }

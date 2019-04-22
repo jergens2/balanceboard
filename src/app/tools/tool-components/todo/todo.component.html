@@ -5,7 +5,72 @@
     </div>
     <fa-icon [icon]="faTimes" class="icon-button header-item" (click)="onClickClose()"></fa-icon>
   </div>
-  <div class="todo-body">
+  <div class="todo-body" [formGroup]="taskForm">
+    <div class="body-row">
+      <input type="text" formControlName="title" placeholder="Title" class="task-title" style="font-weight:bold;">
+    </div>
+    <div class="body-row body-row-border-bottom">
+      <textarea formControlName="description" class="task-details" rows="3" placeholder="Details..."></textarea>
+    </div>
 
+    <div class="body-row body-row-small body-row-border-bottom">
+      <div >
+        Estimated time required for completion
+      </div>
+
+      <div style="display:flex;flex-direction: row;">
+        <input type="number" formControlName="timeRequiredHours"
+          style="width:50px; border: 1px solid rgb(238, 238, 238); ">
+        <div style="margin-left:5px; margin-right:5px;">
+          hrs
+        </div>
+
+        <input type="number" formControlName="timeRequiredMinutes"
+          style="width:50px; border: 1px solid rgb(238, 238, 238);">
+        <div style="margin-left:5px; margin-right:5px;">
+          min
+        </div>
+      </div>
+
+    </div>
+
+    <div class="body-row body-row-small body-row-border-bottom" style="display:flex;flex-direction: row;">
+      <div>
+        Priority
+      </div>
+      <div>
+        <select formControlName="priority" style="margin-left:10px;border: 1px solid rgb(238, 238, 238);">
+          <option value="0">High</option>
+          <option value="1">Normal</option>
+          <option value="2">Low</option>
+        </select>
+      </div>
+      
+    </div>
+    <div class="body-row body-row-small" style="padding-bottom:10px;">
+      Schedule
+      <div class="icon-button-black" (click)="onClickScheduleAutomatic()" >
+        <fa-icon [icon]="scheduleAutomaticIcon"></fa-icon>
+        Automatic
+      </div>
+      <div class="icon-button-black" (click)="onClickScheduleSpecify()" >
+        <fa-icon [icon]="scheduleSpecifyIcon"></fa-icon>
+        Specify
+      </div>
+      <div *ngIf="!scheduleAutomatic">
+        Specific schedule:
+        NOT IMPLEMENTED
+      </div>
+    </div>
+    <!-- <div class="body-row">
+      Due Date
+    </div>
+    <div class="body-row">
+      Do date
+    </div> -->
+  </div>
+  <div class="task-buttons">
+    <button class="btn btn-primary btn-sm" (click)="onClickSaveTask()" [disabled]="saveTaskDisabled">Save</button>
+    <button class="btn btn-secondary btn-sm" (click)="onClickCloseTask()" style="margin-left:5px;">Cancel</button>
   </div>
 </div>

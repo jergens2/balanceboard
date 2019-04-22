@@ -28,7 +28,8 @@ export class PrimaryObjectiveModalComponent implements OnInit {
 
     if(this.modal.modalData.action == "SET"){
       this.primaryTaskForm = new FormGroup({
-        'description': new FormControl(null, Validators.required),
+        'title': new FormControl(null, Validators.required),
+        'description': new FormControl(""),
         'startDate': new FormControl({value: this._date.format('YYYY-MM-DD'), disabled: true}, Validators.required),
         'dueDate': new FormControl(this._date.format('YYYY-MM-DD'))
       })
@@ -36,7 +37,8 @@ export class PrimaryObjectiveModalComponent implements OnInit {
     }else if(this.modal.modalData.action == "EDIT"){
       this.currentTask = this.daybookService.currentDay.primaryTask;
       this.primaryTaskForm = new FormGroup({
-        'description': new FormControl(this.currentTask.description, Validators.required),
+        'title': new FormControl(this.currentTask.title, Validators.required),
+        'description': new FormControl(""),
         'startDate': new FormControl({value: this._date.format('YYYY-MM-DD'), disabled: true}, Validators.required),
         'dueDate': new FormControl(this._date.format('YYYY-MM-DD'))
       })
@@ -83,6 +85,7 @@ export class PrimaryObjectiveModalComponent implements OnInit {
   onClickSave(){
     this._saveDisabled = true;
     let description: string = this.primaryTaskForm.controls['description'].value;
+    let title: string = this.primaryTaskForm.controls['title'].value;
     let startDate = moment(this._date).startOf("day");
     let dueDate = moment(this._date).endOf("day");
 
@@ -95,14 +98,14 @@ export class PrimaryObjectiveModalComponent implements OnInit {
       
       id = this.currentTask.id;
       userId = this.currentTask.userId;
-      primaryTask = new Task(id, userId, description, startDate, dueDate);
+      primaryTask = new Task(id, userId, title, description, startDate, dueDate);
       
       this.tasksService.updateTaskHTTP$(primaryTask).subscribe((updatedTask: Task)=>{
         this.daybookService.setPrimaryTask(updatedTask, this._date);
         this.modalService.closeModal();
       });
     }else if(this.modal.modalData.action == "SET"){
-      primaryTask = new Task(id, userId, description, startDate, dueDate);
+      primaryTask = new Task(id, userId, title, description, startDate, dueDate);
 
       this.tasksService.createTaskHTTP$(primaryTask).subscribe((savedTask: Task)=>{
         

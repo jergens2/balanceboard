@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import { TaskPriority } from './task-priority.enum';
 
 export class Task{
 
@@ -6,6 +7,9 @@ export class Task{
     id: string;
     userId: string;
 
+
+    public title: string;
+    priority: TaskPriority = TaskPriority.Normal;
 
     private _isComplete: boolean = false;
     private _isCompleteByDueDate: boolean = false;
@@ -48,11 +52,14 @@ export class Task{
     // durationRequirementMinutes: number = 0;
 
 
-    constructor(id: string, userId: string, description: string, startDate: moment.Moment, dueDate?: moment.Moment){
+    constructor(id: string, userId: string, title:string, description: string, startDate?: moment.Moment, dueDate?: moment.Moment){
         this.id = id;
         this.userId = userId;
+        this.title = title;
         this.description = description;
-        this._startDate = moment(startDate);
+        if(startDate){
+            this._startDate = moment(startDate);
+        }      
         
         if(dueDate){
             this._dueDate = moment(dueDate);

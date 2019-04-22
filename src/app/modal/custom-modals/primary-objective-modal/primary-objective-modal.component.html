@@ -1,7 +1,8 @@
 <div class="primary-objective-modal">
   <div class="delete-button-container" *ngIf="currentObjective">
     <button class="btn btn-sm btn-white border-danger" (click)="onClickDelete()" *ngIf="!confirmDelete">Delete</button>
-    <button class="btn btn-sm btn-danger" (click)="onClickConfirmDelete()" (mouseleave)="onMouseLeaveConfirmDelete()" *ngIf="confirmDelete">Confirm</button>
+    <button class="btn btn-sm btn-danger" (click)="onClickConfirmDelete()" (mouseleave)="onMouseLeaveConfirmDelete()"
+      *ngIf="confirmDelete">Confirm</button>
   </div>
   <div class="header">
     <u>Set Primary Objective</u> or alternatively, select from a list of candidate objectives
@@ -13,7 +14,16 @@
         Date
       </div>
       <div class="form-item-control">
-        <input type="date" class="form-control" formControlName="startDate" >
+        <input type="date" class="form-control" formControlName="startDate">
+      </div>
+    </div>
+
+    <div class="form-item">
+      <div class="form-item-label">
+        Title
+      </div>
+      <div class="form-item-control">
+        <input type="text" class="form-control" formControlName="title">
       </div>
     </div>
 
@@ -37,6 +47,7 @@
   </div>
   <div class="modal-buttons">
     <button class="btn btn-primary btn-sm modal-button" (click)="onClickSave()" [disabled]="saveDisabled">Save </button>
-    <button class="btn btn-secondary btn-sm modal-button" (click)="onClickCancel()" [disabled]="saveDisabled">Cancel</button>
+    <button class="btn btn-secondary btn-sm modal-button" (click)="onClickCancel()"
+      [disabled]="saveDisabled">Cancel</button>
   </div>
 </div>
