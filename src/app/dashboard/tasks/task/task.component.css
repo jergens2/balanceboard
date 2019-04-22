@@ -1,0 +1,10 @@
+.task-root{
+    margin:5px;
+    border:1px solid gray;
+    border-radius: 3px;
+    padding:5px;
+
+    display:flex;
+    flex-direction:column;
+    
+}

@@ -53,6 +53,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
 import { NotebooksComponent } from './notebooks/notebooks.component';
 import { NotebookEntryComponent } from './notebooks/notebook-entry/notebook-entry.component';
 import { TasksComponent } from './tasks/tasks.component';
+import { TaskComponent } from './tasks/task/task.component';
 
 
 
@@ -115,6 +116,8 @@ import { TasksComponent } from './tasks/tasks.component';
     NotebookEntryComponent,
     
     TasksComponent,
+    
+    TaskComponent,
     
   ],
   providers: [],

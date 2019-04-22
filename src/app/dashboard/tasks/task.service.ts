@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 
 import * as moment from 'moment';
 import { Task } from './task.model';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { serverUrl } from '../../serverurl';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { TaskPriority } from './task-priority.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class TaskService {
   private _authStatus: AuthStatus;
   login(authStatus: AuthStatus) {
     this._authStatus = authStatus;
+    this.getTasksHTTP();
   }
 
   logout() {
@@ -32,10 +34,33 @@ export class TaskService {
 
   */
 
-  private _tasks: Task[] = [];
-
+  private _tasks$: BehaviorSubject<Task[]> = new BehaviorSubject([]);
+  public get tasks$(): Observable<Task[]> {
+    return this._tasks$.asObservable();
+  }
 
   
+  private getTasksHTTP(){
+    const getUrl = this._serverUrl + "/api/task/" + this._authStatus.user.id;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'  
+      })
+    };
+    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+      .pipe<Task[]>(map((response: { message: string, data: any }) => {
+
+        let tasks: Task[] = [];
+        for(let taskData of (response.data as any[]) ){        
+          tasks.push(this.buildTaskFromHttp(taskData));
+        }
+        return tasks;
+      }))
+      .subscribe((tasks: Task[])=>{
+        this._tasks$.next(tasks);
+      })
+  }
 
   public getTaskByIdHTTP$(id: string): Observable<Task> {
     const getUrl = this._serverUrl + "/api/task/" + this._authStatus.user.id + "/" + id;
@@ -47,13 +72,7 @@ export class TaskService {
     };
     return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<Task>(map((response: { message: string, data: any }) => {
-        let rd = response.data
-        let task: Task = new Task(rd._id, rd.userId, rd.title, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO));
-        if (rd.isComplete as boolean) {
-          task.markComplete(moment(rd.completionDateISO));
-        }
-        console.log("from http get request, returning:", task)
-        return task;
+        return this.buildTaskFromHttp(response.data)
       }))
 
   }
@@ -65,6 +84,9 @@ export class TaskService {
 
     let requestBody: any = {
       userId: this._authStatus.user.id,
+      title: task.title,
+      priority: task.priority,
+      isComplete: false,
       description: task.description,
       startDateISO: task.startDate.toISOString(),
       dueDateISO: task.dueDate.toISOString()
@@ -80,11 +102,10 @@ export class TaskService {
 
     return this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
       .pipe<Task>(map((response: any) => {
-        let rd = response.data
-        let task: Task = new Task(rd._id, rd.userId, rd.title, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO));
-        if (rd.isComplete as boolean) {
-          task.markComplete(moment(rd.completionDateISO));
-        }
+        let task = this.buildTaskFromHttp(response.data);
+        let currentTasks = this._tasks$.getValue();
+        currentTasks.push(task);
+        this._tasks$.next(currentTasks);
         return task;
       }));
   }
@@ -97,6 +118,8 @@ export class TaskService {
     let requestBody: any = {
       id: task.id,
       userId: task.userId,
+      title: task.title,
+      priority: task.priority,
       description: task.description,
       startDateISO: task.startDate.toISOString(),
       dueDateISO: task.dueDate.toISOString(),
@@ -115,12 +138,10 @@ export class TaskService {
 
     return this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
       .pipe<Task>(map((response: any) => {
-        let rd = response.data
-        console.log("Response Data is : ", rd);
-        let task = new Task(rd._id, rd.userId, rd.title, rd.description, moment(rd.startDateISO), moment(rd.dueDateISO))
-        if (rd.isComplete as boolean) {
-          task.markComplete(moment(rd.completionDateISO));
-        }
+        let task = this.buildTaskFromHttp(response.data);
+        let currentTasks = this._tasks$.getValue();
+        currentTasks.push(task);
+        this._tasks$.next(currentTasks);
         return task;
       }));
   }
@@ -141,5 +162,28 @@ export class TaskService {
         console.log("Response from HTTP delete request:", response)
       })
   };
+
+
+  private buildTaskFromHttp(data: any): Task{
+
+
+    let task = new Task(data._id, data.userId, data.title, data.description, moment(data.startDateISO), moment(data.dueDateISO))
+    if (data.isComplete as boolean) {
+      task.markComplete(moment(data.completionDateISO));
+    }
+    let taskPriority: TaskPriority;
+    if(data.priority == 0){
+      taskPriority = TaskPriority.High;
+    }
+    if(data.priority == 1){
+      taskPriority = TaskPriority.Normal;
+    }
+    if(data.priority == 2){
+      taskPriority = TaskPriority.Low;
+    }
+    task.priority = taskPriority;
+    return task;
+  }
+
 
 }
