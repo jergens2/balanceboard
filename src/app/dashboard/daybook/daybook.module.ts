@@ -13,6 +13,7 @@ import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
 import { TimeSegmentTileComponent } from './time-log/time-segment-tile/time-segment-tile.component';
 import { ActivityInputDropdownComponent } from '../activities/activity-input-dropdown/activity-input-dropdown.component';
 import { PrimaryTaskWidgetComponent } from './primary-objective-widget/primary-objective-widget.component';
+import { TaskQueueWidgetComponent } from './task-queue-widget/task-queue-widget.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { PrimaryTaskWidgetComponent } from './primary-objective-widget/primary-o
     HeatmapViewComponent,
     PrimaryTaskWidgetComponent,
     TimeSegmentTileComponent,
-    ActivityInputDropdownComponent
+    ActivityInputDropdownComponent,
+    TaskQueueWidgetComponent
   ],
   exports: [
     ActivityInputDropdownComponent

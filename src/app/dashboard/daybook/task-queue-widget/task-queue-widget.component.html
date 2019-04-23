@@ -1,0 +1,19 @@
+<div class="task-queue-root">
+    <div class="header">
+        Daily Task List
+    </div>
+    <div class="daily-task-list-items">
+        <div *ngFor="let dailyTaskListItem of dailyTaskListItems" class="daily-task-list-item" (click)="onClickDailyTaskListItem(dailyTaskListItem)" [ngClass]="{'item-is-checked':dailyTaskListItem.isChecked}">
+            <div>
+                {{ dailyTaskListItem.taskName }}
+            </div>
+            <div *ngIf="dailyTaskListItem.isChecked">
+                <fa-icon [icon]="faCheckCircle"></fa-icon>
+            </div>
+            <div *ngIf="!dailyTaskListItem.isChecked">
+                <fa-icon [icon]="faCircle"></fa-icon>
+            </div>
+        </div>
+    </div>
+
+</div>
