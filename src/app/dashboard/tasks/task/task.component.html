@@ -1,6 +1,11 @@
-<div class="task-root">
-  
-  <div>{{ task.title }}</div>
-  <div>{{ task.description }}</div>
-  
+<div class="task-root" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  <div>
+    <div>{{ task.title }}</div>
+    <div>{{ task.description }}</div>
+  </div>
+  <div *ngIf="ifMouseOver">
+    <fa-icon [icon]="faTimes" class="icon-button"></fa-icon>
+  </div>
+
+
 </div>
