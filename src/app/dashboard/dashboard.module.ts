@@ -33,7 +33,7 @@ import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year
 
 import { ActivitiesListComponent } from './activities/activities-list/activities-list.component';
 
-import { ScheduleComponent } from './scheduling/schedule.component';
+
 
 
 import { ActivityGoalsWidgetComponent } from './activities/default-view/activity-goals-widget/activity-goals-widget.component';
@@ -45,7 +45,7 @@ import { DayOfWeekComponent } from './activities/default-view/day-of-week/day-of
 import { RotationDayTemplateComponent } from './scheduling/rotation-day-template/rotation-day-template.component';
 import { DayTemplatesComponent } from './scheduling/day-templates/day-templates.component';
 import { RotationFormComponent } from './scheduling/rotation-form/rotation-form.component';
-import { RotationDisplayComponent } from './scheduling/rotation-display/rotation-display.component';
+
 
 import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-template-widget/day-template-widget.component';
 
@@ -54,6 +54,9 @@ import { NotebooksComponent } from './notebooks/notebooks.component';
 import { NotebookEntryComponent } from './notebooks/notebook-entry/notebook-entry.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { TaskComponent } from './tasks/task/task.component';
+import { SchedulingComponent } from './scheduling/scheduling.component';
+import { RecurringTasksComponent } from './scheduling/recurring-tasks/recurring-tasks.component';
+import { ScheduleRotationsComponent } from './scheduling/schedule-rotations/schedule-rotations.component';
 
 
 
@@ -97,8 +100,6 @@ import { TaskComponent } from './tasks/task/task.component';
     MonthOfYearComponent,
     ActivitiesListComponent,
 
-    ScheduleComponent,
-
     ActivityGoalsWidgetComponent,
     ActivityPlanningComponent,
     InstancesListComponent,
@@ -108,7 +109,6 @@ import { TaskComponent } from './tasks/task/task.component';
     RotationDayTemplateComponent,
     DayTemplatesComponent,
     RotationFormComponent,
-    RotationDisplayComponent,
 
     DayTemplateWidgetComponent,
 
@@ -118,6 +118,10 @@ import { TaskComponent } from './tasks/task/task.component';
     TasksComponent,
     
     TaskComponent,
+    
+    SchedulingComponent,
+    ScheduleRotationsComponent,
+    RecurringTasksComponent,
     
   ],
   providers: [],

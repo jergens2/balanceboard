@@ -13,6 +13,7 @@ import { DaybookService } from '../daybook.service';
 import { Day } from '../day.model';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
 import { TaskService } from '../../tasks/task.service';
+import { PrimaryObjectiveService } from './primary-objective.service';
 
 @Component({
   selector: 'app-primary-objective-widget',
@@ -21,7 +22,7 @@ import { TaskService } from '../../tasks/task.service';
 })
 export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
 
-  constructor(private modalService: ModalService, private daybookService: DaybookService, private tasksService: TaskService) { }
+  constructor(private modalService: ModalService, private daybookService: DaybookService, private tasksService: TaskService, private primaryObjectiveService: PrimaryObjectiveService) { }
   faSpinner = faSpinner;
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;

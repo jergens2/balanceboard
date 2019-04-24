@@ -10,10 +10,14 @@ import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 import { MonthPlannerComponent } from "./dashboard/month-planner/month-planner.component";
 import { YearPlannerComponent } from "./dashboard/year-planner/year-planner.component";
 import { UserSettingsComponent } from "./user-settings/user-settings.component";
-import { ScheduleComponent } from "./dashboard/scheduling/schedule.component";
+
 import { DayTemplatesComponent } from "./dashboard/scheduling/day-templates/day-templates.component";
 import { NotebooksComponent } from "./dashboard/notebooks/notebooks.component";
 import { TasksComponent } from "./dashboard/tasks/tasks.component";
+import { SchedulingComponent } from "./dashboard/scheduling/scheduling.component";
+import { ScheduleRotationsComponent } from "./dashboard/scheduling/schedule-rotations/schedule-rotations.component";
+import { RecurringTasksComponent } from "./dashboard/scheduling/recurring-tasks/recurring-tasks.component";
+
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent },
@@ -25,16 +29,24 @@ const appRoutes: Routes = [
     { path: 'networth', component: NetWorthComponent },
     { path: 'daybook', component: DaybookComponent },
     { path: 'daybook/:isoDate', component: DaybookComponent },
-    { path: 'notebooks', component: NotebooksComponent},
+
+    { path: 'notebooks', component: NotebooksComponent },
     { path: 'month-planner', component: MonthPlannerComponent },
     { path: 'year-planner', component: YearPlannerComponent },
     { path: 'activities', component: ActivitiesComponent },
     { path: 'activities/:activityIdentifier', component: ActivitiesComponent },
     { path: 'user_settings', component: UserSettingsComponent },
 
-    // { path: '**', component: PageNotFoundComponent }
-    { path: 'schedule', component: ScheduleComponent },
-    { path: 'day-templates', component: DayTemplatesComponent}
+
+
+    { path: 'scheduling', component: SchedulingComponent },
+    { path: 'schedule-rotations', component: ScheduleRotationsComponent },
+    { path: 'day-templates', component: DayTemplatesComponent },
+    { path: 'recurring-tasks', component: RecurringTasksComponent },
+
+
+
+    // { path: '**', component: PageNotFoundComponent }   
 ];
 
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ScheduleRotation } from './schedule-rotation.model';
+import { ScheduleRotation } from './schedule-rotations/schedule-rotation.model';
 import { Observable, BehaviorSubject } from 'rxjs';
 import * as moment from 'moment';
 import { DayTemplate } from './day-templates/day-template.model';
@@ -7,7 +7,7 @@ import { DayTemplate } from './day-templates/day-template.model';
 @Injectable({
   providedIn: 'root'
 })
-export class ScheduleService {
+export class SchedulingService {
 
   private _rotation$: BehaviorSubject<ScheduleRotation> = new BehaviorSubject(null);
 

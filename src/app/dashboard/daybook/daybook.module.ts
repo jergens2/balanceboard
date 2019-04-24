@@ -7,7 +7,7 @@ import { DaybookComponent } from './daybook.component';
 import { CalendarComponent } from './calendar/calendar.component';
 import { TimeSegmentFormComponent } from './time-segment-form/time-segment-form.component';
 import { TimeLogComponent } from './time-log/time-log.component';
-import { DailyTaskListComponent } from './daily-task-list/daily-task-list.component';
+import { DailyTaskListWidgetComponent } from './daily-task-list-widget/daily-task-list-widget.component';
 import { DaybookHeaderComponent } from './daybook-header/daybook-header.component';
 import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
 import { TimeSegmentTileComponent } from './time-log/time-segment-tile/time-segment-tile.component';
@@ -28,7 +28,7 @@ import { TaskQueueWidgetComponent } from './task-queue-widget/task-queue-widget.
     CalendarComponent,
     TimeSegmentFormComponent,
     TimeLogComponent,
-    DailyTaskListComponent,
+    DailyTaskListWidgetComponent,
     DaybookHeaderComponent,
     HeatmapViewComponent,
     PrimaryTaskWidgetComponent,
