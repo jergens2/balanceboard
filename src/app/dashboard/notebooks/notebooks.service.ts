@@ -74,7 +74,7 @@ export class NotebooksService {
         return notebookEntries;
       }))
       .subscribe((notebookEntries: NotebookEntry[]) => {
-        this._notebookEntries$.next(notebookEntries);
+        this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
       });
 
   }
@@ -121,9 +121,39 @@ export class NotebooksService {
 
         let notebookEntries = this._notebookEntries$.getValue();
         notebookEntries.push(notebookEntry);
-        this._notebookEntries$.next(notebookEntries);
+        this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
       });
 
 
+  }
+
+  public deleteNotebookEntryHTTP(note: NotebookEntry){
+    const postUrl = this.serverUrl + "/api/notebook/delete";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+
+    this.httpClient.post<{ message: string, data: any }>(postUrl, note, httpOptions)
+      .subscribe((response) => {
+        // console.log("Response from HTTP delete request:", response)
+        let notebookEntries: NotebookEntry[] = this._notebookEntries$.getValue();
+        notebookEntries.splice(notebookEntries.indexOf(note),1);
+        this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
+      })
+  }
+
+  private sortNotesByDate(notes: NotebookEntry[]): NotebookEntry[]{
+    return notes.sort((note1, note2)=>{
+      if(note1.forDate.isBefore(note2.forDate)){
+        return 1
+      }
+      if(note1.forDate.isAfter(note2.forDate)){
+        return -1;
+      }
+      return 0;
+    })
   }
 }

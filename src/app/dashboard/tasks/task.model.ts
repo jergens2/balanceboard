@@ -31,6 +31,12 @@ export class Task{
         }
     }
 
+    public markIncomplete(){
+        this._isComplete = false;
+        this._completionDate = null;
+        this._isCompleteByDueDate = null;
+    }
+
     public get dueDate(): moment.Moment{
         return moment(this._dueDate);
     }
@@ -40,6 +46,9 @@ export class Task{
     private _dueDate: moment.Moment;
     private _startDate: moment.Moment;
     private _completionDate: moment.Moment;
+    public get completionDate(): moment.Moment{
+        return this._completionDate;
+    }
     public get completionDateISO(): string{
         if(this._completionDate){
             return this._completionDate.toISOString();

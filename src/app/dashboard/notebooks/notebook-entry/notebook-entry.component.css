@@ -1,0 +1,19 @@
+.notebook-entry-root{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction: column;
+    
+}
+.icon-button{
+    color:gray;
+}
+.icon-button:hover{
+    color:black;
+    cursor: pointer;
+}
+.note-text{
+    flex-grow:2;
+    overflow-y: auto;
+}
+

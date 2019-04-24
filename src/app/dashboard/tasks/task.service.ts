@@ -159,7 +159,10 @@ export class TaskService {
 
     this.httpClient.post<{ message: string, data: any }>(postUrl, task, httpOptions)
       .subscribe((response) => {
-        console.log("Response from HTTP delete request:", response)
+        // console.log("Response from HTTP delete request:", response)
+        let tasks = this._tasks$.getValue();
+        tasks.splice(tasks.indexOf(task),1);
+        this._tasks$.next(tasks);
       })
   };
 

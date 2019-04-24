@@ -1,5 +1,11 @@
-<div class="notebook-entry-root">
-  <div>{{ notebookEntry.forDate.format('YYYY-MM-DD') }}</div>
-  <div>{{ notebookEntry.title }}</div>
-  <div>{{ notebookEntry.textContent }}</div>
+<div class="notebook-entry-root" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  <div style="display:flex;flex-direction: row;justify-content: space-between;">
+      <div>{{ notebookEntry.forDate.format('YYYY-MM-DD') }}</div>
+      <div class="icon-button" *ngIf="mouseOver">
+        <fa-icon [icon]="faTimes" (click)="onClickDelete()"></fa-icon>
+      </div>
+  </div>
+
+  <div style="font-weight:bold;">{{ notebookEntry.title }}</div>
+  <div class="note-text">{{ notebookEntry.textContent }}</div>
 </div>
