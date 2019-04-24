@@ -138,9 +138,9 @@ export class TaskService {
 
     return this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
       .pipe<Task>(map((response: any) => {
-        let task = this.buildTaskFromHttp(response.data);
+        let updatedTask = this.buildTaskFromHttp(response.data);
         let currentTasks = this._tasks$.getValue();
-        currentTasks.push(task);
+        currentTasks.splice(currentTasks.indexOf(task),1,updatedTask );
         this._tasks$.next(currentTasks);
         return task;
       }));
