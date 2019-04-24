@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { faExternalLinkSquareAlt } from '@fortawesome/free-solid-svg-icons';
+import { ISchedulingComponent } from './scheduling-component.interface';
 
 @Component({
   selector: 'app-scheduling',
@@ -7,9 +10,49 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SchedulingComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
+
+  faExternalLinkAlt = faExternalLinkSquareAlt;
+
+
+  schedulingComponents: ISchedulingComponent[] = [];
 
   ngOnInit() {
+    this.schedulingComponents = [
+      {
+        title: 'Schedule Rotations',
+        mouseOver: false,
+        routerLink: '/schedule-rotations'
+      },
+      {
+        title: 'Day Templates',
+        mouseOver: false,
+        routerLink: '/day-templates'
+      },
+      {
+        title: 'Recurring Tasks',
+        mouseOver: false,
+        routerLink: '/recurring-tasks'
+      },
+    ]
   }
+
+  onClickOpenComponent(component: ISchedulingComponent) {
+    try {
+      this.router.navigate([component.routerLink]);
+    } catch (error) {
+      console.log("Error navigating", error);
+    }
+
+  }
+  
+  onMouseEnterComponent(component: ISchedulingComponent){
+    component.mouseOver = true;
+  }
+  onMouseLeaveComponent(component: ISchedulingComponent){
+    component.mouseOver = false;
+  }
+
+
 
 }

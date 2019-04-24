@@ -1,3 +1,14 @@
-<p>
-  scheduling works!
-</p>
+<div class="scheduling-root">
+  <div *ngFor="let schedulingComponent of schedulingComponents" class="scheduling-component" >
+    <div class="scheduling-component-header"  (mouseenter)="onMouseEnterComponent(schedulingComponent)" (mouseleave)="onMouseLeaveComponent(schedulingComponent)">
+      <div style="margin-right:15px;">
+        {{ schedulingComponent.title }}
+      </div>
+      <div>
+        <fa-icon [icon]="faExternalLinkAlt" class="icon-button" (click)="onClickOpenComponent(schedulingComponent)" *ngIf="schedulingComponent.mouseOver"></fa-icon>
+      </div>
+    </div>
+
+  </div>
+
+</div>
