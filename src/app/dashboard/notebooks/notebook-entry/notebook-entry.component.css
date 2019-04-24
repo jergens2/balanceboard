@@ -3,6 +3,8 @@
     height:100%;
     display:flex;
     flex-direction: column;
+
+    padding:10px;
     
 }
 .icon-button{
@@ -17,3 +19,15 @@
     overflow-y: auto;
 }
 
+
+@media (max-width: 767px){
+
+    .notebook-entry-root{
+
+        padding:none;
+        padding-bottom:10px;
+        width:100%;
+        border:none;
+        border-bottom: 1px solid rgb(161, 161, 161);
+    }
+}
