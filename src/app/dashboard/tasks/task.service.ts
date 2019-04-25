@@ -58,7 +58,7 @@ export class TaskService {
         return tasks;
       }))
       .subscribe((tasks: Task[])=>{
-        this._tasks$.next(tasks);
+        this._tasks$.next(this.sortTasksByDate(tasks));
       })
   }
 
@@ -105,7 +105,7 @@ export class TaskService {
         let task = this.buildTaskFromHttp(response.data);
         let currentTasks = this._tasks$.getValue();
         currentTasks.push(task);
-        this._tasks$.next(currentTasks);
+        this._tasks$.next(this.sortTasksByDate(currentTasks));
         return task;
       }));
   }
@@ -141,7 +141,7 @@ export class TaskService {
         let updatedTask = this.buildTaskFromHttp(response.data);
         let currentTasks = this._tasks$.getValue();
         currentTasks.splice(currentTasks.indexOf(task),1,updatedTask );
-        this._tasks$.next(currentTasks);
+        this._tasks$.next(this.sortTasksByDate(currentTasks));
         return task;
       }));
   }
@@ -162,10 +162,23 @@ export class TaskService {
         // console.log("Response from HTTP delete request:", response)
         let tasks = this._tasks$.getValue();
         tasks.splice(tasks.indexOf(task),1);
-        this._tasks$.next(tasks);
+        this._tasks$.next(this.sortTasksByDate(tasks));
       })
   };
 
+
+
+  private sortTasksByDate(tasks: Task[]): Task[] {
+    return tasks.sort((task1, task2)=>{
+      if(task1.startDate.isAfter(task2.startDate)){
+        return -1;
+      }
+      if(task1.startDate.isBefore(task2.startDate)){
+        return 1;
+      }
+      return 0;
+    });
+  }
 
   private buildTaskFromHttp(data: any): Task{
 

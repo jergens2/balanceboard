@@ -1,5 +1,20 @@
 <div class="tasks-root">
-  <div *ngFor="let task of tasks">
+  <div class="header">
+    Task List
+  </div>
+
+  <div style="font-weight: bold;">
+    Incomplete Tasks
+  </div>
+
+  <div *ngFor="let task of incompleteTasks">
+    <app-task [task]="task"></app-task>
+  </div>
+
+  <div style="font-weight: bold; margin-top:20px;">
+    Completed Tasks
+  </div>
+  <div *ngFor="let task of completeTasks">
     <app-task [task]="task"></app-task>
   </div>
 </div>

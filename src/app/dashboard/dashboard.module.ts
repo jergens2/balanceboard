@@ -57,6 +57,7 @@ import { TaskComponent } from './tasks/task/task.component';
 import { SchedulingComponent } from './scheduling/scheduling.component';
 import { RecurringTasksComponent } from './scheduling/recurring-tasks/recurring-tasks.component';
 import { ScheduleRotationsComponent } from './scheduling/schedule-rotations/schedule-rotations.component';
+import { RecurringTaskComponent } from './scheduling/recurring-tasks/recurring-task/recurring-task.component';
 
 
 
@@ -122,6 +123,7 @@ import { ScheduleRotationsComponent } from './scheduling/schedule-rotations/sche
     SchedulingComponent,
     ScheduleRotationsComponent,
     RecurringTasksComponent,
+    RecurringTaskComponent,
     
   ],
   providers: [],

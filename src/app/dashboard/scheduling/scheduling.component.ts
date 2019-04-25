@@ -22,17 +22,23 @@ export class SchedulingComponent implements OnInit {
       {
         title: 'Schedule Rotations',
         mouseOver: false,
-        routerLink: '/schedule-rotations'
+        routerLink: '/schedule-rotations',
+        description: '',
+        icon: null,
       },
       {
         title: 'Day Templates',
         mouseOver: false,
-        routerLink: '/day-templates'
+        routerLink: '/day-templates',
+        description: '',
+        icon: null,
       },
       {
         title: 'Recurring Tasks',
         mouseOver: false,
-        routerLink: '/recurring-tasks'
+        routerLink: '/recurring-tasks',
+        description: '',
+        icon: null,
       },
     ]
   }

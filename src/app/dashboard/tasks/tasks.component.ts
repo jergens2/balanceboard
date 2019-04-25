@@ -11,12 +11,21 @@ export class TasksComponent implements OnInit {
 
   constructor(private taskService: TaskService) { }
 
+  private _allTasks: Task[] = [];
 
-  tasks: Task[] = [];
+  incompleteTasks: Task[] = [];
+  completeTasks: Task[] = [];
 
   ngOnInit() {
     this.taskService.tasks$.subscribe((tasks: Task[])=>{
-      this.tasks = tasks;
+      this._allTasks = tasks;
+      this._allTasks.forEach((task)=>{
+        if(task.isComplete){
+          this.completeTasks.push(task);
+        }else if(!task.isComplete){
+          this.incompleteTasks.push(task);
+        }
+      });
     })
   }
 
