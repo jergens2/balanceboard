@@ -18,6 +18,8 @@ export class TasksComponent implements OnInit {
 
   ngOnInit() {
     this.taskService.tasks$.subscribe((tasks: Task[])=>{
+      this.incompleteTasks = [];
+      this.completeTasks = [];
       this._allTasks = tasks;
       this._allTasks.forEach((task)=>{
         if(task.isComplete){
@@ -26,6 +28,16 @@ export class TasksComponent implements OnInit {
           this.incompleteTasks.push(task);
         }
       });
+      console.log(this._allTasks)
+      this.incompleteTasks.sort((task1, task2)=>{
+        if(task1.completionDate.isBefore(task2.completionDate)){
+          return -1;
+        }
+        if(task1.completionDate.isAfter(task2.completionDate)){
+          return 1;
+        }
+        return 0;
+      })
     })
   }
 

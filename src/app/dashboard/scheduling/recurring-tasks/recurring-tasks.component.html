@@ -1,3 +1,10 @@
 <div class="recurring-tasks-root">
-  
+    <div class="header">
+        Scheduling / Recurring Tasks
+    </div>
+    <div class="body">
+        <div *ngFor="let recurringTask of recurringTasks" class="recurring-task">
+            <app-recurring-task [recurringTask]="recurringTask"></app-recurring-task>
+        </div>
+    </div>
 </div>

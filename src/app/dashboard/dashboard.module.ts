@@ -42,9 +42,9 @@ import { InstancesListComponent } from './activities/activity-display/instances-
 import { ActivityJournalComponent } from './activities/activity-display/activity-journal/activity-journal.component';
 import { DayOfWeekComponent } from './activities/default-view/day-of-week/day-of-week.component';
 
-import { RotationDayTemplateComponent } from './scheduling/rotation-day-template/rotation-day-template.component';
+import { RotationDayTemplateComponent } from './scheduling/schedule-rotations/rotation-day-template/rotation-day-template.component';
 import { DayTemplatesComponent } from './scheduling/day-templates/day-templates.component';
-import { RotationFormComponent } from './scheduling/rotation-form/rotation-form.component';
+import { RotationFormComponent } from './scheduling/schedule-rotations/rotation-form/rotation-form.component';
 
 
 import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-template-widget/day-template-widget.component';

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { RecurringTask } from './recurring-task.model';
 
 @Component({
   selector: 'app-recurring-task',
@@ -8,6 +9,8 @@ import { Component, OnInit } from '@angular/core';
 export class RecurringTaskComponent implements OnInit {
 
   constructor() { }
+
+  @Input() recurringTask: RecurringTask;
 
   ngOnInit() {
   }

@@ -1,15 +1,15 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { DayTemplate } from '../day-templates/day-template.model';
-import { IDayTemplateItem } from '../day-templates/day-template-item.interface';
-import { Modal } from '../../../modal/modal.model';
+import { DayTemplate } from '../../day-templates/day-template.model';
+import { IDayTemplateItem } from '../../day-templates/day-template-item.interface';
+import { Modal } from '../../../../modal/modal.model';
 import { Subscription } from 'rxjs';
-import { ModalService } from '../../../modal/modal.service';
-import { DayTemplatesService } from '../day-templates/day-templates.service';
-import { IModalOption } from '../../../modal/modal-option.interface';
+import { ModalService } from '../../../../modal/modal.service';
+import { DayTemplatesService } from '../../day-templates/day-templates.service';
+import { IModalOption } from '../../../../modal/modal-option.interface';
 import { Router } from '@angular/router';
 
 import * as moment from 'moment';
-import { ModalComponentType } from '../../../modal/modal-component-type.enum';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 
 @Component({
   selector: 'app-rotation-day-template',

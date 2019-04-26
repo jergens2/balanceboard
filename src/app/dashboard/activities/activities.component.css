@@ -1,5 +1,5 @@
 
-.root{
+.activities-root{
     display:flex;
     flex-direction: column;
 
@@ -9,7 +9,7 @@
 .activities-header{
     width:100%;
 
-    border-bottom: 1px solid rgb(151, 151, 151);
+    /* border-bottom: 1px solid rgb(151, 151, 151); */
     font-size:1.3em;
 }
 

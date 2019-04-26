@@ -1,5 +1,9 @@
-.root{
-
+.day-templates-root{
+    display:flex;
+    flex-direction: column;
+}
+.header{
+    font-size:1.3em;
 }
 
 .intro{

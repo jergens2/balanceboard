@@ -3,7 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
-import { IDayTemplateItem } from '../day-templates/day-template-item.interface';
+import { IDayTemplateItem } from '../../day-templates/day-template-item.interface';
 
 @Component({
   selector: 'app-rotation-form',

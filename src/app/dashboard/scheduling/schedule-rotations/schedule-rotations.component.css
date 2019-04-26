@@ -1,0 +1,8 @@
+.schedule-rotations-root{
+    display:flex;
+    flex-direction: column;
+}
+
+.header{
+    font-size:1.3em;
+}

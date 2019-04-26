@@ -1,3 +1,14 @@
 .recurring-tasks-root{
-    
+    display:flex;
+    flex-direction: column;
+}
+.header{
+    font-size:1.3em;
+}
+.body{
+    display:flex;
+    flex-direction: column;
+}
+.recurring-task{
+    margin:5px;
 }
