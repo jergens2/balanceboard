@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import * as moment from 'moment';
 import { Task } from './task.model';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { serverUrl } from '../../serverurl';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
@@ -18,10 +18,13 @@ export class TaskService {
 
   private _serverUrl = serverUrl;
   private _authStatus: AuthStatus;
-  login(authStatus: AuthStatus) {
+  login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
     this.getTasksHTTP();
+    return this._loginComplete$.asObservable();
   }
+
+  private _loginComplete$: Subject<boolean> = new Subject();
 
   logout() {
     this._authStatus = null;
@@ -37,6 +40,46 @@ export class TaskService {
   private _tasks$: BehaviorSubject<Task[]> = new BehaviorSubject([]);
   public get tasks$(): Observable<Task[]> {
     return this._tasks$.asObservable();
+  }
+
+  private _taskQueue: Task[] = [];
+  private _taskQueue$: Subject<Task[]> = new Subject();
+  public get taskQueue(): Task[] {
+    return this._taskQueue;
+  }
+  public get taskQueue$(): Observable<Task[]> {
+    return this._taskQueue$.asObservable();
+  }
+  // public get taskQueue$(): Subject<Task[]> {}
+
+  private updateTaskQueue(allTasks: Task[]){
+    
+    //
+    //  rebuild the task Queue as per algorithm, based on priority.
+    //
+
+    let tasks: Task[] = allTasks.filter((task)=>{ if(!task.isComplete){ return task }})
+    tasks.sort((task1, task2)=>{
+      if(task1.startDate.isBefore(task2.startDate)){
+        return -1;
+      }
+      if(task1.startDate.isAfter(task2.startDate)){
+        return 1;
+      }
+      return 0;
+    })
+
+    let taskQueue: Task[] = [];
+
+    for(let i=0; i<6; i++){
+      taskQueue.push(tasks[i]);
+    }
+
+    console.log("tasks is ", tasks);
+    console.log("taskqueue", taskQueue);
+    this._taskQueue = taskQueue;
+    this._taskQueue$.next(this._taskQueue);
+
   }
 
   
@@ -58,7 +101,9 @@ export class TaskService {
         return tasks;
       }))
       .subscribe((tasks: Task[])=>{
+        this.updateTaskQueue(tasks);
         this._tasks$.next(this.sortTasksByDate(tasks));
+        this._loginComplete$.next(true);
       })
   }
 

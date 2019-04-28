@@ -14,17 +14,10 @@
     border-bottom: 1px solid rgb(219, 219, 219);
 }
 
-.daily-task-list-item{
-    padding:3px;
-    width:100%;
+.task{
     display:flex;
     flex-direction: row;
-    justify-content: space-between;    
 }
-.daily-task-list-item:hover{
-    cursor:pointer;
-}
-.item-is-checked{
-    text-decoration: line-through;
-    color: rgb(0, 51, 20);
+.task-number{
+    min-width:25px;
 }

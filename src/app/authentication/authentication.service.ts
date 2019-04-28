@@ -51,6 +51,7 @@ export class AuthenticationService {
   private dayTemplatesSubscription: Subscription = new Subscription();
   private daybookSubscription: Subscription = new Subscription();
   private notebookSubscription: Subscription = new Subscription();
+  private taskSubscription: Subscription = new Subscription();
 
 
   registerUser$(authData: AuthData): Observable<Object> {
@@ -106,9 +107,15 @@ export class AuthenticationService {
       let dayTemplatesLoginComplete: boolean = false;
       let activitiesLoginComplete: boolean = false;
       let notebookLoginComplete: boolean = false;
+      let taskLoginComplete: boolean = false;
+
+
 
       this.userSettingsService.login(authStatus);
-      this.taskService.login(authStatus);
+      
+      this.taskSubscription = this.taskService.login$(authStatus).subscribe((loginComplete: boolean)=>{
+        taskLoginComplete = loginComplete;
+      });
       
       
       this.notebookSubscription = this.notebooksService.login$(authStatus).subscribe((notebookEntries: NotebookEntry[])=>{
@@ -137,13 +144,13 @@ export class AuthenticationService {
         }
       });
 
-      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete;
+      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete;
       let timerSubscription: Subscription = new Subscription();
       
 
 
       timerSubscription = timer(200,200).subscribe(()=>{
-        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete;
+        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete;
         if(allComplete){
 
           this.completeLogin(authStatus);

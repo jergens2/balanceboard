@@ -1,19 +1,30 @@
 <div class="task-queue-root">
     <div class="header">
-        Daily Task List
+        Task Queue
     </div>
-    <div class="daily-task-list-items">
-        <div *ngFor="let dailyTaskListItem of dailyTaskListItems" class="daily-task-list-item" (click)="onClickDailyTaskListItem(dailyTaskListItem)" [ngClass]="{'item-is-checked':dailyTaskListItem.isChecked}">
+    <div class="body">
+        <div *ngIf="loading">
             <div>
-                {{ dailyTaskListItem.taskName }}
-            </div>
-            <div *ngIf="dailyTaskListItem.isChecked">
-                <fa-icon [icon]="faCheckCircle"></fa-icon>
-            </div>
-            <div *ngIf="!dailyTaskListItem.isChecked">
-                <fa-icon [icon]="faCircle"></fa-icon>
+                <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
             </div>
         </div>
+        <div *ngIf="!loading">
+            <div *ngIf="taskQueue.length > 0">
+                <div *ngFor="let task of taskQueue" class="task">
+                    <div class="task-number">
+                        {{ taskNumber(task) }}
+                    </div>
+                    <div>
+                        {{ task.title }}
+                    </div>
+
+                </div>
+            </div>
+            <div *ngIf="taskQueue.length == 0">
+                No tasks in the queue;
+            </div>
+        </div>
+
     </div>
 
 </div>

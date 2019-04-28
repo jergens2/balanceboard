@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
+import { Task } from '../../tasks/task.model';
+import { TaskService } from '../../tasks/task.service';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-task-queue-widget',
@@ -9,26 +12,28 @@ import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 export class TaskQueueWidgetComponent implements OnInit {
 
 
+  faSpinner = faSpinner;
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
 
-  constructor() { }
+  constructor(private taskService: TaskService) { }
 
+  loading: boolean = true;
 
-  dailyTaskListItems: {taskName: string, isChecked: boolean}[] = [];
+  taskQueue: Task[] = [];
 
   ngOnInit() {
-    this.dailyTaskListItems.push({taskName:"Brush teeth",isChecked: false});
-    this.dailyTaskListItems.push({taskName:"Make Bed",isChecked: false});
-    this.dailyTaskListItems.push({taskName:"Take Vitamins",isChecked: false});
 
-    this.dailyTaskListItems.push({taskName:"20 Pushups",isChecked: false});
-
+    this.taskQueue = this.taskService.taskQueue;
+    this.taskService.taskQueue$.subscribe((taskQueue: Task[])=>{
+      this.taskQueue = taskQueue;
+      this.loading = false;
+    });
+    this.loading = false;
   }
 
-
-  onClickDailyTaskListItem(dailyTaskListItem: {taskName: string, isChecked: boolean}){
-    dailyTaskListItem.isChecked = !dailyTaskListItem.isChecked;
+  public taskNumber(task: Task): string{
+    return (this.taskQueue.indexOf(task) + 1).toString();
   }
 
 }

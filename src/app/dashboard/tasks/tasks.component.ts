@@ -29,15 +29,15 @@ export class TasksComponent implements OnInit {
         }
       });
       console.log(this._allTasks)
-      this.incompleteTasks.sort((task1, task2)=>{
-        if(task1.completionDate.isBefore(task2.completionDate)){
-          return -1;
-        }
-        if(task1.completionDate.isAfter(task2.completionDate)){
-          return 1;
-        }
-        return 0;
-      })
+      // this.incompleteTasks.sort((task1, task2)=>{
+      //   if(task1.completionDate.isBefore(task2.completionDate)){
+      //     return -1;
+      //   }
+      //   if(task1.completionDate.isAfter(task2.completionDate)){
+      //     return 1;
+      //   }
+      //   return 0;
+      // })
     })
   }
 
