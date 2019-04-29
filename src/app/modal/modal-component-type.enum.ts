@@ -1,6 +1,7 @@
 
 export enum ModalComponentType{
     Default = "DEFAULT",
-    PrimarObjective = "PRIMARY_OBJECTIVE",
+    Confirm = "CONFIRM",
     TimeSegment = "TIME_SEGMENT",
+    Task = "TASK",
 }

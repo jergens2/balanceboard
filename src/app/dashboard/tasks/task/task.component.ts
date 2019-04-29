@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Task } from '../task.model';
+import { Task } from './task.model';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
 import { Subscription } from 'rxjs';
@@ -7,7 +7,7 @@ import { IModalOption } from '../../../modal/modal-option.interface';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 import { Modal } from '../../../modal/modal.model';
 import { TaskService } from '../task.service';
-import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
+import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
 import * as moment from 'moment';
 
 @Component({
@@ -19,6 +19,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   constructor(private modalService: ModalService, private taskService: TaskService) { }
 
+  faEdit = faEdit;
   faTimes = faTimes;
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
@@ -62,7 +63,9 @@ export class TaskComponent implements OnInit, OnDestroy {
       this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
         if (selectedOption.value == "Yes") {
           this.task.markIncomplete();
-          this.taskService.updateTaskHTTP$(this.task);
+          this.taskService.updateTaskHTTP$(this.task).subscribe((task: Task)=>{
+            this.task = task;
+          });
         } else if (selectedOption.value == "No") {
 
         } else {
@@ -78,6 +81,18 @@ export class TaskComponent implements OnInit, OnDestroy {
       });
 
     }
+  }
+
+  onClickEdit(){
+    
+    this._modalSubscription.unsubscribe();
+    let modalData: any = {};
+    let modal: Modal = new Modal(null, modalData, null, {}, ModalComponentType.Task);
+    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+
+      console.log("modal response:", selectedOption);
+    });
+    this.modalService.activeModal = modal;
   }
 
   onClickDelete() {

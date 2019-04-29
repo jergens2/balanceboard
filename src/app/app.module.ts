@@ -25,6 +25,9 @@ import { PrimaryObjectiveModalComponent } from './modal/custom-modals/primary-ob
 import { ToolsComponent } from './tools/tools.component';
 import { NotepadComponent } from './tools/tool-components/notepad/notepad.component';
 import { TodoComponent } from './tools/tool-components/todo/todo.component';
+import { TaskQueueModalComponent } from './modal/custom-modals/task-queue-modal/task-queue-modal.component';
+import { TaskModalComponent } from './modal/custom-modals/task-modal/task-modal.component';
+import { ConfirmModalComponent } from './modal/custom-modals/confirm-modal/confirm-modal.component';
 
 
 
@@ -41,7 +44,10 @@ import { TodoComponent } from './tools/tool-components/todo/todo.component';
     PrimaryObjectiveModalComponent,
     NotepadComponent,
     ToolsComponent,
-    TodoComponent
+    TodoComponent,
+    TaskQueueModalComponent,
+    TaskModalComponent,
+    ConfirmModalComponent
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,4 @@
-import { Task } from "../tasks/task.model";
+import { Task } from "../tasks/task/task.model";
 import * as moment from 'moment';
 
 export class Day{

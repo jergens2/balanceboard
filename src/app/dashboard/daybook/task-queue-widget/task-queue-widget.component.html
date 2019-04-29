@@ -10,14 +10,18 @@
         </div>
         <div *ngIf="!loading">
             <div *ngIf="taskQueue.length > 0">
-                <div *ngFor="let task of taskQueue" class="task">
-                    <div class="task-number">
+                <div *ngFor="let task of taskQueue" class="task" >
+                    <div class="task-number" (click)="onClickTask(task)">
                         {{ taskNumber(task) }}
                     </div>
-                    <div>
+                    <div style="flex-grow:2;" (click)="onClickTask(task)">
                         {{ task.title }}
                     </div>
-
+                    <div style="min-width:25px;">
+                        <!-- <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEdit(task)"></fa-icon> -->
+                        <fa-icon [icon]="faCircle" *ngIf="!task.isComplete" class="icon-button" (click)="onClickMarkComplete(task)"></fa-icon>
+                        <fa-icon [icon]="faCheckCircle" *ngIf="task.isComplete" class="green-icon-button" (click)="onClickMarkIncomplete(task)"></fa-icon>
+                    </div>
                 </div>
             </div>
             <div *ngIf="taskQueue.length == 0">

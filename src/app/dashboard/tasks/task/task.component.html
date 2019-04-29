@@ -13,8 +13,9 @@
           </div>
       </div>
       
-      <div *ngIf="ifMouseOver" (click)="onClickDelete()">
-        <fa-icon [icon]="faTimes" class="icon-button"></fa-icon>
+      <div *ngIf="ifMouseOver" >
+        <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEdit()" style="margin-right:5px;"></fa-icon>
+        <fa-icon [icon]="faTimes" class="icon-button" (click)="onClickDelete()"></fa-icon>
       </div>
     </div>
 

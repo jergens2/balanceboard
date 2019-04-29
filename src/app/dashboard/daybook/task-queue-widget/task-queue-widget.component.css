@@ -17,7 +17,22 @@
 .task{
     display:flex;
     flex-direction: row;
+    justify-content: space-between;
+}
+.task:hover{
+    cursor: pointer;
 }
 .task-number{
     min-width:25px;
+}
+.icon-button{
+    color: gray;
+}
+.icon-button:hover{
+    color:black;
+    cursor: pointer;
+}
+.green-icon-button{
+    color:green;
+    cursor: pointer;
 }

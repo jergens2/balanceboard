@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import { TaskPriority } from './task-priority.enum';
 
+
 export class Task{
 
 
@@ -14,6 +15,7 @@ export class Task{
     private _isComplete: boolean = false;
     private _isCompleteByDueDate: boolean = false;
     // private _isFailed: boolean = false;
+
     
     public get isComplete(): boolean{
         return this._isComplete;

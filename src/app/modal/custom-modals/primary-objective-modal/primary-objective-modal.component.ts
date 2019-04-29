@@ -4,7 +4,7 @@ import { Modal } from '../../modal.model';
 
 import * as moment from 'moment';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Task } from '../../../dashboard/tasks/task.model';
+import { Task } from '../../../dashboard/tasks/task/task.model';
 import { TaskService } from '../../../dashboard/tasks/task.service';
 import { DaybookService } from '../../../dashboard/daybook/daybook.service';
 

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 
 import * as moment from 'moment';
-import { Task } from './task.model';
+import { Task } from './task/task.model';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { serverUrl } from '../../serverurl';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { TaskPriority } from './task-priority.enum';
+import { TaskPriority } from './task/task-priority.enum';
 
 @Injectable({
   providedIn: 'root'

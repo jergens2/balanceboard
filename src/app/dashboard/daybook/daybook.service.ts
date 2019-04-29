@@ -8,7 +8,7 @@ import { map } from 'rxjs/operators';
 
 
 import * as moment from 'moment';
-import { Task } from '../tasks/task.model';
+import { Task } from '../tasks/task/task.model';
 
 
 @Injectable({

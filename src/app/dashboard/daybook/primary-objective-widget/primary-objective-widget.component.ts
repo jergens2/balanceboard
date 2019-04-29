@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
-import { Task } from '../../tasks/task.model';
+import { Task } from '../../tasks/task/task.model';
 
 import * as moment from 'moment';
 import { ModalService } from '../../../modal/modal.service';
@@ -91,32 +91,32 @@ export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
   }
 
   onClickEdit(){
-    this._modalSubscription.unsubscribe();
-    let modalData: any = {
-      date: moment(this._currentDay.date),
-      action: "EDIT"
-    }
-    let modal: Modal = new Modal(null, modalData, null, {}, ModalComponentType.PrimarObjective);
-    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+    // this._modalSubscription.unsubscribe();
+    // let modalData: any = {
+    //   date: moment(this._currentDay.date),
+    //   action: "EDIT"
+    // }
+    // let modal: Modal = new Modal(null, modalData, null, {}, ModalComponentType.PrimaryObjective);
+    // this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
 
-      console.log("modal response:", selectedOption);
-    });
-    this.modalService.activeModal = modal;
+    //   console.log("modal response:", selectedOption);
+    // });
+    // this.modalService.activeModal = modal;
   }
 
   onClickSetObjective() {
 
-    this._modalSubscription.unsubscribe();
-    let modalData: any = {
-      date: moment(this._currentDay.date),
-      action: "SET"
-    }
-    let modal: Modal = new Modal(null, modalData, null, {}, ModalComponentType.PrimarObjective);
-    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+    // this._modalSubscription.unsubscribe();
+    // let modalData: any = {
+    //   date: moment(this._currentDay.date),
+    //   action: "SET"
+    // }
+    // let modal: Modal = new Modal(null, modalData, null, {}, ModalComponentType.PrimaryObjective);
+    // this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
 
-      console.log("modal response:", selectedOption);
-    });
-    this.modalService.activeModal = modal;
+    //   console.log("modal response:", selectedOption);
+    // });
+    // this.modalService.activeModal = modal;
   }
 
   ngOnDestroy() {
