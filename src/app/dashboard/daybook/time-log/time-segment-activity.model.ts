@@ -4,9 +4,14 @@ import { ActivitiesService } from "../../activities/activities.service";
 export class TimeSegmentActivity{
 
     activityTreeId: string;
-    duration: number;
+    private _duration: number;
     description: string;
 
+
+
+    public get duration(): number {
+        return this._duration;
+    }
 
     private _activity: UserDefinedActivity;
     get activity(): UserDefinedActivity{
@@ -20,7 +25,7 @@ export class TimeSegmentActivity{
     constructor(activity: UserDefinedActivity, duration: number, description: string){
         if(activity != null){
             this.activityTreeId = activity.treeId;
-            this.duration = duration;
+            this._duration = duration;
             this.description = description;
             this._activity = activity;
         }else{

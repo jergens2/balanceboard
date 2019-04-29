@@ -1,0 +1,31 @@
+<div class="root">
+  <div class="header">
+    Top Activity By Day (last 6 weeks)
+  </div>
+  <div class="body">
+    <div *ngIf="loading">
+      <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+    </div>
+    <div class="day-grid" *ngIf="!loading">
+      <div class="day-of-week-title">Sun</div>
+      <div class="day-of-week-title">Mon</div>
+      <div class="day-of-week-title">Tue</div>
+      <div class="day-of-week-title">Wed</div>
+      <div class="day-of-week-title">Thu</div>
+      <div class="day-of-week-title">Fri</div>
+      <div class="day-of-week-title">Sat</div>
+      <div *ngFor="let day of days" class="day" [ngStyle]="dayStyle(day)">
+        <div class="day-date">
+          {{ day.date.format('MM-DD') }}
+        </div>
+        <div class="day-activity-name">
+          {{ activityName(day) }}
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+
+</div>

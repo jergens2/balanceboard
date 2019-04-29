@@ -63,7 +63,7 @@ export class TimeSegment{
     receiveOldActivities(activities: UserDefinedActivity[]){
         this.activities = activities.map((activity)=>{
             let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, 0, "");
-            timeSegmentActivity.duration = 0;
+            // timeSegmentActivity.duration = 0;
             if(timeSegmentActivity.activity.color == "blue"){
                 timeSegmentActivity.activity.color = "#fafafa";
             }

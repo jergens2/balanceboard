@@ -4,26 +4,34 @@
     Activities
   </div>
 
-  <!-- <div class="activities-list">
+  <div class="body">
 
-  </div> -->
 
-  <div class="activity-display" *ngIf="action == 'activities_list'">
-    <app-activities-list (activitySelected)="onActivitySelected($event)"></app-activities-list>
+    <div class="activity-display">
+        <app-activities-six-week-view></app-activities-six-week-view>
+    </div>
+
+
+    <div class="activity-display" *ngIf="action == 'activities_list'">
+      <app-activities-list (activitySelected)="onActivitySelected($event)"></app-activities-list>
+    </div>
+  
+    <div class="activity-display" *ngIf="action == 'display'">
+      <app-activity-display [selectedActivity]="displayedActivity" (displayClosed)="onDisplayClosed()">
+      </app-activity-display>
+    </div>
+  
+    <div class="activity-display" *ngIf="action == 'default'">
+      <app-activities-default-view (newActivity)="onClickCreateNewActivity()"></app-activities-default-view>
+    </div>
+  
+    <div class="activity-display" *ngIf="action == 'form'">
+      <app-user-defined-activity-form (formClosed)="onFormClosed()">
+      </app-user-defined-activity-form>
+    </div>
   </div>
+  
 
-  <div class="activity-display" *ngIf="action == 'display'">
-    <app-activity-display [selectedActivity]="displayedActivity" (displayClosed)="onDisplayClosed()">
-    </app-activity-display>
-  </div>
-
-  <div class="activity-display" *ngIf="action == 'default'">
-    <app-activities-default-view (newActivity)="onClickCreateNewActivity()"></app-activities-default-view>
-  </div>
-
-  <div class="activity-display" *ngIf="action == 'form'">
-    <app-user-defined-activity-form (formClosed)="onFormClosed()">
-    </app-user-defined-activity-form>
-  </div>
+  
 
 </div>

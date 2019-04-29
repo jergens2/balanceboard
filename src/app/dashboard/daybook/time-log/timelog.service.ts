@@ -67,7 +67,7 @@ export class TimelogService {
         // timeSegment.precedingTimeSegmentId = response.data.precedingTimeSegmentId;
         // timeSegment.followingTimeSegmentId = response.data.followingTimeSegmentId;
         timeSegment.description = response.data.description;
-        timeSegment.activities = this.buildTimeSegmentActivities(response.data.activities);
+        timeSegment.activities = this.buildTimeSegmentActivities(response.data.activities, timeSegment.startTime, timeSegment.endTime);
         return timeSegment;
       }))
       .subscribe((returnedTimeSegment: TimeSegment) => {
@@ -109,7 +109,7 @@ export class TimelogService {
         // timeSegment.precedingTimeSegmentId = response.data.precedingTimeSegmentId;
         // timeSegment.followingTimeSegmentId = response.data.followingTimeSegmentId;
         timeSegment.description = response.data.description;
-        timeSegment.activities = this.buildTimeSegmentActivities(response.data.activities);
+        timeSegment.activities = this.buildTimeSegmentActivities(response.data.activities, timeSegment.startTime, timeSegment.endTime);
         return timeSegment;
       }))
       .subscribe((timeSegment: TimeSegment) => {
@@ -121,10 +121,13 @@ export class TimelogService {
       })
   }
 
-  private buildTimeSegmentActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimeSegmentActivity[] {
-    // console.log("building time segment activities");
+  private buildTimeSegmentActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }> , startTime: moment.Moment, endTime: moment.Moment): TimeSegmentActivity[] {
+    
+    let duration: number = endTime.diff(startTime, "minutes") / activitiesData.length;
+
+
     return activitiesData.map((activity) => {
-      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.activitiesService.findActivityByTreeId(activity.activityTreeId), activity.duration, activity.description);
+      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.activitiesService.findActivityByTreeId(activity.activityTreeId), duration, activity.description);
       return timeSegmentActivity;
     })
   }
@@ -179,7 +182,7 @@ export class TimelogService {
           if (activities.length > 0) {
             //if the element in the array has a property called .activity , then it is of new type of activity as of 2018-12-13
             if (activities[0].activityTreeId != null) {
-              timeSegment.activities = this.buildTimeSegmentActivities(activities);
+              timeSegment.activities = this.buildTimeSegmentActivities(activities, timeSegment.startTime, timeSegment.endTime);
             } else {
               timeSegment.receiveOldActivities(dataObject.activities as UserDefinedActivity[])
             }
@@ -221,7 +224,7 @@ export class TimelogService {
           if (activities.length > 0) {
             //if the element in the array has a property called .activity , then it is of new type of activity as of 2018-12-13
             if (activities[0].activityTreeId != null) {
-              timeSegment.activities = this.buildTimeSegmentActivities(activities);
+              timeSegment.activities = this.buildTimeSegmentActivities(activities, timeSegment.startTime, timeSegment.endTime);
             } else {
               console.log("this shit must be old");
               timeSegment.receiveOldActivities(dataObject.activities as UserDefinedActivity[])
