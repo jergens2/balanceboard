@@ -14,13 +14,16 @@
       <div class="day-of-week-title">Thu</div>
       <div class="day-of-week-title">Fri</div>
       <div class="day-of-week-title">Sat</div>
-      <div *ngFor="let day of days" class="day" [ngStyle]="dayStyle(day)">
-        <div class="day-date">
-          {{ day.date.format('MM-DD') }}
+      <div *ngFor="let day of days" class="day-container">
+        <div class="day" [ngStyle]="dayStyle(day)">
+          <div class="day-date">
+            {{ day.date.format('MM-DD') }}
+          </div>
+          <div class="day-activity-name-container">
+            <span class="day-activity-name">{{ activityName(day) }}</span>
+          </div>
         </div>
-        <div class="day-activity-name">
-          {{ activityName(day) }}
-        </div>
+
 
 
       </div>

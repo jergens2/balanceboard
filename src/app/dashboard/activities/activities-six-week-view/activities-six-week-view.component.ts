@@ -102,7 +102,7 @@ export class ActivitiesSixWeekViewComponent implements OnInit {
       // console.log("color is ", this.transparentColor(color));
       return {
         "background-color": this.transparentColor(color, 0.1),
-        "border": "1px solid " + this.transparentColor(color, 0.5),
+        "border": "2px solid " + this.transparentColor(color, 1.0),
       }
     } else {
       return {};
