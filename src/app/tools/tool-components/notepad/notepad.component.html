@@ -13,6 +13,9 @@
     <div class="body-row" style="flex-grow:2;">
       <textarea formControlName="noteBody" class="note-body" placeholder="Type something..."></textarea>
     </div>
+    <div class="body-row">
+      <input type="text" formControlName="tags" placeholder="tags" class="notepad-input" style="font-weight:bold;color:rgb(18, 110, 67)" >
+    </div>
   </div>
   <div class="notepad-buttons">
     <button class="btn btn-primary btn-sm" (click)="onClickSaveNote()" [disabled]="saveDisabled">Save</button>

@@ -15,11 +15,12 @@ export class NotebooksService {
   constructor(private httpClient: HttpClient) { }
 
   private _authStatus: AuthStatus;
-  login$(authStatus: AuthStatus): Observable<NotebookEntry[]> {
+  private _loginComplete: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
 
     this.fetchNotebookEntries();
-    return this._notebookEntries$.asObservable();
+    return this._loginComplete.asObservable();
   }
   logout() {
     this._authStatus = null;
@@ -35,8 +36,17 @@ export class NotebooksService {
   public get notebookEntries$(): Observable<NotebookEntry[]> {
     return this._notebookEntries$.asObservable();
   }
+  public get notebookEntries(): NotebookEntry[] {
+    return this._notebookEntries$.getValue();
+  }
 
-
+  private _tags$: BehaviorSubject<string[]> = new BehaviorSubject([]);
+  public get tags$(): Observable<string[]> {
+    return this._tags$.asObservable();
+  }
+  public get tags(): string[] {
+    return this._tags$.getValue();
+  }
 
   public saveNotebookEntry(notebookEntry: NotebookEntry) {
 
@@ -59,22 +69,26 @@ export class NotebooksService {
         let rd: any[] = response.data;
         let notebookEntries: NotebookEntry[] = [];
         rd.forEach((data: any) => {
-          let notebookEntry: NotebookEntry = new NotebookEntry();
-          notebookEntry.id = data._id;
-          notebookEntry.userId = data.userId;
-          notebookEntry.dateCreated = moment(data.dateCreatedISO);
+          let notebookEntry: NotebookEntry = new NotebookEntry(data._id, data.userId, data.dateCreatedISO, data.type, data.textContent, data.title, data.tags);
+
           notebookEntry.dateModified = moment(data.dateModifiedISO);
-          notebookEntry.forDate = moment(data.forDateISO);
-          notebookEntry.tags = data.tags;
-          notebookEntry.textContent = data.textContent;
-          notebookEntry.title = data.title;
-          notebookEntry.type = data.type;
+          notebookEntry.journalDate = moment(data.journalDateISO);
+          notebookEntry.data = data.data;
+
+          if(data.journalDateISO){
+
+          }else{
+            console.log("No journal Date")
+          }
+
           notebookEntries.push(notebookEntry);
         })
         return notebookEntries;
       }))
       .subscribe((notebookEntries: NotebookEntry[]) => {
+        this.getTags(notebookEntries);
         this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
+        this._loginComplete.next(true);
       });
 
   }
@@ -93,13 +107,14 @@ export class NotebooksService {
 
     let requestBody: any = {
       userId: this._authStatus.user.id,
-      forDate: notebookEntry.forDate.toISOString(),
+      journalDate: notebookEntry.journalDate.toISOString(),
       dateCreated: notebookEntry.dateCreated.toISOString(),
       dateModified: notebookEntry.dateModified.toISOString(),
       type: notebookEntry.type,
       textContent: notebookEntry.textContent,
       title: notebookEntry.title,
       tags: notebookEntry.tags,
+      data: notebookEntry.data,
     };
 
 
@@ -107,20 +122,60 @@ export class NotebooksService {
     this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
       .subscribe((response: { message: string, data: any }) => {
         let data = response.data;
-        let notebookEntry: NotebookEntry = new NotebookEntry();
 
-        notebookEntry.id = data._id;
-        notebookEntry.userId = data.userId;
-        notebookEntry.dateCreated = moment(data.dateCreatedISO);
-        notebookEntry.dateModified = moment(data.dateModifiedISO);
-        notebookEntry.forDate = moment(data.forDateISO);
-        notebookEntry.tags = data.tags;
-        notebookEntry.textContent = data.textContent;
-        notebookEntry.title = data.title;
-        notebookEntry.type = data.type;
 
+        let notebookEntry: NotebookEntry = this.buildNoteFromData(data);
+
+
+    
         let notebookEntries = this._notebookEntries$.getValue();
         notebookEntries.push(notebookEntry);
+        this.getTags(notebookEntries);
+        this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
+      });
+
+
+  }
+
+  private updateNotebookEntryHTTP(notebookEntry: NotebookEntry) {
+
+
+    let requestUrl: string = this.serverUrl + "/api/notebook/update";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+
+    let requestBody: any = {
+      id: notebookEntry.id,
+      userId: this._authStatus.user.id,
+      journalDate: notebookEntry.journalDate.toISOString(),
+      dateCreated: notebookEntry.dateCreated.toISOString(),
+      dateModified: notebookEntry.dateModified.toISOString(),
+      type: notebookEntry.type,
+      textContent: notebookEntry.textContent,
+      title: notebookEntry.title,
+      tags: notebookEntry.tags,
+      data: notebookEntry.data,
+    };
+
+
+
+    this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
+      .subscribe((response: { message: string, data: any }) => {
+        let data = response.data;
+
+
+        let updatedNotebookEntry: NotebookEntry = this.buildNoteFromData(data);
+
+
+    
+        let notebookEntries = this._notebookEntries$.getValue();
+        notebookEntries.splice(notebookEntries.indexOf(notebookEntry), 1, updatedNotebookEntry)
+        notebookEntries.push(updatedNotebookEntry);
+        this.getTags(notebookEntries);
         this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
       });
 
@@ -141,16 +196,56 @@ export class NotebooksService {
         // console.log("Response from HTTP delete request:", response)
         let notebookEntries: NotebookEntry[] = this._notebookEntries$.getValue();
         notebookEntries.splice(notebookEntries.indexOf(note),1);
+        this.getTags(notebookEntries);
         this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
       })
   }
 
+  private getTags(notebookEntries: NotebookEntry[]){
+    let tags: string[] = [];
+    for(let notebookEntry of notebookEntries){
+      notebookEntry.tags.forEach((tag: string)=>{
+        if(!tags.includes(tag)){
+          tags.push(tag);
+        }
+      })
+    }
+
+    tags = tags.filter((tag: string)=>{
+      if(tag != ""){
+        return tag;
+      }
+    })
+
+    
+
+    this._tags$.next(tags);
+  }
+
+  private buildNoteFromData(data: any): NotebookEntry {
+    
+    let notebookEntry: NotebookEntry = new NotebookEntry(data._id, data.userId, data.dateCreatedISO, data.type, data.textContent, data.title, data.tags);
+
+        if(data.journalDateISO){
+
+        }else{
+          console.log("No journal Date")
+        }
+
+        notebookEntry.dateModified = moment(data.dateModifiedISO);
+        notebookEntry.journalDate = moment(data.journalDateISO);
+        
+        notebookEntry.data = data.data;
+
+    return notebookEntry;
+  }
+
   private sortNotesByDate(notes: NotebookEntry[]): NotebookEntry[]{
     return notes.sort((note1, note2)=>{
-      if(note1.forDate.isBefore(note2.forDate)){
+      if(note1.journalDate.isBefore(note2.journalDate)){
         return 1
       }
-      if(note1.forDate.isAfter(note2.forDate)){
+      if(note1.journalDate.isAfter(note2.journalDate)){
         return -1;
       }
       return 0;

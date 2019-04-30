@@ -1,7 +1,16 @@
 <div class="notebook-root">
   <div class="header">Notebook Entries</div>
+  <div class="controls">
+    Tags: 
+    <div *ngFor="let tagFilter of tagFilters" class="tag-filter">
+      <fa-icon *ngIf="tagFilter.isChecked" [icon]="faCheckCircle" class="icon-button" (click)="onClickTagCheck(tagFilter)"></fa-icon>
+      <fa-icon *ngIf="!tagFilter.isChecked" [icon]="faCircle" class="icon-button" (click)="onClickTagCheck(tagFilter)"></fa-icon>
+      {{ tagFilter.tag }}
+    </div>
+
+  </div>
   <div class="notebook-entries">
-    <div *ngFor="let notebookEntry of notebookEntries" class="notebook-entry">
+    <div *ngFor="let notebookEntry of filteredNotebookEntries" class="notebook-entry">
       <app-notebook-entry [notebookEntry]="notebookEntry"></app-notebook-entry>
     </div>
   </div>

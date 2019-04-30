@@ -28,6 +28,7 @@ export class NotepadComponent implements OnInit {
 
   private _currentDate: moment.Moment = moment();
 
+
   public get date(): string{
     return this._currentDate.format('YYYY-MM-DD');
   }
@@ -37,7 +38,7 @@ export class NotepadComponent implements OnInit {
   ngOnInit() {
     this.notepadForm = new FormGroup({
       'dateCreated': new FormControl(this._currentDate.format('YYYY-MM-DD'), Validators.required),
-      "title": new FormControl(""),
+      "title": new FormControl("", Validators.required),
       "tags": new FormControl(""),
       "noteBody": new FormControl(null, Validators.required),
     })
@@ -61,18 +62,28 @@ export class NotepadComponent implements OnInit {
 
   onClickSaveNote(){
 
-    let notebookEntry: NotebookEntry = new NotebookEntry();
-    notebookEntry.type = NotebookEntryTypes.Note;
-    notebookEntry.forDate = moment();
-    notebookEntry.dateCreated = moment();
-    notebookEntry.dateModified = moment();
-    notebookEntry.textContent = this.notepadForm.get('noteBody').value;
-    notebookEntry.title = this.notepadForm.get('title').value;
-    let tags: string[] = (this.notepadForm.get('tags').value as string).split(" ");
-    notebookEntry.tags = tags
+    let textContent = this.notepadForm.get('noteBody').value;
+    let title = this.notepadForm.get('title').value;
+    let tags: string[] = this.getTags((this.notepadForm.get('tags').value as string));
+    console.log("tags are:", tags);
+
+    let notebookEntry: NotebookEntry = new NotebookEntry('','', moment(), NotebookEntryTypes.Note, textContent, title, tags);
 
     this.notebooksService.saveNotebookEntry(notebookEntry);
     this.toolsService.closeTool(ToolComponents.Notepad);
   }
+
+
+  private getTags(input: string): string[]{
+    let tags: string[] = input.split(" ");
+    tags = tags.filter((tag)=>{
+      if(tag != "" && tag != " "){
+        return tag;
+      }
+    })
+    return tags;
+  }
+
+
 
 }

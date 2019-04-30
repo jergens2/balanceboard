@@ -127,9 +127,9 @@ export class AuthenticationService {
       })
 
 
-      this.notebookSubscription = this.notebooksService.login$(authStatus).subscribe((notebookEntries: NotebookEntry[]) => {
-        if (notebookEntries != null) {
-          notebookLoginComplete = true;
+      this.notebookSubscription = this.notebooksService.login$(authStatus).subscribe((loginComplete: boolean) => {
+        if (loginComplete != null) {
+          notebookLoginComplete = loginComplete;
         }
       });
 

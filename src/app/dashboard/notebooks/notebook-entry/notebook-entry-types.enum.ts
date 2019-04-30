@@ -1,5 +1,5 @@
 
 export enum NotebookEntryTypes{
     Note,
-    Idea
+    // Idea
 }

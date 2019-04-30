@@ -7,6 +7,7 @@ import { Modal } from '../../../modal/modal.model';
 import { ModalService } from '../../../modal/modal.service';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 import { NotebooksService } from '../notebooks.service';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-notebook-entry',
@@ -16,6 +17,7 @@ import { NotebooksService } from '../notebooks.service';
 export class NotebookEntryComponent implements OnInit, OnDestroy {
 
   faTimes = faTimes;
+  faEdit = faEdit;
 
   @Input() notebookEntry: NotebookEntry;
 
@@ -60,6 +62,19 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
       }
     });
     this.modalService.activeModal = modal;
+  }
+
+  onClickEdit(){
+
+  }
+
+  tags(): string{
+    let tags = "";
+    
+    this.notebookEntry.tags.forEach((tag)=>{
+      tags += tag + " ";
+    })
+    return tags;
   }
 
 }
