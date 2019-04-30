@@ -57,9 +57,11 @@ export class ActivitiesSixWeekViewComponent implements OnInit {
           return 0;
         })
 
+        console.log("Warning: This is incomplete.");
+        let sleepActivity = this.activitiesService.findActivityByTreeId("5b9c362dd71b00180a7cf701_default_sleep")
         thisDaysActivities = thisDaysActivities.filter((activity: any) => {
-          console.log("Warning: This is incomplete.");
-          if (activity.activity != this.activitiesService.findActivityByTreeId("5b9c362dd71b00180a7cf701_default_sleep")) {
+          
+          if (activity.activity != sleepActivity) {
             return activity;
           }
         })

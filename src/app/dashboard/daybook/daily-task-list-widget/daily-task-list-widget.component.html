@@ -1,19 +1,29 @@
-<div class="daily-task-list-root">
-  <div class="header">
-      Daily Task List
-  </div>
-  <div class="daily-task-list-items">
-      <div *ngFor="let dailyTaskListItem of dailyTaskListItems" class="daily-task-list-item" (click)="onClickDailyTaskListItem(dailyTaskListItem)" [ngClass]="{'item-is-checked':dailyTaskListItem.isChecked}">
-          <div>
-              {{ dailyTaskListItem.taskName }}
-          </div>
-          <div *ngIf="dailyTaskListItem.isChecked">
-              <fa-icon [icon]="faCheckCircle"></fa-icon>
-          </div>
-          <div *ngIf="!dailyTaskListItem.isChecked">
-              <fa-icon [icon]="faCircle"></fa-icon>
-          </div>
-      </div>
-  </div>
+<div class="daily-task-list-root" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+    <div class="header">
+        <div class="header-item"></div>
+        <div class="header-item">Daily Task List</div>
+        <div class="header-item">
+            <fa-icon [icon]="faExpand" class="icon-button" (click)="onClickExpand()" *ngIf="mouseOver"></fa-icon>
+        </div>
+
+    </div>
+    <div class="body">
+        <div class="daily-task-list-items">
+            <div *ngFor="let dailyTaskListItem of dailyTaskListItems" class="daily-task-list-item">
+                <div>
+                    {{ dailyTaskListItem.taskName }}
+                </div>
+                <div *ngIf="dailyTaskListItem.isChecked">
+                    <fa-icon [icon]="faCheckCircle" class="icon-button icon-button-green"
+                        (click)="onClickDailyTaskListItem(dailyTaskListItem)"></fa-icon>
+                </div>
+                <div *ngIf="!dailyTaskListItem.isChecked">
+                    <fa-icon [icon]="faCircle" class="icon-button"
+                        (click)="onClickDailyTaskListItem(dailyTaskListItem)"></fa-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </div>

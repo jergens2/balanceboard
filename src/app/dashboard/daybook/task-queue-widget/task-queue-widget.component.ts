@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
 import { Task } from '../../tasks/task/task.model';
 import { TaskService } from '../../tasks/task.service';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 
 import * as moment from 'moment';
@@ -22,6 +22,7 @@ export class TaskQueueWidgetComponent implements OnInit {
   faSpinner = faSpinner;
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
+  faExpand = faExpand;
   // faEdit = faEdit;
 
   constructor(private taskService: TaskService, private modalService: ModalService) { }
@@ -69,6 +70,19 @@ export class TaskQueueWidgetComponent implements OnInit {
   }
   onClickMarkIncomplete(task: Task){
     
+  }
+
+
+  onClickExpand(){
+    console.log("Click Expand");
+  }
+
+  mouseOver:boolean = false;
+  onMouseEnter(){
+    this.mouseOver = true;
+  }
+  onMouseLeave(){
+    this.mouseOver = false;
   }
 
 }

@@ -17,6 +17,7 @@ import { TaskService } from '../dashboard/tasks/task.service';
 import { Day } from '../dashboard/daybook/day.model';
 import { NotebookEntry } from '../dashboard/notebooks/notebook-entry/notebook-entry.model';
 import { NotebooksService } from '../dashboard/notebooks/notebooks.service';
+import { RecurringTasksService } from '../dashboard/scheduling/recurring-tasks/recurring-tasks.service';
 
 
 @Injectable()
@@ -29,15 +30,16 @@ export class AuthenticationService {
   }
 
   constructor(
-    private http: HttpClient, 
-    private activitiesService: ActivitiesService, 
-    private timelogService: TimelogService, 
+    private http: HttpClient,
+    private activitiesService: ActivitiesService,
+    private timelogService: TimelogService,
     private userSettingsService: UserSettingsService,
     private dayTemplatesService: DayTemplatesService,
     private daybookService: DaybookService,
     private notebooksService: NotebooksService,
     private taskService: TaskService,
-    ) {}
+    private recurringTaskService: RecurringTasksService,
+  ) { }
 
   private serverUrl = serverUrl;
 
@@ -52,6 +54,7 @@ export class AuthenticationService {
   private daybookSubscription: Subscription = new Subscription();
   private notebookSubscription: Subscription = new Subscription();
   private taskSubscription: Subscription = new Subscription();
+  private recurringTaskSubscription: Subscription = new Subscription();
 
 
   registerUser$(authData: AuthData): Observable<Object> {
@@ -108,29 +111,35 @@ export class AuthenticationService {
       let activitiesLoginComplete: boolean = false;
       let notebookLoginComplete: boolean = false;
       let taskLoginComplete: boolean = false;
-
+      let recurringTasksLoginComplete: boolean = false;
 
 
       this.userSettingsService.login(authStatus);
-      
-      this.taskSubscription = this.taskService.login$(authStatus).subscribe((loginComplete: boolean)=>{
+
+      this.taskSubscription = this.taskService.login$(authStatus).subscribe((loginComplete: boolean) => {
         taskLoginComplete = loginComplete;
       });
-      
-      
-      this.notebookSubscription = this.notebooksService.login$(authStatus).subscribe((notebookEntries: NotebookEntry[])=>{
-        if(notebookEntries != null){
+
+      this.recurringTaskSubscription = this.recurringTaskService.login$(authStatus).subscribe((loginComplete: boolean) => {
+        if (loginComplete != null) {
+          recurringTasksLoginComplete = loginComplete;
+        }
+      })
+
+
+      this.notebookSubscription = this.notebooksService.login$(authStatus).subscribe((notebookEntries: NotebookEntry[]) => {
+        if (notebookEntries != null) {
           notebookLoginComplete = true;
         }
       });
 
-      this.daybookSubscription = this.daybookService.login$(authStatus).subscribe((day: Day)=>{
-        if(day != null){
+      this.daybookSubscription = this.daybookService.login$(authStatus).subscribe((day: Day) => {
+        if (day != null) {
           daybookLoginComplete = true;
         }
       });
 
-      this.dayTemplatesSubscription = this.dayTemplatesService.login$(authStatus).subscribe(()=>{
+      this.dayTemplatesSubscription = this.dayTemplatesService.login$(authStatus).subscribe(() => {
         dayTemplatesLoginComplete = true;
       });
 
@@ -144,14 +153,14 @@ export class AuthenticationService {
         }
       });
 
-      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete;
+      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete && recurringTasksLoginComplete;
       let timerSubscription: Subscription = new Subscription();
-      
 
 
-      timerSubscription = timer(200,200).subscribe(()=>{
-        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete;
-        if(allComplete){
+
+      timerSubscription = timer(200, 200).subscribe(() => {
+        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete && recurringTasksLoginComplete;
+        if (allComplete) {
 
           this.completeLogin(authStatus);
           timerSubscription.unsubscribe();
@@ -231,6 +240,8 @@ export class AuthenticationService {
     this.dayTemplatesSubscription.unsubscribe();
     this.daybookSubscription.unsubscribe();
     this.notebookSubscription.unsubscribe();
+    this.taskSubscription.unsubscribe();
+    this.recurringTaskSubscription.unsubscribe();
 
     this.timelogService.logout();
     this.activitiesService.logout();
@@ -239,6 +250,7 @@ export class AuthenticationService {
     this.daybookService.logout();
     this.taskService.logout();
     this.notebooksService.logout();
+    this.recurringTaskService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));

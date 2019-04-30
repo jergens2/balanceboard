@@ -1,10 +1,50 @@
 <div class="recurring-tasks-root">
     <div class="header">
-        Scheduling / Recurring Tasks
+        Recurring Tasks
     </div>
     <div class="body">
-        <div *ngFor="let recurringTask of recurringTasks" class="recurring-task">
-            <app-recurring-task [recurringTask]="recurringTask"></app-recurring-task>
-        </div>
+
+        <table style="width:100%;">
+            <tr style="width:100%;border-bottom:1px solid black;">
+                <td>
+                    Time of day
+                </td>
+                <td>
+                    Task
+                </td>
+                <!-- <td>
+                    Start Date
+                </td> -->
+                <!-- <td>
+                    Days
+                </td> -->
+                <td *ngFor="let day of lastSevenDays" style="border-left:1px solid rgb(240, 240, 240);">
+                    <div>{{ day.date.format('MMM') }}</div>
+                    <div>{{ day.date.format('DD') }}</div>
+                </td>
+            </tr>
+            <tr *ngFor="let task of recurringTasks" class="task-row">
+                <td>
+                    {{ task.timeOfDay }}
+                </td>
+                <td>
+                    {{ task.name }}
+                </td>
+                <!-- <td>
+                    {{ task.startDate.format('YYYY-MM-DD') }}
+                </td> -->
+                <!-- <td>
+                    {{ task.frequencyDays }}
+                </td> -->
+                <td *ngFor="let day of lastSevenDays" class="day-check-cell" >
+                    <fa-icon [icon]="faCheck" class="task-check"></fa-icon>
+                </td>
+            </tr>
+        </table>
+
+
+
+
+
     </div>
 </div>
