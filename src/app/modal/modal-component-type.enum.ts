@@ -4,4 +4,5 @@ export enum ModalComponentType{
     Confirm = "CONFIRM",
     TimeSegment = "TIME_SEGMENT",
     Task = "TASK",
+    Note = "NOTE"
 }

@@ -137,7 +137,7 @@ export class NotebooksService {
 
   }
 
-  private updateNotebookEntryHTTP(notebookEntry: NotebookEntry) {
+  updateNotebookEntryHTTP(notebookEntry: NotebookEntry) {
 
 
     let requestUrl: string = this.serverUrl + "/api/notebook/update";
@@ -150,10 +150,10 @@ export class NotebooksService {
 
     let requestBody: any = {
       id: notebookEntry.id,
-      userId: this._authStatus.user.id,
+      userId: notebookEntry.userId,
       journalDate: notebookEntry.journalDate.toISOString(),
       dateCreated: notebookEntry.dateCreated.toISOString(),
-      dateModified: notebookEntry.dateModified.toISOString(),
+      dateModified: moment().toISOString(),
       type: notebookEntry.type,
       textContent: notebookEntry.textContent,
       title: notebookEntry.title,
@@ -169,12 +169,18 @@ export class NotebooksService {
 
 
         let updatedNotebookEntry: NotebookEntry = this.buildNoteFromData(data);
-
-
-    
         let notebookEntries = this._notebookEntries$.getValue();
-        notebookEntries.splice(notebookEntries.indexOf(notebookEntry), 1, updatedNotebookEntry)
-        notebookEntries.push(updatedNotebookEntry);
+
+        let index:number = -1;
+        for(let entry of notebookEntries){
+          if(entry.id == notebookEntry.id){
+            index = notebookEntries.indexOf(entry);
+          }
+        }
+        
+        
+        notebookEntries.splice(index, 1, updatedNotebookEntry)
+        
         this.getTags(notebookEntries);
         this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
       });

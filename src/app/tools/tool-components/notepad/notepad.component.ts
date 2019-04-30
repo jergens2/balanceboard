@@ -75,7 +75,7 @@ export class NotepadComponent implements OnInit {
 
 
   private getTags(input: string): string[]{
-    let tags: string[] = input.split(" ");
+    let tags: string[] = input.toLowerCase().split(" ");
     tags = tags.filter((tag)=>{
       if(tag != "" && tag != " "){
         return tag;

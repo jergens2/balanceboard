@@ -1,0 +1,18 @@
+<div class="notepad-modal-root" [formGroup]="updateNoteForm">
+  <div class="date">
+    {{ notebookEntry.journalDate.format('YYYY-MM-DD') }}
+  </div>
+  <div class="title">
+      <input type="text" formControlName="title" class="input-title">
+  </div>
+  <div class="content">
+    <textarea type="text" formControlName="textContent" class="input-text-content" rows="10"></textarea>
+  </div>
+  <div class="tags">
+    Tags: <input type="text" formControlName="tags" class="input-tags">
+  </div>
+  <div class="controls">
+    <button class="btn btn-primary btn-sm" (click)="onClickSave()" style="margin:5px;">Save</button>
+    <button class="btn btn-secondary btn-sm" (click)="onClickCancel()" style="margin:5px;">Cancel</button>
+  </div>
+</div>

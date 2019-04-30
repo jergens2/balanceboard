@@ -3,7 +3,7 @@
       <div>{{ notebookEntry.journalDate.format('YYYY-MM-DD') }}</div>
       <div *ngIf="mouseOver">
         <fa-icon class="icon-button" [icon]="faEdit" (click)="onClickEdit()" style="margin-right:5px;"></fa-icon>
-        <fa-icon class="icon-button" [icon]="faTimes" (click)="onClickDelete()"></fa-icon>
+        <fa-icon class="icon-button" [icon]="faTrash" (click)="onClickDelete()"></fa-icon>
       </div>
   </div>
 

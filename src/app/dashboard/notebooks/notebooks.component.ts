@@ -49,7 +49,7 @@ export class NotebooksComponent implements OnInit {
     tags.forEach((tag) => {
       this.tagFilters.push({
         tag: tag,
-        isChecked: true,
+        isChecked: false,
       })
     })
     this.tagFilters.push({

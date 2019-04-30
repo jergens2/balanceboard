@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { NotebookEntry } from './notebook-entry.model';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../modal/modal-option.interface';
 import { Modal } from '../../../modal/modal.model';
@@ -16,7 +16,7 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 })
 export class NotebookEntryComponent implements OnInit, OnDestroy {
 
-  faTimes = faTimes;
+  faTrash = faTrash;
   faEdit = faEdit;
 
   @Input() notebookEntry: NotebookEntry;
@@ -65,7 +65,14 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
   }
 
   onClickEdit(){
-
+    this._modalSubscription.unsubscribe();
+    let modalOptions: IModalOption[] = [];
+    let modalData: NotebookEntry = this.notebookEntry;
+    let modal: Modal = new Modal("Edit", modalData, modalOptions, {}, ModalComponentType.Note);
+    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+      console.log("modal Response, selectedOption")
+    });
+    this.modalService.activeModal = modal;
   }
 
   tags(): string{
