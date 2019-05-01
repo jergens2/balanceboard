@@ -45,17 +45,33 @@ export class NotebooksComponent implements OnInit {
   private updateTags(tags: string[]) {
 
     this.tagFilters = [];
-
-    tags.forEach((tag) => {
-      this.tagFilters.push({
-        tag: tag,
-        isChecked: false,
-      })
-    })
     this.tagFilters.push({
       tag: "No tag",
       isChecked: true,
+      count: 0,
     })
+    tags.forEach((tag) => {
+
+      let alreadyContains: boolean = false;
+      this.tagFilters.forEach((tagFilter) => {
+
+        if (tagFilter.tag == tag) {
+          alreadyContains = true;
+          tagFilter.count += 1;
+        }
+
+      });
+      if (!alreadyContains) {
+        this.tagFilters.push({
+          tag: tag,
+          count: 1,
+          isChecked: true,
+        })
+      }
+
+
+    })
+
   }
 
   onClickTagCheck(tagFilter: ITagFilter) {
@@ -75,6 +91,7 @@ export class NotebooksComponent implements OnInit {
         this.tagFilters.forEach((tagFilter) => {
           if (tagFilter.tag == "No tag" && tagFilter.isChecked) {
             filteredEntries.push(notebookEntry);
+            tagFilter.count++;
           }
         })
       }
@@ -84,6 +101,7 @@ export class NotebooksComponent implements OnInit {
           this.tagFilters.forEach((tagFilter) => {
             if (tagFilter.tag == "No tag" && tagFilter.isChecked) {
               filteredEntries.push(notebookEntry);
+              tagFilter.count++;
             }
           })
         }
@@ -105,5 +123,48 @@ export class NotebooksComponent implements OnInit {
     this.filteredNotebookEntries = [];
     this.filteredNotebookEntries = filteredEntries;
   }
+
+
+  sortAlphabetically: boolean = true;
+  onClickSortTags(sortBy: string) {
+    if (sortBy == "ALPHABETICALLY") {
+      this.sortAlphabetically = true;
+      this.tagFilters.sort((tag1, tag2) => {
+        if (tag1.tag < tag2.tag) {
+          return -1;
+        }
+        if (tag1.tag > tag2.tag) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    if (sortBy == "TAG_COUNT") {
+      this.sortAlphabetically = false;
+      this.tagFilters.sort((tag1, tag2) => {
+        if (tag1.count < tag2.count) {
+          return 1;
+        }
+        if (tag1.count > tag2.count) {
+          return -1;
+        }
+        return 0;
+      });
+    }
+  }
+
+  onClickEnableAllTags() {
+    this.tagFilters.forEach((tagFilter) => {
+      tagFilter.isChecked = true;
+    });
+    this.filterNotebookEntries();
+  }
+  onClickDisableAllTags() {
+    this.tagFilters.forEach((tagFilter) => {
+      tagFilter.isChecked = false;
+    });
+    this.filterNotebookEntries();
+  }
+
 
 }

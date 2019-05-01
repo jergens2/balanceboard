@@ -21,12 +21,28 @@
     flex-wrap: wrap;
 }
 
+.tag-controls{
+    display:flex;
+    flex-direction: column;
+}
+.sort-controls{
+    display:flex;
+    flex-direction: row;
+}
+.tags{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 .tag-filter{
     background-color: rgb(226, 255, 236);
     border-radius:10px;
     margin-left:10px;
     font-size:0.9em;
     padding:3px;
+    display:flex;
+    flex-direction: row;
 }
 
 .icon-button{

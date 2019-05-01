@@ -10,6 +10,6 @@
   <div style="font-weight:bold;">{{ notebookEntry.title }}</div>
   <div class="note-text">{{ notebookEntry.textContent }}</div>
   <div class="tags">
-    <span style="font-size:0.8em;font-weight:normal;color:gray;">Tags: </span>{{ notebookEntry.tags.toString() }}
+    <span style="font-size:0.8em;font-weight:normal;color:gray;">Tags: </span><div *ngFor="let tag of notebookEntry.tags" class="tag"> {{ tag }} </div>
   </div>
 </div>

@@ -1,12 +1,47 @@
 <div class="notebook-root">
   <div class="header">Notebook Entries</div>
   <div class="controls">
-    Tags: 
-    <div *ngFor="let tagFilter of tagFilters" class="tag-filter">
-      <fa-icon *ngIf="tagFilter.isChecked" [icon]="faCheckCircle" class="icon-button" (click)="onClickTagCheck(tagFilter)"></fa-icon>
-      <fa-icon *ngIf="!tagFilter.isChecked" [icon]="faCircle" class="icon-button" (click)="onClickTagCheck(tagFilter)"></fa-icon>
-      {{ tagFilter.tag }}
+    <div class="tag-controls">
+      <div class="tag-header">
+        Tags
+      </div>
+      <div>
+        <button class="btn btn-sm btn-success" (click)="onClickEnableAllTags()" style="margin:3px;">Enable all</button>
+        <button class="btn btn-sm btn-secondary" (click)="onClickDisableAllTags()" style="margin:3px;">Disable
+          all</button>
+      </div>
+      <div class="sort-controls">
+        <div style="margin-right:5px;">Sort tags:</div>
+        <div style="margin-right:5px;">
+          <fa-icon [icon]="faCheckCircle" *ngIf="sortAlphabetically" class="icon-button"></fa-icon>
+          <fa-icon [icon]="faCircle" *ngIf="!sortAlphabetically" class="icon-button"
+            (click)="onClickSortTags('ALPHABETICALLY')"></fa-icon>
+          Alphabetically
+        </div>
+        <div style="margin-right:5px;">
+          <fa-icon [icon]="faCheckCircle" *ngIf="!sortAlphabetically" class="icon-button"></fa-icon>
+          <fa-icon [icon]="faCircle" *ngIf="sortAlphabetically" class="icon-button"
+            (click)="onClickSortTags('TAG_COUNT')"></fa-icon>
+          By tag count
+        </div>
+      </div>
+      <div class="tags">
+        <div *ngFor="let tagFilter of tagFilters" class="tag-filter">
+          <fa-icon *ngIf="tagFilter.isChecked" [icon]="faCheckCircle" class="icon-button" style="margin-right:3px;"
+            (click)="onClickTagCheck(tagFilter)"></fa-icon>
+          <fa-icon *ngIf="!tagFilter.isChecked" [icon]="faCircle" class="icon-button" style="margin-right:3px;"
+            (click)="onClickTagCheck(tagFilter)"></fa-icon>
+          <div style="margin-right:3px;">
+              {{ tagFilter.tag }}
+          </div>
+          <div style="margin-right:3px;">
+            ({{tagFilter.count}})
+          </div>
+        </div>
+      </div>
+
     </div>
+
 
   </div>
   <div class="notebook-entries">

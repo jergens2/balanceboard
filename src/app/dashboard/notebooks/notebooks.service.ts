@@ -211,9 +211,7 @@ export class NotebooksService {
     let tags: string[] = [];
     for(let notebookEntry of notebookEntries){
       notebookEntry.tags.forEach((tag: string)=>{
-        if(!tags.includes(tag)){
           tags.push(tag);
-        }
       })
     }
 
@@ -223,7 +221,15 @@ export class NotebooksService {
       }
     })
 
-    
+    tags.sort((tag1, tag2)=>{
+      if(tag1 < tag2){
+        return -1;
+      }
+      if(tag1 > tag2){
+        return 1;
+      }
+      return 0;
+    })
 
     this._tags$.next(tags);
   }

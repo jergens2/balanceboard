@@ -6,11 +6,7 @@
       </div>
     </div>
     <div class="app-modal-body">
-      <app-default-modal *ngIf="modal.modalComponentType == 'DEFAULT'">
-        
-      </app-default-modal>
-      <app-primary-objective-modal *ngIf="modal.modalComponentType == 'PRIMARY_OBJECTIVE'">
-      </app-primary-objective-modal>
+      <app-default-modal *ngIf="modal.modalComponentType == 'DEFAULT'"></app-default-modal>
 
       <app-notepad-modal *ngIf="modal.modalComponentType == 'NOTE'" ></app-notepad-modal>
 
