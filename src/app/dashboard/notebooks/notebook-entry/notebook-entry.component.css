@@ -17,6 +17,8 @@
 .note-text{
     flex-grow:2;
     overflow-y: auto;
+    border:none;
+    resize: none;
 }
 .tags{
     font-weight:bold;

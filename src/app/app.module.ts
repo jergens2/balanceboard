@@ -1,4 +1,3 @@
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
@@ -61,7 +60,6 @@ import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notep
   ],
   providers: [
     AuthenticationService,
-    NgbModule,
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]

@@ -58,6 +58,7 @@ import { SchedulingComponent } from './scheduling/scheduling.component';
 import { RecurringTasksComponent } from './scheduling/recurring-tasks/recurring-tasks.component';
 import { ScheduleRotationsComponent } from './scheduling/schedule-rotations/schedule-rotations.component';
 import { ActivitiesSixWeekViewComponent } from './activities/activities-six-week-view/activities-six-week-view.component';
+import { ActivityChartComponent } from './activities/activity-display/activity-chart/activity-chart.component';
 
 
 
@@ -124,6 +125,7 @@ import { ActivitiesSixWeekViewComponent } from './activities/activities-six-week
     ScheduleRotationsComponent,
     RecurringTasksComponent,
     ActivitiesSixWeekViewComponent,
+    ActivityChartComponent,
     
   ],
   providers: [],

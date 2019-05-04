@@ -16,6 +16,10 @@
         <div *ngIf="action == 'view'">
 
           <div class="activity-body-component">
+            <app-activity-chart [activity]="activity"></app-activity-chart>
+          </div>
+
+          <div class="activity-body-component">
             <app-activity-six-week-view [activityInstances]="activityInstances" [activity]="activity"></app-activity-six-week-view>
           </div>
 
