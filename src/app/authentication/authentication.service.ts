@@ -55,6 +55,7 @@ export class AuthenticationService {
   private notebookSubscription: Subscription = new Subscription();
   private taskSubscription: Subscription = new Subscription();
   private recurringTaskSubscription: Subscription = new Subscription();
+  private timelogSubscription: Subscription = new Subscription();
 
 
   registerUser$(authData: AuthData): Observable<Object> {
@@ -133,9 +134,9 @@ export class AuthenticationService {
         }
       });
 
-      this.daybookSubscription = this.daybookService.login$(authStatus).subscribe((day: Day) => {
-        if (day != null) {
-          daybookLoginComplete = true;
+      this.daybookSubscription = this.daybookService.login$(authStatus).subscribe((loginComplete: boolean) => {
+        if (loginComplete != null) {
+          daybookLoginComplete = loginComplete;
         }
       });
 
@@ -145,8 +146,13 @@ export class AuthenticationService {
 
       this.activitiesSubscription = this.activitiesService.login$(authStatus).subscribe((activityTree: ActivityTree) => {
         if (activityTree != null) {
-          this.timelogService.login(authStatus)
-          activitiesLoginComplete = true;
+          this.timelogSubscription = this.timelogService.login$(authStatus).subscribe((loginComplete: boolean)=>{
+            if(loginComplete != null){
+              activitiesLoginComplete = loginComplete;
+            }
+           
+          })
+          
 
         } else {
           // console.log("activityTree was null");
@@ -242,6 +248,7 @@ export class AuthenticationService {
     this.notebookSubscription.unsubscribe();
     this.taskSubscription.unsubscribe();
     this.recurringTaskSubscription.unsubscribe();
+    this.timelogSubscription.unsubscribe();
 
     this.timelogService.logout();
     this.activitiesService.logout();

@@ -34,12 +34,12 @@ export class Day{
         return moment(this._date);
     }
 
-    dateISO: string;
+    dateYYYYMMDD: string;
 
-    constructor(id: string, userId: string, dateISO: string){
+    constructor(id: string, userId: string, dateYYYYMMDD: string){
         this.id = id;
         this.userId = userId;
-        this._date = moment(dateISO).hour(0).minute(0).second(0).millisecond(0);
-        this.dateISO = dateISO;
+        this._date = moment(dateYYYYMMDD).hour(0).minute(0).second(0).millisecond(0);
+        this.dateYYYYMMDD = dateYYYYMMDD;
     }
 }

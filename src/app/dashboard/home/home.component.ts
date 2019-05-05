@@ -92,11 +92,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           let day: Day = new Day('','', currentDate.format('YYYY-MM-DD'));
           day.activityData = activityData;
           day.timeSegmentData = timeSegmentData;
-          console.log("Saving day:", day.dateISO);
+          console.log("Saving day:", day.dateYYYYMMDD);
 
-          this.daybookService.saveDayHTTP(day).subscribe((response)=>{
-            console.log("After saving daY: ", response);
-          });
+          this.daybookService.saveDayHTTP(day);
 
           timeSegmentData = [];
           activityData = [];
@@ -133,11 +131,9 @@ export class HomeComponent implements OnInit, OnDestroy {
           let day: Day = new Day('','', currentDate.format('YYYY-MM-DD'));
           day.activityData = activityData;
           day.timeSegmentData = timeSegmentData;
-          console.log("Saving day:", day.dateISO);
+          console.log("Saving day:", day.dateYYYYMMDD);
 
-          this.daybookService.saveDayHTTP(day).subscribe((response)=>{
-            console.log("After saving daY: ", response);
-          });
+          this.daybookService.saveDayHTTP(day);
 
     })
     

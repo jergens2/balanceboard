@@ -21,13 +21,34 @@ export class DaybookService {
   private serverUrl = serverUrl;
 
   private _authStatus: AuthStatus;
-  login$(authStatus: AuthStatus): Observable<Day>{
+  private _loginComplete$: Subject<boolean> = new Subject();
+  login$(authStatus: AuthStatus): Observable<boolean>{
     this._authStatus = authStatus;
-    return this.setDate$(moment());
+    
+    //old method
+    this.setDate$(moment());
+  
+
+    //new method
+    this.getLast365Days();
+
+    return this._loginComplete$;
+  
   }
 
   logout() {
     this._authStatus = null;
+  }
+
+
+
+  private getLast365Days(){
+    
+    this.getDaysInRange$(moment().subtract(365, "days"), moment()).subscribe((days: Day[])=>{
+      this._last365Days$.next(days);
+      this._loginComplete$.next(true);
+    })
+    
   }
 
 
@@ -44,6 +65,13 @@ export class DaybookService {
     return moment(this._currentDay$.getValue().date);
   }
 
+  private _last365Days$: BehaviorSubject<Day[]> = new BehaviorSubject(null);
+  public get last365Days(): Day[] {
+    return this._last365Days$.getValue();
+  }
+  public get last365Days$(): Observable<Day[]> {
+    return this._last365Days$.asObservable();
+  }
   private _currentDay$: BehaviorSubject<Day> = new BehaviorSubject(null);
   public get currentDay(): Day {
     console.log("current value of day from service: ", this._currentDay$.getValue());
@@ -97,10 +125,10 @@ export class DaybookService {
         })
 
         days.sort((day1, day2)=>{
-          if(day1.dateISO < day2.dateISO){
+          if(day1.dateYYYYMMDD < day2.dateYYYYMMDD){
             return -1;
           }
-          if(day1.dateISO > day2.dateISO){
+          if(day1.dateYYYYMMDD > day2.dateYYYYMMDD){
             return 1;
           }
           return 0;
@@ -151,7 +179,7 @@ export class DaybookService {
 
   }
 
-  saveDayHTTP(day: Day): Observable<Day>{
+  saveDayHTTP(day: Day){
     console.log("Saving day: ", day);
 
     let requestUrl: string = "";
@@ -195,11 +223,34 @@ export class DaybookService {
 
     }
 
-    return this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
       .pipe<Day>(map((response) => {
         let rd: any = response.data;
-        return new Day(rd._id, rd.userId, rd.dateYYYYMMDD);
-      }));
+        let day: Day = new Day(rd._id, rd.userId, rd.dateYYYYMMDD)
+        
+        day.activityData = rd.activityData;
+        day.dailyTaskListData = rd.dailyTaskListData;
+        day.taskData = rd.taskData;
+        day.timeSegmentData = rd.timeSegmentData;
+        
+        return day;
+      }))
+      .subscribe((savedDay)=>{
+        console.log("Day saved", savedDay);
+        let last365Days: Day[] = this._last365Days$.getValue();
+        let index:number = -1;
+        last365Days.forEach((existingDay)=>{
+          if(day.id == existingDay.id){
+            index = last365Days.indexOf(existingDay);
+          }
+        });
+        if(index>=0){
+          last365Days.splice(index,1,savedDay);
+        }
+
+        this._last365Days$.next(last365Days);
+
+      })
 
   }
 

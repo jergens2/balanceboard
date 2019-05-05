@@ -23,13 +23,25 @@ export class YearViewComponent implements OnInit {
 
   ngOnInit() {
 
+    /*
+      Simple method of improved performance:
+      
+      Instead of pulling the days asynchronously at this time with daybookService, pull them on login and store them in memory.
 
+      as of this writing, it takes approximately 300ms to run buildData() which is fast enough.  
+      The part that takes a long while is the async loading, which takes about 800ms
+
+
+    */
 
 
     let currentMonth = moment().startOf("year");
+
     this.daybookService.getDaysInRange$(moment(currentMonth), moment(currentMonth).endOf("year")).subscribe((days: Day[]) => {
+
       this.allDays = days;
       this.buildData(this.allDays);
+
     });
 
 
@@ -38,6 +50,9 @@ export class YearViewComponent implements OnInit {
 
 
   private buildData(allDays: Day[]) {
+
+
+
     let months: any[] = [];
     let currentMonth = moment().startOf("year");
 
@@ -60,7 +75,7 @@ export class YearViewComponent implements OnInit {
 
         let dayStyle: any = {};
         let dayObject = allDays.find((dayObject: Day) => {
-          return dayObject.dateISO == currentDay.format('YYYY-MM-DD');
+          return dayObject.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
         })
 
         if(dayObject){
@@ -96,18 +111,17 @@ export class YearViewComponent implements OnInit {
 
 
   private buildDayStyle(dayObject: Day){
-    let style: any;
+    let style: any = {};
     let activity:UserDefinedActivity; 
     if(dayObject.activityData){
-      activity = this.activitiesService.findActivityByTreeId(dayObject.activityData[1].activityTreeId);
-      style = {
-        "background-color":activity.color,
+      if(dayObject.activityData.length >= 1){
+        activity = this.activitiesService.findActivityByTreeId(dayObject.activityData[1].activityTreeId);
+        style = {
+          "background-color":activity.color,
+        }
       }
-    }
-    
-    
+    }  
     return style;
-
   }
 
   dayData(day: { dayDate: moment.Moment, dayObject: Day, dayStyle: any }): string {
