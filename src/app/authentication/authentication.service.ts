@@ -14,7 +14,7 @@ import { UserSettingsService } from '../user-settings/user-settings.service';
 import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
 import { DaybookService } from '../dashboard/daybook/daybook.service';
 import { TaskService } from '../dashboard/tasks/task.service';
-import { Day } from '../dashboard/daybook/day.model';
+import { Day } from '../dashboard/daybook/day/day.model';
 import { NotebookEntry } from '../dashboard/notebooks/notebook-entry/notebook-entry.model';
 import { NotebooksService } from '../dashboard/notebooks/notebooks.service';
 import { RecurringTasksService } from '../dashboard/scheduling/recurring-tasks/recurring-tasks.service';

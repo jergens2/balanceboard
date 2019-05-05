@@ -40,6 +40,13 @@ export class SchedulingComponent implements OnInit {
         description: '',
         icon: null,
       },
+      {
+        title: 'Year View',
+        mouseOver: false,
+        routerLink: '/year',
+        description: '',
+        icon: null,
+      },
     ]
   }
 

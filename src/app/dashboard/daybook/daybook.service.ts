@@ -3,7 +3,7 @@ import { serverUrl } from '../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { Day } from './day.model';
+import { Day } from './day/day.model';
 import { map } from 'rxjs/operators';
 
 
@@ -55,25 +55,69 @@ export class DaybookService {
 
 
 
-  public setPrimaryTask(task: Task, date: moment.Moment) {
-    // console.log("setting primary task for date:", date.format('YYYY-MM-DD'))
-    if(this._currentDay$.getValue() != null){
-      if (this._currentDay$.getValue().date.format('YYYY-MM-DD') == date.format('YYYY-MM-DD')) {
+  // public setPrimaryTask(task: Task, date: moment.Moment) {
+  //   // console.log("setting primary task for date:", date.format('YYYY-MM-DD'))
+  //   if(this._currentDay$.getValue() != null){
+  //     if (this._currentDay$.getValue().date.format('YYYY-MM-DD') == date.format('YYYY-MM-DD')) {
 
-        let first = this._currentDay$.getValue().primaryTask;
-        this._currentDay$.getValue().primaryTask = task;
-        let second = this._currentDay$.getValue().primaryTask;
-        console.log("Task set, compare first to second: ", first, second);
-        this.saveDayHTTP(this._currentDay$.getValue());
+  //       let first = this._currentDay$.getValue().primaryTask;
+  //       this._currentDay$.getValue().primaryTask = task;
+  //       let second = this._currentDay$.getValue().primaryTask;
+  //       console.log("Task set, compare first to second: ", first, second);
+  //       this.saveDayHTTP(this._currentDay$.getValue());
   
-      } else {
-        console.log("Error: dates are not the same :(");
-      }
-    }else{
-      console.log("Error: day value is null.  This shouldn't happen.");
-    }
-  }
+  //     } else {
+  //       console.log("Error: dates are not the same :(");
+  //     }
+  //   }else{
+  //     console.log("Error: day value is null.  This shouldn't happen.");
+  //   }
+  // }
 
+  public getDaysInRange$(startDate: moment.Moment, endDate: moment.Moment):Observable<Day[]>{
+    const getUrl = this.serverUrl + "/api/day/" + this._authStatus.user.id + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'  
+      })
+    };
+    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+      .pipe<Day[]>(map((response: { message: string, data: any[] }) => {
+
+        let days: Day[] = [];
+
+        response.data.forEach((data)=>{
+          let day = new Day(data._id, data._userId, data.dateYYYYMMDD)
+          day.activityData = data.activityData;
+          day.dailyTaskListData = data.dailyTaskListData;
+          day.taskData = data.taskData;
+          day.timeSegmentData = data.timeSegmentData;
+          days.push(day);
+        })
+
+        days.sort((day1, day2)=>{
+          if(day1.dateISO < day2.dateISO){
+            return -1;
+          }
+          if(day1.dateISO > day2.dateISO){
+            return 1;
+          }
+          return 0;
+        })
+
+        console.log("Returning days: ", days);
+        // for(let (dayData as any) in (daysData as any[])){
+
+        //   let day = new Day(dayData._id, dayData._userId, dayData.dateYYYYMMDD)
+
+        //   days.push();
+        // }
+        
+
+        return days;
+      }))
+  }
 
   public getDayHTTP(date: moment.Moment) {
     const getUrl = this.serverUrl + "/api/day/" + this._authStatus.user.id + "/" + date.format('YYYY-MM-DD');
@@ -86,20 +130,10 @@ export class DaybookService {
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<Day>(map((response: { message: string, data: any }) => {
 
-        let dayData: any = response.data.day;
-        let poData: any = response.data.task;
+        let dayData: any = response.data;
 
-        let primaryTask: Task = null;
-        if(poData){
-          primaryTask = new Task(poData._id, poData.userId, poData.title, poData.description, moment(poData.startDateISO), moment(poData.dueDateISO));
-          if (poData.isComplete as boolean) {
-            primaryTask.markComplete(moment(poData.completionDateISO));
-          }
-        }else{
-
-        }
         
-        let day = new Day(dayData._id, dayData._userId, dayData.dateYYYYMMDD, primaryTask);
+        let day = new Day(dayData._id, dayData._userId, dayData.dateYYYYMMDD);
         return day;
       }))
       .subscribe((day: Day) => {
@@ -107,7 +141,7 @@ export class DaybookService {
         this._currentDay$.next(day);
       }, (error) => {
         if (error.status == 404) {
-          let day = new Day('', this._authStatus.user.id, moment(date), null);
+          let day = new Day('', this._authStatus.user.id, moment(date).format('YYYY-MM-DD'));
           // console.log("error 404. creating new Day.  Nexting new day value")
           this._currentDay$.next(day);
         }else{
@@ -117,7 +151,7 @@ export class DaybookService {
 
   }
 
-  private saveDayHTTP(day: Day) {
+  saveDayHTTP(day: Day): Observable<Day>{
     console.log("Saving day: ", day);
 
     let requestUrl: string = "";
@@ -128,19 +162,20 @@ export class DaybookService {
       })
     };
     let requestBody: any = {};
-    let primaryTaskId = ""; 
-    if(day.primaryTask){
-      primaryTaskId = day.primaryTask.id;
-    }
+
+
     if (day.id == "") {
       //Save day
       requestUrl = this.serverUrl + "/api/day/create";
 
 
       requestBody = {
-        userId: day.userId,
+        userId: this._authStatus.user.id,
         dateYYYYMMDD: day.date.format('YYYY-MM-DD'),
-        primaryTaskId: primaryTaskId
+        activityData: day.activityData,
+        dailyTaskListData: day.dailyTaskListData,
+        taskData: day.taskData,
+        timeSegmentData: day.timeSegmentData
       };
     } else {
       //Update day
@@ -149,21 +184,22 @@ export class DaybookService {
         id: day.id,
         userId: day.userId,
         dateYYYYMMDD: day.date.format('YYYY-MM-DD'),
-        primaryTaskId: primaryTaskId
+        activityData: day.activityData,
+        dailyTaskListData: day.dailyTaskListData,
+        taskData: day.taskData,
+        timeSegmentData: day.timeSegmentData
       };
+
+
+
+
     }
 
-    this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
+    return this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
       .pipe<Day>(map((response) => {
         let rd: any = response.data;
-        return new Day(rd._id, rd.userId, moment(rd.dateYYYYMMDD), day.primaryTask);
-      }))
-      .subscribe((day: Day) => {
-        this._currentDay$.next(day);
-      });
-
-
-
+        return new Day(rd._id, rd.userId, rd.dateYYYYMMDD);
+      }));
 
   }
 

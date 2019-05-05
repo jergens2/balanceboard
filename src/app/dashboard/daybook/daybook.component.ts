@@ -7,7 +7,7 @@ import { HeaderService } from '../../nav/header/header.service';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
 import { ITimeSegmentFormData } from './time-segment-form/time-segment-form-data.interface';
-import { Day } from './day.model';
+import { Day } from './day/day.model';
 import { DaybookService } from './daybook.service';
 
 @Component({

@@ -17,6 +17,7 @@ import { TasksComponent } from "./dashboard/tasks/tasks.component";
 import { SchedulingComponent } from "./dashboard/scheduling/scheduling.component";
 import { ScheduleRotationsComponent } from "./dashboard/scheduling/schedule-rotations/schedule-rotations.component";
 import { RecurringTasksComponent } from "./dashboard/scheduling/recurring-tasks/recurring-tasks.component";
+import { YearViewComponent } from "./dashboard/scheduling/year-view/year-view.component";
 
 
 const appRoutes: Routes = [
@@ -43,6 +44,7 @@ const appRoutes: Routes = [
     { path: 'schedule-rotations', component: ScheduleRotationsComponent },
     { path: 'day-templates', component: DayTemplatesComponent },
     { path: 'recurring-tasks', component: RecurringTasksComponent },
+    { path: 'year', component: YearViewComponent }
 
 
 

@@ -1,0 +1,35 @@
+.year-view-root{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+}
+.header{
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+}
+.body{
+    flex-grow:2;
+
+}
+.months{
+    width:100%;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+}
+.month-container{
+    width:100%;
+    height:100%;
+    padding:2px;
+}
+.month{
+    width:100%;
+    border:1px solid gray;
+    background-color: rgb(248, 255, 218);
+    display:flex;
+    flex-direction: column;
+}
+.month-header{
+    font-size: 1.1em;
+}

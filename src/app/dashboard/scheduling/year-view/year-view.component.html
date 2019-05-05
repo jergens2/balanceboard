@@ -1,0 +1,21 @@
+<div class="year-view-root">
+  <div class="header">
+    {{ currentYear }}
+  </div>
+  <div class="body">
+    <div *ngIf="months" class="months">
+      <div *ngFor="let month of months" class="month-container">
+        <div class="month">
+          <div class="month-header">
+              {{ month.month.format('MMM') }}
+          </div>
+          <div class="month-body">
+
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+</div>

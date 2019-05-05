@@ -1,18 +1,18 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
-import { Task } from '../../tasks/task/task.model';
+import { Task } from '../../../tasks/task/task.model';
 
 import * as moment from 'moment';
-import { ModalService } from '../../../modal/modal.service';
+import { ModalService } from '../../../../modal/modal.service';
 import { Subscription } from 'rxjs';
-import { IModalOption } from '../../../modal/modal-option.interface';
-import { Modal } from '../../../modal/modal.model';
-import { ModalComponentType } from '../../../modal/modal-component-type.enum';
+import { IModalOption } from '../../../../modal/modal-option.interface';
+import { Modal } from '../../../../modal/modal.model';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { DaybookService } from '../daybook.service';
-import { Day } from '../day.model';
+import { DaybookService } from '../../daybook.service';
+import { Day } from '../../day/day.model';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
-import { TaskService } from '../../tasks/task.service';
+import { TaskService } from '../../../tasks/task.service';
 import { PrimaryObjectiveService } from './primary-objective.service';
 
 @Component({
@@ -45,7 +45,7 @@ export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
       this.loading = true;
       this._currentDay = day;
       
-      this.task = this._currentDay.primaryTask;
+
       // console.log("updating task here", this.task)
       this.loading = false;
     })

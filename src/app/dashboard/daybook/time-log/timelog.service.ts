@@ -217,6 +217,7 @@ export class TimelogService {
             */
             console.log("this shit must be old");
             timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.timeISO, dataObject.timeISO, dataObject.description);
+            return;
           }
           timeSegment.description = dataObject.description;
 
@@ -227,7 +228,8 @@ export class TimelogService {
               timeSegment.activities = this.buildTimeSegmentActivities(activities, timeSegment.startTime, timeSegment.endTime);
             } else {
               console.log("this shit must be old");
-              timeSegment.receiveOldActivities(dataObject.activities as UserDefinedActivity[])
+              // timeSegment.receiveOldActivities(dataObject.activities as UserDefinedActivity[])
+              return;
             }
           }
 

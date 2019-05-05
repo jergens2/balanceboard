@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
-import { RecurringTasksService } from '../../scheduling/recurring-tasks/recurring-tasks.service';
-import { RecurringTask } from '../../scheduling/recurring-tasks/recurring-task.model';
+import { RecurringTasksService } from '../../../scheduling/recurring-tasks/recurring-tasks.service';
+import { RecurringTask } from '../../../scheduling/recurring-tasks/recurring-task.model';
 
 @Component({
   selector: 'app-daily-task-list-widget',

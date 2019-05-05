@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
-import { Task } from '../../tasks/task/task.model';
-import { TaskService } from '../../tasks/task.service';
+import { Task } from '../../../tasks/task/task.model';
+import { TaskService } from '../../../tasks/task.service';
 import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 
 import * as moment from 'moment';
-import { Modal } from '../../../modal/modal.model';
-import { ModalComponentType } from '../../../modal/modal-component-type.enum';
-import { IModalOption } from '../../../modal/modal-option.interface';
-import { ModalService } from '../../../modal/modal.service';
+import { Modal } from '../../../../modal/modal.model';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
+import { IModalOption } from '../../../../modal/modal-option.interface';
+import { ModalService } from '../../../../modal/modal.service';
 
 @Component({
   selector: 'app-task-queue-widget',

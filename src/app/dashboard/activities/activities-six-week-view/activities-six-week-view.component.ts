@@ -6,6 +6,8 @@ import { TimeSegment } from '../../daybook/time-log/time-segment-tile/time-segme
 import { TimeSegmentActivity } from '../../daybook/time-log/time-segment-activity.model';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { UserDefinedActivity } from '../user-defined-activity.model';
+import { DaybookService } from '../../daybook/daybook.service';
+import { Day } from '../../daybook/day/day.model';
 
 @Component({
   selector: 'app-activities-six-week-view',
@@ -17,97 +19,71 @@ export class ActivitiesSixWeekViewComponent implements OnInit {
   faSpinner = faSpinner;
   loading: boolean = true;
 
-  constructor(private activitiesService: ActivitiesService, private timelogService: TimelogService) { }
+  constructor(private activitiesService: ActivitiesService, private timelogService: TimelogService, private daybookService: DaybookService) { }
 
-  days: any[] = [];
+  daysOfSixWeeks: Day[] = [];
 
   ngOnInit() {
+
+
+    
 
     let startDate: moment.Moment = moment().startOf('week').subtract(5, 'weeks');
     let endDate: moment.Moment = moment().endOf('week');
 
-    this.timelogService.fetchTimeSegmentsByRange$(startDate, endDate).subscribe((timeSegments: TimeSegment[]) => {
-      let currentDate: moment.Moment = moment(startDate);
+    console.log("start date is:", startDate);
+    console.log("end date is :", endDate);
 
 
-      let days: any[] = [];
+    this.daybookService.getDaysInRange$(startDate, endDate).subscribe((days: Day[])=>{
+      console.log("Range data is ", days);  
+      days.forEach((day)=>{
+        console.log(day.date.format('YYYY-MM-DD'))
+      })
 
-      while (currentDate.isBefore(endDate)) {
-        let startOfDay: moment.Moment = moment(currentDate).startOf("day");
-        let endOfDay: moment.Moment = moment(currentDate).endOf("day");
-
-        let thisDaysActivities: any[] = [];
-
-        for (let timeSegment of timeSegments) {
-          if ((timeSegment.startTime.isSameOrAfter(startOfDay) && timeSegment.startTime.isSameOrBefore(endOfDay)) || (timeSegment.endTime.isSameOrAfter(startOfDay) && timeSegment.endTime.isSameOrBefore(endOfDay))) {
-
-            thisDaysActivities = this.getActivityDayData(thisDaysActivities, currentDate, timeSegment);
-
-
-          }
-        }
-
-        thisDaysActivities.sort((a1, a2) => {
-          if (a1.duration > a2.duration) {
-            return -1;
-          }
-          if (a1.duration < a2.duration) {
-            return 1;
-          }
-          return 0;
-        })
-
-        console.log("Warning: This is incomplete.");
-        let sleepActivity = this.activitiesService.findActivityByTreeId("5b9c362dd71b00180a7cf701_default_sleep")
-        thisDaysActivities = thisDaysActivities.filter((activity: any) => {
-          
-          if (activity.activity != sleepActivity) {
-            return activity;
-          }
-        })
-
-
-        let topActivity: UserDefinedActivity = null;
-        if (thisDaysActivities.length > 0) {
-          topActivity = thisDaysActivities[0].activity;
-        }
-
-        let day: any = {
-          date: currentDate,
-          topActivity: topActivity,
-        }
-
-        days.push(day);
-        currentDate = moment(currentDate).add(1, 'days');
-      }
-
+      this.daysOfSixWeeks = days;
       this.loading = false;
-      this.days = days;
+
     })
+
+
 
   }
 
-  public activityName(day: any): string {
-    if (day.topActivity != null) {
-      let activity: UserDefinedActivity = day.topActivity as UserDefinedActivity;
-      return activity.name;
+  public topActivity(day: Day): string {
+    if (day.activityData != null) {
+      if(day.activityData.length > 0){
+        if(day.activityData.length > 1){
+          return this.activitiesService.findActivityByTreeId(day.activityData[1].activityTreeId).name
+        }
+      }else{
+        return this.activitiesService.findActivityByTreeId(day.activityData[0].activityTreeId).name
+      }
     } else {
       return "";
     }
 
   }
 
-  public dayStyle(day: any): any {
-    // console.log("dayStyle: ", day)
-    if (day.topActivity != null) {
-      let color: string = (day.topActivity as UserDefinedActivity).color;
-      // console.log("color is ", this.transparentColor(color));
-      return {
-        "background-color": this.transparentColor(color, 0.1),
-        "border": "2px solid " + this.transparentColor(color, 1.0),
+  public dayStyle(day: Day): any {
+    if (day.activityData != null) {
+      if(day.activityData.length > 0){
+        if(day.activityData.length > 1){
+          let color = this.activitiesService.findActivityByTreeId(day.activityData[1].activityTreeId).color
+          return {
+            "background-color": this.transparentColor(color, 0.1),
+            "border": "2px solid " + this.transparentColor(color, 1.0),
+          }
+        }
+      }else{
+        let color = this.activitiesService.findActivityByTreeId(day.activityData[0].activityTreeId).color
+        return {
+          "background-color": this.transparentColor(color, 0.1),
+          "border": "2px solid " + this.transparentColor(color, 1.0),
+        }
       }
     } else {
-      return {};
+      return "";
     }
   }
 
