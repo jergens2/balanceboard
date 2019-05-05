@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { AuthenticationService } from './authentication/authentication.service';
 import { AuthStatus } from './authentication/auth-status.model';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -8,13 +8,16 @@ import { ModalService } from './modal/modal.service';
 import { Modal } from './modal/modal.model';
 import { ToolsService } from './tools/tools.service';
 import { ToolComponents } from './tools/tool-components.enum';
+import { SizeService } from './shared/app-screen-size/size.service';
+import { AppScreenSize } from './shared/app-screen-size/app-screen-size.enum';
+import { OnScreenSizeChanged } from './shared/on-screen-size-changed.interface';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnScreenSizeChanged {
 
   faSpinner = faSpinner;
 
@@ -27,34 +30,49 @@ export class AppComponent implements OnInit {
   ifTools: boolean = false;
 
   constructor(
-    private authService: AuthenticationService, 
-    private userSettingsService: UserSettingsService, 
+    private authService: AuthenticationService,
+    private sizeService: SizeService,
+    private userSettingsService: UserSettingsService,
     private modalService: ModalService,
     private toolsService: ToolsService,
-    ) { }
+  ) { }
+
+  @HostListener('window:resize', ['$event']) onResize(event) {
+    let innerWidth = event.target.innerWidth;
+    let innerHeight = event.target.innerHeight;
+    this.sizeService.updateSize(innerWidth, innerHeight);
+  }
+
+  private appScreenSize: AppScreenSize;
 
   ngOnInit() {
 
-    this.modalService.activeModal$.subscribe((modal: Modal)=>{
-      if(modal){
+    this.onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
+    this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize)=>{
+      this.onScreenSizeChanged(appScreenSize);
+    })
+
+
+    this.modalService.activeModal$.subscribe((modal: Modal) => {
+      if (modal) {
         this.ifModal = true;
-      }else{
+      } else {
         this.ifModal = false;
       }
     });
 
-    this.toolsService.currentTool$.subscribe((tool: ToolComponents)=>{
-        if(tool != null){
-          this.ifTools = true;
-        }else{
-          this.ifTools = false;
-        }
+    this.toolsService.currentTool$.subscribe((tool: ToolComponents) => {
+      if (tool != null) {
+        this.ifTools = true;
+      } else {
+        this.ifTools = false;
+      }
     })
-    
 
-    this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[])=>{
-      for(let setting of userSettings){
-        if(setting.name == "night_mode"){
+
+    this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[]) => {
+      for (let setting of userSettings) {
+        if (setting.name == "night_mode") {
           this.nightMode = setting;
         }
       }
@@ -79,13 +97,22 @@ export class AppComponent implements OnInit {
     })
     this.authService.checkLocalStorage();
 
-    if(localStorage.getItem("sidebar_is_open") == "true"){
-      this.sideBarOpen = true;
+
+  }
+
+  onScreenSizeChanged(appScreenSize: AppScreenSize){
+    this.appScreenSize = appScreenSize;
+    console.log(this.appScreenSize);
+    if(this.appScreenSize < 2){
+      this.sideBarOpen = false;
+    }else if(this.appScreenSize >= 2){
+      if (localStorage.getItem("sidebar_is_open") == "true") {
+        this.sideBarOpen = true;
+      }
     }
   }
 
-
-  onHeaderSidebarButtonClicked(){
+  onHeaderSidebarButtonClicked() {
     this.sideBarOpen = !this.sideBarOpen;
     localStorage.setItem("sidebar_is_open", this.sideBarOpen.toString());
   }

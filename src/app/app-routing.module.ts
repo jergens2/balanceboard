@@ -8,7 +8,7 @@ import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.compo
 import { ActivitiesComponent } from "./dashboard/activities/activities.component";
 import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 import { MonthPlannerComponent } from "./dashboard/month-planner/month-planner.component";
-import { YearPlannerComponent } from "./dashboard/year-planner/year-planner.component";
+
 import { UserSettingsComponent } from "./user-settings/user-settings.component";
 
 import { DayTemplatesComponent } from "./dashboard/scheduling/day-templates/day-templates.component";
@@ -17,7 +17,7 @@ import { TasksComponent } from "./dashboard/tasks/tasks.component";
 import { SchedulingComponent } from "./dashboard/scheduling/scheduling.component";
 import { ScheduleRotationsComponent } from "./dashboard/scheduling/schedule-rotations/schedule-rotations.component";
 import { RecurringTasksComponent } from "./dashboard/scheduling/recurring-tasks/recurring-tasks.component";
-import { YearViewComponent } from "./dashboard/scheduling/year-view/year-view.component";
+import { YearViewComponent } from "./shared/year-view/year-view.component";
 
 
 const appRoutes: Routes = [
@@ -33,7 +33,7 @@ const appRoutes: Routes = [
 
     { path: 'notebooks', component: NotebooksComponent },
     { path: 'month-planner', component: MonthPlannerComponent },
-    { path: 'year-planner', component: YearPlannerComponent },
+
     { path: 'activities', component: ActivitiesComponent },
     { path: 'activities/:activityIdentifier', component: ActivitiesComponent },
     { path: 'user_settings', component: UserSettingsComponent },

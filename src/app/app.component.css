@@ -13,9 +13,25 @@
     width:100%;
     height: 100vh;
     display:grid;
+    
+    z-index:0;
+}
+
+.app-container-mobile{
+    grid-template-rows: 29px auto;
+    grid-template-columns: 1fr;
+}
+.app-container-tablet{
+    grid-template-rows: 29px auto;
+    grid-template-columns: 1fr;
+}
+.app-container-normal{
     grid-template-rows: 29px auto;
     grid-template-columns: 250px 1fr 1px;
-    z-index:0;
+}
+.app-container-large{
+    grid-template-rows: 29px auto;
+    grid-template-columns: 250px 1fr 1px;
 }
 
 .app-tools-container{
@@ -46,8 +62,7 @@
 
 .content{
     /* height: 100%; */
-    grid-column: 2 / span 1;
-    grid-row: 2 / span 1;
+    
     width: 100%;
     height:100%;
     /* padding-left:15px;
@@ -58,38 +73,19 @@
 
 }
 
-/* @media (min-width: 1200px){ */
-    /* .app-container{ */
-        /* The following will apply a right-hand margin to match the size of the sidebar on the left
-            for the purpose of putting the content in the literal center of the screen
-        */
-        /* grid-template-columns: 250px auto 250px; */
-    /* } */
-    /* .content{ */
-        /*  */
-    /* } */
-/* } */
-
-
-@media (max-width: 767px){
-    /*  Small Screens  */
-    .app-container{
-        display:grid;
-        grid-template-rows: 29px auto;
-        grid-template-columns: 1fr;
-    }
-    .sidebar{
-        display:none;
-        grid-column: 0 / span 0;
-        grid-row: 0 / span 0;
-    }
-    .content{
-        grid-column: 1 / span 1;
-        padding:0px;
-    }
-    .app-tools-container{
-        grid-column: 1 / span 1;
-    }
-
+.content-mobile{
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
 }
-
+.content-tablet{
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
+}
+.content-normal{
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+}
+.content-large{
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+}

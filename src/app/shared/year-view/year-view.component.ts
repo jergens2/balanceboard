@@ -1,28 +1,38 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import * as moment from 'moment';
-import { DaybookService } from '../../daybook/daybook.service';
-import { Day } from '../../daybook/day/day.model';
-import { ActivitiesService } from '../../activities/activities.service';
-import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
+import { DaybookService } from '../../dashboard/daybook/daybook.service';
+import { Day } from '../../dashboard/daybook/day/day.model';
+import { ActivitiesService } from '../../dashboard/activities/activities.service';
+import { UserDefinedActivity } from '../../dashboard/activities/user-defined-activity.model';
 import { Router } from '@angular/router';
+import { SizeService } from '../app-screen-size/size.service';
+import { AppScreenSize } from '../app-screen-size/app-screen-size.enum';
+import { OnScreenSizeChanged } from '../on-screen-size-changed.interface';
 
 @Component({
   selector: 'app-year-view',
   templateUrl: './year-view.component.html',
   styleUrls: ['./year-view.component.css']
 })
-export class YearViewComponent implements OnInit {
+export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
-  constructor(private daybookService: DaybookService, private activitiesService: ActivitiesService, private router:Router) { }
+  constructor(private daybookService: DaybookService, private activitiesService: ActivitiesService, private router:Router, private sizeService: SizeService) { }
 
-  currentYear: string = "2019";
+  currentYear: number = 2019;
 
-  months: any[];
+  months: any[] = null;
 
   allDays: Day[] = [];
 
-  ngOnInit() {
+  appScreenSize: AppScreenSize;
 
+
+  ngOnInit() {
+    this.appScreenSize = this.sizeService.appScreenSize;
+    this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize)=>{
+      this.onScreenSizeChanged(appScreenSize);
+    })
+    
     /*
       Simple method of improved performance:
       
@@ -34,17 +44,70 @@ export class YearViewComponent implements OnInit {
 
     */
 
+    this.buildCalendar(this.currentYear);
+
 
     let currentMonth = moment().startOf("year");
 
-    this.daybookService.getDaysInRange$(moment(currentMonth), moment(currentMonth).endOf("year")).subscribe((days: Day[]) => {
+    // this.daybookService.getDaysInRange$(moment(currentMonth), moment(currentMonth).endOf("year")).subscribe((days: Day[]) => {
 
-      this.allDays = days;
-      this.buildData(this.allDays);
+    //   this.allDays = days;
+    //   this.buildData(this.allDays);
 
-    });
+    // });
+
+  }
+
+  onScreenSizeChanged(appScreenSize: AppScreenSize){
+    this.appScreenSize = appScreenSize;
+  }
 
 
+  private buildCalendar(currentYear: number){
+    let months: any[] = [];
+    let currentMonth = moment().year(currentYear).startOf("year");
+    for (let i = 0; i < 12; i++) {
+
+      let currentDay: moment.Moment = moment(currentMonth).startOf("month");
+      let endOfMonth: moment.Moment = moment(currentMonth).endOf("month");
+      let days: any[] = [];
+
+      let daysAfterStart: number = moment(currentDay).day();
+      for(let i=0; i<daysAfterStart; i++){
+        days.push({
+          dayDate: "",
+          dayObject: {},
+          dayStyle: { "border":"none", "background-color":"none"}
+        });
+      }
+
+      while (currentDay.isBefore(endOfMonth)) {
+
+        let dayStyle: any = {};
+        // let dayObject = allDays.find((dayObject: Day) => {
+        //   return dayObject.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
+        // })
+        let dayObject: Day = null;
+
+        dayStyle = { "border":"1px solid rgb(206, 206, 206)"};
+
+        days.push({
+          dayDate: currentDay,
+          dayObject: dayObject,
+          dayStyle: dayStyle
+        })
+        currentDay = moment(currentDay).add(1, "days");
+      }
+
+
+      months.push({
+        monthDate: currentMonth,
+        daysOfMonth: days
+      })
+      currentMonth = moment(currentMonth).add(1, "month");
+    }
+
+    this.months = months;
   }
 
 

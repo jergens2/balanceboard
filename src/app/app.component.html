@@ -8,14 +8,16 @@
         <app-authentication></app-authentication>
     </div>
 
-    <div *ngIf="authenticated" class="app-container">
+    <div *ngIf="authenticated" class="app-container" 
+        [ngClass]="{'app-container-mobile': appScreenSize == 0, 'app-container-tablet': appScreenSize == 1, 'app-container-normal': appScreenSize == 2, 'app-container-large': appScreenSize == 3}">
         <div class="header">
             <app-header (sidebarButtonClicked)="onHeaderSidebarButtonClicked()"></app-header>
         </div>
         <div class="sidebar" *ngIf="sideBarOpen">
             <app-sidebar></app-sidebar>
         </div>
-        <div class="content">
+        <div class="content"
+        [ngClass]="{'content-mobile': appScreenSize == 0, 'content-tablet': appScreenSize == 1, 'content-normal': appScreenSize == 2, 'content-large': appScreenSize == 3}">
             <router-outlet></router-outlet>
         </div>
         <div class="app-tools-container" *ngIf="ifTools">

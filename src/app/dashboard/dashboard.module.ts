@@ -22,14 +22,14 @@ import { ActivityListItemComponent } from './activities/activity-list-item/activ
 import { ActivityDisplayComponent } from './activities/activity-display/activity-display.component';
 import { ActivityYearViewComponent } from './activities/activity-display/activity-year-view/activity-year-view.component';
 import { MonthPlannerComponent } from './month-planner/month-planner.component';
-import { YearPlannerComponent } from './year-planner/year-planner.component';
+
 import { ActivitySixWeekViewComponent } from './activities/activity-display/activity-six-week-view/activity-six-week-view.component';
 import { UserDefinedActivityFormComponent } from './activities/user-defined-activity-form/user-defined-activity-form.component';
 
 import { ActivitiesDefaultViewComponent } from './activities/default-view/default-view.component';
 
 
-import { MonthOfYearComponent } from './year-planner/month-of-year/month-of-year.component';
+
 
 import { ActivitiesListComponent } from './activities/activities-list/activities-list.component';
 
@@ -59,7 +59,7 @@ import { RecurringTasksComponent } from './scheduling/recurring-tasks/recurring-
 import { ScheduleRotationsComponent } from './scheduling/schedule-rotations/schedule-rotations.component';
 import { ActivitiesSixWeekViewComponent } from './activities/activities-six-week-view/activities-six-week-view.component';
 import { ActivityChartComponent } from './activities/activity-display/activity-chart/activity-chart.component';
-import { YearViewComponent } from './scheduling/year-view/year-view.component';
+
 
 
 
@@ -93,14 +93,12 @@ import { YearViewComponent } from './scheduling/year-view/year-view.component';
     ActivityDisplayComponent,
     ActivityYearViewComponent,
     MonthPlannerComponent,
-    YearPlannerComponent,
     ActivitySixWeekViewComponent,
     UserDefinedActivityFormComponent,
 
     ActivitiesDefaultViewComponent,
 
 
-    MonthOfYearComponent,
     ActivitiesListComponent,
 
     ActivityGoalsWidgetComponent,
@@ -127,7 +125,6 @@ import { YearViewComponent } from './scheduling/year-view/year-view.component';
     RecurringTasksComponent,
     ActivitiesSixWeekViewComponent,
     ActivityChartComponent,
-    YearViewComponent,
     
   ],
   providers: [],

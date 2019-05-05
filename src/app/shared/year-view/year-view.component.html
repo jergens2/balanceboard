@@ -3,7 +3,8 @@
     {{ currentYear }}
   </div>
   <div class="body">
-    <div *ngIf="months" class="months">
+    <div *ngIf="months" class="months"
+      [ngClass]="{'months-mobile': appScreenSize == 0, 'months-tablet': appScreenSize == 1, 'months-normal': appScreenSize == 2, 'months-large': appScreenSize == 3}">
       <div *ngFor="let month of months" class="month-container">
         <div class="month">
           <div class="month-header">
@@ -11,7 +12,7 @@
           </div>
           <div class="month-body">
             <div class="days-of-month">
-              <div *ngFor="let day of month.daysOfMonth" class="day-container"  >
+              <div *ngFor="let day of month.daysOfMonth" class="day-container">
                 <div class="day" [ngStyle]="day.dayStyle" (click)="onClickDay(day)">
                   <div class="day-header" *ngIf="day.dayDate">
                     {{ day.dayDate.format('DD') }}

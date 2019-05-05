@@ -28,6 +28,7 @@ import { TaskQueueModalComponent } from './modal/custom-modals/task-queue-modal/
 import { TaskModalComponent } from './modal/custom-modals/task-modal/task-modal.component';
 import { ConfirmModalComponent } from './modal/custom-modals/confirm-modal/confirm-modal.component';
 import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notepad-modal.component';
+import { SharedModule } from './shared/shared.module';
 
 
 
@@ -55,6 +56,7 @@ import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notep
     ReactiveFormsModule,
     HttpClientModule,
     DashboardModule,
+    SharedModule,
     AppRoutingModule,
     FontAwesomeModule
   ],
