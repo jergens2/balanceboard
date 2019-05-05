@@ -36,14 +36,8 @@ export class ActivitiesSixWeekViewComponent implements OnInit {
 
 
     this.daybookService.getDaysInRange$(startDate, endDate).subscribe((days: Day[])=>{
-      console.log("Range data is ", days);  
-      days.forEach((day)=>{
-        console.log(day.date.format('YYYY-MM-DD'))
-      })
-
       this.daysOfSixWeeks = days;
       this.loading = false;
-
     })
 
 

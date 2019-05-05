@@ -13,23 +13,62 @@
 
 }
 .months{
+    padding:10px;
     width:100%;
     display: grid;
     grid-template-rows: repeat(3, 1fr);
     grid-template-columns: repeat(4, 1fr);
+
+    width: 1100px;
+    height: 825px;
 }
 .month-container{
     width:100%;
     height:100%;
-    padding:2px;
+    padding:4px;
 }
 .month{
     width:100%;
-    border:1px solid gray;
-    background-color: rgb(248, 255, 218);
+    height:100%;
+    min-width:200px;
+    border-radius:5px;
+    padding:4px;
+    background-color: rgb(253, 253, 253);
     display:flex;
     flex-direction: column;
+    border:1px solid gray;
 }
 .month-header{
     font-size: 1.1em;
+}
+.month-body{
+    flex-grow:2;
+}
+
+.days-of-month{
+    display:grid;
+    width:100%;
+    height:100%;
+
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
+}
+.day-container{
+    padding:3px;
+    width:100%;
+    height: 100%;
+    
+}
+.day{
+    border-radius:5px;
+    width:100%;
+    height:100%;
+    border: 1px solid rgb(247, 247, 247);
+}
+.day:hover{
+    border:1px solid black;
+    cursor: pointer;
+}
+.day-header{
+    font-size:0.7em;
 }

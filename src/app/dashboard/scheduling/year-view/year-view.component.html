@@ -7,15 +7,30 @@
       <div *ngFor="let month of months" class="month-container">
         <div class="month">
           <div class="month-header">
-              {{ month.month.format('MMM') }}
+            {{ month.monthDate.format('MMM') }}
           </div>
           <div class="month-body">
+            <div class="days-of-month">
+              <div *ngFor="let day of month.daysOfMonth" class="day-container"  >
+                <div class="day" [ngStyle]="day.dayStyle" (click)="onClickDay(day)">
+                  <div class="day-header" *ngIf="day.dayDate">
+                    {{ day.dayDate.format('DD') }}
+                  </div>
+                  <div class="day-body">
+                    <!-- {{ dayData(day) }} -->
 
+                  </div>
+                </div>
+
+              </div>
+
+
+
+            </div>
           </div>
+
         </div>
-        
       </div>
     </div>
-  </div>
 
-</div>
+  </div>

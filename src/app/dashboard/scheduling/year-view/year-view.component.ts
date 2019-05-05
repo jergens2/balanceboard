@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
+import { DaybookService } from '../../daybook/daybook.service';
+import { Day } from '../../daybook/day/day.model';
+import { ActivitiesService } from '../../activities/activities.service';
+import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-year-view',
@@ -8,37 +13,118 @@ import * as moment from 'moment';
 })
 export class YearViewComponent implements OnInit {
 
-  constructor() { }
+  constructor(private daybookService: DaybookService, private activitiesService: ActivitiesService, private router:Router) { }
 
   currentYear: string = "2019";
 
   months: any[];
 
+  allDays: Day[] = [];
+
   ngOnInit() {
 
+
+
+
+    let currentMonth = moment().startOf("year");
+    this.daybookService.getDaysInRange$(moment(currentMonth), moment(currentMonth).endOf("year")).subscribe((days: Day[]) => {
+      this.allDays = days;
+      this.buildData(this.allDays);
+    });
+
+
+  }
+
+
+
+  private buildData(allDays: Day[]) {
     let months: any[] = [];
     let currentMonth = moment().startOf("year");
-    for(let i=0; i<12; i++){
+
+    for (let i = 0; i < 12; i++) {
 
       let currentDay: moment.Moment = moment(currentMonth).startOf("month");
       let endOfMonth: moment.Moment = moment(currentMonth).endOf("month");
       let days: any[] = [];
-      while(currentDay.isBefore(endOfMonth)){
-        
-        currentDay = moment(currentDay).add(1,"days");
+
+      let daysAfterStart: number = moment(currentDay).day();
+      for(let i=0; i<daysAfterStart; i++){
+        days.push({
+          dayDate: "",
+          dayObject: {},
+          dayStyle: { "border":"none", "background-color":"none"}
+        });
+      }
+
+      while (currentDay.isBefore(endOfMonth)) {
+
+        let dayStyle: any = {};
+        let dayObject = allDays.find((dayObject: Day) => {
+          return dayObject.dateISO == currentDay.format('YYYY-MM-DD');
+        })
+
+        if(dayObject){
+
+          dayStyle = this.buildDayStyle(dayObject);
+        }else{
+
+          dayStyle = { "border":"1px solid rgb(206, 206, 206)"};
+        }
+        days.push({
+          dayDate: currentDay,
+          dayObject: dayObject,
+          dayStyle: dayStyle
+        })
+        currentDay = moment(currentDay).add(1, "days");
       }
 
 
       months.push({
-        month:currentMonth
+        monthDate: currentMonth,
+        daysOfMonth: days
       })
-      currentMonth = moment(currentMonth).add(1,"month");
+      currentMonth = moment(currentMonth).add(1, "month");
     }
 
     this.months = months;
   }
 
 
+  onClickDay(day: { dayDate: moment.Moment, dayObject: Day, dayStyle: any }){
+    this.router.navigate(['daybook/'+day.dayDate.format('YYYY-MM-DD')]);
+  }
+
+
+  private buildDayStyle(dayObject: Day){
+    let style: any;
+    let activity:UserDefinedActivity; 
+    if(dayObject.activityData){
+      activity = this.activitiesService.findActivityByTreeId(dayObject.activityData[1].activityTreeId);
+      style = {
+        "background-color":activity.color,
+      }
+    }
+    
+    
+    return style;
+
+  }
+
+  dayData(day: { dayDate: moment.Moment, dayObject: Day, dayStyle: any }): string {
+
+    if(day.dayObject){
+      
+      if(day.dayObject.activityData){
+        let activity: UserDefinedActivity = this.activitiesService.findActivityByTreeId(day.dayObject.activityData[1].activityTreeId)
+        
+      }
+      
+    }else{
+      console.log("No day object for ", day);
+    }
+
+    return "";
+  }
 
 
 }
