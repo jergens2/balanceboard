@@ -10,7 +10,8 @@ import { YearViewComponent } from './year-view/year-view.component';
         YearViewComponent,
     ],
     exports: [
-        CommonModule
+        CommonModule,
+        YearViewComponent
     ]
 })
 

@@ -59,6 +59,7 @@ import { RecurringTasksComponent } from './scheduling/recurring-tasks/recurring-
 import { ScheduleRotationsComponent } from './scheduling/schedule-rotations/schedule-rotations.component';
 import { ActivitiesSixWeekViewComponent } from './activities/activities-six-week-view/activities-six-week-view.component';
 import { ActivityChartComponent } from './activities/activity-display/activity-chart/activity-chart.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 
@@ -72,7 +73,8 @@ import { ActivityChartComponent } from './activities/activity-display/activity-c
     ReactiveFormsModule,
     FontAwesomeModule,
     ColorPickerModule,
-    DaybookModule
+    DaybookModule,
+    SharedModule,
   ],
   declarations: [
 

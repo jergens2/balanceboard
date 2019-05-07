@@ -10,7 +10,7 @@ import { ToolsService } from './tools/tools.service';
 import { ToolComponents } from './tools/tool-components.enum';
 import { SizeService } from './shared/app-screen-size/size.service';
 import { AppScreenSize } from './shared/app-screen-size/app-screen-size.enum';
-import { OnScreenSizeChanged } from './shared/on-screen-size-changed.interface';
+import { OnScreenSizeChanged } from './shared/app-screen-size/on-screen-size-changed.interface';
 
 @Component({
   selector: 'app-root',
@@ -102,7 +102,6 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
 
   onScreenSizeChanged(appScreenSize: AppScreenSize){
     this.appScreenSize = appScreenSize;
-    console.log(this.appScreenSize);
     if(this.appScreenSize < 2){
       this.sideBarOpen = false;
     }else if(this.appScreenSize >= 2){

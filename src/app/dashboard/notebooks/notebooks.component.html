@@ -1,6 +1,13 @@
 <div class="notebook-root">
   <div class="header">Notebook Entries</div>
   <div class="controls">
+    <div class="year-view-container">
+      <button class="btn btn-success btn-sm" (click)="onClickYearView()" style="width:100px;">Year View</button>
+      <div class="year-view" *ngIf="yearView">
+        <app-year-view [yearViewData]="yearViewData" (dateClicked)="onYearViewDateClicked($event)"></app-year-view>
+      </div>
+
+    </div>
     <div class="tag-controls">
       <div class="tag-header">
         Tags
@@ -32,7 +39,7 @@
           <fa-icon *ngIf="!tagFilter.isChecked" [icon]="faCircle" class="icon-button" style="margin-right:3px;"
             (click)="onClickTagCheck(tagFilter)"></fa-icon>
           <div style="margin-right:3px;">
-              {{ tagFilter.tag }}
+            {{ tagFilter.tag }}
           </div>
           <div style="margin-right:3px;">
             ({{tagFilter.count}})

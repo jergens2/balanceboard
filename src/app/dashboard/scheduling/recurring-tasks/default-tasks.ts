@@ -12,6 +12,7 @@ recurringTasks.push(new RecurringTask('', '', '20 Pushups', 1, RecurringTaskTime
 
 
 recurringTasks.push(new RecurringTask('', '', 'Water the hanging baskets', 1, RecurringTaskTimeOfDay.Evening, moment()));
+recurringTasks.push(new RecurringTask('', '', 'Ask Kristine if there is anything I can do to help her', 1, RecurringTaskTimeOfDay.Evening, moment()));
 recurringTasks.push(new RecurringTask('', '', 'Task Selection / Task Grabbing', 1, RecurringTaskTimeOfDay.Evening, moment()));
 recurringTasks.push(new RecurringTask('', '', 'Brush Teeth', 1, RecurringTaskTimeOfDay.Evening , moment()));
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { DaybookService } from '../../dashboard/daybook/daybook.service';
 import { Day } from '../../dashboard/daybook/day/day.model';
@@ -7,7 +7,8 @@ import { UserDefinedActivity } from '../../dashboard/activities/user-defined-act
 import { Router } from '@angular/router';
 import { SizeService } from '../app-screen-size/size.service';
 import { AppScreenSize } from '../app-screen-size/app-screen-size.enum';
-import { OnScreenSizeChanged } from '../on-screen-size-changed.interface';
+import { OnScreenSizeChanged } from '../app-screen-size/on-screen-size-changed.interface';
+import { IYearViewData } from './year-view-data.interface';
 
 @Component({
   selector: 'app-year-view',
@@ -16,7 +17,7 @@ import { OnScreenSizeChanged } from '../on-screen-size-changed.interface';
 })
 export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
-  constructor(private daybookService: DaybookService, private activitiesService: ActivitiesService, private router:Router, private sizeService: SizeService) { }
+  constructor(private daybookService: DaybookService, private activitiesService: ActivitiesService, private router: Router, private sizeService: SizeService) { }
 
   currentYear: number = 2019;
 
@@ -27,12 +28,15 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
   appScreenSize: AppScreenSize;
 
 
+  @Input() yearViewData: IYearViewData;
+  @Output() dateClicked: EventEmitter<any> = new EventEmitter();
+
   ngOnInit() {
     this.appScreenSize = this.sizeService.appScreenSize;
-    this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize)=>{
+    this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize) => {
       this.onScreenSizeChanged(appScreenSize);
     })
-    
+
     /*
       Simple method of improved performance:
       
@@ -58,12 +62,12 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   }
 
-  onScreenSizeChanged(appScreenSize: AppScreenSize){
+  onScreenSizeChanged(appScreenSize: AppScreenSize) {
     this.appScreenSize = appScreenSize;
   }
 
 
-  private buildCalendar(currentYear: number){
+  private buildCalendar(currentYear: number) {
     let months: any[] = [];
     let currentMonth = moment().year(currentYear).startOf("year");
     for (let i = 0; i < 12; i++) {
@@ -73,29 +77,17 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
       let days: any[] = [];
 
       let daysAfterStart: number = moment(currentDay).day();
-      for(let i=0; i<daysAfterStart; i++){
+      for (let i = 0; i < daysAfterStart; i++) {
         days.push({
           dayDate: "",
           dayObject: {},
-          dayStyle: { "border":"none", "background-color":"none"}
+          dayStyle: { "border": "none", "background-color": "none" }
         });
       }
 
       while (currentDay.isBefore(endOfMonth)) {
 
-        let dayStyle: any = {};
-        // let dayObject = allDays.find((dayObject: Day) => {
-        //   return dayObject.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
-        // })
-        let dayObject: Day = null;
-
-        dayStyle = { "border":"1px solid rgb(206, 206, 206)"};
-
-        days.push({
-          dayDate: currentDay,
-          dayObject: dayObject,
-          dayStyle: dayStyle
-        })
+        days.push(this.buildDay(currentDay))
         currentDay = moment(currentDay).add(1, "days");
       }
 
@@ -108,6 +100,48 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
     }
 
     this.months = months;
+  }
+
+
+  private buildDay(currentDay: moment.Moment): any {
+
+    let day: any = {};
+
+    let dayStyle: any = {};
+    let dayObject: Day = null;
+
+    let dayData: any;
+
+    if (this.yearViewData != null) {
+      let dataElement = this.yearViewData.data.find((element) => {
+        return element.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
+      })
+      dayData = dataElement.value;
+
+
+      dayStyle = { "border": "1px solid rgb(206, 206, 206)", "background-color": this.dayBackgroundColor(dayData, this.yearViewData.maxValue) };
+    } else {
+      dayStyle = { "border": "1px solid rgb(206, 206, 206)" };
+    }
+
+
+
+
+    day = {
+      dayDate: currentDay,
+      dayObject: dayObject,
+      dayStyle: dayStyle,
+      dayData: dayData
+    }
+
+    return day;
+  }
+
+
+  private dayBackgroundColor(value: number, maxValue: number): string {
+    let color = "rgba(0, 153, 64, "+(value/maxValue).toFixed(2)+")";
+    console.log("color is ", color );
+    return color;
   }
 
 
@@ -126,11 +160,11 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
       let days: any[] = [];
 
       let daysAfterStart: number = moment(currentDay).day();
-      for(let i=0; i<daysAfterStart; i++){
+      for (let i = 0; i < daysAfterStart; i++) {
         days.push({
           dayDate: "",
           dayObject: {},
-          dayStyle: { "border":"none", "background-color":"none"}
+          dayStyle: { "border": "none", "background-color": "none" }
         });
       }
 
@@ -141,12 +175,12 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
           return dayObject.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
         })
 
-        if(dayObject){
+        if (dayObject) {
 
           dayStyle = this.buildDayStyle(dayObject);
-        }else{
+        } else {
 
-          dayStyle = { "border":"1px solid rgb(206, 206, 206)"};
+          dayStyle = { "border": "1px solid rgb(206, 206, 206)" };
         }
         days.push({
           dayDate: currentDay,
@@ -168,35 +202,36 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
   }
 
 
-  onClickDay(day: { dayDate: moment.Moment, dayObject: Day, dayStyle: any }){
-    this.router.navigate(['daybook/'+day.dayDate.format('YYYY-MM-DD')]);
+  onClickDay(day: any) {
+    this.dateClicked.emit(day);
+    // this.router.navigate(['daybook/' + day.dayDate.format('YYYY-MM-DD')]);
   }
 
 
-  private buildDayStyle(dayObject: Day){
+  private buildDayStyle(dayObject: Day) {
     let style: any = {};
-    let activity:UserDefinedActivity; 
-    if(dayObject.activityData){
-      if(dayObject.activityData.length >= 1){
+    let activity: UserDefinedActivity;
+    if (dayObject.activityData) {
+      if (dayObject.activityData.length >= 1) {
         activity = this.activitiesService.findActivityByTreeId(dayObject.activityData[1].activityTreeId);
         style = {
-          "background-color":activity.color,
+          "background-color": activity.color,
         }
       }
-    }  
+    }
     return style;
   }
 
   dayData(day: { dayDate: moment.Moment, dayObject: Day, dayStyle: any }): string {
 
-    if(day.dayObject){
-      
-      if(day.dayObject.activityData){
+    if (day.dayObject) {
+
+      if (day.dayObject.activityData) {
         let activity: UserDefinedActivity = this.activitiesService.findActivityByTreeId(day.dayObject.activityData[1].activityTreeId)
-        
+
       }
-      
-    }else{
+
+    } else {
       console.log("No day object for ", day);
     }
 
