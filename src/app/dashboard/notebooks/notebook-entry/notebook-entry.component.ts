@@ -51,7 +51,7 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
         dataObject: null
       }
     ];
-    let modal: Modal = new Modal("Confirm: Delete Note?", null, modalOptions, {}, ModalComponentType.Default);
+    let modal: Modal = new Modal("Note", "Confirm: Delete Note?", null, modalOptions, {}, ModalComponentType.Default);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Yes") {
         this.notebooksService.deleteNotebookEntryHTTP(this.notebookEntry);
@@ -68,7 +68,7 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
     this._modalSubscription.unsubscribe();
     let modalOptions: IModalOption[] = [];
     let modalData: NotebookEntry = this.notebookEntry;
-    let modal: Modal = new Modal("Edit", modalData, modalOptions, {}, ModalComponentType.Note);
+    let modal: Modal = new Modal("Note", "Edit", modalData, modalOptions, {}, ModalComponentType.Note);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       console.log("modal Response, selectedOption")
     });

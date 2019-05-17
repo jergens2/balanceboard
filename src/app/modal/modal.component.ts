@@ -32,5 +32,9 @@ export class ModalComponent implements OnInit {
     this.modalService.optionClicked(option);
   }
 
+  get modalHeader(): string{ 
+    return this.modal.header;
+  }
+
 
 }

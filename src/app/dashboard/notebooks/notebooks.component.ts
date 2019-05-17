@@ -118,8 +118,12 @@ export class NotebooksComponent implements OnInit {
       tag: "No tag",
       isChecked: true,
       count: 0,
-    })
+      style: {},
+    });
+
+    let totalCount: number = 0;
     tags.forEach((tag) => {
+
 
       let alreadyContains: boolean = false;
       this.tagFilters.forEach((tagFilter) => {
@@ -127,6 +131,7 @@ export class NotebooksComponent implements OnInit {
         if (tagFilter.tag == tag) {
           alreadyContains = true;
           tagFilter.count += 1;
+          totalCount += 1;
         }
 
       });
@@ -135,11 +140,71 @@ export class NotebooksComponent implements OnInit {
           tag: tag,
           count: 1,
           isChecked: true,
-        })
+          style: {}
+        });
+        totalCount += 1;
       }
 
 
+    });
+
+    console.log("total count is", totalCount);
+    let alphabeticalSort = Object.assign([], this.tagFilters);
+    let countSort = Object.assign([], this.tagFilters);
+
+    countSort.sort((tagFilter1, tagFilter2)=>{
+      if(tagFilter1.count > tagFilter2.count){
+        return -1;
+      }
+      if(tagFilter1.count < tagFilter2.count){
+        return 1;
+      }
+      return 0;
+    });
+    
+
+    let average = totalCount / countSort.length;
+    let values: number[] = [];
+    countSort.forEach((tagFilter)=>{
+      values.push((tagFilter.count-average)*(tagFilter.count-average))
     })
+    let valuesSum: number = 0;
+    values.forEach((number)=>{
+      valuesSum += number;
+    })
+    let valuesAverage: number = valuesSum / values.length;
+    let standardDeviation = Math.sqrt(valuesAverage);
+    console.log("Standard deviation is", standardDeviation);
+
+    countSort.forEach((tagFilter)=>{
+      let style: any = {};
+
+      let deviation: number = 0;
+      if(tagFilter.count >= average){
+        deviation = (tagFilter.count-average)/standardDeviation
+      }else if(tagFilter.count < average){
+        deviation = (average-tagFilter.count)/standardDeviation;
+      }
+
+      if(deviation <= 1){
+        style = { "font-size":"1.0em"};
+      }
+      if(deviation > 1 && deviation <= 2){
+        style = { "font-size":"1.5em"};
+      }
+      if(deviation > 2 && deviation <= 3){
+        style = { "font-size":"2.0em"};
+      }
+      if(deviation > 3 && deviation <= 4){
+        style = { "font-size":"2.5em"};
+      }
+      if(deviation > 4 ){
+        style = { "font-size":"3.0em"};
+      }
+
+      tagFilter.style = style;
+    })
+    
 
   }
 

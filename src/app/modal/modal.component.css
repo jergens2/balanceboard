@@ -1,5 +1,5 @@
 
-.root{
+.full-screen{
     position:fixed;
     top:0;
     left:0;
@@ -16,20 +16,23 @@
 
 }
 .app-modal{
-    /* width:300px; */
+    min-width:360px;
     background-color: white;
-    border: 1px solid black;
-    border-radius: 5px;
+    border: 1px solid gray;
+    border-radius: 1px;
 
     display:flex;
     flex-direction:column;
 }
 
 .app-modal-header{
-    height:30px;
+    height:25px;
+    padding-left:4px;
+    font-size: 0.9em;
     display:flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid gray;
 }
 .app-modal-body{
     padding:30px;

@@ -38,12 +38,15 @@
             (click)="onClickTagCheck(tagFilter)"></fa-icon>
           <fa-icon *ngIf="!tagFilter.isChecked" [icon]="faCircle" class="icon-button" style="margin-right:3px;"
             (click)="onClickTagCheck(tagFilter)"></fa-icon>
-          <div style="margin-right:3px;">
-            {{ tagFilter.tag }}
-          </div>
-          <div style="margin-right:3px;">
-            ({{tagFilter.count}})
-          </div>
+            <div [ngStyle]="tagFilter.style" style="display:flex;flex-direction:row;">
+              <div style="margin-right:3px;" >
+                {{ tagFilter.tag }}
+              </div>
+              <div style="margin-right:3px;">
+                ({{tagFilter.count}})
+              </div>
+            </div>
+          
         </div>
       </div>
 

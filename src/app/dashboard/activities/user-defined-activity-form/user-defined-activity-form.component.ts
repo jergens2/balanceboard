@@ -177,7 +177,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
         dataObject: null
       }
     ];  
-    let modal: Modal = new Modal("Confirm: Delete Activity?", null, modalOptions, {}, ModalComponentType.Default);
+    let modal: Modal = new Modal("Delect Activity", "Confirm: Delete Activity?", null, modalOptions, {}, ModalComponentType.Default);
     let modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
       if(selectedOption.value == "Yes"){
         this.activitiesService.deleteActivity(this.activity);

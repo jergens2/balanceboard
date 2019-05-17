@@ -80,7 +80,7 @@ export class RotationDayTemplateComponent implements OnInit, OnDestroy {
       "width":"600px"
     };
 
-    let modal: Modal = new Modal("Select a template", null, modalOptions, modalStyle, ModalComponentType.Default);
+    let modal: Modal = new Modal("Day Template", "Select a template", null, modalOptions, modalStyle, ModalComponentType.Default);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Create a new template") {
         this.router.navigate(['/day-templates']);

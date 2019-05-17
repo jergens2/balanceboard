@@ -242,7 +242,7 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
         dataObject: null
       }
     ];     
-    let modal: Modal = new Modal("Confirm: Delete Time Event?", null, modalOptions, {}, ModalComponentType.Default);
+    let modal: Modal = new Modal("Delete Time Event", "Confirm: Delete Time Event?", null, modalOptions, {}, ModalComponentType.Default);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
       if(selectedOption.value == "Yes"){
 

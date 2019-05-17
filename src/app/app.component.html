@@ -1,6 +1,12 @@
 <div *ngIf="loading" class="loading">
-    <div style="font-size:4em">
+    <!-- <div style="font-size:4em">
         <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+    </div> -->
+    <div>
+        <svg viewBox="25 25 50 50">
+            <circle cx="50" cy="50" r="20"></circle>
+        </svg>
+
     </div>
 </div>
 <div *ngIf="!loading">
@@ -8,7 +14,7 @@
         <app-authentication></app-authentication>
     </div>
 
-    <div *ngIf="authenticated" class="app-container" 
+    <div *ngIf="authenticated" class="app-container"
         [ngClass]="{'app-container-mobile': appScreenSize == 0, 'app-container-tablet': appScreenSize == 1, 'app-container-normal': appScreenSize == 2, 'app-container-large': appScreenSize == 3}">
         <div class="header">
             <app-header (sidebarButtonClicked)="onHeaderSidebarButtonClicked()"></app-header>
@@ -17,7 +23,7 @@
             <app-sidebar></app-sidebar>
         </div>
         <div class="content"
-        [ngClass]="{'content-mobile': appScreenSize == 0, 'content-tablet': appScreenSize == 1, 'content-normal': appScreenSize == 2, 'content-large': appScreenSize == 3}">
+            [ngClass]="{'content-mobile': appScreenSize == 0, 'content-tablet': appScreenSize == 1, 'content-normal': appScreenSize == 2, 'content-large': appScreenSize == 3}">
             <router-outlet></router-outlet>
         </div>
         <div class="app-tools-container" *ngIf="ifTools">

@@ -54,7 +54,7 @@ export class TaskQueueWidgetComponent implements OnInit {
       // date: moment(this._currentDay.date),
       // action: "EDIT"
     }
-    let modal: Modal = new Modal(null, modalData, null, {}, ModalComponentType.Task);
+    let modal: Modal = new Modal("Task", null, modalData, null, {}, ModalComponentType.Task);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
 
       console.log("modal response:", selectedOption);

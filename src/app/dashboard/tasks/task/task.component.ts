@@ -59,7 +59,7 @@ export class TaskComponent implements OnInit, OnDestroy {
           dataObject: null
         }
       ];
-      let modal: Modal = new Modal("Confirm: mark task as incomplete?", null, modalOptions, {}, ModalComponentType.Default);
+      let modal: Modal = new Modal("Task", "Confirm: mark task as incomplete?", null, modalOptions, {}, ModalComponentType.Default);
       this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
         if (selectedOption.value == "Yes") {
           this.task.markIncomplete();
@@ -87,7 +87,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     
     this._modalSubscription.unsubscribe();
     let modalData: any = {};
-    let modal: Modal = new Modal(null, modalData, null, {}, ModalComponentType.Task);
+    let modal: Modal = new Modal("Task", null, modalData, null, {}, ModalComponentType.Task);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
 
       console.log("modal response:", selectedOption);
@@ -107,7 +107,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         dataObject: null
       }
     ];
-    let modal: Modal = new Modal("Confirm: Delete Task?", null, modalOptions, {}, ModalComponentType.Default);
+    let modal: Modal = new Modal("Task", "Confirm: Delete Task?", null, modalOptions, {}, ModalComponentType.Default);
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Yes") {
         this.taskService.deleteTaskHTTP(this.task);
