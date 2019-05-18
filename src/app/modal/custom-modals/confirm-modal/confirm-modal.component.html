@@ -1,3 +1,11 @@
-<p>
-  confirm-modal works!
-</p>
+<div class="confirm-modal-root">
+  <!-- <div class="modal-message">
+    {{ modal.message }}
+  </div> -->
+  <div class="options">
+
+    <button *ngFor="let option of modal.modalOptions" (click)="onClickOption(option)"
+      class="btn btn-secondary btn-light border-secondary" style="margin:3px;flex-grow:2;">{{ option.value }}</button>
+
+  </div>
+</div>

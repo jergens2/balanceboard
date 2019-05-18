@@ -9,6 +9,10 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { Router } from '@angular/router';
 import { ToolsService } from '../../tools/tools.service';
 import { ToolComponents } from '../../tools/tool-components.enum';
+import { IModalOption } from '../../modal/modal-option.interface';
+import { ModalComponentType } from '../../modal/modal-component-type.enum';
+import { Modal } from '../../modal/modal.model';
+import { ModalService } from '../../modal/modal.service';
 
 @Component({
   selector: 'app-header',
@@ -20,7 +24,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     private headerService: HeaderService, 
     private authService: AuthenticationService, 
-    private toolsService: ToolsService) { }
+    private toolsService: ToolsService,
+    private modalService: ModalService) { }
 
   faBars = faBars;
   faCogs = faCogs;
@@ -68,7 +73,29 @@ export class HeaderComponent implements OnInit {
 
     let signOutMenuItem = new MenuItem('Sign Out', null, null);
     this.activeSubscriptions.push(signOutMenuItem.clickEmitted$.subscribe(() => {
-      this.authService.logout();
+      let options: IModalOption[] = [
+        {
+          value: "Logout",
+          dataObject: null,
+        },
+        {
+          value: "Cancel",
+          dataObject: null,
+        }
+      ];
+      let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm );
+      // this._modalSubscription = 
+      this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+        if (selectedOption.value == "Logout") {
+          this.logout();
+  
+        } else if (selectedOption.value == "Cancel") {
+  
+        } else {
+          //error 
+        }
+      });
+      this.modalService.activeModal = modal;
     }));
     accountMenuItems.push(new MenuItem('Settings', '/user_settings', faCogs));
     accountMenuItems.push(signOutMenuItem);
@@ -99,6 +126,10 @@ export class HeaderComponent implements OnInit {
     return newMenus;
   }
 
+  private logout(){
+
+    this.authService.logout();
+  }
 
   onClickSidebarMenuButton() {
     this.sidebarButtonClicked.emit();

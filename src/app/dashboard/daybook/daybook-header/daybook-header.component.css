@@ -40,10 +40,7 @@
     font-size: 1em;
     line-height: 100%;
 }
-.daybook-header-today{
 
-
-}
 .daybook-header-tab:hover{
     cursor: pointer;
     background-color: rgb(0, 103, 199);

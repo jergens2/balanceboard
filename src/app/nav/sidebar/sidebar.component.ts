@@ -10,6 +10,10 @@ import { Subscription } from 'rxjs';
 import { UserSettingsService } from '../../user-settings/user-settings.service';
 import { UserSetting } from '../../user-settings/user-setting.model';
 import { User } from '../../authentication/user.model';
+import { Modal } from '../../modal/modal.model';
+import { IModalOption } from '../../modal/modal-option.interface';
+import { ModalComponentType } from '../../modal/modal-component-type.enum';
+import { ModalService } from '../../modal/modal.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,7 +22,7 @@ import { User } from '../../authentication/user.model';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private router: Router) { }
+  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private router: Router, private modalService:ModalService) { }
 
 
 
@@ -73,8 +77,31 @@ export class SidebarComponent implements OnInit {
   }
 
   onClickLogout(){
-    this.logout();
-    
+
+    let options: IModalOption[] = [
+      {
+        value: "Logout",
+        dataObject: null,
+      },
+      {
+        value: "Cancel",
+        dataObject: null,
+      }
+    ];
+    let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm );
+    // this._modalSubscription = 
+    this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+      if (selectedOption.value == "Logout") {
+        this.logout();
+
+      } else if (selectedOption.value == "Cancel") {
+
+      } else {
+        //error 
+      }
+    });
+    this.modalService.activeModal = modal;
+
   }
 
   private logout(){

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Modal } from '../../modal.model';
+import { ModalService } from '../../modal.service';
 
 @Component({
   selector: 'app-confirm-modal',
@@ -7,9 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConfirmModalComponent implements OnInit {
 
-  constructor() { }
+  constructor(private modalService: ModalService) { }
 
+  modal: Modal;
   ngOnInit() {
+    this.modal = this.modalService.activeModal
+  }
+
+  onClickOption(option: any){
+    this.modalService.optionClicked(option);
   }
 
 }
