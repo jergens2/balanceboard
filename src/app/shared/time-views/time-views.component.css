@@ -1,0 +1,30 @@
+.time-views-root{
+    width:100%;
+    min-height:300px;
+
+    display:flex;
+    flex-direction: column;
+}
+.zoom-controls-container{
+    width:100%;
+    display:flex;
+    justify-content: flex-end;
+}
+.zoom-controls{
+    
+    margin: 3px;
+    border-radius:4px;
+}
+
+.zoom-button{
+    border:none;
+    border:1px solid rgb(0, 153, 255);
+    border-right:none;
+    background-color: rgb(244, 252, 255);
+}
+
+.time-view-container{
+    width:100%;
+    display:flex;
+    justify-content: center;
+}

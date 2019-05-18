@@ -1,6 +1,12 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { YearViewComponent } from './year-view/year-view.component';
+import { YearViewComponent } from './time-views/year-view/year-view.component';
+import { SixWeekViewComponent } from './time-views/six-week-view/six-week-view.component';
+import { TimeViewsComponent } from './time-views/time-views.component';
+import { MultiYearViewComponent } from './time-views/multi-year-view/multi-year-view.component';
+import { WeekViewComponent } from './time-views/week-view/week-view.component';
+import { SingleDayViewComponent } from './time-views/single-day-view/single-day-view.component';
+import { ColorPickerComponent } from './color-picker/color-picker.component';
 
 @NgModule({
     imports: [
@@ -8,10 +14,18 @@ import { YearViewComponent } from './year-view/year-view.component';
     ],
     declarations: [
         YearViewComponent,
+        SixWeekViewComponent,
+        TimeViewsComponent,
+        MultiYearViewComponent,
+        WeekViewComponent,
+        SingleDayViewComponent,
+        ColorPickerComponent,
     ],
     exports: [
         CommonModule,
-        YearViewComponent
+        TimeViewsComponent,
+        YearViewComponent,
+        ColorPickerComponent
     ]
 })
 

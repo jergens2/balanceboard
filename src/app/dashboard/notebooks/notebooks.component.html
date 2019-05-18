@@ -1,6 +1,14 @@
 <div class="notebook-root">
   <div class="header">Notebook Entries</div>
   <div class="controls">
+
+
+    
+    <div class="time-view-container">
+      <app-time-views></app-time-views>
+    </div>
+    
+    
     <div class="year-view-container">
       <button class="btn btn-success btn-sm" (click)="onClickYearView()" style="width:100px;">Year View</button>
       <div class="year-view" *ngIf="yearView">
@@ -8,6 +16,9 @@
       </div>
 
     </div>
+    
+    
+    
     <div class="tag-controls">
       <div class="tag-header">
         Tags

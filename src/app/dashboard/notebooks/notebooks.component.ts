@@ -3,8 +3,8 @@ import { NotebookEntry } from './notebook-entry/notebook-entry.model';
 import { NotebooksService } from './notebooks.service';
 import { ITagFilter } from './tag-filter.interface';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
-import { IYearViewData } from '../../shared/year-view/year-view-data.interface';
-import { YearViewDataType } from '../../shared/year-view/year-view-data-type.enum';
+import { IYearViewData } from '../../shared/time-views/year-view/year-view-data.interface';
+import { YearViewDataType } from '../../shared/time-views/year-view/year-view-data-type.enum';
 import * as moment from 'moment';
 
 @Component({

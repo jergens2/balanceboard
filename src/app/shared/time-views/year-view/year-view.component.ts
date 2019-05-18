@@ -1,14 +1,16 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
-import { DaybookService } from '../../dashboard/daybook/daybook.service';
-import { Day } from '../../dashboard/daybook/day/day.model';
-import { ActivitiesService } from '../../dashboard/activities/activities.service';
-import { UserDefinedActivity } from '../../dashboard/activities/user-defined-activity.model';
+import { DaybookService } from '../../../dashboard/daybook/daybook.service';
+import { Day } from '../../../dashboard/daybook/day/day.model';
+import { ActivitiesService } from '../../../dashboard/activities/activities.service';
+import { UserDefinedActivity } from '../../../dashboard/activities/user-defined-activity.model';
 import { Router } from '@angular/router';
-import { SizeService } from '../app-screen-size/size.service';
-import { AppScreenSize } from '../app-screen-size/app-screen-size.enum';
-import { OnScreenSizeChanged } from '../app-screen-size/on-screen-size-changed.interface';
+import { SizeService } from '../../app-screen-size/size.service';
+import { AppScreenSize } from '../../app-screen-size/app-screen-size.enum';
+import { OnScreenSizeChanged } from '../../app-screen-size/on-screen-size-changed.interface';
 import { IYearViewData } from './year-view-data.interface';
+import { IDayOfYear } from './day-of-year.interface';
+import { TimeViewsService } from '../time-views.service';
 
 @Component({
   selector: 'app-year-view',
@@ -17,19 +19,28 @@ import { IYearViewData } from './year-view-data.interface';
 })
 export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
-  constructor(private daybookService: DaybookService, private activitiesService: ActivitiesService, private router: Router, private sizeService: SizeService) { }
+  constructor(
+    private daybookService: DaybookService,
+    private activitiesService: ActivitiesService,
+    private router: Router,
+    private sizeService: SizeService,
+    private timeViewsService: TimeViewsService,
+  ) { }
 
   currentYear: number = 2019;
 
   months: any[] = null;
 
-  allDays: Day[] = [];
+  allDays: IDayOfYear[] = [];
+
+  toolTip: { style: any, value: string };
 
   appScreenSize: AppScreenSize;
 
 
   @Input() yearViewData: IYearViewData;
   @Output() dateClicked: EventEmitter<any> = new EventEmitter();
+
 
   ngOnInit() {
     this.appScreenSize = this.sizeService.appScreenSize;
@@ -74,20 +85,18 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
       let currentDay: moment.Moment = moment(currentMonth).startOf("month");
       let endOfMonth: moment.Moment = moment(currentMonth).endOf("month");
-      let days: any[] = [];
+      let days: IDayOfYear[] = [];
 
       let daysAfterStart: number = moment(currentDay).day();
       for (let i = 0; i < daysAfterStart; i++) {
-        days.push({
-          dayDate: "",
-          dayObject: {},
-          dayStyle: { "border": "none", "background-color": "none" }
-        });
+        days.push(null);
       }
 
       while (currentDay.isBefore(endOfMonth)) {
 
-        days.push(this.buildDay(currentDay))
+        let builtDay: IDayOfYear = this.buildDay(currentDay)
+        days.push(builtDay);
+        this.allDays.push(builtDay);
         currentDay = moment(currentDay).add(1, "days");
       }
 
@@ -103,9 +112,9 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
   }
 
 
-  private buildDay(currentDay: moment.Moment): any {
+  private buildDay(currentDay: moment.Moment): IDayOfYear {
 
-    let day: any = {};
+    let day: IDayOfYear;
 
     let dayStyle: any = {};
     let dayObject: Day = null;
@@ -119,19 +128,19 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
       dayData = dataElement.value;
 
 
-      dayStyle = { "border": "1px solid rgb(206, 206, 206)", "background-color": this.dayBackgroundColor(dayData, this.yearViewData.maxValue) };
+      dayStyle = { "background-color": this.dayBackgroundColor(dayData, this.yearViewData.maxValue) };
     } else {
-      dayStyle = { "border": "1px solid rgb(206, 206, 206)" };
+      dayStyle = {};
     }
 
 
 
 
     day = {
-      dayDate: currentDay,
-      dayObject: dayObject,
-      dayStyle: dayStyle,
-      dayData: dayData
+      date: currentDay,
+      dayObjectData: dayObject,
+      style: dayStyle,
+      isHighlighted: false,
     }
 
     return day;
@@ -139,8 +148,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
 
   private dayBackgroundColor(value: number, maxValue: number): string {
-    let color = "rgba(0, 153, 64, "+(value/maxValue).toFixed(2)+")";
-    console.log("color is ", color );
+    let color = "rgba(0, 153, 64, " + (value / maxValue).toFixed(2) + ")";
     return color;
   }
 
@@ -157,14 +165,15 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
       let currentDay: moment.Moment = moment(currentMonth).startOf("month");
       let endOfMonth: moment.Moment = moment(currentMonth).endOf("month");
-      let days: any[] = [];
+      let days: IDayOfYear[] = [];
 
       let daysAfterStart: number = moment(currentDay).day();
       for (let i = 0; i < daysAfterStart; i++) {
         days.push({
-          dayDate: "",
-          dayObject: {},
-          dayStyle: { "border": "none", "background-color": "none" }
+          date: null,
+          dayObjectData: null,
+          style: { "border": "none", "background-color": "none" },
+          isHighlighted: false
         });
       }
 
@@ -183,9 +192,10 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
           dayStyle = { "border": "1px solid rgb(206, 206, 206)" };
         }
         days.push({
-          dayDate: currentDay,
-          dayObject: dayObject,
-          dayStyle: dayStyle
+          date: currentDay,
+          dayObjectData: dayObject,
+          style: dayStyle,
+          isHighlighted: false,
         })
         currentDay = moment(currentDay).add(1, "days");
       }
@@ -202,9 +212,83 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
   }
 
 
-  onClickDay(day: any) {
+  onClickDay(day: IDayOfYear) {
     this.dateClicked.emit(day);
     // this.router.navigate(['daybook/' + day.dayDate.format('YYYY-MM-DD')]);
+  }
+
+
+  private mouseDownDay: IDayOfYear;
+  private mouseOverDay: IDayOfYear;
+  onMouseDownDay(day: IDayOfYear) {
+    this.mouseDownDay = day;
+    this.mouseOverDay = day;
+  }
+
+  onMouseOverDay(day: IDayOfYear, hoverEvent: MouseEvent) {
+
+    if (this.mouseOverDay) {
+      if (day.date.format('YYYY-MM-DD') != this.mouseOverDay.date.format('YYYY-MM-DD')) {
+        this.mouseOverDay = day;
+        if (this.mouseDownDay) {
+          let startDate: IDayOfYear = this.mouseDownDay;
+          let endDate: IDayOfYear = day;
+          if (day.date.isBefore(this.mouseDownDay.date)) {
+            startDate = day;
+            endDate = this.mouseDownDay;
+          }
+          this.highlightHoverRange(startDate, endDate, hoverEvent);
+        }
+      }
+    }
+
+
+
+
+
+  }
+
+  onMouseUpDay(day: IDayOfYear) {
+    if (this.mouseDownDay) {
+      // console.log("Zoom range selected: from " + this.mouseDownDay.date.format('YYYY-MM-DD') + " to " + day.date.format('YYYY-MM-DD')  )
+      
+      this.timeViewsService.changeRange(this.mouseDownDay.date, day.date );
+      this.removeHighlightHoverRange();
+    }
+
+  }
+
+  private highlightHoverRange(startDay: IDayOfYear, endDay: IDayOfYear, hoverEvent: MouseEvent) {
+
+    let count = 0;
+
+    this.allDays.forEach(dayOfYear => {
+      dayOfYear.isHighlighted = false;
+    });
+    this.allDays.forEach((dayOfYear: IDayOfYear) => {
+      if (dayOfYear.date.isSameOrAfter(startDay.date) && dayOfYear.date.isSameOrBefore(endDay.date)) {
+        dayOfYear.isHighlighted = true;
+        count++;
+      }
+    });
+
+    this.toolTip = { value: count.toFixed(0) + " days", style: { "top": (hoverEvent.y - 35) + "px", "left": (hoverEvent.x - 35) + "px" } };
+  }
+
+  private removeHighlightHoverRange() {
+    this.toolTip = null;
+    this.mouseDownDay = null;
+    this.mouseOverDay = null;
+    this.allDays.forEach(dayOfYear => {
+      dayOfYear.isHighlighted = false;
+    });
+  }
+
+  onMouseUp() {
+    this.removeHighlightHoverRange();
+  }
+  onMouseLeave() {
+    this.removeHighlightHoverRange();
   }
 
 
@@ -222,12 +306,12 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
     return style;
   }
 
-  dayData(day: { dayDate: moment.Moment, dayObject: Day, dayStyle: any }): string {
+  dayData(day: IDayOfYear): string {
 
-    if (day.dayObject) {
+    if (day.dayObjectData) {
 
-      if (day.dayObject.activityData) {
-        let activity: UserDefinedActivity = this.activitiesService.findActivityByTreeId(day.dayObject.activityData[1].activityTreeId)
+      if (day.dayObjectData.activityData) {
+        let activity: UserDefinedActivity = this.activitiesService.findActivityByTreeId(day.dayObjectData.activityData[1].activityTreeId)
 
       }
 

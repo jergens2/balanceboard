@@ -17,7 +17,7 @@ import { TasksComponent } from "./dashboard/tasks/tasks.component";
 import { SchedulingComponent } from "./dashboard/scheduling/scheduling.component";
 import { ScheduleRotationsComponent } from "./dashboard/scheduling/schedule-rotations/schedule-rotations.component";
 import { RecurringTasksComponent } from "./dashboard/scheduling/recurring-tasks/recurring-tasks.component";
-import { YearViewComponent } from "./shared/year-view/year-view.component";
+import { YearViewComponent } from "./shared/time-views/year-view/year-view.component";
 
 
 const appRoutes: Routes = [

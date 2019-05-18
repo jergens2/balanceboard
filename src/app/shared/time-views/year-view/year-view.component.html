@@ -1,4 +1,4 @@
-<div class="year-view-root">
+<div class="year-view-root no-select" (mouseup)="onMouseUp()" (mouseleave)="onMouseLeave()">
   <div class="header">
     {{ currentYear }}
   </div>
@@ -13,13 +13,11 @@
           <div class="month-body">
             <div class="days-of-month">
               <div *ngFor="let day of month.daysOfMonth" class="day-container">
-                <div class="day" [ngStyle]="day.dayStyle" (click)="onClickDay(day)">
-                  <div class="day-header" *ngIf="day.dayDate">
-                    {{ day.dayDate.format('DD') }}
-                  </div>
-                  <div class="day-body">
-                    <!-- {{ dayData(day) }} -->
-
+                <div *ngIf="day == null" class="null-day" ></div>
+                <div *ngIf="day != null" class="day" [ngClass]="{'highlighted-day':day.isHighlighted}" [ngStyle]="day.style"
+                  (mousedown)="onMouseDownDay(day)" (mouseover)="onMouseOverDay(day, $event)" (mouseup)="onMouseUpDay(day)">
+                  <div class="day-date" *ngIf="day.date">
+                    {{ day.date.format('DD') }}
                   </div>
                 </div>
 
@@ -33,5 +31,6 @@
         </div>
       </div>
     </div>
-
+    <div class="tool-tip" *ngIf="toolTip" [ngStyle]="toolTip.style">{{ toolTip.value }}</div>
   </div>
+</div>

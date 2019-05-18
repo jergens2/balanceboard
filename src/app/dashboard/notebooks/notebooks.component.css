@@ -15,6 +15,11 @@
     font-size:1.3em;
 }
 
+
+.time-view-container{
+    width:100%;
+}
+
 .year-view-container{
     width:100%;
     display:flex;
