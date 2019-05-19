@@ -59,6 +59,7 @@ export class Task{
     }
 
     description: string;
+    groupCategoryString: string = ":group :category";
 
     // durationRequirementMinutes: number = 0;
 

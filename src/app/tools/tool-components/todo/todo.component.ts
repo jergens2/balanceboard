@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import { ToolsService } from '../../tools.service';
 import { ToolComponents } from '../../tool-components.enum';
@@ -7,6 +7,7 @@ import { faCircle, faCheckCircle, IconDefinition } from '@fortawesome/free-regul
 import { Task } from '../../../dashboard/tasks/task/task.model';
 import { TaskPriority } from '../../../dashboard/tasks/task/task-priority.enum';
 import { TaskService } from '../../../dashboard/tasks/task.service';
+import { ModalService } from '../../../modal/modal.service';
 
 @Component({
   selector: 'app-todo',
@@ -19,20 +20,36 @@ export class TodoComponent implements OnInit {
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
 
-  constructor(private toolsService: ToolsService, private taskService: TaskService) { }
+  constructor(private toolsService: ToolsService, private taskService: TaskService, private modalService: ModalService) { }
 
 
   taskForm: FormGroup;
 
+  @Input('modifyItem') modifyTask: Task;
+
   ngOnInit() {
-    this.taskForm = new FormGroup({
-      "title": new FormControl("", Validators.required),
-      "groupCategory": new FormControl(""),
-      "description": new FormControl(""),
-      "timeRequiredHours": new FormControl(0),
-      "timeRequiredMinutes": new FormControl(0),
-      "priority": new FormControl(1),
-    })
+    if(this.modifyTask){
+      console.log("This is a modification");
+      this.taskForm = new FormGroup({
+        "title": new FormControl(this.modifyTask.title, Validators.required),
+        "groupCategory": new FormControl(this.modifyTask.groupCategoryString),
+        "description": new FormControl(this.modifyTask.description),
+        "timeRequiredHours": new FormControl(),
+        "timeRequiredMinutes": new FormControl(0),
+        "priority": new FormControl(1),
+      });
+    }else{
+      console.log("This is a new one ")
+      this.taskForm = new FormGroup({
+        "title": new FormControl("", Validators.required),
+        "groupCategory": new FormControl(""),
+        "description": new FormControl(""),
+        "timeRequiredHours": new FormControl(0),
+        "timeRequiredMinutes": new FormControl(0),
+        "priority": new FormControl(1),
+      });
+    }
+    
   }
 
 
@@ -65,7 +82,8 @@ export class TodoComponent implements OnInit {
     this.toolsService.closeTool(ToolComponents.Todo)
   }
   onClickCloseTask(){
-    this.toolsService.closeTool(ToolComponents.Todo)
+    this.toolsService.closeTool(ToolComponents.Todo);
+    this.modalService.closeModal();
   }
   public get saveTaskDisabled(): string{
     if(this.taskForm.valid){

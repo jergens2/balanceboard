@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { NotebookEntry } from '../../../dashboard/notebooks/notebook-entry/notebook-entry.model';
 import { NotebookEntryTypes } from '../../../dashboard/notebooks/notebook-entry/notebook-entry-types.enum';
 import { NotebooksService } from '../../../dashboard/notebooks/notebooks.service';
+import { ModalService } from '../../../modal/modal.service';
 
 
 
@@ -21,7 +22,8 @@ export class NotepadComponent implements OnInit {
 
   constructor(
     private toolsService: ToolsService,
-    private notebooksService: NotebooksService
+    private notebooksService: NotebooksService,
+    private modalService: ModalService
   ) { }
 
 
@@ -46,6 +48,7 @@ export class NotepadComponent implements OnInit {
 
   onClickCloseNotepad() {
     this.toolsService.closeTool(ToolComponents.Notepad);
+    this.modalService.closeModal();
   }
 
   get formIsValid(): boolean{
