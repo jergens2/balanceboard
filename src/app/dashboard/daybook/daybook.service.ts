@@ -44,7 +44,7 @@ export class DaybookService {
 
   private getLast365Days(){
     
-    this.getDaysInRange$(moment().subtract(365, "days"), moment()).subscribe((days: Day[])=>{
+    this.getDaysInRangeHTTP$(moment().subtract(365, "days"), moment()).subscribe((days: Day[])=>{
       this._last365Days$.next(days);
       this._loginComplete$.next(true);
     })
@@ -102,7 +102,7 @@ export class DaybookService {
   //   }
   // }
 
-  public getDaysInRange$(startDate: moment.Moment, endDate: moment.Moment):Observable<Day[]>{
+  public getDaysInRangeHTTP$(startDate: moment.Moment, endDate: moment.Moment):Observable<Day[]>{
     const getUrl = this.serverUrl + "/api/day/" + this._authStatus.user.id + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
     const httpOptions = {
       headers: new HttpHeaders({

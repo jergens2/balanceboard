@@ -7,6 +7,7 @@ import { MultiYearViewComponent } from './time-views/multi-year-view/multi-year-
 import { WeekViewComponent } from './time-views/week-view/week-view.component';
 import { SingleDayViewComponent } from './time-views/single-day-view/single-day-view.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
+import { CustomRangeTimeViewComponent } from './time-views/custom-range-time-view/custom-range-time-view.component';
 
 @NgModule({
     imports: [
@@ -20,6 +21,7 @@ import { ColorPickerComponent } from './color-picker/color-picker.component';
         WeekViewComponent,
         SingleDayViewComponent,
         ColorPickerComponent,
+        CustomRangeTimeViewComponent,
     ],
     exports: [
         CommonModule,

@@ -18,6 +18,7 @@ import { Day } from '../dashboard/daybook/day/day.model';
 import { NotebookEntry } from '../dashboard/notebooks/notebook-entry/notebook-entry.model';
 import { NotebooksService } from '../dashboard/notebooks/notebooks.service';
 import { RecurringTasksService } from '../dashboard/scheduling/recurring-tasks/recurring-tasks.service';
+import { TimeViewsService } from '../shared/time-views/time-views.service';
 
 
 @Injectable()
@@ -39,6 +40,7 @@ export class AuthenticationService {
     private notebooksService: NotebooksService,
     private taskService: TaskService,
     private recurringTaskService: RecurringTasksService,
+    private timeViewsService: TimeViewsService
   ) { }
 
   private serverUrl = serverUrl;
@@ -56,6 +58,7 @@ export class AuthenticationService {
   private taskSubscription: Subscription = new Subscription();
   private recurringTaskSubscription: Subscription = new Subscription();
   private timelogSubscription: Subscription = new Subscription();
+  private timeViewsSubscription: Subscription = new Subscription();
 
 
   registerUser$(authData: AuthData): Observable<Object> {
@@ -113,6 +116,7 @@ export class AuthenticationService {
       let notebookLoginComplete: boolean = false;
       let taskLoginComplete: boolean = false;
       let recurringTasksLoginComplete: boolean = false;
+      let timeViewsLoginComplete: boolean = false;
 
 
       this.userSettingsService.login(authStatus);
@@ -144,6 +148,10 @@ export class AuthenticationService {
         dayTemplatesLoginComplete = true;
       });
 
+      this.timeViewsSubscription = this.timeViewsService.login$().subscribe((loginComplete: boolean)=>{
+        timeViewsLoginComplete = loginComplete;
+      })
+
       this.activitiesSubscription = this.activitiesService.login$(authStatus).subscribe((activityTree: ActivityTree) => {
         if (activityTree != null) {
           this.timelogSubscription = this.timelogService.login$(authStatus).subscribe((loginComplete: boolean)=>{
@@ -159,13 +167,13 @@ export class AuthenticationService {
         }
       });
 
-      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete && recurringTasksLoginComplete;
+      let allComplete: boolean = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete && recurringTasksLoginComplete && timeViewsLoginComplete;
       let timerSubscription: Subscription = new Subscription();
 
 
 
       timerSubscription = timer(200, 200).subscribe(() => {
-        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete && recurringTasksLoginComplete;
+        allComplete = daybookLoginComplete && dayTemplatesLoginComplete && activitiesLoginComplete && notebookLoginComplete && taskLoginComplete && recurringTasksLoginComplete  && timeViewsLoginComplete;
         if (allComplete) {
 
           this.completeLogin(authStatus);
@@ -249,6 +257,7 @@ export class AuthenticationService {
     this.taskSubscription.unsubscribe();
     this.recurringTaskSubscription.unsubscribe();
     this.timelogSubscription.unsubscribe();
+    this.timeViewsSubscription.unsubscribe();
 
     this.timelogService.logout();
     this.activitiesService.logout();
@@ -258,6 +267,7 @@ export class AuthenticationService {
     this.taskService.logout();
     this.notebooksService.logout();
     this.recurringTaskService.logout();
+    this.timeViewsService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));

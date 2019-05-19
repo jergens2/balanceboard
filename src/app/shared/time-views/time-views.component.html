@@ -20,6 +20,7 @@
     <app-six-week-view *ngIf="timeView == 'SIX_WEEKS'"></app-six-week-view>
     <app-year-view *ngIf="timeView == 'YEAR'"></app-year-view>
     <app-multi-year-view *ngIf="timeView == 'MULTIPLE_YEARS'"></app-multi-year-view>
+    <app-custom-range-time-view [timeRange]="customViewTimeRange" *ngIf="timeView == 'CUSTOM'"></app-custom-range-time-view>
   </div>
 
 
