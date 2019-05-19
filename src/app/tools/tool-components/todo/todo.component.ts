@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+
 import { ToolsService } from '../../tools.service';
 import { ToolComponents } from '../../tool-components.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -15,7 +15,7 @@ import { TaskService } from '../../../dashboard/tasks/task.service';
 })
 export class TodoComponent implements OnInit {
 
-  faTimes = faTimes;
+
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
 
@@ -34,9 +34,6 @@ export class TodoComponent implements OnInit {
     })
   }
 
-  onClickClose(){ 
-    this.toolsService.closeTool(ToolComponents.Todo)
-  }
 
 
   onClickSaveTask(){

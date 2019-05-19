@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+
 import { ToolsService } from '../../tools.service';
 import { ToolComponents } from '../../tool-components.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -17,7 +17,6 @@ import { NotebooksService } from '../../../dashboard/notebooks/notebooks.service
 })
 export class NotepadComponent implements OnInit {
 
-  faTimes = faTimes;
 
 
   constructor(

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ToolsService } from './tools.service';
 import { ToolComponents } from './tool-components.enum';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-tools',
@@ -8,6 +9,8 @@ import { ToolComponents } from './tool-components.enum';
   styleUrls: ['./tools.component.css']
 })
 export class ToolsComponent implements OnInit {
+
+  faTimes = faTimes;
 
   constructor(private toolsService: ToolsService) { }
 
@@ -26,6 +29,10 @@ export class ToolsComponent implements OnInit {
       }
     })
 
+  }
+
+  onClickClose(){
+    this.toolsService.closeTool(ToolComponents.Notepad);
   }
 
 }

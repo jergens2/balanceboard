@@ -1,10 +1,4 @@
 <div class="todo-root">
-  <div class="todo-header">
-    <div class="header-item" style="font-size:0.8em;">
-      New to-do item
-    </div>
-    <fa-icon [icon]="faTimes" class="icon-button header-item" (click)="onClickClose()"></fa-icon>
-  </div>
   <div class="todo-body" [formGroup]="taskForm">
     <div class="body-row">
       <input type="text" formControlName="title" placeholder="Title" class="task-title" style="font-weight:bold;">

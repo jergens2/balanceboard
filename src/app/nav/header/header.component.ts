@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@ang
 import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent, Subscriber } from 'rxjs';
-import { faBars, faCogs } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
@@ -69,9 +69,8 @@ export class HeaderComponent implements OnInit {
     this.activeSubscriptions = [];
 
     let newMenus: HeaderMenu[] = [];
-    let accountMenuItems: MenuItem[] = [];
 
-    let signOutMenuItem = new MenuItem('Sign Out', null, null);
+    let signOutMenuItem = new MenuItem('Sign Out', null, faSignOutAlt);
     this.activeSubscriptions.push(signOutMenuItem.clickEmitted$.subscribe(() => {
       let options: IModalOption[] = [
         {
@@ -97,11 +96,8 @@ export class HeaderComponent implements OnInit {
       });
       this.modalService.activeModal = modal;
     }));
-    accountMenuItems.push(new MenuItem('Settings', '/user_settings', faCogs));
-    accountMenuItems.push(signOutMenuItem);
 
-    newMenus.push(new HeaderMenu('Menu', appMenuItems));
-    newMenus.push(new HeaderMenu('Account', accountMenuItems));
+    newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem('Settings', '/user_settings', faCogs), signOutMenuItem])));
 
 
     let toolsMenuItems: MenuItem[] = [];
@@ -127,7 +123,10 @@ export class HeaderComponent implements OnInit {
   }
 
   private logout(){
-
+    this.activeSubscriptions.forEach(subscription => {
+      subscription.unsubscribe();
+    });
+    this.activeSubscriptions = [];
     this.authService.logout();
   }
 
