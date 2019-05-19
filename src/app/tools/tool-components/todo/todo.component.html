@@ -3,12 +3,17 @@
     <div class="body-row">
       <input type="text" formControlName="title" placeholder="Title" class="task-title" style="font-weight:bold;">
     </div>
+    <div class="body-row">
+        <input type="text" formControlName="groupCategory" class="task-title" placeholder=":supergroup :subgroup :subsubgroup">
+    </div>
     <div class="body-row body-row-border-bottom">
       <textarea formControlName="description" class="task-details" rows="3" placeholder="Details..."></textarea>
     </div>
 
+
+
     <div class="body-row body-row-small body-row-border-bottom">
-      <div >
+      <div>
         Estimated time required for completion
       </div>
 
@@ -39,15 +44,15 @@
           <option value="2">Low</option>
         </select>
       </div>
-      
+
     </div>
     <div class="body-row body-row-small" style="padding-bottom:10px;">
       Schedule
-      <div class="icon-button-black" (click)="onClickScheduleAutomatic()" >
+      <div class="icon-button-black" (click)="onClickScheduleAutomatic()">
         <fa-icon [icon]="scheduleAutomaticIcon"></fa-icon>
         Automatic
       </div>
-      <div class="icon-button-black" (click)="onClickScheduleSpecify()" >
+      <div class="icon-button-black" (click)="onClickScheduleSpecify()">
         <fa-icon [icon]="scheduleSpecifyIcon"></fa-icon>
         Specify
       </div>

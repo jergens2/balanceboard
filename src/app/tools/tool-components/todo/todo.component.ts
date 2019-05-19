@@ -27,6 +27,7 @@ export class TodoComponent implements OnInit {
   ngOnInit() {
     this.taskForm = new FormGroup({
       "title": new FormControl("", Validators.required),
+      "groupCategory": new FormControl(""),
       "description": new FormControl(""),
       "timeRequiredHours": new FormControl(0),
       "timeRequiredMinutes": new FormControl(0),
