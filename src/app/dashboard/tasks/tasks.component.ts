@@ -26,7 +26,7 @@ export class TasksComponent implements OnInit {
     return this._allTasks;
   }
 
-  taskView: string = "LIST";  // can be "CATEGORIES", "LIST", "GRID"
+  taskView: string = "CATEGORIES";  // can be "CATEGORIES", "LIST", "GRID"
 
   ngOnInit() {
     this.taskService.tasks$.subscribe((tasks: Task[])=>{

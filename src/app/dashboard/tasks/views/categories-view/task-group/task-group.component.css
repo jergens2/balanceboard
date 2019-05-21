@@ -1,12 +1,11 @@
 .task-group-root{
-    border:1px solid gray;
-    border-radius: 5px;
+    border:1px solid rgb(241, 241, 241);
+    border-radius: 2px;
     margin-left:25px;
-    margin-bottom: 3px;
     padding:10px;
 }
 .header{
-    font-size:1.2em;
+    font-size:1.0em;
     font-weight: bold;
 }
 
