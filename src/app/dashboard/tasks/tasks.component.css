@@ -3,5 +3,32 @@
     flex-direction: column;
 }
 .header{
+    padding:3px;
     font-size:1.3em;
+
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+.header-buttons{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+}
+.toggled-button{
+    color:rgb(51, 131, 255);
+}
+.settings-menu{
+    margin:3px;
+    padding:5px;
+    border: 1px solid rgba(51, 133, 255, 0.322);
+
+}
+
+.icon-button{
+    padding:5px;
+}
+.icon-button:hover{
+    color:rgb(51, 131, 255);
 }

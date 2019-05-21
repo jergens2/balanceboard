@@ -63,9 +63,7 @@ export class TaskComponent implements OnInit, OnDestroy {
       this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
         if (selectedOption.value == "Yes") {
           this.task.markIncomplete();
-          this.taskService.updateTaskHTTP$(this.task).subscribe((task: Task)=>{
-            this.task = task;
-          });
+          this.taskService.updateTaskHTTP(this.task);
         } else if (selectedOption.value == "No") {
 
         } else {
@@ -75,10 +73,7 @@ export class TaskComponent implements OnInit, OnDestroy {
       this.modalService.activeModal = modal;
     } else if (!this.task.isComplete) {
       this.task.markComplete(moment());
-      this.taskService.updateTaskHTTP$(this.task).subscribe((updatedTask: Task)=>{
-        console.log("it has been updated, it now looks like this: ", this.task)
-        // this.daybookService.setPrimaryTask(this.task, this._currentDay.date);
-      });
+      this.taskService.updateTaskHTTP(this.task);
 
     }
   }

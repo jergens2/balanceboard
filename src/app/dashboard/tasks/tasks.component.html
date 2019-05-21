@@ -1,20 +1,48 @@
 <div class="tasks-root">
   <div class="header">
-    Task List
+    <div class="header-title">
+      To-do items
+    </div>
+    <div class="header-buttons">
+      <div class="icon-button" style="font-size:10pt;" [ngClass]="{'toggled-button':taskView=='CATEGORIES'}"
+        (click)="onClickChangeView('CATEGORIES')">
+        <fa-icon [icon]="faSitemap"></fa-icon>
+      </div>
+      <div class="icon-button" style="font-size:10pt;" [ngClass]="{'toggled-button':taskView=='LIST'}"
+        (click)="onClickChangeView('LIST')">
+        <fa-icon [icon]="faList"></fa-icon>
+      </div>
+      <div class="icon-button" style="font-size:10pt;" [ngClass]="{'toggled-button':taskView=='GRID'}"
+        (click)="onClickChangeView('GRID')">
+        <fa-icon [icon]="faThlarge"></fa-icon>
+      </div>
+      <div class="icon-button" style="margin-left:20px;" (click)="onClickSettings()"
+        [ngClass]="{'toggled-button':settingsMenu}">
+        <fa-icon [icon]="faCog"></fa-icon>
+      </div>
+    </div>
+
   </div>
 
-  <div style="font-weight: bold;">
-    Incomplete Tasks
+  <div *ngIf="settingsMenu" class="settings-menu">
+    <div>
+      Sort by Importance
+    </div>
+    <div>
+      Sort by Urgency
+    </div>
+    <div>
+      Sort by date created
+    </div>
+    <div>
+      Sort by Category / click to toggle Category view
+    </div>
   </div>
 
-  <div *ngFor="let task of incompleteTasks">
-    <app-task [task]="task"></app-task>
+  <div class="tasks-view">
+    <app-categories-view *ngIf="taskView=='CATEGORIES'"></app-categories-view>
+    <app-list-view *ngIf="taskView=='LIST'"></app-list-view>
+    <app-eisenhower-view *ngIf="taskView=='GRID'"></app-eisenhower-view>
   </div>
 
-  <div style="font-weight: bold; margin-top:20px;">
-    Completed Tasks
-  </div>
-  <div *ngFor="let task of completeTasks">
-    <app-task [task]="task"></app-task>
-  </div>
 </div>

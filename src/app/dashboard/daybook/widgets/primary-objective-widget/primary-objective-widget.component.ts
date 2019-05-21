@@ -75,11 +75,7 @@ export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
     this.task.markComplete(moment());
 
     console.log("updating task, it should look like this:", this.task)
-    this.tasksService.updateTaskHTTP$(this.task).subscribe((updatedTask: Task)=>{
-      this.task = updatedTask;
-      console.log("it has been updated, it now looks like this: ", this.task)
-      // this.daybookService.setPrimaryTask(this.task, this._currentDay.date);
-    });
+    this.tasksService.updateTaskHTTP(this.task);
 
   }
   onClickUnsetComplete(){

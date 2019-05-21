@@ -41,6 +41,9 @@ export class TaskService {
   public get tasks$(): Observable<Task[]> {
     return this._tasks$.asObservable();
   }
+  public get tasks(): Task[]{
+    return this._tasks$.getValue();
+  }
 
   private _taskQueue: Task[] = [];
   private _taskQueue$: Subject<Task[]> = new Subject();
@@ -60,10 +63,10 @@ export class TaskService {
 
     let tasks: Task[] = allTasks.filter((task)=>{ if(!task.isComplete){ return task }})
     tasks.sort((task1, task2)=>{
-      if(task1.startDate.isBefore(task2.startDate)){
+      if(task1.createdDate.isBefore(task2.createdDate)){
         return -1;
       }
-      if(task1.startDate.isAfter(task2.startDate)){
+      if(task1.createdDate.isAfter(task2.createdDate)){
         return 1;
       }
       return 0;
@@ -122,7 +125,7 @@ export class TaskService {
 
   }
 
-  public createTaskHTTP$(task: Task): Observable<Task> {
+  public createTaskHTTP(task: Task){
     console.log("Saving task:", task);
 
 
@@ -131,10 +134,13 @@ export class TaskService {
       userId: this._authStatus.user.id,
       title: task.title,
       priority: task.priority,
-      isComplete: false,
+      groupCategory: task.groupCategory,
       description: task.description,
-      startDateISO: task.startDate.toISOString(),
-      dueDateISO: task.dueDate.toISOString()
+      createdDateISO: task.createdDate.toISOString(),
+      hasDueDate: task.hasDueDate,
+      dueDateISO: task.dueDate.toISOString(),
+      completionDateISO: task.completionDateISO,
+      isComplete: task.isComplete,
     }
 
     const postUrl = this._serverUrl + "/api/task/create";
@@ -145,17 +151,18 @@ export class TaskService {
       })
     };
 
-    return this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
       .pipe<Task>(map((response: any) => {
-        let task = this.buildTaskFromHttp(response.data);
+        return this.buildTaskFromHttp(response.data);
+      }))
+      .subscribe((task: Task)=>{
         let currentTasks = this._tasks$.getValue();
         currentTasks.push(task);
         this._tasks$.next(this.sortTasksByDate(currentTasks));
-        return task;
-      }));
+      })
   }
 
-  public updateTaskHTTP$(task: Task): Observable<Task> {
+  public updateTaskHTTP(task: Task) {
     console.log("Updating task:", task);
 
 
@@ -165,13 +172,17 @@ export class TaskService {
       userId: task.userId,
       title: task.title,
       priority: task.priority,
+      groupCategory: task.groupCategory,
       description: task.description,
-      startDateISO: task.startDate.toISOString(),
+      createdDateISO: task.createdDate.toISOString(),
+      hasDueDate: task.hasDueDate,
       dueDateISO: task.dueDate.toISOString(),
       completionDateISO: task.completionDateISO,
       isComplete: task.isComplete,
 
     }
+
+
 
     const postUrl = this._serverUrl + "/api/task/update";
     const httpOptions = {
@@ -181,14 +192,21 @@ export class TaskService {
       })
     };
 
-    return this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, requestBody, httpOptions)
       .pipe<Task>(map((response: any) => {
-        let updatedTask = this.buildTaskFromHttp(response.data);
+        return this.buildTaskFromHttp(response.data);;
+      }))
+      .subscribe((updatedTask: Task)=>{
         let currentTasks = this._tasks$.getValue();
-        currentTasks.splice(currentTasks.indexOf(task),1,updatedTask );
+        let index: number = 0;
+        for(let currentTask of currentTasks){
+          if(currentTask.id == updatedTask.id){
+            index = currentTasks.indexOf(currentTask);
+          }
+        }
+        currentTasks.splice(index, 1, updatedTask);
         this._tasks$.next(this.sortTasksByDate(currentTasks));
-        return task;
-      }));
+      })
   }
 
 
@@ -215,10 +233,10 @@ export class TaskService {
 
   private sortTasksByDate(tasks: Task[]): Task[] {
     return tasks.sort((task1, task2)=>{
-      if(task1.startDate.isAfter(task2.startDate)){
+      if(task1.createdDate.isAfter(task2.createdDate)){
         return -1;
       }
-      if(task1.startDate.isBefore(task2.startDate)){
+      if(task1.createdDate.isBefore(task2.createdDate)){
         return 1;
       }
       return 0;
@@ -227,11 +245,6 @@ export class TaskService {
 
   private buildTaskFromHttp(data: any): Task{
 
-
-    let task = new Task(data._id, data.userId, data.title, data.description, moment(data.startDateISO), moment(data.dueDateISO))
-    if (data.isComplete as boolean) {
-      task.markComplete(moment(data.completionDateISO));
-    }
     let taskPriority: TaskPriority;
     if(data.priority == 0){
       taskPriority = TaskPriority.High;
@@ -242,7 +255,12 @@ export class TaskService {
     if(data.priority == 2){
       taskPriority = TaskPriority.Low;
     }
-    task.priority = taskPriority;
+
+    let task = new Task(data._id, data.userId, data.title, data.description, data.groupCategory, taskPriority, moment(data.createdDateISO), moment(data.dueDateISO))
+    if (data.isComplete as boolean) {
+      task.markComplete(moment(data.completionDateISO));
+    }
+    
     return task;
   }
 

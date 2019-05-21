@@ -60,6 +60,10 @@ import { ScheduleRotationsComponent } from './scheduling/schedule-rotations/sche
 import { ActivitiesSixWeekViewComponent } from './activities/activities-six-week-view/activities-six-week-view.component';
 import { ActivityChartComponent } from './activities/activity-display/activity-chart/activity-chart.component';
 import { SharedModule } from '../shared/shared.module';
+import { CategoriesViewComponent } from './tasks/views/categories-view/categories-view.component';
+import { ListViewComponent } from './tasks/views/list-view/list-view.component';
+import { EisenhowerViewComponent } from './tasks/views/eisenhower-view/eisenhower-view.component';
+import { TaskGroupComponent } from './tasks/views/categories-view/task-group/task-group.component';
 
 
 
@@ -127,6 +131,10 @@ import { SharedModule } from '../shared/shared.module';
     RecurringTasksComponent,
     ActivitiesSixWeekViewComponent,
     ActivityChartComponent,
+    CategoriesViewComponent,
+    ListViewComponent,
+    EisenhowerViewComponent,
+    TaskGroupComponent,
     
   ],
   providers: [],

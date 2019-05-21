@@ -8,6 +8,7 @@ import { Task } from '../../../dashboard/tasks/task/task.model';
 import { TaskPriority } from '../../../dashboard/tasks/task/task-priority.enum';
 import { TaskService } from '../../../dashboard/tasks/task.service';
 import { ModalService } from '../../../modal/modal.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-todo',
@@ -26,20 +27,21 @@ export class TodoComponent implements OnInit {
   taskForm: FormGroup;
 
   @Input('modifyItem') modifyTask: Task;
+  private modeIsModify: boolean = false;
+
 
   ngOnInit() {
     if(this.modifyTask){
-      console.log("This is a modification");
       this.taskForm = new FormGroup({
         "title": new FormControl(this.modifyTask.title, Validators.required),
-        "groupCategory": new FormControl(this.modifyTask.groupCategoryString),
+        "groupCategory": new FormControl(this.modifyTask.groupCategory),
         "description": new FormControl(this.modifyTask.description),
         "timeRequiredHours": new FormControl(),
         "timeRequiredMinutes": new FormControl(0),
         "priority": new FormControl(1),
+        "dueDate": new FormControl(),
       });
     }else{
-      console.log("This is a new one ")
       this.taskForm = new FormGroup({
         "title": new FormControl("", Validators.required),
         "groupCategory": new FormControl(""),
@@ -47,6 +49,7 @@ export class TodoComponent implements OnInit {
         "timeRequiredHours": new FormControl(0),
         "timeRequiredMinutes": new FormControl(0),
         "priority": new FormControl(1),
+        "dueDate": new FormControl(),
       });
     }
     
@@ -57,10 +60,12 @@ export class TodoComponent implements OnInit {
   onClickSaveTask(){
     let title:string = this.taskForm.controls['title'].value;
     let description: string = this.taskForm.controls['description'].value;
-
-    let task = new Task('', '', title, description);
-
+    let groupCategory: string = this.taskForm.controls['groupCategory'].value;
     let priority: number = this.taskForm.controls['priority'].value as number;
+    let dueDate: moment.Moment;
+    if(this.taskForm.controls['dueDate'].value){
+      dueDate = moment(this.taskForm.controls['dueDate'].value);
+    }
     let taskPriority: TaskPriority;
     if(priority == 0){
       taskPriority = TaskPriority.High;
@@ -71,15 +76,17 @@ export class TodoComponent implements OnInit {
     if(priority == 2){
       taskPriority = TaskPriority.Low;
     }
-    task.priority = taskPriority;
 
+    if(this.modifyTask){
+      let modifyTask = new Task(this.modifyTask.id, this.modifyTask.userId, title, description, groupCategory, priority, this.modifyTask.createdDate, dueDate);
+      this.taskService.updateTaskHTTP(modifyTask);
+    }else{
+      let task = new Task('', '', title, description, groupCategory, priority, moment(), dueDate);
+      this.taskService.createTaskHTTP(task);
+    }
 
-    this.taskService.createTaskHTTP$(task).subscribe((savedTask: Task)=>{
-      
-      console.log("Task has been saved:", task);
-    })
-
-    this.toolsService.closeTool(ToolComponents.Todo)
+    this.toolsService.closeTool(ToolComponents.Todo);
+    this.modalService.closeModal();
   }
   onClickCloseTask(){
     this.toolsService.closeTool(ToolComponents.Todo);
