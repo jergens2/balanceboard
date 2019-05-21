@@ -1,6 +1,6 @@
 <div class="task-group-root">
   <div class="header">
-    {{ taskGroup.groupName }} <span style="margin-left:10px;font-size:0.7em;color:gray;">{{ taskGroup.totalTaskCount }}</span>
+    {{ taskGroup.groupName }} <span style="margin-left:5px;font-size:0.7em;color:gray;">{{ taskGroup.totalTaskCount }}</span>
   </div>
   <div *ngIf="taskGroup.tasks.length > 0" class="tasks">
     <app-task [task]="task" *ngFor="let task of taskGroup.tasks"></app-task>

@@ -1,16 +1,20 @@
 import { IModalOption } from "./modal-option.interface";
 import { ModalComponentType } from "./modal-component-type.enum";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 export class Modal {
 
 
     header: string;
+    headerIcon: IconDefinition;
 
     message: string;
 
     modalOptions: IModalOption[];
     modalStyle: any = {};
     modalData: any = {};
+
+
 
     modalComponentType: ModalComponentType = ModalComponentType.Default                                                                                                                          ;
 

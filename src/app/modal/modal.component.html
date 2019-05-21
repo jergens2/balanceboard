@@ -1,20 +1,25 @@
 <div class="full-screen">
+  
   <div class="app-modal">
+
     <div class="app-modal-header">
-      <div>
+      <div style="display:flex;flex-direction: row;">
+        <fa-icon [icon]="modal.headerIcon" *ngIf="modal.headerIcon"></fa-icon>
         {{ modalHeader }}
       </div>
       <div class="header-button" (click)="onClickCloseModal()">
         <fa-icon [icon]="faTimes" style="width:15px;height:15px;"></fa-icon>
       </div>
     </div>
+
     <div class="app-modal-body">
       <app-default-modal *ngIf="modal.modalComponentType == 'DEFAULT'"></app-default-modal>
       <app-confirm-modal *ngIf="modal.modalComponentType == 'CONFIRM'"></app-confirm-modal>
 
-      <app-notepad-modal *ngIf="modal.modalComponentType == 'NOTE'" ></app-notepad-modal>
+      <app-notepad-modal *ngIf="modal.modalComponentType == 'NOTE'"></app-notepad-modal>
       <app-todo *ngIf="modal.modalComponentType == 'TASK'" [modifyItem]="modal.modalData"></app-todo>
     </div>
+
   </div>
 
 

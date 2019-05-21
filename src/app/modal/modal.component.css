@@ -47,13 +47,3 @@
     color:gray;
 }
 
-.app-modal-buttons{
-
-    display:flex;
-    flex-direction: row;
-    justify-content: center;
-
-}
-.app-modal-button{
-    min-width:50px;
-}

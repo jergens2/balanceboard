@@ -89,6 +89,7 @@ export class SidebarComponent implements OnInit {
       }
     ];
     let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm );
+    modal.headerIcon = faSignOutAlt;
     // this._modalSubscription = 
     this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Logout") {

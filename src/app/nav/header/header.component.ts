@@ -83,7 +83,8 @@ export class HeaderComponent implements OnInit {
         }
       ];
       let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm );
-      // this._modalSubscription = 
+      modal.headerIcon = faSignOutAlt;
+
       this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
         if (selectedOption.value == "Logout") {
           this.logout();
