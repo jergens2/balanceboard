@@ -64,6 +64,13 @@
     background-color: white;
 }
 
+.search-bar{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 25px;
+}
+
 
 @media (max-width: 768px) {
     .title-section{

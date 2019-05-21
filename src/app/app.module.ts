@@ -28,6 +28,7 @@ import { TaskQueueModalComponent } from './modal/custom-modals/task-queue-modal/
 import { ConfirmModalComponent } from './modal/custom-modals/confirm-modal/confirm-modal.component';
 import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notepad-modal.component';
 import { SharedModule } from './shared/shared.module';
+import { SearchBarComponent } from './nav/search-bar/search-bar.component';
 
 
 
@@ -47,7 +48,8 @@ import { SharedModule } from './shared/shared.module';
     TodoComponent,
     TaskQueueModalComponent,
     ConfirmModalComponent,
-    NotepadModalComponent
+    NotepadModalComponent,
+    SearchBarComponent
   ],
   imports: [
     BrowserModule,

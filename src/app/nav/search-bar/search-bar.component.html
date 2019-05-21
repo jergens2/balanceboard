@@ -1,0 +1,8 @@
+<div class="search-bar-root" [ngClass]="{'focus':focus}">
+  <div class="search">
+      <fa-icon [icon]="faSearch"></fa-icon>
+      <input class="search-input" type="text" placeholder="Search" (focusin)="onFocusInInput()" (focusout)="onFocusOutInput()">
+  </div>
+  
+
+</div>
