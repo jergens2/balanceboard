@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Task } from '../../task/task.model';
 import { TaskService } from '../../task.service';
-import { ITaskGroup } from './task-group/task-group.interface';
+import { TaskGroup } from './task-group/task-group.class';
 
 @Component({
   selector: 'app-categories-view',
@@ -25,15 +25,11 @@ export class CategoriesViewComponent implements OnInit {
     });
   }
 
-  groups: ITaskGroup[] = [];
+  groups: TaskGroup[] = [];
 
 
 
-
-
-
-
-  private buildGroups(tasks: Task[]): ITaskGroup[] {
+  private buildGroups(tasks: Task[]): TaskGroup[] {
 
     /*
         2019-05-20:
@@ -41,13 +37,13 @@ export class CategoriesViewComponent implements OnInit {
         as in, as of now this part of the app is relying on the user to use the correct syntax.
 
     */
-    let groups: ITaskGroup[] = [];
+    let groups: TaskGroup[] = [];
     function addTask(task: Task, groupName: string) {
       if (groups.length == 0) {
         groups.push(createNewGroup(task, groupName, task.groupCategories));
       } else if (groups.length > 0) {
         let alreadyExists: boolean = false;
-        groups.forEach((group: ITaskGroup) => {
+        groups.forEach((group: TaskGroup) => {
           if (group.groupName == groupName) {
             alreadyExists = true;
             addToExistingGroup(group, task);
@@ -59,10 +55,10 @@ export class CategoriesViewComponent implements OnInit {
       }
     }
 
-    function createNewGroup(task: Task, groupName: string, groupCategories: string[]): ITaskGroup {
-      console.log("    Creating a new group with:", groupName)
-      console.log("    Group categories are ", groupCategories.toString());
-      let subGroups: ITaskGroup[];
+    function createNewGroup(task: Task, groupName: string, groupCategories: string[]): TaskGroup {
+      // console.log("    Creating a new group with:", groupName)
+      // console.log("    Group categories are ", groupCategories.toString());
+      let subGroups: TaskGroup[];
       let tasks: Task[] = [];
 
       let targetGroupName: string = task.groupCategories[task.groupCategories.length - 1];
@@ -72,20 +68,20 @@ export class CategoriesViewComponent implements OnInit {
       } else {
         let subMatches: string[] = groupCategories.slice(1);
         let newGroupName: string = subMatches[0];
-        console.log("    Creating a subgroup, ", newGroupName)
+        // console.log("    Creating a subgroup, ", newGroupName)
         subGroups = [createNewGroup(task, newGroupName, subMatches)];
       }
 
-      let newGroup: ITaskGroup = {
-        groupName: groupName,
-        tasks: tasks,
-        subGroups: subGroups,
-      }
+      let newGroup: TaskGroup = new TaskGroup()
+      newGroup.groupName = groupName;
+      newGroup.tasks = tasks;
+      newGroup.subGroups = subGroups;
+      
       return newGroup;
     }
 
-    function addToExistingGroup(group: ITaskGroup, task: Task) {
-      console.log("GroupName: ", group.groupName, "Adding this task: ", task.groupCategory);
+    function addToExistingGroup(group: TaskGroup, task: Task) {
+      // console.log("GroupName: ", group.groupName, "Adding this task: ", task.groupCategory);
 
       let targetGroupName: string = task.groupCategories[task.groupCategories.length - 1];
       if (group.groupName == targetGroupName) {
@@ -97,7 +93,7 @@ export class CategoriesViewComponent implements OnInit {
           group.subGroups.push(createNewGroup(task, newGroupName, subGroups))
         } else {
           let alreadyExists: boolean = false;
-          group.subGroups.forEach((subGroup: ITaskGroup) => {
+          group.subGroups.forEach((subGroup: TaskGroup) => {
             if (subGroup.groupName == newGroupName) {
               alreadyExists = true;
               addToExistingGroup(subGroup, task);
@@ -123,57 +119,5 @@ export class CategoriesViewComponent implements OnInit {
 
 
 
-  private buildGroup(task: Task, matches: string[]): ITaskGroup {
-    console.log("    matches", matches)
-    let taskGroup: ITaskGroup;
-    if (matches.length == 1) {
-      taskGroup = {
-        groupName: matches[0],
-        tasks: [task],
-        subGroups: []
-      }
-    } else if (matches.length > 1) {
-      let subMatches: string[] = matches.slice(1);
-      console.log("      subMatches: ", subMatches)
-      taskGroup = {
-        groupName: matches[0],
-        tasks: [task],
-        // subGroups: [this.buildGroup(task, subMatches)]
-        subGroups: []
-      }
-    } else {
-      console.log("Error with matches");
-    }
-    console.log("taskGroup built:", taskGroup);
-    return taskGroup;
-  }
-
-
-  private addToGroup(group: ITaskGroup, task: Task, matches: string[]) {
-
-
-    if (matches.length == 1) {
-      group.tasks.push(task);
-    } else if (matches.length > 1) {
-
-      let subMatches: string[] = matches.slice(1);
-
-      group.subGroups.forEach((group: ITaskGroup) => {
-
-
-        let alreadyExists: boolean = false;
-        if (group.groupName == subMatches[0]) {
-          alreadyExists = true;
-          this.addToGroup(group, task, subMatches);
-        }
-        if (alreadyExists == false) {
-          this.groups.push(this.buildGroup(task, matches));
-        }
-
-      });
-    }
-
-
-  }
 
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ITaskGroup } from './task-group.interface';
+import { TaskGroup } from './task-group.class';
 
 @Component({
   selector: 'app-task-group',
@@ -9,7 +9,7 @@ import { ITaskGroup } from './task-group.interface';
 export class TaskGroupComponent implements OnInit {
 
 
-  @Input() taskGroup: ITaskGroup;
+  @Input() taskGroup: TaskGroup;
 
   constructor() { }
 

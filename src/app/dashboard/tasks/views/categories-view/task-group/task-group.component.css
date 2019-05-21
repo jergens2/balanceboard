@@ -1,7 +1,7 @@
 .task-group-root{
     border:1px solid rgb(241, 241, 241);
     border-radius: 2px;
-    margin-left:25px;
+    
     padding:10px;
 }
 .header{
@@ -14,5 +14,5 @@
 
 }
 .subgroups{
-
+    margin-left:25px;
 }
