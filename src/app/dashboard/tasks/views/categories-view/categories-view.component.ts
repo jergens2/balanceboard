@@ -13,15 +13,15 @@ export class CategoriesViewComponent implements OnInit {
   constructor(private taskService: TaskService) { }
 
   private _allTasks: Task[] = [];
-  public categoriesTasks: Task[] = [];
+  public completeTasks: Task[] = [];
 
   ngOnInit() {
     this._allTasks = this.taskService.tasks;
     this.taskService.tasks$.subscribe((tasks) => {
       this._allTasks = tasks;
-      this.categoriesTasks = Object.assign([], this._allTasks);
+      this.completeTasks = Object.assign([], this._allTasks.filter(task=>{ if(!task.isComplete){ return task; }}));
 
-      this.buildGroups(this.categoriesTasks);
+      this.groups = this.buildGroups(this.completeTasks);
     });
   }
 
@@ -43,29 +43,20 @@ export class CategoriesViewComponent implements OnInit {
     */
     let groups: ITaskGroup[] = [];
     function addTask(task: Task, groupName: string) {
-
-
-
       if (groups.length == 0) {
         groups.push(createNewGroup(task, groupName, task.groupCategories));
       } else if (groups.length > 0) {
         let alreadyExists: boolean = false;
-
         groups.forEach((group: ITaskGroup) => {
           if (group.groupName == groupName) {
             alreadyExists = true;
-
             addToExistingGroup(group, task);
           }
         });
         if (!alreadyExists) {
           groups.push(createNewGroup(task, groupName, task.groupCategories));
         }
-
       }
-
-
-
     }
 
     function createNewGroup(task: Task, groupName: string, groupCategories: string[]): ITaskGroup {
@@ -90,7 +81,6 @@ export class CategoriesViewComponent implements OnInit {
         tasks: tasks,
         subGroups: subGroups,
       }
-
       return newGroup;
     }
 
@@ -98,7 +88,6 @@ export class CategoriesViewComponent implements OnInit {
       console.log("GroupName: ", group.groupName, "Adding this task: ", task.groupCategory);
 
       let targetGroupName: string = task.groupCategories[task.groupCategories.length - 1];
-
       if (group.groupName == targetGroupName) {
         group.tasks.push(task);
       } else {
@@ -108,11 +97,9 @@ export class CategoriesViewComponent implements OnInit {
           group.subGroups.push(createNewGroup(task, newGroupName, subGroups))
         } else {
           let alreadyExists: boolean = false;
-
           group.subGroups.forEach((subGroup: ITaskGroup) => {
             if (subGroup.groupName == newGroupName) {
               alreadyExists = true;
-
               addToExistingGroup(subGroup, task);
             }
           });
@@ -120,32 +107,17 @@ export class CategoriesViewComponent implements OnInit {
             group.subGroups.push(createNewGroup(task, newGroupName, task.groupCategories));
           }
         }
-
-
       }
-
     }
-
-
-
     tasks.forEach((task) => {
-      console.log("Adding task to groups: ", task.groupCategory);
-
+      // console.log("Adding task to groups: ", task.groupCategory);
       if (task.groupCategories.length < 1) {
-        console.log("Warning: no root matches");
+        // console.log("Warning: no root matches");
       } else if (task.groupCategories.length >= 1) {
         addTask(task, task.groupCategories[0]);
-        console.log("groups is now: ", groups);
+        // console.log("groups is now: ", groups);
       }
-
-    })
-
-
-
-
-
-
-
+    });
     return groups;
   }
 

@@ -1,3 +1,20 @@
-<p>
-  task-group works!
-</p>
+<div class="task-group-root">
+  <div class="header">
+    {{ taskGroup.groupName }}
+  </div>
+  <div *ngIf="taskGroup.tasks.length > 0" class="tasks">
+    <ul>
+      <li *ngFor="let task of taskGroup.tasks">
+        {{ task.title }}
+      </li>
+    </ul>
+
+  </div>
+  <div *ngIf="taskGroup.subGroups.length > 0" class="subgroups">
+    <div *ngFor="let subGroup of taskGroup.subGroups">
+      <app-task-group [taskGroup]="subGroup"></app-task-group>
+    </div>
+  </div>
+
+
+</div>

@@ -1,8 +1,12 @@
 <div class="categories-view-root">
-  <div *ngFor="let task of categoriesTasks">
 
-      {{ task.groupCategory }}
-      <!-- <app-task [task]="task"></app-task> -->
 
-  </div>
+  <app-task-group *ngFor="let group of groups" [taskGroup]="group"></app-task-group>
+
+  <!-- <div *ngFor="let task of categoriesTasks">
+
+    {{ task.groupCategory }}
+    <app-task [task]="task"></app-task> -->
+
+  <!-- </div> --> 
 </div>

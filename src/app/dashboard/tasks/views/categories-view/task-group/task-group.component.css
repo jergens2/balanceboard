@@ -1,0 +1,19 @@
+.task-group-root{
+    border:1px solid gray;
+    border-radius: 5px;
+    margin-left:25px;
+    margin-bottom: 3px;
+    padding:10px;
+}
+.header{
+    font-size:1.2em;
+    font-weight: bold;
+}
+
+.tasks{
+
+
+}
+.subgroups{
+
+}
