@@ -2,17 +2,18 @@ import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@ang
 import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent, Subscriber } from 'rxjs';
-import { faBars, faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCogs, faSignOutAlt, faTools, faWrench } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
-import { ToolsService } from '../../tools/tools.service';
-import { ToolComponents } from '../../tools/tool-components.enum';
+import { ToolsService } from './tools/tools.service';
+import { ToolComponents } from './tools/tool-components.enum';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { Modal } from '../../modal/modal.model';
 import { ModalService } from '../../modal/modal.service';
+import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-header',
@@ -29,6 +30,7 @@ export class HeaderComponent implements OnInit {
 
   faBars = faBars;
   faCogs = faCogs;
+
 
   activeAppTool: string = null;
 
@@ -102,19 +104,21 @@ export class HeaderComponent implements OnInit {
 
 
     let toolsMenuItems: MenuItem[] = [];
-    let notepadMenuItem: MenuItem = new MenuItem('Notepad', null, null);
+    let notepadMenuItem: MenuItem = new MenuItem('Notepad', null, faStickyNote);
     this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(()=>{
       this.toolsService.openTool(ToolComponents.Notepad);
     }))
     toolsMenuItems.push(notepadMenuItem);
 
-    let todoMenuItem: MenuItem = new MenuItem("To do", null, null);
+    let todoMenuItem: MenuItem = new MenuItem("To do", null, faCheckCircle);
     this.activeSubscriptions.push(todoMenuItem.clickEmitted$.subscribe(()=>{
       this.toolsService.openTool(ToolComponents.Todo);
     }))
 
     toolsMenuItems.push(todoMenuItem);
-    newMenus.push(new HeaderMenu('Tools', toolsMenuItems));
+    let toolsMenu: HeaderMenu = new HeaderMenu('Tools', toolsMenuItems);
+    toolsMenu.icon = faWrench;
+    newMenus.push(toolsMenu);
 
 
     if (currentComponentMenu) {

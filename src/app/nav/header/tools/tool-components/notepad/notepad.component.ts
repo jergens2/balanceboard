@@ -4,10 +4,10 @@ import { ToolsService } from '../../tools.service';
 import { ToolComponents } from '../../tool-components.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
-import { NotebookEntry } from '../../../dashboard/notebooks/notebook-entry/notebook-entry.model';
-import { NotebookEntryTypes } from '../../../dashboard/notebooks/notebook-entry/notebook-entry-types.enum';
-import { NotebooksService } from '../../../dashboard/notebooks/notebooks.service';
-import { ModalService } from '../../../modal/modal.service';
+import { NotebookEntry } from '../../../../../dashboard/notebooks/notebook-entry/notebook-entry.model';
+import { NotebookEntryTypes } from '../../../../../dashboard/notebooks/notebook-entry/notebook-entry-types.enum';
+import { NotebooksService } from '../../../../../dashboard/notebooks/notebooks.service';
+import { ModalService } from '../../../../../modal/modal.service';
 
 
 

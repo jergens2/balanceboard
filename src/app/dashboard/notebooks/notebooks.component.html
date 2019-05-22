@@ -1,66 +1,27 @@
 <div class="notebook-root">
-  <div class="header">Notebook Entries</div>
+  <div class="header">
+    <div class="header-title">
+      Notebook Entries
+    </div>
+    <div class="header-buttons">
+
+      <div class="icon-button" (click)="onToggleTagsMenu()" [ngClass]="{'toggled-button':tagsMenu}">
+        <fa-icon [icon]="faHashtag"></fa-icon>
+      </div>
+      <div class="icon-button" (click)="onToggleTimeViewsMenu()" [ngClass]="{'toggled-button':timeViewsMenu}">
+        <fa-icon [icon]="faCalendarAlt"></fa-icon>
+      </div>
+    </div>
+
+  </div>
   <div class="controls">
 
-
-    
-    <div class="time-view-container">
+    <div class="time-view-container" *ngIf="timeViewsMenu">
       <app-time-views></app-time-views>
     </div>
-    
-    
-    <!-- <div class="year-view-container">
-      <button class="btn btn-success btn-sm" (click)="onClickYearView()" style="width:100px;">Year View</button>
-      <div class="year-view" *ngIf="yearView">
-        <app-year-view [yearViewData]="yearViewData" (dateClicked)="onYearViewDateClicked($event)"></app-year-view>
-      </div>
 
-    </div>
-     -->
-    
-    
-    <div class="tag-controls">
-      <div class="tag-header">
-        Tags
-      </div>
-      <div>
-        <button class="btn btn-sm btn-success" (click)="onClickEnableAllTags()" style="margin:3px;">Enable all</button>
-        <button class="btn btn-sm btn-secondary" (click)="onClickDisableAllTags()" style="margin:3px;">Disable
-          all</button>
-      </div>
-      <div class="sort-controls">
-        <div style="margin-right:5px;">Sort tags:</div>
-        <div style="margin-right:5px;">
-          <fa-icon [icon]="faCheckCircle" *ngIf="sortAlphabetically" class="icon-button"></fa-icon>
-          <fa-icon [icon]="faCircle" *ngIf="!sortAlphabetically" class="icon-button"
-            (click)="onClickSortTags('ALPHABETICALLY')"></fa-icon>
-          Alphabetically
-        </div>
-        <div style="margin-right:5px;">
-          <fa-icon [icon]="faCheckCircle" *ngIf="!sortAlphabetically" class="icon-button"></fa-icon>
-          <fa-icon [icon]="faCircle" *ngIf="sortAlphabetically" class="icon-button"
-            (click)="onClickSortTags('TAG_COUNT')"></fa-icon>
-          By tag count
-        </div>
-      </div>
-      <div class="tags">
-        <div *ngFor="let tagFilter of tagFilters" class="tag-filter">
-          <fa-icon *ngIf="tagFilter.isChecked" [icon]="faCheckCircle" class="icon-button" style="margin-right:3px;"
-            (click)="onClickTagCheck(tagFilter)"></fa-icon>
-          <fa-icon *ngIf="!tagFilter.isChecked" [icon]="faCircle" class="icon-button" style="margin-right:3px;"
-            (click)="onClickTagCheck(tagFilter)"></fa-icon>
-            <div [ngStyle]="tagFilter.style" style="display:flex;flex-direction:row;">
-              <div style="margin-right:3px;" >
-                {{ tagFilter.tag }}
-              </div>
-              <div style="margin-right:3px;">
-                ({{tagFilter.count}})
-              </div>
-            </div>
-          
-        </div>
-      </div>
-
+    <div class="tag-controls" *ngIf="tagsMenu">
+      <app-notebook-tags (notesFiltered)="onNotesFiltered($event)"></app-notebook-tags>
     </div>
 
 

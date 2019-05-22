@@ -64,6 +64,7 @@ import { CategoriesViewComponent } from './tasks/views/categories-view/categorie
 import { ListViewComponent } from './tasks/views/list-view/list-view.component';
 import { EisenhowerViewComponent } from './tasks/views/eisenhower-view/eisenhower-view.component';
 import { TaskGroupComponent } from './tasks/views/categories-view/task-group/task-group.component';
+import { NotebookTagsComponent } from './notebooks/notebook-tags/notebook-tags.component';
 
 
 
@@ -135,6 +136,7 @@ import { TaskGroupComponent } from './tasks/views/categories-view/task-group/tas
     ListViewComponent,
     EisenhowerViewComponent,
     TaskGroupComponent,
+    NotebookTagsComponent,
     
   ],
   providers: [],

@@ -1,4 +1,4 @@
-<div class="header">
+<div class="header no-select">
   <div class="title-section">
     <div class="balanceboard-title">
       balanceboard
@@ -10,19 +10,29 @@
       <fa-icon [icon]="faBars"></fa-icon>
     </div>
   </div>
+  <div class="header-component-sections">
+    <div class="header-component-section">
+      <div *ngFor="let headerMenu of headerMenus" class="header-menu" [ngClass]="{'header-is-open':headerMenu.isOpen}">
+        <div class="menu-name" (click)="onClickHeaderMenuName(headerMenu)"
+          (mouseover)="onMouseOverHeaderMenuName(headerMenu)" (mouseleave)="onMouseLeaveHeaderMenuName(headerMenu)">
+          <fa-icon [icon]="headerMenu.icon" style="margin-right:2px;" *ngIf="headerMenu.icon"></fa-icon>
+          {{ headerMenu.name }}
+        </div>
 
-  <div *ngFor="let headerMenu of headerMenus" class="header-menu" [ngClass]="{'header-is-open':headerMenu.isOpen}" 
-    >
-    <div class="menu-name" (click)="onClickHeaderMenuName(headerMenu)" (mouseover)="onMouseOverHeaderMenuName(headerMenu)" (mouseleave)="onMouseLeaveHeaderMenuName(headerMenu)">
-      {{ headerMenu.name }}
+        <div *ngIf="headerMenu.isOpen == true" class="open-menu">
+          <app-header-menu [openMenu]="headerMenu"></app-header-menu>
+        </div>
+      </div>
     </div>
 
-    <div *ngIf="headerMenu.isOpen == true" class="open-menu">
-      <app-header-menu [openMenu]="headerMenu"></app-header-menu>
+    <div class="header-component-section" style="margin-right:5px;">
+      <div class="search-bar">
+        <app-search-bar></app-search-bar>
+      </div>
     </div>
   </div>
-  <div class="search-bar">
-    <app-search-bar></app-search-bar>
-  </div>
+
+
+
 
 </div>

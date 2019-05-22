@@ -1,12 +1,13 @@
 import { MenuItem } from "./menu-item.model";
 import { Subscription } from "rxjs";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 export class HeaderMenu{
     name: string;
     isOpen: boolean = false;
     menuOpenSubscription: Subscription = new Subscription();
     menuItems: MenuItem[];
-
+    icon: IconDefinition;
 
     constructor(name: string, menuItems: MenuItem[]){
         this.name = name;

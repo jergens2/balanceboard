@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ToolsService } from './tools.service';
 import { ToolComponents } from './tool-components.enum';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { SizeService } from '../shared/app-screen-size/size.service';
-import { AppScreenSize } from '../shared/app-screen-size/app-screen-size.enum';
+import { SizeService } from '../../../shared/app-screen-size/size.service';
+import { AppScreenSize } from '../../../shared/app-screen-size/app-screen-size.enum';
 
 @Component({
   selector: 'app-tools',

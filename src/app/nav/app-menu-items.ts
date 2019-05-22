@@ -1,5 +1,5 @@
 import { MenuItem } from "./header/header-menu/menu-item.model";
-import { faHome, faSitemap, faProjectDiagram, faListOl, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt, faBookOpen, faCog, faAppleAlt, faTrophy, faBook, faCheck, faListUl } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faSitemap, faCheckCircle, faProjectDiagram, faListOl, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt, faBookOpen, faCog, faAppleAlt, faTrophy, faBook, faCheck, faListUl, faClipboardCheck, faClipboardList, faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { faCalendarAlt, faLightbulb, faClock } from "@fortawesome/free-regular-svg-icons";
 import { Subscription } from "rxjs";
 import { HeaderMenu } from "./header/header-menu/header-menu.model";
@@ -19,11 +19,11 @@ menuItems.push(daybookMenu);
 
 
 menuItems.push(new MenuItem('Notebooks','/notebooks', faBook));
-menuItems.push(new MenuItem('Tasks','/tasks',faCheck));
+menuItems.push(new MenuItem('Tasks','/tasks', faCheckCircle ));
 
 
 
-let schedulingMenu = new MenuItem('Scheduling','/scheduling', faClock );
+let schedulingMenu = new MenuItem('Scheduling','/scheduling', faCalendar );
 let schedulingMenuItems: MenuItem[] = [
     new MenuItem('Schedule Rotations','/schedule-rotations',faClock),
     new MenuItem('Day Templates','/day-templates',faClock),

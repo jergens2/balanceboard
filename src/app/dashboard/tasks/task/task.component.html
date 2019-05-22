@@ -4,16 +4,16 @@
     <fa-icon [icon]="faCheckCircle" *ngIf="task.isComplete" class="icon-button" style="color:green;"></fa-icon>
     <fa-icon [icon]="faCircle" *ngIf="!task.isComplete" class="icon-button"></fa-icon>
   </div>
-  <div style="display:flex;flex-direction: column; flex-grow:2;" >
+  <div style="display:flex;flex-direction: column; flex-grow:2;">
     <div style="display:flex;flex-direction: row; justify-content: space-between">
       <div style="display:flex; flex-direction: row;">
-          <div style="margin-right:5px;font-weight:bold;">{{ task.title }}</div>
-          <div *ngIf="ifMouseOver" style="font-size:0.8em;color:gray;" >
-            <i>{{ taskCompletionDate }}</i>
-          </div>
+        <div style="margin-right:5px;font-weight:bold;">{{ task.title }}</div>
+        <div *ngIf="ifMouseOver" style="font-size:0.8em;color:gray;">
+          <i>{{ taskCompletionDate }}</i>
+        </div>
       </div>
-      
-      <div *ngIf="ifMouseOver" >
+
+      <div *ngIf="ifMouseOver">
         <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEdit()" style="margin-right:5px;"></fa-icon>
         <fa-icon [icon]="faTimes" class="icon-button" (click)="onClickDelete()"></fa-icon>
       </div>
