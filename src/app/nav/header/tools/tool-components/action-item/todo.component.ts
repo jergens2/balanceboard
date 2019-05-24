@@ -34,7 +34,7 @@ export class TodoComponent implements OnInit {
     if(this.modifyTask){
       this.taskForm = new FormGroup({
         "title": new FormControl(this.modifyTask.title, Validators.required),
-        "groupCategory": new FormControl(this.modifyTask.groupCategory),
+        "directoryPath": new FormControl(this.modifyTask.directoryPath),
         "description": new FormControl(this.modifyTask.description),
         "timeRequiredHours": new FormControl(),
         "timeRequiredMinutes": new FormControl(0),
@@ -44,7 +44,7 @@ export class TodoComponent implements OnInit {
     }else{
       this.taskForm = new FormGroup({
         "title": new FormControl("", Validators.required),
-        "groupCategory": new FormControl(""),
+        "directoryPath": new FormControl(""),
         "description": new FormControl(""),
         "timeRequiredHours": new FormControl(0),
         "timeRequiredMinutes": new FormControl(0),
@@ -60,7 +60,7 @@ export class TodoComponent implements OnInit {
   onClickSaveTask(){
     let title:string = this.taskForm.controls['title'].value;
     let description: string = this.taskForm.controls['description'].value;
-    let groupCategory: string = this.taskForm.controls['groupCategory'].value;
+    let directoryPath: string = this.taskForm.controls['directoryPath'].value;
     let priority: number = this.taskForm.controls['priority'].value as number;
     let dueDate: moment.Moment;
     if(this.taskForm.controls['dueDate'].value){
@@ -78,10 +78,10 @@ export class TodoComponent implements OnInit {
     }
 
     if(this.modifyTask){
-      let modifyTask = new Task(this.modifyTask.id, this.modifyTask.userId, title, description, groupCategory, priority, this.modifyTask.createdDate, dueDate);
+      let modifyTask = new Task(this.modifyTask.id, this.modifyTask.userId, title, description, directoryPath, priority, this.modifyTask.createdDate, dueDate);
       this.taskService.updateTaskHTTP(modifyTask);
     }else{
-      let task = new Task('', '', title, description, groupCategory, priority, moment(), dueDate);
+      let task = new Task('', this.taskService.userId, title, description, directoryPath, priority, moment(), dueDate);
       this.taskService.createTaskHTTP(task);
     }
 

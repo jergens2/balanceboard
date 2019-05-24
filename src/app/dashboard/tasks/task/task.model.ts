@@ -1,16 +1,51 @@
 import * as moment from 'moment';
 import { TaskPriority } from './task-priority.enum';
+import { Directory } from '../../../shared/directory/directory.class';
 
 
 export class Task {
 
+    constructor(id: string, userId: string, title: string, description: string, directoryPath: string, priority: TaskPriority, createdDate: moment.Moment, dueDate?: moment.Moment) {
+        this._id = id;
+        this._userId = userId;
+        this.title = title;
+        this.description = description;
+        this._priority = priority;
+        this._directory = new Directory(directoryPath);
+
+        this._createdDate = moment(createdDate);
+
+        if (dueDate) {
+            this._hasDueDate = true;
+            this._dueDate = dueDate;
+        } else {
+            this._hasDueDate = false;
+        }
+    }
+
+    public get httpRequestBody(): any{
+        return {
+            id: this.id,
+            userId: this.userId,
+            title: this.title,
+            priority: this.priority,
+            directoryPath: this.directoryPath,
+            description: this.description,
+            createdDateISO: this.createdDate.toISOString(),
+            hasDueDate: this.hasDueDate,
+            dueDateISO: this.dueDate.toISOString(),
+            completionDateISO: this.completionDateISO,
+            isComplete: this.isComplete,
+        }
+    }
 
     private _id: string;
     private _userId: string;
 
     public title: string;
     private _priority: TaskPriority;
-    private _groupCategory: string;
+    
+    private _directory: Directory;
 
     private _hasDueDate: boolean = false;
     private _dueDate: moment.Moment;
@@ -20,6 +55,7 @@ export class Task {
     private _isCompleteByDueDate: boolean = false;
     // private _isFailed: boolean = false;
 
+    
 
 
     public get id(): string {
@@ -36,13 +72,11 @@ export class Task {
         return this._priority;
     }
 
-    public get groupCategory(): string {
-        return this._groupCategory;
+    public get directoryPath(): string {
+        return this._directory.fullPath;
     }
-    public get groupCategories(): string[] {
-        let regex: RegExp = /:\w+/g;
-        let matches: string[] = this._groupCategory.match(regex);
-        return matches;
+    public get directory(): Directory {
+        return this._directory
     }
 
     public get isComplete(): boolean {
@@ -89,23 +123,8 @@ export class Task {
     // durationRequirementMinutes: number = 0;
 
 
-    constructor(id: string, userId: string, title: string, description: string, groupCategory: string, priority: TaskPriority, createdDate: moment.Moment, dueDate?: moment.Moment) {
-        this._id = id;
-        this._userId = userId;
-        this.title = title;
-        this.description = description;
-        this._priority = priority;
-        this._groupCategory = groupCategory;
+    
 
-        this._createdDate = moment(createdDate);
-
-        if (dueDate) {
-            this._hasDueDate = true;
-            this._dueDate = dueDate;
-        } else {
-            this._hasDueDate = false;
-        }
-
-    }
+    
 
 }

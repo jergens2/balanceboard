@@ -29,7 +29,7 @@ export class TaskComponent implements OnInit, OnDestroy {
   @Input() task: Task;
 
   ngOnInit() {
-    console.log(this.task.isComplete);
+
   }
   ngOnDestroy() {
     this._modalSubscription.unsubscribe();

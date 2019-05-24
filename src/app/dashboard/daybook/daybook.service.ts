@@ -57,7 +57,7 @@ export class DaybookService {
     return this._currentDay$.asObservable();
   }
   public setDate(date: moment.Moment){
-    console.log("changing the date / setting date in service:", date.format('YYYY-MM-DD'))
+    // console.log("changing the date / setting date in service:", date.format('YYYY-MM-DD'))
     this.getDayHTTP(date);
     
   }
@@ -74,7 +74,7 @@ export class DaybookService {
   }
   private _currentDay$: BehaviorSubject<Day> = new BehaviorSubject(null);
   public get currentDay(): Day {
-    console.log("current value of day from service: ", this._currentDay$.getValue());
+    // console.log("current value of day from service: ", this._currentDay$.getValue());
     return this._currentDay$.getValue();
   }
   public get currentDay$(): Observable<Day> {
@@ -134,7 +134,7 @@ export class DaybookService {
           return 0;
         })
 
-        console.log("Returning days: ", days);
+        // console.log("Returning days: ", days);
         // for(let (dayData as any) in (daysData as any[])){
 
         //   let day = new Day(dayData._id, dayData._userId, dayData.dateYYYYMMDD)

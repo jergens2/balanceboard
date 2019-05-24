@@ -23,7 +23,7 @@ import { DefaultModalComponent } from './modal/custom-modals/default-modal/defau
 import { PrimaryObjectiveModalComponent } from './modal/custom-modals/primary-objective-modal/primary-objective-modal.component';
 import { ToolsComponent } from './nav/header/tools/tools.component';
 import { NotepadComponent } from './nav/header/tools/tool-components/notepad/notepad.component';
-import { TodoComponent } from './nav/header/tools/tool-components/todo/todo.component';
+import { TodoComponent } from './nav/header/tools/tool-components/action-item/todo.component';
 import { TaskQueueModalComponent } from './modal/custom-modals/task-queue-modal/task-queue-modal.component';
 import { ConfirmModalComponent } from './modal/custom-modals/confirm-modal/confirm-modal.component';
 import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notepad-modal.component';

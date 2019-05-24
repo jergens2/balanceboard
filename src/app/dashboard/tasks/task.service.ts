@@ -37,6 +37,10 @@ export class TaskService {
 
   */
 
+  public get userId(): string{
+    return this._authStatus.user.id;
+  }
+
   private _tasks$: BehaviorSubject<Task[]> = new BehaviorSubject([]);
   public get tasks$(): Observable<Task[]> {
     return this._tasks$.asObservable();
@@ -77,9 +81,7 @@ export class TaskService {
     for(let i=0; i<6; i++){
       taskQueue.push(tasks[i]);
     }
-
-    console.log("tasks is ", tasks);
-    console.log("taskqueue", taskQueue);
+    
     this._taskQueue = taskQueue;
     this._taskQueue$.next(this._taskQueue);
 
@@ -126,22 +128,10 @@ export class TaskService {
   }
 
   public createTaskHTTP(task: Task){
-    console.log("Saving task:", task);
+    
+    let requestBody: any = task.httpRequestBody;
+    console.log("Saving task:", requestBody);
 
-
-
-    let requestBody: any = {
-      userId: this._authStatus.user.id,
-      title: task.title,
-      priority: task.priority,
-      groupCategory: task.groupCategory,
-      description: task.description,
-      createdDateISO: task.createdDate.toISOString(),
-      hasDueDate: task.hasDueDate,
-      dueDateISO: task.dueDate.toISOString(),
-      completionDateISO: task.completionDateISO,
-      isComplete: task.isComplete,
-    }
 
     const postUrl = this._serverUrl + "/api/task/create";
     const httpOptions = {
@@ -163,24 +153,10 @@ export class TaskService {
   }
 
   public updateTaskHTTP(task: Task) {
+
+
+    let requestBody: any = task.httpRequestBody;
     console.log("Updating task:", task);
-
-
-
-    let requestBody: any = {
-      id: task.id,
-      userId: task.userId,
-      title: task.title,
-      priority: task.priority,
-      groupCategory: task.groupCategory,
-      description: task.description,
-      createdDateISO: task.createdDate.toISOString(),
-      hasDueDate: task.hasDueDate,
-      dueDateISO: task.dueDate.toISOString(),
-      completionDateISO: task.completionDateISO,
-      isComplete: task.isComplete,
-
-    }
 
 
 
@@ -256,7 +232,7 @@ export class TaskService {
       taskPriority = TaskPriority.Low;
     }
 
-    let task = new Task(data._id, data.userId, data.title, data.description, data.groupCategory, taskPriority, moment(data.createdDateISO), moment(data.dueDateISO))
+    let task = new Task(data._id, data.userId, data.title, data.description, data.directoryPath, taskPriority, moment(data.createdDateISO), moment(data.dueDateISO))
     if (data.isComplete as boolean) {
       task.markComplete(moment(data.completionDateISO));
     }
