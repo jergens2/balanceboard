@@ -44,7 +44,7 @@ export class CategoriesViewComponent implements OnInit {
         }
       });
       if(!groupExists){
-        taskGroups.push(new TaskGroup(task.directory.rootDirectory, task));
+        taskGroups.push(new TaskGroup(task.directory.subPath(0), task));
       }
     }
 

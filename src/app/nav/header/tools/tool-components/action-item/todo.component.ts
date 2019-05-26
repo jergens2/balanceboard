@@ -26,17 +26,32 @@ export class TodoComponent implements OnInit {
 
   taskForm: FormGroup;
 
-  @Input('modifyItem') modifyTask: Task;
-  private modeIsModify: boolean = false;
+  @Input() action :string;
 
+
+  modifyTask: Task;
 
   ngOnInit() {
-    if(this.modifyTask){
+    if(this.action == "MODIFY"){
+
+      this.modifyTask = this.modalService.activeModal.modalData;
       this.taskForm = new FormGroup({
         "title": new FormControl(this.modifyTask.title, Validators.required),
         "directoryPath": new FormControl(this.modifyTask.directoryPath),
         "description": new FormControl(this.modifyTask.description),
-        "timeRequiredHours": new FormControl(),
+        "timeRequiredHours": new FormControl(0),
+        "timeRequiredMinutes": new FormControl(0),
+        "priority": new FormControl(1),
+        "dueDate": new FormControl(),
+      });
+    }else if(this.action == "GROUP_NEW"){
+      console.log("its a grou-New")
+      this.modifyTask = this.modalService.activeModal.modalData;
+      this.taskForm = new FormGroup({
+        "title": new FormControl("", Validators.required),
+        "directoryPath": new FormControl(this.modifyTask.directoryPath),
+        "description": new FormControl(""),
+        "timeRequiredHours": new FormControl(0),
         "timeRequiredMinutes": new FormControl(0),
         "priority": new FormControl(1),
         "dueDate": new FormControl(),
@@ -77,9 +92,12 @@ export class TodoComponent implements OnInit {
       taskPriority = TaskPriority.Low;
     }
 
-    if(this.modifyTask){
+    if(this.action == "MODIFY"){
       let modifyTask = new Task(this.modifyTask.id, this.modifyTask.userId, title, description, directoryPath, priority, this.modifyTask.createdDate, dueDate);
       this.taskService.updateTaskHTTP(modifyTask);
+    }else if(this.action == "GROUP_NEW"){
+      let task = new Task('', this.taskService.userId, title, description, directoryPath, priority, this.modifyTask.createdDate, dueDate);
+      this.taskService.createTaskHTTP(task);
     }else{
       let task = new Task('', this.taskService.userId, title, description, directoryPath, priority, moment(), dueDate);
       this.taskService.createTaskHTTP(task);

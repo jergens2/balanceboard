@@ -7,16 +7,23 @@ export class TaskGroup {
     tasks: Task[] = [];
     subGroups: TaskGroup[] = [];
 
-    constructor(name: string, task: Task) {
-        // this._directory = directory;
-        this.groupName = name;
+    mouseOver: boolean = false;
+    
+    private _directory: Directory;
+    public get directory(): Directory{
+        return this._directory;
+    }
+
+    constructor(directoryPath: string, task: Task) {
+        this._directory = new Directory(directoryPath);
+        console.log("This.directory is : ", this._directory.fullPath)
+        this.groupName = this._directory.specificDirectory;
         this.subGroups = [];
         this.addTask(task);
     }
 
 
     public addTask(task: Task) {
-
         let currentIndex: number = task.directory.indexOf(this.groupName);
         let targetIndex: number = task.directory.depth - 1;
 
@@ -31,13 +38,14 @@ export class TaskGroup {
                 }
             });
             if (!subGroupExists) {
-                this.subGroups.push(new TaskGroup(task.directory.specificDirectory, task));
+
+                this.subGroups.push(new TaskGroup(task.directory.fullPath, task));
             }
         } else if(targetIndex-currentIndex > 1){
 
             let nextIndex: number = currentIndex+1;
             let nextPath = task.directory.atIndex(nextIndex);
-
+            let subPath = task.directory.subPath(nextIndex);            
             
             let subGroupExists: boolean = false;
             this.subGroups.forEach((subGroup) => {
@@ -47,7 +55,7 @@ export class TaskGroup {
                 }
             });
             if (!subGroupExists) {
-                this.subGroups.push(new TaskGroup(nextPath, task));
+                this.subGroups.push(new TaskGroup(subPath, task));
             }
         }
 

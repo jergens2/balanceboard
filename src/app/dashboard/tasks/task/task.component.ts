@@ -83,6 +83,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     this._modalSubscription.unsubscribe();
     let modalData: Task = this.task;
     let modal: Modal = new Modal("Task", null, modalData, null, {}, ModalComponentType.Task);
+    modal.action = "MODIFY";
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
 
       console.log("modal response:", selectedOption);

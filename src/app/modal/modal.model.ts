@@ -14,6 +14,7 @@ export class Modal {
     modalStyle: any = {};
     modalData: any = {};
 
+    action: string = "";
 
 
     modalComponentType: ModalComponentType = ModalComponentType.Default                                                                                                                          ;

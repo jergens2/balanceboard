@@ -1,6 +1,12 @@
-<div class="task-group-root">
+<div class="task-group-root" (mouseover)="onMouseEnter()" (mouseleave)="onMouseLeave()">
   <div class="header">
-    {{ taskGroup.groupName }} <span style="margin-left:5px;font-size:0.7em;color:gray;">{{ taskGroup.totalTaskCount }}</span>
+    <div class="header-title">
+        {{ taskGroup.groupName }} <span style="margin-left:5px;font-size:0.7em;color:gray;">{{ taskGroup.totalTaskCount }}</span>
+    </div>
+    <div class="header-buttons" *ngIf="taskGroup.mouseOver">
+      <fa-icon [icon]="faPlusCircle" class="icon-button" (click)="onClickNewTask()"></fa-icon>
+    </div>
+    
   </div>
   <div *ngIf="taskGroup.tasks.length > 0" class="tasks">
     <app-task [task]="task" *ngFor="let task of taskGroup.tasks"></app-task>
