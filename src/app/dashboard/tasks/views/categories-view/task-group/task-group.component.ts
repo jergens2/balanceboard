@@ -4,7 +4,6 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { ModalService } from '../../../../../modal/modal.service';
 import { Modal } from '../../../../../modal/modal.model';
 import { Task } from '../../../task/task.model';
-import { TaskPriority } from '../../../task/task-priority.enum';
 import * as moment from 'moment';
 import { ModalComponentType } from '../../../../../modal/modal-component-type.enum';
 import { IModalOption } from '../../../../../modal/modal-option.interface';
@@ -37,7 +36,7 @@ export class TaskGroupComponent implements OnInit {
   onClickNewTask(){
 
 
-    let modalData: Task = new Task('', '', "", "", this.taskGroup.directory.fullPath, TaskPriority.Normal, moment() );
+    let modalData: Task = new Task('', '', "", "", this.taskGroup.directory.fullPath, 1, moment() );
     let modal: Modal = new Modal("Task", null, modalData, null, {}, ModalComponentType.Task);
     modal.action = "GROUP_NEW";
     this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {

@@ -14,7 +14,9 @@
       </div>
 
       <div *ngIf="ifMouseOver">
-        <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEdit()" style="margin-right:5px;"></fa-icon>
+        <fa-icon [icon]="faArrowCircleUp" class="icon-button" (click)="onClickPushUp()"></fa-icon>
+        <fa-icon [icon]="faArrowCircleDown" class="icon-button" (click)="onClickPushDOwn()"></fa-icon>
+        <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEdit()"></fa-icon>
         <fa-icon [icon]="faTimes" class="icon-button" (click)="onClickDelete()"></fa-icon>
       </div>
     </div>

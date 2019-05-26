@@ -1,11 +1,10 @@
 import * as moment from 'moment';
-import { TaskPriority } from './task-priority.enum';
 import { Directory } from '../../../shared/directory/directory.class';
 
 
 export class Task {
 
-    constructor(id: string, userId: string, title: string, description: string, directoryPath: string, priority: TaskPriority, createdDate: moment.Moment, dueDate?: moment.Moment) {
+    constructor(id: string, userId: string, title: string, description: string, directoryPath: string, priority: number, createdDate: moment.Moment, dueDate?: moment.Moment) {
         this._id = id;
         this._userId = userId;
         this.title = title;
@@ -43,7 +42,7 @@ export class Task {
     private _userId: string;
 
     public title: string;
-    private _priority: TaskPriority;
+    private _priority: number = 0;
     
     private _directory: Directory;
 
@@ -68,7 +67,7 @@ export class Task {
         return this._hasDueDate;
     }
 
-    public get priority(): TaskPriority {
+    public get priority(): number {
         return this._priority;
     }
 

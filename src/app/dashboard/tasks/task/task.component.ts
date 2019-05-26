@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Task } from './task.model';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faArrowCircleUp, faArrowCircleDown } from '@fortawesome/free-solid-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
 import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../modal/modal-option.interface';
@@ -23,6 +23,8 @@ export class TaskComponent implements OnInit, OnDestroy {
   faTimes = faTimes;
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
+  faArrowCircleUp = faArrowCircleUp;
+  faArrowCircleDown = faArrowCircleDown;
 
   private _modalSubscription: Subscription = new Subscription();
 
@@ -76,6 +78,14 @@ export class TaskComponent implements OnInit, OnDestroy {
       this.taskService.updateTaskHTTP(this.task);
 
     }
+  }
+
+  onClickPushUp(){
+
+  }
+
+  onClickPushDown(){
+    
   }
 
   onClickEdit(){

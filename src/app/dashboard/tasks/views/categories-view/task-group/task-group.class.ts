@@ -16,7 +16,6 @@ export class TaskGroup {
 
     constructor(directoryPath: string, task: Task) {
         this._directory = new Directory(directoryPath);
-        console.log("This.directory is : ", this._directory.fullPath)
         this.groupName = this._directory.specificDirectory;
         this.subGroups = [];
         this.addTask(task);

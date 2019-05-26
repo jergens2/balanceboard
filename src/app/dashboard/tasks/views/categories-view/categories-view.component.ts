@@ -48,6 +48,12 @@ export class CategoriesViewComponent implements OnInit {
       }
     }
 
+    // taskGroups.sort((taskGroup1, taskGroup2)=>{
+    //   if(taskGroup1)
+      
+    //   return 0;
+    // })
+
     return taskGroups;
   }
 

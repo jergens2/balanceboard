@@ -5,7 +5,6 @@ import { ToolComponents } from '../../tool-components.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { faCircle, faCheckCircle, IconDefinition } from '@fortawesome/free-regular-svg-icons';
 import { Task } from '../../../../../dashboard/tasks/task/task.model';
-import { TaskPriority } from '../../../../../dashboard/tasks/task/task-priority.enum';
 import { TaskService } from '../../../../../dashboard/tasks/task.service';
 import { ModalService } from '../../../../../modal/modal.service';
 import * as moment from 'moment';
@@ -81,16 +80,7 @@ export class TodoComponent implements OnInit {
     if(this.taskForm.controls['dueDate'].value){
       dueDate = moment(this.taskForm.controls['dueDate'].value);
     }
-    let taskPriority: TaskPriority;
-    if(priority == 0){
-      taskPriority = TaskPriority.High;
-    }
-    if(priority == 1){
-      taskPriority = TaskPriority.Normal;
-    }
-    if(priority == 2){
-      taskPriority = TaskPriority.Low;
-    }
+
 
     if(this.action == "MODIFY"){
       let modifyTask = new Task(this.modifyTask.id, this.modifyTask.userId, title, description, directoryPath, priority, this.modifyTask.createdDate, dueDate);

@@ -7,7 +7,6 @@ import { serverUrl } from '../../serverurl';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { TaskPriority } from './task/task-priority.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -220,19 +219,7 @@ export class TaskService {
   }
 
   private buildTaskFromHttp(data: any): Task{
-
-    let taskPriority: TaskPriority;
-    if(data.priority == 0){
-      taskPriority = TaskPriority.High;
-    }
-    if(data.priority == 1){
-      taskPriority = TaskPriority.Normal;
-    }
-    if(data.priority == 2){
-      taskPriority = TaskPriority.Low;
-    }
-
-    let task = new Task(data._id, data.userId, data.title, data.description, data.directoryPath, taskPriority, moment(data.createdDateISO), moment(data.dueDateISO))
+    let task = new Task(data._id, data.userId, data.title, data.description, data.directoryPath, data.priority, moment(data.createdDateISO), moment(data.dueDateISO))
     if (data.isComplete as boolean) {
       task.markComplete(moment(data.completionDateISO));
     }
