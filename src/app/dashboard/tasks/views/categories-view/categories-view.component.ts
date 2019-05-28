@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Task } from '../../task/task.model';
 import { TaskService } from '../../task.service';
-import { TaskGroup } from './task-group/task-group.class';
+import { TaskGroup } from '../../task-group/task-group.class';
 import { Directory } from '../../../../shared/directory/directory.class';
 
 
@@ -48,11 +48,28 @@ export class CategoriesViewComponent implements OnInit {
       }
     }
 
-    // taskGroups.sort((taskGroup1, taskGroup2)=>{
-    //   if(taskGroup1)
-      
-    //   return 0;
-    // })
+
+    let percentages: any[] = [];
+    let counts: any[] = [];
+    let total: number = 0;
+    taskGroups.forEach((taskGroup)=>{
+      total += taskGroup.totalTaskCount;
+      counts.push({name: taskGroup.groupName, count:taskGroup.totalTaskCount});
+    });
+    counts.forEach((count)=>{
+      percentages.push({name: count.name, percent: ((count.count/total)*100)});
+    });
+    percentages.sort((p1, p2)=>{
+      if(p1.percent > p2.percent){
+        return -1;
+      }
+      if(p1.percent < p2.percent){
+        return 1;
+      }
+      return 0;
+    })
+
+    console.log("Percentages:", percentages);
 
     return taskGroups;
   }

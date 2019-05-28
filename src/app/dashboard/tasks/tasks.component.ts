@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TaskService } from './task.service';
 import { Task } from './task/task.model';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faCog, faSitemap, faList, faThLarge } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faSitemap, faList, faThLarge, faPercentage } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-tasks',
@@ -12,6 +12,7 @@ import { faCog, faSitemap, faList, faThLarge } from '@fortawesome/free-solid-svg
 export class TasksComponent implements OnInit {
 
 
+  faPercentage = faPercentage;
   faCog: IconDefinition = faCog;
   faSitemap = faSitemap;
   faList = faList;
@@ -26,7 +27,7 @@ export class TasksComponent implements OnInit {
     return this._allTasks;
   }
 
-  taskView: string = "CATEGORIES";  // can be "CATEGORIES", "LIST", "GRID"
+  taskView: string = "CATEGORIES";  // can be "CATEGORIES", "LIST", "GRID", "TREEMAP"
 
   ngOnInit() {
     this.taskService.tasks$.subscribe((tasks: Task[])=>{

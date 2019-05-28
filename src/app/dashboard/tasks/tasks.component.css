@@ -1,6 +1,10 @@
 .tasks-root{
     display:flex;
     flex-direction: column;
+    height:100%;
+}
+.tasks-view{
+    flex-grow:2;
 }
 .header{
     padding:3px;

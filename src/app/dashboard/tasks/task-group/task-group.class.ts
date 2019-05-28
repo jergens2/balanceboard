@@ -1,5 +1,5 @@
-import { Task } from "../../../task/task.model";
-import { Directory } from "../../../../../shared/directory/directory.class";
+import { Task } from "../task/task.model";
+import { Directory } from "../../../shared/directory/directory.class";
 
 export class TaskGroup {
 

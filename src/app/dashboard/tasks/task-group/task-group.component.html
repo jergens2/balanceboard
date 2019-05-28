@@ -1,5 +1,14 @@
 <div class="task-group-root" (mouseover)="onMouseEnter()" (mouseleave)="onMouseLeave()">
   <div class="header">
+    {{ taskGroup.groupName }}
+    {{ taskGroup.totalTaskCount }}
+  </div>
+  <div class="squares">
+    <div *ngFor="let square of squares" class="square">
+      
+    </div>
+  </div>
+  <!-- <div class="header">
     <div class="header-title">
         {{ taskGroup.groupName }} <span style="margin-left:5px;font-size:0.7em;color:gray;">{{ taskGroup.totalTaskCount }}</span>
     </div>
@@ -15,7 +24,7 @@
     <div *ngFor="let subGroup of taskGroup.subGroups">
       <app-task-group [taskGroup]="subGroup"></app-task-group>
     </div>
-  </div>
+  </div> -->
 
 
 </div>

@@ -4,6 +4,10 @@
       To-do items
     </div>
     <div class="header-buttons">
+      <div class="icon-button" style="font-size:10pt;" [ngClass]="{'toggled-button':taskView=='TREEMAP'}"
+        (click)="onClickChangeView('TREEMAP')">
+        <fa-icon [icon]="faPercentage"></fa-icon>
+      </div>
       <div class="icon-button" style="font-size:10pt;" [ngClass]="{'toggled-button':taskView=='CATEGORIES'}"
         (click)="onClickChangeView('CATEGORIES')">
         <fa-icon [icon]="faSitemap"></fa-icon>
@@ -42,7 +46,7 @@
   <div class="tasks-view">
     <app-categories-view *ngIf="taskView=='CATEGORIES'"></app-categories-view>
     <app-list-view *ngIf="taskView=='LIST'"></app-list-view>
-    <app-eisenhower-view *ngIf="taskView=='GRID'"></app-eisenhower-view>
+    <app-treemap-view *ngIf="taskView=='TREEMAP'" style="height:100%;display:flex;flex-direction: column;"></app-treemap-view>
   </div>
 
 </div>

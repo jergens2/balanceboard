@@ -1,12 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TaskGroup } from './task-group.class';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import { ModalService } from '../../../../../modal/modal.service';
-import { Modal } from '../../../../../modal/modal.model';
-import { Task } from '../../../task/task.model';
+import { ModalService } from '../../../modal/modal.service';
+import { Modal } from '../../../modal/modal.model';
+import { Task } from '../task/task.model';
 import * as moment from 'moment';
-import { ModalComponentType } from '../../../../../modal/modal-component-type.enum';
-import { IModalOption } from '../../../../../modal/modal-option.interface';
+import { ModalComponentType } from '../../../modal/modal-component-type.enum';
+import { IModalOption } from '../../../modal/modal-option.interface';
 
 
 @Component({
@@ -44,6 +44,15 @@ export class TaskGroupComponent implements OnInit {
       console.log("modal response:", selectedOption);
     });
     this.modalService.activeModal = modal;
+  }
+
+  get squares(): any[] {
+    let squares: any[] = [];
+    for(let i=0;i<=this.taskGroup.totalTaskCount;i++){
+      squares.push(i);
+    }
+    return squares;
+
   }
 
 }

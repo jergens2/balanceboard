@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AppScreenSize } from './app-screen-size.enum';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +8,14 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class SizeService {
 
   constructor() { }
+
+  private _dimensions: BehaviorSubject<{width:number, height:number}> = new BehaviorSubject({width:0, height:0});
+  public get dimensions$(): Observable<{width:number, height:number}> {
+    return this._dimensions.asObservable();
+  }
+  public get dimensions(): {width:number, height:number} {
+    return this._dimensions.getValue();
+  }
 
   private _appScreenSize$: BehaviorSubject<AppScreenSize> = new BehaviorSubject(AppScreenSize.Normal);
   public get appScreenSize$(): Observable<AppScreenSize> {
@@ -17,6 +25,7 @@ export class SizeService {
     return this._appScreenSize$.getValue();
   }
   public updateSize(innerWidth: number, innerHeight:number): AppScreenSize{
+    this._dimensions.next({width:innerWidth,height:innerHeight});
     let appScreenSize: AppScreenSize;
     if(innerWidth <= 400){
       appScreenSize = AppScreenSize.Mobile;

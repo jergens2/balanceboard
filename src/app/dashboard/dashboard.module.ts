@@ -63,8 +63,12 @@ import { SharedModule } from '../shared/shared.module';
 import { CategoriesViewComponent } from './tasks/views/categories-view/categories-view.component';
 import { ListViewComponent } from './tasks/views/list-view/list-view.component';
 import { EisenhowerViewComponent } from './tasks/views/eisenhower-view/eisenhower-view.component';
-import { TaskGroupComponent } from './tasks/views/categories-view/task-group/task-group.component';
+import { TaskGroupComponent } from './tasks/task-group/task-group.component';
 import { NotebookTagsComponent } from './notebooks/notebook-tags/notebook-tags.component';
+import { TreemapViewComponent } from './tasks/views/treemap-view/treemap-view.component';
+import { CategoriesTaskGroupComponent } from './tasks/views/categories-view/categories-task-group/categories-task-group.component';
+import { TreemapTaskGroupComponent } from './tasks/views/treemap-view/treemap-task-group/treemap-task-group.component';
+import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.component';
 
 
 
@@ -137,7 +141,10 @@ import { NotebookTagsComponent } from './notebooks/notebook-tags/notebook-tags.c
     EisenhowerViewComponent,
     TaskGroupComponent,
     NotebookTagsComponent,
-    
+    TreemapViewComponent,
+    CategoriesTaskGroupComponent,
+    TreemapTaskGroupComponent,
+    TreemapComponent,
   ],
   providers: [],
   entryComponents: []

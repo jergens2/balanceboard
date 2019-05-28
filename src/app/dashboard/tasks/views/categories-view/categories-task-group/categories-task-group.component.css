@@ -1,0 +1,35 @@
+.task-group-root{
+    border:1px solid rgb(241, 241, 241);
+    border-radius: 2px;
+    
+    padding:10px;
+    margin-bottom:10px;
+}
+.header{
+    font-size:1.0em;
+    font-weight: bold;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.tasks{
+
+
+}
+.subgroups{
+    margin-left:25px;
+}
+
+.squares{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.square{
+    width:20px;
+    height:20px;
+    background-color: rgb(182, 226, 255);
+    border-radius:2px;
+    margin:3px;
+}
