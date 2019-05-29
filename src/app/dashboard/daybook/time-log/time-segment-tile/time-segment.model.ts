@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { TimeSegmentActivity } from "../time-segment-activity.model";
 
 
-export class TimeSegment{
+export class TimeSegment {
 
     public id: string;
 
@@ -26,7 +26,7 @@ export class TimeSegment{
 
     public userId: string;
 
-    constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string, description: string){
+    constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string, description: string) {
         this.id = id;
         this.userId = userId;
         this._startTimeISO = startTimeISO;
@@ -34,41 +34,41 @@ export class TimeSegment{
         this.description = description;
     }
 
-    get startTime(): moment.Moment{
+    get startTime(): moment.Moment {
         return moment(this.startTimeISO);
     }
     // set startTime(newStartTime: moment.Moment){
     //     this.startTimeISO = moment(newStartTime).toISOString();
     // }
-    get endTime(): moment.Moment{
+    get endTime(): moment.Moment {
         return moment(this.endTimeISO);
     }
     // set endTime(newEndTime: moment.Moment){
     //     this.endTimeISO = moment(newEndTime).toISOString();
     // }
-    get durationString(): string{
+    get durationString(): string {
         let duration = moment.duration(moment(this.endTime).diff(moment(this.startTime)));
         let durationString = '';
-        if(duration.hours() > 0){
-          duration.hours() == 1 ? durationString += "1 hour " : durationString += (duration.hours() + " hours ");
+        if (duration.hours() > 0) {
+            duration.hours() == 1 ? durationString += "1 hour " : durationString += (duration.hours() + " hours ");
         }
-        if(duration.minutes() > 0){
-          duration.minutes() == 1 ? durationString += "1 minute " : durationString += (duration.minutes() + " minutes ");
-        }else{
-          durationString += "0 minutes";
+        if (duration.minutes() > 0) {
+            duration.minutes() == 1 ? durationString += "1 minute " : durationString += (duration.minutes() + " minutes ");
+        } else {
+            durationString += "0 minutes";
         }
         return durationString;
     }
-    get duration(): number{
+    get duration(): number {
         let duration = moment.duration(moment(this.endTime).diff(moment(this.startTime)));
         return duration.asMinutes();
     }
 
-    receiveOldActivities(activities: UserDefinedActivity[]){
-        this.activities = activities.map((activity)=>{
+    receiveOldActivities(activities: UserDefinedActivity[]) {
+        this.activities = activities.map((activity) => {
             let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, "");
             // timeSegmentActivity.duration = 0;
-            if(timeSegmentActivity.activity.color == "blue"){
+            if (timeSegmentActivity.activity.color == "blue") {
                 timeSegmentActivity.activity.color = "#fafafa";
             }
             return timeSegmentActivity;

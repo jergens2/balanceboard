@@ -1,37 +1,5 @@
 <div class="timelog-entry-form-root">
 
-  <div class="section" *ngIf="mostRecentTimelogEntry">
-    <div class="section-header">
-      Previous timelog entry
-    </div>
-    <div class="timelog-entry">
-      <div *ngIf="mostRecentTimelogEntry.isSingleDay" style="font-size:0.8em; color:gray;">
-        <span>From {{ mostRecentTimelogEntry.startTime.format('h:mm a')}} </span>
-        <span>to {{ mostRecentTimelogEntry.endTime.format('h:mm a')}} - </span>
-        <span> Total duration: {{ mostRecentTimelogEntry.durationString }} </span>
-      </div>
-      <div *ngIf="!mostRecentTimelogEntry.isSingleDay">
-        <div style="font-size:0.8em; color:gray;">
-          <span style="width:50px;">From:</span> {{ mostRecentTimelogEntry.startTime.format('YYYY-MM-DD h:mm a')}}
-        </div>
-        <div style="font-size:0.8em; color:gray;">
-          <span style="width:50px;">To:</span> {{ mostRecentTimelogEntry.endTime.format('YYYY-MM-DD h:mm a')}}
-        </div>
-      </div>
-      <div *ngFor="let activity of mostRecentTimelogEntry.activities" style="display:flex;flex-direction: row;">
-        <div class="activity-name" [style.background-color]="activity.activity.color">
-          {{ activity.activity.name }}
-        </div>
-        <div>
-          {{ activity.activity.duration }}
-        </div>
-      </div>
-      <div>
-        {{ howLongAgo }}
-      </div>
-
-    </div>
-  </div>
 
   <div class="section" style="display:flex;flex-direction: row; align-items: center;margin-bottom:10px;">
     <div class="section-header">
@@ -48,14 +16,76 @@
 
   </div>
 
+  <div class="section" *ngIf="chart">
+    <div class="chart-grid" [style.grid-template-rows]="chart.gridTemplateRows">
 
-  <div class="timelog-entry-form" [formGroup]="timelogEntryForm">
-    <app-directory-input></app-directory-input>
+      <div style="grid-row: 1 / span 1; grid-column: 1 / span 1;">
+        <div class="chart-time">
+          {{ chart.startTime.format('h:mm a') }}
+        </div>
+      </div>
+      <div style="grid-row: 2 / span 1; grid-column: 1 / span 1;">
+        <div class="chart-time">
+          {{ chart.middleTime.format('h:mm a') }}
+        </div>
+      </div>
+      <div style="grid-row: 3 / span 1; grid-column: 1 / span 1;">
+        <div class="chart-time">
+          {{ chart.endTime.format('h:mm a') }}
+        </div>
+      </div>
+
+      <div style="grid-column: 3 / span 1; margin-left:5px;">
+        <div style="display:flex;flex-direction: row;height:100%;">
+          <div *ngFor="let activity of mostRecentTimelogEntry.activities" class="activity-name"
+            [style.background-color]="activity.activity.color">
+
+            {{ activity.activity.name }}
+
+          </div>
+        </div>
+      </div>
+
+      <div class="current-timelog-entry">
+        <div style="font-size:0.8em; color:gray;">
+          Current Timelog Entry - {{ chart.middleTime.format('h:mm a') }} to
+          {{ chart.endTime.format('h:mm a')}}
+        </div>
+        <div style="font-size:0.8em; color:gray;">Total Duration <b>{{ currentTimelogEntryDuration }}</b> </div>
+        <div *ngIf="currentTimelogEntry">
+          <div *ngFor="let activity of currentTimelogEntry.activities" class="activity-name"
+            [style.background-color]="activity.activity.color">
+            {{ activity.activity.name }}
+          </div>
+        </div>
+
+      </div>
+      <div class="chart-line-top"> </div>
+      <div class="chart-line-bottom"></div>
+
+    </div>
   </div>
 
+
+
+  <div class="section" *ngIf="chart">
+    <div class="section-header">
+      Activities
+    </div>
+    <div style="margin-bottom:5px;">
+        What activities have you done in the last <span style="font-weight:bold;color:rgb(0, 73, 168);;">{{ currentTimelogEntryDuration }}</span> ?
+    </div>
+    
+    <div [formGroup]="timelogEntryForm">
+      <input type="text" placeholder="Activity name" >
+    </div>
+  </div>
+
+
+
   <div class="section buttons-container">
-      <button class="btn btn-primary btn-sm" (click)="onClickSaveTimelogEntry()" [disabled]="saveDisabled">Save</button>
-      <button class="btn btn-secondary btn-sm" (click)="onClickClose()" style="margin-left:5px;">Cancel</button> 
+    <button class="btn btn-primary btn-sm" (click)="onClickSaveTimelogEntry()" [disabled]="saveDisabled">Save</button>
+    <button class="btn btn-secondary btn-sm" (click)="onClickClose()" style="margin-left:5px;">Cancel</button>
   </div>
 
 </div>

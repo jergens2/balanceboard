@@ -19,12 +19,17 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   constructor(private timelogService: TimelogService, private toolsService: ToolsService, private modalService: ModalService) { }
 
   mostRecentTimelogEntry: TimeSegment;
+  currentTimelogEntry: TimeSegment;
   timelogEntryForm: FormGroup;
 
   clockSubscription: Subscription = new Subscription();
 
   
   private _now = moment();
+  
+
+
+  chart: any;
 
   ngOnInit() {
     this.mostRecentTimelogEntry = this.timelogService.mostRecentTimelogEntry;
@@ -33,16 +38,51 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       
     });
 
-    this.clockSubscription = timer(1000,1000).subscribe(()=>{
+    this.clockSubscription = timer(0,1000).subscribe(()=>{
       this._now = moment();
+      this.buildChart();
     })
   }
   ngOnDestroy(){
     this.clockSubscription.unsubscribe();
   }
 
+  private buildChart(){
+    let chartStartTime: moment.Moment = moment(this.mostRecentTimelogEntry.startTime);
+    let chartMiddleTime: moment.Moment = moment(this.mostRecentTimelogEntry.endTime);
+    let chartEndTime: moment.Moment = moment();
+
+    let totalMinutes: number = moment(chartEndTime).diff(chartStartTime, "minutes");
+    let previousTLEPercent: number = (this.mostRecentTimelogEntry.duration/totalMinutes)*100;
+    let currentTLEPercent: number = 100-previousTLEPercent;
+
+    if(previousTLEPercent < 15){
+      previousTLEPercent = 15;
+      currentTLEPercent = 85;
+    }
+    if(currentTLEPercent < 15){
+      previousTLEPercent = 85;
+      currentTLEPercent = 15;
+    }
+
+    let chart: any = {
+      previousTimelogEntryPercent: previousTLEPercent,
+      currentTimelogEntryPercent: currentTLEPercent,
+      gridTemplateRows: "" + previousTLEPercent.toFixed(1) + "% " + currentTLEPercent.toFixed(1)  + "% auto" ,
+      startTime: chartStartTime,
+      middleTime: chartMiddleTime,
+      endTime: chartEndTime,
+
+    };
+
+    let currentTimelogEntry: TimeSegment = new TimeSegment('', this.timelogService.userId, chartMiddleTime.toISOString(), chartEndTime.toISOString(), '')
+
+    this.currentTimelogEntry = currentTimelogEntry;
+    this.chart = chart;
+  }
+
   onClickSaveTimelogEntry(){
-    
+
   }
 
   onClickClose() {
@@ -54,24 +94,24 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     return this._now
   }
 
-  public get howLongAgo(): string{
+  public get currentTimelogEntryDuration(): string{
     let minutes: number = moment().diff(this.mostRecentTimelogEntry.endTime, "minutes");
 
     function plurality(value: number, name: string): string{
       if(value == 1){
-        return "1 "+name+" ago";
+        return "1 "+name+"";
       }else{
-        return ""+value+" " + name + " ago";
+        return ""+value+" " + name + "s";
       }
     }
 
     if(minutes < 60){
-      return plurality(minutes, "minutes");
+      return plurality(minutes, "minute");
     }else if(minutes >= 60 && minutes < 1440){
       let hours = Math.floor(minutes/60);
       minutes = minutes - (hours*60);
 
-      return plurality(hours, "hours") + ", " + plurality(minutes, "minutes");
+      return plurality(hours, "hour") + ", " + plurality(minutes, "minute");
     }else if(minutes >= 1440){
       let days = Math.floor(minutes/1440);
       minutes = minutes - (days*1440);
@@ -79,11 +119,11 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       if(minutes > 60){
         let hours: number = Math.floor(minutes/60)
         minutes = minutes - (hours*60);
-        remainingString = plurality(hours, "hours") + "," + plurality(minutes, "minutes");
+        remainingString = plurality(hours, "hour") + "," + plurality(minutes, "minute");
       }else{
-        remainingString = plurality(minutes, "minutes");
+        remainingString = plurality(minutes, "minute");
       }
-      return plurality(days, "days") +", "+remainingString;
+      return plurality(days, "day") +", "+remainingString;
     }
 
 

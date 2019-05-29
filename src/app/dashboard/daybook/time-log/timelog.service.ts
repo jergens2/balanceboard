@@ -32,6 +32,10 @@ export class TimelogService {
     return this._loginComplete$.asObservable();
   }
 
+  public get userId(): string{
+    return this._authStatus.user.id;
+  }
+
   constructor(private httpClient: HttpClient, private activitiesService: ActivitiesService, private daybookService: DaybookService) {
   }
 
