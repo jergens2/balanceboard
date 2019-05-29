@@ -72,7 +72,7 @@ export class ActivitiesService {
 
   private buildTimeSegmentActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimeSegmentActivity[] {
     return activitiesData.map((activity) => {
-      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.findActivityByTreeId(activity.activityTreeId), activity.duration, activity.description);
+      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.findActivityByTreeId(activity.activityTreeId), activity.description);
       return timeSegmentActivity;
     })
   }

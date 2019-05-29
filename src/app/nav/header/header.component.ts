@@ -2,13 +2,13 @@ import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@ang
 import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent, Subscriber } from 'rxjs';
-import { faBars, faCogs, faSignOutAlt, faTools, faWrench } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
-import { ToolsService } from './tools/tools.service';
-import { ToolComponents } from './tools/tool-components.enum';
+import { ToolsService } from '../../shared/tools/tools.service';
+import { ToolComponents } from '../../shared/tools/tool-components.enum';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { Modal } from '../../modal/modal.model';
@@ -104,18 +104,33 @@ export class HeaderComponent implements OnInit {
 
 
     let toolsMenuItems: MenuItem[] = [];
-    let notepadMenuItem: MenuItem = new MenuItem('Notepad', null, faStickyNote);
+    let notepadMenuItem: MenuItem = new MenuItem('Notebook Entry', null, faStickyNote);
     this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(()=>{
       this.toolsService.openTool(ToolComponents.Notepad);
     }))
     toolsMenuItems.push(notepadMenuItem);
 
-    let todoMenuItem: MenuItem = new MenuItem("To do", null, faCheckCircle);
-    this.activeSubscriptions.push(todoMenuItem.clickEmitted$.subscribe(()=>{
-      this.toolsService.openTool(ToolComponents.Todo);
+    let actionItemMenuItem: MenuItem = new MenuItem("Action Item", null, faCheckCircle);
+    this.activeSubscriptions.push(actionItemMenuItem.clickEmitted$.subscribe(()=>{
+      this.toolsService.openTool(ToolComponents.ActionItem);
     }))
 
-    toolsMenuItems.push(todoMenuItem);
+    toolsMenuItems.push(actionItemMenuItem);
+
+    let timelogEntryMenuItem: MenuItem = new MenuItem("Timelog Entry", null, faTable);
+    this.activeSubscriptions.push(timelogEntryMenuItem.clickEmitted$.subscribe(()=>{
+      this.toolsService.openTool(ToolComponents.TimelogEntry);
+    }))
+
+    toolsMenuItems.push(timelogEntryMenuItem);
+
+    let futureEventMenuItem: MenuItem = new MenuItem("Appointment / Future Event", null, faCalendarAlt);
+    this.activeSubscriptions.push(futureEventMenuItem.clickEmitted$.subscribe(()=>{
+      this.toolsService.openTool(ToolComponents.FutureEvent);
+    }))
+
+    toolsMenuItems.push(futureEventMenuItem);
+    
     let toolsMenu: HeaderMenu = new HeaderMenu('Tools', toolsMenuItems);
     toolsMenu.icon = faWrench;
     newMenus.push(toolsMenu);

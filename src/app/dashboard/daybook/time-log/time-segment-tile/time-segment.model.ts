@@ -16,6 +16,10 @@ export class TimeSegment{
         return this._endTimeISO;
     }
 
+    public get isSingleDay(): boolean {
+        return this.startTime.format('YYYY-MM-DD') == this.endTime.format('YYYY-MM-DD');
+    }
+
     public description: string;
 
     public activities: TimeSegmentActivity[] = []
@@ -62,7 +66,7 @@ export class TimeSegment{
 
     receiveOldActivities(activities: UserDefinedActivity[]){
         this.activities = activities.map((activity)=>{
-            let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, 0, "");
+            let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, "");
             // timeSegmentActivity.duration = 0;
             if(timeSegmentActivity.activity.color == "blue"){
                 timeSegmentActivity.activity.color = "#fafafa";

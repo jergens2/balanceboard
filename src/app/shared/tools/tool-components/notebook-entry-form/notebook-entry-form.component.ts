@@ -4,19 +4,19 @@ import { ToolsService } from '../../tools.service';
 import { ToolComponents } from '../../tool-components.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
-import { NotebookEntry } from '../../../../../dashboard/notebooks/notebook-entry/notebook-entry.model';
-import { NotebookEntryTypes } from '../../../../../dashboard/notebooks/notebook-entry/notebook-entry-types.enum';
-import { NotebooksService } from '../../../../../dashboard/notebooks/notebooks.service';
-import { ModalService } from '../../../../../modal/modal.service';
+import { NotebookEntry } from '../../../../dashboard/notebooks/notebook-entry/notebook-entry.model';
+import { NotebookEntryTypes } from '../../../../dashboard/notebooks/notebook-entry/notebook-entry-types.enum';
+import { NotebooksService } from '../../../../dashboard/notebooks/notebooks.service';
+import { ModalService } from '../../../../modal/modal.service';
 
 
 
 @Component({
-  selector: 'app-notepad',
-  templateUrl: './notepad.component.html',
-  styleUrls: ['./notepad.component.css']
+  selector: 'app-notebook-entry-form',
+  templateUrl: './notebook-entry-form.component.html',
+  styleUrls: ['./notebook-entry-form.component.css']
 })
-export class NotepadComponent implements OnInit {
+export class NotebookEntryFormComponent implements OnInit {
 
 
 

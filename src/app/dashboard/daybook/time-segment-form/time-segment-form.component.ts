@@ -288,7 +288,7 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
   onClickSaveActivity() {
     console.log("saving activity", this.selectedActivity);
     if(this.selectedActivity){
-      this.timeSegmentActivities.push(new TimeSegmentActivity(this.selectedActivity, 0, ''));
+      this.timeSegmentActivities.push(new TimeSegmentActivity(this.selectedActivity, ''));
       this.ifAddActivity = false;
     }else{
 

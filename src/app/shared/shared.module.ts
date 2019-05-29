@@ -8,10 +8,20 @@ import { WeekViewComponent } from './time-views/week-view/week-view.component';
 import { SingleDayViewComponent } from './time-views/single-day-view/single-day-view.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { CustomRangeTimeViewComponent } from './time-views/custom-range-time-view/custom-range-time-view.component';
+import { ToolsComponent } from './tools/tools.component';
+import { ActionItemFormComponent } from './tools/tool-components/action-item-form/action-item-form.component';
+import { NotebookEntryFormComponent } from "./tools/tool-components/notebook-entry-form/notebook-entry-form.component";
+import { ReactiveFormsModule } from "@angular/forms";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { TimelogEntryFormComponent } from './tools/tool-components/timelog-entry-form/timelog-entry-form.component';
+import { FutureEventFormComponent } from './tools/tool-components/future-event-form/future-event-form.component';
+import { DirectoryInputComponent } from './directory/directory-input/directory-input.component';
 
 @NgModule({
     imports: [
         CommonModule,
+        ReactiveFormsModule,
+        FontAwesomeModule
     ],
     declarations: [
         YearViewComponent,
@@ -22,12 +32,21 @@ import { CustomRangeTimeViewComponent } from './time-views/custom-range-time-vie
         SingleDayViewComponent,
         ColorPickerComponent,
         CustomRangeTimeViewComponent,
+        NotebookEntryFormComponent,
+        ToolsComponent,
+        ActionItemFormComponent,
+        TimelogEntryFormComponent,
+        FutureEventFormComponent,
+        DirectoryInputComponent,
     ],
     exports: [
         CommonModule,
         TimeViewsComponent,
         YearViewComponent,
-        ColorPickerComponent
+        ColorPickerComponent,
+        ToolsComponent,
+        ActionItemFormComponent,
+        NotebookEntryFormComponent
     ]
 })
 

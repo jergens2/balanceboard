@@ -1,0 +1,61 @@
+<div class="timelog-entry-form-root">
+
+  <div class="section" *ngIf="mostRecentTimelogEntry">
+    <div class="section-header">
+      Previous timelog entry
+    </div>
+    <div class="timelog-entry">
+      <div *ngIf="mostRecentTimelogEntry.isSingleDay" style="font-size:0.8em; color:gray;">
+        <span>From {{ mostRecentTimelogEntry.startTime.format('h:mm a')}} </span>
+        <span>to {{ mostRecentTimelogEntry.endTime.format('h:mm a')}} - </span>
+        <span> Total duration: {{ mostRecentTimelogEntry.durationString }} </span>
+      </div>
+      <div *ngIf="!mostRecentTimelogEntry.isSingleDay">
+        <div style="font-size:0.8em; color:gray;">
+          <span style="width:50px;">From:</span> {{ mostRecentTimelogEntry.startTime.format('YYYY-MM-DD h:mm a')}}
+        </div>
+        <div style="font-size:0.8em; color:gray;">
+          <span style="width:50px;">To:</span> {{ mostRecentTimelogEntry.endTime.format('YYYY-MM-DD h:mm a')}}
+        </div>
+      </div>
+      <div *ngFor="let activity of mostRecentTimelogEntry.activities" style="display:flex;flex-direction: row;">
+        <div class="activity-name" [style.background-color]="activity.activity.color">
+          {{ activity.activity.name }}
+        </div>
+        <div>
+          {{ activity.activity.duration }}
+        </div>
+      </div>
+      <div>
+        {{ howLongAgo }}
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section" style="display:flex;flex-direction: row; align-items: center;margin-bottom:10px;">
+    <div class="section-header">
+      Current time:
+    </div>
+    <div style="flex-grow:2;display:flex;justify-content: space-between;align-items: center;padding-left:10px;">
+      <span class="current-time">
+        {{ currentTime.format('h:mm:ss a') }}
+      </span>
+      <span>
+        {{ currentTime.format('MMMM Do, YYYY') }}
+      </span>
+    </div>
+
+  </div>
+
+
+  <div class="timelog-entry-form" [formGroup]="timelogEntryForm">
+    <app-directory-input></app-directory-input>
+  </div>
+
+  <div class="section buttons-container">
+      <button class="btn btn-primary btn-sm" (click)="onClickSaveTimelogEntry()" [disabled]="saveDisabled">Save</button>
+      <button class="btn btn-secondary btn-sm" (click)="onClickClose()" style="margin-left:5px;">Cancel</button> 
+  </div>
+
+</div>

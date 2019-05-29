@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ToolsService } from './tools.service';
 import { ToolComponents } from './tool-components.enum';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { SizeService } from '../../../shared/app-screen-size/size.service';
-import { AppScreenSize } from '../../../shared/app-screen-size/app-screen-size.enum';
+import { SizeService } from '../app-screen-size/size.service';
+import { AppScreenSize } from '../app-screen-size/app-screen-size.enum';
 
 @Component({
   selector: 'app-tools',
@@ -17,7 +17,11 @@ export class ToolsComponent implements OnInit {
   constructor(private toolsService: ToolsService, private sizeService: SizeService) { }
 
   ifNotepad: boolean = false;
-  ifToDo: boolean = false;
+  ifActionItem: boolean = false;
+  ifTimelogEntry: boolean = false;
+  // ifAppointment: boolean = 
+
+  toolName: string = "";
 
   screenSize: AppScreenSize;
   
@@ -29,16 +33,24 @@ export class ToolsComponent implements OnInit {
     this.screenSize = this.sizeService.appScreenSize;
 
     this.toolsService.currentTool$.subscribe((tool: ToolComponents)=>{
-      if(tool != null){
-        if(tool == ToolComponents.Notepad){
-          this.ifToDo = false;
-          this.ifNotepad = true;
-        }
-        if(tool == ToolComponents.Todo){
-          this.ifNotepad = false;
-          this.ifToDo = true;
-        }
-      }
+      this.toolName = tool;
+      // if(tool != null){
+      //   if(tool == ToolComponents.Notepad){
+      //     this.ifActionItem = false;
+      //     this.ifTimelogEntry = false;
+      //     this.ifNotepad = true;
+      //   }
+      //   if(tool == ToolComponents.ActionItem){
+      //     this.ifNotepad = false;
+      //     this.ifTimelogEntry = false;
+      //     this.ifActionItem = true;
+      //   }
+      //   if(tool == ToolComponents.TimelogEntry){
+      //     this.ifActionItem = false;
+      //     this.ifNotepad = false;
+      //     this.ifTimelogEntry = true;
+      //   }
+      // }
     });
 
 

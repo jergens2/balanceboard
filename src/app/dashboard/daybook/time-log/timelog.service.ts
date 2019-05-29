@@ -47,7 +47,23 @@ export class TimelogService {
     return this._timeSegments;
   }
 
-
+  public get mostRecentTimelogEntry(): TimeSegment {
+    if(this._timeSegments.length > 0){
+      let timeSegments = this._timeSegments.sort((ts1, ts2)=>{
+        if(ts1.startTime.isAfter(ts2.startTime)){
+          return -1;
+        }
+        if(ts1.startTime.isBefore(ts2.startTime)){
+          return 1;
+        }
+        return 0;
+      })
+      return timeSegments[0];
+    }else{
+      return null;
+    }
+    
+  } 
 
 
 
@@ -55,7 +71,7 @@ export class TimelogService {
     console.log("Updating time segment: ", timeSegment);
     let updatedTimeSegment: TimeSegment = timeSegment;
     let trimmedActivities = updatedTimeSegment.activities.map((activity: TimeSegmentActivity) => {
-      return { activityTreeId: activity.activityTreeId, duration: activity.duration, description: activity.description }
+      return { activityTreeId: activity.activityTreeId, description: activity.description }
     })
 
     updatedTimeSegment.activities = trimmedActivities as TimeSegmentActivity[];
@@ -99,7 +115,7 @@ export class TimelogService {
 
     //the following line exists to remove the activity data from the object
     let trimmedActivities = newTimeSegment.activities.map((activity: TimeSegmentActivity) => {
-      return { activityTreeId: activity.activityTreeId, duration: activity.duration, description: activity.description };
+      return { activityTreeId: activity.activityTreeId, description: activity.description };
     })
     newTimeSegment.activities = trimmedActivities as TimeSegmentActivity[];
     const postUrl = this._serverUrl + "/api/timeSegment/create";
@@ -135,7 +151,7 @@ export class TimelogService {
 
 
     return activitiesData.map((activity) => {
-      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.activitiesService.findActivityByTreeId(activity.activityTreeId), duration, activity.description);
+      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.activitiesService.findActivityByTreeId(activity.activityTreeId), activity.description);
       return timeSegmentActivity;
     })
   }

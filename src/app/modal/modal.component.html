@@ -17,7 +17,7 @@
       <app-confirm-modal *ngIf="modal.modalComponentType == 'CONFIRM'"></app-confirm-modal>
 
       <app-notepad-modal *ngIf="modal.modalComponentType == 'NOTE'"></app-notepad-modal>
-      <app-todo *ngIf="modal.modalComponentType == 'TASK'" [action]="modal.action"></app-todo>
+      <app-action-item-form *ngIf="modal.modalComponentType == 'TASK'" [action]="modal.action"></app-action-item-form>
     </div>
 
   </div>

@@ -16,7 +16,7 @@ export class ToolsService {
     this._currentTool$.next(component);
   }
 
-  public closeTool(component: ToolComponents){
+  public closeTool(component?: ToolComponents){
     console.log("closing tool");
     this._currentTool$.next(null);
   }
