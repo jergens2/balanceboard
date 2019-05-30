@@ -1,0 +1,33 @@
+<div class="schedule-planner-root">
+  <div>
+    Schedule Planner
+  </div>
+
+  <div class="planner-graphic" [ngStyle]="plannerGraphic.graphicStyle" (mouseleave)="onMouseLeaveGraphic()">
+    <div style="grid-column: 1 / span 1; grid-row: 1 / span 1;"></div>
+    <div *ngFor="let dayOfWeek of plannerGraphic.daysOfWeek" [ngStyle]="dayOfWeek.style" class="day-of-week">
+      <div>
+        {{ dayOfWeek.day.format('YYYY-MM-DD') }}
+      </div>
+      <div style="font-weight:bold;">
+        {{ dayOfWeek.day.format('dddd') }}
+      </div>
+    </div>
+
+
+
+    <div *ngFor="let timeBlock of plannerGraphic.timeBlocks" [ngStyle]="timeBlock.style"
+      class="time-block-container no-select" (mousedown)="onMouseDownTimeBlock(timeBlock)"
+      (mouseup)="onMouseUpTimeBlock(timeBlock)" (mouseenter)="onMouseEnterTimeBlock(timeBlock)">
+      <div class="time-block" [ngClass]="{'selected-time-block':timeBlock.isSelected}">
+
+      </div>
+
+    </div>
+
+    <div *ngFor="let hourLabel of plannerGraphic.hourLabels" [ngStyle]="hourLabel.style" class="hour-label">
+      {{ hourLabel.label }}
+    </div>
+
+  </div>
+</div>

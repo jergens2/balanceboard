@@ -69,6 +69,7 @@ import { TreemapViewComponent } from './tasks/views/treemap-view/treemap-view.co
 import { CategoriesTaskGroupComponent } from './tasks/views/categories-view/categories-task-group/categories-task-group.component';
 import { TreemapTaskGroupComponent } from './tasks/views/treemap-view/treemap-task-group/treemap-task-group.component';
 import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.component';
+import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule-planner.component';
 
 
 
@@ -145,6 +146,7 @@ import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.com
     CategoriesTaskGroupComponent,
     TreemapTaskGroupComponent,
     TreemapComponent,
+    SchedulePlannerComponent,
   ],
   providers: [],
   entryComponents: []
