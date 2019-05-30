@@ -33,10 +33,20 @@ export class SchedulePlannerComponent implements OnInit {
   private buildPlannerGraphic() {
     let graphic: any = {};
 
-    let timeBlockHeight: number = 20;
+    let totalHoursPerDay: number = 16;
+    
+    let totalHeightPx: number = 800;
+    let timeBlockDurationMinutes: number = 10;
+    let rows: number = (60 / timeBlockDurationMinutes) * totalHoursPerDay
+    let timeBlockHeightPx: number = totalHeightPx / rows;
+    
+
+    
+
 
     let graphicStyle: any = {
-      "grid-template-rows": "auto repeat(32, "+timeBlockHeight+"px)",
+      "grid-template-rows": "auto repeat("+rows+", "+timeBlockHeightPx+"px)",
+      "height":""+totalHeightPx+"px",
     };
 
     let daysOfWeek: { day: moment.Moment, style: any }[] = [];
@@ -60,11 +70,40 @@ export class SchedulePlannerComponent implements OnInit {
     }
 
 
+    
+
+    let timeBlocks: ITimeBlock[] = [];   
+
+    for (let currentDay = moment().startOf("week"); currentDay.isBefore(moment().endOf("week")); currentDay = moment(currentDay).add(1, "days").hour(7).minute(30).second(0).millisecond(0)) {
+      let startOfDay = moment(currentDay).hour(7).minute(30).second(0).millisecond(0);
+      let endOfDay: moment.Moment = moment(startOfDay).add(totalHoursPerDay, "hours");
+      for(let currentTime = moment(startOfDay); currentTime.isBefore(endOfDay); currentTime = moment(currentTime).add(timeBlockDurationMinutes, "minutes")){
+        let row = 2 + (moment(currentTime).diff(moment(startOfDay), "minutes") / timeBlockDurationMinutes);
+        let blockEndTime: moment.Moment = moment(currentTime).add(timeBlockDurationMinutes, "minutes");
+        let borderBottom: string = "";
+        if(blockEndTime.minute() == 30 || blockEndTime.minute() == 0){
+          borderBottom = "1px solid rgb(240, 240, 240)";
+        }
+        let block:ITimeBlock = {
+          startTime: currentTime,
+          endTime: blockEndTime,
+          style: {
+            "grid-row": "" + row + " / span 1",
+            "grid-column": "" + (currentDay.day()+2) + " / span 1",
+            "border-bottom": borderBottom,
+          },
+          isSelected: false,
+        }
+
+        timeBlocks.push(block);
+      }
+    }
+
     let hourLabels: { hour: moment.Moment, label: string, style: any }[] = [];
 
     let startTime: moment.Moment = moment().hour(7).minute(30).second(0).millisecond(0);
-    let endTime: moment.Moment = moment(startTime).add(16, "hours");
-    for (let currentHour: moment.Moment = moment(startTime); currentHour.isBefore(endTime); currentHour = moment(currentHour).add(30, "minutes")) {
+    let endTime: moment.Moment = moment(startTime).add(totalHoursPerDay, "hours");
+    for (let currentHour: moment.Moment = moment(startTime); currentHour.isBefore(endTime); currentHour = moment(currentHour).add(timeBlockDurationMinutes, "minutes")) {
       let label: string = "";
       if (currentHour.minute() == 0) {
         label = currentHour.format('h:mm a');
@@ -78,31 +117,6 @@ export class SchedulePlannerComponent implements OnInit {
       })
     }
 
-
-    let timeBlocks: ITimeBlock[] = [];
-
-
-
-    for (let currentDay = moment().startOf("week"); currentDay.isBefore(moment().endOf("week")); currentDay = moment(currentDay).add(1, "days").hour(7).minute(30).second(0).millisecond(0)) {
-      let startOfDay = moment(currentDay).hour(7).minute(30).second(0).millisecond(0);
-      let endOfDay: moment.Moment = moment(startOfDay).add(16, "hours");
-      for(let currentTime = moment(startOfDay); currentTime.isBefore(endOfDay); currentTime = moment(currentTime).add(30, "minutes")){
-        let row = 2 + (moment(currentTime).diff(moment(startOfDay), "minutes") / 30);
-        let block:ITimeBlock = {
-          startTime: currentTime,
-          endTime: moment(currentTime).add(30, "minutes"),
-          style: {
-            "grid-row": "" + row + " / span 1",
-            "grid-column": "" + (currentDay.day()+2) + " / span 1",
-          },
-          isSelected: false,
-        }
-
-        timeBlocks.push(block);
-      }
-    }
-
-    
 
 
 

@@ -16,18 +16,22 @@
 
 
 
-    <div *ngFor="let timeBlock of plannerGraphic.timeBlocks" [ngStyle]="timeBlock.style"
+    <div *ngFor="let timeBlock of plannerGraphic.timeBlocks" [ngStyle]="timeBlock.style" [ngClass]="{'selected-time-block':timeBlock.isSelected}"
       class="time-block-container no-select" (mousedown)="onMouseDownTimeBlock(timeBlock)"
       (mouseup)="onMouseUpTimeBlock(timeBlock)" (mouseenter)="onMouseEnterTimeBlock(timeBlock)">
-      <div class="time-block" [ngClass]="{'selected-time-block':timeBlock.isSelected}">
+      <!-- <div class="time-block" >
 
+      </div> -->
+
+    </div>
+
+    <div class="hour-labels">
+      <div *ngFor="let hourLabel of plannerGraphic.hourLabels" [ngStyle]="hourLabel.style" class="hour-label">
+        {{ hourLabel.label }}
       </div>
-
     </div>
 
-    <div *ngFor="let hourLabel of plannerGraphic.hourLabels" [ngStyle]="hourLabel.style" class="hour-label">
-      {{ hourLabel.label }}
-    </div>
+    
 
   </div>
 </div>
