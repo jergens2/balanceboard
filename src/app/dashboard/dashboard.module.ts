@@ -127,11 +127,11 @@ import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule
 
     NotebooksComponent,
     NotebookEntryComponent,
-    
+
     TasksComponent,
-    
+
     TaskComponent,
-    
+
     SchedulingComponent,
     ScheduleRotationsComponent,
     RecurringTasksComponent,

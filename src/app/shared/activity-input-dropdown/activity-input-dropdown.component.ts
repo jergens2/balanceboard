@@ -1,10 +1,11 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
-import { UserDefinedActivity } from '../user-defined-activity.model';
-import { ActivityTree } from '../activity-tree.model';
-import { ActivitiesService } from '../activities.service';
-import { IActivityDropdownListItem } from './activity-dropdown-list-item.interface';
+
 import { Subscription, Observable, fromEvent } from 'rxjs';
+import { IActivityDropdownListItem } from './activity-dropdown-list-item.interface';
+import { ActivityTree } from '../../dashboard/activities/activity-tree.model';
+import { UserDefinedActivity } from '../../dashboard/activities/user-defined-activity.model';
+import { ActivitiesService } from '../../dashboard/activities/activities.service';
 
 @Component({
   selector: 'app-activity-input-dropdown',
@@ -162,6 +163,8 @@ export class ActivityInputDropdownComponent implements OnInit {
 
   private onValueChanged(activity: UserDefinedActivity) {
     this.valueChanged.emit(activity);
+    this.activityTextInputValue = "";
+    
   }
 
   private searchForActivities(searchValue: string) {

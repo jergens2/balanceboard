@@ -30,17 +30,16 @@
     flex-direction: row;
     justify-content: flex-end;
     padding:5px;
-    border-top: 1px solid rgb(196, 196, 196);
 }    
 
 
 .chart-grid{
-    padding-top:15px;
-    padding-bottom: 15px;
+    padding-top:5px;
+    padding-bottom: 5px;
     padding-right:5px;
     display:grid;
-    grid-template-columns: 30% 10px 70%;
-    height:300px;
+    grid-template-columns: 25% 10px 75%;
+    height:250px;
 }
 
 .chart-time{
@@ -52,24 +51,29 @@
 
 .label-line{
     grid-column: 2 / span 1;
-    border-top: 1px solid gray; 
     border-right: 1px solid gray;
-}
-.last-label-line{
-    border-bottom: 1px solid gray;
 }
 
 .time-segment{
     height:100%;
+
+    font-size: 0.8em;
     margin:2px;
     margin-left:5px;
     margin-right:5px;
+
+    display:flex;
+    flex-direction: row;
 }
 .activity{
     height:100%;
+    flex-grow: 2;
 }
 
-
+.clean-input{
+    width:100%;
+    border:none;
+}
 
 
 .current-timelog-entry{
@@ -81,4 +85,20 @@
     padding:5px;
 
     height:100%;
+}
+
+.new-activity{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left:15px;
+    margin-right:15px;
+}
+.new-activity-name{
+    margin-left:5px;
+}
+.new-activity-color-block{
+    width:20px;
+    height:20px;
+    border-radius:3px;
 }

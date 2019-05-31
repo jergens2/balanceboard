@@ -16,6 +16,7 @@ import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { TimelogEntryFormComponent } from './tools/tool-components/timelog-entry-form/timelog-entry-form.component';
 import { FutureEventFormComponent } from './tools/tool-components/future-event-form/future-event-form.component';
 import { DirectoryInputComponent } from './directory/directory-input/directory-input.component';
+import { ActivityInputDropdownComponent } from "./activity-input-dropdown/activity-input-dropdown.component";
 
 @NgModule({
     imports: [
@@ -38,6 +39,7 @@ import { DirectoryInputComponent } from './directory/directory-input/directory-i
         TimelogEntryFormComponent,
         FutureEventFormComponent,
         DirectoryInputComponent,
+        ActivityInputDropdownComponent,
     ],
     exports: [
         CommonModule,
@@ -46,7 +48,8 @@ import { DirectoryInputComponent } from './directory/directory-input/directory-i
         ColorPickerComponent,
         ToolsComponent,
         ActionItemFormComponent,
-        NotebookEntryFormComponent
+        NotebookEntryFormComponent,
+        ActivityInputDropdownComponent,
     ]
 })
 

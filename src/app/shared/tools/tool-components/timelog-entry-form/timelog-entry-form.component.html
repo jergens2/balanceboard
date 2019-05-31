@@ -1,7 +1,7 @@
-<div class="timelog-entry-form-root">
+<div class="timelog-entry-form-root" [formGroup]="timelogEntryForm" *ngIf="initiated">
 
 
-  <div class="section" style="display:flex;flex-direction: row; align-items: center;margin-bottom:10px;">
+  <div class="section" style="display:flex;flex-direction: row; align-items: center;">
     <div class="section-header">
       Current time:
     </div>
@@ -16,15 +16,11 @@
 
   </div>
 
-  <div class="section" *ngIf="chart">
+  <div class="section" *ngIf="chart.isVisible">
 
     <div class="chart-grid" [style.grid-template-rows]="chart.gridTemplateRows">
 
-      <div style="grid-row: 1 / span 1; grid-column: 1 / span 1;">
-        <div class="chart-time">
-          {{ chart.startTime.format('h:mm a') }}
-        </div>
-      </div>
+
       <div [ngStyle]="chart.timeSegmentStartStyle">
         <div class="chart-time">
           {{ chart.timeSegmentStart.format('h:mm a') }}
@@ -35,15 +31,7 @@
           {{ chart.timeSegmentEnd.format('h:mm a') }}
         </div>
       </div>
-      <div [ngStyle]="chart.chartEndStyle">
-        <div class="chart-time">
-          {{ chart.endTime.format('h:mm a') }}
-        </div>
-      </div>
-
-      <div *ngFor="let row of chart.percentages; let i = index;" class="label-line"
-        [ngClass]="{'last-label-line':i==chart.percentages.length-1}">
-      </div>
+      <div *ngFor="let labelLine of chart.labelLines" class="label-line" [ngStyle]="labelLine.style"></div>
 
       <div *ngFor="let timeBlock of chart.timeBlocks;" [ngStyle]="timeBlock.style">
         <div *ngIf="timeBlock.isCurrent" class="current-timelog-entry">
@@ -52,52 +40,100 @@
             {{ chart.timeSegmentEnd.format('h:mm a')}}
           </div>
           <div style="font-size:0.8em; color:gray;">Total Duration <b>{{ currentTimelogEntryDuration }}</b> </div>
-          <!-- <div *ngIf="currentTimelogEntry">
-                <div *ngFor="let activity of currentTimelogEntry.activities" class="activity-name"
-                  [style.background-color]="activity.activity.color">
-                  {{ activity.activity.name }}
-                </div>
-              </div> -->
+          <div *ngFor="let activityItem of activityItems" class="new-activity">
+            <div style="flex-grow:2;display:flex;flex-direction: row;">
+              <div class="new-activity-color-block" [style.background-color]="activityItem.activity.color"></div>
+              <div class="new-activity-name">
+                {{ activityItem.activity.name }}
+              </div>
+            </div>
+
+
+          </div>
         </div>
         <div *ngIf="timeBlock.isPrevious" class="time-segment">
-          <div *ngFor="let activity of timeBlock.timeSegment.activities" class="activity"
-            [style.background-color]="activity.activity.color">{{ activity.activity.name }} </div>
-        </div>
-        <div *ngIf="timeBlock.isFuture" class="time-segment">
+          <div *ngIf="timeBlock.timeSegment.activities.length == 1" class="activity"
+            [style.background-color]="timeBlock.timeSegment.activities[0].activity.color">
+            {{ timeBlock.timeSegment.activities[0].activity.name }}
+          </div>
+          <div *ngIf="timeBlock.timeSegment.activities.length > 1 " class="activity"
+            [style.background-color]="timeBlock.timeSegment.activities[0].activity.color">
+            {{ timeBlock.timeSegment.activities[0].activity.name }} and {{ timeBlock.timeSegment.length-1 }} more
+          </div>
 
         </div>
+        <!-- <div *ngIf="timeBlock.isFuture" class="time-segment">
+
+        </div> -->
       </div>
-
-
-
-      <!-- <div class="current-timelog-entry">
-        
-
-      </div> -->
-
 
     </div>
   </div>
 
+  <div class="section" style="display:flex;flex-direction: column;">
+    <div style="display:flex;flex-direction: row;">
+      <div style="width:80px;height:30px;">
+        Start time:
+      </div>
+      <div *ngIf="!mouseOverTimes">
+        {{ chart.timeSegmentStart.format('h:mm a') }}
+      </div>
+      <div *ngIf="mouseOverTimes" style="display:flex;flex-direction: row;">
+        <input type="time" formControlName="startTime">
+        <input type="date" formControlName="startDate">
+      </div>
+    </div>
+    <div style="display:flex;flex-direction: row;">
+      <div style="width:80px;height:30px;">
+        End time:
+      </div>
+      <div *ngIf="!mouseOverTimes">
+        {{ chart.timeSegmentEnd.format('h:mm a') }}
+      </div>
+      <div *ngIf="mouseOverTimes" style="display:flex;flex-direction: row;">
+        <input type="time" formControlName="endTime">
+        <input type="date" formControlName="endDate">
+      </div>
+    </div>
+  </div>
 
 
-  <div class="section" *ngIf="chart">
+  <div class="section" style="margin-bottom:5px;padding-bottom:5px;">
     <div class="section-header">
       Activities
     </div>
     <div style="margin-bottom:5px;">
-      What activities have you done in the last <span
+      What activities have you been doing in the last <span
         style="font-weight:bold;color:rgb(0, 73, 168);;">{{ currentTimelogEntryDuration }}</span> ?
     </div>
 
-    <div [formGroup]="timelogEntryForm">
-      <input type="text" placeholder="Activity name">
+    <div *ngFor="let activityItem of activityItems" class="new-activity"
+      (mouseenter)="onMouseEnterActivity(activityItem)" (mouseleave)="onMouseLeaveActivity(activityItem)">
+      <div style="flex-grow:2;display:flex;flex-direction: row;">
+        <div class="new-activity-color-block" [style.background-color]="activityItem.activity.color"></div>
+        <div class="new-activity-name">
+          {{ activityItem.activity.name }}
+        </div>
+        
+        <div class="new-activity-duration">
+         : {{ activityItem.durationMinutes.toFixed(0) }} minutes
+        </div>
+      </div>
+      <div class="delete-activity">
+        <fa-icon class="icon-button" [icon]="faTimes" (click)="onClickRemoveActivity(activityItem)"></fa-icon>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <app-activity-input-dropdown (valueChanged)="onActivityValueChanged($event)"></app-activity-input-dropdown>
     </div>
   </div>
 
+  <div class="section">
+    <input formControlName="description" type="text" class="clean-input" placeholder="Description / additional details...">
+  </div>
 
-
-  <div class="section buttons-container">
+  <div class="buttons-container">
     <button class="btn btn-primary btn-sm" (click)="onClickSaveTimelogEntry()" [disabled]="saveDisabled">Save</button>
     <button class="btn btn-secondary btn-sm" (click)="onClickClose()" style="margin-left:5px;">Cancel</button>
   </div>

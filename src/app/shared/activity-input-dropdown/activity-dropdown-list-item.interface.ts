@@ -1,4 +1,5 @@
-import { UserDefinedActivity } from "../user-defined-activity.model";
+import { UserDefinedActivity } from "../../dashboard/activities/user-defined-activity.model";
+
 
 export interface IActivityDropdownListItem{
 

@@ -11,9 +11,10 @@ import { DailyTaskListWidgetComponent } from './widgets/daily-task-list-widget/d
 import { DaybookHeaderComponent } from './daybook-header/daybook-header.component';
 import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
 import { TimeSegmentTileComponent } from './time-log/time-segment-tile/time-segment-tile.component';
-import { ActivityInputDropdownComponent } from '../activities/activity-input-dropdown/activity-input-dropdown.component';
 import { PrimaryTaskWidgetComponent } from './widgets/primary-objective-widget/primary-objective-widget.component';
 import { TaskQueueWidgetComponent } from './widgets/task-queue-widget/task-queue-widget.component';
+import { ActivityInputDropdownComponent } from '../../shared/activity-input-dropdown/activity-input-dropdown.component';
+import { SharedModule } from '../../shared/shared.module';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { TaskQueueWidgetComponent } from './widgets/task-queue-widget/task-queue
     CommonModule,
     ColorPickerModule,
     ReactiveFormsModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    SharedModule
   ],
   declarations: [
     DaybookComponent,
@@ -33,11 +35,9 @@ import { TaskQueueWidgetComponent } from './widgets/task-queue-widget/task-queue
     HeatmapViewComponent,
     PrimaryTaskWidgetComponent,
     TimeSegmentTileComponent,
-    ActivityInputDropdownComponent,
-    TaskQueueWidgetComponent
+    TaskQueueWidgetComponent,
   ],
   exports: [
-    ActivityInputDropdownComponent
   ]
 })
 export class DaybookModule { }
