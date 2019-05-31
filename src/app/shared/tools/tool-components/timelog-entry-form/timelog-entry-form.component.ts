@@ -223,9 +223,9 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     this.chart = chart;
 
     
-    this.timelogEntryForm.controls["startTime"].setValue(timeSegmentStart.format('HH:mm'));
+    this.timelogEntryForm.controls["startTime"].setValue(timeSegmentStart.second(0).millisecond(0).format('HH:mm'));
     this.timelogEntryForm.controls["startDate"].setValue(timeSegmentStart.format('YYYY-MM-DD'));
-    this.timelogEntryForm.controls["endTime"].setValue(timeSegmentEnd.format('HH:mm'));
+    this.timelogEntryForm.controls["endTime"].setValue(timeSegmentEnd.second(0).millisecond(0).format('HH:mm'));
     this.timelogEntryForm.controls["endDate"].setValue(timeSegmentEnd.format('YYYY-MM-DD'));
 
 
