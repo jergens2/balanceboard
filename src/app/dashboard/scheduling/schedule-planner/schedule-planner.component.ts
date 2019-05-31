@@ -3,6 +3,9 @@ import { SizeService } from '../../../shared/app-screen-size/size.service';
 import { AppScreenSize } from '../../../shared/app-screen-size/app-screen-size.enum';
 import * as moment from 'moment';
 import { ITimeBlock } from './time-block.interface';
+import { ScheduleItem } from './schedule-item.class';
+import { SchedulingService } from '../scheduling.service';
+import { ItemSelection } from './item-selection.class';
 
 @Component({
   selector: 'app-schedule-planner',
@@ -11,16 +14,26 @@ import { ITimeBlock } from './time-block.interface';
 })
 export class SchedulePlannerComponent implements OnInit {
 
-  constructor(private sizeService: SizeService) { }
+  constructor(private sizeService: SizeService, private schedulingService: SchedulingService) { }
 
   size: AppScreenSize;
+  scheduleItems: ScheduleItem[] = [];
 
-  plannerGraphic: any;
+  plannerGraphic: {
+    daysOfWeek: { day: moment.Moment, style: any }[],
+    hourLabels: { hour: moment.Moment, label: string, style: any }[],
+    timeBlocks: ITimeBlock[],
+    graphicStyle: any,
+    scheduleItems: ScheduleItem[]
+  } = null;
 
   ngOnInit() {
     this.sizeService.appScreenSize$.subscribe((size: AppScreenSize) => {
       this.size = size;
     })
+    // this.schedulingService.scheduleItems$.subscribe((scheduleItems: ScheduleItem[])=>{
+    //   this.scheduleItems = scheduleItems;
+    // })
     this.size = this.sizeService.appScreenSize;
     this.buildPlannerGraphic();
   }
@@ -92,7 +105,9 @@ export class SchedulePlannerComponent implements OnInit {
             "grid-column": "" + (currentDay.day()+2) + " / span 1",
             "border-bottom": borderBottom,
           },
-          isSelected: false,
+          gridColumnStart: (currentDay.day()+2),
+          gridRowStart: row,
+          isHighlighted: false,
         }
 
         timeBlocks.push(block);
@@ -106,7 +121,7 @@ export class SchedulePlannerComponent implements OnInit {
     for (let currentHour: moment.Moment = moment(startTime); currentHour.isBefore(endTime); currentHour = moment(currentHour).add(timeBlockDurationMinutes, "minutes")) {
       let label: string = "";
       if (currentHour.minute() == 0) {
-        label = currentHour.format('h:mm a');
+        label = currentHour.format('h A');
       }
       hourLabels.push({
         hour: currentHour,
@@ -118,101 +133,43 @@ export class SchedulePlannerComponent implements OnInit {
     }
 
 
-
-
+    let scheduleItems: ScheduleItem[] = [];
 
     graphic = {
       daysOfWeek: daysOfWeek,
       hourLabels: hourLabels,
       timeBlocks: timeBlocks,
       graphicStyle: graphicStyle,
+      scheduleItems: scheduleItems
     }
-
-
     this.plannerGraphic = graphic;
   }
 
-  anchorBlock: ITimeBlock = null;
-  currentlySelecting: boolean = false;
-  selection: ITimeBlock[] = [];
 
+
+  selection: ItemSelection = null; 
+  isGrabbing: boolean = false;
+  
   onMouseDownTimeBlock(block: ITimeBlock){
-    this.currentlySelecting = true;
-    this.anchorBlock = block;
-    this.plannerGraphic.timeBlocks.forEach((timeBlock:ITimeBlock)=>{
-      timeBlock.isSelected = false;
-    })
-    this.selection = [];
+    this.isGrabbing = true;
+    let selection: ItemSelection = new ItemSelection(this.plannerGraphic.timeBlocks); 
+    selection.mouseDownBlock(block);
+    this.selection = selection;
   }
-  onMouseUpTimeBlock(block: ITimeBlock){
-    if(this.currentlySelecting){
-      if(block == this.anchorBlock){
-        this.selection = [block];
-      }else{
-        let startTime = moment(this.anchorBlock.startTime);
-        let endTime = moment(block.endTime);
-        if(this.anchorBlock.startTime.isAfter(block.startTime)){
-          startTime = moment(block.startTime);
-          endTime = moment(this.anchorBlock.endTime);
-        }
-        
-
-
-        this.selection = this.plannerGraphic.timeBlocks.filter((timeBlock: ITimeBlock)=>{
-          if(timeBlock.startTime.isSameOrAfter(startTime) && timeBlock.endTime.isSameOrBefore(endTime)){
-            return timeBlock;
-          }
-        })
-
-      }
-      this.plannerGraphic.timeBlocks.forEach((timeBlock:ITimeBlock)=>{
-        timeBlock.isSelected = false;
-      })
-      this.selection.forEach((timeBlock:ITimeBlock)=>{
-        timeBlock.isSelected = true;
-      })
+  
+  onMouseUpGraphic(){
+    if(this.selection){
+      this.selection.mouseUp();
     }
-    
-    this.currentlySelecting = false;
-    
   }
+  
   onMouseEnterTimeBlock(block: ITimeBlock){
-    if(this.currentlySelecting){
-      if(block == this.anchorBlock){
-        this.selection = [block];
-      }else{
-        
-        let startTime = moment(this.anchorBlock.startTime);
-        let endTime = moment(block.endTime);
-        if(this.anchorBlock.startTime.isAfter(block.startTime)){
-          startTime = moment(block.startTime);
-          endTime = moment(this.anchorBlock.endTime);
-        }
-
-        this.selection = this.plannerGraphic.timeBlocks.filter((timeBlock: ITimeBlock)=>{
-          if(timeBlock.startTime.isSameOrAfter(startTime) && timeBlock.endTime.isSameOrBefore(endTime)){
-            return timeBlock;
-          }
-        })
-
-      }
-      this.plannerGraphic.timeBlocks.forEach((timeBlock:ITimeBlock)=>{
-        timeBlock.isSelected = false;
-      })
-      this.selection.forEach((timeBlock:ITimeBlock)=>{
-        timeBlock.isSelected = true;
-      })
+    if(this.selection){
+      this.selection.mouseEnterBlock(block);
     }
-
   }
-
   onMouseLeaveGraphic(){
-    this.plannerGraphic.timeBlocks.forEach((timeBlock:ITimeBlock)=>{
-      timeBlock.isSelected = false;
-    })
-    this.selection = [];
-    this.currentlySelecting = false;
-    this.anchorBlock = null;
+    this.selection = null; 
   }
 
 }

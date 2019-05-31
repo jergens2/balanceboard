@@ -4,5 +4,7 @@ export interface ITimeBlock{
     startTime: moment.Moment,
     endTime: moment.Moment,
     style: any,
-    isSelected: boolean,
+    gridColumnStart:number,
+    gridRowStart:number,
+    isHighlighted: boolean,
 }

@@ -3,6 +3,7 @@ import { ScheduleRotation } from './schedule-rotations/schedule-rotation.model';
 import { Observable, BehaviorSubject } from 'rxjs';
 import * as moment from 'moment';
 import { DayTemplate } from './day-templates/day-template.model';
+import { ScheduleItem } from './schedule-planner/schedule-item.class';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,10 @@ export class SchedulingService {
     /*
       for any provided date, return whatever the designated Day Template is for that date.
     */
+    return null;
+  }
+
+  public get scheduleItems$(): Observable<ScheduleItem[]> {
     return null;
   }
 
