@@ -217,7 +217,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
 
     if (totalMinutes < 10) {
-      chart.isComplete = false;
+      chart.isVisible = false;
     }
 
     this.chart = chart;
