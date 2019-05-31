@@ -17,6 +17,7 @@
   </div>
 
   <div class="section" *ngIf="chart">
+
     <div class="chart-grid" [style.grid-template-rows]="chart.gridTemplateRows">
 
       <div style="grid-row: 1 / span 1; grid-column: 1 / span 1;">
@@ -24,44 +25,56 @@
           {{ chart.startTime.format('h:mm a') }}
         </div>
       </div>
-      <div style="grid-row: 2 / span 1; grid-column: 1 / span 1;">
+      <div [ngStyle]="chart.timeSegmentStartStyle">
         <div class="chart-time">
-          {{ chart.middleTime.format('h:mm a') }}
+          {{ chart.timeSegmentStart.format('h:mm a') }}
         </div>
       </div>
-      <div style="grid-row: 3 / span 1; grid-column: 1 / span 1;">
+      <div [ngStyle]="chart.timeSegmentEndStyle">
+        <div class="chart-time">
+          {{ chart.timeSegmentEnd.format('h:mm a') }}
+        </div>
+      </div>
+      <div [ngStyle]="chart.chartEndStyle">
         <div class="chart-time">
           {{ chart.endTime.format('h:mm a') }}
         </div>
       </div>
 
-      <div style="grid-column: 3 / span 1; margin-left:5px;">
-        <div style="display:flex;flex-direction: row;height:100%;">
-          <div *ngFor="let activity of mostRecentTimelogEntry.activities" class="activity-name"
-            [style.background-color]="activity.activity.color">
+      <div *ngFor="let row of chart.percentages; let i = index;" class="label-line"
+        [ngClass]="{'last-label-line':i==chart.percentages.length-1}">
+      </div>
 
-            {{ activity.activity.name }}
-
+      <div *ngFor="let timeBlock of chart.timeBlocks;" [ngStyle]="timeBlock.style">
+        <div *ngIf="timeBlock.isCurrent" class="current-timelog-entry">
+          <div style="font-size:0.8em; color:gray;">
+            Current Timelog Entry - {{ chart.timeSegmentStart.format('h:mm a') }} to
+            {{ chart.timeSegmentEnd.format('h:mm a')}}
           </div>
+          <div style="font-size:0.8em; color:gray;">Total Duration <b>{{ currentTimelogEntryDuration }}</b> </div>
+          <!-- <div *ngIf="currentTimelogEntry">
+                <div *ngFor="let activity of currentTimelogEntry.activities" class="activity-name"
+                  [style.background-color]="activity.activity.color">
+                  {{ activity.activity.name }}
+                </div>
+              </div> -->
+        </div>
+        <div *ngIf="timeBlock.isPrevious" class="time-segment">
+          <div *ngFor="let activity of timeBlock.timeSegment.activities" class="activity"
+            [style.background-color]="activity.activity.color">{{ activity.activity.name }} </div>
+        </div>
+        <div *ngIf="timeBlock.isFuture" class="time-segment">
+
         </div>
       </div>
 
-      <div class="current-timelog-entry">
-        <div style="font-size:0.8em; color:gray;">
-          Current Timelog Entry - {{ chart.middleTime.format('h:mm a') }} to
-          {{ chart.endTime.format('h:mm a')}}
-        </div>
-        <div style="font-size:0.8em; color:gray;">Total Duration <b>{{ currentTimelogEntryDuration }}</b> </div>
-        <div *ngIf="currentTimelogEntry">
-          <div *ngFor="let activity of currentTimelogEntry.activities" class="activity-name"
-            [style.background-color]="activity.activity.color">
-            {{ activity.activity.name }}
-          </div>
-        </div>
 
-      </div>
-      <div class="chart-line-top"> </div>
-      <div class="chart-line-bottom"></div>
+
+      <!-- <div class="current-timelog-entry">
+        
+
+      </div> -->
+
 
     </div>
   </div>
@@ -73,11 +86,12 @@
       Activities
     </div>
     <div style="margin-bottom:5px;">
-        What activities have you done in the last <span style="font-weight:bold;color:rgb(0, 73, 168);;">{{ currentTimelogEntryDuration }}</span> ?
+      What activities have you done in the last <span
+        style="font-weight:bold;color:rgb(0, 73, 168);;">{{ currentTimelogEntryDuration }}</span> ?
     </div>
-    
+
     <div [formGroup]="timelogEntryForm">
-      <input type="text" placeholder="Activity name" >
+      <input type="text" placeholder="Activity name">
     </div>
   </div>
 

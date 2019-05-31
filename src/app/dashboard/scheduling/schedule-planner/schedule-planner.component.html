@@ -3,41 +3,46 @@
     Schedule Planner
   </div>
 
-  <div class="planner-graphic" [ngStyle]="plannerGraphic.graphicStyle" (mouseleave)="onMouseLeaveGraphic()" (mouseup)="onMouseUpGraphic()" [ngClass]="{'cursor-grabbing':isGrabbing}" >
-    <div style="grid-column: 1 / span 1; grid-row: 1 / span 1;"></div>
-    <div *ngFor="let dayOfWeek of plannerGraphic.daysOfWeek" [ngStyle]="dayOfWeek.style" class="day-of-week">
-      <div>
-        {{ dayOfWeek.day.format('YYYY-MM-DD') }}
+  <div class="planner-graphic-container">
+
+
+    <div class="planner-graphic" [ngStyle]="plannerGraphic.graphicStyle" (mouseleave)="onMouseLeaveGraphic()"
+      (mouseup)="onMouseUpGraphic()" [ngClass]="{'cursor-grabbing':isGrabbing}">
+      <div style="grid-column: 1 / span 1; grid-row: 1 / span 1;"></div>
+      <div *ngFor="let dayOfWeek of plannerGraphic.daysOfWeek" [ngStyle]="dayOfWeek.style" class="day-of-week">
+        <div>
+          {{ dayOfWeek.day.format('YYYY-MM-DD') }}
+        </div>
+        <div style="font-weight:bold;">
+          {{ dayOfWeek.day.format('dddd') }}
+        </div>
       </div>
-      <div style="font-weight:bold;">
-        {{ dayOfWeek.day.format('dddd') }}
-      </div>
-    </div>
 
 
 
-    <div *ngFor="let timeBlock of plannerGraphic.timeBlocks" [ngStyle]="timeBlock.style" [ngClass]="{'highlighted-time-block':timeBlock.isHighlighted}"
-      class="time-block-container no-select" (mousedown)="onMouseDownTimeBlock(timeBlock)"
-       (mouseenter)="onMouseEnterTimeBlock(timeBlock)">
-      <!-- <div class="time-block" >
+      <div *ngFor="let timeBlock of plannerGraphic.timeBlocks" [ngStyle]="timeBlock.style"
+        [ngClass]="{'highlighted-time-block':timeBlock.isHighlighted}" class="time-block-container no-select"
+        (mousedown)="onMouseDownTimeBlock(timeBlock)" (mouseenter)="onMouseEnterTimeBlock(timeBlock)">
+        <!-- <div class="time-block" >
 
       </div> -->
 
-    </div>
+      </div>
 
-    <div *ngIf="selection" [ngStyle]="selection.style" class="time-block-selection">
-      {{ selection.startTime.format('h:mm a') }} -- {{ selection.endTime.format('h:mm a') }}
-    </div>
+      <div *ngIf="selection" [ngStyle]="selection.style" class="time-block-selection">
+        {{ selection.startTime.format('h:mm a') }} -- {{ selection.endTime.format('h:mm a') }}
+      </div>
 
-    <div *ngFor="let scheduleItem of plannerGraphic.scheduleItems" class="schedule-item" [ngClass]="scheduleItem.class"></div>
+      <div *ngFor="let scheduleItem of plannerGraphic.scheduleItems" class="schedule-item"
+        [ngClass]="scheduleItem.class"></div>
 
-    <div class="hour-labels">
-      <div *ngFor="let hourLabel of plannerGraphic.hourLabels" [ngStyle]="hourLabel.style" class="hour-label">
-        {{ hourLabel.label }}
+      <div class="hour-labels">
+        <div *ngFor="let hourLabel of plannerGraphic.hourLabels" [ngStyle]="hourLabel.style" class="hour-label">
+          {{ hourLabel.label }}
+        </div>
       </div>
     </div>
   </div>
-
   <div>
 
   </div>

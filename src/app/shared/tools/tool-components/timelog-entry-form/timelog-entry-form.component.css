@@ -39,7 +39,7 @@
     padding-bottom: 15px;
     padding-right:5px;
     display:grid;
-    grid-template-columns: 80px 10px auto;
+    grid-template-columns: 30% 10px 70%;
     height:300px;
 }
 
@@ -50,26 +50,35 @@
     text-align: right;
 }
 
-.chart-line-top{
-    grid-row: 1 / span 1;
-    grid-column: 2 / span 1; 
+.label-line{
+    grid-column: 2 / span 1;
     border-top: 1px solid gray; 
     border-right: 1px solid gray;
-
 }
-.chart-line-top{
-    grid-row: 2 / span 1;
-    grid-column: 2 / span 1; 
-    border-top: 1px solid gray; 
-    border-right: 1px solid gray;
+.last-label-line{
     border-bottom: 1px solid gray;
 }
 
-.current-timelog-entry{
-    grid-column: 3 / span 1; 
+.time-segment{
+    height:100%;
     margin:2px;
     margin-left:5px;
+    margin-right:5px;
+}
+.activity{
+    height:100%;
+}
+
+
+
+
+.current-timelog-entry{
+    margin:2px;
+    margin-left:5px;
+    margin-right:5px;
     border:2px solid rgb(0, 90, 194);
     border-radius: 4px;
     padding:5px;
+
+    height:100%;
 }

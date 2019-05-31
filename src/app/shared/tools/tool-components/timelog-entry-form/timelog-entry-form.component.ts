@@ -48,36 +48,146 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   }
 
   private buildChart(){
-    let chartStartTime: moment.Moment = moment(this.mostRecentTimelogEntry.startTime);
-    let chartMiddleTime: moment.Moment = moment(this.mostRecentTimelogEntry.endTime);
-    let chartEndTime: moment.Moment = moment();
+
+    let timeSegmentStart: moment.Moment = moment(this.mostRecentTimelogEntry.endTime);
+    let timeSegmentEnd: moment.Moment = moment();
+
+    let chartStartTime: moment.Moment;
+    if(timeSegmentStart.minute() >= 30){
+      chartStartTime = moment(timeSegmentStart).minute(0);  
+    }else{
+      chartStartTime = moment(timeSegmentStart).minute(0).subtract(30, "minutes");
+    }
+
+    let chartEndTime: moment.Moment;
+    if(timeSegmentEnd.minute() < 30){
+      chartEndTime = moment(timeSegmentEnd).minute(30).add(30, "minutes");
+    }else{
+      chartEndTime = moment(timeSegmentEnd).minute(60).add(30, "minutes");
+    }
+
+    let previousTimeSegments: TimeSegment[] = this.timelogService.timeSegments.filter((timeSegment)=>{
+      let isBefore = timeSegment.startTime.isBefore(chartStartTime) && timeSegment.endTime.isAfter(chartStartTime)
+      let isAfter = timeSegment.startTime.isAfter(chartStartTime) && timeSegment.endTime.isSameOrBefore(timeSegmentStart)
+      if(isBefore || isAfter){
+        return timeSegment;
+      }
+    });
+    previousTimeSegments = previousTimeSegments.sort((ts1, ts2)=>{
+      if(ts1.startTime.isBefore(ts2.startTime)){
+        return -1;
+      }
+      if(ts1.startTime.isAfter(ts2.startTime)){
+        return 1;
+      }
+      return 0;
+    })
+
+    
 
     let totalMinutes: number = moment(chartEndTime).diff(chartStartTime, "minutes");
-    let previousTLEPercent: number = (this.mostRecentTimelogEntry.duration/totalMinutes)*100;
-    let currentTLEPercent: number = 100-previousTLEPercent;
 
-    if(previousTLEPercent < 15){
-      previousTLEPercent = 15;
-      currentTLEPercent = 85;
+    let percentages: number[] = [];
+    previousTimeSegments.forEach((timeSegment)=>{
+      let minutes: number = 0
+      if(timeSegment.startTime.isBefore(chartStartTime)){
+        minutes = (timeSegment.endTime.diff(chartStartTime, "minutes"));
+      }else{
+        minutes = (timeSegment.endTime.diff(timeSegment.startTime, "minutes"));
+      }
+
+      percentages.push( (minutes/totalMinutes)*100);
+    })
+
+    percentages.push((timeSegmentEnd.diff(timeSegmentStart, "minutes")/ totalMinutes) * 100);
+    percentages.push((chartEndTime.diff(timeSegmentEnd, "minutes")/totalMinutes) * 100);
+
+    let gridTemplateRows: string = "";
+    percentages.forEach((percentage)=>{ gridTemplateRows += " " + percentage.toFixed(2) + "%"; } )
+    let startGridRow: string = "" + (percentages.length-1) + " /span 1";
+    let endGridRow: string = "" + percentages.length + " / span 1";
+    let chartEndRow: string = "" + (percentages.length+1) + " / span 1";
+
+    let timeSegmentStartStyle = {
+      "grid-row":startGridRow,
+      "grid-column": "1 / span 1",
     }
-    if(currentTLEPercent < 15){
-      previousTLEPercent = 85;
-      currentTLEPercent = 15;
+    let timeSegmentEndStyle = {
+      "grid-row":endGridRow,
+      "grid-column": "1 / span 1",
     }
+    let chartEndStyle = {
+      "grid-row":chartEndRow,
+      "grid-column": "1 / span 1",
+    }
+
+    
+    let timeBlocks: {
+      style: any,
+      timeSegment: TimeSegment,
+      isCurrent: boolean,
+      isPrevious: boolean,
+      isFuture: boolean,
+    }[] = [];
+    let currentRow: number = 1;
+    previousTimeSegments.forEach((previousTimeSegment)=>{
+      timeBlocks.push({
+        style: {
+          "grid-row":""+currentRow.toFixed(0)+" / span 1",
+          "grid-column":"3 / span 1",
+        },
+        isCurrent: false,
+        isPrevious: true,
+        isFuture: false,
+        timeSegment: previousTimeSegment
+      });
+      currentRow++;
+    })
+    timeBlocks.push({
+      style: {
+        "grid-row":""+currentRow.toFixed(0)+" / span 1",
+        "grid-column":"3 / span 1",
+      },
+      isCurrent: true,
+      isPrevious: false,
+      isFuture: false,
+      timeSegment: null,
+    });
+    currentRow++;
+    timeBlocks.push({
+      style: {
+        "grid-row":""+currentRow.toFixed(0)+" / span 1",
+        "grid-column":"3 / span 1",
+      },
+      isCurrent: false,
+      isPrevious: false,
+      isFuture: true,
+      timeSegment: null,
+    });
+    
+    console.log("timeblocks is ", timeBlocks);
 
     let chart: any = {
-      previousTimelogEntryPercent: previousTLEPercent,
-      currentTimelogEntryPercent: currentTLEPercent,
-      gridTemplateRows: "" + previousTLEPercent.toFixed(1) + "% " + currentTLEPercent.toFixed(1)  + "% auto" ,
+      
+      gridTemplateRows:gridTemplateRows,
+      percentages: percentages,
+
+
       startTime: chartStartTime,
-      middleTime: chartMiddleTime,
       endTime: chartEndTime,
+      timeBlocks: timeBlocks,
+      timeSegmentStart: timeSegmentStart,
+      timeSegmentEnd: timeSegmentEnd,
+
+      timeSegmentStartStyle: timeSegmentStartStyle,
+      timeSegmentEndStyle: timeSegmentEndStyle,
+      chartEndStyle: chartEndStyle,
 
     };
 
-    let currentTimelogEntry: TimeSegment = new TimeSegment('', this.timelogService.userId, chartMiddleTime.toISOString(), chartEndTime.toISOString(), '')
+    // let currentTimelogEntry: TimeSegment = new TimeSegment('', this.timelogService.userId, chartMiddleTime.toISOString(), chartEndTime.toISOString(), '')
 
-    this.currentTimelogEntry = currentTimelogEntry;
+    // this.currentTimelogEntry = currentTimelogEntry;
     this.chart = chart;
   }
 
