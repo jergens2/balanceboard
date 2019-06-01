@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivityTree } from '../activity-tree.model';
-import { TimeSegment } from '../../daybook/time-log/time-segment-tile/time-segment.model';
+import { TimelogEntry } from '../../daybook/time-log/timelog-entry-tile/timelog-entry.model';
 
 @Component({
   selector: 'app-activity-display',
@@ -24,7 +24,7 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   ifLoading: boolean = true;
 
   activityInstances: IActivityInstance[] = [];
-  activityTimeSegments: TimeSegment[] = [];
+  activityTimelogEntrys: TimelogEntry[] = [];
 
   activity: UserDefinedActivity = null;
 
@@ -55,26 +55,26 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
     this.ifLoading = true;
     this.activityInstances = [];
     this.activityDataSubscription.unsubscribe();
-    this.activityDataSubscription = this.activitiesService.getActivityData(this.activity).subscribe((timeSegments: TimeSegment[]) => {
+    this.activityDataSubscription = this.activitiesService.getActivityData(this.activity).subscribe((timelogEntrys: TimelogEntry[]) => {
       let activityInstances: IActivityInstance[] = [];
-      for (let timeSegment of timeSegments) {
+      for (let timelogEntry of timelogEntrys) {
 
         let timeForThisActivity: number = 0;
-        if(timeSegment.activities.length > 1){
+        if(timelogEntry.activities.length > 1){
           
-          let timeSegmentDuration: number = moment(timeSegment.endTimeISO).diff(moment(timeSegment.startTimeISO), 'minutes');
-          timeForThisActivity =  timeSegmentDuration / timeSegment.activities.length;
+          let timelogEntryDuration: number = moment(timelogEntry.endTimeISO).diff(moment(timelogEntry.startTimeISO), 'minutes');
+          timeForThisActivity =  timelogEntryDuration / timelogEntry.activities.length;
 
         }else{
-          timeForThisActivity = moment(timeSegment.endTimeISO).diff(moment(timeSegment.startTimeISO), 'minutes');
+          timeForThisActivity = moment(timelogEntry.endTimeISO).diff(moment(timelogEntry.startTimeISO), 'minutes');
         }
 
         let durationHours: number = timeForThisActivity / 60;
-        let instance: IActivityInstance = { startTime: moment(timeSegment.startTime), endTime: moment(timeSegment.endTime), durationHours: durationHours, activityTreeId: this.activity.treeId }
+        let instance: IActivityInstance = { startTime: moment(timelogEntry.startTime), endTime: moment(timelogEntry.endTime), durationHours: durationHours, activityTreeId: this.activity.treeId }
         activityInstances.push(instance);
       }
 
-      this.activityTimeSegments = timeSegments;
+      this.activityTimelogEntrys = timelogEntrys;
       this.activityInstances = activityInstances
       this.ifLoading = false;
     });

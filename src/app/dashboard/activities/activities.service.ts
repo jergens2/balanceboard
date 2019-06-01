@@ -9,8 +9,8 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.model';
-import { TimeSegment } from '../daybook/time-log/time-segment-tile/time-segment.model';
-import { TimeSegmentActivity } from '../daybook/time-log/time-segment-activity.model';
+import { TimelogEntry } from '../daybook/time-log/timelog-entry-tile/timelog-entry.model';
+import { TimelogEntryActivity } from '../daybook/time-log/timelog-entry-activity.model';
 
 @Injectable({
   providedIn: 'root'
@@ -46,12 +46,12 @@ export class ActivitiesService {
   */
   
   
-  getActivityData(activity: UserDefinedActivity): Observable<TimeSegment[]> {
+  getActivityData(activity: UserDefinedActivity): Observable<TimelogEntry[]> {
     /*
       This method grabs activity data from the server to display over a period of time, 
       e.g. over a six week view.
     */
-    const getUrl = this._serverUrl + "/api/timeSegment/activity_data/" + activity.treeId;
+    const getUrl = this._serverUrl + "/api/timelogEntry/activity_data/" + activity.treeId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -59,21 +59,21 @@ export class ActivitiesService {
       })
     };
     return this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
-      .pipe<TimeSegment[]>(
+      .pipe<TimelogEntry[]>(
         map((response) => {
           return response.data.map((dataObject) => {
-            let timeSegment = new TimeSegment(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description);
-            timeSegment.activities = this.buildTimeSegmentActivities(dataObject.activities);
-            return timeSegment;
+            let timelogEntry = new TimelogEntry(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description);
+            timelogEntry.activities = this.buildTimelogEntryActivities(dataObject.activities);
+            return timelogEntry;
           })
         })
       );
   }
 
-  private buildTimeSegmentActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimeSegmentActivity[] {
+  private buildTimelogEntryActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimelogEntryActivity[] {
     return activitiesData.map((activity) => {
-      let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(this.findActivityByTreeId(activity.activityTreeId), activity.description);
-      return timeSegmentActivity;
+      let timelogEntryActivity: TimelogEntryActivity = new TimelogEntryActivity(this.findActivityByTreeId(activity.activityTreeId), activity.description);
+      return timelogEntryActivity;
     })
   }
 
@@ -93,10 +93,10 @@ export class ActivitiesService {
 
       This leads me to believe that there may come a time when I come back to this method when I am exieriencing app issues where activities cannot be found by ID.
 
-      Example case:  User creates a new definedActivity, then creates timeSegments with that activity, then later deletes this defineActivity.  but the timesegment still exists,
+      Example case:  User creates a new definedActivity, then creates timelogEntrys with that activity, then later deletes this defineActivity.  but the timelog Entry still exists,
       and will try to do a search for this activity even though it doesn't exist.  currently I don't think there is any handling of that case.
 
-      I think the app will need to handle the management of definedActivities so that if you delete one, all of the timeSegments know its a deleted activity ?
+      I think the app will need to handle the management of definedActivities so that if you delete one, all of the timelogEntrys know its a deleted activity ?
 
       this might become a bit of a mess if not managed properly
 

@@ -21,14 +21,14 @@
     <div class="chart-grid" [style.grid-template-rows]="chart.gridTemplateRows">
 
 
-      <div [ngStyle]="chart.timeSegmentStartStyle">
+      <div [ngStyle]="chart.timelogEntryStartStyle">
         <div class="chart-time">
-          {{ chart.timeSegmentStart.format('h:mm a') }}
+          {{ chart.timelogEntryStart.format('h:mm a') }}
         </div>
       </div>
-      <div [ngStyle]="chart.timeSegmentEndStyle">
+      <div [ngStyle]="chart.timelogEntryEndStyle">
         <div class="chart-time">
-          {{ chart.timeSegmentEnd.format('h:mm a') }}
+          {{ chart.timelogEntryEnd.format('h:mm a') }}
         </div>
       </div>
       <div *ngFor="let labelLine of chart.labelLines" class="label-line" [ngStyle]="labelLine.style"></div>
@@ -36,8 +36,8 @@
       <div *ngFor="let timeBlock of chart.timeBlocks;" [ngStyle]="timeBlock.style">
         <div *ngIf="timeBlock.isCurrent" class="current-timelog-entry">
           <div style="font-size:0.8em; color:gray;">
-            Current Timelog Entry - {{ chart.timeSegmentStart.format('h:mm a') }} to
-            {{ chart.timeSegmentEnd.format('h:mm a')}}
+            Current Timelog Entry - {{ chart.timelogEntryStart.format('h:mm a') }} to
+            {{ chart.timelogEntryEnd.format('h:mm a')}}
           </div>
           <div style="font-size:0.8em; color:gray;">Total Duration <b>{{ currentTimelogEntryDuration }}</b> </div>
           <div *ngFor="let activityItem of activityItems" class="new-activity">
@@ -51,18 +51,19 @@
 
           </div>
         </div>
-        <div *ngIf="timeBlock.isPrevious" class="time-segment">
-          <div *ngIf="timeBlock.timeSegment.activities.length == 1" class="activity"
-            [style.background-color]="timeBlock.timeSegment.activities[0].activity.color">
-            {{ timeBlock.timeSegment.activities[0].activity.name }}
+        <div *ngIf="timeBlock.isPrevious" class="time-entry">
+          <div *ngIf="timeBlock.timelogEntry.activities.length == 1" class="activity"
+            [style.background-color]="timeBlock.timelogEntry.activities[0].activity.color">
+            {{ timeBlock.timelogEntry.activities[0].activity.name }}
           </div>
-          <div *ngIf="timeBlock.timeSegment.activities.length > 1 " class="activity"
-            [style.background-color]="timeBlock.timeSegment.activities[0].activity.color">
-            {{ timeBlock.timeSegment.activities[0].activity.name }} and {{ timeBlock.timeSegment.length-1 }} more
+          <div *ngIf="timeBlock.timelogEntry.activities.length > 1 " class="activity"
+            [style.background-color]="timeBlock.timelogEntry.activities[0].activity.color">
+            {{ timeBlock.timelogEntry.activities[0].activity.name }} and {{ timeBlock.timelogEntry.activities.length-1 }}
+            more
           </div>
 
         </div>
-        <!-- <div *ngIf="timeBlock.isFuture" class="time-segment">
+        <!-- <div *ngIf="timeBlock.isFuture" class="time-entry">
 
         </div> -->
       </div>
@@ -76,7 +77,7 @@
         Start time:
       </div>
       <div *ngIf="!mouseOverTimes">
-        {{ chart.timeSegmentStart.format('h:mm a') }}
+        {{ chart.timelogEntryStart.format('h:mm a') }}
       </div>
       <div *ngIf="mouseOverTimes" style="display:flex;flex-direction: row;">
         <input type="time" formControlName="startTime">
@@ -88,7 +89,7 @@
         End time:
       </div>
       <div *ngIf="!mouseOverTimes">
-        {{ chart.timeSegmentEnd.format('h:mm a') }}
+        {{ chart.timelogEntryEnd.format('h:mm a') }}
       </div>
       <div *ngIf="mouseOverTimes" style="display:flex;flex-direction: row;">
         <input type="time" formControlName="endTime">
@@ -107,17 +108,28 @@
         style="font-weight:bold;color:rgb(0, 73, 168);;">{{ currentTimelogEntryDuration }}</span> ?
     </div>
 
-    <div *ngFor="let activityItem of activityItems" class="new-activity"
+    <div *ngFor="let activityItem of activityItems" class="new-activity no-select"
       (mouseenter)="onMouseEnterActivity(activityItem)" (mouseleave)="onMouseLeaveActivity(activityItem)">
-      <div style="flex-grow:2;display:flex;flex-direction: row;">
-        <div class="new-activity-color-block" [style.background-color]="activityItem.activity.color"></div>
-        <div class="new-activity-name">
-          {{ activityItem.activity.name }}
+      <div style="flex-grow:2;display:flex;flex-direction: column;">
+        <div style="display:flex;flex-direction: row;">
+          <div class="new-activity-name">
+            {{ activityItem.activity.name }}
+          </div>
+
+          <div class="new-activity-duration">
+            : {{ activityItem.durationMinutes.toFixed(0) }} minutes
+          </div>
         </div>
-        
-        <div class="new-activity-duration">
-         : {{ activityItem.durationMinutes.toFixed(0) }} minutes
+
+        <div class="color-bar-container">
+          <div class="color-bar-grid-item" *ngFor="let item of colorBarGridItems" (mouseenter)="onMouseEnterColorBarItem(item, activityItem)" (mouseup)="onMouseUpColorBarItem(item, activityItem)" [ngClass]="{'z-10':activityItem.isResizing, 'z-9':!activityItem.isResizing}"></div>
+          <div class="activity-color-bar" [style.background-color]="activityItem.activity.color" [ngClass]="{'z-9':activityItem.isResizing, 'z-10':!activityItem.isResizing}"
+            [style.width]="activityItem.durationPercent+'%'">
+            <div class="color-bar-grabber" (mousedown)="onMouseDownGrabber(activityItem)"></div>
+          </div>
         </div>
+
+
       </div>
       <div class="delete-activity">
         <fa-icon class="icon-button" [icon]="faTimes" (click)="onClickRemoveActivity(activityItem)"></fa-icon>
@@ -130,7 +142,8 @@
   </div>
 
   <div class="section">
-    <input formControlName="description" type="text" class="clean-input" placeholder="Description / additional details...">
+    <input formControlName="description" type="text" class="clean-input"
+      placeholder="Description / additional details...">
   </div>
 
   <div class="buttons-container">

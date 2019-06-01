@@ -2,10 +2,10 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogService } from '../../daybook/time-log/timelog.service';
 import { Subscription } from 'rxjs';
-import { TimeSegment } from '../../daybook/time-log/time-segment-tile/time-segment.model';
+import { TimelogEntry } from '../../daybook/time-log/timelog-entry-tile/timelog-entry.model';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { IActivityData } from './activity-data.interface';
-import { TimeSegmentActivity } from '../../daybook/time-log/time-segment-activity.model';
+import { TimelogEntryActivity } from '../../daybook/time-log/timelog-entry-activity.model';
 import { UserDefinedActivity } from '../user-defined-activity.model';
 
 @Component({
@@ -26,8 +26,8 @@ export class ActivitiesDefaultViewComponent implements OnInit {
 
   @Output() newActivity: EventEmitter<boolean> = new EventEmitter();
 
-  private timeSegmentSubscription: Subscription = new Subscription();
-  private _timeSegments: TimeSegment[] = [];
+  private timelogEntrySubscription: Subscription = new Subscription();
+  private _timelogEntrys: TimelogEntry[] = [];
 
   ngOnInit() {
 
@@ -37,11 +37,11 @@ export class ActivitiesDefaultViewComponent implements OnInit {
     let periodStart: moment.Moment = moment().startOf("day").day(periodStartDay).subtract(periodLengthDays, "days");
     let periodEnd: moment.Moment = moment(periodStart).add(periodLengthDays, "days");
 
-    this.timeSegmentSubscription = this.timelogService.fetchTimeSegmentsByRange$(periodStart, periodEnd).subscribe((timeSegments: TimeSegment[]) => {
-      if (timeSegments.length > 0) {
-        this._timeSegments = timeSegments;
-        this.buildDaysOfRow(periodStart, periodEnd, timeSegments);
-        this.buildLastPeriod(periodStart, periodEnd, timeSegments);
+    this.timelogEntrySubscription = this.timelogService.fetchTimelogEntrysByRange$(periodStart, periodEnd).subscribe((timelogEntrys: TimelogEntry[]) => {
+      if (timelogEntrys.length > 0) {
+        this._timelogEntrys = timelogEntrys;
+        this.buildDaysOfRow(periodStart, periodEnd, timelogEntrys);
+        this.buildLastPeriod(periodStart, periodEnd, timelogEntrys);
       } else {
 
       }
@@ -52,7 +52,7 @@ export class ActivitiesDefaultViewComponent implements OnInit {
 
   }
 
-  private extractActivityData(startTime: moment.Moment, endTime: moment.Moment, timeSegments: TimeSegment[]): IActivityData {
+  private extractActivityData(startTime: moment.Moment, endTime: moment.Moment, timelogEntrys: TimelogEntry[]): IActivityData {
     let activities: {
       activity: UserDefinedActivity,
       durationMinutes: number
@@ -60,22 +60,22 @@ export class ActivitiesDefaultViewComponent implements OnInit {
 
     // console.log("    extracting data for: " + startTime.format('YYYY-MM-DD hh:mm a') + "  to  " + endTime.format('YYYY-MM-DD hh:mm a'));
 
-    for (let timeSegment of timeSegments) {
+    for (let timelogEntry of timelogEntrys) {
       let durationMinutes: number = 0;
-      if (moment(timeSegment.startTime).isBefore(startTime) && moment(timeSegment.endTime).isAfter(startTime)) {
-        durationMinutes = moment(timeSegment.endTime).diff(startTime, "minutes");
-      } else if (moment(timeSegment.startTime).isSameOrAfter(startTime) && moment(timeSegment.endTime).isSameOrBefore(endTime)) {
-        durationMinutes = moment(timeSegment.endTime).diff(timeSegment.startTime, "minutes");
-      } else if (moment(timeSegment.startTime).isBefore(endTime) && moment(timeSegment.endTime).isAfter(endTime)) {
-        durationMinutes = moment(endTime).diff(moment(timeSegment.startTime), "minutes");
+      if (moment(timelogEntry.startTime).isBefore(startTime) && moment(timelogEntry.endTime).isAfter(startTime)) {
+        durationMinutes = moment(timelogEntry.endTime).diff(startTime, "minutes");
+      } else if (moment(timelogEntry.startTime).isSameOrAfter(startTime) && moment(timelogEntry.endTime).isSameOrBefore(endTime)) {
+        durationMinutes = moment(timelogEntry.endTime).diff(timelogEntry.startTime, "minutes");
+      } else if (moment(timelogEntry.startTime).isBefore(endTime) && moment(timelogEntry.endTime).isAfter(endTime)) {
+        durationMinutes = moment(endTime).diff(moment(timelogEntry.startTime), "minutes");
       }
 
       if (durationMinutes <= 0) {
         // console.log("Duration minutes is " + durationMinutes);
       } else {
-        if (timeSegment.activities.length > 0) {
+        if (timelogEntry.activities.length > 0) {
           let alreadyExists: boolean = false;
-          timeSegment.activities.forEach((tsActivity: TimeSegmentActivity) => {
+          timelogEntry.activities.forEach((tsActivity: TimelogEntryActivity) => {
             activities.forEach((activity: {
               activity: UserDefinedActivity,
               durationMinutes: number
@@ -83,14 +83,14 @@ export class ActivitiesDefaultViewComponent implements OnInit {
 
               if (activity.activity.treeId  == tsActivity.activity.treeId) {
                 alreadyExists = true;
-                activity.durationMinutes += (durationMinutes / timeSegment.activities.length);
+                activity.durationMinutes += (durationMinutes / timelogEntry.activities.length);
               }
 
             });
             if (!alreadyExists) {
               activities.push({
                 activity: tsActivity.activity,
-                durationMinutes: 0 + durationMinutes / timeSegment.activities.length
+                durationMinutes: 0 + durationMinutes / timelogEntry.activities.length
               });
             }
           });
@@ -98,7 +98,7 @@ export class ActivitiesDefaultViewComponent implements OnInit {
 
 
         } else {
-          // console.log("timeSegment has no activities");
+          // console.log("timelogEntry has no activities");
         }
       }
     }
@@ -134,7 +134,7 @@ export class ActivitiesDefaultViewComponent implements OnInit {
     return activityData;
   }
 
-  private buildDaysOfRow(periodStart: moment.Moment, periodEnd: moment.Moment, timeSegments: TimeSegment[]) {
+  private buildDaysOfRow(periodStart: moment.Moment, periodEnd: moment.Moment, timelogEntrys: TimelogEntry[]) {
 
 
 
@@ -153,7 +153,7 @@ export class ActivitiesDefaultViewComponent implements OnInit {
 
       let dayOfWeek = {
         date: currentDay.format('YYYY-MM-DD'),
-        activityData: this.extractActivityData(moment(currentDay.startOf("day")), moment(currentDay.endOf("day")), timeSegments)
+        activityData: this.extractActivityData(moment(currentDay.startOf("day")), moment(currentDay.endOf("day")), timelogEntrys)
 
       }
       daysOfWeek.push(dayOfWeek);
@@ -161,14 +161,14 @@ export class ActivitiesDefaultViewComponent implements OnInit {
     }
 
 
-    // console.log(this.extractActivityData(moment(periodStart), moment(periodEnd), timeSegments))
+    // console.log(this.extractActivityData(moment(periodStart), moment(periodEnd), timelogEntrys))
 
     this.daysOfWeek = daysOfWeek;
   }
 
-  private buildLastPeriod(periodStart: moment.Moment, periodEnd: moment.Moment, timeSegments: TimeSegment[]) {
+  private buildLastPeriod(periodStart: moment.Moment, periodEnd: moment.Moment, timelogEntrys: TimelogEntry[]) {
 
-    let activityData: IActivityData = this.extractActivityData(periodStart, periodEnd, timeSegments);
+    let activityData: IActivityData = this.extractActivityData(periodStart, periodEnd, timelogEntrys);
     this.lastPeriod = activityData;
   }
 

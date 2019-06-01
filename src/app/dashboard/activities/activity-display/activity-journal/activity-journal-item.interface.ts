@@ -4,5 +4,5 @@ export interface IActivityJournalItem {
     startTime: moment.Moment;
     endTime: moment.Moment;
     description: string;
-    timeSegmentActivitesCount: number;
+    timelogEntryActivitesCount: number;
 }

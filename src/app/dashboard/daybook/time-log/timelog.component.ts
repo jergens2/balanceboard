@@ -1,20 +1,21 @@
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, timer, Subject } from 'rxjs';
-import { TimeSegmentTile } from './time-segment-tile/time-segment-tile.model';
-import { TimeSegment } from './time-segment-tile/time-segment.model';
+import { TimelogEntryTile } from './timelog-entry-tile/timelog-entry-tile.model';
+import { TimelogEntry } from './timelog-entry-tile/timelog-entry.model';
 import { TimelogService } from './timelog.service';
 import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
-import { ITimeSegmentFormData } from '../time-segment-form/time-segment-form-data.interface';
+import { ITimelogEntryFormData } from '../timelog-entry-form/timelog-entry-form-data.interface';
+
 
 
 
 
 @Component({
-  selector: 'app-time-log',
-  templateUrl: './time-log.component.html',
-  styleUrls: ['./time-log.component.css']
+  selector: 'app-timelog',
+  templateUrl: './timelog.component.html',
+  styleUrls: ['./timelog.component.css']
 })
 export class TimeLogComponent implements OnInit, OnDestroy {
 
@@ -28,14 +29,14 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   ifLoading: boolean = false;
 
 
-  private _fetchTimeSegmentsSubscription: Subscription = new Subscription();
-  private _fetchTimeSegmentsTimerSubscription: Subscription = new Subscription();
+  private _fetchTimelogEntrysSubscription: Subscription = new Subscription();
+  private _fetchTimelogEntrysTimerSubscription: Subscription = new Subscription();
 
 
 
-  private _timeSegments: TimeSegment[] = [];
-  timeSegmentTiles: TimeSegmentTile[] = [];
-  timeSegmentsContainer: { style: any } = null;
+  private _timelogEntrys: TimelogEntry[] = [];
+  timelogEntryTiles: TimelogEntryTile[] = [];
+  timelogEntrysContainer: { style: any } = null;
 
   hourLabels: { hour: string, style: any }[] = [];
   hourLines: { time: moment.Moment, style: any }[] = [];
@@ -43,7 +44,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   private _nowLineSubscription: Subscription = new Subscription();
 
 
-  @Output() timeSegmentFormData: EventEmitter<ITimeSegmentFormData> = new EventEmitter();
+  @Output() timelogEntryFormData: EventEmitter<ITimelogEntryFormData> = new EventEmitter();
   @Output() changedDate: EventEmitter<moment.Moment> = new EventEmitter();
 
   @Input() set currentDate(date: moment.Moment) {
@@ -76,19 +77,19 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     // console.log("Re-initialized?")
     this._currentDateSubscription = this._currentDate$.subscribe((date: moment.Moment) => {
       this.dateChanged(date);
-      // this.timelogService.fetchTimeSegmentsByRange(moment(date).subtract(1, 'day'), moment(date).add(1, 'day'));
+      // this.timelogService.fetchTimelogEntrysByRange(moment(date).subtract(1, 'day'), moment(date).add(1, 'day'));
     });
 
 
-    this._fetchTimeSegmentsTimerSubscription.unsubscribe();
-    this._fetchTimeSegmentsTimerSubscription = timer(0, 30000).subscribe(() => {
+    this._fetchTimelogEntrysTimerSubscription.unsubscribe();
+    this._fetchTimelogEntrysTimerSubscription = timer(0, 30000).subscribe(() => {
       // console.log("Every 30 seconds: " + moment().format('YYYY-MM-DD hh:mm a'))
-      this._fetchTimeSegmentsSubscription.unsubscribe();
-      this._fetchTimeSegmentsSubscription = this.timelogService.timeSegments$.subscribe((receivedTimeSegments: TimeSegment[]) => {
-        // console.log("Received new TimeSegments: ", receivedTimeSegments);
+      this._fetchTimelogEntrysSubscription.unsubscribe();
+      this._fetchTimelogEntrysSubscription = this.timelogService.timelogEntrys$.subscribe((receivedTimelogEntrys: TimelogEntry[]) => {
+        // console.log("Received new TimelogEntrys: ", receivedTimelogEntrys);
 
-        this._timeSegments = Object.assign([], receivedTimeSegments);
-        this.drawTimeSegments();
+        this._timelogEntrys = Object.assign([], receivedTimelogEntrys);
+        this.drawTimelogEntrys();
 
       });
     });
@@ -208,12 +209,12 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     return { startTime: startTime, endTime: endTime, referenceFrom: timeWindow.referenceFrom };
   }
   private dateChanged(date: moment.Moment) {
-    this.timelogService.fetchTimeSegmentsByRange(moment(date).startOf('day').subtract(1, 'day'), moment(date).endOf('day').add(1, 'day'));
+    this.timelogService.fetchTimelogEntrysByRange(moment(date).startOf('day').subtract(1, 'day'), moment(date).endOf('day').add(1, 'day'));
     this.startViewModeTimer();
     this._timeWindowSubscription.unsubscribe();
     this._timeWindowSubscription = this._timeWindow$.subscribe((timeWindow: ITimeWindow) => {
       this.buildDisplay(timeWindow);
-      this.drawTimeSegments();
+      this.drawTimelogEntrys();
     });
     this.setTimeWindowFromDate(date);
 
@@ -268,7 +269,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
   }
-  private drawTimeSegments() {
+  private drawTimelogEntrys() {
 
 
     function earliestOf(times: moment.Moment[]): moment.Moment {
@@ -286,16 +287,16 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       return moment(times[0]);
     }
 
-    function crossesNow(tile: TimeSegmentTile, now: moment.Moment, timeSegment?: TimeSegment): TimeSegmentTile[] {
-      let tiles: TimeSegmentTile[] = [];
-      let setTimeSegment: TimeSegment = null;
-      if (timeSegment) {
-        setTimeSegment = new TimeSegment(timeSegment.id, timeSegment.userId, timeSegment.startTimeISO, timeSegment.endTimeISO, timeSegment.description);
-        setTimeSegment.activities = timeSegment.activities;
+    function crossesNow(tile: TimelogEntryTile, now: moment.Moment, timelogEntry?: TimelogEntry): TimelogEntryTile[] {
+      let tiles: TimelogEntryTile[] = [];
+      let setTimelogEntry: TimelogEntry = null;
+      if (timelogEntry) {
+        setTimelogEntry = new TimelogEntry(timelogEntry.id, timelogEntry.userId, timelogEntry.startTimeISO, timelogEntry.endTimeISO, timelogEntry.description);
+        setTimelogEntry.activities = timelogEntry.activities;
       }
 
       if (tile.startTime.isBefore(now) && tile.endTime.isAfter(now)) {
-        tiles.push(buildTile(tile.startTime, now, setTimeSegment, "MIDDLE"));
+        tiles.push(buildTile(tile.startTime, now, setTimelogEntry, "MIDDLE"));
         tiles.push(buildTile(now, tile.endTime, null, "MIDDLE"));
         return tiles;
       } else {
@@ -306,8 +307,8 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     }
 
 
-    function buildTile(startTime: moment.Moment, endTime: moment.Moment, timeSegment: TimeSegment, borderNoRadius: string): TimeSegmentTile {
-      function tileBackgroundColor(timeSegment: TimeSegment): string {
+    function buildTile(startTime: moment.Moment, endTime: moment.Moment, timelogEntry: TimelogEntry, borderNoRadius: string): TimelogEntryTile {
+      function tileBackgroundColor(timelogEntry: TimelogEntry): string {
         function hexToRGB(hex: string, alpha: number) {
           var r = parseInt(hex.slice(1, 3), 16),
             g = parseInt(hex.slice(3, 5), 16),
@@ -319,9 +320,9 @@ export class TimeLogComponent implements OnInit, OnDestroy {
             return "rgb(" + r + ", " + g + ", " + b + ")";
           }
         }
-        if (timeSegment != null) {
-          if (timeSegment.activities.length > 0) {
-            let color = timeSegment.activities[0].activity.color;
+        if (timelogEntry != null) {
+          if (timelogEntry.activities.length > 0) {
+            let color = timelogEntry.activities[0].activity.color;
             return hexToRGB(color, 0.5);
 
           } else {
@@ -332,17 +333,17 @@ export class TimeLogComponent implements OnInit, OnDestroy {
         }
 
       }
-      if (timeSegment == null) {
-        // console.log("building a blank timeSegment")
+      if (timelogEntry == null) {
+        // console.log("building a blank timelogEntry")
       }
-      let tile: TimeSegmentTile = new TimeSegmentTile(timeSegment, startTime, endTime);
+      let tile: TimelogEntryTile = new TimelogEntryTile(timelogEntry, startTime, endTime);
       if (borderNoRadius == "TOP") {
         tile.style = {
           "border-top-left-radius": "0px",
           "border-top-right-radius": "0px",
           "border-bottom-left-radius": "4px",
           "border-bottom-right-radius": "4px",
-          "background-color": tileBackgroundColor(timeSegment)
+          "background-color": tileBackgroundColor(timelogEntry)
         };
 
       } else if (borderNoRadius == "BOTTOM") {
@@ -351,17 +352,17 @@ export class TimeLogComponent implements OnInit, OnDestroy {
           "border-top-right-radius": "4px",
           "border-bottom-left-radius": "0px",
           "border-bottom-right-radius": "0px",
-          "background-color": tileBackgroundColor(timeSegment)
+          "background-color": tileBackgroundColor(timelogEntry)
         };
       } else if (borderNoRadius == "TOP AND BOTTOM") {
         tile.style = {
           "border-radius": "0px",
-          "background-color": tileBackgroundColor(timeSegment)
+          "background-color": tileBackgroundColor(timelogEntry)
         };
       } else {
         tile.style = {
           "border-radius": "4px",
-          "background-color": tileBackgroundColor(timeSegment)
+          "background-color": tileBackgroundColor(timelogEntry)
         };
       }
 
@@ -370,27 +371,27 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     }
 
 
-    if (this._timeSegments.length > 0 && this._timeWindow) {
+    if (this._timelogEntrys.length > 0 && this._timeWindow) {
 
-      let windowTimeSegments: TimeSegment[] = [];
+      let windowTimelogEntrys: TimelogEntry[] = [];
 
-      for (let timeSegment of this._timeSegments) {
-        if ((moment(timeSegment.startTime).isSameOrBefore(moment(this._timeWindow.startTime)) && moment(timeSegment.endTime).isAfter(moment(this._timeWindow.startTime)))
-          || (moment(timeSegment.startTime).isSameOrAfter(moment(this._timeWindow.startTime)) && moment(timeSegment.endTime).isSameOrBefore(moment(this._timeWindow.endTime)))
-          || (moment(timeSegment.startTime).isBefore(moment(this._timeWindow.endTime)) && moment(timeSegment.endTime).isSameOrAfter(moment(this._timeWindow.endTime)))
+      for (let timelogEntry of this._timelogEntrys) {
+        if ((moment(timelogEntry.startTime).isSameOrBefore(moment(this._timeWindow.startTime)) && moment(timelogEntry.endTime).isAfter(moment(this._timeWindow.startTime)))
+          || (moment(timelogEntry.startTime).isSameOrAfter(moment(this._timeWindow.startTime)) && moment(timelogEntry.endTime).isSameOrBefore(moment(this._timeWindow.endTime)))
+          || (moment(timelogEntry.startTime).isBefore(moment(this._timeWindow.endTime)) && moment(timelogEntry.endTime).isSameOrAfter(moment(this._timeWindow.endTime)))
         ) {
-          // windowTimeSegments.push(Object.assign({}, timeSegment ));
+          // windowTimelogEntrys.push(Object.assign({}, timelogEntry ));
           /*
             Warning
-             we are pushing the timeSegment: 
-             in this example, would this mean that the timeSegment being pushed to this new array in fact refers to the same object that exists elsewhere in memory,
+             we are pushing the timelogEntry: 
+             in this example, would this mean that the timelogEntry being pushed to this new array in fact refers to the same object that exists elsewhere in memory,
              for example is it the same one that the service is holding, and therfore, if so, would that mean that any changes made to this one will modify the object in memory which is being used by the rest of the app ?
              something to be aware of i think    
           */
-          windowTimeSegments.push(timeSegment);
+          windowTimelogEntrys.push(timelogEntry);
         }
       }
-      windowTimeSegments.sort((a, b) => {
+      windowTimelogEntrys.sort((a, b) => {
         if (a.startTime.isAfter(b.startTime)) {
           return 1;
         }
@@ -399,7 +400,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
         }
         return 0;
       })
-      //  At this point, all time segments will be within the window.
+      //  At this point, all time entrys will be within the window.
 
       /*
         Under this current design, it is not permissable for time Events to overlap 
@@ -407,13 +408,13 @@ export class TimeLogComponent implements OnInit, OnDestroy {
         Any detected overlaps will be overwritten.
 
         A way to implement overlap would be to build all tiles, and then detect if the tiles overlap.
-        if overlap, create a second column, put the overlapping timesegments in the second column,
-        the rest of the non-overlapping timesegments are fully wide, across both+ columns.
+        if overlap, create a second column, put the overlapping timelog Entry in the second column,
+        the rest of the non-overlapping timelogEntrys are fully wide, across both+ columns.
       */
 
 
 
-      if (windowTimeSegments.length > 0) {
+      if (windowTimelogEntrys.length > 0) {
 
 
         let startTimeMarker: moment.Moment = moment(this._timeWindow.startTime);
@@ -436,41 +437,41 @@ export class TimeLogComponent implements OnInit, OnDestroy {
         let tileStartTime: moment.Moment = null;
         let tileEndTime: moment.Moment = null;
 
-        let tiles: TimeSegmentTile[] = [];
+        let tiles: TimelogEntryTile[] = [];
 
 
-        for (let timeSegment of windowTimeSegments) {
-          tileStartTime = moment(timeSegment.startTime);
-          tileEndTime = moment(timeSegment.endTime);
+        for (let timelogEntry of windowTimelogEntrys) {
+          tileStartTime = moment(timelogEntry.startTime);
+          tileEndTime = moment(timelogEntry.endTime);
 
           let borderNoRadius: string = "MIDDLE";
-          if (windowTimeSegments.indexOf(timeSegment) == 0 && timeSegment.startTime.isBefore(startTimeMarker)) {
+          if (windowTimelogEntrys.indexOf(timelogEntry) == 0 && timelogEntry.startTime.isBefore(startTimeMarker)) {
             borderNoRadius = "TOP";
           }
-          if (windowTimeSegments.indexOf(timeSegment) == windowTimeSegments.length - 1 && timeSegment.endTime.isAfter(endTimeMarker)) {
+          if (windowTimelogEntrys.indexOf(timelogEntry) == windowTimelogEntrys.length - 1 && timelogEntry.endTime.isAfter(endTimeMarker)) {
             borderNoRadius = "BOTTOM";
           }
 
-          let nextTimeSegmentEndTime: moment.Moment = null;
-          if (windowTimeSegments.indexOf(timeSegment) < windowTimeSegments.length - 1) {
-            nextTimeSegmentEndTime = moment(windowTimeSegments[windowTimeSegments.indexOf(timeSegment) + 1].endTime);
+          let nextTimelogEntryEndTime: moment.Moment = null;
+          if (windowTimelogEntrys.indexOf(timelogEntry) < windowTimelogEntrys.length - 1) {
+            nextTimelogEntryEndTime = moment(windowTimelogEntrys[windowTimelogEntrys.indexOf(timelogEntry) + 1].endTime);
           } else {
-            nextTimeSegmentEndTime = moment(endTimeMarker);
+            nextTimelogEntryEndTime = moment(endTimeMarker);
           }
 
 
-          currentEndTimeLimit = earliestOf([endTimeMarker, nextTimeSegmentEndTime]);
+          currentEndTimeLimit = earliestOf([endTimeMarker, nextTimelogEntryEndTime]);
 
 
-          let startGap: TimeSegmentTile = null;
-          let timeSegmentTile: TimeSegmentTile = null;
-          let nowCrosses: TimeSegmentTile[] = null;
+          let startGap: TimelogEntryTile = null;
+          let timelogEntryTile: TimelogEntryTile = null;
+          let nowCrosses: TimelogEntryTile[] = null;
 
 
-          if (timeSegment.startTime.isBefore(currentStartTimeLimit)) {
+          if (timelogEntry.startTime.isBefore(currentStartTimeLimit)) {
             tileStartTime = moment(currentStartTimeLimit);
-          } else if (timeSegment.startTime.isAfter(currentStartTimeLimit)) {
-            startGap = buildTile(currentStartTimeLimit, timeSegment.startTime, null, "MIDDLE");
+          } else if (timelogEntry.startTime.isAfter(currentStartTimeLimit)) {
+            startGap = buildTile(currentStartTimeLimit, timelogEntry.startTime, null, "MIDDLE");
             nowCrosses = crossesNow(startGap, now);
             if (nowCrosses) {
               for (let tile of nowCrosses) {
@@ -480,27 +481,27 @@ export class TimeLogComponent implements OnInit, OnDestroy {
               tiles.push(startGap);
             }
             nowCrosses = null;
-            tileStartTime = moment(timeSegment.startTime);
+            tileStartTime = moment(timelogEntry.startTime);
           }
-          if (timeSegment.endTime.isAfter(currentEndTimeLimit)) {
+          if (timelogEntry.endTime.isAfter(currentEndTimeLimit)) {
             tileEndTime = moment(currentEndTimeLimit);
           }
 
-          timeSegmentTile = buildTile(tileStartTime, tileEndTime, timeSegment, borderNoRadius);
-          nowCrosses = crossesNow(timeSegmentTile, now, timeSegment);
+          timelogEntryTile = buildTile(tileStartTime, tileEndTime, timelogEntry, borderNoRadius);
+          nowCrosses = crossesNow(timelogEntryTile, now, timelogEntry);
           if (nowCrosses) {
             for (let tile of nowCrosses) {
               tiles.push(tile);
             }
           } else {
-            tiles.push(timeSegmentTile);
+            tiles.push(timelogEntryTile);
           }
           nowCrosses = null;
 
 
 
           currentStartTimeLimit = moment(tileEndTime);
-          currentEndTimeLimit = earliestOf([endTimeMarker, nextTimeSegmentEndTime]);
+          currentEndTimeLimit = earliestOf([endTimeMarker, nextTimelogEntryEndTime]);
         }
 
 
@@ -575,24 +576,24 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
 
-        this.timeSegmentTiles = tiles;
-        this.timeSegmentsContainer = { style: style };
+        this.timelogEntryTiles = tiles;
+        this.timelogEntrysContainer = { style: style };
 
 
 
 
       } else {
         
-        this.timeSegmentsContainer = null;
-        this.timeSegmentTiles = [];
+        this.timelogEntrysContainer = null;
+        this.timelogEntryTiles = [];
         
       }
 
 
     } else {
 
-      this.timeSegmentsContainer = null;
-      this.timeSegmentTiles = [];
+      this.timelogEntrysContainer = null;
+      this.timelogEntryTiles = [];
       
     }
   }
@@ -610,7 +611,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
           "grid-template-rows": percentage + "% " + (100 - percentage) + "%"
         };
         this.nowLine = { containerStyle: style };
-        this.drawTimeSegments();
+        this.drawTimelogEntrys();
       } else {
         this.nowLine = null;
       }
@@ -626,8 +627,8 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
 
-  onTimeSegmentFormDataReceived(data: ITimeSegmentFormData) {
-    this.timeSegmentFormData.emit(data);
+  onTimelogEntryFormDataReceived(data: ITimelogEntryFormData) {
+    this.timelogEntryFormData.emit(data);
   }
 
   onClickCaret(direction: string) {
@@ -671,12 +672,12 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
-    this._fetchTimeSegmentsSubscription.unsubscribe();
+    this._fetchTimelogEntrysSubscription.unsubscribe();
     this._currentDateSubscription.unsubscribe();
     this._timeWindowSubscription.unsubscribe();
     this._manualDateChangeSubscription.unsubscribe();
-    this._fetchTimeSegmentsSubscription.unsubscribe();
-    this._fetchTimeSegmentsTimerSubscription.unsubscribe();
+    this._fetchTimelogEntrysSubscription.unsubscribe();
+    this._fetchTimelogEntrysTimerSubscription.unsubscribe();
 
   }
 }

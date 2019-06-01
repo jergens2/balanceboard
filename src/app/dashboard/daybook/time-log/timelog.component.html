@@ -23,9 +23,9 @@
       </div>
 
 
-      <div class="grid-object" *ngIf="timeSegmentsContainer" [ngStyle]="timeSegmentsContainer.style">
-        <div *ngFor="let tile of timeSegmentTiles" class="time-segment-tile" >
-          <app-time-segment-tile [tile]="tile" (timeSegmentFormData)="onTimeSegmentFormDataReceived($event)"></app-time-segment-tile>
+      <div class="grid-object" *ngIf="timelogEntrysContainer" [ngStyle]="timelogEntrysContainer.style">
+        <div *ngFor="let tile of timelogEntryTiles" class="time-entry-tile" >
+          <app-timelog-entry-tile [tile]="tile" (timelogEntryFormData)="onTimelogEntryFormDataReceived($event)"></app-timelog-entry-tile>
         </div>
 
       </div>

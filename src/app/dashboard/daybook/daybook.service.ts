@@ -120,7 +120,7 @@ export class DaybookService {
           day.activityData = data.activityData;
           day.dailyTaskListData = data.dailyTaskListData;
           day.taskData = data.taskData;
-          day.timeSegmentData = data.timeSegmentData;
+          day.timelogEntryData = data.timelogEntryData;
           days.push(day);
         })
 
@@ -203,7 +203,7 @@ export class DaybookService {
         activityData: day.activityData,
         dailyTaskListData: day.dailyTaskListData,
         taskData: day.taskData,
-        timeSegmentData: day.timeSegmentData
+        timelogEntryData: day.timelogEntryData
       };
     } else {
       //Update day
@@ -215,7 +215,7 @@ export class DaybookService {
         activityData: day.activityData,
         dailyTaskListData: day.dailyTaskListData,
         taskData: day.taskData,
-        timeSegmentData: day.timeSegmentData
+        timelogEntryData: day.timelogEntryData
       };
 
 
@@ -231,7 +231,7 @@ export class DaybookService {
         day.activityData = rd.activityData;
         day.dailyTaskListData = rd.dailyTaskListData;
         day.taskData = rd.taskData;
-        day.timeSegmentData = rd.timeSegmentData;
+        day.timelogEntryData = rd.timelogEntryData;
         
         return day;
       }))

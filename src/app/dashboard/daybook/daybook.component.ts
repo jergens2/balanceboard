@@ -6,9 +6,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from '../../nav/header/header.service';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
-import { ITimeSegmentFormData } from './time-segment-form/time-segment-form-data.interface';
 import { Day } from './day/day.model';
 import { DaybookService } from './daybook.service';
+import { ITimelogEntryFormData } from './timelog-entry-form/timelog-entry-form-data.interface';
 
 @Component({
   selector: 'app-daybook',
@@ -29,10 +29,10 @@ export class DaybookComponent implements OnInit, OnDestroy {
   faEdit = faEdit;
 
   ifCalendarInside: boolean = false;
-  ifTimeSegmentForm: boolean = false;
+  ifTimelogEntryForm: boolean = false;
 
 
-  timeSegmentFormData: ITimeSegmentFormData = { action: "NEW", timeSegment: null, date: null };
+  timelogEntryFormData: ITimelogEntryFormData = { action: "NEW", timelogEntry: null, date: null };
 
   private _headerMenuSubscriptions: Subscription[] = [];
   private _currentDaySubscription: Subscription = new Subscription();
@@ -87,9 +87,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
   private buildHeaderMenu() {
     let daybookHeaderMenuItems: MenuItem[] = [];
 
-    let newTimeSegmentMenuItem = new MenuItem("New Time Segment", null, null);
-    this._headerMenuSubscriptions.push(newTimeSegmentMenuItem.clickEmitted$.subscribe((clicked) => {
-      this.timeSegmentFormData = { action: "NEW", timeSegment: null, date: this._currentDate }
+    let newTimelogEntryMenuItem = new MenuItem("New Time Entry", null, null);
+    this._headerMenuSubscriptions.push(newTimelogEntryMenuItem.clickEmitted$.subscribe((clicked) => {
+      this.timelogEntryFormData = { action: "NEW", timelogEntry: null, date: this._currentDate }
       this.currentView = "form";
     }));
 
@@ -103,7 +103,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
       this.changeView("heatmap");
     }));
 
-    daybookHeaderMenuItems.push(newTimeSegmentMenuItem);
+    daybookHeaderMenuItems.push(newTimelogEntryMenuItem);
     daybookHeaderMenuItems.push(timelogViewMenuItem);
     daybookHeaderMenuItems.push(heatmapViewMenuItem);
 
@@ -116,9 +116,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this.currentView = newView;
   }
 
-  onTimeSegmentDataProvided(data: ITimeSegmentFormData) {
-    console.log("Timesegment form data RECEIVED BRAH")
-    this.timeSegmentFormData = data;
+  onTimelogEntryDataProvided(data: ITimelogEntryFormData) {
+    // console.log("timelog Entry form data RECEIVED BRAH")
+    this.timelogEntryFormData = data;
     this.changeView("form");
   }
 

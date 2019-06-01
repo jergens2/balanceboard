@@ -4,7 +4,7 @@ import { TimelogService } from '../time-log/timelog.service';
 
 import * as moment from 'moment';
 import { Subject, Subscription } from 'rxjs';
-import { TimeSegment } from '../time-log/time-segment-tile/time-segment.model';
+import { TimelogEntry } from '../time-log/timelog-entry-tile/timelog-entry.model';
 import { IHeatmapContentItem } from './heatmap-content-item.interface';
 
 @Component({
@@ -19,7 +19,7 @@ export class HeatmapViewComponent implements OnInit {
 
   constructor(private timelogService: TimelogService) { }
 
-  private timeSegmentsSubscription: Subscription = new Subscription();
+  private timelogEntrysSubscription: Subscription = new Subscription();
   private _currentDate$: Subject<moment.Moment> = new Subject();
 
   @Input() set currentDate(date: moment.Moment) {
@@ -37,12 +37,12 @@ export class HeatmapViewComponent implements OnInit {
       this.ifLoading = true;
 
 
-      this.timelogService.timeSegments$.subscribe((timeSegments) => {
-        this.buildTemplateItems(changedDate, timeSegments);
+      this.timelogService.timelogEntrys$.subscribe((timelogEntrys) => {
+        this.buildTemplateItems(changedDate, timelogEntrys);
         this.ifLoading = false;
       });
-      this.timeSegmentsSubscription.unsubscribe();
-      this.timelogService.fetchTimeSegmentsByRange(moment(changedDate).subtract(1,'day'), moment(changedDate).add(1,'day'));
+      this.timelogEntrysSubscription.unsubscribe();
+      this.timelogService.fetchTimelogEntrysByRange(moment(changedDate).subtract(1,'day'), moment(changedDate).add(1,'day'));
 
     });
 
@@ -50,12 +50,12 @@ export class HeatmapViewComponent implements OnInit {
   }
 
 
-  private buildTemplateItems(currentDate: moment.Moment, timeSegments: TimeSegment[]) {
+  private buildTemplateItems(currentDate: moment.Moment, timelogEntrys: TimelogEntry[]) {
     function getActivityColor(startTime: moment.Moment, endTime: moment.Moment): string {
-      for (let timeSegment of timeSegments) {
-        if (moment(timeSegment.startTime).isSameOrBefore(startTime) && moment(timeSegment.endTime).isSameOrAfter(endTime)) {
-          if (timeSegment.activities.length > 0) {
-            return timeSegment.activities[0].activity.color;
+      for (let timelogEntry of timelogEntrys) {
+        if (moment(timelogEntry.startTime).isSameOrBefore(startTime) && moment(timelogEntry.endTime).isSameOrAfter(endTime)) {
+          if (timelogEntry.activities.length > 0) {
+            return timelogEntry.activities[0].activity.color;
           } else {
             return "";
           }
@@ -64,15 +64,15 @@ export class HeatmapViewComponent implements OnInit {
               This block is not necessarily robust, but does the job for now.
           */
           let halfwayPoint = moment(startTime).add(2,'minutes').add(30,'seconds');
-          if( moment(timeSegment.startTime).isSameOrBefore(startTime) && moment(timeSegment.endTime).isSameOrAfter(halfwayPoint)){
-            if (timeSegment.activities.length > 0) {
-              return timeSegment.activities[0].activity.color;
+          if( moment(timelogEntry.startTime).isSameOrBefore(startTime) && moment(timelogEntry.endTime).isSameOrAfter(halfwayPoint)){
+            if (timelogEntry.activities.length > 0) {
+              return timelogEntry.activities[0].activity.color;
             } else {
               return "";
             }
-          }else if( moment(timeSegment.startTime).isSameOrAfter(halfwayPoint) && moment(timeSegment.endTime).isSameOrAfter(endTime)){
-            if (timeSegment.activities.length > 0) {
-              return timeSegment.activities[0].activity.color;
+          }else if( moment(timelogEntry.startTime).isSameOrAfter(halfwayPoint) && moment(timelogEntry.endTime).isSameOrAfter(endTime)){
+            if (timelogEntry.activities.length > 0) {
+              return timelogEntry.activities[0].activity.color;
             } else {
               return "";
             }

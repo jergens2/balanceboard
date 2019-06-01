@@ -3,7 +3,7 @@ property for activities:  concurrent.
 
 or is this a property for timelog / daybook , concurrency, 
 
-or an activity-of-a-timeSegment property, like description is a property of an individual instance of an activity.
+or an activity-of-a-timelogEntry property, like description is a property of an individual instance of an activity.
 
 
 an example is eating and watching TV.
