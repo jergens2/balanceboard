@@ -32,7 +32,7 @@ export class TimelogService {
     this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'days'), moment().endOf('day').add(1, 'days'));
 
 
-
+    this.subscribeToUpdates();
 
     return this._loginComplete$.asObservable();
   }
