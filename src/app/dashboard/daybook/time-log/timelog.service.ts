@@ -32,7 +32,7 @@ export class TimelogService {
     this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'days'), moment().endOf('day').add(1, 'days'));
 
 
-
+    this.subscribeToUpdates();
 
     return this._loginComplete$.asObservable();
   }
@@ -83,6 +83,7 @@ export class TimelogService {
 
   private _timerSubscription: Subscription = new Subscription();
   private subscribeToUpdates(){
+    //every 30 seconds, check for updates;
     this._timerSubscription = timer(0,30000).subscribe((event)=>{
       this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'days'), moment().endOf('day').add(1, 'days'));
     });
