@@ -2,7 +2,7 @@
 export enum ModalComponentType{
     Default = "DEFAULT",
     Confirm = "CONFIRM",
-    TimeSegment = "TIME_SEGMENT",
+    TimelogEntry = "TIMELOG_ENTRY",
     Task = "TASK",
     Note = "NOTE"
 }

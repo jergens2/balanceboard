@@ -1,13 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { TimeSegment } from '../time-log/time-segment-tile/time-segment.model';
-import { TimeSegmentActivity } from '../time-log/time-segment-activity.model';
+import { TimelogEntry } from '../time-log/timelog-entry-tile/timelog-entry.model';
+import { TimelogEntryActivity } from '../time-log/timelog-entry-activity.model';
 import { faPlus, faCaretDown, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ActivitiesService } from '../../activities/activities.service';
 import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
 import { TimelogService } from '../time-log/timelog.service';
-import { ITimeSegmentFormData } from './time-segment-form-data.interface';
+import { ITimelogEntryFormData } from './timelog-entry-form-data.interface';
 import { Subscription } from 'rxjs';
 import { Modal } from '../../../modal/modal.model';
 import { ModalService } from '../../../modal/modal.service';
@@ -16,11 +16,11 @@ import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 
 
 @Component({
-  selector: 'app-time-segment-form',
-  templateUrl: './time-segment-form.component.html',
-  styleUrls: ['./time-segment-form.component.css']
+  selector: 'app-time-entry-form',
+  templateUrl: './timelog-entry-form.component.html',
+  styleUrls: ['./timelog-entry-form.component.css']
 })
-export class TimeSegmentFormComponent implements OnInit, OnDestroy {
+export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
 
   faPlus = faPlus;
@@ -30,10 +30,10 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
 
   constructor(private activitiesService: ActivitiesService, private timelogService: TimelogService, private modalService: ModalService) { }
 
-  // previousTimeSegmentEnd: moment.Moment;
+  // previousTimelogEntryEnd: moment.Moment;
 
-  private _providedFormData: ITimeSegmentFormData = null;
-  @Input() set providedFormData(data: ITimeSegmentFormData) {
+  private _providedFormData: ITimelogEntryFormData = null;
+  @Input() set providedFormData(data: ITimelogEntryFormData) {
     this._providedFormData = data;
     console.log("data is ", data);
     this.action = this._providedFormData.action;
@@ -41,9 +41,9 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
 
   @Output() closeForm: EventEmitter<boolean> = new EventEmitter();
 
-  timeSegmentForm: FormGroup = null;
+  timelogEntryForm: FormGroup = null;
 
-  timeSegmentActivities: TimeSegmentActivity[] = [];
+  timelogEntryActivities: TimelogEntryActivity[] = [];
 
   ifAddActivity: boolean = false;
 
@@ -51,7 +51,7 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
 
   durationString: string = "";
 
-  private timeSegments: TimeSegment[] = [];
+  private timelogEntrys: TimelogEntry[] = [];
   action: string = "";
   public get viewAction(): string {
     if(this.action){
@@ -72,7 +72,7 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
 
-    this.timeSegments = Object.assign([], this.timelogService.timeSegments);
+    this.timelogEntrys = Object.assign([], this.timelogService.timelogEntrys);
 
 
 
@@ -100,7 +100,7 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
       }
 
 
-      this.timeSegmentForm = new FormGroup({
+      this.timelogEntryForm = new FormGroup({
         'startTime': new FormControl(moment(startTime).format('HH:mm'), Validators.required),
         'startTimeDate': new FormControl(moment(startTime).format('YYYY-MM-DD')),
         'endTime': new FormControl(moment(endTime).format('HH:mm'), Validators.required),
@@ -113,36 +113,36 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
 
     } else if (this.action == "REVIEW" || this.action == "SET") {
 
-      this.timeSegmentForm = new FormGroup({
-        'startTime': new FormControl(this._providedFormData.timeSegment.startTime.format('HH:mm'), Validators.required),
-        'startTimeDate': new FormControl(this._providedFormData.timeSegment.startTime.format('YYYY-MM-DD')),
-        'endTime': new FormControl(this._providedFormData.timeSegment.endTime.format('HH:mm'), Validators.required),
-        'endTimeDate': new FormControl(this._providedFormData.timeSegment.endTime.format('YYYY-MM-DD')),
-        'description': new FormControl(this._providedFormData.timeSegment.description),
+      this.timelogEntryForm = new FormGroup({
+        'startTime': new FormControl(this._providedFormData.timelogEntry.startTime.format('HH:mm'), Validators.required),
+        'startTimeDate': new FormControl(this._providedFormData.timelogEntry.startTime.format('YYYY-MM-DD')),
+        'endTime': new FormControl(this._providedFormData.timelogEntry.endTime.format('HH:mm'), Validators.required),
+        'endTimeDate': new FormControl(this._providedFormData.timelogEntry.endTime.format('YYYY-MM-DD')),
+        'description': new FormControl(this._providedFormData.timelogEntry.description),
       });
-      this.timeSegmentActivities = Object.assign([], this._providedFormData.timeSegment.activities);
+      this.timelogEntryActivities = Object.assign([], this._providedFormData.timelogEntry.activities);
     }
     this.validateTimes();
 
 
 
     this.controlSubscriptions.push(
-      this.timeSegmentForm.controls['startTime'].valueChanges.subscribe(() => {
+      this.timelogEntryForm.controls['startTime'].valueChanges.subscribe(() => {
         this.validateTimes();
       })
     );
     this.controlSubscriptions.push(
-      this.timeSegmentForm.controls['startTimeDate'].valueChanges.subscribe(() => {
+      this.timelogEntryForm.controls['startTimeDate'].valueChanges.subscribe(() => {
         this.validateTimes();
       })
     );
     this.controlSubscriptions.push(
-      this.timeSegmentForm.controls['endTime'].valueChanges.subscribe(() => {
+      this.timelogEntryForm.controls['endTime'].valueChanges.subscribe(() => {
         this.validateTimes();
       })
     );
     this.controlSubscriptions.push(
-      this.timeSegmentForm.controls['endTimeDate'].valueChanges.subscribe(() => {
+      this.timelogEntryForm.controls['endTimeDate'].valueChanges.subscribe(() => {
         this.validateTimes();
       })
     );
@@ -163,8 +163,8 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
 
   private validateTimes() {
 
-    let start:moment.Moment = this.buildDate(this.timeSegmentForm.controls['startTime'].value, this.timeSegmentForm.controls['startTimeDate'].value);
-    let end: moment.Moment = this.buildDate(this.timeSegmentForm.controls['endTime'].value, this.timeSegmentForm.controls['endTimeDate'].value);
+    let start:moment.Moment = this.buildDate(this.timelogEntryForm.controls['startTime'].value, this.timelogEntryForm.controls['startTimeDate'].value);
+    let end: moment.Moment = this.buildDate(this.timelogEntryForm.controls['endTime'].value, this.timelogEntryForm.controls['endTimeDate'].value);
 
 
     if (start.isAfter(end)) {
@@ -195,18 +195,18 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
 
   private findNewStartTime() {
     let latestTime: moment.Moment = null;
-    if (this.timeSegments.length > 0) {
-      for (let timeSegment of this.timeSegments) {
+    if (this.timelogEntrys.length > 0) {
+      for (let timelogEntry of this.timelogEntrys) {
         if (latestTime == null) {
-          latestTime = moment(timeSegment.endTime);
+          latestTime = moment(timelogEntry.endTime);
         }
-        if (moment(timeSegment.endTime).isAfter(moment(latestTime))) {
-          latestTime = moment(timeSegment.endTime);
+        if (moment(timelogEntry.endTime).isAfter(moment(latestTime))) {
+          latestTime = moment(timelogEntry.endTime);
         }
       }
       return moment(latestTime);
     } else {
-      console.log("there were no timesegments");
+      console.log("there were no timelog entrys");
       return moment().subtract(1, "hour");
     }
   }
@@ -215,12 +215,12 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
 
 
   get startTimeDate(): string {
-    let value = moment(this.timeSegmentForm.controls['startTimeDate'].value).format('YYYY-MM-DD')
+    let value = moment(this.timelogEntryForm.controls['startTimeDate'].value).format('YYYY-MM-DD')
     return value;
   }
   get endTimeDate(): string {
-    let startDate = moment(this.timeSegmentForm.controls['startTimeDate'].value).format('YYYY-MM-DD');
-    let value = moment(this.timeSegmentForm.controls['endTimeDate'].value).format('YYYY-MM-DD')
+    let startDate = moment(this.timelogEntryForm.controls['startTimeDate'].value).format('YYYY-MM-DD');
+    let value = moment(this.timelogEntryForm.controls['endTimeDate'].value).format('YYYY-MM-DD')
     if (value == startDate) {
       return "Same Date"
     } else {
@@ -246,7 +246,7 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
       if(selectedOption.value == "Yes"){
 
-        this.timelogService.deleteTimeSegment(this._providedFormData.timeSegment);
+        this.timelogService.deleteTimelogEntry(this._providedFormData.timelogEntry);
         this.closeForm.emit(true);
       }else if(selectedOption.value == "No"){
 
@@ -288,7 +288,7 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
   onClickSaveActivity() {
     console.log("saving activity", this.selectedActivity);
     if(this.selectedActivity){
-      this.timeSegmentActivities.push(new TimeSegmentActivity(this.selectedActivity, ''));
+      this.timelogEntryActivities.push(new TimelogEntryActivity(this.selectedActivity, ''));
       this.ifAddActivity = false;
     }else{
 
@@ -300,29 +300,29 @@ export class TimeSegmentFormComponent implements OnInit, OnDestroy {
     this.ifAddActivity = false;
   }
 
-  onClickSaveTimeSegment() {
-    let startTime:moment.Moment = this.buildDate(this.timeSegmentForm.controls['startTime'].value, this.timeSegmentForm.controls['startTimeDate'].value)
-    let endTime: moment.Moment = this.buildDate(this.timeSegmentForm.controls['endTime'].value, this.timeSegmentForm.controls['endTimeDate'].value)
-    let newTimeSegment: TimeSegment;
+  onClickSaveTimelogEntry() {
+    let startTime:moment.Moment = this.buildDate(this.timelogEntryForm.controls['startTime'].value, this.timelogEntryForm.controls['startTimeDate'].value)
+    let endTime: moment.Moment = this.buildDate(this.timelogEntryForm.controls['endTime'].value, this.timelogEntryForm.controls['endTimeDate'].value)
+    let newTimelogEntry: TimelogEntry;
 
     if (this.action == "NEW" || this.action == "SET") {
       
-      newTimeSegment = new TimeSegment(null, null, startTime.toISOString(), endTime.toISOString(), this.timeSegmentForm.get('description').value);
-      newTimeSegment.activities = this.timeSegmentActivities;
-      this.timelogService.saveTimeSegment(newTimeSegment);
+      newTimelogEntry = new TimelogEntry(null, null, startTime.toISOString(), endTime.toISOString(), this.timelogEntryForm.get('description').value);
+      newTimelogEntry.activities = this.timelogEntryActivities;
+      this.timelogService.saveTimelogEntry(newTimelogEntry);
 
     } else if (this.action == "REVIEW" ) {
 
-      let reviewTimeSegment: TimeSegment = this._providedFormData.timeSegment;
-      newTimeSegment = new TimeSegment(reviewTimeSegment.id, reviewTimeSegment.userId, startTime.toISOString(), endTime.toISOString(), this.timeSegmentForm.get('description').value);
-      for (let activity of this.timeSegmentActivities) {
-        newTimeSegment.activities.push(activity)
+      let reviewTimelogEntry: TimelogEntry = this._providedFormData.timelogEntry;
+      newTimelogEntry = new TimelogEntry(reviewTimelogEntry.id, reviewTimelogEntry.userId, startTime.toISOString(), endTime.toISOString(), this.timelogEntryForm.get('description').value);
+      for (let activity of this.timelogEntryActivities) {
+        newTimelogEntry.activities.push(activity)
       }
-      this.timelogService.updateTimeSegment(newTimeSegment);
+      this.timelogService.updateTimelogEntry(newTimelogEntry);
 
     }
     this.controlSubscriptions.forEach((sub) => { sub.unsubscribe(); });
-    this.timeSegmentForm.reset()
+    this.timelogEntryForm.reset()
     this.closeForm.emit();
 
   }

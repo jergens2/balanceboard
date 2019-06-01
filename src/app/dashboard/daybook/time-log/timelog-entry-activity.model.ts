@@ -1,7 +1,7 @@
 import { UserDefinedActivity } from "../../activities/user-defined-activity.model";
 import { ActivitiesService } from "../../activities/activities.service";
 
-export class TimeSegmentActivity{
+export class TimelogEntryActivity{
 
     activityTreeId: string;
     description: string;

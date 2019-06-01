@@ -1,9 +1,9 @@
 import { UserDefinedActivity } from "../../../activities/user-defined-activity.model";
 import * as moment from 'moment';
-import { TimeSegmentActivity } from "../time-segment-activity.model";
+import { TimelogEntryActivity } from "../timelog-entry-activity.model";
 
 
-export class TimeSegment {
+export class TimelogEntry {
 
     public id: string;
 
@@ -22,7 +22,7 @@ export class TimeSegment {
 
     public description: string;
 
-    public activities: TimeSegmentActivity[] = []
+    public activities: TimelogEntryActivity[] = []
 
     public userId: string;
 
@@ -66,12 +66,12 @@ export class TimeSegment {
 
     receiveOldActivities(activities: UserDefinedActivity[]) {
         this.activities = activities.map((activity) => {
-            let timeSegmentActivity: TimeSegmentActivity = new TimeSegmentActivity(activity, "");
-            // timeSegmentActivity.duration = 0;
-            if (timeSegmentActivity.activity.color == "blue") {
-                timeSegmentActivity.activity.color = "#fafafa";
+            let timelogEntryActivity: TimelogEntryActivity = new TimelogEntryActivity(activity, "");
+            // timelogEntryActivity.duration = 0;
+            if (timelogEntryActivity.activity.color == "blue") {
+                timelogEntryActivity.activity.color = "#fafafa";
             }
-            return timeSegmentActivity;
+            return timelogEntryActivity;
         })
     }
 

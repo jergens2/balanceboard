@@ -12,9 +12,9 @@
 
   </div>
 
-  <div class="time-segment-form" [formGroup]="timeSegmentForm">
+  <div class="time-entry-form" [formGroup]="timelogEntryForm">
 
-    <div class="time-segment-form-row" style="padding:none;">
+    <div class="time-entry-form-row" style="padding:none;">
 
 
       <div class="time-section" [ngClass]="{'time-section-error': startTimeError }">
@@ -70,13 +70,13 @@
         </div>
       </div>
     </div>
-    <div class="time-segment-form-row" style="font-weight:bold;"
+    <div class="time-entry-form-row" style="font-weight:bold;"
       [ngClass]="{'duration-error': endTimeError || startTimeError }">
       {{ durationString }}
     </div>
 
 
-    <div class="time-segment-form-row">
+    <div class="time-entry-form-row">
       <textarea rows="5" class="form-textarea" placeholder="Description" formControlName="description">
       </textarea>
 
@@ -85,14 +85,14 @@
 
 
 
-    <div class="time-segment-form-row" style="flex-direction: column;">
+    <div class="time-entry-form-row" style="flex-direction: column;">
       <div style="font-size:1.15em">
         Activities
       </div>
-      <div *ngIf="timeSegmentActivities.length > 0">
-        <div *ngFor="let timeSegmentActivity of timeSegmentActivities" class="time-segment-activity"
-          [style.background-color]="timeSegmentActivity.activity.color">
-          {{ timeSegmentActivity.activity.name }}
+      <div *ngIf="timelogEntryActivities.length > 0">
+        <div *ngFor="let timelogEntryActivity of timelogEntryActivities" class="time-entry-activity"
+          [style.background-color]="timelogEntryActivity.activity.color">
+          {{ timelogEntryActivity.activity.name }}
         </div>
       </div>
       <div class="mt-1">
@@ -116,9 +116,9 @@
 
 
 
-    <div class="time-segment-form-row"
+    <div class="time-entry-form-row"
       style="display:flex;flex-direction:row;justify-content: flex-end; justify-self: flex-end;">
-      <button class="btn btn-primary mx-2" (click)="onClickSaveTimeSegment()">Save Time Segment</button>
+      <button class="btn btn-primary mx-2" (click)="onClickSaveTimelogEntry()">Save Time Entry</button>
       <button class="btn btn-secondary" (click)="onClickCancel()">Cancel</button>
     </div>
   </div>

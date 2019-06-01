@@ -2,11 +2,10 @@ import * as moment from 'moment';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DaybookService } from '../daybook/daybook.service';
 import { TimelogService } from '../daybook/time-log/timelog.service';
-import { TimeSegment } from '../daybook/time-log/time-segment-tile/time-segment.model';
+import { TimelogEntry } from '../daybook/time-log/timelog-entry-tile/timelog-entry.model';
 import { Day } from '../daybook/day/day.model';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import { ITimeSegmentDataItem } from '../daybook/day/time-segment-data.interface';
-import { IActivityDataItem } from '../daybook/day/activity-data-item.interface';
+
 
 @Component({
   selector: 'app-home',
@@ -26,9 +25,9 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // COMMENTING THIS OUT because it has an error with the duration thing.  I might need to revist this., maybe
   // onClickBuildDays(){
-  //   this.timelogService.fetchTimeSegmentsByRange$(moment("2018-09-01"), moment("2019-09-01")).subscribe((timeSegments: TimeSegment[])=>{
-  //     timeSegments = timeSegments.filter((ts)=>{if(ts!=null){return ts;}});
-  //     timeSegments.sort((ts1, ts2)=>{
+  //   this.timelogService.fetchTimelogEntrysByRange$(moment("2018-09-01"), moment("2019-09-01")).subscribe((timelogEntrys: TimelogEntry[])=>{
+  //     timelogEntrys = timelogEntrys.filter((ts)=>{if(ts!=null){return ts;}});
+  //     timelogEntrys.sort((ts1, ts2)=>{
   //       if(ts1.startTime.isBefore(ts2.startTime)){
   //         return -1;
   //       }
@@ -37,38 +36,38 @@ export class HomeComponent implements OnInit, OnDestroy {
   //       }
   //       return 0;
   //     })
-  //     console.log("All timesegments:" , timeSegments.length);
-  //     console.log(timeSegments);
+  //     console.log("All timelogentrys:" , timelogEntrys.length);
+  //     console.log(timelogEntrys);
 
 
-  //     let currentDate: moment.Moment = moment(timeSegments[0].startTimeISO);
-  //     let timeSegmentData: ITimeSegmentDataItem[] = [];
+  //     let currentDate: moment.Moment = moment(timelogEntrys[0].startTimeISO);
+  //     let timelogEntryData: ITimelogEntryDataItem[] = [];
   //     let activityData: IActivityDataItem[] = [];
 
-  //     for(let timeSegment of timeSegments){
-  //       // console.log(timeSegments.indexOf(timeSegment), " of ", timeSegments.length);
+  //     for(let timelogEntry of timelogEntrys){
+  //       // console.log(timelogEntrys.indexOf(timelogEntry), " of ", timelogEntrys.length);
 
 
-  //       if(moment(timeSegment.startTime).format('YYYY-MM-DD') == currentDate.format('YYYY-MM-DD') || moment(timeSegment.endTime).format('YYYY-MM-DD') == currentDate.format('YYYY-MM-DD') ){
-  //         timeSegmentData.push({
-  //           timeSegmentId: timeSegment.id,
-  //           description: timeSegment.description,
-  //           seconds: timeSegment.endTime.diff(timeSegment.startTime, "seconds"),
+  //       if(moment(timelogEntry.startTime).format('YYYY-MM-DD') == currentDate.format('YYYY-MM-DD') || moment(timelogEntry.endTime).format('YYYY-MM-DD') == currentDate.format('YYYY-MM-DD') ){
+  //         timelogEntryData.push({
+  //           timelogEntryId: timelogEntry.id,
+  //           description: timelogEntry.description,
+  //           seconds: timelogEntry.endTime.diff(timelogEntry.startTime, "seconds"),
   //         });
-  //         let timeSegmentActivities = timeSegment.activities;
-  //         timeSegmentActivities.forEach((timeSegmentActivity)=>{
+  //         let timelogEntryActivities = timelogEntry.activities;
+  //         timelogEntryActivities.forEach((timelogEntryActivity)=>{
 
   //           let alreadyIn:boolean = false;
   //           for(let activityItem of activityData){
-  //             if(activityItem.activityTreeId == timeSegmentActivity.activityTreeId){
+  //             if(activityItem.activityTreeId == timelogEntryActivity.activityTreeId){
   //               alreadyIn = true;
-  //               activityItem.seconds += (timeSegmentActivity.duration*60);
+  //               activityItem.seconds += (timelogEntryActivity.duration*60);
   //             }
   //           }
   //           if(!alreadyIn){
   //             activityData.push({
-  //               activityTreeId:timeSegmentActivity.activityTreeId,
-  //               seconds: timeSegmentActivity.duration*60,
+  //               activityTreeId:timelogEntryActivity.activityTreeId,
+  //               seconds: timelogEntryActivity.duration*60,
   //             })
   //           }
   //         });
@@ -76,7 +75,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   //       }else{
 
-  //         // console.log("TimeSegmentData:", timeSegmentData);
+  //         // console.log("TimelogEntryData:", timelogEntryData);
   //         // console.log("ActivityData", activityData);
 
   //         activityData.sort((a1, a2)=>{
@@ -91,38 +90,38 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   //         let day: Day = new Day('','', currentDate.format('YYYY-MM-DD'));
   //         day.activityData = activityData;
-  //         day.timeSegmentData = timeSegmentData;
+  //         day.timelogEntryData = timelogEntryData;
   //         console.log("Saving day:", day.dateYYYYMMDD);
 
   //         this.daybookService.saveDayHTTP(day);
 
-  //         timeSegmentData = [];
+  //         timelogEntryData = [];
   //         activityData = [];
-  //         timeSegmentData.push({
-  //           timeSegmentId: timeSegment.id,
-  //           description: timeSegment.description,
-  //           seconds: timeSegment.endTime.diff(timeSegment.startTime, "seconds"),
+  //         timelogEntryData.push({
+  //           timelogEntryId: timelogEntry.id,
+  //           description: timelogEntry.description,
+  //           seconds: timelogEntry.endTime.diff(timelogEntry.startTime, "seconds"),
   //         });
-  //         let timeSegmentActivities = timeSegment.activities;
-  //         timeSegmentActivities.forEach((timeSegmentActivity)=>{
+  //         let timelogEntryActivities = timelogEntry.activities;
+  //         timelogEntryActivities.forEach((timelogEntryActivity)=>{
 
   //           let alreadyIn:boolean = false;
   //           for(let activityItem of activityData){
-  //             if(activityItem.activityTreeId == timeSegmentActivity.activityTreeId){
+  //             if(activityItem.activityTreeId == timelogEntryActivity.activityTreeId){
   //               alreadyIn = true;
-  //               activityItem.seconds += (timeSegmentActivity.duration*60);
+  //               activityItem.seconds += (timelogEntryActivity.duration*60);
   //             }
   //           }
   //           if(!alreadyIn){
   //             activityData.push({
-  //               activityTreeId:timeSegmentActivity.activityTreeId,
-  //               seconds: timeSegmentActivity.duration*60,
+  //               activityTreeId:timelogEntryActivity.activityTreeId,
+  //               seconds: timelogEntryActivity.duration*60,
   //             })
   //           }
   //         });
 
 
-  //         currentDate = moment(timeSegment.startTime);
+  //         currentDate = moment(timelogEntry.startTime);
   //       }
 
 
@@ -130,7 +129,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   //     }
   //         let day: Day = new Day('','', currentDate.format('YYYY-MM-DD'));
   //         day.activityData = activityData;
-  //         day.timeSegmentData = timeSegmentData;
+  //         day.timelogEntryData = timelogEntryData;
   //         console.log("Saving day:", day.dateYYYYMMDD);
 
   //         this.daybookService.saveDayHTTP(day);

@@ -34,16 +34,16 @@
       </div>
 
       <div class="daybook-view" *ngIf="currentView == 'timelog'">
-        <app-time-log [currentDate]="currentDate" (timeSegmentFormData)="onTimeSegmentDataProvided($event)"
+        <app-timelog [currentDate]="currentDate" (timelogEntryFormData)="onTimelogEntryDataProvided($event)"
           (changedDate)="onChangeDate($event)">
-        </app-time-log>
+        </app-timelog>
       </div>
 
       <div class="daybook-view" *ngIf="currentView == 'form'">
-        <!-- <app-time-segment-form [newTimeSegment]="nextTimeSegment" [reviewTimeSegment]="reviewTimeSegment"
-          [action]="timeSegmentFormAction" (closeForm)="onCloseForm($event)"></app-time-segment-form> -->
-        <app-time-segment-form [providedFormData]="timeSegmentFormData" (closeForm)="onCloseForm($event)">
-        </app-time-segment-form>
+        <!-- <app-time-entry-form [newTimelogEntry]="nextTimelogEntry" [reviewTimelogEntry]="reviewTimelogEntry"
+          [action]="timelogEntryFormAction" (closeForm)="onCloseForm($event)"></app-time-entry-form> -->
+        <app-time-entry-form [providedFormData]="timelogEntryFormData" (closeForm)="onCloseForm($event)">
+        </app-time-entry-form>
       </div>
 
     </div>

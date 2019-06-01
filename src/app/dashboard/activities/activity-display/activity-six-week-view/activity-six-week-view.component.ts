@@ -46,12 +46,12 @@ export class ActivitySixWeekViewComponent implements OnInit {
 
       Some notes:  
       As of right now, there will be a bit of an inaccuracy issue here, for the following reason:
-      in the activity-display.component.ts file, activities are being pulled from timeSegments from the server, and by default
-      are simply being read-in as if these activies always take up the entirety of the duration of the timeSegment, even if the timeSegment has multiple activites within it.
+      in the activity-display.component.ts file, activities are being pulled from timelogEntrys from the server, and by default
+      are simply being read-in as if these activies always take up the entirety of the duration of the timelogEntry, even if the timelogEntry has multiple activites within it.
 
-      e.g. a timeSegment has "reading" and "web browsing" as 2 activities within it.  when the data is pulled, both "reading" as well as "web browsing" measure-in as the full duration of the timeSegment
+      e.g. a timelogEntry has "reading" and "web browsing" as 2 activities within it.  when the data is pulled, both "reading" as well as "web browsing" measure-in as the full duration of the timelogEntry
 
-      this is actually part of a much larger situation, where saved timeSegments do not delineate the times/duration between activities within.  
+      this is actually part of a much larger situation, where saved timelogEntrys do not delineate the times/duration between activities within.  
       This needs to be fixed at the level of creating and storing in the DB.
     */
 

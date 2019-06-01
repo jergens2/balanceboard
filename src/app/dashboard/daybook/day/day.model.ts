@@ -3,7 +3,8 @@ import * as moment from 'moment';
 import { IActivityDataItem } from './activity-data-item.interface';
 import { IDailyTaskListDataItem } from './daily-task-list-data-item.interface';
 import { ITaskDataItem } from './task-data.interface';
-import { ITimeSegmentDataItem } from './time-segment-data.interface';
+import { ITimelogEntryDataItem } from './timelog-entry-data.interface';
+
 
 export class Day{
 
@@ -15,7 +16,7 @@ export class Day{
         activityData: req.body.activityData,
         dailyTaskListData: req.body.dailyTaskListData,
         taskData: req.body.taskData,
-        timeSegmentData: req.body.timeSegmentData
+        timelogEntryData: req.body.timelogEntryData
 
 
     */
@@ -27,7 +28,7 @@ export class Day{
     activityData: IActivityDataItem[] = [];
     dailyTaskListData: IDailyTaskListDataItem[] = [];
     taskData: ITaskDataItem[] = [];
-    timeSegmentData: ITimeSegmentDataItem[] = [];
+    timelogEntryData: ITimelogEntryDataItem[] = [];
 
     private _date: moment.Moment;
     public get date(): moment.Moment{

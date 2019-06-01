@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 
 import * as moment from 'moment';
-import { TimeSegmentTile } from './time-segment-tile.model';
-import { ITimeSegmentFormData } from '../../time-segment-form/time-segment-form-data.interface';
+import { TimelogEntryTile } from './timelog-entry-tile.model';
 import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../../modal/modal-option.interface';
 import { Modal } from '../../../../modal/modal.model';
@@ -11,13 +10,14 @@ import { ModalService } from '../../../../modal/modal.service';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
+import { ITimelogEntryFormData } from '../../timelog-entry-form/timelog-entry-form-data.interface';
 
 @Component({
-  selector: 'app-time-segment-tile',
-  templateUrl: './time-segment-tile.component.html',
-  styleUrls: ['./time-segment-tile.component.css']
+  selector: 'app-timelog-entry-tile',
+  templateUrl: './timelog-entry-tile.component.html',
+  styleUrls: ['./timelog-entry-tile.component.css']
 })
-export class TimeSegmentTileComponent implements OnInit, OnDestroy {
+export class TimelogEntryTileComponent implements OnInit, OnDestroy {
 
   faTimes = faTimes;
   faEdit = faEdit;
@@ -25,8 +25,8 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
 
   constructor(private timelogService: TimelogService, private modalService: ModalService) { }
 
-  @Input() tile: TimeSegmentTile;
-  @Output() timeSegmentFormData: EventEmitter<ITimeSegmentFormData> = new EventEmitter();
+  @Input() tile: TimelogEntryTile;
+  @Output() timelogEntryFormData: EventEmitter<ITimelogEntryFormData> = new EventEmitter();
 
   ngOnInit() {
     // console.log("tile received:", this.tile)
@@ -38,21 +38,21 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
 
 
 
-  onClickSetNewTimeSegment(tile: TimeSegmentTile) {
+  onClickSetNewTimelogEntry(tile: TimelogEntryTile) {
     console.log("tile is ", tile);
-    let timeSegmentFormData: ITimeSegmentFormData = {
+    let timelogEntryFormData: ITimelogEntryFormData = {
       action: 'SET',
-      timeSegment: tile.timeSegment,
-      date: moment(tile.timeSegment.startTime)
+      timelogEntry: tile.timelogEntry,
+      date: moment(tile.timelogEntry.startTime)
     }
-    this.timeSegmentFormData.emit(timeSegmentFormData);
+    this.timelogEntryFormData.emit(timelogEntryFormData);
   }
 
-  onClickTile(tile: TimeSegmentTile) {
-    console.log("tile data: " +  tile.startTime.format('hh:mm:ss a') + " to " + tile.endTime.format('hh:mm:ss a'), tile.timeSegment.activities)
+  onClickTile(tile: TimelogEntryTile) {
+    console.log("tile data: " +  tile.startTime.format('hh:mm:ss a') + " to " + tile.endTime.format('hh:mm:ss a'), tile.timelogEntry.activities)
     if (!tile.isLarge) {
       if (tile.isBlank) {
-        this.onClickSetNewTimeSegment(tile);
+        this.onClickSetNewTimelogEntry(tile);
       } else {
         this.onClickTileEdit(tile);
       }
@@ -62,24 +62,24 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
     }
   }
 
-  onMouseOverTile(tile: TimeSegmentTile) {
+  onMouseOverTile(tile: TimelogEntryTile) {
     tile.isMouseOver = true;
   }
-  onMouseLeaveTile(tile: TimeSegmentTile) {
+  onMouseLeaveTile(tile: TimelogEntryTile) {
     tile.isMouseOver = false;
   }
 
-  onClickTileEdit(tile: TimeSegmentTile) {
-    let timeSegmentFormData: ITimeSegmentFormData = {
+  onClickTileEdit(tile: TimelogEntryTile) {
+    let timelogEntryFormData: ITimelogEntryFormData = {
       action: 'REVIEW',
-      timeSegment: tile.timeSegment,
-      date: moment(tile.timeSegment.startTime)
+      timelogEntry: tile.timelogEntry,
+      date: moment(tile.timelogEntry.startTime)
     }
-    this.timeSegmentFormData.emit(timeSegmentFormData);
+    this.timelogEntryFormData.emit(timelogEntryFormData);
   }
 
   private _modalSubscription: Subscription = new Subscription();
-  onClickTileDelete(tile: TimeSegmentTile) {
+  onClickTileDelete(tile: TimelogEntryTile) {
     this._modalSubscription.unsubscribe();
     let modalOptions: IModalOption[] = [
       {
@@ -95,11 +95,11 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Yes") {
         // try{
-        //   this.timeSegmentTiles.splice(this.timeSegmentTiles.indexOf(tile));
+        //   this.timelogEntryTiles.splice(this.timelogEntryTiles.indexOf(tile));
         // }catch{
 
         // }
-        this.timelogService.deleteTimeSegment(tile.timeSegment);
+        this.timelogService.deleteTimelogEntry(tile.timelogEntry);
 
       } else if (selectedOption.value == "No") {
 
@@ -110,10 +110,10 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
     this.modalService.activeModal = modal;
   }
 
-  activityName(tile: TimeSegmentTile): string {
+  activityName(tile: TimelogEntryTile): string {
     if (moment(tile.endTime).diff(moment(tile.startTime), 'minutes') > 19) {
-      if (tile.timeSegment.activities.length > 0) {
-        return tile.timeSegment.activities[0].activity.name;
+      if (tile.timelogEntry.activities.length > 0) {
+        return tile.timelogEntry.activities[0].activity.name;
       } else {
         return "";
       }
@@ -123,8 +123,9 @@ export class TimeSegmentTileComponent implements OnInit, OnDestroy {
 
   }
 
-  timeEventTimesString(tile: TimeSegmentTile): string {
-    return ("" + tile.timeSegment.startTime.format("h:mm a") + " - " + tile.timeSegment.endTime.format('h:mm a'));
+  timeEventTimesString(tile: TimelogEntryTile): string {
+    return ("" + tile.timelogEntry.startTime.format("h:mm a") + " - " + tile.timelogEntry.endTime.format('h:mm a'));
   }
+
 
 }

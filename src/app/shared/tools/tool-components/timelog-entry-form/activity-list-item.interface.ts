@@ -4,4 +4,6 @@ export interface IActivityListItem{
     activity: UserDefinedActivity,
     mouseOver: boolean,
     durationMinutes: number,
+    durationPercent: number,
+    isResizing: boolean,
 }

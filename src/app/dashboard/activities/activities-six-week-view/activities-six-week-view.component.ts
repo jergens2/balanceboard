@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivitiesService } from '../activities.service';
 import { TimelogService } from '../../daybook/time-log/timelog.service';
 import * as moment from 'moment';
-import { TimeSegment } from '../../daybook/time-log/time-segment-tile/time-segment.model';
-import { TimeSegmentActivity } from '../../daybook/time-log/time-segment-activity.model';
+import { TimelogEntry } from '../../daybook/time-log/timelog-entry-tile/timelog-entry.model';
+import { TimelogEntryActivity } from '../../daybook/time-log/timelog-entry-activity.model';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { UserDefinedActivity } from '../user-defined-activity.model';
 import { DaybookService } from '../../daybook/daybook.service';
@@ -104,32 +104,32 @@ export class ActivitiesSixWeekViewComponent implements OnInit {
 
   }
 
-  private getActivityDayData(thisDaysActivities: any[], currentDate: moment.Moment, timeSegment: TimeSegment): any[] {
+  private getActivityDayData(thisDaysActivities: any[], currentDate: moment.Moment, timelogEntry: TimelogEntry): any[] {
 
     let totalDuration: number = 0;
-    if (timeSegment.endTime.isAfter(currentDate.endOf("day"))) {
-      totalDuration = moment(currentDate.endOf("day")).diff(timeSegment.startTime, "minutes");
-    } else if (timeSegment.startTime.isBefore(currentDate.startOf("day"))) {
-      totalDuration = moment(timeSegment.endTime).diff(currentDate.startOf("day"), "minutes");
+    if (timelogEntry.endTime.isAfter(currentDate.endOf("day"))) {
+      totalDuration = moment(currentDate.endOf("day")).diff(timelogEntry.startTime, "minutes");
+    } else if (timelogEntry.startTime.isBefore(currentDate.startOf("day"))) {
+      totalDuration = moment(timelogEntry.endTime).diff(currentDate.startOf("day"), "minutes");
     } else {
-      totalDuration = timeSegment.endTime.diff(timeSegment.startTime, "minutes");
+      totalDuration = timelogEntry.endTime.diff(timelogEntry.startTime, "minutes");
     }
 
-    let totalDurationPerActivity: number = totalDuration / timeSegment.activities.length;
+    let totalDurationPerActivity: number = totalDuration / timelogEntry.activities.length;
 
-    timeSegment.activities.forEach((timeSegmentActivity: TimeSegmentActivity) => {
+    timelogEntry.activities.forEach((timelogEntryActivity: TimelogEntryActivity) => {
 
       let activityInArray: boolean = false;
 
       thisDaysActivities.forEach((a: any) => {
-        if (a.activity == timeSegmentActivity.activity) {
+        if (a.activity == timelogEntryActivity.activity) {
           activityInArray = true;
           a.duration = a.duration + totalDurationPerActivity;
         }
       });
       if (!activityInArray) {
         thisDaysActivities.push({
-          activity: timeSegmentActivity.activity,
+          activity: timelogEntryActivity.activity,
           duration: totalDurationPerActivity
         })
       }

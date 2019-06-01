@@ -1,9 +1,9 @@
-import { TimeSegment } from "./time-segment.model";
+import { TimelogEntry } from "./timelog-entry.model";
 import * as moment from 'moment';
 
-export class TimeSegmentTile{
+export class TimelogEntryTile{
 
-    timeSegment: TimeSegment;
+    timelogEntry: TimelogEntry;
     style: any;
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
@@ -53,11 +53,11 @@ export class TimeSegmentTile{
 
 
 
-    constructor(timeSegment: TimeSegment, startTime: moment.Moment, endTime: moment.Moment){
-        if(timeSegment){
-            this.timeSegment = timeSegment;
+    constructor(timelogEntry: TimelogEntry, startTime: moment.Moment, endTime: moment.Moment){
+        if(timelogEntry){
+            this.timelogEntry = timelogEntry;
         }else{
-            this.timeSegment = new TimeSegment('','', moment(startTime).toISOString(), moment(endTime).toISOString(), '');
+            this.timelogEntry = new TimelogEntry('','', moment(startTime).toISOString(), moment(endTime).toISOString(), '');
             this._isBlank = true;
         }
 
