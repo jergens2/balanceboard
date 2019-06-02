@@ -1,36 +1,7 @@
 
-.root{
+.home-root{
     width:100%;
     display:flex;
     flex-direction: row;
     justify-content: center;
 }
-.home{
-    
-}
-
-.goals{
-    width: 600px;
-    padding:10px;
-    display:flex;
-    flex-direction: column;
-    background-color:rgb(250, 250, 250);
-    border-radius:5px;
-}
-
-.goal{
-    width: 100%;
-    margin-bottom: 10px;
-    background-color: white;
-    padding: 10px;
-    border: 1px solid rgb(218, 218, 218);
-    border-radius: 2px;
-    display:flex;
-    flex-direction: column;
-}
-
-.goal-title{
-    border-bottom: 1px solid rgb(218, 218, 218);
-
-}
-

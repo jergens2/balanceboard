@@ -1,0 +1,15 @@
+<div class="slider-bar-root" (mouseleave)="onMouseLeaveSliderBar()"
+  [ngClass]="{'active':activityItem.sliderBar.isActive}">
+
+
+  <div class="slider-bar">
+
+    <div *ngFor="let barItem of activityItem.sliderBar.sliderBarItems" class="bar-item" [ngStyle]="barItem.style"
+      (mouseenter)="onMouseEnterItem(barItem)" (mouseup)="onMouseUpItem(barItem)">
+      <div class="grabber" *ngIf="barItem.hasGrabber" (mousedown)="onMouseDownGrabber(barItem)">
+      </div>
+    </div>
+
+  </div>
+
+</div>

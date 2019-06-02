@@ -7,9 +7,13 @@ import { timer, Subscription } from 'rxjs';
 import { ModalService } from '../../../../modal/modal.service';
 import { ToolsService } from '../../tools.service';
 import { UserDefinedActivity } from '../../../../dashboard/activities/user-defined-activity.model';
-import { IActivityListItem } from './activity-list-item.interface';
+
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { TimelogEntryActivity } from '../../../../dashboard/daybook/time-log/timelog-entry-activity.model';
+import { DurationString } from './duration-string.class';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { ActivitySliderBar } from './tlef-activity-slider-bar/activity-slider-bar.class';
+import { ITLEFActivityListItem } from './tlef-activity-list-item.interface';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -19,6 +23,7 @@ import { TimelogEntryActivity } from '../../../../dashboard/daybook/time-log/tim
 export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   faTimes = faTimes;
+  faEdit = faEdit;
 
   constructor(private timelogService: TimelogService, private toolsService: ToolsService, private modalService: ModalService) { }
 
@@ -33,216 +38,55 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   initiated: boolean = false;
   formIsValid: boolean = false;
-  activityItems: IActivityListItem[] = [];
+  activityItems: ITLEFActivityListItem[] = [];
 
-  chart: any;
+  
+  timelogEntryStart: moment.Moment;
+  timelogEntryEnd: moment.Moment;
 
-  colorBarGridItems: any[] = [];
 
   ngOnInit() {
-    for(let i=0;i<20;i++){
-      this.colorBarGridItems.push({
-        value: (5*(i+1))
-      })
-    }
-    this.mostRecentTimelogEntry = this.timelogService.mostRecentTimelogEntry;
 
+    this.mostRecentTimelogEntry = this.timelogService.mostRecentTimelogEntry;
 
 
     this.clockSubscription = timer(0, 1000).subscribe(() => {
       this._now = moment();
-      this.buildChart();
 
     })
 
+
+
+    let timelogEntryStart: moment.Moment = moment(this.mostRecentTimelogEntry.endTime);
+    let timelogEntryEnd: moment.Moment = moment();
+    
+
+
+    this.timelogEntryStart = timelogEntryStart;
+    this.timelogEntryEnd = timelogEntryEnd;
+
+    
+
+
     this.timelogEntryForm = new FormGroup({
-      "startTime": new FormControl(),
-      "startDate": new FormControl(),
-      "endTime": new FormControl(),
-      "endDate": new FormControl(),
+      "startTime": new FormControl(timelogEntryStart.format('hh:mm a')),
+      "startDate": new FormControl(timelogEntryStart.format('YYYY-MM-DD')),
+      "endTime": new FormControl(timelogEntryEnd.format('hh:mm a')),
+      "endDate": new FormControl(timelogEntryEnd.format('YYYY-MM-DD')),
       "description": new FormControl(),
     });
+
+    this.initiated = true;
   }
   ngOnDestroy() {
     this.clockSubscription.unsubscribe();
   }
 
-  private buildChart() {
-
-    let chartStartTime: moment.Moment;
-    let chartEndTime: moment.Moment;
-
-    let timelogEntryStart: moment.Moment = moment(this.mostRecentTimelogEntry.endTime);
-    let timelogEntryEnd: moment.Moment = moment();
-    let timelogEntryMinutes: number = timelogEntryEnd.diff(timelogEntryStart, "minutes");
-    let totalMinutes: number = timelogEntryMinutes * (100 / 80);
-
-
-    chartStartTime = moment(timelogEntryStart).subtract((totalMinutes * 0.1), "minutes");
-    chartEndTime = moment(timelogEntryEnd).add((totalMinutes * .1), "minutes");
-
-
-    let previousTimelogEntrys: TimelogEntry[] = this.timelogService.timelogEntrys.filter((timelogEntry) => {
-      let isBefore = timelogEntry.startTime.isBefore(chartStartTime) && timelogEntry.endTime.isAfter(chartStartTime)
-      let isAfter = timelogEntry.startTime.isAfter(chartStartTime) && timelogEntry.endTime.isSameOrBefore(timelogEntryStart)
-      if (isBefore || isAfter) {
-        return timelogEntry;
-      }
-    });
-    previousTimelogEntrys = previousTimelogEntrys.sort((ts1, ts2) => {
-      if (ts1.startTime.isBefore(ts2.startTime)) {
-        return -1;
-      }
-      if (ts1.startTime.isAfter(ts2.startTime)) {
-        return 1;
-      }
-      return 0;
-    })
-
-
-
-    // let totalMinutes: number = moment(chartEndTime).diff(chartStartTime, "minutes");
-
-    let percentages: number[] = [];
-    previousTimelogEntrys.forEach((timelogEntry) => {
-      let minutes: number = 0
-      if (timelogEntry.startTime.isBefore(chartStartTime)) {
-        minutes = (timelogEntry.endTime.diff(chartStartTime, "minutes"));
-      } else {
-        minutes = (timelogEntry.endTime.diff(timelogEntry.startTime, "minutes"));
-      }
-
-      percentages.push((minutes / totalMinutes) * 100);
-    })
-
-    percentages.push((timelogEntryEnd.diff(timelogEntryStart, "minutes") / totalMinutes) * 100);
-    percentages.push((chartEndTime.diff(timelogEntryEnd, "minutes") / totalMinutes) * 100);
-
-    let gridTemplateRows: string = "";
-    percentages.forEach((percentage) => { gridTemplateRows += " " + percentage.toFixed(2) + "%"; })
-    let startGridRow: string = "" + (percentages.length - 1) + " /span 1";
-    let endGridRow: string = "" + percentages.length + " / span 1";
-    let chartEndRow: string = "" + (percentages.length + 1) + " / span 1";
-
-
-    let labelLines: {
-      style: {
-
-      },
-    }[] = [];
-    let currentLabelRow: number = 1;
-    while (currentLabelRow < percentages.length + 1) {
-      let borderTop: string = "";
-      if (currentLabelRow != 1 && currentLabelRow < percentages.length + 1) {
-        borderTop = "1px solid gray";
-      }
-      labelLines.push({
-        style: {
-          "border-top": borderTop,
-          "grid-row": "" + currentLabelRow + " / span 1",
-        },
-      })
-      currentLabelRow++;
-    }
-
-
-    let timelogEntryStartStyle = {
-      "grid-row": startGridRow,
-      "grid-column": "1 / span 1",
-    }
-    let timelogEntryEndStyle = {
-      "grid-row": endGridRow,
-      "grid-column": "1 / span 1",
-    }
-    let chartEndStyle = {
-      "grid-row": chartEndRow,
-      "grid-column": "1 / span 1",
-    }
-
-
-    let timeBlocks: {
-      style: any,
-      timelogEntry: TimelogEntry,
-      isCurrent: boolean,
-      isPrevious: boolean,
-      isFuture: boolean,
-    }[] = [];
-    let currentRow: number = 1;
-    previousTimelogEntrys.forEach((previousTimelogEntry) => {
-      timeBlocks.push({
-        style: {
-          "grid-row": "" + currentRow.toFixed(0) + " / span 1",
-          "grid-column": "3 / span 1",
-        },
-        isCurrent: false,
-        isPrevious: true,
-        isFuture: false,
-        timelogEntry: previousTimelogEntry
-      });
-      currentRow++;
-    })
-    timeBlocks.push({
-      style: {
-        "grid-row": "" + currentRow.toFixed(0) + " / span 1",
-        "grid-column": "3 / span 1",
-      },
-      isCurrent: true,
-      isPrevious: false,
-      isFuture: false,
-      timelogEntry: null,
-    });
-    currentRow++;
-    timeBlocks.push({
-      style: {
-        "grid-row": "" + currentRow.toFixed(0) + " / span 1",
-        "grid-column": "3 / span 1",
-      },
-      isCurrent: false,
-      isPrevious: false,
-      isFuture: true,
-      timelogEntry: null,
-    });
-
-
-    let chart: any = {
-
-      gridTemplateRows: gridTemplateRows,
-      labelLines: labelLines,
-
-      startTime: chartStartTime,
-      endTime: chartEndTime,
-      timeBlocks: timeBlocks,
-      timelogEntryStart: timelogEntryStart,
-      timelogEntryEnd: timelogEntryEnd,
-      timelogEntryMinutes: timelogEntryMinutes,
-
-      timelogEntryStartStyle: timelogEntryStartStyle,
-      timelogEntryEndStyle: timelogEntryEndStyle,
-      chartEndStyle: chartEndStyle,
-      isVisible: true
-    };
-
-
-    if (totalMinutes < 10) {
-      chart.isComplete = false;
-    }
-
-    this.chart = chart;
-
-    
-    this.timelogEntryForm.controls["startTime"].setValue(timelogEntryStart.format('HH:mm'));
-    this.timelogEntryForm.controls["startDate"].setValue(timelogEntryStart.format('YYYY-MM-DD'));
-    this.timelogEntryForm.controls["endTime"].setValue(timelogEntryEnd.format('HH:mm'));
-    this.timelogEntryForm.controls["endDate"].setValue(timelogEntryEnd.format('YYYY-MM-DD'));
-
-
-    this.initiated = true;
-    this.updateForm();
-  }
+  
 
   onClickSaveTimelogEntry() {
-    let startTime: string = this.chart.timelogEntryStart.second(0).millisecond(0).toISOString();
-    let endTime: string = this.chart.timelogEntryEnd.second(0).millisecond(0).toISOString();
+    let startTime: string = this.timelogEntryStart.second(0).millisecond(0).toISOString();
+    let endTime: string = this.timelogEntryEnd.second(0).millisecond(0).toISOString();
     let description: string = this.timelogEntryForm.controls['description'].value;
      
     let newTimelogEntry: TimelogEntry = new TimelogEntry("", this.timelogService.userId, startTime, endTime, description);
@@ -254,9 +98,17 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     this.modalService.closeModal();
   }
 
+  get timelogEntryMinutes(): number{
+    return this.timelogEntryEnd.diff(this.timelogEntryStart, "minutes");
+  }
+
   private updateForm() {
-    let durationMinutes: number = this.chart.timelogEntryMinutes / (this.activityItems.length);
-    let durationPercent = durationMinutes / (this.chart.timelogEntryMinutes) * 100;
+    this.timelogEntryForm.controls["startTime"].setValue(this.timelogEntryStart.format('HH:mm'));
+    this.timelogEntryForm.controls["startDate"].setValue(this.timelogEntryStart.format('YYYY-MM-DD'));
+    this.timelogEntryForm.controls["endTime"].setValue(this.timelogEntryEnd.format('HH:mm'));
+    this.timelogEntryForm.controls["endDate"].setValue(this.timelogEntryEnd.format('YYYY-MM-DD'));
+    let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
+    let durationPercent = durationMinutes / (this.timelogEntryMinutes) * 100;
     if (this.activityItems.length > 0) {
       this.formIsValid = true;
       this.activityItems.forEach((activityItem) => {
@@ -268,52 +120,60 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   }
 
   onActivityValueChanged(activity: UserDefinedActivity) {
-    let durationMinutes: number = this.chart.timelogEntryMinutes / (this.activityItems.length + 1);
-    let durationPercent = durationMinutes / (this.chart.timelogEntryMinutes) * 100;
+    let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length + 1);
+    let durationPercent = durationMinutes / (this.timelogEntryMinutes) * 100;
 
-    this.activityItems.push({
+    let sliderBar: ActivitySliderBar = new ActivitySliderBar(durationPercent, activity.color);
+
+
+    let activityItem: ITLEFActivityListItem = {
       activity: activity,
       durationMinutes: durationMinutes,
       durationPercent: durationPercent,
       mouseOver: false,
-      isResizing: false,
-    });
+      sliderBar: sliderBar,
+    }
+
+    this.activityItems.push(activityItem);
+
+    this.updatePercentages(activityItem);
    
     this.updateForm();
   }
 
+  private updatePercentages(activityItem: ITLEFActivityListItem, newPercent?: number){
+    if(newPercent){
 
-
-  onMouseDownGrabber(activityItem: IActivityListItem){
-    activityItem.isResizing = true;
-  }
-
-  onMouseEnterColorBarItem(item: {value: number}, activityItem: IActivityListItem){
-    console.log(item.value)
-    if(activityItem.isResizing){
-      console.log("New value is ", item.value);
+    }else{
+      
     }
+
   }
+
+  onActivityItemPercentChanged(activityItem: ITLEFActivityListItem, newPercent: number){
+    console.log("Percent changed: " + newPercent);
+    this.updatePercentages(activityItem, newPercent);
+  }
+
   
-  onMouseUpColorBarItem(item: {value: number}, activityItem: IActivityListItem){
-    activityItem.isResizing = false;
+
+
+
+  editingTimes: boolean = false;
+  onClickEditTimes(){
+    this.editingTimes = true;
   }
 
-  private recalculatePercentages(){
-
-  }
-
-
-  onMouseEnterActivity(activityItem: IActivityListItem) {
+  onMouseEnterActivity(activityItem: ITLEFActivityListItem) {
     activityItem.mouseOver = true;
   }
 
-  onMouseLeaveActivity(activityItem: IActivityListItem) {
+  onMouseLeaveActivity(activityItem: ITLEFActivityListItem) {
     activityItem.mouseOver = false;
   }
-  onClickRemoveActivity(activityItem: IActivityListItem) {
+  onClickRemoveActivity(activityItem: ITLEFActivityListItem) {
     this.activityItems.splice(this.activityItems.indexOf(activityItem), 1);
-    let durationMinutes: number = this.chart.timelogEntryMinutes / (this.activityItems.length);
+    let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
     this.activityItems.forEach((activityItem) => {
       activityItem.durationMinutes = durationMinutes;
     });
@@ -338,48 +198,17 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     return this._now
   }
 
-  public get currentTimelogEntryDuration(): string {
-    let minutes: number = moment().diff(this.mostRecentTimelogEntry.endTime, "minutes");
-
-    function plurality(value: number, name: string): string {
-      if (value == 1) {
-        return "1 " + name + "";
-      } else {
-        return "" + value + " " + name + "s";
-      }
-    }
-
-    if (minutes < 60) {
-      return plurality(minutes, "minute");
-    } else if (minutes >= 60 && minutes < 1440) {
-      let hours = Math.floor(minutes / 60);
-      minutes = minutes - (hours * 60);
-
-      return plurality(hours, "hour") + ", " + plurality(minutes, "minute");
-    } else if (minutes >= 1440) {
-      let days = Math.floor(minutes / 1440);
-      minutes = minutes - (days * 1440);
-      let remainingString: string = "";
-      if (minutes > 60) {
-        let hours: number = Math.floor(minutes / 60)
-        minutes = minutes - (hours * 60);
-        remainingString = plurality(hours, "hour") + "," + plurality(minutes, "minute");
-      } else {
-        remainingString = plurality(minutes, "minute");
-      }
-      return plurality(days, "day") + ", " + remainingString;
-    }
-
-
-    return "";
-  }
-
+  
   public get saveDisabled(): string {
     if (this.formIsValid) {
       return "";
     } else {
       return "disabled";
     }
+  }
+
+  public get currentTimelogEntryDuration(): string {
+    return DurationString.calculateDurationString(this.timelogEntryStart, this.timelogEntryEnd);
   }
 
 }
