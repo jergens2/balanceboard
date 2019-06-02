@@ -1,0 +1,35 @@
+.slider-bar-root{
+    width: 100%;
+    padding-top:3px;
+    padding-bottom:3px;
+
+    
+}
+.slider-bar{
+    width: 100%;
+
+    height: 12px;
+    border: 1px solid rgb(221, 221, 221);
+    border-radius:3px;
+    display:grid;
+    grid-template-rows: auto;
+    grid-template-columns: repeat(20, 1fr);
+
+}
+
+.active{
+    cursor: col-resize;
+}
+
+.grabber{
+    cursor: col-resize;
+    width:10px;
+    border-right:2px solid gray;
+    margin-left:auto;
+    height:100%; 
+}
+.bar-item{
+    width:100%;
+    height:100%;
+    grid-row: 1 / -1;
+}
