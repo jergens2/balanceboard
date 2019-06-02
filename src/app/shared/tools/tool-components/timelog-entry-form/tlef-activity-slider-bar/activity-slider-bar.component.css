@@ -13,12 +13,16 @@
     border-radius:3px;
     display:grid;
     grid-template-rows: auto;
-    grid-template-columns: repeat(20, 1fr);
+    /* be aware: this following number 50 must needs to be the same value as ActivitySliderBar.units */
+    grid-template-columns: repeat(50, 1fr);
 
 }
 
 .active{
     cursor: col-resize;
+}
+.locked{
+    border:1px solid blue;
 }
 
 .grabber{

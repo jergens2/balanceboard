@@ -2,7 +2,7 @@
   [ngClass]="{'active':activityItem.sliderBar.isActive}">
 
 
-  <div class="slider-bar">
+  <div class="slider-bar" [ngClass]="{'locked':activityItem.percentageIsSet}">
 
     <div *ngFor="let barItem of activityItem.sliderBar.sliderBarItems" class="bar-item" [ngStyle]="barItem.style"
       (mouseenter)="onMouseEnterItem(barItem)" (mouseup)="onMouseUpItem(barItem)">

@@ -13,7 +13,8 @@ import { TimelogEntryActivity } from '../../../../dashboard/daybook/time-log/tim
 import { DurationString } from './duration-string.class';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivitySliderBar } from './tlef-activity-slider-bar/activity-slider-bar.class';
-import { ITLEFActivityListItem } from './tlef-activity-list-item.interface';
+import { TLEFActivityListItem } from './tlef-activity-list-item.class';
+import { isUndefined } from 'util';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -38,9 +39,9 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   initiated: boolean = false;
   formIsValid: boolean = false;
-  activityItems: ITLEFActivityListItem[] = [];
+  activityItems: TLEFActivityListItem[] = [];
 
-  
+
   timelogEntryStart: moment.Moment;
   timelogEntryEnd: moment.Moment;
 
@@ -59,13 +60,13 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
     let timelogEntryStart: moment.Moment = moment(this.mostRecentTimelogEntry.endTime);
     let timelogEntryEnd: moment.Moment = moment();
-    
+
 
 
     this.timelogEntryStart = timelogEntryStart;
     this.timelogEntryEnd = timelogEntryEnd;
 
-    
+
 
 
     this.timelogEntryForm = new FormGroup({
@@ -82,7 +83,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     this.clockSubscription.unsubscribe();
   }
 
-  
+
 
   onClickSaveTimelogEntry() {
     let startTime: string = this.timelogEntryStart.second(0).millisecond(0).toISOString();
@@ -97,7 +98,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     this.modalService.closeModal();
   }
 
-  get timelogEntryMinutes(): number{
+  get timelogEntryMinutes(): number {
     return this.timelogEntryEnd.diff(this.timelogEntryStart, "minutes");
   }
 
@@ -115,67 +116,188 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
         activityItem.durationPercent = durationPercent;
       });
     }
-    
+
   }
 
   onActivityValueChanged(activity: UserDefinedActivity) {
+    // This is the event of a new activity being added.
     let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length + 1);
     let durationPercent = durationMinutes / (this.timelogEntryMinutes) * 100;
 
-    let sliderBar: ActivitySliderBar = new ActivitySliderBar(durationPercent, activity.color);
+    const minimumActivityPercent: number = 2;
+    let maximumPercent: number = 100;
 
-
-    let activityItem: ITLEFActivityListItem = {
-      activity: activity,
-      durationMinutes: durationMinutes,
-      durationPercent: durationPercent,
-      mouseOver: false,
-      sliderBar: sliderBar,
+    if (this.activityItems.length > 1) {
+      maximumPercent = (100 - ((this.activityItems.length - 1) * minimumActivityPercent));
     }
+
+    let activityItem: TLEFActivityListItem = new TLEFActivityListItem(activity, durationMinutes, durationPercent, this.timelogEntryMinutes, maximumPercent);
 
     this.activityItems.push(activityItem);
 
+    this.updateChangeSubscriptions();
     this.updatePercentages(activityItem);
-   
+
     this.updateForm();
   }
 
-  private updatePercentages(activityItem: ITLEFActivityListItem, newPercent?: number){
-    if(newPercent){
+  private changeSubscriptions: Subscription[] = [];
+  private updateChangeSubscriptions() {
+    this.changeSubscriptions.forEach((sub) => {
+      sub.unsubscribe();
+    });
+    this.changeSubscriptions = [];
+    for (let activityItem of this.activityItems) {
+      activityItem.sliderBar.deactivate();
+      this.changeSubscriptions.push(activityItem.percentChanged$.subscribe((percentChanged) => {
+        this.updatePercentages(activityItem, percentChanged);
+      }))
+    }
+  }
 
-    }else{
-      
+  private updatePercentages(changedActivityItem: TLEFActivityListItem, newPercent?: number) {
+    const minimumActivityPercent: number = 2;
+    let maximumPercent: number = 100;
+
+    if (this.activityItems.length > 1) {
+      maximumPercent = (100 - ((this.activityItems.length - 1) * minimumActivityPercent));
+    }
+    if (newPercent) {
+
+      if (this.activityItems.length == 1) {
+        this.activityItems[0].updatePercentage(100, false, 100);
+      } else if (this.activityItems.length > 1) {
+
+        let percentageSum: number = 0;
+
+
+        this.activityItems.forEach((activityItem) => { percentageSum += activityItem.durationPercent });
+        if (percentageSum > 100) {
+          let totalSubtract: number = percentageSum - 100;
+
+          while (totalSubtract > 0) {
+            let itemsLength = (this.activityItems.filter((item) => {
+              if (item.durationPercent > minimumActivityPercent && item.activity.treeId != changedActivityItem.activity.treeId) {
+                return item;
+              }
+            })).length;
+
+            if(itemsLength > 0){
+              let subtractEvenly: number = totalSubtract / itemsLength;
+
+              this.activityItems.forEach((activityItem) => {
+                if (activityItem.activity.treeId != changedActivityItem.activity.treeId && activityItem.durationPercent > minimumActivityPercent) {
+                  if (activityItem.durationPercent > minimumActivityPercent) {
+                    if ((activityItem.durationPercent - subtractEvenly) > minimumActivityPercent) {
+                      totalSubtract -= subtractEvenly;
+                      activityItem.updatePercentage(activityItem.durationPercent - subtractEvenly, true, maximumPercent);
+                    } else {
+                      totalSubtract -= (activityItem.durationPercent - minimumActivityPercent);
+                      activityItem.updatePercentage(minimumActivityPercent, true, maximumPercent)
+                    }
+                  }
+                }
+                if (subtractEvenly <= minimumActivityPercent) {
+                  if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
+                    activityItem.updatePercentage(activityItem.durationPercent - totalSubtract, false, maximumPercent);
+                  }
+                }
+              });
+            }else{
+              this.activityItems.forEach((activityItem) => {
+                if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
+                  activityItem.updatePercentage(activityItem.durationPercent - totalSubtract, false, maximumPercent);
+                }
+              });
+              totalSubtract = 0;
+            }
+            
+
+          }
+
+
+        } else if (percentageSum < 100) {
+          let totalAdd = 100 - percentageSum;
+
+          while (totalAdd > 0) {
+            let itemsLength = (this.activityItems.filter((item) => {
+              if (item.durationPercent < maximumPercent && item.activity.treeId != changedActivityItem.activity.treeId) {
+                return item;
+              }
+            })).length;
+            if(itemsLength > 0){
+              let addEvenly: number = totalAdd / itemsLength;
+              this.activityItems.forEach((activityItem) => {
+  
+                if (activityItem.activity.treeId != changedActivityItem.activity.treeId && activityItem.durationPercent < maximumPercent) {
+                  if ((activityItem.durationPercent + addEvenly) <= maximumPercent) {
+                    totalAdd -= addEvenly;
+                    activityItem.updatePercentage(activityItem.durationPercent + addEvenly, true, maximumPercent);
+                  } else {
+                    let difference: number = (maximumPercent - activityItem.durationPercent)
+                    totalAdd -= difference;
+                    activityItem.updatePercentage(activityItem.durationPercent + difference, true, maximumPercent);
+                  }
+                }
+  
+                if (addEvenly <= 1) {
+                  if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
+                    activityItem.updatePercentage(activityItem.durationPercent + totalAdd, false, maximumPercent);
+                  }
+                  totalAdd = 0;
+                }
+              });
+            }else{
+              this.activityItems.forEach((activityItem)=>{
+                if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
+                  activityItem.updatePercentage(activityItem.durationPercent + totalAdd, false, maximumPercent);
+                }
+              })
+              totalAdd = 0;
+            }
+          }
+
+        }
+      }
+
+
+    } else {
+      for (let activityItem of this.activityItems) {
+        let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
+        let dividedEvenlyPercentage = durationMinutes / (this.timelogEntryMinutes) * 100;
+        console.log("divided evenly", dividedEvenlyPercentage)
+        activityItem.sliderBar.deactivate();
+        activityItem.updatePercentage(dividedEvenlyPercentage, true, maximumPercent);
+      }
     }
 
   }
 
-  onActivityItemPercentChanged(activityItem: ITLEFActivityListItem, newPercent: number){
-    console.log("Percent changed: " + newPercent);
-    this.updatePercentages(activityItem, newPercent);
-  }
 
-  
+
+
 
 
 
   editingTimes: boolean = false;
-  onClickEditTimes(){
+  onClickEditTimes() {
     this.editingTimes = true;
   }
 
-  onMouseEnterActivity(activityItem: ITLEFActivityListItem) {
+  onMouseEnterActivity(activityItem: TLEFActivityListItem) {
     activityItem.mouseOver = true;
   }
 
-  onMouseLeaveActivity(activityItem: ITLEFActivityListItem) {
+  onMouseLeaveActivity(activityItem: TLEFActivityListItem) {
     activityItem.mouseOver = false;
   }
-  onClickRemoveActivity(activityItem: ITLEFActivityListItem) {
+  onClickRemoveActivity(activityItem: TLEFActivityListItem) {
     this.activityItems.splice(this.activityItems.indexOf(activityItem), 1);
     let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
     this.activityItems.forEach((activityItem) => {
       activityItem.durationMinutes = durationMinutes;
     });
+    this.updatePercentages(activityItem);
     this.updateForm();
   }
 
@@ -197,7 +319,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     return this._now
   }
 
-  
+
   public get saveDisabled(): string {
     if (this.formIsValid) {
       return "";

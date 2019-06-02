@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ITLEFActivityListItem } from '../tlef-activity-list-item.interface';
+import { TLEFActivityListItem } from '../tlef-activity-list-item.class';
 import { ITLEFActivitySliderBarItem } from './activity-slider-bar-item.interface';
 import { Subscription } from 'rxjs';
 
@@ -10,20 +10,18 @@ import { Subscription } from 'rxjs';
 })
 export class ActivitySliderBarComponent implements OnInit {
 
-  @Input() activityItem: ITLEFActivityListItem;
+  @Input() activityItem: TLEFActivityListItem;
   @Output() percentChanged: EventEmitter<number> = new EventEmitter();
 
   constructor() { }
 
-  private percentChangeSubscription: Subscription = new Subscription();
+
 
   ngOnInit() {
-    this.percentChangeSubscription = this.activityItem.sliderBar.durationPercent$.subscribe((newPercent)=>{
-      this.percentChanged.emit(newPercent);
-    });
+
   }
   ngOnDestroy(){  
-    this.percentChangeSubscription.unsubscribe();
+
   }
 
   onMouseLeaveSliderBar(){

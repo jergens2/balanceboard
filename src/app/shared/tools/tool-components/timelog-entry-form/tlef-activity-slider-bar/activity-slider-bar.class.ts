@@ -15,7 +15,7 @@ export class ActivitySliderBar {
 
     private changePercent(percent) {
         this.durationPercent = percent;
-        this._sliderBarItems = this.buildSliderBarItems();
+        this._sliderBarItems = this.buildSliderBarItems(); 
         this._percentChanged.next(percent);
     }
 
@@ -27,23 +27,35 @@ export class ActivitySliderBar {
     }
 
     private color: string = "white";
-    constructor(durationPercent: number, color: string) {
-        this.durationPercent = durationPercent;
+    private maxPercent: number;
+    constructor(durationPercent: number, maxPercent:number, color: string) {
         this.color = color;
-        this._sliderBarItems = this.buildSliderBarItems();
+        this.maxPercent = maxPercent;
+        this.changePercent(durationPercent);
     }
+    update(durationPercent: number, maxPercent: number){
+        this.maxPercent = maxPercent;
+        this.durationPercent = durationPercent;
+        this._sliderBarItems = this.buildSliderBarItems(); 
+    }
+
+
+    private units: number = 50;
+    // Be aware that this units value must be the same number of grid columns in the component.css file.
+    private percentPerUnit = 100 / this.units;
+
 
     private buildSliderBarItems(): ITLEFActivitySliderBarItem[] {
         let sliderBarGridItems: ITLEFActivitySliderBarItem[] = [];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < this.units; i++) {
             let hasValue: boolean = false;
             let backgroundColor: string = "white";
-            let percent: number = (i + 1) * 5;
+            let percent: number = (i + 1) * this.percentPerUnit;
             let hasGrabber: boolean = false;
             if (percent <= this.durationPercent) {
                 hasValue = true;
                 backgroundColor = this.color;
-                if ((percent + 5) > this.durationPercent) {
+                if ((percent + this.percentPerUnit) > this.durationPercent) {
                     hasGrabber = true;
                 }
             }
@@ -90,12 +102,15 @@ export class ActivitySliderBar {
 
     private recalculatePercent(currentSliderBarItem: ITLEFActivitySliderBarItem) {
         let percent = currentSliderBarItem.percent;
+        if(percent >= this.maxPercent){
+            percent = this.maxPercent;
+        }
         for (let sliderBarItem of this._sliderBarItems) {
             sliderBarItem.hasGrabber = false;
             if (sliderBarItem.percent <= percent) {
                 sliderBarItem.hasValue = true;
                 sliderBarItem.style["background-color"] = this.color;
-                if ((sliderBarItem.percent + 5) > percent) {
+                if ((sliderBarItem.percent + this.percentPerUnit) > percent) {
                     sliderBarItem.hasGrabber = true;
                 }
             } else {
