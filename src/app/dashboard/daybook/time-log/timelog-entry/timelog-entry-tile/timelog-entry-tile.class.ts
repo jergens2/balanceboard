@@ -1,4 +1,4 @@
-import { TimelogEntry } from "./timelog-entry.model";
+import { TimelogEntry } from "../timelog-entry.class";
 import * as moment from 'moment';
 
 export class TimelogEntryTile{
@@ -56,8 +56,10 @@ export class TimelogEntryTile{
     constructor(timelogEntry: TimelogEntry, startTime: moment.Moment, endTime: moment.Moment){
         if(timelogEntry){
             this.timelogEntry = timelogEntry;
+            // console.log("Feeling goodman")
         }else{
-            this.timelogEntry = new TimelogEntry('','', moment(startTime).toISOString(), moment(endTime).toISOString(), '');
+            this.timelogEntry = new TimelogEntry('','', moment(startTime).toISOString(), moment(endTime).toISOString(), '', null);
+            // console.log("Warning, after refactor, above line is commented out.");
             this._isBlank = true;
         }
 

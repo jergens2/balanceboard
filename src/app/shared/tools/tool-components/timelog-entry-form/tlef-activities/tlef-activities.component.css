@@ -1,0 +1,22 @@
+
+.new-activity{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left:15px;
+    margin-right:15px;
+}
+.new-activity-name{
+    margin-left:5px;
+}
+.new-activity-color-block{
+    width:20px;
+    height:20px;
+    border-radius:3px;
+}
+
+.slider-bar-container{
+    width:100%;
+
+}
+

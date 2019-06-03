@@ -1,0 +1,35 @@
+<div class="tlef-activities-root">
+  <div style="margin-bottom:5px;">
+    What activities have you been doing in the last <span
+      style="font-weight:bold;color:rgb(0, 73, 168);;">{{ currentTimelogEntryDuration }}</span> ?
+  </div>
+
+  <div *ngFor="let activityItem of activityItems" class="new-activity no-select"
+    (mouseenter)="onMouseEnterActivity(activityItem)" (mouseleave)="onMouseLeaveActivity(activityItem)">
+    <div style="flex-grow:2;display:flex;flex-direction: column;">
+      <div style="display:flex;flex-direction: row;">
+        <div class="new-activity-name">
+          {{ activityItem.activity.name }}
+        </div>
+
+        <div class="new-activity-duration">
+          : {{ activityItem.durationMinutes.toFixed(0) }} minutes
+        </div>
+      </div>
+
+      <div class="slider-bar-container">
+        <app-activity-slider-bar [activityItem]="activityItem"></app-activity-slider-bar>
+
+      </div>
+
+
+    </div>
+    <div class="delete-activity">
+      <fa-icon class="icon-button" [icon]="faTimes" (click)="onClickRemoveActivity(activityItem)"></fa-icon>
+    </div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <app-activity-input-dropdown (valueChanged)="onActivityValueChanged($event)"></app-activity-input-dropdown>
+  </div>
+</div>

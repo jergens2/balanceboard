@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivityTree } from '../activity-tree.model';
-import { TimelogEntry } from '../../daybook/time-log/timelog-entry-tile/timelog-entry.model';
+import { TimelogEntry } from '../../daybook/time-log/timelog-entry/timelog-entry.class';
 
 @Component({
   selector: 'app-activity-display',
@@ -37,49 +37,49 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   @Input() set selectedActivity(activity: UserDefinedActivity) {
     this.action = "view";
     this.activity = activity;
-    this.getActivityData();
+    // this.getActivityData();
   }
   ngOnInit() {
     this.action = "view";
-
+    console.log("this method is neutered, due to refactor of tleActivity refactor");
     this.activitiesService.activitiesTree$.subscribe((newTree: ActivityTree) => {
       let foundActivity = newTree.findActivityByTreeId(this.activity.treeId);
       this.activity = Object.assign({}, foundActivity);
-      this.getActivityData();
+      // this.getActivityData();
     });
 
 
   }
 
-  private getActivityData() {
-    this.ifLoading = true;
-    this.activityInstances = [];
-    this.activityDataSubscription.unsubscribe();
-    this.activityDataSubscription = this.activitiesService.getActivityData(this.activity).subscribe((timelogEntrys: TimelogEntry[]) => {
-      let activityInstances: IActivityInstance[] = [];
-      for (let timelogEntry of timelogEntrys) {
+  // private getActivityData() {
+  //   this.ifLoading = true;
+  //   this.activityInstances = [];
+  //   this.activityDataSubscription.unsubscribe();
+  //   this.activityDataSubscription = this.activitiesService.getActivityData(this.activity).subscribe((timelogEntrys: TimelogEntry[]) => {
+  //     let activityInstances: IActivityInstance[] = [];
+  //     for (let timelogEntry of timelogEntrys) {
 
-        let timeForThisActivity: number = 0;
-        if(timelogEntry.activities.length > 1){
+  //       let timeForThisActivity: number = 0;
+  //       if(timelogEntry.activities.length > 1){
           
-          let timelogEntryDuration: number = moment(timelogEntry.endTimeISO).diff(moment(timelogEntry.startTimeISO), 'minutes');
-          timeForThisActivity =  timelogEntryDuration / timelogEntry.activities.length;
+  //         let timelogEntryDuration: number = moment(timelogEntry.endTimeISO).diff(moment(timelogEntry.startTimeISO), 'minutes');
+  //         timeForThisActivity =  timelogEntryDuration / timelogEntry.activities.length;
 
-        }else{
-          timeForThisActivity = moment(timelogEntry.endTimeISO).diff(moment(timelogEntry.startTimeISO), 'minutes');
-        }
+  //       }else{
+  //         timeForThisActivity = moment(timelogEntry.endTimeISO).diff(moment(timelogEntry.startTimeISO), 'minutes');
+  //       }
 
-        let durationHours: number = timeForThisActivity / 60;
-        let instance: IActivityInstance = { startTime: moment(timelogEntry.startTime), endTime: moment(timelogEntry.endTime), durationHours: durationHours, activityTreeId: this.activity.treeId }
-        activityInstances.push(instance);
-      }
+  //       let durationHours: number = timeForThisActivity / 60;
+  //       let instance: IActivityInstance = { startTime: moment(timelogEntry.startTime), endTime: moment(timelogEntry.endTime), durationHours: durationHours, activityTreeId: this.activity.treeId }
+  //       activityInstances.push(instance);
+  //     }
 
-      this.activityTimelogEntrys = timelogEntrys;
-      this.activityInstances = activityInstances
-      this.ifLoading = false;
-    });
+  //     this.activityTimelogEntrys = timelogEntrys;
+  //     this.activityInstances = activityInstances
+  //     this.ifLoading = false;
+  //   });
 
-  }
+  // }
 
   onClickEdit() {
     this.action = "edit";

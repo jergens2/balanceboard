@@ -11,12 +11,14 @@ export class ActivitySliderBar {
         return this._sliderBarItems;
     }
 
-    // percentageManuallyChanged: boolean = false;
 
     private changePercent(percent) {
-        this.durationPercent = percent;
-        this._sliderBarItems = this.buildSliderBarItems(); 
-        this._percentChanged.next(percent);
+        if(this.durationPercent != percent){
+            this.durationPercent = percent;
+            this.updateSliderBarItems(); 
+            this._percentChanged.next(percent);
+        }
+        
     }
 
     durationPercent: number = 0;
@@ -31,12 +33,13 @@ export class ActivitySliderBar {
     constructor(durationPercent: number, maxPercent:number, color: string) {
         this.color = color;
         this.maxPercent = maxPercent;
+        this._sliderBarItems = this.buildSliderBarItems();
         this.changePercent(durationPercent);
     }
     update(durationPercent: number, maxPercent: number){
         this.maxPercent = maxPercent;
         this.durationPercent = durationPercent;
-        this._sliderBarItems = this.buildSliderBarItems(); 
+        this.updateSliderBarItems();
     }
 
 
@@ -44,6 +47,23 @@ export class ActivitySliderBar {
     // Be aware that this units value must be the same number of grid columns in the component.css file.
     private percentPerUnit = 100 / this.units;
 
+
+
+    private updateSliderBarItems(){        
+        for(let sliderBarItem of this._sliderBarItems){
+            sliderBarItem.hasGrabber = false;
+            if (sliderBarItem.percent <= this.durationPercent) {
+                sliderBarItem.hasValue = true;
+                sliderBarItem.style["background-color"] = this.color;
+                if ((sliderBarItem.percent + this.percentPerUnit) > this.durationPercent) {
+                    sliderBarItem.hasGrabber = true;
+                }
+            }else{
+                sliderBarItem.style["background-color"] = "white";
+                sliderBarItem.hasValue = false;
+            }
+        }
+    }
 
     private buildSliderBarItems(): ITLEFActivitySliderBarItem[] {
         let sliderBarGridItems: ITLEFActivitySliderBarItem[] = [];
@@ -59,20 +79,17 @@ export class ActivitySliderBar {
                     hasGrabber = true;
                 }
             }
-
             let style: any = {
                 "grid-column": "" + (i + 1).toFixed(0) + "/span 1",
                 "background-color": backgroundColor,
             }
-
             sliderBarGridItems.push({
                 hasValue: hasValue,
                 hasGrabber: hasGrabber,
                 mouseOver: false,
                 style: style,
                 percent: percent,
-            })
-
+            });
         }
 
         return sliderBarGridItems;
@@ -99,27 +116,33 @@ export class ActivitySliderBar {
         this.isActive = false;
     }
 
+    onClickBarItem(sliderBarItem: ITLEFActivitySliderBarItem){
+        this.recalculatePercent(sliderBarItem);
+        this.isActive = false;
+    }
+
 
     private recalculatePercent(currentSliderBarItem: ITLEFActivitySliderBarItem) {
         let percent = currentSliderBarItem.percent;
-        if(percent >= this.maxPercent){
-            percent = this.maxPercent;
-        }
-        for (let sliderBarItem of this._sliderBarItems) {
-            sliderBarItem.hasGrabber = false;
-            if (sliderBarItem.percent <= percent) {
-                sliderBarItem.hasValue = true;
-                sliderBarItem.style["background-color"] = this.color;
-                if ((sliderBarItem.percent + this.percentPerUnit) > percent) {
-                    sliderBarItem.hasGrabber = true;
-                }
-            } else {
-                sliderBarItem.hasValue = false;
-                sliderBarItem.style["background-color"] = "white";
+        if(percent != this.durationPercent){
+            if(percent >= this.maxPercent){
+                percent = this.maxPercent;
             }
+            for (let sliderBarItem of this._sliderBarItems) {
+                sliderBarItem.hasGrabber = false;
+                if (sliderBarItem.percent <= percent) {
+                    sliderBarItem.hasValue = true;
+                    sliderBarItem.style["background-color"] = this.color;
+                    if ((sliderBarItem.percent + this.percentPerUnit) > percent) {
+                        sliderBarItem.hasGrabber = true;
+                    }
+                } else {
+                    sliderBarItem.hasValue = false;
+                    sliderBarItem.style["background-color"] = "white";
+                }
+            }
+            this.changePercent(percent);
         }
-        // this.percentageManuallyChanged = true;
-        this.changePercent(percent);
     }
 
 }

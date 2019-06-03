@@ -18,10 +18,10 @@
 
 }
 
-.active{
+.cursor-resize{
     cursor: col-resize;
 }
-.locked{
+.active{
     border:1px solid blue;
 }
 

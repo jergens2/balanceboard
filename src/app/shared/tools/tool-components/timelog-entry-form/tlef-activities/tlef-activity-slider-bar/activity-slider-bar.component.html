@@ -1,0 +1,15 @@
+<div class="slider-bar-root" (mouseleave)="onMouseLeaveSliderBar()"
+  [ngClass]="{'cursor-resize':activityItem.sliderBarIsActive}">
+
+
+  <div class="slider-bar" [ngClass]="{'active':activityItem.sliderBarIsActive}">
+
+    <div *ngFor="let barItem of activityItem.sliderBarItems" class="bar-item" [ngStyle]="barItem.style"
+      (mouseenter)="onMouseEnterItem(barItem)" (mouseup)="onMouseUpItem(barItem)" (click)="onClickBarItem(barItem)">
+      <div class="grabber" *ngIf="barItem.hasGrabber" (mousedown)="onMouseDownGrabber(barItem)">
+      </div>
+    </div>
+
+  </div>
+
+</div>
