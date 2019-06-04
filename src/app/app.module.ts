@@ -31,7 +31,6 @@ import { SearchBarComponent } from './nav/search-bar/search-bar.component';
 
 
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +45,7 @@ import { SearchBarComponent } from './nav/search-bar/search-bar.component';
     TaskQueueModalComponent,
     ConfirmModalComponent,
     NotepadModalComponent,
-    SearchBarComponent
+    SearchBarComponent,
   ],
   imports: [
     BrowserModule,

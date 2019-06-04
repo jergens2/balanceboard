@@ -57,6 +57,7 @@ import { TlefActivitiesComponent } from './tools/tool-components/timelog-entry-f
         ActionItemFormComponent,
         NotebookEntryFormComponent,
         ActivityInputDropdownComponent,
+        TimelogEntryFormComponent,
     ]
 })
 

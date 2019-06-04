@@ -9,7 +9,7 @@ import { ToolsService } from '../../tools.service';
 import { UserDefinedActivity } from '../../../../dashboard/activities/user-defined-activity.model';
 
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { TimelogEntryActivityZZ } from '../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry-activity.class';
+import { TimelogEntryActivity } from '../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry-activity.class';
 import { DurationString } from './duration-string.class';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivitySliderBar } from './tlef-activities/tlef-activity-slider-bar/activity-slider-bar.class';
@@ -47,29 +47,49 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   timelogEntryStart: moment.Moment;
   timelogEntryEnd: moment.Moment;
 
+  @Input('timelogEntry') modifyTimelogEntry: TimelogEntry; 
+  action: string = "NEW";
+
 
   ngOnInit() {
 
-    this.mostRecentTimelogEntry = this.timelogService.mostRecentTimelogEntry;
-
-    this.timelogEntryStart = moment(this.mostRecentTimelogEntry.endTime);
-    this.timelogEntryEnd = moment(this._now);
-    this.clockSubscription = timer(0, 1000).subscribe(() => {
-      this._now = moment();
+    if(this.modifyTimelogEntry){
+      this.action = "MODIFY";
+      this.timelogEntryStart = this.modifyTimelogEntry.startTime;
+      this.timelogEntryEnd = this.modifyTimelogEntry.endTime;
+      let description = "";
+      if(this.modifyTimelogEntry.description){
+        description = this.modifyTimelogEntry.description;
+      }
+      
+      this.timelogEntryForm = new FormGroup({
+        "startTime": new FormControl(this.modifyTimelogEntry.startTime.format('hh:mm a')),
+        "startDate": new FormControl(this.modifyTimelogEntry.startTime.format('YYYY-MM-DD')),
+        "endTime": new FormControl(this.modifyTimelogEntry.endTime.format('hh:mm a')),
+        "endDate": new FormControl(this.modifyTimelogEntry.endTime.format('YYYY-MM-DD')),
+        "description": new FormControl(description),
+      });
+      
+    }else{
+      this.mostRecentTimelogEntry = this.timelogService.mostRecentTimelogEntry;
       this.timelogEntryStart = moment(this.mostRecentTimelogEntry.endTime);
       this.timelogEntryEnd = moment(this._now);
-    })
 
-
-
-    this.timelogEntryForm = new FormGroup({
-      "startTime": new FormControl(this.timelogEntryStart.format('hh:mm a')),
-      "startDate": new FormControl(this.timelogEntryStart.format('YYYY-MM-DD')),
-      "endTime": new FormControl(this.timelogEntryEnd.format('hh:mm a')),
-      "endDate": new FormControl(this.timelogEntryEnd.format('YYYY-MM-DD')),
-      "description": new FormControl(),
-    });
-
+      this.timelogEntryForm = new FormGroup({
+        "startTime": new FormControl(this.timelogEntryStart.format('hh:mm a')),
+        "startDate": new FormControl(this.timelogEntryStart.format('YYYY-MM-DD')),
+        "endTime": new FormControl(this.timelogEntryEnd.format('hh:mm a')),
+        "endDate": new FormControl(this.timelogEntryEnd.format('YYYY-MM-DD')),
+        "description": new FormControl(""),
+      });
+      
+      this.clockSubscription = timer(0, 1000).subscribe(() => {
+        this._now = moment();
+        this.timelogEntryStart = moment(this.mostRecentTimelogEntry.endTime);
+        this.timelogEntryEnd = moment(this._now);
+      });
+    }
+    
     this.initiated = true;
   }
   ngOnDestroy() {
@@ -79,30 +99,35 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
 
   onClickSaveTimelogEntry() {
-    let startTime: string = this.timelogEntryStart.second(0).millisecond(0).toISOString();
-    let endTime: string = this.timelogEntryEnd.second(0).millisecond(0).toISOString();
-    let description: string = this.timelogEntryForm.controls['description'].value;
-    let newTimelogEntry: TimelogEntry = new TimelogEntry("", this.timelogService.userId, startTime, endTime, description, this.activitiesService);
-    this.updateITLEActivities();
-    newTimelogEntry.setTleActivities(this.itleActivities);
+    if(this.modifyTimelogEntry){
+      // Currently cannot modify timelog entry start or end time.
+      let description: string = this.timelogEntryForm.controls['description'].value;
+      this.modifyTimelogEntry.description = description;
+      
+      this.updateITLEActivities();
+      this.modifyTimelogEntry.setTleActivities(this.itleActivities);
 
+      this.timelogService.updateTimelogEntry(this.modifyTimelogEntry);
+      this.modalService.closeModal();
+    }else{
+      let startTime: string = this.timelogEntryStart.second(0).millisecond(0).toISOString();
+      let endTime: string = this.timelogEntryEnd.second(0).millisecond(0).toISOString();
+      let description: string = this.timelogEntryForm.controls['description'].value;
+      let newTimelogEntry: TimelogEntry = new TimelogEntry("", this.timelogService.userId, startTime, endTime, description, this.activitiesService);
+      this.updateITLEActivities();
+      newTimelogEntry.setTleActivities(this.itleActivities);
+  
+      this.timelogService.saveTimelogEntry(newTimelogEntry);
+      this.toolsService.closeTool();
+    }
     
-    // console.log("Saving timelogEntry: ", newTimelogEntry);
-    // console.log(newTimelogEntry.httpSave);
-
-    this.timelogService.saveTimelogEntry(newTimelogEntry);
-    this.toolsService.closeTool();
-    this.modalService.closeModal();
+   
+    
   }
 
   get timelogEntryMinutes(): number {
     return this.timelogEntryEnd.diff(this.timelogEntryStart, "minutes");
   }
-
-
-
-
-
 
 
   private itleActivities: ITLEActivity[] = [];
@@ -128,6 +153,8 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     this.updateITLEActivities();
 
   }
+
+  
 
 
   editingTimes: boolean = false;

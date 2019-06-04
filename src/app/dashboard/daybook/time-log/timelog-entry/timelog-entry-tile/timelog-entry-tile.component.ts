@@ -10,7 +10,6 @@ import { ModalService } from '../../../../../modal/modal.service';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ModalComponentType } from '../../../../../modal/modal-component-type.enum';
-import { ITimelogEntryFormData } from '../../../timelog-entry-form/timelog-entry-form-data.interface';
 import { ToolsService } from '../../../../../shared/tools/tools.service';
 import { ToolComponents } from '../../../../../shared/tools/tool-components.enum';
 
@@ -28,10 +27,10 @@ export class TimelogEntryTileComponent implements OnInit, OnDestroy {
   constructor(private timelogService: TimelogService, private modalService: ModalService, private toolsService: ToolsService) { }
 
   @Input() tile: TimelogEntryTile;
-  @Output() timelogEntryFormData: EventEmitter<ITimelogEntryFormData> = new EventEmitter();
+
 
   ngOnInit() {
-    // console.log("tile received:", this.tile)
+
   }
 
   ngOnDestroy(){
@@ -41,25 +40,16 @@ export class TimelogEntryTileComponent implements OnInit, OnDestroy {
 
 
   onClickSetNewTimelogEntry(tile: TimelogEntryTile) {
-    // console.log("tile is ", tile);
-    // let timelogEntryFormData: ITimelogEntryFormData = {
-    //   action: 'SET',
-    //   timelogEntry: tile.timelogEntry,
-    //   date: moment(tile.timelogEntry.startTime)
-    // }
-    // this.timelogEntryFormData.emit(timelogEntryFormData);
     this.toolsService.openTool(ToolComponents.TimelogEntry);
   }
 
   onClickTile(tile: TimelogEntryTile) {
-
     if (!tile.isLarge) {
       if (tile.isBlank) {
         this.onClickSetNewTimelogEntry(tile);
       } else {
         this.onClickTileEdit(tile);
       }
-
     } else {
 
     }
@@ -73,12 +63,12 @@ export class TimelogEntryTileComponent implements OnInit, OnDestroy {
   }
 
   onClickTileEdit(tile: TimelogEntryTile) {
-    let timelogEntryFormData: ITimelogEntryFormData = {
-      action: 'REVIEW',
-      timelogEntry: tile.timelogEntry,
-      date: moment(tile.timelogEntry.startTime)
-    }
-    this.timelogEntryFormData.emit(timelogEntryFormData);
+    this._modalSubscription.unsubscribe();
+    let modal: Modal = new Modal("Timelog Entry", "", tile.timelogEntry, null, {}, ModalComponentType.TimelogEntry);
+    // this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+      
+    // });
+    this.modalService.activeModal = modal;
   }
 
   private _modalSubscription: Subscription = new Subscription();

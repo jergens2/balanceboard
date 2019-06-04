@@ -13,9 +13,8 @@ import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
 import { TimelogEntryTileComponent } from './time-log/timelog-entry/timelog-entry-tile/timelog-entry-tile.component';
 import { PrimaryTaskWidgetComponent } from './widgets/primary-objective-widget/primary-objective-widget.component';
 import { TaskQueueWidgetComponent } from './widgets/task-queue-widget/task-queue-widget.component';
-import { ActivityInputDropdownComponent } from '../../shared/activity-input-dropdown/activity-input-dropdown.component';
 import { SharedModule } from '../../shared/shared.module';
-import { TimelogEntryFormComponent } from './timelog-entry-form/timelog-entry-form.component';
+
 
 
 
@@ -30,7 +29,6 @@ import { TimelogEntryFormComponent } from './timelog-entry-form/timelog-entry-fo
   declarations: [
     DaybookComponent,
     CalendarComponent,
-    TimelogEntryFormComponent,
     TimeLogComponent,
     DailyTaskListWidgetComponent,
     DaybookHeaderComponent,

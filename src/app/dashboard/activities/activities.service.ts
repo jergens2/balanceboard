@@ -10,7 +10,7 @@ import { AuthStatus } from '../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.model';
 import { TimelogEntry } from '../daybook/time-log/timelog-entry/timelog-entry.class';
-import { TimelogEntryActivityZZ } from '../daybook/time-log/timelog-entry/timelog-entry-activity.class';
+import { TimelogEntryActivity } from '../daybook/time-log/timelog-entry/timelog-entry-activity.class';
 
 @Injectable({
   providedIn: 'root'
@@ -70,9 +70,9 @@ export class ActivitiesService {
   //     );
   // }
 
-  // private buildTimelogEntryActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimelogEntryActivityZZ[] {
+  // private buildTimelogEntryActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimelogEntryActivity[] {
   //   return activitiesData.map((activity) => {
-  //     let timelogEntryActivity: TimelogEntryActivityZZ = new TimelogEntryActivityZZ(this.findActivityByTreeId(activity.activityTreeId), activity.description);
+  //     let timelogEntryActivity: TimelogEntryActivity = new TimelogEntryActivity(this.findActivityByTreeId(activity.activityTreeId), activity.description);
   //     return timelogEntryActivity;
   //   })
   // }

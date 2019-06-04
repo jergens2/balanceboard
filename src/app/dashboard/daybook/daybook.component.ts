@@ -8,7 +8,6 @@ import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
 import { Day } from './day/day.model';
 import { DaybookService } from './daybook.service';
-import { ITimelogEntryFormData } from './timelog-entry-form/timelog-entry-form-data.interface';
 
 @Component({
   selector: 'app-daybook',
@@ -29,10 +28,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
   faEdit = faEdit;
 
   ifCalendarInside: boolean = false;
-  ifTimelogEntryForm: boolean = false;
 
 
-  timelogEntryFormData: ITimelogEntryFormData = { action: "NEW", timelogEntry: null, date: null };
+
 
   private _headerMenuSubscriptions: Subscription[] = [];
   private _currentDaySubscription: Subscription = new Subscription();
@@ -85,42 +83,32 @@ export class DaybookComponent implements OnInit, OnDestroy {
   }
 
   private buildHeaderMenu() {
-    let daybookHeaderMenuItems: MenuItem[] = [];
+    // let daybookHeaderMenuItems: MenuItem[] = [];
 
-    let newTimelogEntryMenuItem = new MenuItem("New Time Entry", null, null);
-    this._headerMenuSubscriptions.push(newTimelogEntryMenuItem.clickEmitted$.subscribe((clicked) => {
-      this.timelogEntryFormData = { action: "NEW", timelogEntry: null, date: this._currentDate }
-      this.currentView = "form";
-    }));
 
-    let timelogViewMenuItem = new MenuItem("Time Log View", null, null);
-    this._headerMenuSubscriptions.push(timelogViewMenuItem.clickEmitted$.subscribe((clicked) => {
-      this.changeView("timelog");
-    }));
+    // let timelogViewMenuItem = new MenuItem("Time Log View", null, null);
+    // this._headerMenuSubscriptions.push(timelogViewMenuItem.clickEmitted$.subscribe((clicked) => {
+    //   this.changeView("timelog");
+    // }));
 
-    let heatmapViewMenuItem = new MenuItem("Heat Map View", null, null);
-    this._headerMenuSubscriptions.push(heatmapViewMenuItem.clickEmitted$.subscribe((clicked) => {
-      this.changeView("heatmap");
-    }));
+    // let heatmapViewMenuItem = new MenuItem("Heat Map View", null, null);
+    // this._headerMenuSubscriptions.push(heatmapViewMenuItem.clickEmitted$.subscribe((clicked) => {
+    //   this.changeView("heatmap");
+    // }));
 
-    daybookHeaderMenuItems.push(newTimelogEntryMenuItem);
-    daybookHeaderMenuItems.push(timelogViewMenuItem);
-    daybookHeaderMenuItems.push(heatmapViewMenuItem);
+    // daybookHeaderMenuItems.push(newTimelogEntryMenuItem);
+    // daybookHeaderMenuItems.push(timelogViewMenuItem);
+    // daybookHeaderMenuItems.push(heatmapViewMenuItem);
 
-    let daybookHeaderMenu: HeaderMenu = new HeaderMenu('Daybook', daybookHeaderMenuItems);
+    // let daybookHeaderMenu: HeaderMenu = new HeaderMenu('Daybook', daybookHeaderMenuItems);
 
-    this.headerService.setCurrentMenu(daybookHeaderMenu);
+    // this.headerService.setCurrentMenu(daybookHeaderMenu);
   }
 
   private changeView(newView: string) {
     this.currentView = newView;
   }
 
-  onTimelogEntryDataProvided(data: ITimelogEntryFormData) {
-    // console.log("timelog Entry form data RECEIVED BRAH")
-    this.timelogEntryFormData = data;
-    this.changeView("form");
-  }
 
 
   ngOnDestroy() {
@@ -142,9 +130,5 @@ export class DaybookComponent implements OnInit, OnDestroy {
   }
 
 
-
-  onCloseForm($event: any) {
-    this.changeView("timelog");
-  }
 
 }

@@ -6,7 +6,6 @@ import { TimelogEntry } from './timelog-entry/timelog-entry.class';
 import { TimelogService } from './timelog.service';
 import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
-import { ITimelogEntryFormData } from '../timelog-entry-form/timelog-entry-form-data.interface';
 import { ActivitiesService } from '../../activities/activities.service';
 
 
@@ -45,7 +44,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
   private _nowLineSubscription: Subscription = new Subscription();
 
 
-  @Output() timelogEntryFormData: EventEmitter<ITimelogEntryFormData> = new EventEmitter();
+
   @Output() changedDate: EventEmitter<moment.Moment> = new EventEmitter();
 
   @Input() set currentDate(date: moment.Moment) {
@@ -624,13 +623,6 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
 
-
-
-
-
-  onTimelogEntryFormDataReceived(data: ITimelogEntryFormData) {
-    this.timelogEntryFormData.emit(data);
-  }
 
   onClickCaret(direction: string) {
 

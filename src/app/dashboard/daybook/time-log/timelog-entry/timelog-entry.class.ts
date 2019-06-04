@@ -3,7 +3,7 @@ import * as moment from 'moment';
 // import { TimelogEntryActivity } from "./timelog-entry-activity.class";
 import { ITLEActivity } from "./timelog-entry-activity.interface";
 import { DurationString } from "../../../../shared/tools/tool-components/timelog-entry-form/duration-string.class";
-import { TimelogEntryActivityZZ } from "./timelog-entry-activity.class";
+import { TimelogEntryActivity } from "./timelog-entry-activity.class";
 import { ActivitiesService } from "../../../../dashboard/activities/activities.service";
 
 
@@ -53,15 +53,15 @@ export class TimelogEntry {
 
     // public tleActivities: ITLEActivity[] = []
     private _itleActivities: ITLEActivity[] = [];
-    private _tleActivities: TimelogEntryActivityZZ[] = [];
-    public get tleActivities(): TimelogEntryActivityZZ[]{
+    private _tleActivities: TimelogEntryActivity[] = [];
+    public get tleActivities(): TimelogEntryActivity[]{
         return this._tleActivities;
     };
     public setTleActivities(itleActivities: ITLEActivity[]){
         this._itleActivities = itleActivities;
-        let tleActivities: TimelogEntryActivityZZ[] = [];
+        let tleActivities: TimelogEntryActivity[] = [];
         itleActivities.forEach(itleActivity => {
-            tleActivities.push(new TimelogEntryActivityZZ(this.activitiesService, itleActivity));
+            tleActivities.push(new TimelogEntryActivity(this.activitiesService, itleActivity));
         });
         this._tleActivities = tleActivities;
     }
@@ -98,7 +98,7 @@ export class TimelogEntry {
     get durationString(): string {
         return DurationString.calculateDurationString(this.startTime, this.endTime);
     }
-    get duration(): number {
+    get durationMinutes(): number {
         let duration = moment.duration(moment(this.endTime).diff(moment(this.startTime)));
         return duration.asMinutes();
     }
