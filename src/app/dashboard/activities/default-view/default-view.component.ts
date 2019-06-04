@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { TimelogEntry } from '../../daybook/time-log/timelog-entry/timelog-entry.class';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { IActivityData } from './activity-data.interface';
-import { TimelogEntryActivityZZ } from '../../daybook/time-log/timelog-entry/timelog-entry-activity.class';
+import { TimelogEntryActivity } from '../../daybook/time-log/timelog-entry/timelog-entry-activity.class';
 import { UserDefinedActivity } from '../user-defined-activity.model';
 
 @Component({

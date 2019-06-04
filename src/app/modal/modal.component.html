@@ -18,6 +18,8 @@
 
       <app-notepad-modal *ngIf="modal.modalComponentType == 'NOTE'"></app-notepad-modal>
       <app-action-item-form *ngIf="modal.modalComponentType == 'TASK'" [action]="modal.action"></app-action-item-form>
+
+      <app-timelog-entry-form *ngIf="modal.modalComponentType == 'TIMELOG_ENTRY'" [timelogEntry]="modal.modalData"></app-timelog-entry-form>
     </div>
 
   </div>

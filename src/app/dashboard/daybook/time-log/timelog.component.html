@@ -25,7 +25,7 @@
 
       <div class="grid-object" *ngIf="timelogEntriesContainer" [ngStyle]="timelogEntriesContainer.style">
         <div *ngFor="let tile of timelogEntryTiles" class="time-entry-tile" >
-          <app-timelog-entry-tile [tile]="tile" (timelogEntryFormData)="onTimelogEntryFormDataReceived($event)"></app-timelog-entry-tile>
+          <app-timelog-entry-tile [tile]="tile"></app-timelog-entry-tile>
         </div>
 
       </div>

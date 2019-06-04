@@ -2,7 +2,7 @@ import { UserDefinedActivity } from "../../../activities/user-defined-activity.m
 import { ActivitiesService } from "../../../activities/activities.service";
 import { ITLEActivity } from "./timelog-entry-activity.interface";
 
-export class TimelogEntryActivityZZ{
+export class TimelogEntryActivity{
 
     activityTreeId: string;
     durationMinutes: number = 0;

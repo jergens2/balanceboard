@@ -5,6 +5,8 @@ import { UserDefinedActivity } from '../../../../../dashboard/activities/user-de
 import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { DurationString } from '../duration-string.class';
+import { TimelogEntry } from '../../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry.class';
+import { TimelogEntryActivity } from '../../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry-activity.class';
 
 
 @Component({
@@ -18,6 +20,7 @@ export class TlefActivitiesComponent implements OnInit {
 
   @Input() timelogEntryStart: moment.Moment;
   @Input() timelogEntryEnd: moment.Moment;
+  @Input() modifyTimelogEntry: TimelogEntry;
   @Output() tlefActivitiesChanged: EventEmitter<TLEFActivityListItem[]> = new EventEmitter();
 
   activityItems: TLEFActivityListItem[] = [];
@@ -31,7 +34,27 @@ export class TlefActivitiesComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("TLEF ACTIVITIES")
+    if (this.modifyTimelogEntry) {
+      this.timelogEntryStart = this.modifyTimelogEntry.startTime;
+      this.timelogEntryEnd = this.modifyTimelogEntry.endTime;
+
+      let maxPercent: number = 100;
+      if (this.modifyTimelogEntry.tleActivities.length > 1) {
+        maxPercent = 100 - ((this.modifyTimelogEntry.tleActivities.length - 1) * 2);
+      }
+      let activityItems: TLEFActivityListItem[] = [];
+      this.modifyTimelogEntry.tleActivities.forEach((tleActivity: TimelogEntryActivity) => {
+        let durationPercent = tleActivity.durationMinutes / this.modifyTimelogEntry.durationMinutes * 100;
+        activityItems.push(new TLEFActivityListItem(tleActivity.activity, tleActivity.durationMinutes, durationPercent, this.modifyTimelogEntry.durationMinutes, maxPercent))
+      })
+
+      this.activityItems = activityItems;
+      this.updateChangeSubscriptions();
+      this.activityItems.forEach((activityItem)=>{
+        activityItem.updatePercentage(activityItem.durationPercent, maxPercent, true);
+      });
+      this.tlefActivitiesChanged.emit(this.activityItems);
+    }
   }
 
   onMouseEnterActivity(activityItem: TLEFActivityListItem) {
@@ -48,7 +71,7 @@ export class TlefActivitiesComponent implements OnInit {
     this.activityItems.forEach((activityItem) => {
       activityItem.durationMinutes = durationMinutes;
     });
-    this.updateChangeSubscriptions(); 
+    this.updateChangeSubscriptions();
     this.updatePercentages(activityItem);
   }
 
@@ -91,106 +114,109 @@ export class TlefActivitiesComponent implements OnInit {
 
 
 
-  private updatePercentages(changedActivityItem: TLEFActivityListItem, newPercent?: number) {
+  private updatePercentages(changedActivityItem?: TLEFActivityListItem, newPercent?: number) {
     const minimumActivityPercent: number = 2;
     let maximumPercent: number = 100;
-    if (this.activityItems.length > 1) {
-      maximumPercent = (100 - ((this.activityItems.length - 1) * minimumActivityPercent));
-    }
-    if (newPercent) {
-      if (this.activityItems.length == 1) {
-        this.activityItems[0].updatePercentage(100, 100, false);
-      } else if (this.activityItems.length > 1) {
-        let percentageSum: number = 0;
-        this.activityItems.forEach((activityItem) => { percentageSum += activityItem.durationPercent });
-        if (percentageSum > 100) {
-          let totalSubtract: number = percentageSum - 100;
-          while (totalSubtract > 0) {
-            let itemsLength = (this.activityItems.filter((item) => {
-              if (item.durationPercent > minimumActivityPercent && item.activity.treeId != changedActivityItem.activity.treeId) {
-                return item;
-              }
-            })).length;
-            if(itemsLength > 0){
-              if(totalSubtract < 1){
-                changedActivityItem.updatePercentage(changedActivityItem.durationPercent-totalSubtract, maximumPercent, false);
-                totalSubtract = 0;
-              }else{
-                let subtractEvenly: number = totalSubtract / itemsLength;
-                this.activityItems.forEach((activityItem) => {
-                  if (activityItem.activity.treeId != changedActivityItem.activity.treeId && activityItem.durationPercent > minimumActivityPercent) {
-                    if (activityItem.durationPercent > minimumActivityPercent) {
-                      if ((activityItem.durationPercent - subtractEvenly) > minimumActivityPercent) {
-                        totalSubtract -= subtractEvenly;
-                        activityItem.updatePercentage(activityItem.durationPercent - subtractEvenly,  maximumPercent, true);
-                      } else {
-                        totalSubtract -= (activityItem.durationPercent - minimumActivityPercent);
-                        activityItem.updatePercentage(minimumActivityPercent,  maximumPercent, true)
+    if (changedActivityItem) {
+      if (this.activityItems.length > 1) {
+        maximumPercent = (100 - ((this.activityItems.length - 1) * minimumActivityPercent));
+      }
+      if (newPercent) {
+        if (this.activityItems.length == 1) {
+          this.activityItems[0].updatePercentage(100, 100, false);
+        } else if (this.activityItems.length > 1) {
+          let percentageSum: number = 0;
+          this.activityItems.forEach((activityItem) => { percentageSum += activityItem.durationPercent });
+          if (percentageSum > 100) {
+            let totalSubtract: number = percentageSum - 100;
+            while (totalSubtract > 0) {
+              let itemsLength = (this.activityItems.filter((item) => {
+                if (item.durationPercent > minimumActivityPercent && item.activity.treeId != changedActivityItem.activity.treeId) {
+                  return item;
+                }
+              })).length;
+              if (itemsLength > 0) {
+                if (totalSubtract < 1) {
+                  changedActivityItem.updatePercentage(changedActivityItem.durationPercent - totalSubtract, maximumPercent, false);
+                  totalSubtract = 0;
+                } else {
+                  let subtractEvenly: number = totalSubtract / itemsLength;
+                  this.activityItems.forEach((activityItem) => {
+                    if (activityItem.activity.treeId != changedActivityItem.activity.treeId && activityItem.durationPercent > minimumActivityPercent) {
+                      if (activityItem.durationPercent > minimumActivityPercent) {
+                        if ((activityItem.durationPercent - subtractEvenly) > minimumActivityPercent) {
+                          totalSubtract -= subtractEvenly;
+                          activityItem.updatePercentage(activityItem.durationPercent - subtractEvenly, maximumPercent, true);
+                        } else {
+                          totalSubtract -= (activityItem.durationPercent - minimumActivityPercent);
+                          activityItem.updatePercentage(minimumActivityPercent, maximumPercent, true)
+                        }
                       }
                     }
-                  }
-                  if (subtractEvenly <= minimumActivityPercent) {
-                    if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
-                      activityItem.updatePercentage(activityItem.durationPercent - totalSubtract,  maximumPercent, false);
+                    if (subtractEvenly <= minimumActivityPercent) {
+                      if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
+                        activityItem.updatePercentage(activityItem.durationPercent - totalSubtract, maximumPercent, false);
+                      }
                     }
-                  }
-                });
-              }              
-            }else{
-              this.activityItems.forEach((activityItem) => {
-                if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
-                  activityItem.updatePercentage(activityItem.durationPercent - totalSubtract,  maximumPercent, false);
+                  });
                 }
-              });
-              totalSubtract = 0;
-            }
-          }
-        } else if (percentageSum < 100) {
-          let totalAdd = 100 - percentageSum;
-          while (totalAdd > 0) {
-            let itemsLength = (this.activityItems.filter((item) => {
-              if (item.durationPercent < maximumPercent && item.activity.treeId != changedActivityItem.activity.treeId) {
-                return item;
-              }
-            })).length;
-            if(itemsLength > 0){          
-              if(totalAdd < 1){
-                changedActivityItem.updatePercentage(changedActivityItem.durationPercent+totalAdd, maximumPercent, false);
-                totalAdd = 0;
-              }else{
-                let addEvenly: number = totalAdd / itemsLength;
+              } else {
                 this.activityItems.forEach((activityItem) => {
-                  if (activityItem.activity.treeId != changedActivityItem.activity.treeId && activityItem.durationPercent < maximumPercent) {
-                    if ((activityItem.durationPercent + addEvenly) <= maximumPercent) {
-                      totalAdd -= addEvenly;
-                      activityItem.updatePercentage(activityItem.durationPercent + addEvenly,   maximumPercent, true);
-                    } else {
-                      let difference: number = (maximumPercent - activityItem.durationPercent)
-                      totalAdd -= difference;
-                      activityItem.updatePercentage(activityItem.durationPercent + difference,  maximumPercent, true);
-                    }
+                  if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
+                    activityItem.updatePercentage(activityItem.durationPercent - totalSubtract, maximumPercent, false);
                   }
                 });
+                totalSubtract = 0;
               }
-            }else{
-              this.activityItems.forEach((activityItem)=>{
-                if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
-                  activityItem.updatePercentage(activityItem.durationPercent + totalAdd, maximumPercent, false);
+            }
+          } else if (percentageSum < 100) {
+            let totalAdd = 100 - percentageSum;
+            while (totalAdd > 0) {
+              let itemsLength = (this.activityItems.filter((item) => {
+                if (item.durationPercent < maximumPercent && item.activity.treeId != changedActivityItem.activity.treeId) {
+                  return item;
                 }
-              })
-              totalAdd = 0;
+              })).length;
+              if (itemsLength > 0) {
+                if (totalAdd < 1) {
+                  changedActivityItem.updatePercentage(changedActivityItem.durationPercent + totalAdd, maximumPercent, false);
+                  totalAdd = 0;
+                } else {
+                  let addEvenly: number = totalAdd / itemsLength;
+                  this.activityItems.forEach((activityItem) => {
+                    if (activityItem.activity.treeId != changedActivityItem.activity.treeId && activityItem.durationPercent < maximumPercent) {
+                      if ((activityItem.durationPercent + addEvenly) <= maximumPercent) {
+                        totalAdd -= addEvenly;
+                        activityItem.updatePercentage(activityItem.durationPercent + addEvenly, maximumPercent, true);
+                      } else {
+                        let difference: number = (maximumPercent - activityItem.durationPercent)
+                        totalAdd -= difference;
+                        activityItem.updatePercentage(activityItem.durationPercent + difference, maximumPercent, true);
+                      }
+                    }
+                  });
+                }
+              } else {
+                this.activityItems.forEach((activityItem) => {
+                  if (activityItem.activity.treeId == changedActivityItem.activity.treeId) {
+                    activityItem.updatePercentage(activityItem.durationPercent + totalAdd, maximumPercent, false);
+                  }
+                })
+                totalAdd = 0;
+              }
             }
           }
         }
-      }
-    } else {
-      for (let activityItem of this.activityItems) {
-        let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
-        let dividedEvenlyPercentage = durationMinutes / (this.timelogEntryMinutes) * 100;
-        activityItem.deactivate();
-        activityItem.updatePercentage(dividedEvenlyPercentage,  maximumPercent, true);
+      } else {
+        for (let activityItem of this.activityItems) {
+          let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
+          let dividedEvenlyPercentage = durationMinutes / (this.timelogEntryMinutes) * 100;
+          activityItem.deactivate();
+          activityItem.updatePercentage(dividedEvenlyPercentage, maximumPercent, true);
+        }
       }
     }
+
 
     this.tlefActivitiesChanged.emit(this.activityItems);
   }

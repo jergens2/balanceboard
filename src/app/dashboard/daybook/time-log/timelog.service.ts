@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable, Subject, Subscription, BehaviorSubject, timer } from 'rxjs';
+import { Observable, Subject, Subscription, timer } from 'rxjs';
 import { TimelogEntry } from './timelog-entry/timelog-entry.class';
-import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
 
 import * as moment from 'moment';
 
@@ -13,10 +12,6 @@ import { AuthStatus } from '../../../authentication/auth-status.model';
 
 import { ActivitiesService } from '../../activities/activities.service';
 import { DaybookService } from '../daybook.service';
-import { Day } from '../day/day.model';
-
-import { IActivityDataItem } from '../day/activity-data-item.interface';
-import { ITimelogEntryDataItem } from '../day/timelog-entry-data.interface';
 import { ITLEActivity } from './timelog-entry/timelog-entry-activity.interface';
 
 
