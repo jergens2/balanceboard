@@ -1,16 +1,18 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 
 import * as moment from 'moment';
-import { TimelogEntryTile } from './timelog-entry-tile.model';
+import { TimelogEntryTile } from './timelog-entry-tile.class';
 import { Subscription } from 'rxjs';
-import { IModalOption } from '../../../../modal/modal-option.interface';
-import { Modal } from '../../../../modal/modal.model';
-import { TimelogService } from '../timelog.service';
-import { ModalService } from '../../../../modal/modal.service';
+import { IModalOption } from '../../../../../modal/modal-option.interface';
+import { Modal } from '../../../../../modal/modal.model';
+import { TimelogService } from '../../timelog.service';
+import { ModalService } from '../../../../../modal/modal.service';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
-import { ITimelogEntryFormData } from '../../timelog-entry-form/timelog-entry-form-data.interface';
+import { ModalComponentType } from '../../../../../modal/modal-component-type.enum';
+import { ITimelogEntryFormData } from '../../../timelog-entry-form/timelog-entry-form-data.interface';
+import { ToolsService } from '../../../../../shared/tools/tools.service';
+import { ToolComponents } from '../../../../../shared/tools/tool-components.enum';
 
 @Component({
   selector: 'app-timelog-entry-tile',
@@ -19,11 +21,11 @@ import { ITimelogEntryFormData } from '../../timelog-entry-form/timelog-entry-fo
 })
 export class TimelogEntryTileComponent implements OnInit, OnDestroy {
 
-  faTimes = faTimes;
+  faTimes = faTimes; 
   faEdit = faEdit;
   faPlus = faPlus;
 
-  constructor(private timelogService: TimelogService, private modalService: ModalService) { }
+  constructor(private timelogService: TimelogService, private modalService: ModalService, private toolsService: ToolsService) { }
 
   @Input() tile: TimelogEntryTile;
   @Output() timelogEntryFormData: EventEmitter<ITimelogEntryFormData> = new EventEmitter();
@@ -39,17 +41,18 @@ export class TimelogEntryTileComponent implements OnInit, OnDestroy {
 
 
   onClickSetNewTimelogEntry(tile: TimelogEntryTile) {
-    console.log("tile is ", tile);
-    let timelogEntryFormData: ITimelogEntryFormData = {
-      action: 'SET',
-      timelogEntry: tile.timelogEntry,
-      date: moment(tile.timelogEntry.startTime)
-    }
-    this.timelogEntryFormData.emit(timelogEntryFormData);
+    // console.log("tile is ", tile);
+    // let timelogEntryFormData: ITimelogEntryFormData = {
+    //   action: 'SET',
+    //   timelogEntry: tile.timelogEntry,
+    //   date: moment(tile.timelogEntry.startTime)
+    // }
+    // this.timelogEntryFormData.emit(timelogEntryFormData);
+    this.toolsService.openTool(ToolComponents.TimelogEntry);
   }
 
   onClickTile(tile: TimelogEntryTile) {
-    console.log("tile data: " +  tile.startTime.format('hh:mm:ss a') + " to " + tile.endTime.format('hh:mm:ss a'), tile.timelogEntry.activities)
+
     if (!tile.isLarge) {
       if (tile.isBlank) {
         this.onClickSetNewTimelogEntry(tile);
@@ -112,8 +115,8 @@ export class TimelogEntryTileComponent implements OnInit, OnDestroy {
 
   activityName(tile: TimelogEntryTile): string {
     if (moment(tile.endTime).diff(moment(tile.startTime), 'minutes') > 19) {
-      if (tile.timelogEntry.activities.length > 0) {
-        return tile.timelogEntry.activities[0].activity.name;
+      if (tile.timelogEntry.tleActivities.length > 0) {
+        return tile.timelogEntry.tleActivities[0].activity.name;
       } else {
         return "";
       }

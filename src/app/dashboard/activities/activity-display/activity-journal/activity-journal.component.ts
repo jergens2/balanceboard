@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { UserDefinedActivity } from '../../user-defined-activity.model';
 import { IActivityJournalItem } from './activity-journal-item.interface';
-import { TimelogEntry } from '../../../daybook/time-log/timelog-entry-tile/timelog-entry.model';
+import { TimelogEntry } from '../../../daybook/time-log/timelog-entry/timelog-entry.class';
 import * as moment from 'moment';
 
 @Component({
@@ -45,24 +45,25 @@ export class ActivityJournalComponent implements OnInit {
   }
 
   private buildJournalEntries() {
-    let journalEntries: IActivityJournalItem[] = [];
+    console.log("Warning: this method is disabled.");
+    // let journalEntries: IActivityJournalItem[] = [];
 
-    for (let timelogEntry of this._timelogEntrys) {
-      let journalEntry: IActivityJournalItem;
-      if(timelogEntry.description){
-        journalEntry = {
-          startTime: moment(timelogEntry.startTime),
-          endTime: moment(timelogEntry.endTime),
-          description: timelogEntry.description,
-          timelogEntryActivitesCount: timelogEntry.activities.length
-        }
-        journalEntries.push(journalEntry);
-      }
+    // for (let timelogEntry of this._timelogEntrys) {
+    //   let journalEntry: IActivityJournalItem;
+    //   if(timelogEntry.description){
+    //     journalEntry = {
+    //       startTime: moment(timelogEntry.startTime),
+    //       endTime: moment(timelogEntry.endTime),
+    //       description: timelogEntry.description,
+    //       timelogEntryActivitesCount: timelogEntry.activities.length
+    //     }
+    //     journalEntries.push(journalEntry);
+    //   }
 
       
-    }
+    // }
 
-    this.journalEntries = journalEntries;
+    // this.journalEntries = journalEntries;
 
   }
 

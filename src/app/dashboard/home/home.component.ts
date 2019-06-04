@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DaybookService } from '../daybook/daybook.service';
 import { TimelogService } from '../daybook/time-log/timelog.service';
-import { TimelogEntry } from '../daybook/time-log/timelog-entry-tile/timelog-entry.model';
+import { TimelogEntry } from '../daybook/time-log/timelog-entry/timelog-entry.class';
 import { Day } from '../daybook/day/day.model';
 import { AuthenticationService } from '../../authentication/authentication.service';
 

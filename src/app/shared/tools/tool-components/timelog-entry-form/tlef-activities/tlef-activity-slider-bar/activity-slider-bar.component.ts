@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ITLEFActivityListItem } from '../tlef-activity-list-item.interface';
+import { TLEFActivityListItem } from './tlef-activity-list-item.class';
 import { ITLEFActivitySliderBarItem } from './activity-slider-bar-item.interface';
 import { Subscription } from 'rxjs';
 
@@ -10,36 +10,37 @@ import { Subscription } from 'rxjs';
 })
 export class ActivitySliderBarComponent implements OnInit {
 
-  @Input() activityItem: ITLEFActivityListItem;
+  @Input() activityItem: TLEFActivityListItem;
   @Output() percentChanged: EventEmitter<number> = new EventEmitter();
 
   constructor() { }
 
-  private percentChangeSubscription: Subscription = new Subscription();
+
 
   ngOnInit() {
-    this.percentChangeSubscription = this.activityItem.sliderBar.durationPercent$.subscribe((newPercent)=>{
-      this.percentChanged.emit(newPercent);
-    });
+
   }
   ngOnDestroy(){  
-    this.percentChangeSubscription.unsubscribe();
+
   }
 
   onMouseLeaveSliderBar(){
-    this.activityItem.sliderBar.deactivate();    
+    this.activityItem.deactivate();    
   }
 
   onMouseDownGrabber(barItem: ITLEFActivitySliderBarItem){
-    this.activityItem.sliderBar.activate();
+    this.activityItem.activate();
   }
 
   onMouseEnterItem(barItem: ITLEFActivitySliderBarItem){
-    this.activityItem.sliderBar.mouseOverSliderBarItem(barItem);
+    this.activityItem.mouseOverSliderBarItem(barItem);
   }
   
   onMouseUpItem(barItem: ITLEFActivitySliderBarItem){
-    this.activityItem.sliderBar.mouseUpSliderBarItem(barItem);
+    this.activityItem.mouseUpSliderBarItem(barItem);
+  }
+  onClickBarItem(barItem: ITLEFActivitySliderBarItem){
+    this.activityItem.onClickBarItem(barItem);
   }
 
 }

@@ -9,8 +9,8 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.model';
-import { TimelogEntry } from '../daybook/time-log/timelog-entry-tile/timelog-entry.model';
-import { TimelogEntryActivity } from '../daybook/time-log/timelog-entry-activity.model';
+import { TimelogEntry } from '../daybook/time-log/timelog-entry/timelog-entry.class';
+import { TimelogEntryActivityZZ } from '../daybook/time-log/timelog-entry/timelog-entry-activity.class';
 
 @Injectable({
   providedIn: 'root'
@@ -46,36 +46,36 @@ export class ActivitiesService {
   */
   
   
-  getActivityData(activity: UserDefinedActivity): Observable<TimelogEntry[]> {
-    /*
-      This method grabs activity data from the server to display over a period of time, 
-      e.g. over a six week view.
-    */
-    const getUrl = this._serverUrl + "/api/timelogEntry/activity_data/" + activity.treeId;
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'  
-      })
-    };
-    return this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
-      .pipe<TimelogEntry[]>(
-        map((response) => {
-          return response.data.map((dataObject) => {
-            let timelogEntry = new TimelogEntry(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description);
-            timelogEntry.activities = this.buildTimelogEntryActivities(dataObject.activities);
-            return timelogEntry;
-          })
-        })
-      );
-  }
+  // getActivityData(activity: UserDefinedActivity): Observable<TimelogEntry[]> {
+  //   /*
+  //     This method grabs activity data from the server to display over a period of time, 
+  //     e.g. over a six week view.
+  //   */
+  //   const getUrl = this._serverUrl + "/api/timelogEntry/activity_data/" + activity.treeId;
+  //   const httpOptions = {
+  //     headers: new HttpHeaders({
+  //       'Content-Type': 'application/json'
+  //       // 'Authorization': 'my-auth-token'  
+  //     })
+  //   };
+  //   return this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
+  //     .pipe<TimelogEntry[]>(
+  //       map((response) => {
+  //         return response.data.map((dataObject) => {
+  //           let timelogEntry = new TimelogEntry(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description, this);
+  //           timelogEntry.activities = this.buildTimelogEntryActivities(dataObject.activities);
+  //           return timelogEntry;
+  //         })
+  //       })
+  //     );
+  // }
 
-  private buildTimelogEntryActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimelogEntryActivity[] {
-    return activitiesData.map((activity) => {
-      let timelogEntryActivity: TimelogEntryActivity = new TimelogEntryActivity(this.findActivityByTreeId(activity.activityTreeId), activity.description);
-      return timelogEntryActivity;
-    })
-  }
+  // private buildTimelogEntryActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimelogEntryActivityZZ[] {
+  //   return activitiesData.map((activity) => {
+  //     let timelogEntryActivity: TimelogEntryActivityZZ = new TimelogEntryActivityZZ(this.findActivityByTreeId(activity.activityTreeId), activity.description);
+  //     return timelogEntryActivity;
+  //   })
+  // }
 
 
   findActivityByTreeId(treeId: string): UserDefinedActivity {

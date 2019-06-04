@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, timer, Subject } from 'rxjs';
-import { TimelogEntryTile } from './timelog-entry-tile/timelog-entry-tile.model';
-import { TimelogEntry } from './timelog-entry-tile/timelog-entry.model';
+import { TimelogEntryTile } from './timelog-entry/timelog-entry-tile/timelog-entry-tile.class';
+import { TimelogEntry } from './timelog-entry/timelog-entry.class';
 import { TimelogService } from './timelog.service';
 import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
 import { ITimelogEntryFormData } from '../timelog-entry-form/timelog-entry-form-data.interface';
+import { ActivitiesService } from '../../activities/activities.service';
 
 
 
@@ -19,7 +20,7 @@ import { ITimelogEntryFormData } from '../timelog-entry-form/timelog-entry-form-
 })
 export class TimeLogComponent implements OnInit, OnDestroy {
 
-  constructor(private timelogService: TimelogService) { }
+  constructor(private timelogService: TimelogService, private activitiesService: ActivitiesService) { }
 
   faSpinner = faSpinner;
   faCaretUp = faCaretUp;
@@ -34,9 +35,9 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
 
-  private _timelogEntrys: TimelogEntry[] = [];
+  private _timelogEntries: TimelogEntry[] = [];
   timelogEntryTiles: TimelogEntryTile[] = [];
-  timelogEntrysContainer: { style: any } = null;
+  timelogEntriesContainer: { style: any } = null;
 
   hourLabels: { hour: string, style: any }[] = [];
   hourLines: { time: moment.Moment, style: any }[] = [];
@@ -85,10 +86,10 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     this._fetchTimelogEntrysTimerSubscription = timer(0, 30000).subscribe(() => {
       // console.log("Every 30 seconds: " + moment().format('YYYY-MM-DD hh:mm a'))
       this._fetchTimelogEntrysSubscription.unsubscribe();
-      this._fetchTimelogEntrysSubscription = this.timelogService.timelogEntrys$.subscribe((receivedTimelogEntrys: TimelogEntry[]) => {
+      this._fetchTimelogEntrysSubscription = this.timelogService.timelogEntries$.subscribe((receivedTimelogEntrys: TimelogEntry[]) => {
         // console.log("Received new TimelogEntrys: ", receivedTimelogEntrys);
 
-        this._timelogEntrys = Object.assign([], receivedTimelogEntrys);
+        this._timelogEntries = Object.assign([], receivedTimelogEntrys);
         this.drawTimelogEntrys();
 
       });
@@ -287,12 +288,12 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       return moment(times[0]);
     }
 
-    function crossesNow(tile: TimelogEntryTile, now: moment.Moment, timelogEntry?: TimelogEntry): TimelogEntryTile[] {
+    function crossesNow(tile: TimelogEntryTile, now: moment.Moment, activitiesService: ActivitiesService, timelogEntry?: TimelogEntry ): TimelogEntryTile[] {
       let tiles: TimelogEntryTile[] = [];
       let setTimelogEntry: TimelogEntry = null;
       if (timelogEntry) {
-        setTimelogEntry = new TimelogEntry(timelogEntry.id, timelogEntry.userId, timelogEntry.startTimeISO, timelogEntry.endTimeISO, timelogEntry.description);
-        setTimelogEntry.activities = timelogEntry.activities;
+        setTimelogEntry = new TimelogEntry(timelogEntry.id, timelogEntry.userId, timelogEntry.startTimeISO, timelogEntry.endTimeISO, timelogEntry.description, activitiesService);
+        setTimelogEntry.setTleActivities(timelogEntry.ITLEActivities);
       }
 
       if (tile.startTime.isBefore(now) && tile.endTime.isAfter(now)) {
@@ -321,8 +322,8 @@ export class TimeLogComponent implements OnInit, OnDestroy {
           }
         }
         if (timelogEntry != null) {
-          if (timelogEntry.activities.length > 0) {
-            let color = timelogEntry.activities[0].activity.color;
+          if (timelogEntry.tleActivities.length > 0) {
+            let color = timelogEntry.tleActivities[0].activity.color;
             return hexToRGB(color, 0.5);
 
           } else {
@@ -371,11 +372,11 @@ export class TimeLogComponent implements OnInit, OnDestroy {
     }
 
 
-    if (this._timelogEntrys.length > 0 && this._timeWindow) {
+    if (this._timelogEntries.length > 0 && this._timeWindow) {
 
       let windowTimelogEntrys: TimelogEntry[] = [];
 
-      for (let timelogEntry of this._timelogEntrys) {
+      for (let timelogEntry of this._timelogEntries) {
         if ((moment(timelogEntry.startTime).isSameOrBefore(moment(this._timeWindow.startTime)) && moment(timelogEntry.endTime).isAfter(moment(this._timeWindow.startTime)))
           || (moment(timelogEntry.startTime).isSameOrAfter(moment(this._timeWindow.startTime)) && moment(timelogEntry.endTime).isSameOrBefore(moment(this._timeWindow.endTime)))
           || (moment(timelogEntry.startTime).isBefore(moment(this._timeWindow.endTime)) && moment(timelogEntry.endTime).isSameOrAfter(moment(this._timeWindow.endTime)))
@@ -409,7 +410,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
         A way to implement overlap would be to build all tiles, and then detect if the tiles overlap.
         if overlap, create a second column, put the overlapping timelog Entry in the second column,
-        the rest of the non-overlapping timelogEntrys are fully wide, across both+ columns.
+        the rest of the non-overlapping timelogEntries are fully wide, across both+ columns.
       */
 
 
@@ -472,7 +473,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
             tileStartTime = moment(currentStartTimeLimit);
           } else if (timelogEntry.startTime.isAfter(currentStartTimeLimit)) {
             startGap = buildTile(currentStartTimeLimit, timelogEntry.startTime, null, "MIDDLE");
-            nowCrosses = crossesNow(startGap, now);
+            nowCrosses = crossesNow(startGap, now, this.activitiesService);
             if (nowCrosses) {
               for (let tile of nowCrosses) {
                 tiles.push(tile);
@@ -488,7 +489,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
           }
 
           timelogEntryTile = buildTile(tileStartTime, tileEndTime, timelogEntry, borderNoRadius);
-          nowCrosses = crossesNow(timelogEntryTile, now, timelogEntry);
+          nowCrosses = crossesNow(timelogEntryTile, now, this.activitiesService, timelogEntry);
           if (nowCrosses) {
             for (let tile of nowCrosses) {
               tiles.push(tile);
@@ -577,14 +578,14 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
 
         this.timelogEntryTiles = tiles;
-        this.timelogEntrysContainer = { style: style };
+        this.timelogEntriesContainer = { style: style };
 
 
 
 
       } else {
         
-        this.timelogEntrysContainer = null;
+        this.timelogEntriesContainer = null;
         this.timelogEntryTiles = [];
         
       }
@@ -592,7 +593,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
 
     } else {
 
-      this.timelogEntrysContainer = null;
+      this.timelogEntriesContainer = null;
       this.timelogEntryTiles = [];
       
     }

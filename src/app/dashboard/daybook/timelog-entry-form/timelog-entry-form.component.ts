@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { TimelogEntry } from '../time-log/timelog-entry-tile/timelog-entry.model';
-import { TimelogEntryActivity } from '../time-log/timelog-entry-activity.model';
+import { TimelogEntry } from '../time-log/timelog-entry/timelog-entry.class';
+import { TimelogEntryActivityZZ } from '../time-log/timelog-entry/timelog-entry-activity.class';
 import { faPlus, faCaretDown, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ActivitiesService } from '../../activities/activities.service';
 import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
@@ -13,6 +13,7 @@ import { Modal } from '../../../modal/modal.model';
 import { ModalService } from '../../../modal/modal.service';
 import { IModalOption } from '../../../modal/modal-option.interface';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
+import { ITLEActivity } from '../time-log/timelog-entry/timelog-entry-activity.interface';
 
 
 @Component({
@@ -43,7 +44,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   timelogEntryForm: FormGroup = null;
 
-  timelogEntryActivities: TimelogEntryActivity[] = [];
+  timelogEntryActivities: TimelogEntryActivityZZ[] = [];
 
   ifAddActivity: boolean = false;
 
@@ -71,81 +72,81 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-
-    this.timelogEntrys = Object.assign([], this.timelogService.timelogEntrys);
-
-
-
-    if (this.action == "NEW") {
-
-      console.log("Action is NEW")
-
-      let startTime: moment.Moment = this.findNewStartTime();
-      let endTime: moment.Moment = null
-      // if (Math.abs(moment().diff(moment(startTime), "hours")) > 12) {
-      //   console.log("start time was more than 12 hours ago or from now");
-      // }
-
-      if (moment().isAfter(moment(startTime))) {
-        endTime = moment();
-      } else {
-        console.log("Problem: now is before the start time" + startTime.format('YYYY-MM-DD hh:mm a'));
-      }
-
-      if (moment(endTime).isBefore(moment(startTime).add(12, 'hours')) || moment(endTime).format('YYYY-MM-DD') == moment(startTime).format('YYYY-MM-DD')) {
-        endTime = moment();
-      } else {
-        console.log("start and end were beyond 12 hours / 1 day of another.")
-        endTime = moment(startTime).add(1, 'hour');
-      }
-
-
-      this.timelogEntryForm = new FormGroup({
-        'startTime': new FormControl(moment(startTime).format('HH:mm'), Validators.required),
-        'startTimeDate': new FormControl(moment(startTime).format('YYYY-MM-DD')),
-        'endTime': new FormControl(moment(endTime).format('HH:mm'), Validators.required),
-        'endTimeDate': new FormControl(moment(endTime).format('YYYY-MM-DD')),
-        'description': new FormControl(),
-      });
+    console.log("Don't use this form any more.")
+    // this.timelogEntrys = Object.assign([], this.timelogService.timelogEntrys);
 
 
 
+    // if (this.action == "NEW") {
 
-    } else if (this.action == "REVIEW" || this.action == "SET") {
+    //   console.log("Action is NEW")
 
-      this.timelogEntryForm = new FormGroup({
-        'startTime': new FormControl(this._providedFormData.timelogEntry.startTime.format('HH:mm'), Validators.required),
-        'startTimeDate': new FormControl(this._providedFormData.timelogEntry.startTime.format('YYYY-MM-DD')),
-        'endTime': new FormControl(this._providedFormData.timelogEntry.endTime.format('HH:mm'), Validators.required),
-        'endTimeDate': new FormControl(this._providedFormData.timelogEntry.endTime.format('YYYY-MM-DD')),
-        'description': new FormControl(this._providedFormData.timelogEntry.description),
-      });
-      this.timelogEntryActivities = Object.assign([], this._providedFormData.timelogEntry.activities);
-    }
-    this.validateTimes();
+    //   let startTime: moment.Moment = this.findNewStartTime();
+    //   let endTime: moment.Moment = null
+    //   // if (Math.abs(moment().diff(moment(startTime), "hours")) > 12) {
+    //   //   console.log("start time was more than 12 hours ago or from now");
+    //   // }
+
+    //   if (moment().isAfter(moment(startTime))) {
+    //     endTime = moment();
+    //   } else {
+    //     console.log("Problem: now is before the start time" + startTime.format('YYYY-MM-DD hh:mm a'));
+    //   }
+
+    //   if (moment(endTime).isBefore(moment(startTime).add(12, 'hours')) || moment(endTime).format('YYYY-MM-DD') == moment(startTime).format('YYYY-MM-DD')) {
+    //     endTime = moment();
+    //   } else {
+    //     console.log("start and end were beyond 12 hours / 1 day of another.")
+    //     endTime = moment(startTime).add(1, 'hour');
+    //   }
+
+
+    //   this.timelogEntryForm = new FormGroup({
+    //     'startTime': new FormControl(moment(startTime).format('HH:mm'), Validators.required),
+    //     'startTimeDate': new FormControl(moment(startTime).format('YYYY-MM-DD')),
+    //     'endTime': new FormControl(moment(endTime).format('HH:mm'), Validators.required),
+    //     'endTimeDate': new FormControl(moment(endTime).format('YYYY-MM-DD')),
+    //     'description': new FormControl(),
+    //   });
 
 
 
-    this.controlSubscriptions.push(
-      this.timelogEntryForm.controls['startTime'].valueChanges.subscribe(() => {
-        this.validateTimes();
-      })
-    );
-    this.controlSubscriptions.push(
-      this.timelogEntryForm.controls['startTimeDate'].valueChanges.subscribe(() => {
-        this.validateTimes();
-      })
-    );
-    this.controlSubscriptions.push(
-      this.timelogEntryForm.controls['endTime'].valueChanges.subscribe(() => {
-        this.validateTimes();
-      })
-    );
-    this.controlSubscriptions.push(
-      this.timelogEntryForm.controls['endTimeDate'].valueChanges.subscribe(() => {
-        this.validateTimes();
-      })
-    );
+
+    // } else if (this.action == "REVIEW" || this.action == "SET") {
+
+    //   this.timelogEntryForm = new FormGroup({
+    //     'startTime': new FormControl(this._providedFormData.timelogEntry.startTime.format('HH:mm'), Validators.required),
+    //     'startTimeDate': new FormControl(this._providedFormData.timelogEntry.startTime.format('YYYY-MM-DD')),
+    //     'endTime': new FormControl(this._providedFormData.timelogEntry.endTime.format('HH:mm'), Validators.required),
+    //     'endTimeDate': new FormControl(this._providedFormData.timelogEntry.endTime.format('YYYY-MM-DD')),
+    //     'description': new FormControl(this._providedFormData.timelogEntry.description),
+    //   });
+    //   this.timelogEntryActivities = Object.assign([], this._providedFormData.timelogEntry.tleActivities);
+    // }
+    // this.validateTimes();
+
+
+
+    // this.controlSubscriptions.push(
+    //   this.timelogEntryForm.controls['startTime'].valueChanges.subscribe(() => {
+    //     this.validateTimes();
+    //   })
+    // );
+    // this.controlSubscriptions.push(
+    //   this.timelogEntryForm.controls['startTimeDate'].valueChanges.subscribe(() => {
+    //     this.validateTimes();
+    //   })
+    // );
+    // this.controlSubscriptions.push(
+    //   this.timelogEntryForm.controls['endTime'].valueChanges.subscribe(() => {
+    //     this.validateTimes();
+    //   })
+    // );
+    // this.controlSubscriptions.push(
+    //   this.timelogEntryForm.controls['endTimeDate'].valueChanges.subscribe(() => {
+    //     this.validateTimes();
+    //   })
+    // );
 
   }
   ngOnDestroy() {
@@ -286,9 +287,14 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
 
   onClickSaveActivity() {
-    console.log("saving activity", this.selectedActivity);
+    
     if(this.selectedActivity){
-      this.timelogEntryActivities.push(new TimelogEntryActivity(this.selectedActivity, ''));
+      let itleActivity: ITLEActivity = {
+        activityTreeId: this.selectedActivity.treeId,
+        durationMinutes: 0,
+      }
+      console.log("Warning: this is the old method and isn't great. need to kill this component.", this.selectedActivity);
+      this.timelogEntryActivities.push(new TimelogEntryActivityZZ(this.activitiesService, itleActivity));
       this.ifAddActivity = false;
     }else{
 
@@ -301,29 +307,29 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   }
 
   onClickSaveTimelogEntry() {
-    let startTime:moment.Moment = this.buildDate(this.timelogEntryForm.controls['startTime'].value, this.timelogEntryForm.controls['startTimeDate'].value)
-    let endTime: moment.Moment = this.buildDate(this.timelogEntryForm.controls['endTime'].value, this.timelogEntryForm.controls['endTimeDate'].value)
-    let newTimelogEntry: TimelogEntry;
+    // let startTime:moment.Moment = this.buildDate(this.timelogEntryForm.controls['startTime'].value, this.timelogEntryForm.controls['startTimeDate'].value)
+    // let endTime: moment.Moment = this.buildDate(this.timelogEntryForm.controls['endTime'].value, this.timelogEntryForm.controls['endTimeDate'].value)
+    // let newTimelogEntry: TimelogEntry;
 
-    if (this.action == "NEW" || this.action == "SET") {
+    // if (this.action == "NEW" || this.action == "SET") {
       
-      newTimelogEntry = new TimelogEntry(null, null, startTime.toISOString(), endTime.toISOString(), this.timelogEntryForm.get('description').value);
-      newTimelogEntry.activities = this.timelogEntryActivities;
-      this.timelogService.saveTimelogEntry(newTimelogEntry);
+    //   newTimelogEntry = new TimelogEntry(null, null, startTime.toISOString(), endTime.toISOString(), this.timelogEntryForm.get('description').value, this.activitiesService);
+    //   newTimelogEntry.activities = this.timelogEntryActivities;
+    //   this.timelogService.saveTimelogEntry(newTimelogEntry);
 
-    } else if (this.action == "REVIEW" ) {
+    // } else if (this.action == "REVIEW" ) {
 
-      let reviewTimelogEntry: TimelogEntry = this._providedFormData.timelogEntry;
-      newTimelogEntry = new TimelogEntry(reviewTimelogEntry.id, reviewTimelogEntry.userId, startTime.toISOString(), endTime.toISOString(), this.timelogEntryForm.get('description').value);
-      for (let activity of this.timelogEntryActivities) {
-        newTimelogEntry.activities.push(activity)
-      }
-      this.timelogService.updateTimelogEntry(newTimelogEntry);
+    //   let reviewTimelogEntry: TimelogEntry = this._providedFormData.timelogEntry;
+    //   newTimelogEntry = new TimelogEntry(reviewTimelogEntry.id, reviewTimelogEntry.userId, startTime.toISOString(), endTime.toISOString(), this.timelogEntryForm.get('description').value);
+    //   for (let activity of this.timelogEntryActivities) {
+    //     newTimelogEntry.activities.push(activity)
+    //   }
+    //   this.timelogService.updateTimelogEntry(newTimelogEntry);
 
-    }
-    this.controlSubscriptions.forEach((sub) => { sub.unsubscribe(); });
-    this.timelogEntryForm.reset()
-    this.closeForm.emit();
+    // }
+    // this.controlSubscriptions.forEach((sub) => { sub.unsubscribe(); });
+    // this.timelogEntryForm.reset()
+    // this.closeForm.emit();
 
   }
 

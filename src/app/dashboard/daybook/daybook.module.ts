@@ -10,7 +10,7 @@ import { TimeLogComponent } from './time-log/timelog.component';
 import { DailyTaskListWidgetComponent } from './widgets/daily-task-list-widget/daily-task-list-widget.component';
 import { DaybookHeaderComponent } from './daybook-header/daybook-header.component';
 import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
-import { TimelogEntryTileComponent } from './time-log/timelog-entry-tile/timelog-entry-tile.component';
+import { TimelogEntryTileComponent } from './time-log/timelog-entry/timelog-entry-tile/timelog-entry-tile.component';
 import { PrimaryTaskWidgetComponent } from './widgets/primary-objective-widget/primary-objective-widget.component';
 import { TaskQueueWidgetComponent } from './widgets/task-queue-widget/task-queue-widget.component';
 import { ActivityInputDropdownComponent } from '../../shared/activity-input-dropdown/activity-input-dropdown.component';

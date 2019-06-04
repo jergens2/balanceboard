@@ -18,7 +18,8 @@ import { FutureEventFormComponent } from './tools/tool-components/future-event-f
 import { DirectoryInputComponent } from './directory/directory-input/directory-input.component';
 import { ActivityInputDropdownComponent } from "./activity-input-dropdown/activity-input-dropdown.component";
 import { TlefChartComponent } from "./tools/tool-components/timelog-entry-form/tlef-chart/tlef-chart.component";
-import { ActivitySliderBarComponent } from './tools/tool-components/timelog-entry-form/tlef-activity-slider-bar/activity-slider-bar.component';
+import { ActivitySliderBarComponent } from './tools/tool-components/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
+import { TlefActivitiesComponent } from './tools/tool-components/timelog-entry-form/tlef-activities/tlef-activities.component';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { ActivitySliderBarComponent } from './tools/tool-components/timelog-entr
         DirectoryInputComponent,
         ActivityInputDropdownComponent,
         TlefChartComponent,
-        ActivitySliderBarComponent
+        ActivitySliderBarComponent,
+        TlefActivitiesComponent
     ],
     exports: [
         CommonModule,
