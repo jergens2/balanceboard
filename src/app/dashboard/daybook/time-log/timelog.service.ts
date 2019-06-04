@@ -77,14 +77,8 @@ export class TimelogService {
   }
 
   private _timerSubscription: Subscription = new Subscription();
-<<<<<<< HEAD
-  private subscribeToUpdates(){
-    //every 30 seconds, check for updates;
-    this._timerSubscription = timer(0,30000).subscribe((event)=>{
-=======
   private subscribeToUpdates() {
     this._timerSubscription = timer(0, 30000).subscribe((event) => {
->>>>>>> wowza
       this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'days'), moment().endOf('day').add(1, 'days'));
     });
   }
