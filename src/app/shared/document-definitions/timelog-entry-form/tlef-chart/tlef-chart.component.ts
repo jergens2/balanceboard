@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import * as moment from 'moment';
-import { TimelogEntry } from '../../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry.class';
+import { TimelogEntry } from '../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry.class';
 import { DurationString } from '../duration-string.class';
 
 @Component({

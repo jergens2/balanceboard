@@ -9,17 +9,21 @@ import { SingleDayViewComponent } from './time-views/single-day-view/single-day-
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { CustomRangeTimeViewComponent } from './time-views/custom-range-time-view/custom-range-time-view.component';
 import { ToolsComponent } from './tools/tools.component';
-import { ActionItemFormComponent } from './tools/tool-components/action-item-form/action-item-form.component';
-import { NotebookEntryFormComponent } from "./tools/tool-components/notebook-entry-form/notebook-entry-form.component";
+import { ActionItemFormComponent } from './document-definitions/action-item-form/action-item-form.component';
+import { NotebookEntryFormComponent } from "./document-definitions/notebook-entry-form/notebook-entry-form.component";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { TimelogEntryFormComponent } from './tools/tool-components/timelog-entry-form/timelog-entry-form.component';
-import { FutureEventFormComponent } from './tools/tool-components/future-event-form/future-event-form.component';
+import { TimelogEntryFormComponent } from './document-definitions/timelog-entry-form/timelog-entry-form.component';
+import { FutureEventFormComponent } from './document-definitions/future-event-form/future-event-form.component';
 import { DirectoryInputComponent } from './directory/directory-input/directory-input.component';
 import { ActivityInputDropdownComponent } from "./activity-input-dropdown/activity-input-dropdown.component";
-import { TlefChartComponent } from "./tools/tool-components/timelog-entry-form/tlef-chart/tlef-chart.component";
-import { ActivitySliderBarComponent } from './tools/tool-components/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
-import { TlefActivitiesComponent } from './tools/tool-components/timelog-entry-form/tlef-activities/tlef-activities.component';
+import { TlefChartComponent } from "./document-definitions/timelog-entry-form/tlef-chart/tlef-chart.component";
+import { ActivitySliderBarComponent } from './document-definitions/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
+import { TlefActivitiesComponent } from './document-definitions/timelog-entry-form/tlef-activities/tlef-activities.component';
+import { RecurringTaskFormComponent } from "./document-definitions/recurring-task/recurring-task-form/recurring-task-form.component";
+import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition-form/activity-category-definition-form.component";
+import { RtRepititionsComponent } from "./document-definitions/recurring-task/recurring-task-form/rt-repititions/rt-repititions.component";
+
 
 
 @NgModule({
@@ -46,7 +50,10 @@ import { TlefActivitiesComponent } from './tools/tool-components/timelog-entry-f
         ActivityInputDropdownComponent,
         TlefChartComponent,
         ActivitySliderBarComponent,
-        TlefActivitiesComponent
+        TlefActivitiesComponent,
+        RecurringTaskFormComponent,
+        ActivityCategoryDefinitionFormComponent,
+        RtRepititionsComponent,
     ],
     exports: [
         CommonModule,
@@ -58,6 +65,8 @@ import { TlefActivitiesComponent } from './tools/tool-components/timelog-entry-f
         NotebookEntryFormComponent,
         ActivityInputDropdownComponent,
         TimelogEntryFormComponent,
+        RecurringTaskFormComponent,
+        
     ]
 })
 

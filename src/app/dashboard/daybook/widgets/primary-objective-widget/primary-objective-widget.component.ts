@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { ModalService } from '../../../../modal/modal.service';
 import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../../modal/modal-option.interface';
-import { Modal } from '../../../../modal/modal.model';
+import { Modal } from '../../../../modal/modal.class';
 import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { DaybookService } from '../../daybook.service';

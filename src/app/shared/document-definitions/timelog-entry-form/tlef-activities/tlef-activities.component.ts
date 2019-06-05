@@ -1,12 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { TLEFActivityListItem } from './tlef-activity-slider-bar/tlef-activity-list-item.class';
-import { UserDefinedActivity } from '../../../../../dashboard/activities/user-defined-activity.model';
+import { UserDefinedActivity } from '../../../../dashboard/activities/user-defined-activity.model';
 import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { DurationString } from '../duration-string.class';
-import { TimelogEntry } from '../../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry.class';
-import { TimelogEntryActivity } from '../../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry-activity.class';
+import { TimelogEntry } from '../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry.class';
+import { TimelogEntryActivity } from '../../../../dashboard/daybook/time-log/timelog-entry/timelog-entry-activity.class';
 
 
 @Component({

@@ -1,0 +1,35 @@
+<div class="repititions-root">
+    <div style="margin-bottom:5px;display: flex;flex-direction: row;justify-content: space-between">
+        <div>
+            Repeats Every
+        </div>
+        <div class="add-repitition-button" (click)="onClickAddRepitition()">
+            <fa-icon [icon]="faPlusCircle" style="color:rgb(35, 156, 255);" >
+            </fa-icon> Add repitition
+        </div>
+    </div>
+
+    <div class="repititions">
+        <div *ngFor="let repitition of repititions" class="repitition">
+            <div class="repitition-form" [formGroup]="repititionForm" style="font-size:13pt; font-weight: bold;">
+                <div style="display:flex;flex-direction: row;">
+                    <input type="number" class="clean-input" formControlName="value" style="width:50px;">
+
+
+                    <select formControlName="period" class="clean-input">
+                        <option *ngFor="let period of periods" [value]="period.period">{{ period.display }}</option>
+                    </select>
+                </div>
+                <div style="display:flex;flex-direction: row;">
+                    At <input type="time" formControlName="startDate" class="clean-input">
+                </div>
+
+            </div>
+            <div>
+                <fa-icon [icon]="faTimes" class="icon-button" (click)="onClickDeleteRepitition(repitition)"></fa-icon>
+            </div>
+        </div>
+    </div>
+
+
+</div>

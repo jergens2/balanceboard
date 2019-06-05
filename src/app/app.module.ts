@@ -20,9 +20,7 @@ import { UserSettingsComponent } from './user-settings/user-settings.component';
 import { HeaderMenuComponent } from './nav/header/header-menu/header-menu.component';
 import { ModalComponent } from './modal/modal.component';
 import { DefaultModalComponent } from './modal/custom-modals/default-modal/default-modal.component';
-import { PrimaryObjectiveModalComponent } from './modal/custom-modals/primary-objective-modal/primary-objective-modal.component';
 
-import { TaskQueueModalComponent } from './modal/custom-modals/task-queue-modal/task-queue-modal.component';
 import { ConfirmModalComponent } from './modal/custom-modals/confirm-modal/confirm-modal.component';
 import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notepad-modal.component';
 import { SharedModule } from './shared/shared.module';
@@ -41,8 +39,6 @@ import { SearchBarComponent } from './nav/search-bar/search-bar.component';
     HeaderMenuComponent,
     ModalComponent,
     DefaultModalComponent,
-    PrimaryObjectiveModalComponent,
-    TaskQueueModalComponent,
     ConfirmModalComponent,
     NotepadModalComponent,
     SearchBarComponent,

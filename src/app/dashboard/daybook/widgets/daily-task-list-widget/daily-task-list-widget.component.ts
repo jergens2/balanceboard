@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
 import { RecurringTasksService } from '../../../scheduling/recurring-tasks/recurring-tasks.service';
-import { RecurringTask } from '../../../scheduling/recurring-tasks/recurring-task.model';
+import { RecurringTaskDefinition } from '../../../../shared/document-definitions/recurring-task/recurring-task-definition.class';
 
 @Component({
   selector: 'app-daily-task-list-widget',
@@ -19,14 +19,14 @@ export class DailyTaskListWidgetComponent implements OnInit {
 
   constructor(private recurringTasksService:RecurringTasksService) { }
 
-  recurringTasks: RecurringTask[] = [];
+  recurringTasks: RecurringTaskDefinition[] = [];
   dailyTaskListItems: {taskName: string, isChecked: boolean}[] = [];
 
   ngOnInit() {
 
     this.recurringTasks = this.recurringTasksService.recurringTasks;
 
-    this.recurringTasks.forEach((task: RecurringTask)=>{
+    this.recurringTasks.forEach((task: RecurringTaskDefinition)=>{
       this.dailyTaskListItems.push({taskName: task.name, isChecked: false})
     })
 

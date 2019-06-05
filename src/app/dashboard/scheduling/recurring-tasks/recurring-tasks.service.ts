@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.model';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { RecurringTask } from './recurring-task.model';
-import { defaultRecurringTasks } from './default-tasks';
+import { RecurringTaskDefinition } from '../../../shared/document-definitions/recurring-task/recurring-task-definition.class';
+import { defaultRecurringTasks } from './default-recurring-tasks';
 
 @Injectable({
   providedIn: 'root'
@@ -23,11 +23,11 @@ export class RecurringTasksService {
     this._authStatus = null;
   }
 
-  private _recurringTasks$: BehaviorSubject<RecurringTask[]> = new BehaviorSubject([]);
-  public get recurringTasks():RecurringTask[] {
+  private _recurringTasks$: BehaviorSubject<RecurringTaskDefinition[]> = new BehaviorSubject([]);
+  public get recurringTasks():RecurringTaskDefinition[] {
     return this._recurringTasks$.getValue();
   }
-  public get recurringTasks$():Observable<RecurringTask[]> {
+  public get recurringTasks$():Observable<RecurringTaskDefinition[]> {
     return this._recurringTasks$.asObservable();
   }
 
@@ -36,6 +36,13 @@ export class RecurringTasksService {
     this._loginComplete$.next(true);
 
     this._recurringTasks$.next(defaultRecurringTasks);
+  }
+
+  public saveRecurringTaskDefinition(saveTask: RecurringTaskDefinition){
+
+
+    console.log("Do http request");
+
   }
 
 

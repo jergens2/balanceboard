@@ -4,7 +4,7 @@ import { TaskGroup } from '../../../task-group/task-group.class';
 import { ModalService } from '../../../../../modal/modal.service';
 import { Task } from '../../../task/task.model';
 import * as moment from 'moment';
-import { Modal } from '../../../../../modal/modal.model';
+import { Modal } from '../../../../../modal/modal.class';
 import { ModalComponentType } from '../../../../../modal/modal-component-type.enum';
 import { IModalOption } from '../../../../../modal/modal-option.interface';
 

@@ -3,7 +3,7 @@ import { NotebookEntry } from './notebook-entry.model';
 import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../modal/modal-option.interface';
-import { Modal } from '../../../modal/modal.model';
+import { Modal } from '../../../modal/modal.class';
 import { ModalService } from '../../../modal/modal.service';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 import { NotebooksService } from '../notebooks.service';

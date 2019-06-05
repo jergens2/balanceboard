@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 import { UserSettingsService } from '../../user-settings/user-settings.service';
 import { UserSetting } from '../../user-settings/user-setting.model';
 import { User } from '../../authentication/user.model';
-import { Modal } from '../../modal/modal.model';
+import { Modal } from '../../modal/modal.class';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { ModalService } from '../../modal/modal.service';

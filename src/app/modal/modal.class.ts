@@ -1,6 +1,6 @@
 import { IModalOption } from "./modal-option.interface";
-import { ModalComponentType } from "./modal-component-type.enum";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { ModalComponentType } from "./modal-component-type.enum";
 
 export class Modal {
 
@@ -29,3 +29,4 @@ export class Modal {
     }
 
 }
+

@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { RecurringTask } from './recurring-task.model';
+import { RecurringTaskDefinition } from '../../../shared/document-definitions/recurring-task/recurring-task-definition.class';
 import * as moment from 'moment';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { RecurringTasksService } from './recurring-tasks.service';
+import { ModalService } from '../../../modal/modal.service';
+import {  Modal } from '../../../modal/modal.class';
+import { ModalComponentType } from '../../../../app/modal/modal-component-type.enum';
 
 @Component({
   selector: 'app-recurring-tasks',
@@ -11,12 +14,12 @@ import { RecurringTasksService } from './recurring-tasks.service';
 })
 export class RecurringTasksComponent implements OnInit {
 
-  constructor(private recurringTasksService: RecurringTasksService) { }
+  constructor(private recurringTasksService: RecurringTasksService, private modalService: ModalService) { }
 
 
   faCheck = faCheck;
 
-  recurringTasks: RecurringTask[] = [];
+  recurringTasks: RecurringTaskDefinition[] = [];
 
   lastSevenDays: any[] = [];
 
@@ -36,6 +39,11 @@ export class RecurringTasksComponent implements OnInit {
       currentDate = moment(currentDate).add(1,"days");
     }
 
+  }
+
+  onClickNewRecurringTask(){
+    let recurringTaskModal: Modal = new Modal("Recurring Task", "", null, [], {}, ModalComponentType.RecurringTask);
+    this.modalService.activeModal = recurringTaskModal;
   }
 
 }

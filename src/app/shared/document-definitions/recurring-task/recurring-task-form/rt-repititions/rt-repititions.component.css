@@ -1,0 +1,37 @@
+
+.repititions-root{
+    font-size:0.9em;
+}
+.repitition-form{
+    display: flex;
+    flex-direction: column;
+}
+.clean-input{
+    border:none;
+}
+
+.repititions{
+    display:flex;
+    flex-direction: column;
+}
+.repitition{
+    border: 1px solid rgb(217, 242, 255);
+    background-color: 1px solid rgb(245, 251, 255);
+    border-radius:2px;
+    margin:2px;
+    padding:5px;
+    padding-left:15px;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.add-repitition-button{
+    border: 1px solid white;
+    padding-left:5px;
+    padding-right:5px;
+    border-radius: 5px;
+}
+.add-repitition-button:hover{
+    border: 1px solid rgb(160, 222, 255);
+    cursor: pointer;
+}

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from './modal.service';
-import { Modal } from './modal.model';
+import { Modal } from './modal.class';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ModalComponentType } from './modal-component-type.enum';
 

@@ -11,7 +11,7 @@ import { ToolsService } from '../../shared/tools/tools.service';
 import { ToolComponents } from '../../shared/tools/tool-components.enum';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
-import { Modal } from '../../modal/modal.model';
+import { Modal } from '../../modal/modal.class';
 import { ModalService } from '../../modal/modal.service';
 import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 

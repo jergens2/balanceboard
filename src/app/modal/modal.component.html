@@ -20,6 +20,7 @@
       <app-action-item-form *ngIf="modal.modalComponentType == 'TASK'" [action]="modal.action"></app-action-item-form>
 
       <app-timelog-entry-form *ngIf="modal.modalComponentType == 'TIMELOG_ENTRY'" [timelogEntry]="modal.modalData"></app-timelog-entry-form>
+      <app-recurring-task-form *ngIf="modal.modalComponentType == 'RECURRING_TASK'"></app-recurring-task-form>
     </div>
 
   </div>
