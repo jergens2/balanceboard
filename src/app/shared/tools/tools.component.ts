@@ -4,6 +4,7 @@ import { ToolComponents } from './tool-components.enum';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { SizeService } from '../app-screen-size/size.service';
 import { AppScreenSize } from '../app-screen-size/app-screen-size.enum';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-tools',
@@ -34,28 +35,11 @@ export class ToolsComponent implements OnInit {
 
     this.toolsService.currentTool$.subscribe((tool: ToolComponents)=>{
       this.toolName = tool;
-      // if(tool != null){
-      //   if(tool == ToolComponents.Notepad){
-      //     this.ifActionItem = false;
-      //     this.ifTimelogEntry = false;
-      //     this.ifNotepad = true;
-      //   }
-      //   if(tool == ToolComponents.ActionItem){
-      //     this.ifNotepad = false;
-      //     this.ifTimelogEntry = false;
-      //     this.ifActionItem = true;
-      //   }
-      //   if(tool == ToolComponents.TimelogEntry){
-      //     this.ifActionItem = false;
-      //     this.ifNotepad = false;
-      //     this.ifTimelogEntry = true;
-      //   }
-      // }
-    });
+    });  
+  }
 
-
-    
-
+  public get currentDate(): string{
+    return moment().format('MMMM Do');
   }
 
   onClickClose(){

@@ -6,13 +6,6 @@
 
   <div class="body">
 
-
-    <div class="activity-display">
-        <app-activities-six-week-view></app-activities-six-week-view>
-        <!-- app-activities-six-week-view goes here -->
-    </div>
-
-
     <div class="activity-display" *ngIf="action == 'activities_list'">
       <app-activities-list (activitySelected)="onActivitySelected($event)"></app-activities-list>
     </div>

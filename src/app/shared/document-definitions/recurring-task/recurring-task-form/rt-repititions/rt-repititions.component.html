@@ -11,7 +11,7 @@
 
     <div class="repititions">
         <div *ngFor="let repitition of repititions" class="repitition">
-            <div class="repitition-form" [formGroup]="repititionForm" style="font-size:13pt; font-weight: bold;">
+            <div class="repitition-form" [formGroup]="repitition.form" style="font-size:13pt; font-weight: bold;">
                 <div style="display:flex;flex-direction: row;">
                     <input type="number" class="clean-input" formControlName="value" style="width:50px;">
 
@@ -21,7 +21,7 @@
                     </select>
                 </div>
                 <div style="display:flex;flex-direction: row;">
-                    At <input type="time" formControlName="startDate" class="clean-input">
+                    At or around <input type="time" formControlName="startDate" class="clean-input">
                 </div>
 
             </div>

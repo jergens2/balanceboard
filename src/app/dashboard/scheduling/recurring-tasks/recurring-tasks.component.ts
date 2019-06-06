@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { RecurringTaskDefinition } from '../../../shared/document-definitions/recurring-task/recurring-task-definition.class';
 import * as moment from 'moment';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import { RecurringTasksService } from './recurring-tasks.service';
+import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { RecurringTasksService } from '../../../shared/document-definitions/recurring-task/recurring-tasks.service';
 import { ModalService } from '../../../modal/modal.service';
 import {  Modal } from '../../../modal/modal.class';
 import { ModalComponentType } from '../../../../app/modal/modal-component-type.enum';
+import { IModalOption } from '../../../modal/modal-option.interface';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-recurring-tasks',
@@ -18,6 +20,8 @@ export class RecurringTasksComponent implements OnInit {
 
 
   faCheck = faCheck;
+  faTimes = faTimes;
+  faEdit = faEdit;
 
   recurringTasks: RecurringTaskDefinition[] = [];
 
@@ -44,6 +48,36 @@ export class RecurringTasksComponent implements OnInit {
   onClickNewRecurringTask(){
     let recurringTaskModal: Modal = new Modal("Recurring Task", "", null, [], {}, ModalComponentType.RecurringTask);
     this.modalService.activeModal = recurringTaskModal;
+  }
+
+  onClickEditTask(task: RecurringTaskDefinition){
+    let editTaskModal: Modal = new Modal("Edit Recurring Task Definition", "", task, [], {}, ModalComponentType.RecurringTask);
+    this.modalService.activeModal = editTaskModal;
+  }
+  
+  onClickDeleteTask(task: RecurringTaskDefinition){
+
+    let modalOptions: IModalOption[] = [
+      {
+        value: "Yes",
+        dataObject: null
+      },
+      {
+        value: "No",
+        dataObject: null
+      }
+    ];
+    let modal: Modal = new Modal("Delete Recurring Task Definition", "Confirm: Delete Recurring Task Definition?", null, modalOptions, {}, ModalComponentType.Default);
+    this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+      if (selectedOption.value == "Yes") {
+        this.recurringTasksService.httpDeleteRecurringTask(task);
+      } else if (selectedOption.value == "No") {
+
+      } else {
+        //error 
+      }
+    });
+    this.modalService.activeModal = modal;
   }
 
 }

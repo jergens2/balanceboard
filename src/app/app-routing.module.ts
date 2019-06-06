@@ -6,7 +6,7 @@ import { BodyWeightComponent } from "./dashboard/health/body-weight/body-weight.
 import { BuildProfileComponent } from "./dashboard/health/build-profile/build-profile.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
 import { ActivitiesComponent } from "./dashboard/activities/activities.component";
-import { DaybookComponent } from "./dashboard/daybook/daybook.component";
+import { DayDataComponent } from "./dashboard/daybook/daybook.component";
 import { MonthPlannerComponent } from "./dashboard/month-planner/month-planner.component";
 
 import { UserSettingsComponent } from "./user-settings/user-settings.component";
@@ -29,8 +29,8 @@ const appRoutes: Routes = [
     { path: 'body-weight', component: BodyWeightComponent },
     { path: 'health-profile', component: BuildProfileComponent },
     { path: 'networth', component: NetWorthComponent },
-    { path: 'daybook', component: DaybookComponent },
-    { path: 'daybook/:isoDate', component: DaybookComponent },
+    { path: 'daybook', component: DayDataComponent },
+    { path: 'daybook/:isoDate', component: DayDataComponent },
 
     { path: 'notebooks', component: NotebooksComponent },
     { path: 'month-planner', component: MonthPlannerComponent },

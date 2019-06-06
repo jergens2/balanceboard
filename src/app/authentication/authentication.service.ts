@@ -12,12 +12,12 @@ import { TimelogService } from '../dashboard/daybook/time-log/timelog.service';
 import { ActivityTree } from '../dashboard/activities/activity-tree.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
 import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
-import { DaybookService } from '../dashboard/daybook/daybook.service';
+import { DayDataService } from '../shared/document-definitions/day-data/day-data.service';
 import { TaskService } from '../dashboard/tasks/task.service';
-import { Day } from '../dashboard/daybook/day/day.model';
+import { DayData } from '../shared/document-definitions/day-data/day-data.class';
 import { NotebookEntry } from '../dashboard/notebooks/notebook-entry/notebook-entry.model';
 import { NotebooksService } from '../dashboard/notebooks/notebooks.service';
-import { RecurringTasksService } from '../dashboard/scheduling/recurring-tasks/recurring-tasks.service';
+import { RecurringTasksService } from '../shared/document-definitions/recurring-task/recurring-tasks.service';
 import { TimeViewsService } from '../shared/time-views/time-views.service';
 
 
@@ -36,7 +36,7 @@ export class AuthenticationService {
     private timelogService: TimelogService,
     private userSettingsService: UserSettingsService,
     private dayTemplatesService: DayTemplatesService,
-    private daybookService: DaybookService,
+    private dayDataService: DayDataService,
     private notebooksService: NotebooksService,
     private taskService: TaskService,
     private recurringTaskService: RecurringTasksService,
@@ -53,7 +53,7 @@ export class AuthenticationService {
 
   private activitiesSubscription: Subscription = new Subscription();
   private dayTemplatesSubscription: Subscription = new Subscription();
-  private daybookSubscription: Subscription = new Subscription();
+  private dayDataSubscription: Subscription = new Subscription();
   private notebookSubscription: Subscription = new Subscription();
   private taskSubscription: Subscription = new Subscription();
   private recurringTaskSubscription: Subscription = new Subscription();
@@ -138,7 +138,7 @@ export class AuthenticationService {
         }
       });
 
-      this.daybookSubscription = this.daybookService.login$(authStatus).subscribe((loginComplete: boolean) => {
+      this.dayDataSubscription = this.dayDataService.login$(authStatus).subscribe((loginComplete: boolean) => {
         if (loginComplete != null) {
           daybookLoginComplete = loginComplete;
         }
@@ -252,7 +252,7 @@ export class AuthenticationService {
 
     this.activitiesSubscription.unsubscribe();
     this.dayTemplatesSubscription.unsubscribe();
-    this.daybookSubscription.unsubscribe();
+    this.dayDataSubscription.unsubscribe();
     this.notebookSubscription.unsubscribe();
     this.taskSubscription.unsubscribe();
     this.recurringTaskSubscription.unsubscribe();
@@ -263,7 +263,7 @@ export class AuthenticationService {
     this.activitiesService.logout();
     this.userSettingsService.logout();
     this.dayTemplatesService.logout();
-    this.daybookService.logout();
+    this.dayDataService.logout();
     this.taskService.logout();
     this.notebooksService.logout();
     this.recurringTaskService.logout();

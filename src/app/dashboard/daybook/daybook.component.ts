@@ -6,20 +6,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from '../../nav/header/header.service';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
-import { Day } from './day/day.model';
-import { DaybookService } from './daybook.service';
+
+import { DayDataService } from '../../shared/document-definitions/day-data/day-data.service';
+import { DayData } from '../../shared/document-definitions/day-data/day-data.class';
 
 @Component({
   selector: 'app-daybook',
   templateUrl: './daybook.component.html',
   styleUrls: ['./daybook.component.css']
 })
-export class DaybookComponent implements OnInit, OnDestroy {
+export class DayDataComponent implements OnInit, OnDestroy {
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private daybookService: DaybookService,
+    private dayDataService: DayDataService,
     private headerService: HeaderService) { }
 
 
@@ -43,28 +44,29 @@ export class DaybookComponent implements OnInit, OnDestroy {
     return this._currentDate
   }
   public setCurrentDate(newDate) {
-    this.daybookService.setDate(newDate);
+    this.dayDataService.setDate(newDate);
     // this._currentDate = moment(newDate);
     // this._currentDate$.next(this._currentDate);
   }
 
   currentView: string = "timelog";
 
-  day: Day = null;
+  dayData: DayData = null;
 
   ngOnInit() {
 
-    this.day = this.daybookService.currentDay;
-    this._currentDate = moment(this.day.date);
+    this.dayData = this.dayDataService.currentDay;
+    // this._currentDate = moment(this.dayData.date);
     // this._currentDate$.next(this._currentDate);
+    this._currentDate = moment();
 
     this._currentDaySubscription.unsubscribe();
-    this._currentDaySubscription = this.daybookService.currentDay$.subscribe((changedDay: Day)=>{
-      console.log("daybook subscription:  day changed", changedDay.date.format('YYYY-MM-DD'));
-      this.day = changedDay;
-      this._currentDate = moment(this.day.date);
-      // this._currentDate$.next(this._currentDate);
-    })
+    // this._currentDaySubscription = this.dayDataService.currentDay$.subscribe((changedDay: DayData)=>{
+    //   console.log("daybook subscription:  DayData changed", changedDay.date.format('YYYY-MM-DD'));
+    //   this.dayData = changedDay;
+    //   this._currentDate = moment(this.dayData.date);
+    //   // this._currentDate$.next(this._currentDate);
+    // })
 
 
     this.buildHeaderMenu();
@@ -100,7 +102,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
     // daybookHeaderMenuItems.push(timelogViewMenuItem);
     // daybookHeaderMenuItems.push(heatmapViewMenuItem);
 
-    // let daybookHeaderMenu: HeaderMenu = new HeaderMenu('Daybook', daybookHeaderMenuItems);
+    // let daybookHeaderMenu: HeaderMenu = new HeaderMenu('DayData', daybookHeaderMenuItems);
 
     // this.headerService.setCurrentMenu(daybookHeaderMenu);
   }

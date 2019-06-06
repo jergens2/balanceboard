@@ -9,7 +9,7 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
   templateUrl: './daybook-header.component.html',
   styleUrls: ['./daybook-header.component.css']
 })
-export class DaybookHeaderComponent implements OnInit {
+export class DayDataHeaderComponent implements OnInit {
 
   faCalendar = faCalendarAlt;
   faBars = faBars;

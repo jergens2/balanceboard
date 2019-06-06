@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@ang
 import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent, Subscriber } from 'rxjs';
-import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
@@ -103,37 +103,46 @@ export class HeaderComponent implements OnInit {
     newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem('Settings', '/user_settings', faCogs), signOutMenuItem])));
 
 
+    /*
+      Tools Menu
+    */
     let toolsMenuItems: MenuItem[] = [];
+
     let notepadMenuItem: MenuItem = new MenuItem('Notebook Entry', null, faStickyNote);
     this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(()=>{
       this.toolsService.openTool(ToolComponents.Notepad);
-    }))
-    toolsMenuItems.push(notepadMenuItem);
-
+    }));
     let actionItemMenuItem: MenuItem = new MenuItem("Action Item", null, faCheckCircle);
     this.activeSubscriptions.push(actionItemMenuItem.clickEmitted$.subscribe(()=>{
       this.toolsService.openTool(ToolComponents.ActionItem);
-    }))
-
-    toolsMenuItems.push(actionItemMenuItem);
-
+    }));
     let timelogEntryMenuItem: MenuItem = new MenuItem("Timelog Entry", null, faTable);
     this.activeSubscriptions.push(timelogEntryMenuItem.clickEmitted$.subscribe(()=>{
       this.toolsService.openTool(ToolComponents.TimelogEntry);
-    }))
-
-    toolsMenuItems.push(timelogEntryMenuItem);
-
+    }));
     let futureEventMenuItem: MenuItem = new MenuItem("Appointment / Future Event", null, faCalendarAlt);
     this.activeSubscriptions.push(futureEventMenuItem.clickEmitted$.subscribe(()=>{
       this.toolsService.openTool(ToolComponents.FutureEvent);
-    }))
+    }));
+    let dailyTaskListMenuItem: MenuItem = new MenuItem("Daily Task List", null, faTasks);
+    this.activeSubscriptions.push(dailyTaskListMenuItem.clickEmitted$.subscribe(()=>{
+      this.toolsService.openTool(ToolComponents.DailyTaskList);
+    }));
 
+    toolsMenuItems.push(notepadMenuItem);
+    toolsMenuItems.push(actionItemMenuItem);
+    toolsMenuItems.push(timelogEntryMenuItem);
     toolsMenuItems.push(futureEventMenuItem);
+    toolsMenuItems.push(dailyTaskListMenuItem);
     
     let toolsMenu: HeaderMenu = new HeaderMenu('Tools', toolsMenuItems);
     toolsMenu.icon = faWrench;
     newMenus.push(toolsMenu);
+
+    /*
+    End of tools menu
+    */
+
 
 
     if (currentComponentMenu) {

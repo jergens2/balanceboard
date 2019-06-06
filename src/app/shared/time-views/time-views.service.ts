@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import * as moment from 'moment';
-import { Day } from '../../dashboard/daybook/day/day.model';
-import { DaybookService } from '../../dashboard/daybook/daybook.service';
+import { DayData } from '../document-definitions/day-data/day-data.class';
+import { DayDataService } from '../document-definitions/day-data/day-data.service';
 
 
 @Injectable({
@@ -27,7 +27,7 @@ export class TimeViewsService {
   }
 
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private dayDataService: DayDataService) { }
 
   public changeRange(startDate: moment.Moment, endDate: moment.Moment) {
     this._currentDayDataRange$.next({ startDate: startDate, endDate: endDate });
@@ -36,8 +36,8 @@ export class TimeViewsService {
   private _daybookSubscription: Subscription = new Subscription();
 
   private _fullDayDataRange: { startDate: moment.Moment, endDate: moment.Moment } = { startDate: moment().subtract(366, "days"), endDate: moment().add(366, "days") };
-  private _allRangeData$: BehaviorSubject<Day[]> = new BehaviorSubject([]);
-  public get allRangeData(): Day[] {
+  private _allRangeData$: BehaviorSubject<DayData[]> = new BehaviorSubject([]);
+  public get allRangeData(): DayData[] {
     return this._allRangeData$.getValue();
   }
 
@@ -51,7 +51,7 @@ export class TimeViewsService {
 
 
   private fetchDayData(range: { startDate: moment.Moment, endDate: moment.Moment }) {
-    this._daybookSubscription = this.daybookService.getDaysInRangeHTTP$(range.startDate, range.endDate).subscribe((dayData: Day[]) => {
+    this._daybookSubscription = this.dayDataService.getDaysInRangeHTTP$(range.startDate, range.endDate).subscribe((dayData: DayData[]) => {
       this._allRangeData$.next(dayData);
       this._loginComplete$.next(true);
     });
@@ -59,13 +59,13 @@ export class TimeViewsService {
   }
 
 
-  public timeViewRangeDayData(startDate: moment.Moment, endDate: moment.Moment): Day[] {
+  public timeViewRangeDayData(startDate: moment.Moment, endDate: moment.Moment): DayData[] {
     let fullRange = this._fullDayDataRange;
     let inRange: boolean = (startDate.isSameOrAfter(fullRange.startDate) && endDate.isSameOrBefore(fullRange.endDate));
 
     if (inRange) {
-      let days: Day[] = [];
-      this.allRangeData.forEach((day: Day)=>{
+      let days: DayData[] = [];
+      this.allRangeData.forEach((day: DayData)=>{
         if(day.dateYYYYMMDD >= startDate.format('YYYY-MM-DD') && day.dateYYYYMMDD <= endDate.format('YYYY-MM-DD')){
           days.push(day);
         }

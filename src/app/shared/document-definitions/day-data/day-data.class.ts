@@ -6,7 +6,7 @@ import { ITaskDataItem } from './task-data.interface';
 import { ITimelogEntryDataItem } from './timelog-entry-data.interface';
 
 
-export class Day{
+export class DayData{
 
 
     /*

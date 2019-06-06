@@ -6,9 +6,9 @@ export interface RecurringTaskRepitition{
 }
 
 export enum RecurringTaskRepititionPeriod {
-    Hours = "HOURS",
-    Days = "DAYS",
-    Weeks = "WEEKS",
-    Months = "MONTHS",
-    Years = "Years"
+    Hours = "hours",
+    Days = "days",
+    Weeks = "weeks",
+    Months = "months",
+    Years = "years"
 }

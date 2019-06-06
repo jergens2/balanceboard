@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ModalService } from '../../../../modal/modal.service';
-import { RecurringTasksService } from '../../../../dashboard/scheduling/recurring-tasks/recurring-tasks.service';
+import { RecurringTasksService } from '../recurring-tasks.service';
 import { RecurringTaskRepitition } from './rt-repititions/recurring-task-repitition.interface';
 import { RecurringTaskDefinition } from '../recurring-task-definition.class';
 
@@ -16,11 +16,23 @@ export class RecurringTaskFormComponent implements OnInit {
 
   recurringTaskForm: FormGroup;
   repititions: RecurringTaskRepitition[] = [];
+  updateRepititions: RecurringTaskRepitition[] = [];
+
+  @Input() updateTask: RecurringTaskDefinition;
 
   ngOnInit() {
-    this.recurringTaskForm = new FormGroup({
-      "name":new FormControl("", Validators.required),
-    });
+    if(this.updateTask){
+      this.updateRepititions = this.updateTask.repititions;
+      this.recurringTaskForm = new FormGroup({
+        "name":new FormControl(this.updateTask.name, Validators.required),
+      });
+      // this.repititions = this.updateTask.repititions;
+    }else{
+      this.recurringTaskForm = new FormGroup({
+        "name":new FormControl("", Validators.required),
+      });
+    }
+
   }
 
   onRepititionsValueChanged(repititions: RecurringTaskRepitition[]){
@@ -28,10 +40,22 @@ export class RecurringTaskFormComponent implements OnInit {
   }
 
   onClickSave(){
-    let name: string = this.recurringTaskForm.controls["name"].value;
-    let saveTask: RecurringTaskDefinition = new RecurringTaskDefinition("", "", name, this.repititions);
-    console.log("Saving this task", saveTask)
-    this.recurringTaskService.saveRecurringTaskDefinition(saveTask);
+    if(this.updateTask){
+      let name: string = this.recurringTaskForm.controls["name"].value;
+      this.updateTask.name = name;
+      this.updateTask.groupIds = [];
+      this.updateTask.activityTreeId = "";
+      this.updateTask.repititions = this.repititions;
+      this.recurringTaskService.httpUpdateRecurringTaskDefinition(this.updateTask);
+    }else{
+      let name: string = this.recurringTaskForm.controls["name"].value;
+      let saveTask: RecurringTaskDefinition = new RecurringTaskDefinition("", this.recurringTaskService.userId, name, this.repititions);
+      saveTask.groupIds = [];
+      saveTask.activityTreeId = "";
+      this.recurringTaskService.httpSaveRecurringTaskDefinition(saveTask);
+    }
+
+    this.modalService.closeModal();
   }
   onClickCancel(){
     this.modalService.closeModal();

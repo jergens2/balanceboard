@@ -9,8 +9,8 @@ import { IModalOption } from '../../../../modal/modal-option.interface';
 import { Modal } from '../../../../modal/modal.class';
 import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { DaybookService } from '../../daybook.service';
-import { Day } from '../../day/day.model';
+import { DayDataService } from '../../../../shared/document-definitions/day-data/day-data.service';
+import { DayData } from '../../../../shared/document-definitions/day-data/day-data.class';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
 import { TaskService } from '../../../tasks/task.service';
 import { PrimaryObjectiveService } from './primary-objective.service';
@@ -22,7 +22,7 @@ import { PrimaryObjectiveService } from './primary-objective.service';
 })
 export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
 
-  constructor(private modalService: ModalService, private daybookService: DaybookService, private tasksService: TaskService, private primaryObjectiveService: PrimaryObjectiveService) { }
+  constructor(private modalService: ModalService, private daybookService: DayDataService, private tasksService: TaskService, private primaryObjectiveService: PrimaryObjectiveService) { }
   faSpinner = faSpinner;
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
@@ -31,7 +31,7 @@ export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
   loading: boolean = true;
 
   task: Task;
-  private _currentDay: Day = null;
+  private _currentDay: DayData = null;
 
 
   private _modalSubscription: Subscription = new Subscription();
@@ -39,7 +39,7 @@ export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._getDaySubscription.unsubscribe();
-    this._getDaySubscription = this.daybookService.currentDay$.subscribe((day: Day)=>{
+    this._getDaySubscription = this.daybookService.currentDay$.subscribe((day: DayData)=>{
 
       // console.log("PrimaryTaskWidget:  Day changed", day)
       this.loading = true;

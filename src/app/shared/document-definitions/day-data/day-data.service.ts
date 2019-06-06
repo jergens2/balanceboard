@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
-import { serverUrl } from '../../serverurl';
+import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.model';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { Day } from './day/day.model';
 import { map } from 'rxjs/operators';
 
 
 import * as moment from 'moment';
-import { Task } from '../tasks/task/task.model';
+import { Task } from '../../../dashboard/tasks/task/task.model';
+import { DayData } from './day-data.class';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class DaybookService {
+export class DayDataService {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -25,16 +25,17 @@ export class DaybookService {
   login$(authStatus: AuthStatus): Observable<boolean>{
     this._authStatus = authStatus;
     
-    //old method
-    this.setDate$(moment());
+    // //old method
+    // this.setDate$(moment());
   
 
-    //new method
+    // //new method
     this.getLast365Days();
 
     return this._loginComplete$;
   
   }
+
 
   logout() {
     this._authStatus = null;
@@ -44,7 +45,7 @@ export class DaybookService {
 
   private getLast365Days(){
     
-    this.getDaysInRangeHTTP$(moment().subtract(365, "days"), moment()).subscribe((days: Day[])=>{
+    this.getDaysInRangeHTTP$(moment().subtract(365, "days"), moment()).subscribe((days: DayData[])=>{
       this._last365Days$.next(days);
       this._loginComplete$.next(true);
     })
@@ -52,7 +53,7 @@ export class DaybookService {
   }
 
 
-  private setDate$(date: moment.Moment): Observable<Day>{
+  private setDate$(date: moment.Moment): Observable<DayData>{
     this.setDate(date);
     return this._currentDay$.asObservable();
   }
@@ -65,19 +66,19 @@ export class DaybookService {
     return moment(this._currentDay$.getValue().date);
   }
 
-  private _last365Days$: BehaviorSubject<Day[]> = new BehaviorSubject(null);
-  public get last365Days(): Day[] {
+  private _last365Days$: BehaviorSubject<DayData[]> = new BehaviorSubject(null);
+  public get last365Days(): DayData[] {
     return this._last365Days$.getValue();
   }
-  public get last365Days$(): Observable<Day[]> {
+  public get last365Days$(): Observable<DayData[]> {
     return this._last365Days$.asObservable();
   }
-  private _currentDay$: BehaviorSubject<Day> = new BehaviorSubject(null);
-  public get currentDay(): Day {
-    // console.log("current value of day from service: ", this._currentDay$.getValue());
+  private _currentDay$: BehaviorSubject<DayData> = new BehaviorSubject(null);
+  public get currentDay(): DayData {
+    // console.log("current value of DayData from service: ", this._currentDay$.getValue());
     return this._currentDay$.getValue();
   }
-  public get currentDay$(): Observable<Day> {
+  public get currentDay$(): Observable<DayData> {
     return this._currentDay$.asObservable();
   }
 
@@ -98,12 +99,12 @@ export class DaybookService {
   //       console.log("Error: dates are not the same :(");
   //     }
   //   }else{
-  //     console.log("Error: day value is null.  This shouldn't happen.");
+  //     console.log("Error: DayData value is null.  This shouldn't happen.");
   //   }
   // }
 
-  public getDaysInRangeHTTP$(startDate: moment.Moment, endDate: moment.Moment):Observable<Day[]>{
-    const getUrl = this.serverUrl + "/api/day/" + this._authStatus.user.id + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
+  public getDaysInRangeHTTP$(startDate: moment.Moment, endDate: moment.Moment):Observable<DayData[]>{
+    const getUrl = this.serverUrl + "/api/day-data/" + this._authStatus.user.id + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -111,17 +112,17 @@ export class DaybookService {
       })
     };
     return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe<Day[]>(map((response: { message: string, data: any[] }) => {
+      .pipe<DayData[]>(map((response: { message: string, data: any[] }) => {
 
-        let days: Day[] = [];
+        let days: DayData[] = [];
 
         response.data.forEach((data)=>{
-          let day = new Day(data._id, data._userId, data.dateYYYYMMDD)
-          day.activityData = data.activityData;
-          day.dailyTaskListData = data.dailyTaskListData;
-          day.taskData = data.taskData;
-          day.timelogEntryData = data.timelogEntryData;
-          days.push(day);
+          let dayData = new DayData(data._id, data._userId, data.dateYYYYMMDD)
+          dayData.activityData = data.activityData;
+          dayData.dailyTaskListData = data.dailyTaskListData;
+          dayData.taskData = data.taskData;
+          dayData.timelogEntryData = data.timelogEntryData;
+          days.push(dayData);
         })
 
         days.sort((day1, day2)=>{
@@ -137,7 +138,7 @@ export class DaybookService {
         // console.log("Returning days: ", days);
         // for(let (dayData as any) in (daysData as any[])){
 
-        //   let day = new Day(dayData._id, dayData._userId, dayData.dateYYYYMMDD)
+        //   let DayData = new DayData(dayData._id, dayData._userId, dayData.dateYYYYMMDD)
 
         //   days.push();
         // }
@@ -148,7 +149,7 @@ export class DaybookService {
   }
 
   public getDayHTTP(date: moment.Moment) {
-    const getUrl = this.serverUrl + "/api/day/" + this._authStatus.user.id + "/" + date.format('YYYY-MM-DD');
+    const getUrl = this.serverUrl + "/api/day-data/" + this._authStatus.user.id + "/" + date.format('YYYY-MM-DD');
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -156,22 +157,22 @@ export class DaybookService {
       })
     };
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe<Day>(map((response: { message: string, data: any }) => {
+      .pipe<DayData>(map((response: { message: string, data: any }) => {
 
-        let dayData: any = response.data;
+        let data: any = response.data;
 
         
-        let day = new Day(dayData._id, dayData._userId, dayData.dateYYYYMMDD);
-        return day;
+        let dayData = new DayData(data._id, data._userId, data.dateYYYYMMDD);
+        return dayData;
       }))
-      .subscribe((day: Day) => {
-        // console.log("All good: nexting value: ", day)
-        this._currentDay$.next(day);
+      .subscribe((dayData: DayData) => {
+        // console.log("All good: nexting value: ", DayData)
+        this._currentDay$.next(dayData);
       }, (error) => {
         if (error.status == 404) {
-          let day = new Day('', this._authStatus.user.id, moment(date).format('YYYY-MM-DD'));
-          // console.log("error 404. creating new Day.  Nexting new day value")
-          this._currentDay$.next(day);
+          let dayData = new DayData('', this._authStatus.user.id, moment(date).format('YYYY-MM-DD'));
+          // console.log("error 404. creating new DayData.  Nexting new DayData value")
+          this._currentDay$.next(dayData);
         }else{
           // console.log("error: ", error);
         }
@@ -179,8 +180,8 @@ export class DaybookService {
 
   }
 
-  saveDayHTTP(day: Day){
-    console.log("Saving day: ", day);
+  saveDayHTTP(dayData: DayData){
+    console.log("Saving DayData: ", dayData);
 
     let requestUrl: string = "";
     const httpOptions = {
@@ -192,30 +193,30 @@ export class DaybookService {
     let requestBody: any = {};
 
 
-    if (day.id == "") {
-      //Save day
-      requestUrl = this.serverUrl + "/api/day/create";
+    if (dayData.id == "") {
+      //Save DayData
+      requestUrl = this.serverUrl + "/api/DayData/create";
 
 
       requestBody = {
         userId: this._authStatus.user.id,
-        dateYYYYMMDD: day.date.format('YYYY-MM-DD'),
-        activityData: day.activityData,
-        dailyTaskListData: day.dailyTaskListData,
-        taskData: day.taskData,
-        timelogEntryData: day.timelogEntryData
+        dateYYYYMMDD: dayData.date.format('YYYY-MM-DD'),
+        activityData: dayData.activityData,
+        dailyTaskListData: dayData.dailyTaskListData,
+        taskData: dayData.taskData,
+        timelogEntryData: dayData.timelogEntryData
       };
     } else {
-      //Update day
-      requestUrl = this.serverUrl + "/api/day/update";
+      //Update DayData
+      requestUrl = this.serverUrl + "/api/DayData/update";
       requestBody = {
-        id: day.id,
-        userId: day.userId,
-        dateYYYYMMDD: day.date.format('YYYY-MM-DD'),
-        activityData: day.activityData,
-        dailyTaskListData: day.dailyTaskListData,
-        taskData: day.taskData,
-        timelogEntryData: day.timelogEntryData
+        id: dayData.id,
+        userId: dayData.userId,
+        dateYYYYMMDD: dayData.date.format('YYYY-MM-DD'),
+        activityData: dayData.activityData,
+        dailyTaskListData: dayData.dailyTaskListData,
+        taskData: dayData.taskData,
+        timelogEntryData: dayData.timelogEntryData
       };
 
 
@@ -224,23 +225,23 @@ export class DaybookService {
     }
 
     this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
-      .pipe<Day>(map((response) => {
+      .pipe<DayData>(map((response) => {
         let rd: any = response.data;
-        let day: Day = new Day(rd._id, rd.userId, rd.dateYYYYMMDD)
+        let dayData: DayData = new DayData(rd._id, rd.userId, rd.dateYYYYMMDD);
         
-        day.activityData = rd.activityData;
-        day.dailyTaskListData = rd.dailyTaskListData;
-        day.taskData = rd.taskData;
-        day.timelogEntryData = rd.timelogEntryData;
+        dayData.activityData = rd.activityData;
+        dayData.dailyTaskListData = rd.dailyTaskListData;
+        dayData.taskData = rd.taskData;
+        dayData.timelogEntryData = rd.timelogEntryData;
         
-        return day;
+        return dayData;
       }))
       .subscribe((savedDay)=>{
-        console.log("Day saved", savedDay);
-        let last365Days: Day[] = this._last365Days$.getValue();
+        console.log("DayData saved", savedDay);
+        let last365Days: DayData[] = this._last365Days$.getValue();
         let index:number = -1;
         last365Days.forEach((existingDay)=>{
-          if(day.id == existingDay.id){
+          if(dayData.id == existingDay.id){
             index = last365Days.indexOf(existingDay);
           }
         });
@@ -255,7 +256,7 @@ export class DaybookService {
   }
 
 
-  private deleteTemplateHTTP(day: Day) {
+  private deleteTemplateHTTP(DayData: DayData) {
     // const postUrl = this.serverUrl + "/api/dayTemplate/delete";
     // const httpOptions = {
     //   headers: new HttpHeaders({

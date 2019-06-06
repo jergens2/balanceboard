@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { DaybookComponent } from './daybook.component';
+import { DayDataComponent } from './daybook.component';
 import { CalendarComponent } from './calendar/calendar.component';
 
 import { TimeLogComponent } from './time-log/timelog.component';
 import { DailyTaskListWidgetComponent } from './widgets/daily-task-list-widget/daily-task-list-widget.component';
-import { DaybookHeaderComponent } from './daybook-header/daybook-header.component';
+import { DayDataHeaderComponent } from './daybook-header/daybook-header.component';
 import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
 import { TimelogEntryTileComponent } from './time-log/timelog-entry/timelog-entry-tile/timelog-entry-tile.component';
 import { PrimaryTaskWidgetComponent } from './widgets/primary-objective-widget/primary-objective-widget.component';
@@ -27,11 +27,11 @@ import { SharedModule } from '../../shared/shared.module';
     SharedModule
   ],
   declarations: [
-    DaybookComponent,
+    DayDataComponent,
     CalendarComponent,
     TimeLogComponent,
     DailyTaskListWidgetComponent,
-    DaybookHeaderComponent,
+    DayDataHeaderComponent,
     HeatmapViewComponent,
     PrimaryTaskWidgetComponent,
     TimelogEntryTileComponent,
@@ -40,4 +40,4 @@ import { SharedModule } from '../../shared/shared.module';
   exports: [
   ]
 })
-export class DaybookModule { }
+export class DayDataModule { }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
-import { RecurringTasksService } from '../../../scheduling/recurring-tasks/recurring-tasks.service';
+import { RecurringTasksService } from '../../../../shared/document-definitions/recurring-task/recurring-tasks.service';
 import { RecurringTaskDefinition } from '../../../../shared/document-definitions/recurring-task/recurring-task-definition.class';
 
 @Component({

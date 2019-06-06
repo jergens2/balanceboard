@@ -1,8 +1,9 @@
 <div class="recurring-task-root">
     <div class="section" [formGroup]="recurringTaskForm">
-        <input type="text" style="text-align:center;font-size:14pt;font-weight:bold;color: rgb(0, 133, 99);" class="clean-input" placeholder="Task Name" formControlName="name">
+        <input type="text" style="text-align:center;font-size:14pt;font-weight:bold;color: rgb(0, 133, 99);"
+            class="clean-input" placeholder="Task Name" formControlName="name">
         <div class="recurring-task-form" [formGroup]="recurringTaskForm">
-            <app-rt-repititions (repititionsValueChanged)="onRepititionsValueChanged($event)"></app-rt-repititions>
+            <app-rt-repititions (repititionsValueChanged)="onRepititionsValueChanged($event)" [updateRepititions]="updateRepititions"></app-rt-repititions>
         </div>
     </div>
     <div class="section buttons">
