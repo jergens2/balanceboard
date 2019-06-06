@@ -1,6 +1,9 @@
 <div class="recurring-tasks-root">
     <div class="header">
         Recurring Tasks
+        <div>
+            <button class="btn btn-primary btn-sm" (click)="onClickNewRecurringTask()">New Recurring Task</button>
+        </div>
     </div>
     <div class="body">
 
@@ -22,6 +25,12 @@
                     <div>{{ day.date.format('MMM') }}</div>
                     <div>{{ day.date.format('DD') }}</div>
                 </td>
+                <td>
+
+                </td>
+                <td>
+
+                </td>
             </tr>
             <tr *ngFor="let task of recurringTasks" class="task-row">
                 <td>
@@ -38,6 +47,12 @@
                 </td> -->
                 <td *ngFor="let day of lastSevenDays" class="day-check-cell" >
                     <fa-icon [icon]="faCheck" class="task-check"></fa-icon>
+                </td>
+                <td>
+                    <fa-icon class="icon-button" [icon]="faEdit" (click)="onClickEditTask(task)"></fa-icon>
+                </td>
+                <td>
+                    <fa-icon class="icon-button" [icon]="faTimes" (click)="onClickDeleteTask(task)"></fa-icon>
                 </td>
             </tr>
         </table>

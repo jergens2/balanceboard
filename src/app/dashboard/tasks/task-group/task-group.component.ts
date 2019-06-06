@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TaskGroup } from './task-group.class';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
-import { Modal } from '../../../modal/modal.model';
+import { Modal } from '../../../modal/modal.class';
 import { Task } from '../task/task.model';
 import * as moment from 'moment';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';

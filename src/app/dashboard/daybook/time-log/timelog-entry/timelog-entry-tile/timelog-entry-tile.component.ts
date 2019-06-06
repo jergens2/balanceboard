@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import { TimelogEntryTile } from './timelog-entry-tile.class';
 import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../../../modal/modal-option.interface';
-import { Modal } from '../../../../../modal/modal.model';
+import { Modal } from '../../../../../modal/modal.class';
 import { TimelogService } from '../../timelog.service';
 import { ModalService } from '../../../../../modal/modal.service';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';

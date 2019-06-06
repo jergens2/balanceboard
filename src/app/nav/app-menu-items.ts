@@ -9,9 +9,9 @@ let menuItems: MenuItem[] = [];
 
 menuItems.push(new MenuItem('Home','/home',faHome));
 
-let daybookMenu = new MenuItem('Daybook','/daybook',faBookOpen);
+let daybookMenu = new MenuItem('DayData','/daybook',faBookOpen);
 let daybookMenuItems: MenuItem[] = [new MenuItem('Daily Task List','/daily-task-list', faListUl)];
-daybookMenu.subMenu = new HeaderMenu('Daybook submenu', daybookMenuItems);
+daybookMenu.subMenu = new HeaderMenu('DayData submenu', daybookMenuItems);
 menuItems.push(daybookMenu);
  
 

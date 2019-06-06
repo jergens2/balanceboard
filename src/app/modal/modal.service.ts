@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Modal } from './modal.model';
+import { Modal } from './modal.class';
 import { Subject, Observable } from 'rxjs';
 import { IModalOption } from './modal-option.interface';
 

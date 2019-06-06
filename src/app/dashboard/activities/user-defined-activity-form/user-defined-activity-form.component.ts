@@ -5,7 +5,7 @@ import { ActivitiesService } from '../activities.service';
 import { ActivityTree } from '../activity-tree.model';
 import { faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
-import { Modal } from '../../../modal/modal.model';
+import { Modal } from '../../../modal/modal.class';
 import { IModalOption } from '../../../modal/modal-option.interface';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 

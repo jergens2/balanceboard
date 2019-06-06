@@ -6,7 +6,7 @@ import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 
 import * as moment from 'moment';
-import { Modal } from '../../../../modal/modal.model';
+import { Modal } from '../../../../modal/modal.class';
 import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 import { IModalOption } from '../../../../modal/modal-option.interface';
 import { ModalService } from '../../../../modal/modal.service';

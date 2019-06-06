@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NotebookEntry } from '../../../dashboard/notebooks/notebook-entry/notebook-entry.model';
-import { Modal } from '../../modal.model';
+import { Modal } from '../../modal.class';
 import { ModalService } from '../../modal.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NotebooksService } from '../../../dashboard/notebooks/notebooks.service';

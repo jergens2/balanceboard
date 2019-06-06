@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import * as moment from 'moment';
 import { TimeViewsService } from '../time-views.service';
-import { Day } from '../../../dashboard/daybook/day/day.model';
+import { DayData } from '../../document-definitions/day-data/day-data.class';
 
 @Component({
   selector: 'app-custom-range-time-view',
@@ -19,7 +19,7 @@ export class CustomRangeTimeViewComponent implements OnInit {
   totalDays: number = 0;
 
 
-  timeViewData: Day[] = [];
+  timeViewData: DayData[] = [];
 
   ngOnInit() {
     this.rangeStartDate = moment(this.timeRange.startDate);

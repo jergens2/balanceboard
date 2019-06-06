@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
-import { DaybookService } from '../../../dashboard/daybook/daybook.service';
-import { Day } from '../../../dashboard/daybook/day/day.model';
+import { DayDataService } from '../../document-definitions/day-data/day-data.service';
+import { DayData } from '../../document-definitions/day-data/day-data.class';
 import { ActivitiesService } from '../../../dashboard/activities/activities.service';
 import { UserDefinedActivity } from '../../../dashboard/activities/user-defined-activity.model';
 import { Router } from '@angular/router';
@@ -20,7 +20,7 @@ import { TimeViewsService } from '../time-views.service';
 export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   constructor(
-    private daybookService: DaybookService,
+    private daybookService: DayDataService,
     private activitiesService: ActivitiesService,
     private router: Router,
     private sizeService: SizeService,
@@ -117,7 +117,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
     let day: IDayOfYear;
 
     let dayStyle: any = {};
-    let dayObject: Day = null;
+    let dayObject: DayData = null;
 
     let dayData: any;
 
@@ -138,7 +138,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
     day = {
       date: currentDay,
-      dayObjectData: dayObject,
+      dayData: dayObject,
       style: dayStyle,
       isHighlighted: false,
     }
@@ -154,7 +154,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
 
 
-  private buildData(allDays: Day[]) {
+  private buildData(allDays: DayData[]) {
 
 
 
@@ -171,7 +171,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
       for (let i = 0; i < daysAfterStart; i++) {
         days.push({
           date: null,
-          dayObjectData: null,
+          dayData: null,
           style: { "border": "none", "background-color": "none" },
           isHighlighted: false
         });
@@ -180,7 +180,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
       while (currentDay.isBefore(endOfMonth)) {
 
         let dayStyle: any = {};
-        let dayObject = allDays.find((dayObject: Day) => {
+        let dayObject = allDays.find((dayObject: DayData) => {
           return dayObject.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
         })
 
@@ -193,7 +193,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
         }
         days.push({
           date: currentDay,
-          dayObjectData: dayObject,
+          dayData: dayObject,
           style: dayStyle,
           isHighlighted: false,
         })
@@ -292,7 +292,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
   }
 
 
-  private buildDayStyle(dayObject: Day) {
+  private buildDayStyle(dayObject: DayData) {
     let style: any = {};
     let activity: UserDefinedActivity;
     if (dayObject.activityData) {
@@ -308,10 +308,10 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   dayData(day: IDayOfYear): string {
 
-    if (day.dayObjectData) {
+    if (day.dayData) {
 
-      if (day.dayObjectData.activityData) {
-        let activity: UserDefinedActivity = this.activitiesService.findActivityByTreeId(day.dayObjectData.activityData[1].activityTreeId)
+      if (day.dayData.activityData) {
+        let activity: UserDefinedActivity = this.activitiesService.findActivityByTreeId(day.dayData.activityData[1].activityTreeId)
 
       }
 

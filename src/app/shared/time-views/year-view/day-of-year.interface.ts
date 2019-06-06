@@ -1,9 +1,9 @@
-import { Day } from "../../../dashboard/daybook/day/day.model";
+import { DayData } from "../../document-definitions/day-data/day-data.class";
 import * as moment from 'moment';
 
 export interface IDayOfYear{
     date: moment.Moment,
-    dayObjectData: Day,
+    dayData: DayData,
     style: any,
     isHighlighted: boolean,
 }

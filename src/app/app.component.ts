@@ -5,7 +5,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { UserSettingsService } from './user-settings/user-settings.service';
 import { UserSetting } from './user-settings/user-setting.model';
 import { ModalService } from './modal/modal.service';
-import { Modal } from './modal/modal.model';
+import { Modal } from './modal/modal.class';
 import { ToolsService } from './shared/tools/tools.service';
 import { ToolComponents } from './shared/tools/tool-components.enum';
 import { SizeService } from './shared/app-screen-size/size.service';

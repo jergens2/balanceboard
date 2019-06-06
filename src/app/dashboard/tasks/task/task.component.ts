@@ -5,7 +5,7 @@ import { ModalService } from '../../../modal/modal.service';
 import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../modal/modal-option.interface';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
-import { Modal } from '../../../modal/modal.model';
+import { Modal } from '../../../modal/modal.class';
 import { TaskService } from '../task.service';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
 import * as moment from 'moment';

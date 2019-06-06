@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from '../../modal.service';
-import { Modal } from '../../modal.model';
+import { Modal } from '../../modal.class';
 import { IModalOption } from '../../modal-option.interface';
 
 @Component({
