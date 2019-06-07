@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject, Observable, BehaviorSubject } from 'rxjs';
 import { faCaretSquareDown, faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderService } from '../../nav/header/header.service';
@@ -32,55 +32,37 @@ export class DayDataComponent implements OnInit, OnDestroy {
 
 
 
-
   private _headerMenuSubscriptions: Subscription[] = [];
-  private _currentDaySubscription: Subscription = new Subscription();
-
-  private _currentDate: moment.Moment = moment();
-  // private _currentDate$: Subject<moment.Moment> = new Subject();
 
 
-  get currentDate(): moment.Moment {
-    return this._currentDate
+  private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
+  public get currentDate(): moment.Moment {
+    return this._currentDate$.getValue();
   }
-  public setCurrentDate(newDate) {
-    this.dayDataService.setDate(newDate);
-    // this._currentDate = moment(newDate);
-    // this._currentDate$.next(this._currentDate);
+  public get currentDate$(): Observable<moment.Moment> {
+    return this._currentDate$.asObservable();
+  }
+  public set currentDate(newDate) {
+    this._currentDate$.next(moment(newDate));
   }
 
-  currentView: string = "timelog";
-
-  dayData: DayData = null;
 
   ngOnInit() {
 
-    this.dayData = this.dayDataService.currentDay;
-    // this._currentDate = moment(this.dayData.date);
-    // this._currentDate$.next(this._currentDate);
-    this._currentDate = moment();
-
-    this._currentDaySubscription.unsubscribe();
-    // this._currentDaySubscription = this.dayDataService.currentDay$.subscribe((changedDay: DayData)=>{
-    //   console.log("daybook subscription:  DayData changed", changedDay.date.format('YYYY-MM-DD'));
-    //   this.dayData = changedDay;
-    //   this._currentDate = moment(this.dayData.date);
-    //   // this._currentDate$.next(this._currentDate);
-    // })
 
 
-    this.buildHeaderMenu();
-    let dateRegExp: RegExp = new RegExp(/[0-9]{4}(-[0-9]{2}){2}/);
-    let date: string = this.activatedRoute.snapshot.paramMap.get('isoDate');
+    // this.buildHeaderMenu();
+    // let dateRegExp: RegExp = new RegExp(/[0-9]{4}(-[0-9]{2}){2}/);
+    // let date: string = this.activatedRoute.snapshot.paramMap.get('isoDate');
 
-    if (dateRegExp.test(date)) {
-      this.setCurrentDate(moment(date));
-    } else {
-      /*
-        is this block necessary, given the fact that the auth service logs in to the daybook service and sets the initial date as moment() ?
-      */
-      // this.setCurrentDate(moment());
-    }
+    // if (dateRegExp.test(date)) {
+    //   this.setCurrentDate(moment(date));
+    // } else {
+    //   /*
+    //     is this block necessary, given the fact that the auth service logs in to the daybook service and sets the initial date as moment() ?
+    //   */
+    //   // this.setCurrentDate(moment());
+    // }
 
   }
 
@@ -107,24 +89,24 @@ export class DayDataComponent implements OnInit, OnDestroy {
     // this.headerService.setCurrentMenu(daybookHeaderMenu);
   }
 
-  private changeView(newView: string) {
-    this.currentView = newView;
-  }
+  // private changeView(newView: string) {
+  //   this.currentView = newView;
+  // }
 
 
 
   ngOnDestroy() {
-    this._headerMenuSubscriptions.forEach((sub: Subscription) => {
-      sub.unsubscribe();
-    });
-    this._currentDaySubscription.unsubscribe();
-    this.headerService.setCurrentMenu(null);
+    // this._headerMenuSubscriptions.forEach((sub: Subscription) => {
+    //   sub.unsubscribe();
+    // });
+    // // this._currentDaySubscription.unsubscribe();
+    // this.headerService.setCurrentMenu(null);
   }
 
   onChangeDate(date: moment.Moment) {
-    this.setCurrentDate(moment(date));
-    this.router.navigate(['/daybook/' + date.format('YYYY-MM-DD')]);
-    this.changeView("timelog");
+    this.currentDate = (moment(date));
+    // this.router.navigate(['/daybook/' + date.format('YYYY-MM-DD')]);
+    // this.changeView("timelog");
   }
 
   onClickToggleCalendar() {

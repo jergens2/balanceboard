@@ -29,11 +29,11 @@
         </app-daybook-header>
       </div>
 
-      <div class="daybook-view" *ngIf="currentView == 'heatmap'">
+      <!-- <div class="daybook-view" *ngIf="currentView == 'heatmap'">
         <app-heatmap-view [currentDate]="currentDate"></app-heatmap-view>
-      </div>
+      </div> -->
 
-      <div class="daybook-view" *ngIf="currentView == 'timelog'">
+      <div class="daybook-view" >
         <app-timelog [currentDate]="currentDate"
           (changedDate)="onChangeDate($event)">
         </app-timelog>
