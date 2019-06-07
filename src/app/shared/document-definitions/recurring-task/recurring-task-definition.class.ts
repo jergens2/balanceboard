@@ -1,6 +1,7 @@
 
 import * as moment from 'moment';
 import { RecurringTaskRepitition } from './recurring-task-form/rt-repititions/recurring-task-repitition.interface';
+import { DailyTaskChecklistItem } from '../../tools/tool-components/dtcl-tool/daily-task-checklist-item.class';
 
 
 export class RecurringTaskDefinition{
@@ -55,25 +56,38 @@ export class RecurringTaskDefinition{
     public hasTaskOnDate(date: moment.Moment): boolean{
         let hasTaskOnDate: boolean = false;
         for(let repitition of this.repititions){
+
             let start: moment.Moment = moment(repitition.startDate);
-            // let daysDifference:number = moment().diff(start, "days");
-            let currentTime: moment.Moment = moment(start);
-            
+            if(start.format('YYYY-MM-DD') == date.format('YYYY-MM-DD')){
+                return true;
+            }
+            let currentTime: moment.Moment = moment(start);            
             while(currentTime.isSameOrBefore(moment(date))){
-                if(currentTime.format('YYYY-MM-DD') == moment().format('YYYY-MM-DD')){
+                if(currentTime.format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')){
                     hasTaskOnDate = true;
                     currentTime = moment(date);
                 }
                 currentTime = moment(currentTime).add(repitition.value, repitition.period);
             }
         }
-        if(hasTaskOnDate){
-            console.log("yaya")
-        }else{
-            console.log("nono");
-        }
-        
         return hasTaskOnDate;
+    }
+
+    public dailyTaskChecklistItemsOnDate(date: moment.Moment): DailyTaskChecklistItem[] {
+        let dtlclItems: DailyTaskChecklistItem[] = [];
+        for(let repitition of this.repititions){
+            let start: moment.Moment = moment(repitition.startDate);
+            // let daysDifference:number = moment().diff(start, "days");
+            let currentTime: moment.Moment = moment(start);            
+            while(currentTime.isSameOrBefore(moment(date))){
+                if(currentTime.format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')){
+                    dtlclItems.push( new DailyTaskChecklistItem(this.id, this.name, ""));
+                    currentTime = moment(date);
+                }
+                currentTime = moment(currentTime).add(repitition.value, repitition.period);
+            }
+        }        
+        return dtlclItems;
     }
 }
 

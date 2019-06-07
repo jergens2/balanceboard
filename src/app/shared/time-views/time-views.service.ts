@@ -15,8 +15,11 @@ export class TimeViewsService {
 
   login$() {
     this._fullDayDataRange = { startDate: moment().subtract(366, "days"), endDate: moment().add(366, "days") };
-    this._currentDayDataRange$.next(this._fullDayDataRange);
-    this.fetchDayData(this._fullDayDataRange)
+    this.dayDataService.yearsDayData$.subscribe((dayData: DayData[])=>{
+      this._allRangeData$.next(dayData);
+      this._loginComplete$.next(true);
+    })
+    
     return this._loginComplete$.asObservable();
   }
   logout() {
@@ -50,13 +53,13 @@ export class TimeViewsService {
   }
 
 
-  private fetchDayData(range: { startDate: moment.Moment, endDate: moment.Moment }) {
-    this._daybookSubscription = this.dayDataService.getDaysInRangeHTTP$(range.startDate, range.endDate).subscribe((dayData: DayData[]) => {
-      this._allRangeData$.next(dayData);
-      this._loginComplete$.next(true);
-    });
+  // private fetchDayData(range: { startDate: moment.Moment, endDate: moment.Moment }) {
+  //   this._daybookSubscription = this.dayDataService.getDaysInRangeHTTP$(range.startDate, range.endDate).subscribe((dayData: DayData[]) => {
+  //     this._allRangeData$.next(dayData);
+  //     this._loginComplete$.next(true);
+  //   });
 
-  }
+  // }
 
 
   public timeViewRangeDayData(startDate: moment.Moment, endDate: moment.Moment): DayData[] {
