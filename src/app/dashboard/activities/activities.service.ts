@@ -1,17 +1,13 @@
 import { Injectable } from '@angular/core';
 import { UserDefinedActivity } from './user-defined-activity.model';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { defaultActivities } from './default-activities';
 import { serverUrl } from '../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../../authentication/authentication.service';
 import { AuthStatus } from '../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.model';
-import { TimelogEntry } from '../daybook/time-log/timelog-entry/timelog-entry.class';
-import { TimelogEntryActivity } from '../daybook/time-log/timelog-entry/timelog-entry-activity.class';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -238,6 +234,10 @@ export class ActivitiesService {
         }
       })
   }
+
+
+
+
 
 
 }

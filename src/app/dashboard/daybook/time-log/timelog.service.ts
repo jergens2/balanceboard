@@ -12,6 +12,7 @@ import { AuthStatus } from '../../../authentication/auth-status.model';
 
 import { ActivitiesService } from '../../activities/activities.service';
 import { ITLEActivity } from './timelog-entry/timelog-entry-activity.interface';
+import { DayDataActivityDataItem } from '../../../shared/document-definitions/day-data/data-properties/activity-data-item.class';
 
 
 
@@ -176,6 +177,29 @@ export class TimelogService {
       });
 
   }
+
+
+  private _generateActivityData$: Subject<DayDataActivityDataItem[]> = new Subject();
+  public generateActivityData$(date: moment.Moment): Observable<DayDataActivityDataItem[]>{
+    const getUrl = this._serverUrl + "/api/timelogEntry/" + this._authStatus.user.id + "/" + date.startOf("day").toISOString() + "/" + date.endOf("day").toISOString();
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'  
+      })
+    };
+    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+      .pipe<TimelogEntry[]>(map((response) => {
+        return this.buildTimelogEntries(response.data as any[]);
+      }))
+      .subscribe((timelogEntries)=>{
+        console.log("wizzle wuzzle")
+        let activityDataItems: DayDataActivityDataItem[] = [];
+        this._generateActivityData$.next(activityDataItems);
+      });
+    return this._generateActivityData$.asObservable();
+  }
+
 
   private buildTimelogEntries(responseData: any[]): TimelogEntry[] {
     return responseData.map((dataObject: any) => {

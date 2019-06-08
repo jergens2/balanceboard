@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RecurringTasksService } from '../../../document-definitions/recurring-task/recurring-tasks.service';
 import * as moment from 'moment';
 import { RecurringTaskDefinition } from '../../../document-definitions/recurring-task/recurring-task-definition.class';
-import { DailyTaskChecklistItem } from './daily-task-checklist-item.class';
+import { DailyTaskListItem } from './daily-task-list-item.class';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faCheckCircle as faCheckCircleSolid, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -41,7 +41,7 @@ export class DtlToolComponent implements OnInit, OnDestroy {
 
   constructor(private toolsService: ToolsService,  private router: Router, private dayDataService: DayDataService) { }
 
-  dtclItems: DailyTaskChecklistItem[];
+  dtclItems: DailyTaskListItem[];
 
   noTasks: boolean = false;
   private dayData: DayData;
@@ -49,7 +49,6 @@ export class DtlToolComponent implements OnInit, OnDestroy {
   private _dataServiceSubscription: Subscription = new Subscription();
 
   ngOnInit() {
-    console.log("On init")
     this.dtclItems = [];
     let today: moment.Moment = moment();
 
@@ -83,7 +82,7 @@ export class DtlToolComponent implements OnInit, OnDestroy {
     this._dataServiceSubscription.unsubscribe();
   }
 
-  onClickCheckTask(dtclItem: DailyTaskChecklistItem){
+  onClickCheckTask(dtclItem: DailyTaskListItem){
     if(dtclItem.isComplete){
       dtclItem.markIncomplete();
     }else{

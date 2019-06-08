@@ -7,7 +7,7 @@ import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
-import { DailyTaskChecklistItem } from '../../tools/tool-components/dtcl-tool/daily-task-checklist-item.class';
+import { DailyTaskListItem } from '../../tools/tool-components/dtcl-tool/daily-task-list-item.class';
 
 
 @Injectable({
@@ -43,13 +43,13 @@ export class RecurringTasksService {
     return this._recurringTasks$.asObservable();
   }
   
-  public getDTLItemsForNewDayData(date: moment.Moment): DailyTaskChecklistItem[]{
-    let dtlItems: DailyTaskChecklistItem[] = [];
+  public getDTLItemsForNewDayData(date: moment.Moment): DailyTaskListItem[]{
+    let dtlItems: DailyTaskListItem[] = [];
 
     this._recurringTasks$.getValue().filter((recurringTask: RecurringTaskDefinition)=>{
       return recurringTask.hasTaskOnDate(date);
     }).forEach((recurringTask: RecurringTaskDefinition)=>{
-      dtlItems.push(new DailyTaskChecklistItem(recurringTask.id, recurringTask.name, ""))
+      dtlItems.push(new DailyTaskListItem(recurringTask.id, ""))
     });
     return dtlItems;
   }

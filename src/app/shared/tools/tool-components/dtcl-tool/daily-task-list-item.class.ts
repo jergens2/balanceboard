@@ -1,10 +1,15 @@
 import * as moment from 'moment';
 
-export class DailyTaskChecklistItem {
 
-    constructor(recurringTaskId: string, name: string, completionDate: string){ 
+export interface DailyTaskListItemInterface{
+    recurringTaskId: string,
+    completionDate: string,
+}
+
+export class DailyTaskListItem {
+
+    constructor(recurringTaskId: string, completionDate: string){ 
         this.recurringTaskId = recurringTaskId;
-        this.name = name;
         if(completionDate != ""){
             this.markComplete(moment(completionDate));
         }
@@ -20,7 +25,6 @@ export class DailyTaskChecklistItem {
     }
 
     recurringTaskId: string;
-    name: string;
     private _isComplete: boolean = false;
     private _completionDate: moment.Moment = null;
     public get isComplete(): boolean{
@@ -30,15 +34,15 @@ export class DailyTaskChecklistItem {
         return this._completionDate;
     }
 
-    public get httpRequestObject(): any {
+    public get httpRequestObject(): DailyTaskListItemInterface {
 
         let completionDateString: string = "";
         if(this._isComplete){
             completionDateString = this._completionDate.toISOString();
         }
+
         return {
             recurringTaskId: this.recurringTaskId,
-            name: this.name,
             completionDate: completionDateString,
         };
     }

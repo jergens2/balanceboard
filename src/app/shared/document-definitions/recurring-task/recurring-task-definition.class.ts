@@ -1,7 +1,7 @@
 
 import * as moment from 'moment';
 import { RecurringTaskRepitition } from './recurring-task-form/rt-repititions/recurring-task-repitition.interface';
-import { DailyTaskChecklistItem } from '../../tools/tool-components/dtcl-tool/daily-task-checklist-item.class';
+import { DailyTaskListItem } from '../../tools/tool-components/dtcl-tool/daily-task-list-item.class';
 
 
 export class RecurringTaskDefinition{
@@ -73,15 +73,15 @@ export class RecurringTaskDefinition{
         return hasTaskOnDate;
     }
 
-    public dailyTaskChecklistItemsOnDate(date: moment.Moment): DailyTaskChecklistItem[] {
-        let dtlclItems: DailyTaskChecklistItem[] = [];
+    public dailyTaskChecklistItemsOnDate(date: moment.Moment): DailyTaskListItem[] {
+        let dtlclItems: DailyTaskListItem[] = [];
         for(let repitition of this.repititions){
             let start: moment.Moment = moment(repitition.startDate);
             // let daysDifference:number = moment().diff(start, "days");
             let currentTime: moment.Moment = moment(start);            
             while(currentTime.isSameOrBefore(moment(date))){
                 if(currentTime.format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')){
-                    dtlclItems.push( new DailyTaskChecklistItem(this.id, this.name, ""));
+                    dtlclItems.push( new DailyTaskListItem(this.id, ""));
                     currentTime = moment(date);
                 }
                 currentTime = moment(currentTime).add(repitition.value, repitition.period);
