@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 import * as moment from 'moment';
 import { DayData } from './day-data.class';
 import { RecurringTasksService } from '../recurring-task/recurring-tasks.service';
-import { DailyTaskListItem, DailyTaskListItemInterface } from '../../tools/tool-components/dtcl-tool/daily-task-list-item.class';
+import { DailyTaskListItem, DailyTaskListItemInterface } from '../../tools/tool-components/dtl-tool/daily-task-list-item.class';
 
 import { TimelogService } from '../../../dashboard/daybook/time-log/timelog.service';
 import { DayDataActivityDataItemInterface, DayDataActivityDataItem } from './data-properties/activity-data-item.class';
@@ -37,16 +37,14 @@ export class DayDataService {
   }
 
 
-  public checkForDayData(date: moment.Moment): DayData {
+  public checkForDayData(date: moment.Moment): void {
     let dayData: DayData = this.yearsDayData.find((dayData) => { return dayData.dateYYYYMMDD == date.format('YYYY-MM-DD'); });
     if (!dayData) {
-      dayData = this.generateNewDayData(date);
-      console.log("    Saving this object", dayData);
-      this.httpSaveDayData(dayData);
+      this.generateNewDayData(date);
     } else {
-      return dayData;
+      
     }
-    return null;
+    
   }
 
   private getInitialDayDataRange() {
@@ -146,7 +144,7 @@ export class DayDataService {
   }
 
 
-  private generateNewDayData(date: moment.Moment): DayData {
+  private generateNewDayData(date: moment.Moment): void {
     /**
      * This event occurs when the check for a DB item returned nothing, so we are generating a new DayData 
      */
@@ -158,11 +156,12 @@ export class DayDataService {
     this.timelogService.generateActivityData$(date).subscribe((data: DayDataActivityDataItem[])=>{
       newData.activityData = data;
       console.log("    This async method is complete.  Value is now:", newData);
+      this.httpSaveDayData(newData);
     });
     
-    console.log("    non-async: value is", newData);
+
     
-    return newData;
+
 
   }
 
@@ -179,10 +178,16 @@ export class DayDataService {
     });
 
     dayData.dailyTaskListItems = (rd.dailyTaskListItems as DailyTaskListItemInterface[]).map<DailyTaskListItem>((dataItem: DailyTaskListItemInterface) => {
-      return new DailyTaskListItem(dataItem.recurringTaskId, dataItem.completionDate);
+      let dtlItem: DailyTaskListItem = new DailyTaskListItem(this.recurringTaskDefinitionService.getRecurringTaskById(dataItem.recurringTaskId));
+      if(dataItem.completionDate){
+        dtlItem.markComplete(moment(dataItem.completionDate));
+      }
+      return dtlItem;
     });
     dayData.taskData = rd.taskData;
     dayData.timelogEntryData = rd.timelogEntryData;
+
+    console.log("Data built.  Is it configured?", dayData.isFullyConfigured);
 
 
     return dayData;

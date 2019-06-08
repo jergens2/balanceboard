@@ -23,7 +23,7 @@ import { TlefActivitiesComponent } from './document-definitions/timelog-entry-fo
 import { RecurringTaskFormComponent } from "./document-definitions/recurring-task/recurring-task-form/recurring-task-form.component";
 import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition-form/activity-category-definition-form.component";
 import { RtRepititionsComponent } from "./document-definitions/recurring-task/recurring-task-form/rt-repititions/rt-repititions.component";
-import { DtlToolComponent } from './tools/tool-components/dtcl-tool/dtcl-tool.component';
+import { DtlToolComponent } from './tools/tool-components/dtl-tool/dtl-tool.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 
@@ -70,7 +70,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
         ActivityInputDropdownComponent,
         TimelogEntryFormComponent,
         RecurringTaskFormComponent,
-        
+        DtlToolComponent,
     ]
 })
 

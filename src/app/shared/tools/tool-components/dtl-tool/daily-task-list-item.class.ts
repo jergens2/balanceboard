@@ -1,4 +1,5 @@
 import * as moment from 'moment';
+import { RecurringTaskDefinition } from '../../../document-definitions/recurring-task/recurring-task-definition.class';
 
 
 export interface DailyTaskListItemInterface{
@@ -8,12 +9,18 @@ export interface DailyTaskListItemInterface{
 
 export class DailyTaskListItem {
 
-    constructor(recurringTaskId: string, completionDate: string){ 
-        this.recurringTaskId = recurringTaskId;
-        if(completionDate != ""){
-            this.markComplete(moment(completionDate));
-        }
+    private _recurringTask: RecurringTaskDefinition;
+    constructor(recurringTask: RecurringTaskDefinition){ 
+        this._recurringTask = recurringTask;
     }
+
+    public get recurringTask(): RecurringTaskDefinition{
+        return this._recurringTask;
+    }
+    public get recurringTaskId(): string{
+        return this._recurringTask.id;
+    }
+    
 
     public markComplete(date: moment.Moment){
         this._isComplete = true;
@@ -24,7 +31,6 @@ export class DailyTaskListItem {
         this._isComplete = false;
     }
 
-    recurringTaskId: string;
     private _isComplete: boolean = false;
     private _completionDate: moment.Moment = null;
     public get isComplete(): boolean{

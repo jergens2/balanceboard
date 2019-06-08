@@ -19,7 +19,7 @@
     <!-- <div *ngFor="let dtclItem of dtclItems" class="dtcl-item" @completion> -->
     <div *ngFor="let dtclItem of dtclItems" class="dtcl-item">
       <div>
-        {{ dtclItem.name }}
+        {{ dtclItem.recurringTask.name }}
       </div>
       <div>
         <fa-icon [icon]="faCircle" class="incomplete-check" (click)="onClickCheckTask(dtclItem)"

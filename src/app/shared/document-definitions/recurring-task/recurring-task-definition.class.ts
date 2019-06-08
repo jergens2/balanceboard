@@ -1,7 +1,7 @@
 
 import * as moment from 'moment';
 import { RecurringTaskRepitition } from './recurring-task-form/rt-repititions/recurring-task-repitition.interface';
-import { DailyTaskListItem } from '../../tools/tool-components/dtcl-tool/daily-task-list-item.class';
+import { DailyTaskListItem } from '../../tools/tool-components/dtl-tool/daily-task-list-item.class';
 
 
 export class RecurringTaskDefinition{
@@ -46,6 +46,7 @@ export class RecurringTaskDefinition{
     
     repititions: RecurringTaskRepitition[] = [];
 
+
     constructor(id: string, userId: string, name: string, repititions: RecurringTaskRepitition[]){
         this.id = id;
         this.userId = userId;
@@ -81,7 +82,7 @@ export class RecurringTaskDefinition{
             let currentTime: moment.Moment = moment(start);            
             while(currentTime.isSameOrBefore(moment(date))){
                 if(currentTime.format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD')){
-                    dtlclItems.push( new DailyTaskListItem(this.id, ""));
+                    dtlclItems.push( new DailyTaskListItem(this));
                     currentTime = moment(date);
                 }
                 currentTime = moment(currentTime).add(repitition.value, repitition.period);

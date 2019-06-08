@@ -15,9 +15,9 @@ import { Subscription } from 'rxjs';
 
 
 @Component({
-  selector: 'app-dtcl-tool',
-  templateUrl: './dtcl-tool.component.html',
-  styleUrls: ['./dtcl-tool.component.css'],
+  selector: 'app-dtl-tool',
+  templateUrl: './dtl-tool.component.html',
+  styleUrls: ['./dtl-tool.component.css'],
   animations: [
     trigger('completion', [
 

@@ -7,7 +7,6 @@ import { DayDataComponent } from './daybook.component';
 import { CalendarComponent } from './calendar/calendar.component';
 
 import { TimeLogComponent } from './time-log/timelog.component';
-import { DailyTaskListWidgetComponent } from './widgets/daily-task-list-widget/daily-task-list-widget.component';
 import { DayDataHeaderComponent } from './daybook-header/daybook-header.component';
 import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
 import { TimelogEntryTileComponent } from './time-log/timelog-entry/timelog-entry-tile/timelog-entry-tile.component';
@@ -30,7 +29,6 @@ import { SharedModule } from '../../shared/shared.module';
     DayDataComponent,
     CalendarComponent,
     TimeLogComponent,
-    DailyTaskListWidgetComponent,
     DayDataHeaderComponent,
     HeatmapViewComponent,
     PrimaryTaskWidgetComponent,

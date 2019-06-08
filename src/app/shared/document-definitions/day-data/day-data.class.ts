@@ -5,7 +5,7 @@ import { DayDataTaskItem } from './data-properties/task-data.interface';
 import { DayDataTimelogEntryDataItem } from './data-properties/timelog-entry-data.interface';
 import { DayDataNotebookEntry } from './data-properties/day-data-notebook-entry.interface';
 
-import { DailyTaskListItem } from '../../tools/tool-components/dtcl-tool/daily-task-list-item.class';
+import { DailyTaskListItem } from '../../tools/tool-components/dtl-tool/daily-task-list-item.class';
 import { Subject, Observable } from 'rxjs';
 
 
@@ -87,7 +87,7 @@ export class DayData {
         if(this._configuration["timelogEntryDataConfigured"] == false){
             isConfigured = false;
         }
-        console.log("We are configured captain.");
+        console.log("We are configured captain? ", isConfigured, this._configuration);
         return isConfigured;
     }
 
