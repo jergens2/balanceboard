@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Observable, Subject, Subscription, timer } from 'rxjs';
-import { TimelogEntry } from './timelog-entry/timelog-entry.class';
+import { TimelogEntry } from './timelog-entry.class';
 
 import * as moment from 'moment';
 
@@ -10,9 +10,9 @@ import { serverUrl } from '../../../serverurl';
 import { map } from 'rxjs/operators';
 import { AuthStatus } from '../../../authentication/auth-status.model';
 
-import { ActivitiesService } from '../../activities/activities.service';
-import { ITLEActivity } from './timelog-entry/timelog-entry-activity.interface';
-import { DayDataActivityDataItem } from '../../../shared/document-definitions/day-data/data-properties/activity-data-item.class';
+import { ActivitiesService } from '../../../dashboard/activities/activities.service';
+import { ITLEActivity } from './timelog-entry-activity.interface';
+import { DayDataActivityDataItem } from '../day-data/data-properties/activity-data-item.class';
 
 
 

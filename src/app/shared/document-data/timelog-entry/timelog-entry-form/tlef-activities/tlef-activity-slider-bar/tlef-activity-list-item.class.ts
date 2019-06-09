@@ -1,4 +1,4 @@
-import { UserDefinedActivity } from "../../../../../dashboard/activities/user-defined-activity.model";
+import { UserDefinedActivity } from "../../../../../../dashboard/activities/user-defined-activity.model";
 import { ActivitySliderBar } from "./activity-slider-bar.class";
 import { Subject, Observable } from "rxjs";
 import { ITLEFActivitySliderBarItem } from "./activity-slider-bar-item.interface";

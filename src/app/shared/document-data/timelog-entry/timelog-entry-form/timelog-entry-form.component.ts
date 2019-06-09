@@ -1,22 +1,22 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { TimelogService } from '../../../dashboard/daybook/time-log/timelog.service';
-import { TimelogEntry } from '../../../dashboard/daybook/time-log/timelog-entry/timelog-entry.class';
+import { TimelogService } from '../timelog.service';
+import { TimelogEntry } from '../timelog-entry.class';
 import { FormGroup, FormControl } from '@angular/forms';
 import * as moment from 'moment';
 import { timer, Subscription } from 'rxjs';
-import { ModalService } from '../../../modal/modal.service';
-import { ToolsService } from '../../tools/tools.service';
-import { UserDefinedActivity } from '../../../dashboard/activities/user-defined-activity.model';
+import { ModalService } from '../../../../modal/modal.service';
+import { ToolsService } from '../../../tools/tools.service';
+import { UserDefinedActivity } from '../../../../dashboard/activities/user-defined-activity.model';
 
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { TimelogEntryActivity } from '../../../dashboard/daybook/time-log/timelog-entry/timelog-entry-activity.class';
+import { TimelogEntryActivity } from '../timelog-entry-activity.class';
 import { DurationString } from './duration-string.class';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivitySliderBar } from './tlef-activities/tlef-activity-slider-bar/activity-slider-bar.class';
 import { TLEFActivityListItem } from './tlef-activities/tlef-activity-slider-bar/tlef-activity-list-item.class';
 import { isUndefined } from 'util';
-import { ActivitiesService } from '../../../dashboard/activities/activities.service';
-import { ITLEActivity } from '../../../dashboard/daybook/time-log/timelog-entry/timelog-entry-activity.interface';
+import { ActivitiesService } from '../../../../dashboard/activities/activities.service';
+import { ITLEActivity } from '../timelog-entry-activity.interface';
 
 @Component({
   selector: 'app-timelog-entry-form',

@@ -5,7 +5,7 @@ import { DayDataTaskItem } from './data-properties/task-data.interface';
 import { DayDataTimelogEntryDataItem } from './data-properties/timelog-entry-data.interface';
 import { DayDataNotebookEntry } from './data-properties/day-data-notebook-entry.interface';
 
-import { DailyTaskListItem } from '../../tools/tool-components/dtl-tool/daily-task-list-item.class';
+import { DailyTaskListItem } from '../daily-task-list/daily-task-list.class';
 import { Subject, Observable } from 'rxjs';
 
 
@@ -17,7 +17,7 @@ export class DayData {
             userId: this.userId,
             dateYYYYMMDD: this.dateYYYYMMDD,
             activityData: this.activityData,
-            dailyTaskListItems: this.dailyTaskListItemsHttpReq,
+            dailyTaskListItems: this.dailyTaskListItems,
             taskData: this._taskData,
             timelogEntryData: this._timelogEntryData
         }
@@ -28,7 +28,7 @@ export class DayData {
             userId: this.userId,
             dateYYYYMMDD: this.dateYYYYMMDD,
             activityData: this.activityData,
-            dailyTaskListItems: this.dailyTaskListItemsHttpReq,
+            dailyTaskListItems: this.dailyTaskListItems,
             taskData: this._taskData,
             timelogEntryData: this._timelogEntryData
         }
@@ -143,18 +143,18 @@ export class DayData {
     }
 
 
-    public get allDTLItemsComplete(): boolean {
-        if (this._dailyTaskListItems.length <= 0) {
-            return false;
-        }
-        let allComplete: boolean = true;
-        this._dailyTaskListItems.forEach((dtclItem) => {
-            if (dtclItem.isComplete == false) {
-                allComplete = false;
-            }
-        });
-        return allComplete;
-    }
+    // public get allDTLItemsComplete(): boolean {
+    //     if (this._dailyTaskListItems.length <= 0) {
+    //         return false;
+    //     }
+    //     let allComplete: boolean = true;
+    //     this._dailyTaskListItems.forEach((dtclItem) => {
+    //         if (dtclItem.isComplete == false) {
+    //             allComplete = false;
+    //         }
+    //     });
+    //     return allComplete;
+    // }
 
 
 
@@ -165,13 +165,13 @@ export class DayData {
     }
 
 
-    private get dailyTaskListItemsHttpReq(): any {
-        let items: any[] = [];
-        this._dailyTaskListItems.forEach((dtlItem) => {
-            items.push(dtlItem.httpRequestObject);
-        })
-        return items;
-    }
+    // private get dailyTaskListItemsHttpReq(): any {
+    //     let items: any[] = [];
+    //     this._dailyTaskListItems.forEach((dtlItem) => {
+    //         items.push(dtlItem.httpRequestObject);
+    //     })
+    //     return items;
+    // }
 
     private update() {
         this._updateSubject$.next();

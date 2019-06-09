@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { RecurringTaskDefinition } from '../../../shared/document-definitions/recurring-task/recurring-task-definition.class';
+import { RecurringTaskDefinition } from '../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
 import * as moment from 'moment';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { RecurringTasksService } from '../../../shared/document-definitions/recurring-task/recurring-tasks.service';
+import { RecurringTasksService } from '../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
 import { ModalService } from '../../../modal/modal.service';
 import {  Modal } from '../../../modal/modal.class';
 import { ModalComponentType } from '../../../../app/modal/modal-component-type.enum';

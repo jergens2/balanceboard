@@ -1,17 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RecurringTasksService } from '../../../document-definitions/recurring-task/recurring-tasks.service';
 import * as moment from 'moment';
-import { RecurringTaskDefinition } from '../../../document-definitions/recurring-task/recurring-task-definition.class';
-import { DailyTaskListItem } from './daily-task-list-item.class';
+import { DailyTaskListItem, DailyTaskList } from '../../../document-data/daily-task-list/daily-task-list.class';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faCheckCircle as faCheckCircleSolid, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 import { Router } from '@angular/router';
 import { ToolsService } from '../../tools.service';
-import { DayDataService } from '../../../document-definitions/day-data/day-data.service';
-import { DayData } from '../../../document-definitions/day-data/day-data.class';
+import { DayDataService } from '../../../document-data/day-data/day-data.service';
 import { Subscription } from 'rxjs';
+import { DailyTaskListService } from '../../../document-data/daily-task-list/daily-task-list.service';
 
 
 @Component({
@@ -39,69 +37,58 @@ export class DtlToolComponent implements OnInit, OnDestroy {
   faCheckCircleSolid = faCheckCircleSolid;
   faTasks = faTasks;
 
-  constructor(private toolsService: ToolsService,  private router: Router, private dayDataService: DayDataService) { }
+  constructor(private toolsService: ToolsService,  private router: Router, private dailyTaskListService: DailyTaskListService) { }
 
-  dtclItems: DailyTaskListItem[];
+  // dtclItems: DailyTaskListItem[];
 
   noTasks: boolean = false;
-  private dayData: DayData;
+  // private dayData: DayData;
+  dailyTaskList: DailyTaskList;
 
-  private _dataServiceSubscription: Subscription = new Subscription();
+  // private _dtlSubscription: Subscription = new Subscription();
 
   ngOnInit() {
-    this.dtclItems = [];
+    // this.dtclItems = [];
+    
     let today: moment.Moment = moment();
 
-    this.dayDataService.checkForDayData(today);
-    this._dataServiceSubscription = this.dayDataService.yearsDayData$.subscribe((dayDatas: DayData[])=>{
-      if(dayDatas.length > 0){
-        
-        this.dayData = dayDatas.find((dayData: DayData)=>{
-          return dayData.dateYYYYMMDD == today.format('YYYY-MM-DD');
-        });
-
-        if(!this.dayData){
-          console.log("Error.  Could not get this days day data.")
-        }else{
-          this.dayData;
-          this.dtclItems = this.dayData.dailyTaskListItems;
-          if(this.dtclItems.length == 0){
-            this.noTasks = true;
-          }
-        }
-
-          
-
-      }
-      
+    this.dailyTaskListService.dailyTaskLists$.subscribe((allDTLs: DailyTaskList[])=>{
+      this.dailyTaskList = this.dailyTaskListService.todaysDailyTaskList;
     });
-     
+    this.dailyTaskList = this.dailyTaskListService.todaysDailyTaskList;
+    console.log("This.dailyTaskList is ", this.dailyTaskList);
+    
+    if(this.dailyTaskList.tasks.length == 0){
+      this.noTasks = true;
+    }
 
   }
   ngOnDestroy(){
-    this._dataServiceSubscription.unsubscribe();
+    // this._dtlSubscription.unsubscribe();
   }
 
   onClickCheckTask(dtclItem: DailyTaskListItem){
-    if(dtclItem.isComplete){
-      dtclItem.markIncomplete();
-    }else{
-      dtclItem.markComplete(moment());
-    }
-    this.dayData.updateDailyTaskListItems(this.dtclItems);
+    this.dailyTaskList.onClickCheckTask(dtclItem);
+  }
 
+  public get dailyTaskItems(): DailyTaskListItem[]{
+    if(this.dailyTaskList){
+      return this.dailyTaskList.tasks;
+    }else{
+      return [];
+    }
+  }
+
+  public isComplete(task: DailyTaskListItem){
+    return this.dailyTaskList.isComplete(task);
   }
 
   private allTasksCompleteManualSwitch: boolean = false;
   public get allTasksComplete(): boolean{
     if(this.allTasksCompleteManualSwitch){
       return false;
-    }else{
-      if(this.dayData){
-        return this.dayData.allDTLItemsComplete;
-      }
-      return false;
     }
+    return this.dailyTaskList.allTasksComplete;
   }
 
   onClickManageRecurringTasks(){
@@ -111,7 +98,15 @@ export class DtlToolComponent implements OnInit, OnDestroy {
 
   onClickShowTasksButton(){
     this.allTasksCompleteManualSwitch = !this.allTasksCompleteManualSwitch;
-    console.log(this.dtclItems);
+  }
+
+  public showTasksButton: boolean = false;
+  onMouseEnterAllComplete(){
+    this.showTasksButton = true;
+  }
+  onMouseLeaveAllComplete(){
+    this.showTasksButton = false;
+    this.allTasksCompleteManualSwitch = false;
   }
 
 }

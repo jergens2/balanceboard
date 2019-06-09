@@ -1,5 +1,5 @@
-import { UserDefinedActivity } from "../../../activities/user-defined-activity.model";
-import { ActivitiesService } from "../../../activities/activities.service";
+import { UserDefinedActivity } from "../../../dashboard/activities/user-defined-activity.model";
+import { ActivitiesService } from "../../../dashboard/activities/activities.service";
 import { ITLEActivity } from "./timelog-entry-activity.interface";
 
 export class TimelogEntryActivity{

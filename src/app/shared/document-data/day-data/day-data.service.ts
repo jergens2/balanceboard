@@ -1,32 +1,29 @@
+import * as moment from 'moment';
 import { Injectable } from '@angular/core';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AuthStatus } from '../../../authentication/auth-status.model';
-import { Observable, Subject, BehaviorSubject, Subscription, timer } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-
-import * as moment from 'moment';
 import { DayData } from './day-data.class';
-import { RecurringTasksService } from '../recurring-task/recurring-tasks.service';
-import { DailyTaskListItem, DailyTaskListItemInterface } from '../../tools/tool-components/dtl-tool/daily-task-list-item.class';
-
-import { TimelogService } from '../../../dashboard/daybook/time-log/timelog.service';
+import { RecurringTasksService } from '../../document-definitions/recurring-task-definition/recurring-tasks.service';
+import { TimelogService } from '../timelog-entry/timelog.service';
 import { DayDataActivityDataItemInterface, DayDataActivityDataItem } from './data-properties/activity-data-item.class';
-
-
 @Injectable({
   providedIn: 'root'
 })
+/**
+ * Notes:
+ * DayData is not something that exists in the database explicitly.
+ * It is an aggregate of data, collected from other collections.
+ * It exists exclusively on the front end as an object definition, primarily for the purpose of browsing / zooming out on the calendar views to see the aggregate picture.
+ * 
+ */
 export class DayDataService {
-
   constructor(private httpClient: HttpClient, private recurringTaskDefinitionService: RecurringTasksService, private timelogService: TimelogService) { }
-
   private serverUrl = serverUrl;
-
   private _authStatus: AuthStatus;
   private _loginComplete$: Subject<boolean> = new Subject();
-
   login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
     this.getInitialDayDataRange();
@@ -35,18 +32,14 @@ export class DayDataService {
   logout() {
     this._authStatus = null;
   }
-
-
   public checkForDayData(date: moment.Moment): void {
     let dayData: DayData = this.yearsDayData.find((dayData) => { return dayData.dateYYYYMMDD == date.format('YYYY-MM-DD'); });
     if (!dayData) {
       this.generateNewDayData(date);
-    } else {
-      
     }
-    
+    else {
+    }
   }
-
   private getInitialDayDataRange() {
     this.httpGetDaysInRange(moment().subtract(365, "days"), moment().add(365, "days"));
   }
@@ -57,10 +50,6 @@ export class DayDataService {
   public get yearsDayData$(): Observable<DayData[]> {
     return this._yearsDayData$.asObservable();
   }
-
-
-
-
   private httpGetDaysInRange(startDate: moment.Moment, endDate: moment.Moment) {
     const getUrl = this.serverUrl + "/api/day-data/" + this._authStatus.user.id + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
     const httpOptions = {
@@ -69,8 +58,14 @@ export class DayDataService {
         // 'Authorization': 'my-auth-token'  
       })
     };
-    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe<DayData[]>(map((response: { message: string, data: any[] }) => {
+    this.httpClient.get<{
+      message: string;
+      data: any;
+    }>(getUrl, httpOptions)
+      .pipe<DayData[]>(map((response: {
+        message: string;
+        data: any[];
+      }) => {
         return response.data.map((data) => {
           return this.buildDayDataFromResponse(data);
         });
@@ -80,9 +75,8 @@ export class DayDataService {
         this._yearsDayData$.next(dayData);
         this.updateYearsDataSubscriptions();
         this._loginComplete$.next(true);
-      })
+      });
   }
-
   httpSaveDayData(dayDataToSave: DayData) {
     let requestUrl: string = serverUrl + "/api/day-data/create";
     const httpOptions = {
@@ -91,20 +85,21 @@ export class DayDataService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(requestUrl, dayDataToSave.httpCreate, httpOptions)
+    this.httpClient.post<{
+      message: string;
+      data: any;
+    }>(requestUrl, dayDataToSave.httpCreate, httpOptions)
       .pipe<DayData>(map((response) => {
         return this.buildDayDataFromResponse(response.data);
       }))
       .subscribe((savedDayData: DayData) => {
-        console.log("    HTTP Response: Value saved:  ", savedDayData )
+        console.log("    HTTP Response: Value saved:  ", savedDayData);
         let dayData: DayData[] = this._yearsDayData$.getValue();
         dayData.push(savedDayData);
         this._yearsDayData$.next(dayData);
         this.updateYearsDataSubscriptions();
       });
-
   }
-
   httpUpdateDayData(dayDataToUpdate: DayData) {
     // console.log("Updating", dayDataToUpdate)
     let requestUrl: string = serverUrl + "/api/day-data/update";
@@ -114,7 +109,10 @@ export class DayDataService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(requestUrl, dayDataToUpdate.httpUpdate, httpOptions)
+    this.httpClient.post<{
+      message: string;
+      data: any;
+    }>(requestUrl, dayDataToUpdate.httpUpdate, httpOptions)
       .pipe<DayData>(map((response) => {
         return this.buildDayDataFromResponse(response.data);
       }))
@@ -123,10 +121,8 @@ export class DayDataService {
         allDayData.splice(allDayData.indexOf(dayDataToUpdate), 1, updatedDayData);
         this._yearsDayData$.next(allDayData);
         this.updateYearsDataSubscriptions();
-      })
-
+      });
   }
-
   httpDeleteDayData(dayDataToDelete: DayData) {
     const deleteUrl = this.serverUrl + "/api/day-data/delete";
     const httpOptions = {
@@ -135,65 +131,28 @@ export class DayDataService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(deleteUrl, dayDataToDelete.httpDelete, httpOptions)
+    this.httpClient.post<{
+      message: string;
+      data: any;
+    }>(deleteUrl, dayDataToDelete.httpDelete, httpOptions)
       .subscribe((response) => {
         let allDayData: DayData[] = this._yearsDayData$.getValue();
         allDayData.splice(allDayData.indexOf(dayDataToDelete), 1);
         this._yearsDayData$.next(allDayData);
-      })
+      });
   }
-
-
   private generateNewDayData(date: moment.Moment): void {
     /**
-     * This event occurs when the check for a DB item returned nothing, so we are generating a new DayData 
+     * This event occurs when the check for a DB item returned nothing, so we are generating a new DayData
      */
-    console.log("Generating new")
-    let newData = new DayData("", this._authStatus.user.id, date.format('YYYY-MM-DD'));
-    
-    newData.dailyTaskListItems = this.recurringTaskDefinitionService.getDTLItemsForNewDayData(date);
-    
-    this.timelogService.generateActivityData$(date).subscribe((data: DayDataActivityDataItem[])=>{
-      newData.activityData = data;
-      console.log("    This async method is complete.  Value is now:", newData);
-      this.httpSaveDayData(newData);
-    });
-    
-
-    
-
-
   }
-
   private buildDayDataFromResponse(responseData) {
     /**
      *  This event occurs when a response data object does exist.
-     *  Therefore this primarily entails in constructing all of the Class objects from the DB interface data. 
+     *  Therefore this primarily entails in constructing all of the Class objects from the DB interface data.
     */
-    let rd: any = responseData;
-    let dayData: DayData = new DayData(rd._id, rd.userId, rd.dateYYYYMMDD);
-
-    dayData.activityData = (rd.activityData as DayDataActivityDataItemInterface[]).map<DayDataActivityDataItem>((dataItem: DayDataActivityDataItemInterface) => {
-      return new DayDataActivityDataItem(dataItem.activityTreeId, dataItem.durationMinutes);
-    });
-
-    dayData.dailyTaskListItems = (rd.dailyTaskListItems as DailyTaskListItemInterface[]).map<DailyTaskListItem>((dataItem: DailyTaskListItemInterface) => {
-      let dtlItem: DailyTaskListItem = new DailyTaskListItem(this.recurringTaskDefinitionService.getRecurringTaskById(dataItem.recurringTaskId));
-      if(dataItem.completionDate){
-        dtlItem.markComplete(moment(dataItem.completionDate));
-      }
-      return dtlItem;
-    });
-    dayData.taskData = rd.taskData;
-    dayData.timelogEntryData = rd.timelogEntryData;
-
-    console.log("Data built.  Is it configured?", dayData.isFullyConfigured);
-
-
-    return dayData;
+    return null;
   }
-
-
   private _updateSubscriptions: Subscription[] = [];
   private updateYearsDataSubscriptions() {
     this._updateSubscriptions.forEach((sub) => sub.unsubscribe());
@@ -202,7 +161,10 @@ export class DayDataService {
       this._updateSubscriptions.push(dayData.updates$.subscribe(() => {
         this.httpUpdateDayData(dayData);
       }));
-    })
+    });
   }
-
 }
+
+
+
+

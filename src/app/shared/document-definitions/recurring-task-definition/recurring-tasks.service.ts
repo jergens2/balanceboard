@@ -7,7 +7,7 @@ import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
-import { DailyTaskListItem } from '../../tools/tool-components/dtl-tool/daily-task-list-item.class';
+import { DailyTaskListItem, DailyTaskList } from '../../document-data/daily-task-list/daily-task-list.class';
 
 
 @Injectable({
@@ -18,7 +18,7 @@ export class RecurringTasksService {
   constructor(private httpClient: HttpClient) { }
 
   private _authStatus: AuthStatus;
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
 
 
@@ -43,22 +43,30 @@ export class RecurringTasksService {
     return this._recurringTasks$.asObservable();
   }
   
-  public getDTLItemsForNewDayData(date: moment.Moment): DailyTaskListItem[]{
-    let dtlItems: DailyTaskListItem[] = [];
 
-    this._recurringTasks$.getValue().filter((recurringTask: RecurringTaskDefinition)=>{
-      return recurringTask.hasTaskOnDate(date);
-    }).forEach((recurringTask: RecurringTaskDefinition)=>{
-      dtlItems.push(new DailyTaskListItem(recurringTask))
-    });
-    return dtlItems;
-  }
 
   public getRecurringTaskById(recurringTaskId: string): RecurringTaskDefinition{
     return this._recurringTasks$.getValue().find((task: RecurringTaskDefinition)=>{
       return task.id == recurringTaskId;
     })
   }
+
+  public generateDailyTaskList(date: moment.Moment): DailyTaskList{
+    return new DailyTaskList("", this._authStatus.user.id, this.getDTLItemsForDate(date), date.format("YYYY-MM-DD"), this);
+  }
+
+  private getDTLItemsForDate(date: moment.Moment): DailyTaskListItem[]{
+    let dtlItems: DailyTaskListItem[] = [];
+    console.log("all recurring tasks", this._recurringTasks$.getValue());
+    this._recurringTasks$.getValue().filter((recurringTask: RecurringTaskDefinition)=>{
+      return recurringTask.hasTaskOnDate(date);
+    }).forEach((recurringTask: RecurringTaskDefinition)=>{
+      dtlItems.push({recurringTaskId: recurringTask.id, completionDate: ""});
+    });
+    console.log("DTL ITEMS on "+ date.format("YYYY-MM-DD"), dtlItems);
+    return dtlItems;
+  }
+
 
   private httpGetRecurringTasks() {
 
@@ -85,10 +93,8 @@ export class RecurringTasksService {
         } else {
           this._recurringTasks$.next(tasks);
         }
+        this._loginComplete$.next(true);
       });
-
-
-    this._loginComplete$.next(true);
   }
 
   public httpSaveRecurringTaskDefinition(saveTask: RecurringTaskDefinition) {

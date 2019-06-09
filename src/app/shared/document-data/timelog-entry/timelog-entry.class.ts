@@ -1,10 +1,10 @@
-import { UserDefinedActivity } from "../../../activities/user-defined-activity.model";
+import { UserDefinedActivity } from "../../../dashboard/activities/user-defined-activity.model";
 import * as moment from 'moment';
 // import { TimelogEntryActivity } from "./timelog-entry-activity.class";
 import { ITLEActivity } from "./timelog-entry-activity.interface";
-import { DurationString } from "../../../../shared/document-definitions/timelog-entry-form/duration-string.class";
+import { DurationString } from "./timelog-entry-form/duration-string.class";
 import { TimelogEntryActivity } from "./timelog-entry-activity.class";
-import { ActivitiesService } from "../../../../dashboard/activities/activities.service";
+import { ActivitiesService } from "../../../dashboard/activities/activities.service";
 
 
 export class TimelogEntry {

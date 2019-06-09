@@ -1,4 +1,4 @@
-import { TimelogEntry } from "../timelog-entry.class";
+import { TimelogEntry } from "../../../../shared/document-data/timelog-entry/timelog-entry.class";
 import * as moment from 'moment';
 
 export class TimelogEntryTile{

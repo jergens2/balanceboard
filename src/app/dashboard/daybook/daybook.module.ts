@@ -9,7 +9,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { TimeLogComponent } from './time-log/timelog.component';
 import { DayDataHeaderComponent } from './daybook-header/daybook-header.component';
 import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
-import { TimelogEntryTileComponent } from './time-log/timelog-entry/timelog-entry-tile/timelog-entry-tile.component';
+import { TimelogEntryTileComponent } from './time-log/timelog-entry-tile/timelog-entry-tile.component';
 import { PrimaryTaskWidgetComponent } from './widgets/primary-objective-widget/primary-objective-widget.component';
 import { TaskQueueWidgetComponent } from './widgets/task-queue-widget/task-queue-widget.component';
 import { SharedModule } from '../../shared/shared.module';

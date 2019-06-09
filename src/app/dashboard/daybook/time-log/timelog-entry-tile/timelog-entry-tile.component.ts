@@ -3,15 +3,15 @@ import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angu
 import * as moment from 'moment';
 import { TimelogEntryTile } from './timelog-entry-tile.class';
 import { Subscription } from 'rxjs';
-import { IModalOption } from '../../../../../modal/modal-option.interface';
-import { Modal } from '../../../../../modal/modal.class';
-import { TimelogService } from '../../timelog.service';
-import { ModalService } from '../../../../../modal/modal.service';
+import { IModalOption } from '../../../../modal/modal-option.interface';
+import { Modal } from '../../../../modal/modal.class';
+import { TimelogService } from '../../../../shared/document-data/timelog-entry/timelog.service';
+import { ModalService } from '../../../../modal/modal.service';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import { ModalComponentType } from '../../../../../modal/modal-component-type.enum';
-import { ToolsService } from '../../../../../shared/tools/tools.service';
-import { ToolComponents } from '../../../../../shared/tools/tool-components.enum';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
+import { ToolsService } from '../../../../shared/tools/tools.service';
+import { ToolComponents } from '../../../../shared/tools/tool-components.enum';
 
 @Component({
   selector: 'app-timelog-entry-tile',

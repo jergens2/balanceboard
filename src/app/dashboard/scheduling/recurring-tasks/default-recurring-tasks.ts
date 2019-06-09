@@ -1,6 +1,6 @@
-import { RecurringTaskDefinition } from "../../../shared/document-definitions/recurring-task/recurring-task-definition.class";
+import { RecurringTaskDefinition } from "../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class";
 import * as moment from 'moment';
-import { RecurringTaskRepititionPeriod } from "../../../shared/document-definitions/recurring-task/recurring-task-form/rt-repititions/recurring-task-repitition.interface";
+import { RecurringTaskRepititionPeriod } from "../../../shared/document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/recurring-task-repitition.interface";
 
 
 let recurringTasks: RecurringTaskDefinition[] = [];
