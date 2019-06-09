@@ -1,11 +1,11 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
-import { TimelogService } from '../../daybook/time-log/timelog.service';
+import { TimelogService } from '../../../shared/document-data/timelog-entry/timelog.service';
 import { Subscription } from 'rxjs';
-import { TimelogEntry } from '../../daybook/time-log/timelog-entry/timelog-entry.class';
+import { TimelogEntry } from '../../../shared/document-data/timelog-entry/timelog-entry.class';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { IActivityData } from './activity-data.interface';
-import { TimelogEntryActivity } from '../../daybook/time-log/timelog-entry/timelog-entry-activity.class';
+import { TimelogEntryActivity } from '../../../shared/document-data/timelog-entry/timelog-entry-activity.class';
 import { UserDefinedActivity } from '../user-defined-activity.model';
 
 @Component({

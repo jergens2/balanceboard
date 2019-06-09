@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import * as moment from 'moment';
 import { TimeViewsService } from '../time-views.service';
-import { DayData } from '../../document-definitions/day-data/day-data.class';
+import { DayData } from '../../document-data/day-data/day-data.class';
 
 @Component({
   selector: 'app-custom-range-time-view',

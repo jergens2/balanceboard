@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, timer, Subject } from 'rxjs';
-import { TimelogEntryTile } from './timelog-entry/timelog-entry-tile/timelog-entry-tile.class';
-import { TimelogEntry } from './timelog-entry/timelog-entry.class';
-import { TimelogService } from './timelog.service';
+import { TimelogEntryTile } from './timelog-entry-tile/timelog-entry-tile.class';
+import { TimelogEntry } from '../../../shared/document-data/timelog-entry/timelog-entry.class';
+import { TimelogService } from '../../../shared/document-data/timelog-entry/timelog.service';
 import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
 import { ActivitiesService } from '../../activities/activities.service';

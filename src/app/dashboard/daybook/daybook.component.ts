@@ -7,8 +7,8 @@ import { HeaderService } from '../../nav/header/header.service';
 import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
 import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
 
-import { DayDataService } from '../../shared/document-definitions/day-data/day-data.service';
-import { DayData } from '../../shared/document-definitions/day-data/day-data.class';
+import { DayDataService } from '../../shared/document-data/day-data/day-data.service';
+import { DayData } from '../../shared/document-data/day-data/day-data.class';
 
 @Component({
   selector: 'app-daybook',

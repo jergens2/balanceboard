@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
-import { DayDataService } from '../../document-definitions/day-data/day-data.service';
-import { DayData } from '../../document-definitions/day-data/day-data.class';
+import { DayDataService } from '../../document-data/day-data/day-data.service';
+import { DayData } from '../../document-data/day-data/day-data.class';
 import { ActivitiesService } from '../../../dashboard/activities/activities.service';
 import { UserDefinedActivity } from '../../../dashboard/activities/user-defined-activity.model';
 import { Router } from '@angular/router';

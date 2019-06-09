@@ -1,10 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { TimelogService } from '../time-log/timelog.service';
+import { TimelogService } from '../../../shared/document-data/timelog-entry/timelog.service';
 
 import * as moment from 'moment';
 import { Subject, Subscription } from 'rxjs';
-import { TimelogEntry } from '../time-log/timelog-entry/timelog-entry.class';
+import { TimelogEntry } from '../../../shared/document-data/timelog-entry/timelog-entry.class';
 import { IHeatmapContentItem } from './heatmap-content-item.interface';
 
 @Component({

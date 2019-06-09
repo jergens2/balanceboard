@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import * as moment from 'moment';
-import { DayData } from '../document-definitions/day-data/day-data.class';
-import { DayDataService } from '../document-definitions/day-data/day-data.service';
+import { DayData } from '../document-data/day-data/day-data.class';
+import { DayDataService } from '../document-data/day-data/day-data.service';
 
 
 @Injectable({

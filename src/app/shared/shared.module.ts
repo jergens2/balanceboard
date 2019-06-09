@@ -9,21 +9,21 @@ import { SingleDayViewComponent } from './time-views/single-day-view/single-day-
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { CustomRangeTimeViewComponent } from './time-views/custom-range-time-view/custom-range-time-view.component';
 import { ToolsComponent } from './tools/tools.component';
-import { ActionItemFormComponent } from './document-definitions/action-item-form/action-item-form.component';
-import { NotebookEntryFormComponent } from "./document-definitions/notebook-entry-form/notebook-entry-form.component";
+import { ActionItemFormComponent } from './document-data/action-item-form/action-item-form.component';
+import { NotebookEntryFormComponent } from "./document-data/notebook-entry-form/notebook-entry-form.component";
 import { ReactiveFormsModule } from "@angular/forms";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
-import { TimelogEntryFormComponent } from './document-definitions/timelog-entry-form/timelog-entry-form.component';
-import { FutureEventFormComponent } from './document-definitions/future-event-form/future-event-form.component';
+import { TimelogEntryFormComponent } from './document-data/timelog-entry/timelog-entry-form/timelog-entry-form.component';
+import { FutureEventFormComponent } from './document-data/future-event-form/future-event-form.component';
 import { DirectoryInputComponent } from './directory/directory-input/directory-input.component';
 import { ActivityInputDropdownComponent } from "./activity-input-dropdown/activity-input-dropdown.component";
-import { TlefChartComponent } from "./document-definitions/timelog-entry-form/tlef-chart/tlef-chart.component";
-import { ActivitySliderBarComponent } from './document-definitions/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
-import { TlefActivitiesComponent } from './document-definitions/timelog-entry-form/tlef-activities/tlef-activities.component';
-import { RecurringTaskFormComponent } from "./document-definitions/recurring-task/recurring-task-form/recurring-task-form.component";
-import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition-form/activity-category-definition-form.component";
-import { RtRepititionsComponent } from "./document-definitions/recurring-task/recurring-task-form/rt-repititions/rt-repititions.component";
-import { DtlToolComponent } from './tools/tool-components/dtcl-tool/dtcl-tool.component';
+import { TlefChartComponent } from "./document-data/timelog-entry/timelog-entry-form/tlef-chart/tlef-chart.component";
+import { ActivitySliderBarComponent } from './document-data/timelog-entry/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
+import { TlefActivitiesComponent } from './document-data/timelog-entry/timelog-entry-form/tlef-activities/tlef-activities.component';
+import { RecurringTaskFormComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/recurring-task-form.component";
+import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition/activity-category-definition-form.component";
+import { RtRepititionsComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/rt-repititions.component";
+import { DtlToolComponent } from './tools/tool-components/dtl-tool/dtl-tool.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 
@@ -70,7 +70,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
         ActivityInputDropdownComponent,
         TimelogEntryFormComponent,
         RecurringTaskFormComponent,
-        
+        DtlToolComponent,
     ]
 })
 
