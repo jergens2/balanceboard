@@ -4,15 +4,16 @@ import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AuthStatus } from '../../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 
 import * as moment from 'moment';
 import { ITemplateTimeRange } from './template-time-range.interface';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DayTemplatesService {
+export class DayTemplatesService implements ServiceAuthenticates {
 
   constructor(private httpClient: HttpClient) { }
   private serverUrl = serverUrl;
@@ -20,10 +21,11 @@ export class DayTemplatesService {
 
 
   private _authStatus: AuthStatus;
-  login$(authStatus: AuthStatus): Observable<DayTemplate[]>{
+  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  login$(authStatus: AuthStatus): Observable<boolean>{
     this._authStatus = authStatus;
     this.getTemplatesHTTP();
-    return this.dayTemplates$;
+    return this._loginComplete$.asObservable();
   }
 
   logout(){
@@ -63,6 +65,7 @@ export class DayTemplatesService {
         }else{
           this._dayTemplates = dayTemplates;
           this._dayTemplates$.next(this._dayTemplates);
+          this._loginComplete$.next(true);
         }
       });
 

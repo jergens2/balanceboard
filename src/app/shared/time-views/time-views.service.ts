@@ -11,7 +11,7 @@ import { DayDataService } from '../document-data/day-data/day-data.service';
 export class TimeViewsService {
 
 
-  private _loginComplete$: Subject<boolean> = new Subject();
+  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
   login$() {
     this._fullDayDataRange = { startDate: moment().subtract(366, "days"), endDate: moment().add(366, "days") };

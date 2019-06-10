@@ -101,10 +101,11 @@ export class ActivitiesService {
     return this._activitiesTree.findActivityByTreeId(treeId);
   }
 
+  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus) {
     this._authStatus = authStatus;
     this.fetchActivities();
-    return this.activitiesTree$;
+    return this._loginComplete$.asObservable();
   }
 
   logout() {
@@ -137,6 +138,7 @@ export class ActivitiesService {
           // console.log("response data was 0 or less... creating default activities")
           this.saveDefaultActivities(defaultActivities)
         }
+        this._loginComplete$.next(true);
       });
   }
 

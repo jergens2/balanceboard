@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable, Subject, Subscription, timer } from 'rxjs';
+import { Observable, Subject, Subscription, timer, BehaviorSubject } from 'rxjs';
 import { TimelogEntry } from './timelog-entry.class';
 
 import * as moment from 'moment';
@@ -22,7 +22,7 @@ import { DayDataActivityDataItem } from '../day-data/data-properties/activity-da
 export class TimelogService {
 
   private _authStatus: AuthStatus = null;
-  private _loginComplete$: Subject<boolean> = new Subject();
+  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
     this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'days'), moment().endOf('day').add(1, 'days'));
