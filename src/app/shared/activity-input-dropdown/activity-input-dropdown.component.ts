@@ -4,8 +4,8 @@ import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 import { Subscription, Observable, fromEvent } from 'rxjs';
 import { IActivityDropdownListItem } from './activity-dropdown-list-item.interface';
 import { ActivityTree } from '../../dashboard/activities/activity-tree.model';
-import { UserDefinedActivity } from '../../dashboard/activities/user-defined-activity.model';
-import { ActivitiesService } from '../../dashboard/activities/activities.service';
+import { ActivityCategoryDefinition } from '../document-definitions/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinitionService } from '../document-definitions/activity-category-definition/activity-category-definition.service';
 
 @Component({
   selector: 'app-activity-input-dropdown',
@@ -25,28 +25,28 @@ export class ActivityInputDropdownComponent implements OnInit {
   activityTextInputValue: string = "";
 
   private activitiesTree: ActivityTree = null;
-  private selectedActivity: UserDefinedActivity = null;
+  private selectedActivity: ActivityCategoryDefinition = null;
 
   private dropdownMenuSubscription: Subscription = new Subscription();
 
 
-  @Output() valueChanged: EventEmitter<UserDefinedActivity> = new EventEmitter<UserDefinedActivity>();
-  @Input('initialValue') set initialValue(providedParent: UserDefinedActivity)  {
+  @Output() valueChanged: EventEmitter<ActivityCategoryDefinition> = new EventEmitter<ActivityCategoryDefinition>();
+  @Input('initialValue') set initialValue(providedParent: ActivityCategoryDefinition)  {
     if(providedParent != null){
       this.activityTextInputValue = providedParent.name;
     }
     
   }; 
 
-  constructor(private activitiesService: ActivitiesService) { }
+  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
   ngOnInit() {
-    this.activitiesTree = this.activitiesService.activitiesTree;
+    this.activitiesTree = this.activityCategoryDefinitionService.activitiesTree;
     this.buildDropdownListTree();
   }
 
   private buildDropdownListTree() {
-    function buildChildDropdownItems(parent: UserDefinedActivity, generationNumber: number): IActivityDropdownListItem {
+    function buildChildDropdownItems(parent: ActivityCategoryDefinition, generationNumber: number): IActivityDropdownListItem {
       if (parent.children.length > 0) {
         let children: IActivityDropdownListItem[] = [];
         for (let child of parent.children) {
@@ -161,7 +161,7 @@ export class ActivityInputDropdownComponent implements OnInit {
 
 
 
-  private onValueChanged(activity: UserDefinedActivity) {
+  private onValueChanged(activity: ActivityCategoryDefinition) {
     this.valueChanged.emit(activity);
     this.activityTextInputValue = "";
     
@@ -172,8 +172,8 @@ export class ActivityInputDropdownComponent implements OnInit {
 
 
     let searchResults: IActivityDropdownListItem[] = [];
-    // let activityResults: UserDefinedActivity[] = [];
-    let activitiesArray: UserDefinedActivity[] = Object.assign([], this.activitiesTree.allActivities);
+    // let activityResults: ActivityCategoryDefinition[] = [];
+    let activitiesArray: ActivityCategoryDefinition[] = Object.assign([], this.activitiesTree.allActivities);
     for (let activity of activitiesArray) {
       if (activity.name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
 

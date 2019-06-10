@@ -6,7 +6,7 @@ import { TimelogEntry } from '../../../shared/document-data/timelog-entry/timelo
 import { TimelogService } from '../../../shared/document-data/timelog-entry/timelog.service';
 import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
-import { ActivitiesService } from '../../activities/activities.service';
+import { ActivityCategoryDefinitionService } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 
 
 
@@ -19,7 +19,7 @@ import { ActivitiesService } from '../../activities/activities.service';
 })
 export class TimeLogComponent implements OnInit, OnDestroy {
 
-  constructor(private timelogService: TimelogService, private activitiesService: ActivitiesService) { }
+  constructor(private timelogService: TimelogService, private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
   faSpinner = faSpinner;
   faCaretUp = faCaretUp;
@@ -287,11 +287,11 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       return moment(times[0]);
     }
 
-    function crossesNow(tile: TimelogEntryTile, now: moment.Moment, activitiesService: ActivitiesService, timelogEntry?: TimelogEntry ): TimelogEntryTile[] {
+    function crossesNow(tile: TimelogEntryTile, now: moment.Moment, activityCategoryDefinitionService: ActivityCategoryDefinitionService, timelogEntry?: TimelogEntry ): TimelogEntryTile[] {
       let tiles: TimelogEntryTile[] = [];
       let setTimelogEntry: TimelogEntry = null;
       if (timelogEntry) {
-        setTimelogEntry = new TimelogEntry(timelogEntry.id, timelogEntry.userId, timelogEntry.startTimeISO, timelogEntry.endTimeISO, timelogEntry.description, activitiesService);
+        setTimelogEntry = new TimelogEntry(timelogEntry.id, timelogEntry.userId, timelogEntry.startTimeISO, timelogEntry.endTimeISO, timelogEntry.description, activityCategoryDefinitionService);
         setTimelogEntry.setTleActivities(timelogEntry.ITLEActivities);
       }
 
@@ -472,7 +472,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
             tileStartTime = moment(currentStartTimeLimit);
           } else if (timelogEntry.startTime.isAfter(currentStartTimeLimit)) {
             startGap = buildTile(currentStartTimeLimit, timelogEntry.startTime, null, "MIDDLE");
-            nowCrosses = crossesNow(startGap, now, this.activitiesService);
+            nowCrosses = crossesNow(startGap, now, this.activityCategoryDefinitionService);
             if (nowCrosses) {
               for (let tile of nowCrosses) {
                 tiles.push(tile);
@@ -488,7 +488,7 @@ export class TimeLogComponent implements OnInit, OnDestroy {
           }
 
           timelogEntryTile = buildTile(tileStartTime, tileEndTime, timelogEntry, borderNoRadius);
-          nowCrosses = crossesNow(timelogEntryTile, now, this.activitiesService, timelogEntry);
+          nowCrosses = crossesNow(timelogEntryTile, now, this.activityCategoryDefinitionService, timelogEntry);
           if (nowCrosses) {
             for (let tile of nowCrosses) {
               tiles.push(tile);

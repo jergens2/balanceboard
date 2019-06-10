@@ -1,10 +1,10 @@
-import { UserDefinedActivity } from "../../../dashboard/activities/user-defined-activity.model";
+import { ActivityCategoryDefinition } from "../../document-definitions/activity-category-definition/activity-category-definition.class";
 import * as moment from 'moment';
 // import { TimelogEntryActivity } from "./timelog-entry-activity.class";
 import { ITLEActivity } from "./timelog-entry-activity.interface";
 import { DurationString } from "./timelog-entry-form/duration-string.class";
 import { TimelogEntryActivity } from "./timelog-entry-activity.class";
-import { ActivitiesService } from "../../../dashboard/activities/activities.service";
+import { ActivityCategoryDefinitionService } from "../../document-definitions/activity-category-definition/activity-category-definition.service";
 
 
 export class TimelogEntry {
@@ -61,7 +61,7 @@ export class TimelogEntry {
         this._itleActivities = itleActivities;
         let tleActivities: TimelogEntryActivity[] = [];
         itleActivities.forEach(itleActivity => {
-            tleActivities.push(new TimelogEntryActivity(this.activitiesService, itleActivity));
+            tleActivities.push(new TimelogEntryActivity(this.activityCategoryDefinitionService, itleActivity));
         });
         this._tleActivities = tleActivities;
     }
@@ -72,10 +72,10 @@ export class TimelogEntry {
 
     public userId: string;
 
-    private activitiesService: ActivitiesService;
+    private activityCategoryDefinitionService: ActivityCategoryDefinitionService;
 
-    constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string, description: string, activitiesService: ActivitiesService) {
-        this.activitiesService = activitiesService;
+    constructor(id: string, userId: string, startTimeISO: string, endTimeISO: string, description: string, activityCategoryDefinitionService: ActivityCategoryDefinitionService) {
+        this.activityCategoryDefinitionService = activityCategoryDefinitionService;
         this.id = id;
         this.userId = userId;
         this._startTimeISO = startTimeISO;
@@ -103,7 +103,7 @@ export class TimelogEntry {
         return duration.asMinutes();
     }
 
-    receiveOldActivities(activities: UserDefinedActivity[]) {
+    receiveOldActivities(activities: ActivityCategoryDefinition[]) {
         console.log("this is the receiveOldActivities method", activities);
         // this.activities = activities.map((activity) => {
         //     let timelogEntryActivity: TimelogEntryActivity = new TimelogEntryActivity(activity, "");

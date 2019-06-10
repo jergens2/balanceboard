@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { UserDefinedActivity } from '../../user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 import { IActivityJournalItem } from './activity-journal-item.interface';
 import { TimelogEntry } from '../../../../shared/document-data/timelog-entry/timelog-entry.class';
 import * as moment from 'moment';
@@ -14,7 +14,7 @@ export class ActivityJournalComponent implements OnInit {
 
 
   private _timelogEntrys: TimelogEntry[];
-  private _activity: UserDefinedActivity;
+  private _activity: ActivityCategoryDefinition;
 
   journalEntries: IActivityJournalItem[] = [];
 
@@ -32,7 +32,7 @@ export class ActivityJournalComponent implements OnInit {
     });
     this._timelogEntrys = sortedTimelogEntrys;
   }
-  @Input() set activity(activity: UserDefinedActivity) {
+  @Input() set activity(activity: ActivityCategoryDefinition) {
     this._activity = activity;
   }
 

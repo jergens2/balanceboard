@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { TLEFActivityListItem } from './tlef-activity-slider-bar/tlef-activity-list-item.class';
-import { UserDefinedActivity } from '../../../../../dashboard/activities/user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../../document-definitions/activity-category-definition/activity-category-definition.class';
 import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { DurationString } from '../duration-string.class';
@@ -75,7 +75,7 @@ export class TlefActivitiesComponent implements OnInit {
     this.updatePercentages(activityItem);
   }
 
-  onActivityValueChanged(activity: UserDefinedActivity) {
+  onActivityValueChanged(activity: ActivityCategoryDefinition) {
     // This is the event of a new activity being added.
     let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length + 1);
     let durationPercent = durationMinutes / (this.timelogEntryMinutes) * 100;

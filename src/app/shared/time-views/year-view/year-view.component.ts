@@ -2,8 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { DayDataService } from '../../document-data/day-data/day-data.service';
 import { DayData } from '../../document-data/day-data/day-data.class';
-import { ActivitiesService } from '../../../dashboard/activities/activities.service';
-import { UserDefinedActivity } from '../../../dashboard/activities/user-defined-activity.model';
+import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinition } from '../../document-definitions/activity-category-definition/activity-category-definition.class';
 import { Router } from '@angular/router';
 import { SizeService } from '../../app-screen-size/size.service';
 import { AppScreenSize } from '../../app-screen-size/app-screen-size.enum';
@@ -21,7 +21,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   constructor(
     private daybookService: DayDataService,
-    private activitiesService: ActivitiesService,
+    private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
     private router: Router,
     private sizeService: SizeService,
     private timeViewsService: TimeViewsService,
@@ -294,10 +294,10 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   private buildDayStyle(dayObject: DayData) {
     let style: any = {};
-    let activity: UserDefinedActivity;
+    let activity: ActivityCategoryDefinition;
     if (dayObject.activityData) {
       if (dayObject.activityData.length >= 1) {
-        activity = this.activitiesService.findActivityByTreeId(dayObject.activityData[1].activityTreeId);
+        activity = this.activityCategoryDefinitionService.findActivityByTreeId(dayObject.activityData[1].activityTreeId);
         style = {
           "background-color": activity.color,
         }
@@ -311,7 +311,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
     if (day.dayData) {
 
       if (day.dayData.activityData) {
-        let activity: UserDefinedActivity = this.activitiesService.findActivityByTreeId(day.dayData.activityData[1].activityTreeId)
+        let activity: ActivityCategoryDefinition = this.activityCategoryDefinitionService.findActivityByTreeId(day.dayData.activityData[1].activityTreeId)
 
       }
 

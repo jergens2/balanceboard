@@ -1,8 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { ActivitiesService } from '../activities.service';
+import { ActivityCategoryDefinitionService } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { ActivityTree } from '../activity-tree.model';
 import { IActivityTile } from '../activity-tile.interface';
-import { UserDefinedActivity } from '../user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 
 @Component({
   selector: 'app-activities-list',
@@ -11,16 +11,16 @@ import { UserDefinedActivity } from '../user-defined-activity.model';
 })
 export class ActivitiesListComponent implements OnInit {
 
-  constructor(private activitiesService: ActivitiesService) { }
+  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
   activityTree: ActivityTree = null
   rootActivityTiles: IActivityTile[] = [];
 
-  @Output() activitySelected: EventEmitter<UserDefinedActivity> = new EventEmitter();
+  @Output() activitySelected: EventEmitter<ActivityCategoryDefinition> = new EventEmitter();
 
   ngOnInit() {
-    this.updateTree(this.activitiesService.activitiesTree);
-    this.activitiesService.activitiesTree$.subscribe((changedTree)=>{
+    this.updateTree(this.activityCategoryDefinitionService.activitiesTree);
+    this.activityCategoryDefinitionService.activitiesTree$.subscribe((changedTree)=>{
       this.updateTree(changedTree);
     });
   }
@@ -32,7 +32,7 @@ export class ActivitiesListComponent implements OnInit {
     });
   }
 
-  onActivitySelected(selectedActivity: UserDefinedActivity){
+  onActivitySelected(selectedActivity: ActivityCategoryDefinition){
     this.activitySelected.emit(selectedActivity);
   }
 

@@ -10,7 +10,7 @@ import { serverUrl } from '../../../serverurl';
 import { map } from 'rxjs/operators';
 import { AuthStatus } from '../../../authentication/auth-status.model';
 
-import { ActivitiesService } from '../../../dashboard/activities/activities.service';
+import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
 import { ITLEActivity } from './timelog-entry-activity.interface';
 import { ActivityDayDataService } from '../activity-day-data/activity-day-data.service';
 import { ActivityDayDataItem, ActivityDayData } from '../activity-day-data/activity-day-data.class';
@@ -50,7 +50,7 @@ export class TimelogService {
     return this._authStatus.user.id;
   }
 
-  constructor(private httpClient: HttpClient, private activitiesService: ActivitiesService, private activityDataService: ActivityDayDataService) {
+  constructor(private httpClient: HttpClient, private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private activityDataService: ActivityDayDataService) {
   }
 
   private _serverUrl: string = serverUrl;
@@ -184,7 +184,7 @@ export class TimelogService {
   private buildTimelogEntry(dataObject: any): TimelogEntry {
     let itleData: any[] = dataObject.itleActivities;
     let itleActivities: ITLEActivity[] = this.buildITLEActivities(itleData);
-    let timelogEntry = new TimelogEntry(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description, this.activitiesService);
+    let timelogEntry = new TimelogEntry(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description, this.activityCategoryDefinitionService);
     timelogEntry.setTleActivities(itleActivities);
     timelogEntry.description = dataObject.description;
     if (dataObject.timeISO) {
@@ -232,7 +232,7 @@ export class TimelogService {
   //     while(currentDate.isBefore(moment())){
   //       console.log("Building activity day data for date: "+ currentDate.format('YYYY-MM-DD'))
   //       sub.unsubscribe();
-  //       let data: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, currentDate.format("YYYY-MM-DD"), this.generateActivityData(currentDate), this.activitiesService )
+  //       let data: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, currentDate.format("YYYY-MM-DD"), this.generateActivityData(currentDate), this.activityCategoryDefinitionService )
   //       this.activityDataService.httpSaveActivityDayData(data);
   //       currentDate = moment(currentDate).add(1, "day");
   //     }

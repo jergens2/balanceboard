@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { UserDefinedActivity } from '../../activities/user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 
 export class ScheduleItem {
 
@@ -16,7 +16,7 @@ export class ScheduleItem {
     }
 
     name: string;
-    activity: UserDefinedActivity;
+    activity: ActivityCategoryDefinition;
 
     style: any;
 
