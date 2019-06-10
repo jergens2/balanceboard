@@ -8,7 +8,7 @@ import * as moment from 'moment';
 import { serverUrl } from '../../../serverurl';
 import { map } from 'rxjs/operators';
 import { ActivitiesService } from '../../../dashboard/activities/activities.service';
-import { ActivityDayData } from './activity-day-data.class';
+import { ActivityDayData, ActivityDayDataItem } from './activity-day-data.class';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication.interface';
 
 
@@ -50,17 +50,34 @@ export class ActivityDayDataService implements ServiceAuthenticates{
     return this._activityDayDatas$.asObservable();
   }
 
-
-  // public get todaysActivityDayData(): ActivityDayData {
-  //   return this._activityDayDatas$.getValue().find((taskList)=>{
-  //     return taskList.dateYYYYMMDD == moment().format('YYYY-MM-DD');
-  //   })
-  // }
+  httpUpdateActivityDayDataByDate(date:moment.Moment, activityData: ActivityDayDataItem[]){
+    let activityDayData: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, date.format("YYYY-MM-DD"), activityData, this.activitiesService);
+    let requestUrl: string = serverUrl + "/api/activity-day-data/update-by-date";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    this.httpClient.post<{message: string;data: any;}>(requestUrl, activityDayData.httpUpdate, httpOptions)
+      .pipe<ActivityDayData>(map((response) => {
+        return this.buildActivityDayDataFromResponse(response.data);
+      }))
+      .subscribe((updatedActivityDayData) => {
+        let allActivityDayData: ActivityDayData[] = this._activityDayDatas$.getValue();
+        let index: number = allActivityDayData.findIndex((activityDayData)=>{return activityDayData.dateYYYYMMDD == date.format('YYYY-MM-DD'); });
+        if(index >= 0){
+          allActivityDayData.splice(index, 1, updatedActivityDayData);
+        }
+        this._activityDayDatas$.next(allActivityDayData);
+      });
+    
+  }
 
 
 
   private httpGetActivityDayDataInRange(startDate: moment.Moment, endDate: moment.Moment) {
-    const getUrl = this.serverUrl + "/api/daily-task-list/" + this._authStatus.user.id + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
+    const getUrl = this.serverUrl + "/api/activity-day-data/" + this._authStatus.user.id + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -75,16 +92,13 @@ export class ActivityDayDataService implements ServiceAuthenticates{
       }))
       .subscribe((activityDayData: ActivityDayData[]) => {
         this._activityDayDatas$.next(activityDayData);
-        // if(!this.todaysActivityDayData){
-        //   this.httpSaveActivityDayData(this.recurringTaskService.generateActivityDayData(this._today));
-        // }
-        // this.updateSubscriptions();
         this._loginComplete$.next(true);
       });
 
   }
+
   httpSaveActivityDayData(activityDayDataToSave: ActivityDayData) {
-    let requestUrl: string = serverUrl + "/api/daily-task-list/create";
+    let requestUrl: string = serverUrl + "/api/activity-day-data/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -99,12 +113,10 @@ export class ActivityDayDataService implements ServiceAuthenticates{
         let activityDayData: ActivityDayData[] = this._activityDayDatas$.getValue();
         activityDayData.push(savedActivityDayData);
         this._activityDayDatas$.next(activityDayData);
-        // this.updateSubscriptions();
       });
   }
   httpUpdateActivityDayData(activityDayDataToUpdate: ActivityDayData) {
-    // console.log("Updating", activityDayDataToUpdate)
-    let requestUrl: string = serverUrl + "/api/daily-task-list/update";
+    let requestUrl: string = serverUrl + "/api/activity-day-data/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -119,11 +131,10 @@ export class ActivityDayDataService implements ServiceAuthenticates{
         let allActivityDayData: ActivityDayData[] = this._activityDayDatas$.getValue();
         allActivityDayData.splice(allActivityDayData.indexOf(activityDayDataToUpdate), 1, updatedActivityDayData);
         this._activityDayDatas$.next(allActivityDayData);
-        // this.updateSubscriptions();
       });
   }
   httpDeleteActivityDayData(activityDayDataToDelete: ActivityDayData) {
-    const deleteUrl = this.serverUrl + "/api/daily-task-list/delete";
+    const deleteUrl = this.serverUrl + "/api/activity-day-data/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -135,27 +146,13 @@ export class ActivityDayDataService implements ServiceAuthenticates{
         let allActivityDayData: ActivityDayData[] = this._activityDayDatas$.getValue();
         allActivityDayData.splice(allActivityDayData.indexOf(activityDayDataToDelete), 1);
         this._activityDayDatas$.next(allActivityDayData);
-        // this.updateSubscriptions();
       });
   }
 
   private buildActivityDayDataFromResponse(responseData: any): ActivityDayData{
-    return new ActivityDayData(responseData._id, responseData.userId, responseData.activityDataItems, responseData.dateYYYYMMDD, this.activitiesService);
+    return new ActivityDayData(responseData._id, responseData.userId, responseData.dateYYYYMMDD, responseData.activityDataItems, this.activitiesService);
   }
 
-
-
-  // private _updateSubscriptions: Subscription[] = [];
-  // private updateSubscriptions() {
-  //   this._updateSubscriptions.forEach((sub) => sub.unsubscribe());
-  //   this._updateSubscriptions = [];
-  //   this._activityDayDatas$.getValue().forEach((activityDayData: ActivityDayData) => {
-  //     this._updateSubscriptions.push(activityDayData.saveChanges$.subscribe(() => {
-  //       console.log("Save change request --> httpUpdate()")
-  //       this.httpUpdateActivityDayData(activityDayData);
-  //     }));
-  //   });
-  // }
 
 
 }

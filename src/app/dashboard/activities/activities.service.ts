@@ -42,38 +42,6 @@ export class ActivitiesService {
   */
   
   
-  // getActivityData(activity: UserDefinedActivity): Observable<TimelogEntry[]> {
-  //   /*
-  //     This method grabs activity data from the server to display over a period of time, 
-  //     e.g. over a six week view.
-  //   */
-  //   const getUrl = this._serverUrl + "/api/timelogEntry/activity_data/" + activity.treeId;
-  //   const httpOptions = {
-  //     headers: new HttpHeaders({
-  //       'Content-Type': 'application/json'
-  //       // 'Authorization': 'my-auth-token'  
-  //     })
-  //   };
-  //   return this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
-  //     .pipe<TimelogEntry[]>(
-  //       map((response) => {
-  //         return response.data.map((dataObject) => {
-  //           let timelogEntry = new TimelogEntry(dataObject._id, dataObject.userId, dataObject.startTimeISO, dataObject.endTimeISO, dataObject.description, this);
-  //           timelogEntry.activities = this.buildTimelogEntryActivities(dataObject.activities);
-  //           return timelogEntry;
-  //         })
-  //       })
-  //     );
-  // }
-
-  // private buildTimelogEntryActivities(activitiesData: Array<{ activityTreeId: string, duration: number, description: string }>): TimelogEntryActivity[] {
-  //   return activitiesData.map((activity) => {
-  //     let timelogEntryActivity: TimelogEntryActivity = new TimelogEntryActivity(this.findActivityByTreeId(activity.activityTreeId), activity.description);
-  //     return timelogEntryActivity;
-  //   })
-  // }
-
-
   findActivityByTreeId(treeId: string): UserDefinedActivity {
     /*
       2019-01-28

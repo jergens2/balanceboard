@@ -21,6 +21,7 @@ import { RecurringTasksService } from '../shared/document-definitions/recurring-
 import { TimeViewsService } from '../shared/time-views/time-views.service';
 import { DailyTaskListService } from '../shared/document-data/daily-task-list/daily-task-list.service';
 import { ServiceAuthentication } from './service-authentication.interface';
+import { ActivityDayDataService } from '../shared/document-data/activity-day-data/activity-day-data.service';
 
 
 @Injectable()
@@ -35,6 +36,7 @@ export class AuthenticationService {
   constructor(
     private http: HttpClient,
     private activitiesService: ActivitiesService,
+    private activityDayDataService: ActivityDayDataService,
     private timelogService: TimelogService,
     private userSettingsService: UserSettingsService,
     private dayTemplatesService: DayTemplatesService,
@@ -55,11 +57,14 @@ export class AuthenticationService {
 
   private _serviceAuthentications: ServiceAuthentication[] = [
     { name: "activities", subscription: new Subscription, isAuthenticated: false, },
+    { name: "timelog", subscription: new Subscription, isAuthenticated: false, },
+    { name: "activityDayData", subscription: new Subscription, isAuthenticated: false, },
+
     { name: "dayTemplates", subscription: new Subscription, isAuthenticated: false, },
     { name: "notebooks", subscription: new Subscription, isAuthenticated: false, },
     { name: "tasks", subscription: new Subscription, isAuthenticated: false, },
     { name: "recurringTaskDefinitions", subscription: new Subscription, isAuthenticated: false, },
-    { name: "timelog", subscription: new Subscription, isAuthenticated: false, },
+
     { name: "timeViews", subscription: new Subscription, isAuthenticated: false, },
     { name: "dailyTaskList", subscription: new Subscription, isAuthenticated: false, },
   ]
@@ -111,12 +116,9 @@ export class AuthenticationService {
       })
 
       this.userSettingsService.login(authStatus);
-
-
       this._serviceAuthentications.find((sub) => { return sub.name == "tasks" }).subscription = this.taskService.login$(authStatus).subscribe((loginComplete: boolean) => {
         this._serviceAuthentications.find((sub) => { return sub.name == "tasks" }).isAuthenticated = loginComplete;
       });
-
       this._serviceAuthentications.find((sub) => { return sub.name == "recurringTaskDefinitions" }).subscription = this.recurringTaskService.login$(authStatus).subscribe((loginComplete: boolean) => {
         if (loginComplete) {
           this._serviceAuthentications.find((sub) => { return sub.name == "recurringTaskDefinitions" }).isAuthenticated = loginComplete;
@@ -125,32 +127,31 @@ export class AuthenticationService {
           });
         }
       });
-
-
       this._serviceAuthentications.find((sub) => { return sub.name == "notebooks" }).subscription = this.notebooksService.login$(authStatus).subscribe((loginComplete: boolean) => {
         if (loginComplete != null) {
           this._serviceAuthentications.find((sub) => { return sub.name == "notebooks" }).isAuthenticated = loginComplete;
         }
       });
-
-
-
       this._serviceAuthentications.find((sub) => { return sub.name == "dayTemplates" }).subscription = this.dayTemplatesService.login$(authStatus).subscribe((loginComplete: boolean) => {
         this._serviceAuthentications.find((sub) => { return sub.name == "dayTemplates" }).isAuthenticated = loginComplete;
       });
 
       this._serviceAuthentications.find((sub) => { return sub.name == "timeViews" }).subscription = this.timeViewsService.login$().subscribe((loginComplete: boolean) => {
         this._serviceAuthentications.find((sub) => { return sub.name == "timeViews" }).isAuthenticated = loginComplete;
-      })
-
+      });
       this._serviceAuthentications.find((sub) => { return sub.name == "activities" }).subscription = this.activitiesService.login$(authStatus).subscribe((activitiesLoginComplete: boolean) => {
         if (activitiesLoginComplete) {
           this._serviceAuthentications.find((sub) => { return sub.name == "activities" }).isAuthenticated = activitiesLoginComplete;
-          this._serviceAuthentications.find((sub) => { return sub.name == "timelog" }).subscription = this.timelogService.login$(authStatus).subscribe((loginComplete: boolean) => {
-              this._serviceAuthentications.find((sub) => { return sub.name == "timelog" }).isAuthenticated = loginComplete;
+          this._serviceAuthentications.find((sub) => { return sub.name == "timelog" }).subscription = this.timelogService.login$(authStatus).subscribe((timelogLoginComplete: boolean) => {
+            this._serviceAuthentications.find((sub) => { return sub.name == "timelog" }).isAuthenticated = timelogLoginComplete;
+          });
+          this._serviceAuthentications.find((sub) => { return sub.name == "activityDayData" }).subscription = this.activityDayDataService.login$(authStatus).subscribe((activityDayDataLoginComplete: boolean) => {
+            this._serviceAuthentications.find((sub) => { return sub.name == "activityDayData" }).isAuthenticated = activityDayDataLoginComplete;
           });
         }
       });
+
+
 
       let allComplete: boolean = true;
       this._serviceAuthentications.forEach((serviceAuth) => {
@@ -167,18 +168,14 @@ export class AuthenticationService {
         this._serviceAuthentications.forEach((serviceAuth) => {
           if (serviceAuth.isAuthenticated == false) {
             allComplete = false
+            // console.log(this._serviceAuthentications)
           }
         });
-        console.log("this._serviceAuthentications", this._serviceAuthentications);
-
         if (allComplete) {
           this.completeLogin(authStatus);
           timerSubscription.unsubscribe();
         }
-      })
-
-
-
+      });
     } else {
       console.log("Cannot execute login routine because the authStatus.isAuthenticated == false");
       this.completeLogin(authStatus);

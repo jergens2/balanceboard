@@ -58,14 +58,8 @@ export class DayDataService {
         // 'Authorization': 'my-auth-token'  
       })
     };
-    this.httpClient.get<{
-      message: string;
-      data: any;
-    }>(getUrl, httpOptions)
-      .pipe<DayData[]>(map((response: {
-        message: string;
-        data: any[];
-      }) => {
+    this.httpClient.get<{message: string;data: any;}>(getUrl, httpOptions)
+      .pipe<DayData[]>(map((response: {message: string;data: any[];}) => {
         return response.data.map((data) => {
           return this.buildDayDataFromResponse(data);
         });
