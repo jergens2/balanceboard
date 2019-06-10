@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Observable, Subject, Subscription, timer } from 'rxjs';
+import { Observable, Subject, Subscription, timer, BehaviorSubject } from 'rxjs';
 import { TimelogEntry } from './timelog-entry.class';
 
 import * as moment from 'moment';
@@ -12,7 +12,8 @@ import { AuthStatus } from '../../../authentication/auth-status.model';
 
 import { ActivitiesService } from '../../../dashboard/activities/activities.service';
 import { ITLEActivity } from './timelog-entry-activity.interface';
-import { DayDataActivityDataItem } from '../day-data/data-properties/activity-data-item.class';
+import { ActivityDayDataService } from '../activity-day-data/activity-day-data.service';
+import { ActivityDayDataItem, ActivityDayData } from '../activity-day-data/activity-day-data.class';
 
 
 
@@ -22,21 +23,26 @@ import { DayDataActivityDataItem } from '../day-data/data-properties/activity-da
 export class TimelogService {
 
   private _authStatus: AuthStatus = null;
-  private _loginComplete$: Subject<boolean> = new Subject();
+  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
+
     this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'days'), moment().endOf('day').add(1, 'days'));
-
-
     this.subscribeToUpdates();
+
+    // this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'year'), moment().endOf('day').add(1, 'year'));
+
+
+
+
 
     return this._loginComplete$.asObservable();
   }
 
   logout() {
     this._authStatus = null;
-    this._timelogEntries = [];
-    this._timelogEntries$.next(this._timelogEntries);
+
+    this._timelogEntries$.next([]);
     this._timerSubscription.unsubscribe();
   }
 
@@ -44,23 +50,23 @@ export class TimelogService {
     return this._authStatus.user.id;
   }
 
-  constructor(private httpClient: HttpClient, private activitiesService: ActivitiesService) {
+  constructor(private httpClient: HttpClient, private activitiesService: ActivitiesService, private activityDataService: ActivityDayDataService) {
   }
 
   private _serverUrl: string = serverUrl;
 
-  private _timelogEntries: TimelogEntry[] = [];
-  private _timelogEntries$: Subject<TimelogEntry[]> = new Subject();
+
+  private _timelogEntries$: BehaviorSubject<TimelogEntry[]> = new BehaviorSubject([]);
   public get timelogEntries$(): Observable<TimelogEntry[]> {
     return this._timelogEntries$.asObservable();
   }
   public get timelogEntries(): TimelogEntry[] {
-    return this._timelogEntries;
+    return this._timelogEntries$.getValue();
   }
 
   public get mostRecentTimelogEntry(): TimelogEntry {
-    if (this._timelogEntries.length > 0) {
-      let timelogEntries = this._timelogEntries.sort((ts1, ts2) => {
+    if (this.timelogEntries.length > 0) {
+      let timelogEntries = this.timelogEntries.sort((ts1, ts2) => {
         if (ts1.startTime.isAfter(ts2.startTime)) {
           return -1;
         }
@@ -85,7 +91,6 @@ export class TimelogService {
 
 
   updateTimelogEntry(timelogEntry: TimelogEntry) {
-    console.log("Updating time entry: ", timelogEntry);
     const postUrl = this._serverUrl + "/api/timelogEntry/update";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -98,20 +103,18 @@ export class TimelogService {
         return this.buildTimelogEntry(response.data);
       }))
       .subscribe((returnedTimelogEntry: TimelogEntry) => {
-        let timelogEntries: TimelogEntry[] = this._timelogEntries;
+        let timelogEntries: TimelogEntry[] = this.timelogEntries;
         for (let timelogEntry of timelogEntries) {
           if (timelogEntry.id == returnedTimelogEntry.id) {
             timelogEntries.splice(timelogEntries.indexOf(timelogEntry), 1, returnedTimelogEntry)
           }
         }
-        this._timelogEntries = Object.assign([], timelogEntries);
-        this._timelogEntries$.next(this._timelogEntries);
-        this.updateDayData();
+        this._timelogEntries$.next(timelogEntries);
+        this.updateActivityData(returnedTimelogEntry);
       });
   }
 
   saveTimelogEntry(timelogEntry: TimelogEntry) {
-    console.log("Saving new timelogEntry", timelogEntry);
     const postUrl = this._serverUrl + "/api/timelogEntry/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -124,17 +127,14 @@ export class TimelogService {
         return this.buildTimelogEntry(response.data);
       }))
       .subscribe((timelogEntry: TimelogEntry) => {
-        console.log("saved time entry was ", timelogEntry);
-        let timelogEntries: TimelogEntry[] = this._timelogEntries;
+        let timelogEntries: TimelogEntry[] = this.timelogEntries;
         timelogEntries.push(timelogEntry);
-        this._timelogEntries = Object.assign([], timelogEntries);
-        this._timelogEntries$.next(this._timelogEntries);
-        this.updateDayData();
+        this._timelogEntries$.next(timelogEntries);
+        this.updateActivityData(timelogEntry);
       })
   }
 
   deleteTimelogEntry(timelogEntry: TimelogEntry) {
-    console.log("DELETING", timelogEntry);
     const postUrl = this._serverUrl + "/api/timelogEntry/delete";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -145,13 +145,10 @@ export class TimelogService {
 
     this.httpClient.post<{ message: string, data: any }>(postUrl, timelogEntry.httpDelete, httpOptions)
       .subscribe((response: any) => {
-        console.log("Response from server:", response);
-        let timelogEntries: TimelogEntry[] = this._timelogEntries;
+        let timelogEntries: TimelogEntry[] = this.timelogEntries;
         timelogEntries.splice(timelogEntries.indexOf(timelogEntry), 1);
-
-        this._timelogEntries = Object.assign([], timelogEntries);
         this._timelogEntries$.next(timelogEntries);
-        this.updateDayData();
+        this.updateActivityData(timelogEntry);
       })
 
   }
@@ -171,34 +168,12 @@ export class TimelogService {
         return this.buildTimelogEntries(response.data as any[]);
       }))
       .subscribe((timelogEntries: TimelogEntry[]) => {
-        this._timelogEntries = timelogEntries;
-        this._timelogEntries$.next(this._timelogEntries);
+        this._timelogEntries$.next(timelogEntries);
         this._loginComplete$.next(true);
       });
 
   }
 
-
-  private _generateActivityData$: Subject<DayDataActivityDataItem[]> = new Subject();
-  public generateActivityData$(date: moment.Moment): Observable<DayDataActivityDataItem[]>{
-    const getUrl = this._serverUrl + "/api/timelogEntry/" + this._authStatus.user.id + "/" + date.startOf("day").toISOString() + "/" + date.endOf("day").toISOString();
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'  
-      })
-    };
-    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe<TimelogEntry[]>(map((response) => {
-        return this.buildTimelogEntries(response.data as any[]);
-      }))
-      .subscribe((timelogEntries)=>{
-        console.log("wizzle wuzzle")
-        let activityDataItems: DayDataActivityDataItem[] = [];
-        this._generateActivityData$.next(activityDataItems);
-      });
-    return this._generateActivityData$.asObservable();
-  }
 
 
   private buildTimelogEntries(responseData: any[]): TimelogEntry[] {
@@ -213,12 +188,7 @@ export class TimelogService {
     timelogEntry.setTleActivities(itleActivities);
     timelogEntry.description = dataObject.description;
     if (dataObject.timeISO) {
-      /* 
-        2018-11-23
-        This check is here for previous versions of the timelogEntry where there used to be a property called timeISO.
-      */
-      console.log("this shit is old af and this method is disabled.")
-      // timelogEntry = new TimelogEntry(dataObject._id, dataObject.userId, dataObject.timeISO, dataObject.timeISO, dataObject.description);
+      console.log("this shit is old 2018-11-23 and this method is disabled.");
     }
     return timelogEntry;
   }
@@ -228,14 +198,14 @@ export class TimelogService {
     itleData.forEach((itleItem: any) => {
       if (itleItem.activityTreeId) {
         let durationMinutes: number = 0;
-        if(itleItem.durationMinutes){
+        if (itleItem.durationMinutes) {
           // console.log("This is a valid ITLEActivity item from the database");
           durationMinutes = itleItem.durationMinutes;
-        }else{
+        } else {
           // console.log("Has a tree ID, but no duration.");
         }
-        
-        if(durationMinutes == 0){
+
+        if (durationMinutes == 0) {
           // console.log("Duration minutes is 0. currently doing nothing about this.");
         }
         itleActivities.push({
@@ -243,20 +213,121 @@ export class TimelogService {
           durationMinutes: durationMinutes,
         })
       } else {
-        console.log("The ITLEActivity data from database is not valid / is an older type", itleItem);
+        // console.log("The ITLEActivity data from database is not valid / is an older type", itleItem);
       }
     });
     return itleActivities;
   }
 
+  // private superSpecialBuildActivityDataRoutine() {
+
+  //     console.log("Warning: super special routine")
+  //     // this.timelogEntries.forEach((tle)=>{
+  //     //   this.ZZupdateTimelogEntry(tle)
+  //     // })
+        
+  //     let startDate = moment("2018-12-17");
+  //     let currentDate = moment(startDate);
+  //     let sub = new Subscription;
+  //     while(currentDate.isBefore(moment())){
+  //       console.log("Building activity day data for date: "+ currentDate.format('YYYY-MM-DD'))
+  //       sub.unsubscribe();
+  //       let data: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, currentDate.format("YYYY-MM-DD"), this.generateActivityData(currentDate), this.activitiesService )
+  //       this.activityDataService.httpSaveActivityDayData(data);
+  //       currentDate = moment(currentDate).add(1, "day");
+  //     }
+
+  // }
 
 
-  private updateDayData() {
-    console.log("Warning.  This method is currently disabled.");
 
-    // To do:  every time we modify timelog entry, we should update the timelogEntryActivity data in the DayData object.
+  // private ZZupdateTimelogEntry(timelogEntry: TimelogEntry){
+  //   let duration = timelogEntry.durationMinutes;
+  //   let sum = 0;
+  //   timelogEntry.ITLEActivities.forEach((itlea)=>{
+  //     sum += itlea.durationMinutes;
+  //   })
+  //   if(sum < duration){
+  //     if(sum == 0){
+  //       let evenlyDivided = duration / timelogEntry.ITLEActivities.length;
+  //       timelogEntry.ITLEActivities.forEach((itlea)=>{
+  //         itlea.durationMinutes = evenlyDivided;
+  //       });
+  //       console.log("Updating timelog entry: ", timelogEntry.startTimeISO)
+  //       this.updateTimelogEntry(timelogEntry);
+  //     }
+  //     //   console.log("it was less than duration:", sum, duration)
+  //     // }
+      
+  //   }
+  // }
+
+
+  private updateActivityData(timelogEntry: TimelogEntry) {
+    if(timelogEntry.startTime.format('YYYY-MM-DD') == timelogEntry.endTime.format('YYYY-MM-DD')){
+      let activityData: ActivityDayDataItem[] = this.generateActivityData(timelogEntry.startTime);
+      this.activityDataService.httpUpdateActivityDayDataByDate(timelogEntry.startTime, activityData);
+    }else{
+      let startActivityData: ActivityDayDataItem[] = this.generateActivityData(timelogEntry.startTime);
+      this.activityDataService.httpUpdateActivityDayDataByDate(timelogEntry.startTime, startActivityData);
+      let endActivityData: ActivityDayDataItem[] = this.generateActivityData(timelogEntry.endTime);
+      this.activityDataService.httpUpdateActivityDayDataByDate(timelogEntry.endTime, endActivityData);
+    }
   }
+  private generateActivityData(date: moment.Moment): ActivityDayDataItem[] {
+    let timelogEntries: TimelogEntry[] = this.timelogEntries.filter((timelogEntry) => {
+      let crossesStart: boolean = (timelogEntry.startTime.isSameOrBefore(date.startOf("day")) && timelogEntry.endTime.isAfter(date.startOf("day")));
+      let isDuring: boolean = (timelogEntry.startTime.isSameOrAfter(date.startOf("day")) && timelogEntry.endTime.isSameOrBefore(date.endOf("day")));
+      let crossesEnd: boolean = (timelogEntry.startTime.isBefore(date.endOf("day")) && timelogEntry.endTime.isSameOrAfter(date.endOf("day")));
+      return (crossesStart || isDuring || crossesEnd);
+    });
+    console.log("  TimelogEntries for date " + date.format('YYYY-MM-DD'), timelogEntries);
+    let activityData: ActivityDayDataItem[] = [];
+    timelogEntries.forEach((timelogEntry: TimelogEntry) => {
+      let crossesStart: boolean = (timelogEntry.startTime.isSameOrBefore(date.startOf("day")) && timelogEntry.endTime.isAfter(date.startOf("day")));
+      // let isDuring: boolean = (timelogEntry.startTime.isSameOrAfter(date.startOf("day")) && timelogEntry.endTime.isSameOrBefore(date.endOf("day")));
+      let crossesEnd: boolean = (timelogEntry.startTime.isBefore(date.endOf("day")) && timelogEntry.endTime.isSameOrAfter(date.endOf("day")));
+      let totalMinutes:number = timelogEntry.endTime.diff(timelogEntry.startTime,"minutes");
+      let maxMinutes: number = totalMinutes;
+      if(crossesStart){
+        totalMinutes = timelogEntry.endTime.diff(date.startOf("day"),"minutes");
+      }
+      if(crossesEnd){
+        totalMinutes = date.endOf("day").diff(timelogEntry.startTime,"minutes");
+      }
 
+
+      timelogEntry.ITLEActivities.forEach((itleActivity: ITLEActivity) => {
+        let isInActivityData: boolean = false;
+        let itleMinutes:number = itleActivity.durationMinutes * (totalMinutes/maxMinutes);
+        activityData.forEach((activityItem: ActivityDayDataItem) => {
+          if (activityItem.activityTreeId == itleActivity.activityTreeId) {
+            isInActivityData = true;
+            activityItem.durationMinutes += itleMinutes;
+          }
+        });
+        if (!isInActivityData) {
+          activityData.push({
+            activityTreeId: itleActivity.activityTreeId,
+            durationMinutes: itleMinutes,
+          })
+        }
+      });
+
+
+      
+    });
+    activityData = activityData.sort((data1, data2)=>{
+      if(data1.durationMinutes > data2.durationMinutes){
+        return -1;
+      }
+      if(data1.durationMinutes < data2.durationMinutes){
+        return 1;
+      }
+      return 0;
+    });
+    return activityData;
+  }
 
 
 

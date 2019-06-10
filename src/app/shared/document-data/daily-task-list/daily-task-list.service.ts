@@ -25,11 +25,12 @@ export class DailyTaskListService {
   private _clockSubscription: Subscription = new Subscription();
   public login$(authStatus: AuthStatus): Observable<boolean>{
     this._today = moment();
-    let milliseconds: number = moment(this._today).endOf("day").diff(this._today, "milliseconds");
-    this._clockSubscription = timer(1, milliseconds).subscribe(()=>{
+    
+    this._clockSubscription = timer(1, 30000).subscribe(()=>{
       if(moment().format('YYYY-MM-DD') != moment(this._today).format('YYYY-MM-DD')){
         this._today = moment();
       }
+      this.httpGetDailyTaskListDataInRange(moment().subtract(1, "year"), moment().add(1, "year"));
     })
     this._authStatus = authStatus;
     this.httpGetDailyTaskListDataInRange(moment().subtract(1, "year"), moment().add(1, "year"));
