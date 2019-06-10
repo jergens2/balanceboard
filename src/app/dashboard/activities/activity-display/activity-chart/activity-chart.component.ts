@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Chart } from 'chart.js';
-import { UserDefinedActivity } from '../../user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 import * as moment from 'moment';
 
 @Component({
@@ -15,7 +15,7 @@ export class ActivityChartComponent implements OnInit {
   chart: Chart = null;
   date: moment.Moment = moment();
 
-  @Input() activity: UserDefinedActivity;
+  @Input() activity: ActivityCategoryDefinition;
 
   ngOnInit() {
 

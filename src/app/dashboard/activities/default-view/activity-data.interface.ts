@@ -1,6 +1,6 @@
 
 import * as moment from 'moment';
-import { UserDefinedActivity } from '../user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 
 export interface IActivityData {
     startTime: moment.Moment;
@@ -10,7 +10,7 @@ export interface IActivityData {
     minutes: number;
     hours: number;
     activities: {
-       activity: UserDefinedActivity,
+       activity: ActivityCategoryDefinition,
        durationMinutes: number 
     }[];
 }

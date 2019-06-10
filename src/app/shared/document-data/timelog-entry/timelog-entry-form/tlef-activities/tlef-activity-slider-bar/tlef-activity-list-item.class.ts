@@ -1,10 +1,10 @@
-import { UserDefinedActivity } from "../../../../../../dashboard/activities/user-defined-activity.model";
+import { ActivityCategoryDefinition } from "../../../../../document-definitions/activity-category-definition/activity-category-definition.class";
 import { ActivitySliderBar } from "./activity-slider-bar.class";
 import { Subject, Observable } from "rxjs";
 import { ITLEFActivitySliderBarItem } from "./activity-slider-bar-item.interface";
 
 export class TLEFActivityListItem {
-    activity: UserDefinedActivity;
+    activity: ActivityCategoryDefinition;
     mouseOver: boolean = false;
     durationMinutes: number;
     durationPercent: number;
@@ -36,7 +36,7 @@ export class TLEFActivityListItem {
         this.sliderBar.onClickBarItem(sliderBarItem);
     }
 
-    constructor(activity: UserDefinedActivity, durationMinutes: number, durationPercent: number, totalTimelogEntryMinutes:number, maxPercent: number) {
+    constructor(activity: ActivityCategoryDefinition, durationMinutes: number, durationPercent: number, totalTimelogEntryMinutes:number, maxPercent: number) {
         this.activity = activity;
         this.durationMinutes = durationMinutes;
         this.durationPercent = durationPercent;

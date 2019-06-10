@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IActivityData } from '../activity-data.interface';
 import * as moment from 'moment';
-import { ActivitiesService } from '../../activities.service';
+import { ActivityCategoryDefinitionService } from '../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 
 @Component({
   selector: 'app-day-of-week',

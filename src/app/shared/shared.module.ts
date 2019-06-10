@@ -1,5 +1,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+
 import { YearViewComponent } from './time-views/year-view/year-view.component';
 import { SixWeekViewComponent } from './time-views/six-week-view/six-week-view.component';
 import { TimeViewsComponent } from './time-views/time-views.component';
@@ -24,7 +26,7 @@ import { RecurringTaskFormComponent } from "./document-definitions/recurring-tas
 import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition/activity-category-definition-form.component";
 import { RtRepititionsComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/rt-repititions.component";
 import { DtlToolComponent } from './tools/tool-components/dtl-tool/dtl-tool.component';
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+
 
 
 

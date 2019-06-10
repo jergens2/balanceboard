@@ -7,7 +7,7 @@ import { AuthStatus } from '../../../authentication/auth-status.model';
 import * as moment from 'moment';
 import { serverUrl } from '../../../serverurl';
 import { map } from 'rxjs/operators';
-import { ActivitiesService } from '../../../dashboard/activities/activities.service';
+import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
 import { ActivityDayData, ActivityDayDataItem } from './activity-day-data.class';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication.interface';
 
@@ -19,7 +19,7 @@ export class ActivityDayDataService implements ServiceAuthenticates{
 
   private serverUrl = serverUrl;
 
-  constructor(private httpClient: HttpClient, private activitiesService: ActivitiesService) { }
+  constructor(private httpClient: HttpClient, private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
   private _authStatus: AuthStatus;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -51,7 +51,7 @@ export class ActivityDayDataService implements ServiceAuthenticates{
   }
 
   httpUpdateActivityDayDataByDate(date:moment.Moment, activityData: ActivityDayDataItem[]){
-    let activityDayData: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, date.format("YYYY-MM-DD"), activityData, this.activitiesService);
+    let activityDayData: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, date.format("YYYY-MM-DD"), activityData, this.activityCategoryDefinitionService);
     let requestUrl: string = serverUrl + "/api/activity-day-data/update-by-date";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -150,7 +150,7 @@ export class ActivityDayDataService implements ServiceAuthenticates{
   }
 
   private buildActivityDayDataFromResponse(responseData: any): ActivityDayData{
-    return new ActivityDayData(responseData._id, responseData.userId, responseData.dateYYYYMMDD, responseData.activityDataItems, this.activitiesService);
+    return new ActivityDayData(responseData._id, responseData.userId, responseData.dateYYYYMMDD, responseData.activityDataItems, this.activityCategoryDefinitionService);
   }
 
 

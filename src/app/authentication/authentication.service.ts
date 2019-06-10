@@ -7,7 +7,7 @@ import { AuthData } from './auth-data.model';
 import { AuthStatus } from './auth-status.model';
 import { serverUrl } from '../serverurl';
 import { UserSetting } from '../user-settings/user-setting.model';
-import { ActivitiesService } from '../dashboard/activities/activities.service';
+import { ActivityCategoryDefinitionService } from '../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { TimelogService } from '../shared/document-data/timelog-entry/timelog.service';
 import { ActivityTree } from '../dashboard/activities/activity-tree.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
@@ -35,7 +35,7 @@ export class AuthenticationService {
 
   constructor(
     private http: HttpClient,
-    private activitiesService: ActivitiesService,
+    private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
     private activityDayDataService: ActivityDayDataService,
     private timelogService: TimelogService,
     private userSettingsService: UserSettingsService,
@@ -139,7 +139,7 @@ export class AuthenticationService {
       this._serviceAuthentications.find((sub) => { return sub.name == "timeViews" }).subscription = this.timeViewsService.login$().subscribe((loginComplete: boolean) => {
         this._serviceAuthentications.find((sub) => { return sub.name == "timeViews" }).isAuthenticated = loginComplete;
       });
-      this._serviceAuthentications.find((sub) => { return sub.name == "activities" }).subscription = this.activitiesService.login$(authStatus).subscribe((activitiesLoginComplete: boolean) => {
+      this._serviceAuthentications.find((sub) => { return sub.name == "activities" }).subscription = this.activityCategoryDefinitionService.login$(authStatus).subscribe((activitiesLoginComplete: boolean) => {
         if (activitiesLoginComplete) {
           this._serviceAuthentications.find((sub) => { return sub.name == "activities" }).isAuthenticated = activitiesLoginComplete;
           this._serviceAuthentications.find((sub) => { return sub.name == "timelog" }).subscription = this.timelogService.login$(authStatus).subscribe((timelogLoginComplete: boolean) => {
@@ -248,7 +248,7 @@ export class AuthenticationService {
     })
 
     this.timelogService.logout();
-    this.activitiesService.logout();
+    this.activityCategoryDefinitionService.logout();
     this.userSettingsService.logout();
     this.dayTemplatesService.logout();
     this.dayDataService.logout();

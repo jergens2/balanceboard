@@ -1,7 +1,7 @@
-import { UserDefinedActivity } from "./user-defined-activity.model";
+import { ActivityCategoryDefinition } from "../../shared/document-definitions/activity-category-definition/activity-category-definition.class";
 
 export interface IActivityTile {
-    activity: UserDefinedActivity,
+    activity: ActivityCategoryDefinition,
     ifShowActivityDelete: boolean,
     ifShowActivityModify: boolean,
 }

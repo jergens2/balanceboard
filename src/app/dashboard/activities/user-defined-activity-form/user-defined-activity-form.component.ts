@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { UserDefinedActivity } from '../user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivitiesService } from '../activities.service';
+import { ActivityCategoryDefinitionService } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { ActivityTree } from '../activity-tree.model';
 import { faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
@@ -14,7 +14,7 @@ import { ModalComponentType } from '../../../modal/modal-component-type.enum';
   templateUrl: './user-defined-activity-form.component.html',
   styleUrls: ['./user-defined-activity-form.component.css']
 })
-export class UserDefinedActivityFormComponent implements OnInit {
+export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
 
   faCheckCircle = faCheckCircle;
@@ -22,12 +22,12 @@ export class UserDefinedActivityFormComponent implements OnInit {
 
   ifTopLevelActivity: boolean = true;
 
-  private _activity: UserDefinedActivity = null;
+  private _activity: ActivityCategoryDefinition = null;
   private _action: string = "new";
 
-  parentActivity: UserDefinedActivity = null;
+  parentActivity: ActivityCategoryDefinition = null;
 
-  @Input() public set activity(activity: UserDefinedActivity) {
+  @Input() public set activity(activity: ActivityCategoryDefinition) {
     this._activity = activity;
     this._action = "edit";
     let topLevelActivityString = activity.userId + "_TOP_LEVEL";
@@ -36,12 +36,12 @@ export class UserDefinedActivityFormComponent implements OnInit {
       this.parentActivity = null;
     } else {
       this.ifTopLevelActivity = false;
-      this.parentActivity = this.activitiesService.findActivityByTreeId(activity.parentTreeId);
+      this.parentActivity = this.activityCategoryDefinitionService.findActivityByTreeId(activity.parentTreeId);
     }
 
     this.colorPickerValue = activity.color;
   }
-  public get activity(): UserDefinedActivity {
+  public get activity(): ActivityCategoryDefinition {
     return this._activity;
   }
 
@@ -55,7 +55,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
 
   @Output() formClosed: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private activitiesService: ActivitiesService, private modalService: ModalService) { }
+  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private modalService: ModalService) { }
 
   activityForm: FormGroup = null;
   private activityTree: ActivityTree = null;
@@ -64,7 +64,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
 
 
   ngOnInit() {
-    this.activityTree = this.activitiesService.activitiesTree;
+    this.activityTree = this.activityCategoryDefinitionService.activitiesTree;
     if (this._action == "new") {
       this.activityForm = new FormGroup({
         'name': new FormControl(null, Validators.required),
@@ -77,7 +77,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
 
       let parentActivityId: string = "";
       if(this.ifTopLevelActivity){
-        parentActivityId = this.activitiesService.userId + "_TOP_LEVEL";
+        parentActivityId = this.activityCategoryDefinitionService.userId + "_TOP_LEVEL";
       }else{
         parentActivityId = this.parentActivity.treeId;
       }
@@ -93,7 +93,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
   }
 
 
-  onActivityInputDropdownValueChanged(activity: UserDefinedActivity) {
+  onActivityInputDropdownValueChanged(activity: ActivityCategoryDefinition) {
     this.parentActivity = activity;
   }
 
@@ -122,7 +122,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
 
     let parentActivityId: string;
     if (this.ifTopLevelActivity) {
-      parentActivityId = this.activitiesService.userId + "_TOP_LEVEL";
+      parentActivityId = this.activityCategoryDefinitionService.userId + "_TOP_LEVEL";
       this.activityForm.patchValue({ 'parent': parentActivityId });
     } else {
       if (this.parentActivity != null) {
@@ -138,8 +138,8 @@ export class UserDefinedActivityFormComponent implements OnInit {
         console.log("saving new activity");
 
 
-        let saveNewActivity: UserDefinedActivity = new UserDefinedActivity('', '', '', this.activityForm.controls['name'].value, this.activityForm.controls['description'].value, parentActivityId, this.activityForm.controls['color'].value);
-        this.activitiesService.saveActivity(saveNewActivity);
+        let saveNewActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition('', '', '', this.activityForm.controls['name'].value, this.activityForm.controls['description'].value, parentActivityId, this.activityForm.controls['color'].value);
+        this.activityCategoryDefinitionService.saveActivity(saveNewActivity);
         this.formClosed.emit("SAVE_NEW");
       } else {
         console.log("Is parentActivityID null ? ", parentActivityId);
@@ -150,12 +150,12 @@ export class UserDefinedActivityFormComponent implements OnInit {
     else if(this._action == "edit"){
       if (this.activityForm.valid) {
 
-        let modifyActivity: UserDefinedActivity = Object.assign({}, this.activity);
+        let modifyActivity: ActivityCategoryDefinition = Object.assign({}, this.activity);
         modifyActivity.name =  this.activityForm.controls['name'].value;
         modifyActivity.description = this.activityForm.controls['description'].value;
         modifyActivity.parentTreeId = parentActivityId;
         modifyActivity.color =  this.activityForm.controls['color'].value;
-        this.activitiesService.updateActivity(modifyActivity);
+        this.activityCategoryDefinitionService.updateActivity(modifyActivity);
         this.formClosed.emit("SAVE_EDIT");
       } else {
         console.log("Error : Form is invalid.")
@@ -180,7 +180,7 @@ export class UserDefinedActivityFormComponent implements OnInit {
     let modal: Modal = new Modal("Delect Activity", "Confirm: Delete Activity?", null, modalOptions, {}, ModalComponentType.Default);
     let modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
       if(selectedOption.value == "Yes"){
-        this.activitiesService.deleteActivity(this.activity);
+        this.activityCategoryDefinitionService.deleteActivity(this.activity);
         this.formClosed.emit("DELETE");
       }else if(selectedOption.value == "No"){
 

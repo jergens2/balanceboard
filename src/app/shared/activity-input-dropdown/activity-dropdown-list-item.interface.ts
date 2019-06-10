@@ -1,9 +1,9 @@
-import { UserDefinedActivity } from "../../dashboard/activities/user-defined-activity.model";
+import { ActivityCategoryDefinition } from "../document-definitions/activity-category-definition/activity-category-definition.class";
 
 
 export interface IActivityDropdownListItem{
 
-    activity: UserDefinedActivity;
+    activity: ActivityCategoryDefinition;
     isExpanded: boolean;
     generationNumber: number;
     children: IActivityDropdownListItem[];

@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { timer, Subscription } from 'rxjs';
 import { ModalService } from '../../../../modal/modal.service';
 import { ToolsService } from '../../../tools/tools.service';
-import { UserDefinedActivity } from '../../../../dashboard/activities/user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../document-definitions/activity-category-definition/activity-category-definition.class';
 
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { TimelogEntryActivity } from '../timelog-entry-activity.class';
@@ -15,7 +15,7 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivitySliderBar } from './tlef-activities/tlef-activity-slider-bar/activity-slider-bar.class';
 import { TLEFActivityListItem } from './tlef-activities/tlef-activity-slider-bar/tlef-activity-list-item.class';
 import { isUndefined } from 'util';
-import { ActivitiesService } from '../../../../dashboard/activities/activities.service';
+import { ActivityCategoryDefinitionService } from '../../../document-definitions/activity-category-definition/activity-category-definition.service';
 import { ITLEActivity } from '../timelog-entry-activity.interface';
 
 @Component({
@@ -28,7 +28,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   faEdit = faEdit;
 
-  constructor(private timelogService: TimelogService, private toolsService: ToolsService, private modalService: ModalService, private activitiesService: ActivitiesService) { }
+  constructor(private timelogService: TimelogService, private toolsService: ToolsService, private modalService: ModalService, private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
   mostRecentTimelogEntry: TimelogEntry;
   currentTimelogEntry: TimelogEntry;
@@ -113,7 +113,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       let startTime: string = this.timelogEntryStart.second(0).millisecond(0).toISOString();
       let endTime: string = this.timelogEntryEnd.second(0).millisecond(0).toISOString();
       let description: string = this.timelogEntryForm.controls['description'].value;
-      let newTimelogEntry: TimelogEntry = new TimelogEntry("", this.timelogService.userId, startTime, endTime, description, this.activitiesService);
+      let newTimelogEntry: TimelogEntry = new TimelogEntry("", this.timelogService.userId, startTime, endTime, description, this.activityCategoryDefinitionService);
       this.updateITLEActivities();
       newTimelogEntry.setTleActivities(this.itleActivities);
   

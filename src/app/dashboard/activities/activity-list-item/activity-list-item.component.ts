@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { faTimes, faCog } from '@fortawesome/free-solid-svg-icons';
-import { UserDefinedActivity } from '../user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 import { IActivityTile } from '../activity-tile.interface';
 
 @Component({
@@ -17,23 +17,23 @@ export class ActivityListItemComponent implements OnInit {
 
   activityTile: IActivityTile = null;
 
-  @Input() set activity(activity: UserDefinedActivity){
+  @Input() set activity(activity: ActivityCategoryDefinition){
     this.activityTile = {activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false};
   };
 
 
-  @Output() activitySelected: EventEmitter<UserDefinedActivity> = new EventEmitter<UserDefinedActivity>();
+  @Output() activitySelected: EventEmitter<ActivityCategoryDefinition> = new EventEmitter<ActivityCategoryDefinition>();
 
   ngOnInit() {
 
   }
 
 
-  onActivitySelected(activity:UserDefinedActivity){
+  onActivitySelected(activity:ActivityCategoryDefinition){
     this.activitySelected.emit(activity);
   }
 
-  onClickActivity(activity: UserDefinedActivity){
+  onClickActivity(activity: ActivityCategoryDefinition){
     this.activitySelected.emit(activity);
   }
 

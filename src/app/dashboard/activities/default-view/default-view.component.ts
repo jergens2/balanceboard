@@ -6,7 +6,7 @@ import { TimelogEntry } from '../../../shared/document-data/timelog-entry/timelo
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { IActivityData } from './activity-data.interface';
 import { TimelogEntryActivity } from '../../../shared/document-data/timelog-entry/timelog-entry-activity.class';
-import { UserDefinedActivity } from '../user-defined-activity.model';
+import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 
 @Component({
   selector: 'app-activities-default-view',
@@ -55,7 +55,7 @@ export class ActivitiesDefaultViewComponent implements OnInit {
   private extractActivityData(startTime: moment.Moment, endTime: moment.Moment, timelogEntrys: TimelogEntry[]): IActivityData {
     return null;
     // let activities: {
-    //   activity: UserDefinedActivity,
+    //   activity: ActivityCategoryDefinition,
     //   durationMinutes: number
     // }[] = [];
 
@@ -78,7 +78,7 @@ export class ActivitiesDefaultViewComponent implements OnInit {
     //       let alreadyExists: boolean = false;
     //       timelogEntry.activities.forEach((tsActivity: TimelogEntryActivity) => {
     //         activities.forEach((activity: {
-    //           activity: UserDefinedActivity,
+    //           activity: ActivityCategoryDefinition,
     //           durationMinutes: number
     //         }) => {
 

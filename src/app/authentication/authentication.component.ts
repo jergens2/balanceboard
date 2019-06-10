@@ -7,7 +7,7 @@ import { faKey, faUser, faUnlock, faSpinner } from '@fortawesome/free-solid-svg-
 import { User } from './user.model';
 import { UserSetting } from '../user-settings/user-setting.model';
 import { UserSettingsService } from '../user-settings/user-settings.service';
-import { ActivitiesService } from '../dashboard/activities/activities.service';
+import { ActivityCategoryDefinitionService } from '../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { TimelogService } from '../shared/document-data/timelog-entry/timelog.service';
 
 

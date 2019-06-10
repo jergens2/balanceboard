@@ -3,8 +3,8 @@ import { IActivityInstance } from '../activity-instance.interface';
 import { ISixWeekDayTile } from './six-week-day-tile.interface';
 
 import * as moment from 'moment';
-import { ActivitiesService } from '../../activities.service';
-import { UserDefinedActivity } from '../../user-defined-activity.model';
+import { ActivityCategoryDefinitionService } from '../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinition } from '../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,7 +16,7 @@ export class ActivitySixWeekViewComponent implements OnInit {
 
 
   private _activityInstances: IActivityInstance[];
-  private _activity: UserDefinedActivity = null;
+  private _activity: ActivityCategoryDefinition = null;
   tiles: ISixWeekDayTile[] = [];
   weeksOf: string[] = [];
   weekSums: string[] = [];
@@ -24,11 +24,11 @@ export class ActivitySixWeekViewComponent implements OnInit {
   @Input() set activityInstances(activityInstances: IActivityInstance[]) {
     this._activityInstances = activityInstances;
   }
-  @Input() set activity(activity: UserDefinedActivity) {
+  @Input() set activity(activity: ActivityCategoryDefinition) {
     this._activity = activity;
   }
 
-  constructor(private activitiesService: ActivitiesService, private router: Router) { }
+  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private router: Router) { }
 
   ngOnInit() {
 

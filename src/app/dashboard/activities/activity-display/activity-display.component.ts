@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { UserDefinedActivity } from '../user-defined-activity.model';
-import { ActivitiesService } from '../activities.service';
+import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinitionService } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { Subscription } from 'rxjs';
 import { IActivityInstance } from './activity-instance.interface';
 import * as moment from 'moment';
@@ -19,14 +19,14 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   faSpinner = faSpinner;
   faEdit = faEdit;
 
-  constructor(private activitiesService: ActivitiesService) { }
+  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
   ifLoading: boolean = true;
 
   activityInstances: IActivityInstance[] = [];
   activityTimelogEntrys: TimelogEntry[] = [];
 
-  activity: UserDefinedActivity = null;
+  activity: ActivityCategoryDefinition = null;
 
   private activityDataSubscription: Subscription = new Subscription();
 
@@ -34,7 +34,7 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
 
   @Output() displayClosed: EventEmitter<boolean> = new EventEmitter();
 
-  @Input() set selectedActivity(activity: UserDefinedActivity) {
+  @Input() set selectedActivity(activity: ActivityCategoryDefinition) {
     this.action = "view";
     this.activity = activity;
     // this.getActivityData();
@@ -42,7 +42,7 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.action = "view";
     console.log("this method is neutered, due to refactor of tleActivity refactor");
-    this.activitiesService.activitiesTree$.subscribe((newTree: ActivityTree) => {
+    this.activityCategoryDefinitionService.activitiesTree$.subscribe((newTree: ActivityTree) => {
       let foundActivity = newTree.findActivityByTreeId(this.activity.treeId);
       this.activity = Object.assign({}, foundActivity);
       // this.getActivityData();
@@ -55,7 +55,7 @@ export class ActivityDisplayComponent implements OnInit, OnDestroy {
   //   this.ifLoading = true;
   //   this.activityInstances = [];
   //   this.activityDataSubscription.unsubscribe();
-  //   this.activityDataSubscription = this.activitiesService.getActivityData(this.activity).subscribe((timelogEntrys: TimelogEntry[]) => {
+  //   this.activityDataSubscription = this.activityCategoryDefinitionService.getActivityData(this.activity).subscribe((timelogEntrys: TimelogEntry[]) => {
   //     let activityInstances: IActivityInstance[] = [];
   //     for (let timelogEntry of timelogEntrys) {
 

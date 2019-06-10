@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivitiesService } from './activities.service';
-import { UserDefinedActivity } from './user-defined-activity.model';
+import { ActivityCategoryDefinitionService } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinition } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 import { IActivityTile } from './activity-tile.interface';
 import { ActivityTree } from './activity-tree.model';
 import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
@@ -17,13 +17,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class ActivitiesComponent implements OnInit, OnDestroy {
 
-  constructor(private activitiesService: ActivitiesService, private headerService: HeaderService, private route:ActivatedRoute, private router: Router) { }
+  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private headerService: HeaderService, private route:ActivatedRoute, private router: Router) { }
 
 
 
   action: string = "default";
 
-  displayedActivity: UserDefinedActivity = null;
+  displayedActivity: ActivityCategoryDefinition = null;
 
   // rootActivityTiles: IActivityTile[] = [];
   activitiesTree: ActivityTree = null;
@@ -32,8 +32,8 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   private menuItemSubscriptions: Subscription[] = [];
 
   ngOnInit() {
-    this.activitiesTree = this.activitiesService.activitiesTree;
-    this.treeSubscription = this.activitiesService.activitiesTree$.subscribe((newTree)=>{
+    this.activitiesTree = this.activityCategoryDefinitionService.activitiesTree;
+    this.treeSubscription = this.activityCategoryDefinitionService.activitiesTree$.subscribe((newTree)=>{
       this.activitiesTree = newTree;
     });
     this.buildHeaderMenu();
@@ -95,7 +95,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
     this.action = "default";
   }
 
-  onActivitySelected(activity: UserDefinedActivity) {
+  onActivitySelected(activity: ActivityCategoryDefinition) {
 
     if(this.activitiesTree.activityNameIsUnique(activity)){
       this.router.navigate(['/activities/'+activity.name]);

@@ -3,7 +3,7 @@ import * as moment from 'moment';
 
 
 import { Subject, Observable } from 'rxjs';
-import { ActivitiesService } from '../../../dashboard/activities/activities.service';
+import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
 
 export interface ActivityDayDataItem{
     activityTreeId: string,
@@ -47,15 +47,15 @@ export class ActivityDayData {
 
     dateYYYYMMDD: string;
 
-    private _activitiesService: ActivitiesService;
-    constructor(id: string, userId: string, dateYYYYMMDD: string, activityItems: ActivityDayDataItem[], activitiesService: ActivitiesService) {
+    private _activityCategoryDefinitionService: ActivityCategoryDefinitionService;
+    constructor(id: string, userId: string, dateYYYYMMDD: string, activityItems: ActivityDayDataItem[], activityCategoryDefinitionService: ActivityCategoryDefinitionService) {
         this.id = id;
         this.userId = userId;
         this._date = moment(dateYYYYMMDD).hour(0).minute(0).second(0).millisecond(0);
         this.dateYYYYMMDD = dateYYYYMMDD;
         this.activityItems = activityItems;
 
-        this._activitiesService = activitiesService;
+        this._activityCategoryDefinitionService = activityCategoryDefinitionService;
     }
 
 

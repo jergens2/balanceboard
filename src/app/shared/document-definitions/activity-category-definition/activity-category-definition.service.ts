@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { UserDefinedActivity } from './user-defined-activity.model';
+import { ActivityCategoryDefinition } from './activity-category-definition.class';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { defaultActivities } from './default-activities';
-import { serverUrl } from '../../serverurl';
+import { defaultActivities } from './default-activity-category-definitions';
+import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
-import { ActivityTree } from './activity-tree.model';
+import { ActivityTree } from '../../../dashboard/activities/activity-tree.model';
 @Injectable({
   providedIn: 'root'
 })
-export class ActivitiesService {
+export class ActivityCategoryDefinitionService {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -34,7 +34,7 @@ export class ActivitiesService {
   }
 
   /*
-  private mergeAndDestroyThisActivity(destroyActivity: UserDefinedActivity, mergeToActivity: UserDefinedActivity){
+  private mergeAndDestroyThisActivity(destroyActivity: ActivityCategoryDefinition, mergeToActivity: ActivityCategoryDefinition){
     //todo: implement
   } 
   
@@ -42,7 +42,7 @@ export class ActivitiesService {
   */
   
   
-  findActivityByTreeId(treeId: string): UserDefinedActivity {
+  findActivityByTreeId(treeId: string): ActivityCategoryDefinition {
     /*
       2019-01-28
       Warning: 
@@ -83,7 +83,7 @@ export class ActivitiesService {
 
 
   private fetchActivities() {
-    const getUrl = this._serverUrl + "/api/activity/get/" + this._authStatus.user.id;
+    const getUrl = this._serverUrl + "/api/activity-category-definition/get/" + this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -95,8 +95,8 @@ export class ActivitiesService {
         // console.log("response is ", response);
         let responseData = response.data;
         if (responseData.length > 0) {
-          let allActivities: UserDefinedActivity[] = response.data.map((dataObject) => {
-            let newActivity: UserDefinedActivity = new UserDefinedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
+          let allActivities: ActivityCategoryDefinition[] = response.data.map((dataObject) => {
+            let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
             return newActivity
           });
           this._activitiesTree = new ActivityTree(allActivities);
@@ -110,15 +110,15 @@ export class ActivitiesService {
       });
   }
 
-  saveDefaultActivities(defaultActivities: UserDefinedActivity[]) {
+  saveDefaultActivities(defaultActivities: ActivityCategoryDefinition[]) {
     let userDefaultActivities = defaultActivities.map((activity) => {
       let newTreeId = this._authStatus.user.id + "_" + activity.treeId;
       let newParentTreeId = this._authStatus.user.id + "_" + activity.parentTreeId.replace(" ", "_");
 
-      return new UserDefinedActivity(activity.id, this._authStatus.user.id, newTreeId, activity.name, activity.description, newParentTreeId, activity.color);
+      return new ActivityCategoryDefinition(activity.id, this._authStatus.user.id, newTreeId, activity.name, activity.description, newParentTreeId, activity.color);
     })
 
-    const postUrl = this._serverUrl + "/api/activity/createDefault";
+    const postUrl = this._serverUrl + "/api/activity-category-definition/createDefault";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -128,17 +128,17 @@ export class ActivitiesService {
     this.httpClient.post<{ message: string, data: any }>(postUrl, userDefaultActivities, httpOptions)
       .pipe(map((response) => {
         return response.data.map((dataObject) => {
-          let newActivity: UserDefinedActivity = new UserDefinedActivity(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
+          let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
           return newActivity
         })
       }))
-      .subscribe((allActivities: UserDefinedActivity[]) => {
+      .subscribe((allActivities: ActivityCategoryDefinition[]) => {
         this._activitiesTree = new ActivityTree(allActivities);
         this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  saveActivity(activity: UserDefinedActivity) {
+  saveActivity(activity: ActivityCategoryDefinition) {
     let newActivity = activity;
     newActivity.userId = this._authStatus.user.id;
 
@@ -147,7 +147,7 @@ export class ActivitiesService {
     */
     newActivity.treeId = this._authStatus.user.id + "_" + activity.name.replace(" ", "_");
 
-    const postUrl = this._serverUrl + "/api/activity/create";
+    const postUrl = this._serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -156,19 +156,19 @@ export class ActivitiesService {
     };
 
     this.httpClient.post<{ message: string, data: any }>(postUrl, activity, httpOptions)
-      .pipe<UserDefinedActivity>(map((response) => {
+      .pipe<ActivityCategoryDefinition>(map((response) => {
         let data = response.data;
-        let activity = new UserDefinedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
+        let activity = new ActivityCategoryDefinition(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
         return activity;
       }))
-      .subscribe((activity: UserDefinedActivity) => {
+      .subscribe((activity: ActivityCategoryDefinition) => {
         this._activitiesTree.addActivityToTree(activity);
         this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  updateActivity(unsentActivity: UserDefinedActivity) {
-    const updateUrl = this._serverUrl + "/api/activity/update";
+  updateActivity(unsentActivity: ActivityCategoryDefinition) {
+    const updateUrl = this._serverUrl + "/api/activity-category-definition/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -176,20 +176,20 @@ export class ActivitiesService {
       })
     };
     this.httpClient.post(updateUrl, unsentActivity, httpOptions)
-      .pipe<UserDefinedActivity>(map((response: { message: string, data: any }) => {
+      .pipe<ActivityCategoryDefinition>(map((response: { message: string, data: any }) => {
         let data = response.data;
-        let updatedActivity = new UserDefinedActivity(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
+        let updatedActivity = new ActivityCategoryDefinition(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
         return updatedActivity;
       }))
-      .subscribe((updatedActivity: UserDefinedActivity) => {
+      .subscribe((updatedActivity: ActivityCategoryDefinition) => {
         this._activitiesTree.pruneActivityFromTree(unsentActivity);
         this._activitiesTree.addActivityToTree(updatedActivity);
         this._activitiesTree$.next(this._activitiesTree);
       })
   }
 
-  deleteActivity(activity: UserDefinedActivity) {
-    const deleteUrl = this._serverUrl + "/api/activity/delete";
+  deleteActivity(activity: ActivityCategoryDefinition) {
+    const deleteUrl = this._serverUrl + "/api/activity-category-definition/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

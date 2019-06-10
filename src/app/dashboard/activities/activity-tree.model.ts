@@ -1,4 +1,4 @@
-import { UserDefinedActivity } from "./user-defined-activity.model";
+import { ActivityCategoryDefinition } from "../../shared/document-definitions/activity-category-definition/activity-category-definition.class";
 
 export class ActivityTree {
     /*
@@ -6,31 +6,31 @@ export class ActivityTree {
     */
 
 
-    private _rootActivities: UserDefinedActivity[];
+    private _rootActivities: ActivityCategoryDefinition[];
 
-    get rootActivities(): UserDefinedActivity[] {
+    get rootActivities(): ActivityCategoryDefinition[] {
         return this._rootActivities;
     }
 
-    private _allActivities: UserDefinedActivity[];
+    private _allActivities: ActivityCategoryDefinition[];
 
-    get allActivities(): UserDefinedActivity[] {
+    get allActivities(): ActivityCategoryDefinition[] {
         return this._allActivities;
     }
 
-    constructor(allActivities: UserDefinedActivity[]) {
+    constructor(allActivities: ActivityCategoryDefinition[]) {
         this._allActivities = allActivities;
         this._rootActivities = this.buildActivityTree(allActivities);
     }
 
-    private buildActivityTree(allActivities: UserDefinedActivity[]): UserDefinedActivity[] {
+    private buildActivityTree(allActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition[] {
         /*
             Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
         */
         for(let activity of allActivities){
             activity.removeChildren();
         }
-        let rootActivities: UserDefinedActivity[] = [];
+        let rootActivities: ActivityCategoryDefinition[] = [];
 
         for (let activity of allActivities) {
             if (activity.parentTreeId.endsWith("TOP_LEVEL")) {
@@ -55,7 +55,7 @@ export class ActivityTree {
         return rootActivities;
     }
 
-    findActivityByTreeId(treeId: string): UserDefinedActivity{
+    findActivityByTreeId(treeId: string): ActivityCategoryDefinition{
         
         for(let activity of this._allActivities){
             // console.log(activity);
@@ -68,7 +68,7 @@ export class ActivityTree {
         return null;
     }
 
-    findActivityByIdentifier(identifier: string): UserDefinedActivity{
+    findActivityByIdentifier(identifier: string): ActivityCategoryDefinition{
         for(let activity of this._allActivities){
             if(activity.treeId == identifier){
                 return activity;
@@ -86,7 +86,7 @@ export class ActivityTree {
         }
     }
 
-    activityNameIsUnique(checkActivity:UserDefinedActivity):boolean {
+    activityNameIsUnique(checkActivity:ActivityCategoryDefinition):boolean {
         let namesCount: number = 0;
         for(let activity of this._allActivities){
             if(activity.name == checkActivity.name){
@@ -103,7 +103,7 @@ export class ActivityTree {
         }
     }
 
-    findChildActivities(activityNode: UserDefinedActivity, allActivities: UserDefinedActivity[]): UserDefinedActivity {
+    findChildActivities(activityNode: ActivityCategoryDefinition, allActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition {
         for (let activity of allActivities) {
             if (activity.parentTreeId == activityNode.treeId) {
                 activityNode.addChild(activity);
@@ -124,12 +124,12 @@ export class ActivityTree {
         return activityNode;
     }
 
-    addActivityToTree(activity: UserDefinedActivity) {
+    addActivityToTree(activity: ActivityCategoryDefinition) {
         this._allActivities.push(activity);
         this._rootActivities = this.buildActivityTree(this.allActivities);
     }
 
-    pruneActivityFromTree(activityRemove: UserDefinedActivity) {
+    pruneActivityFromTree(activityRemove: ActivityCategoryDefinition) {
         /*
             2018-12-13
             Warning: this method works but there is a flaw:  when you click delete on an activity that has children, only the clicked activity is deleted, and not its children

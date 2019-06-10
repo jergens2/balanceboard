@@ -24,7 +24,7 @@ import { ActivityYearViewComponent } from './activities/activity-display/activit
 import { MonthPlannerComponent } from './month-planner/month-planner.component';
 
 import { ActivitySixWeekViewComponent } from './activities/activity-display/activity-six-week-view/activity-six-week-view.component';
-import { UserDefinedActivityFormComponent } from './activities/user-defined-activity-form/user-defined-activity-form.component';
+import { ActivityCategoryDefinitionFormComponent } from './activities/user-defined-activity-form/user-defined-activity-form.component';
 
 import { ActivitiesDefaultViewComponent } from './activities/default-view/default-view.component';
 
@@ -105,7 +105,7 @@ import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule
     ActivityYearViewComponent,
     MonthPlannerComponent,
     ActivitySixWeekViewComponent,
-    UserDefinedActivityFormComponent,
+    ActivityCategoryDefinitionFormComponent,
 
     ActivitiesDefaultViewComponent,
 
