@@ -3,4 +3,36 @@
   <div style="border:1px solid gray; border-radius:10px; padding:5px;">
     Your social ID:  <span style="color:rgb(0, 90, 75);font-size:2em;">{{ socialId }}</span>
   </div>
+  <div [formGroup]="addFriendForm" style="display:flex;flex-direction: column;margin-top:10px;">
+    <div style="margin-bottom:3px;">
+        Add a Friend
+    </div>
+    
+    <input type="text" formControlName="socialId" placeholder="Social ID" style="width:300px;font-size:1.1em;margin-bottom:3px;color:rgb(0, 90, 75);">
+    <div>
+      {{ message }}
+    </div>
+    <div>
+        <button class="btn btn-primary btn-sm" (click)="onClickSendFriendRequest()" [disabled]="formDisabled">Send friend request</button>
+    </div>
+    
+  </div>
+  <div style="margin-top:10px;" *ngIf="!loading">
+    <div>
+      <div>Incoming Requests</div>
+      <div>
+        <div *ngFor="let request of incomingRequests" class="incoming-request">
+          Request from {{ request.requesterId }}
+        </div>
+      </div>
+    </div>
+    <div>
+        <div>Outgoing Requests</div>
+        <div>
+          <div *ngFor="let request of outgoingRequests" class="outgoing-request">
+            Request sent to {{ request.recipientId }}
+          </div>
+        </div>
+      </div>
+  </div>
 </div>
