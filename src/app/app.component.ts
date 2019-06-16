@@ -1,9 +1,9 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { AuthenticationService } from './authentication/authentication.service';
-import { AuthStatus } from './authentication/auth-status.model';
+import { AuthStatus } from './authentication/auth-status.class';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { UserSettingsService } from './user-settings/user-settings.service';
-import { UserSetting } from './user-settings/user-setting.model';
+import { UserSettingsService } from './shared/document-definitions/user-account/user-settings/user-settings.service';
+import { UserSetting } from './shared/document-definitions/user-account/user-settings/user-setting.model';
 import { ModalService } from './modal/modal.service';
 import { Modal } from './modal/modal.class';
 import { ToolsService } from './shared/tools/tools.service';

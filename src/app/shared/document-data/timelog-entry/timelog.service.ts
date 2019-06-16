@@ -8,7 +8,7 @@ import * as moment from 'moment';
 
 import { serverUrl } from '../../../serverurl';
 import { map } from 'rxjs/operators';
-import { AuthStatus } from '../../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.class';
 
 import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
 import { ITLEActivity } from './timelog-entry-activity.interface';

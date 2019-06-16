@@ -5,11 +5,11 @@ import { Component, OnInit } from '@angular/core';
 import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from '../header/header-menu/menu-item.model';
 import { appMenuItems } from '../app-menu-items';
-import { AuthStatus } from '../../authentication/auth-status.model';
+import { AuthStatus } from '../../authentication/auth-status.class';
 import { Subscription } from 'rxjs';
-import { UserSettingsService } from '../../user-settings/user-settings.service';
-import { UserSetting } from '../../user-settings/user-setting.model';
-import { User } from '../../authentication/user.model';
+import { UserSettingsService } from '../../shared/document-definitions/user-account/user-settings/user-settings.service';
+import { UserSetting } from '../../shared/document-definitions/user-account/user-settings/user-setting.model';
+import { UserAccount } from '../../shared/document-definitions/user-account/user-account.class';
 import { Modal } from '../../modal/modal.class';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
@@ -33,7 +33,7 @@ export class SidebarComponent implements OnInit {
   activeLink = { color: 'red' };
   private authStatus: AuthStatus = null;
   private authSubscription: Subscription = new Subscription();
-  user: User = null;
+  user: UserAccount = null;
 
   menuItems: MenuItem[];
 

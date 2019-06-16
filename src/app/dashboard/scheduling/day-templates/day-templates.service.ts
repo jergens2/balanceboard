@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { DayTemplate } from './day-template.model';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.class';
 import { map } from 'rxjs/operators';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 

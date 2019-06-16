@@ -1,14 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthenticationService } from './authentication.service';
-import { AuthData } from './auth-data.model';
-import { AuthStatus } from './auth-status.model';
+import { AuthData } from './auth-data.interface';
+import { AuthStatus } from './auth-status.class';
 import { faKey, faUser, faUnlock, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { User } from './user.model';
-import { UserSetting } from '../user-settings/user-setting.model';
-import { UserSettingsService } from '../user-settings/user-settings.service';
+import { UserAccount } from '../shared/document-definitions/user-account/user-account.class';
+import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
+import { UserSettingsService } from '../shared/document-definitions/user-account/user-settings/user-settings.service';
 import { ActivityCategoryDefinitionService } from '../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { TimelogService } from '../shared/document-data/timelog-entry/timelog.service';
+import { SocialService } from '../shared/document-definitions/user-account/social.service';
 
 
 @Component({
@@ -29,7 +30,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   formMessage: string = "";
   errorMessage: string = "";
 
-  authData: AuthData = { user: null, password: '' };
+  authData: AuthData = { userAccount: null, password: '' };
 
 
   registrationForm: FormGroup;
@@ -38,7 +39,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   continueDisabled: boolean = true;
 
 
-  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService) { }
+  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private socialService: SocialService) { }
 
   attemptLogin() {
     this.setAction("waiting");
@@ -72,8 +73,8 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     this.setAction("waiting");
 
     if (this.loginForm.valid) {
-      let loginUser = new User('', this.loginForm.controls['emailAddress'].value, []);
-      this.authData = { user: loginUser, password: this.loginForm.controls['password'].value }
+      let loginUser = new UserAccount('', this.loginForm.controls['emailAddress'].value, '', []);
+      this.authData = { userAccount: loginUser, password: this.loginForm.controls['password'].value }
       this.authService.loginAttempt$.subscribe((successful: boolean) => {
         if(successful){
           this.setAction("waiting");
@@ -129,14 +130,16 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     if (this.registrationForm.controls['password'].value == this.confirmRegistrationForm.controls['password'].value) {
       this.setAction("waiting");
       let defaultSettings: UserSetting[] = this.userSettingsService.createDefaultSettings();
-      let newUser = new User(null, this.registrationForm.controls['emailAddress'].value, defaultSettings);
-      this.authData = { user: newUser, password: this.registrationForm.controls['password'].value };
-      this.authService.registerUser$(this.authData).subscribe((response: { data: any, message: string }) => {
+      let newUser = new UserAccount(null, this.registrationForm.controls['emailAddress'].value, this.socialService.generateSocialId(), defaultSettings);
+      console.log("Registering new user:", newUser);
+      this.authData = { userAccount: newUser.httpBody, password: this.registrationForm.controls['password'].value };
+      console.log("Auth data is", this.authData);
+      this.authService.registerNewUserAccount$(this.authData).subscribe((response: { data: any, message: string }) => {
         if (response != null) {
           this.setAction("successful_registration");
         } else {
           this.setAction("error");
-          this.errorMessage = "No response from server.";
+          this.errorMessage = "No response from server.";2
         }
       }, error => {
         console.log(error);

@@ -70,7 +70,7 @@
       <div *ngIf="action == 'successful_registration'">
         <div class="successful-registration">
           Woohoo! <br>
-          {{ authData.user.email }} has been successfully registered.
+          {{ authData.userAccount.email }} has been successfully registered.
         </div>
         <div class="action-buttons-container">
           <button class="btn btn-sm btn-primary mx-1" (click)="onClickContinuePostRegistration()">Login <fa-icon [icon]="faUnlock"

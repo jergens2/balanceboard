@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NotebookEntry } from './notebook-entry/notebook-entry.model';
 import { serverUrl } from '../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../authentication/auth-status.model';
+import { AuthStatus } from '../../authentication/auth-status.class';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';

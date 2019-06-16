@@ -7,7 +7,7 @@ import { BuildProfileComponent } from "./dashboard/health/build-profile/build-pr
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
 import { DayDataComponent } from "./dashboard/daybook/daybook.component";
 
-import { UserSettingsComponent } from "./user-settings/user-settings.component";
+import { UserSettingsComponent } from "./shared/document-definitions/user-account/user-settings/user-settings.component";
 
 import { DayTemplatesComponent } from "./dashboard/scheduling/day-templates/day-templates.component";
 import { NotebooksComponent } from "./dashboard/notebooks/notebooks.component";
@@ -17,6 +17,7 @@ import { ScheduleRotationsComponent } from "./dashboard/scheduling/schedule-rota
 import { RecurringTasksComponent } from "./dashboard/scheduling/recurring-tasks/recurring-tasks.component";
 import { SchedulePlannerComponent } from "./dashboard/scheduling/schedule-planner/schedule-planner.component";
 import { ActivitiesComponent } from "./dashboard/activities/activities.component";
+import { SocialComponent } from "./dashboard/social/social.component";
 
 
 const appRoutes: Routes = [
@@ -29,11 +30,13 @@ const appRoutes: Routes = [
     { path: 'daybook', component: DayDataComponent },
     { path: 'daybook/:isoDate', component: DayDataComponent },
 
+    { path: 'social', component: SocialComponent }, 
+
     { path: 'notebooks', component: NotebooksComponent },
 
     { path: 'activities', component: ActivitiesComponent },
     { path: 'activities/:activityIdentifier', component: ActivitiesComponent },
-    { path: 'user_settings', component: UserSettingsComponent },
+    { path: 'user-settings', component: UserSettingsComponent },
 
 
 

@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { defaultActivities } from './default-activity-category-definitions';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.class';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.class';
 @Injectable({

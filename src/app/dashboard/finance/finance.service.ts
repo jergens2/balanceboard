@@ -6,7 +6,7 @@ import { FinanceProfile } from './finance-profile.model';
 import * as moment from 'moment';
 // import { GenericDataType } from '../generic-data/generic-data-type.model';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import { AuthStatus } from '../../authentication/auth-status.model';
+import { AuthStatus } from '../../authentication/auth-status.class';
 
 @Injectable({
   providedIn: 'root'

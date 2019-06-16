@@ -19,7 +19,7 @@ import { AppComponent } from './app.component';
 import { HeaderComponent } from './nav/header/header.component';
 import { SidebarComponent } from './nav/sidebar/sidebar.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
-import { UserSettingsComponent } from './user-settings/user-settings.component';
+import { UserSettingsComponent } from './shared/document-definitions/user-account/user-settings/user-settings.component';
 import { HeaderMenuComponent } from './nav/header/header-menu/header-menu.component';
 import { ModalComponent } from './modal/modal.component';
 import { DefaultModalComponent } from './modal/custom-modals/default-modal/default-modal.component';

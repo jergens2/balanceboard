@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { UserSetting } from './user-setting.model';
 import { UserSettingsService } from './user-settings.service';
-import { AuthenticationService } from '../authentication/authentication.service';
-import { User } from '../authentication/user.model';
-import { AuthStatus } from '../authentication/auth-status.model';
+import { AuthenticationService } from '../../../../authentication/authentication.service';
+import { UserAccount } from '../user-account.class';
+import { AuthStatus } from '../../../../authentication/auth-status.class';
 
 @Component({
   selector: 'app-user-settings',
@@ -20,7 +20,7 @@ export class UserSettingsComponent implements OnInit {
 
   nightModeSetting: UserSetting = new UserSetting("night_mode", false, null, null);
 
-  authenticatedUser: User = null;
+  authenticatedUser: UserAccount = null;
 
   ngOnInit() {
 

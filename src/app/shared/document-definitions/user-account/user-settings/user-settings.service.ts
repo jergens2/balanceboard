@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { UserSetting } from './user-setting.model';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { serverUrl } from '../serverurl';
+import { serverUrl } from '../../../../serverurl';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthenticationService } from '../authentication/authentication.service';
-import { User } from '../authentication/user.model';
+import { AuthenticationService } from '../../../../authentication/authentication.service';
+import { UserAccount } from '../user-account.class';
 import { map } from 'rxjs/operators';
 import { defaultUserSettings } from './default-user-settings';
-import { AuthStatus } from '../authentication/auth-status.model';
+import { AuthStatus } from '../../../../authentication/auth-status.class';
 
 
 @Injectable({
@@ -84,11 +84,11 @@ export class UserSettingsService {
     user.userSettings = currentSettings;
 
     this.httpClient.post<{ message: string, data: any }>(settingsPostUrl, user, httpOptions)
-      .pipe<User>(map((response) => {
-        let updatedUser = new User(response.data._id, response.data.email, response.data.userSettings);
+      .pipe<UserAccount>(map((response) => {
+        let updatedUser = new UserAccount(response.data._id, response.data.email, response.data.socialId, response.data.userSettings);
         return updatedUser;
       }))
-      .subscribe((updatedUser: User)=>{
+      .subscribe((updatedUser: UserAccount)=>{
         this.userSettings = updatedUser.userSettings;
       })
 

@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, timer, Subscription } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthStatus } from '../../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.class';
 
 import * as moment from 'moment';
 import { serverUrl } from '../../../serverurl';

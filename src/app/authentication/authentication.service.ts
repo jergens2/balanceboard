@@ -1,16 +1,16 @@
 import { map } from 'rxjs/operators';
-import { User } from './user.model';
+import { UserAccount } from '../shared/document-definitions/user-account/user-account.class';
 import { Observable, Subject, BehaviorSubject, Subscription, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthData } from './auth-data.model';
-import { AuthStatus } from './auth-status.model';
+import { AuthData } from './auth-data.interface';
+import { AuthStatus } from './auth-status.class';
 import { serverUrl } from '../serverurl';
-import { UserSetting } from '../user-settings/user-setting.model';
+import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
 import { ActivityCategoryDefinitionService } from '../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { TimelogService } from '../shared/document-data/timelog-entry/timelog.service';
 import { ActivityTree } from '../shared/document-definitions/activity-category-definition/activity-tree.class';
-import { UserSettingsService } from '../user-settings/user-settings.service';
+import { UserSettingsService } from '../shared/document-definitions/user-account/user-settings/user-settings.service';
 import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
 import { DayDataService } from '../shared/document-data/day-data/day-data.service';
 import { TaskService } from '../dashboard/tasks/task.service';
@@ -22,6 +22,7 @@ import { TimeViewsService } from '../shared/time-views/time-views.service';
 import { DailyTaskListService } from '../shared/document-data/daily-task-list/daily-task-list.service';
 import { ServiceAuthentication } from './service-authentication.interface';
 import { ActivityDayDataService } from '../shared/document-data/activity-day-data/activity-day-data.service';
+import { SocialService } from '../shared/document-definitions/user-account/social.service';
 
 
 @Injectable()
@@ -32,6 +33,7 @@ export class AuthenticationService {
   get authStatus$(): Observable<AuthStatus> {
     return this._authStatusSubject$.asObservable();
   }
+
 
   constructor(
     private http: HttpClient,
@@ -46,6 +48,7 @@ export class AuthenticationService {
     private recurringTaskService: RecurringTasksService,
     private timeViewsService: TimeViewsService,
     private dailyTaskListService: DailyTaskListService,
+    private socialService: SocialService,
   ) { }
 
   private serverUrl = serverUrl;
@@ -67,9 +70,10 @@ export class AuthenticationService {
 
     { name: "timeViews", subscription: new Subscription, isAuthenticated: false, },
     { name: "dailyTaskList", subscription: new Subscription, isAuthenticated: false, },
+    { name: "social", subscription: new Subscription, isAuthenticated: false, },
   ]
 
-  registerUser$(authData: AuthData): Observable<Object> {
+  registerNewUserAccount$(authData: AuthData): Observable<Object> {
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)
   }
 
@@ -78,13 +82,13 @@ export class AuthenticationService {
   loginAttempt(authData: AuthData) {
     this.http.post<{ message: string, data: any }>(this.serverUrl + "/api/authentication/authenticate", authData)
       .pipe<AuthStatus>(map((response) => {
-        let settings: any[] = Object.assign([], response.data.user.userSettings);
+        let settings: any[] = Object.assign([], response.data.userAccount.userSettings);
         let userSettings: UserSetting[] = [];
         for (let setting of settings) {
           let userSetting: UserSetting = new UserSetting(setting.name, setting.booleanValue, setting.numericValue, setting.stringValue);
           userSettings.push(userSetting);
         }
-        let responseAuthStatus = new AuthStatus(response.data.token, new User(response.data.user._id, response.data.user.email, userSettings), true);
+        let responseAuthStatus = new AuthStatus(response.data.token, new UserAccount(response.data.userAccount._id, response.data.userAccount.email, response.data.userAccount.socialId, userSettings), true);
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
@@ -116,6 +120,11 @@ export class AuthenticationService {
       })
 
       this.userSettingsService.login(authStatus);
+
+      this._serviceAuthentications.find((sub) => { return sub.name == "social" }).subscription = this.socialService.login$(authStatus).subscribe((loginComplete: boolean) => {
+        this._serviceAuthentications.find((sub) => { return sub.name == "social" }).isAuthenticated = loginComplete;
+      });
+
       this._serviceAuthentications.find((sub) => { return sub.name == "tasks" }).subscription = this.taskService.login$(authStatus).subscribe((loginComplete: boolean) => {
         this._serviceAuthentications.find((sub) => { return sub.name == "tasks" }).isAuthenticated = loginComplete;
       });
@@ -164,6 +173,7 @@ export class AuthenticationService {
 
 
       timerSubscription = timer(200, 200).subscribe(() => {
+        console.log("Auth:" , this._serviceAuthentications)
         allComplete = true;
         this._serviceAuthentications.forEach((serviceAuth) => {
           if (serviceAuth.isAuthenticated == false) {
@@ -199,7 +209,7 @@ export class AuthenticationService {
 
   }
 
-  getUserById$(userId: string): Observable<User> {
+  getUserById$(userId: string): Observable<UserAccount> {
     return this.http.get<{ message: string, data: any }>(this.serverUrl + "/api/authentication/getUserById/" + userId)
       .pipe(map((response) => {
         let settings: any[] = Object.assign([], response.data.userSettings);
@@ -208,7 +218,7 @@ export class AuthenticationService {
           let userSetting: UserSetting = new UserSetting(setting.name, setting.booleanValue, setting.numericValue, setting.stringValue);
           userSettings.push(userSetting);
         }
-        return new User(response.data._id, response.data.email, userSettings);
+        return new UserAccount(response.data._id, response.data.email, response.data.socialId, userSettings);
       }))
   }
 
@@ -224,7 +234,7 @@ export class AuthenticationService {
       this._authStatusSubject$.next(new AuthStatus(null, null, false));
       this.checkLocalStorage$.next(false);
     } else {
-      let user: User = JSON.parse(localStorage.getItem("user"));
+      let user: UserAccount = JSON.parse(localStorage.getItem("user"));
       // console.log("userEmail from localStorage:" , user.email)
       this.loginRoutine(new AuthStatus(localStorage.getItem("token"), user, true));
       this.checkLocalStorage$.next(true);
@@ -232,7 +242,7 @@ export class AuthenticationService {
   }
 
 
-  updateUserSettings(user: User) {
+  updateUserSettings(user: UserAccount) {
     localStorage.removeItem("user");
     localStorage.setItem("user", JSON.stringify(user));
     this._authStatusSubject$.next(new AuthStatus(localStorage.getItem("token"), user, true));

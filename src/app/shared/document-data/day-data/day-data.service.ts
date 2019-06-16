@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { Injectable } from '@angular/core';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.class';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DayData } from './day-data.class';

@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@ang
 import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent, Subscriber } from 'rxjs';
-import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
@@ -30,7 +30,7 @@ export class HeaderComponent implements OnInit {
 
   faBars = faBars;
   faCogs = faCogs;
-
+  faUsers = faUsers;
 
   activeAppTool: string = null;
 
@@ -100,7 +100,7 @@ export class HeaderComponent implements OnInit {
       this.modalService.activeModal = modal;
     }));
 
-    newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem('Settings', '/user_settings', faCogs), signOutMenuItem])));
+    newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem('Settings', '/user-settings', faCogs), signOutMenuItem])));
 
 
     /*

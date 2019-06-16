@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AuthStatus } from '../../../authentication/auth-status.model';
+import { AuthStatus } from '../../../authentication/auth-status.class';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { RecurringTaskDefinition } from './recurring-task-definition.class';
 import { defaultRecurringTasks } from '../../../dashboard/scheduling/recurring-tasks/default-recurring-tasks';
