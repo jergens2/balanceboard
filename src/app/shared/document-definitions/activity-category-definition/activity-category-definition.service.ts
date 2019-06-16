@@ -7,7 +7,7 @@ import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AuthStatus } from '../../../authentication/auth-status.model';
 import { map } from 'rxjs/operators';
-import { ActivityTree } from '../../../dashboard/activities/activity-tree.model';
+import { ActivityTree } from './activity-tree.class';
 @Injectable({
   providedIn: 'root'
 })

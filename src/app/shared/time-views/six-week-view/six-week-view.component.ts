@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { TimeViewConfiguration } from '../time-view-configuration.interface';
 
 @Component({
   selector: 'app-six-week-view',
@@ -8,6 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class SixWeekViewComponent implements OnInit {
 
   constructor() { }
+  @Input() configuration: TimeViewConfiguration;
 
   ngOnInit() {
   }

@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import * as moment from 'moment';
 import { TimeViewsService } from '../time-views.service';
 import { DayData } from '../../document-data/day-data/day-data.class';
+import { TimeViewConfiguration } from '../time-view-configuration.interface';
 
 @Component({
   selector: 'app-custom-range-time-view',
@@ -13,6 +14,7 @@ export class CustomRangeTimeViewComponent implements OnInit {
   constructor(private timeViewsService: TimeViewsService) { }
 
   @Input() timeRange: {startDate: moment.Moment, endDate: moment.Moment};
+  @Input() configuration: TimeViewConfiguration;
   rangeStartDate: moment.Moment;
   rangeEndDate: moment.Moment;
 
@@ -27,7 +29,6 @@ export class CustomRangeTimeViewComponent implements OnInit {
     this.totalDays = this.rangeEndDate.diff(this.rangeStartDate, "days") + 1;
 
     console.log("total days is ", this.totalDays);
-    this.timeViewData = this.timeViewsService.timeViewRangeDayData(this.rangeStartDate, this.rangeEndDate);
   }
 
 }

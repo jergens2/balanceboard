@@ -17,30 +17,6 @@ import { NetWorthComponent } from './finance/net-worth/net-worth.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 
-import { ActivitiesComponent } from './activities/activities.component';
-import { ActivityListItemComponent } from './activities/activity-list-item/activity-list-item.component';
-import { ActivityDisplayComponent } from './activities/activity-display/activity-display.component';
-import { ActivityYearViewComponent } from './activities/activity-display/activity-year-view/activity-year-view.component';
-import { MonthPlannerComponent } from './month-planner/month-planner.component';
-
-import { ActivitySixWeekViewComponent } from './activities/activity-display/activity-six-week-view/activity-six-week-view.component';
-import { ActivityCategoryDefinitionFormComponent } from './activities/user-defined-activity-form/user-defined-activity-form.component';
-
-import { ActivitiesDefaultViewComponent } from './activities/default-view/default-view.component';
-
-
-
-
-import { ActivitiesListComponent } from './activities/activities-list/activities-list.component';
-
-
-
-
-import { ActivityGoalsWidgetComponent } from './activities/default-view/activity-goals-widget/activity-goals-widget.component';
-import { ActivityPlanningComponent } from './activities/activity-display/activity-planning/activity-planning.component';
-import { InstancesListComponent } from './activities/activity-display/instances-list/instances-list.component';
-import { ActivityJournalComponent } from './activities/activity-display/activity-journal/activity-journal.component';
-import { DayOfWeekComponent } from './activities/default-view/day-of-week/day-of-week.component';
 
 import { RotationDayTemplateComponent } from './scheduling/schedule-rotations/rotation-day-template/rotation-day-template.component';
 import { DayTemplatesComponent } from './scheduling/day-templates/day-templates.component';
@@ -57,7 +33,7 @@ import { TaskComponent } from './tasks/task/task.component';
 import { SchedulingComponent } from './scheduling/scheduling.component';
 import { RecurringTasksComponent } from './scheduling/recurring-tasks/recurring-tasks.component';
 import { ScheduleRotationsComponent } from './scheduling/schedule-rotations/schedule-rotations.component';
-import { ActivityChartComponent } from './activities/activity-display/activity-chart/activity-chart.component';
+
 import { SharedModule } from '../shared/shared.module';
 import { CategoriesViewComponent } from './tasks/views/categories-view/categories-view.component';
 import { ListViewComponent } from './tasks/views/list-view/list-view.component';
@@ -69,11 +45,7 @@ import { CategoriesTaskGroupComponent } from './tasks/views/categories-view/cate
 import { TreemapTaskGroupComponent } from './tasks/views/treemap-view/treemap-task-group/treemap-task-group.component';
 import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.component';
 import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule-planner.component';
-
-
-
-
-
+import { ActivitiesComponent } from './activities/activities.component';
 
 
 @NgModule({
@@ -97,27 +69,6 @@ import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule
     BudgetComponent,
     NetWorthComponent,
 
-
-
-    ActivitiesComponent,
-    ActivityListItemComponent,
-    ActivityDisplayComponent,
-    ActivityYearViewComponent,
-    MonthPlannerComponent,
-    ActivitySixWeekViewComponent,
-    ActivityCategoryDefinitionFormComponent,
-
-    ActivitiesDefaultViewComponent,
-
-
-    ActivitiesListComponent,
-
-    ActivityGoalsWidgetComponent,
-    ActivityPlanningComponent,
-    InstancesListComponent,
-    ActivityJournalComponent,
-    DayOfWeekComponent,
-
     RotationDayTemplateComponent,
     DayTemplatesComponent,
     RotationFormComponent,
@@ -131,7 +82,7 @@ import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule
     SchedulingComponent,
     ScheduleRotationsComponent,
     RecurringTasksComponent,
-    ActivityChartComponent,
+
     CategoriesViewComponent,
     ListViewComponent,
     EisenhowerViewComponent,
@@ -142,6 +93,9 @@ import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule
     TreemapTaskGroupComponent,
     TreemapComponent,
     SchedulePlannerComponent,
+
+    ActivitiesComponent,
+
   ],
   providers: [],
   entryComponents: []

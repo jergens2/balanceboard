@@ -1,124 +1,99 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivityCategoryDefinitionService } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityTree } from '../../shared/document-definitions/activity-category-definition/activity-tree.class';
+import { TimeViewDataSource } from '../../shared/time-views/time-view-data-source.enum';
+import { ActivityDayDataService } from '../../shared/document-data/activity-day-data/activity-day-data.service';
+import { TimeViewConfiguration } from '../../shared/time-views/time-view-configuration.interface';
+import { ActivityDayData, ActivityDayDataItem } from '../../shared/document-data/activity-day-data/activity-day-data.class';
+import { TimeViewDayData } from '../../shared/time-views/time-view-day-data-interface';
+import * as moment from 'moment';
 import { ActivityCategoryDefinition } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
-import { IActivityTile } from './activity-tile.interface';
-import { ActivityTree } from './activity-tree.model';
-import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
-import { Subscription } from 'rxjs';
-import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
-import { HeaderService } from '../../nav/header/header.service';
-import { ActivatedRoute, Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-activities',
   templateUrl: './activities.component.html',
   styleUrls: ['./activities.component.css']
 })
-export class ActivitiesComponent implements OnInit, OnDestroy {
+export class ActivitiesComponent implements OnInit {
 
-  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private headerService: HeaderService, private route:ActivatedRoute, private router: Router) { }
+  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private activityDataService: ActivityDayDataService) { }
 
-
-
-  action: string = "default";
-
-  displayedActivity: ActivityCategoryDefinition = null;
-
-  // rootActivityTiles: IActivityTile[] = [];
-  activitiesTree: ActivityTree = null;
-  treeSubscription: Subscription = new Subscription();
-
-  private menuItemSubscriptions: Subscription[] = [];
+  private activityTree: ActivityTree;
+  private allActivityData: ActivityDayData[] = [];
 
   ngOnInit() {
-    this.activitiesTree = this.activityCategoryDefinitionService.activitiesTree;
-    this.treeSubscription = this.activityCategoryDefinitionService.activitiesTree$.subscribe((newTree)=>{
-      this.activitiesTree = newTree;
+    this.activityTree = this.activityCategoryDefinitionService.activitiesTree;
+    this.activityCategoryDefinitionService.activitiesTree$.subscribe((changedTree) => {
+      this.activityTree = changedTree;
+      this.buildTimeViewConfiguration();
     });
-    this.buildHeaderMenu();
-    let routeParameter: string = this.route.snapshot.paramMap.get('activityIdentifier');
-    if(routeParameter){
-      let foundActivity = this.activitiesTree.findActivityByIdentifier(routeParameter);
-      if(foundActivity){
-        this.displayedActivity = foundActivity;
-        this.action = "display"; 
-      }else{
-        console.log("Error: could not find an activity");
+    this.allActivityData = this.activityDataService.activityDayDatas;
+    this.activityDataService.activityDayDatas$.subscribe((allData) => {
+      this.allActivityData = allData;
+      this.buildTimeViewConfiguration();
+    });
+    this.buildTimeViewConfiguration();
+  }
+
+  private _timeViewConfiguration: TimeViewConfiguration;
+  private buildTimeViewConfiguration() {
+
+    function hexToRGB(hex: string, alpha: number) {
+      var r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+
+      if (alpha) {
+        return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+      } else {
+        return "rgb(" + r + ", " + g + ", " + b + ")";
       }
+    }
 
- 
-    }else{
-      this.action = "default";
+    function findTopActivity(data: ActivityDayData): ActivityDayDataItem{
+      let result: ActivityDayDataItem = data.activityItems.find((activityItem)=>{
+        return activityItem.activityTreeId != "5b9c362dd71b00180a7cf701_default_sleep";
+      });
+      if(!result){
+        result = data.activityItems[0];
+      }
+      return result;
     }
 
 
+    if (this.allActivityData.length > 0) {
+      let minValue: number = 0;
+      let maxValue: number = 0;
+      let data: TimeViewDayData[] = [];
 
+      this.allActivityData.forEach((activityData: ActivityDayData) => {
+        let topActivity: ActivityDayDataItem = findTopActivity(activityData);
+        data.push({
+          dateYYYYMMDD: activityData.dateYYYYMMDD,
+          value: topActivity.durationMinutes,
+          name: this.activityTree.findActivityByTreeId(topActivity.activityTreeId).name,
+          date: moment(activityData.dateYYYYMMDD).startOf("day"),
+          style: {
+            "background-color": hexToRGB(this.activityTree.findActivityByTreeId(topActivity.activityTreeId).color, 0.5),
+          },
+          isHighlighted: false,
+          mouseOver: false,
+        });
+      });
 
-
-
-    // this.rootActivityTiles = this.rootActivities.map((activity) => {
-    //   return { activity: activity, ifShowActivityDelete: false, ifShowActivityModify: false };
-    // });
-    // console.log(this.rootActivityTiles);
-  }
-
-  
-  private buildHeaderMenu(){
-    let newActivityMenuItem = new MenuItem("Create New Activity", null, null);
-    this.menuItemSubscriptions.push(newActivityMenuItem.clickEmitted$.subscribe((clicked)=>{
-      this.onClickCreateNewActivity();
-    }));
-    let activitiesListMenuItem = new MenuItem("Activities List", null, null);
-    this.menuItemSubscriptions.push(activitiesListMenuItem.clickEmitted$.subscribe((clicked)=>{
-      this.onClickShowActivitiesList();
-    }));
-
-    let activitiesHeaderMenuItems: MenuItem[] = [];
-    activitiesHeaderMenuItems.push(newActivityMenuItem);
-    activitiesHeaderMenuItems.push(activitiesListMenuItem);
-
-    let daybookHeaderMenu: HeaderMenu = new HeaderMenu('Activities', activitiesHeaderMenuItems);
-
-    this.headerService.setCurrentMenu(daybookHeaderMenu);
-  }
-
-
-  onClickShowActivitiesList(){
-    this.action = "activities_list";
-  }
-
-  onDisplayClosed() {
-    this.action = "default";
-  }
-  onFormClosed(){
-    this.action = "default";
-  }
-
-  onActivitySelected(activity: ActivityCategoryDefinition) {
-
-    if(this.activitiesTree.activityNameIsUnique(activity)){
-      this.router.navigate(['/activities/'+activity.name]);
-    }else{
-      this.router.navigate(['/activities/'+activity.treeId]);
+      let configuration: TimeViewConfiguration = {
+        units: "top activity",
+        singleValueType: false,
+        minValue: minValue,
+        maxValue: maxValue,
+        data: data,
+      }
+      this._timeViewConfiguration = configuration;
     }
-    this.displayedActivity = activity;
-    this.action = "display"; 
-
   }
-
-  onClickCreateNewActivity() {
-    this.action = "form";
+  public get timeViewConfiguration(): TimeViewConfiguration {
+    return this._timeViewConfiguration;
   }
-
-  ngOnDestroy(){
-    this.treeSubscription.unsubscribe();
-    for(let subscription of this.menuItemSubscriptions){
-      subscription.unsubscribe();
-    }
-    this.headerService.setCurrentMenu(null);
-  }
-
 
 
 }

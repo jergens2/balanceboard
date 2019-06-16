@@ -219,25 +219,25 @@ export class TimelogService {
     return itleActivities;
   }
 
-  // private superSpecialBuildActivityDataRoutine() {
+  private superSpecialBuildActivityDataRoutine() {
 
-  //     console.log("Warning: super special routine")
-  //     // this.timelogEntries.forEach((tle)=>{
-  //     //   this.ZZupdateTimelogEntry(tle)
-  //     // })
+      console.log("Warning: super special routine")
+      // this.timelogEntries.forEach((tle)=>{
+      //   this.ZZupdateTimelogEntry(tle)
+      // })
         
-  //     let startDate = moment("2018-12-17");
-  //     let currentDate = moment(startDate);
-  //     let sub = new Subscription;
-  //     while(currentDate.isBefore(moment())){
-  //       console.log("Building activity day data for date: "+ currentDate.format('YYYY-MM-DD'))
-  //       sub.unsubscribe();
-  //       let data: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, currentDate.format("YYYY-MM-DD"), this.generateActivityData(currentDate), this.activityCategoryDefinitionService )
-  //       this.activityDataService.httpSaveActivityDayData(data);
-  //       currentDate = moment(currentDate).add(1, "day");
-  //     }
+      let startDate = moment("2018-12-17");
+      let currentDate = moment(startDate);
+      let sub = new Subscription;
+      while(currentDate.isBefore(moment())){
+        console.log("Building activity day data for date: "+ currentDate.format('YYYY-MM-DD'))
+        sub.unsubscribe();
+        let data: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, currentDate.format("YYYY-MM-DD"), this.generateActivityData(currentDate), this.activityCategoryDefinitionService )
+        this.activityDataService.httpSaveActivityDayData(data);
+        currentDate = moment(currentDate).add(1, "day");
+      }
 
-  // }
+  }
 
 
 

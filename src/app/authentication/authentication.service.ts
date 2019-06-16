@@ -9,7 +9,7 @@ import { serverUrl } from '../serverurl';
 import { UserSetting } from '../user-settings/user-setting.model';
 import { ActivityCategoryDefinitionService } from '../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { TimelogService } from '../shared/document-data/timelog-entry/timelog.service';
-import { ActivityTree } from '../dashboard/activities/activity-tree.model';
+import { ActivityTree } from '../shared/document-definitions/activity-category-definition/activity-tree.class';
 import { UserSettingsService } from '../user-settings/user-settings.service';
 import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
 import { DayDataService } from '../shared/document-data/day-data/day-data.service';

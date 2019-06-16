@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ActivityCategoryDefinitionService } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
-import { ActivityTree } from '../activity-tree.model';
+import { ActivityTree } from '../../../shared/document-definitions/activity-category-definition/activity-tree.class';
 import { IActivityTile } from '../activity-tile.interface';
 import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 
