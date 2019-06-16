@@ -9,6 +9,7 @@ import { Modal } from '../../../../modal/modal.class';
 import { IModalOption } from '../../../../modal/modal-option.interface';
 import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 
+
 @Component({
   selector: 'app-activity-category-definition-form',
   templateUrl: './activity-category-definition-form.component.html',
