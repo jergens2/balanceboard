@@ -6,7 +6,7 @@ import { IActivityInstance } from './activity-instance.interface';
 import * as moment from 'moment';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import { ActivityTree } from '../activity-tree.model';
+import { ActivityTree } from '../../../shared/document-definitions/activity-category-definition/activity-tree.class';
 import { TimelogEntry } from '../../../shared/document-data/timelog-entry/timelog-entry.class';
 
 @Component({

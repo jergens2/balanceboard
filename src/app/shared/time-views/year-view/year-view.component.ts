@@ -9,8 +9,9 @@ import { SizeService } from '../../app-screen-size/size.service';
 import { AppScreenSize } from '../../app-screen-size/app-screen-size.enum';
 import { OnScreenSizeChanged } from '../../app-screen-size/on-screen-size-changed.interface';
 import { IYearViewData } from './year-view-data.interface';
-import { IDayOfYear } from './day-of-year.interface';
 import { TimeViewsService } from '../time-views.service';
+import { TimeViewDayData } from '../time-view-day-data-interface';
+import { TimeViewConfiguration } from '../time-view-configuration.interface';
 
 @Component({
   selector: 'app-year-view',
@@ -31,45 +32,29 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   months: any[] = null;
 
-  allDays: IDayOfYear[] = [];
+  allDays: TimeViewDayData[] = [];
 
   toolTip: { style: any, value: string };
 
   appScreenSize: AppScreenSize;
 
-
-  @Input() yearViewData: IYearViewData;
   @Output() dateClicked: EventEmitter<any> = new EventEmitter();
-
+  @Input() configuration: TimeViewConfiguration;
 
   ngOnInit() {
     this.appScreenSize = this.sizeService.appScreenSize;
     this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize) => {
       this.onScreenSizeChanged(appScreenSize);
-    })
+    });
 
-    /*
-      Simple method of improved performance:
-      
-      Instead of pulling the days asynchronously at this time with daybookService, pull them on login and store them in memory.
-
-      as of this writing, it takes approximately 300ms to run buildData() which is fast enough.  
-      The part that takes a long while is the async loading, which takes about 800ms
+    if (this.configuration) {
+      this.buildCalendar(moment().startOf("year"), moment().endOf("year"));
+    } else {
+      console.log("Year view: no configuration to build with.");
+    }
 
 
-    */
 
-    this.buildCalendar(this.currentYear);
-
-
-    let currentMonth = moment().startOf("year");
-
-    // this.daybookService.getDaysInRange$(moment(currentMonth), moment(currentMonth).endOf("year")).subscribe((days: Day[]) => {
-
-    //   this.allDays = days;
-    //   this.buildData(this.allDays);
-
-    // });
 
   }
 
@@ -78,14 +63,15 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
   }
 
 
-  private buildCalendar(currentYear: number) {
+  private buildCalendar(startDate: moment.Moment, endDate: moment.Moment) {
+    let start = moment();
     let months: any[] = [];
-    let currentMonth = moment().year(currentYear).startOf("year");
+    let currentMonth = moment().year(startDate.year()).startOf("year");
     for (let i = 0; i < 12; i++) {
 
       let currentDay: moment.Moment = moment(currentMonth).startOf("month");
       let endOfMonth: moment.Moment = moment(currentMonth).endOf("month");
-      let days: IDayOfYear[] = [];
+      let days: TimeViewDayData[] = [];
 
       let daysAfterStart: number = moment(currentDay).day();
       for (let i = 0; i < daysAfterStart; i++) {
@@ -94,7 +80,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
       while (currentDay.isBefore(endOfMonth)) {
 
-        let builtDay: IDayOfYear = this.buildDay(currentDay)
+        let builtDay: TimeViewDayData = this.buildDay(currentDay);
         days.push(builtDay);
         this.allDays.push(builtDay);
         currentDay = moment(currentDay).add(1, "days");
@@ -109,41 +95,27 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
     }
 
     this.months = months;
+    console.log("it took " + moment().diff(start, "milliseconds") + " milliseconds to build calendar");
   }
 
 
-  private buildDay(currentDay: moment.Moment): IDayOfYear {
-
-    let day: IDayOfYear;
-
-    let dayStyle: any = {};
-    let dayObject: DayData = null;
-
-    let dayData: any;
-
-    if (this.yearViewData != null) {
-      let dataElement = this.yearViewData.data.find((element) => {
-        return element.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
-      })
-      dayData = dataElement.value;
-
-
-      dayStyle = { "background-color": this.dayBackgroundColor(dayData, this.yearViewData.maxValue) };
-    } else {
-      dayStyle = {};
+  private buildDay(currentDay: moment.Moment): TimeViewDayData {
+    let dayData: TimeViewDayData;
+    dayData = this.configuration.data.find((data)=>{
+      return data.dateYYYYMMDD == currentDay.format("YYYY-MM-DD");
+    })
+    if(!dayData){
+      dayData = {
+        dateYYYYMMDD: currentDay.format("YYYY-MM-DD"),
+        date: moment(currentDay),
+        value: null,
+        name: null,
+        style: {},
+        isHighlighted: false,
+        mouseOver: false,
+      }
     }
-
-
-
-
-    day = {
-      date: currentDay,
-      dayData: dayObject,
-      style: dayStyle,
-      isHighlighted: false,
-    }
-
-    return day;
+    return dayData;
   }
 
 
@@ -154,85 +126,85 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
 
 
-  private buildData(allDays: DayData[]) {
+  // private buildData(allDays: DayData[]) {
 
 
 
-    let months: any[] = [];
-    let currentMonth = moment().startOf("year");
+  //   let months: any[] = [];
+  //   let currentMonth = moment().startOf("year");
 
-    for (let i = 0; i < 12; i++) {
+  //   for (let i = 0; i < 12; i++) {
 
-      let currentDay: moment.Moment = moment(currentMonth).startOf("month");
-      let endOfMonth: moment.Moment = moment(currentMonth).endOf("month");
-      let days: IDayOfYear[] = [];
+  //     let currentDay: moment.Moment = moment(currentMonth).startOf("month");
+  //     let endOfMonth: moment.Moment = moment(currentMonth).endOf("month");
+  //     let days: TimeViewDayData[] = [];
 
-      let daysAfterStart: number = moment(currentDay).day();
-      for (let i = 0; i < daysAfterStart; i++) {
-        days.push({
-          date: null,
-          dayData: null,
-          style: { "border": "none", "background-color": "none" },
-          isHighlighted: false
-        });
-      }
+  //     let daysAfterStart: number = moment(currentDay).day();
+  //     for (let i = 0; i < daysAfterStart; i++) {
+  //       days.push({
+  //         date: null,
+  //         // dayData: null,
+  //         // style: { "border": "none", "background-color": "none" },
+  //         isHighlighted: false
+  //       });
+  //     }
 
-      while (currentDay.isBefore(endOfMonth)) {
+  //     while (currentDay.isBefore(endOfMonth)) {
 
-        let dayStyle: any = {};
-        let dayObject = allDays.find((dayObject: DayData) => {
-          return dayObject.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
-        })
+  //       let dayStyle: any = {};
+  //       let dayObject = allDays.find((dayObject: DayData) => {
+  //         return dayObject.dateYYYYMMDD == currentDay.format('YYYY-MM-DD');
+  //       })
 
-        if (dayObject) {
+  //       if (dayObject) {
 
-          dayStyle = this.buildDayStyle(dayObject);
-        } else {
+  //         dayStyle = this.buildDayStyle(dayObject);
+  //       } else {
 
-          dayStyle = { "border": "1px solid rgb(206, 206, 206)" };
-        }
-        days.push({
-          date: currentDay,
-          dayData: dayObject,
-          style: dayStyle,
-          isHighlighted: false,
-        })
-        currentDay = moment(currentDay).add(1, "days");
-      }
-
-
-      months.push({
-        monthDate: currentMonth,
-        daysOfMonth: days
-      })
-      currentMonth = moment(currentMonth).add(1, "month");
-    }
-
-    this.months = months;
-  }
+  //         dayStyle = { "border": "1px solid rgb(206, 206, 206)" };
+  //       }
+  //       days.push({
+  //         date: currentDay,
+  //         // dayData: dayObject,
+  //         // style: dayStyle,
+  //         isHighlighted: false,
+  //       })
+  //       currentDay = moment(currentDay).add(1, "days");
+  //     }
 
 
-  onClickDay(day: IDayOfYear) {
+  //     months.push({
+  //       monthDate: currentMonth,
+  //       daysOfMonth: days
+  //     })
+  //     currentMonth = moment(currentMonth).add(1, "month");
+  //   }
+
+  //   this.months = months;
+  // }
+
+
+  onClickDay(day: TimeViewDayData) {
     this.dateClicked.emit(day);
     // this.router.navigate(['daybook/' + day.dayDate.format('YYYY-MM-DD')]);
   }
 
 
-  private mouseDownDay: IDayOfYear;
-  private mouseOverDay: IDayOfYear;
-  onMouseDownDay(day: IDayOfYear) {
+  private mouseDownDay: TimeViewDayData;
+  private mouseOverDay: TimeViewDayData;
+  onMouseDownDay(day: TimeViewDayData) {
     this.mouseDownDay = day;
     this.mouseOverDay = day;
   }
 
-  onMouseOverDay(day: IDayOfYear, hoverEvent: MouseEvent) {
+  onMouseOverDay(day: TimeViewDayData, hoverEvent: MouseEvent) {
 
     if (this.mouseOverDay) {
       if (day.date.format('YYYY-MM-DD') != this.mouseOverDay.date.format('YYYY-MM-DD')) {
         this.mouseOverDay = day;
         if (this.mouseDownDay) {
-          let startDate: IDayOfYear = this.mouseDownDay;
-          let endDate: IDayOfYear = day;
+          let startDate: TimeViewDayData = this.mouseDownDay;
+          let endDate: TimeViewDayData = day;
           if (day.date.isBefore(this.mouseDownDay.date)) {
             startDate = day;
             endDate = this.mouseDownDay;
@@ -248,24 +220,24 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   }
 
-  onMouseUpDay(day: IDayOfYear) {
+  onMouseUpDay(day: TimeViewDayData) {
     if (this.mouseDownDay) {
       // console.log("Zoom range selected: from " + this.mouseDownDay.date.format('YYYY-MM-DD') + " to " + day.date.format('YYYY-MM-DD')  )
-      
-      this.timeViewsService.changeRange(this.mouseDownDay.date, day.date );
+
+      this.timeViewsService.changeRange(this.mouseDownDay.date, day.date);
       this.removeHighlightHoverRange();
     }
 
   }
 
-  private highlightHoverRange(startDay: IDayOfYear, endDay: IDayOfYear, hoverEvent: MouseEvent) {
+  private highlightHoverRange(startDay: TimeViewDayData, endDay: TimeViewDayData, hoverEvent: MouseEvent) {
 
     let count = 0;
 
     this.allDays.forEach(dayOfYear => {
       dayOfYear.isHighlighted = false;
     });
-    this.allDays.forEach((dayOfYear: IDayOfYear) => {
+    this.allDays.forEach((dayOfYear: TimeViewDayData) => {
       if (dayOfYear.date.isSameOrAfter(startDay.date) && dayOfYear.date.isSameOrBefore(endDay.date)) {
         dayOfYear.isHighlighted = true;
         count++;
@@ -306,18 +278,18 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
     return style;
   }
 
-  dayData(day: IDayOfYear): string {
+  dayData(day: TimeViewDayData): string {
 
-    if (day.dayData) {
+    // if (day.dayData) {
 
-      if (day.dayData.activityData) {
-        let activity: ActivityCategoryDefinition = this.activityCategoryDefinitionService.findActivityByTreeId(day.dayData.activityData[1].activityTreeId)
+    //   if (day.dayData.activityData) {
+    //     let activity: ActivityCategoryDefinition = this.activityCategoryDefinitionService.findActivityByTreeId(day.dayData.activityData[1].activityTreeId)
 
-      }
+    //   }
 
-    } else {
-      console.log("No day object for ", day);
-    }
+    // } else {
+    //   console.log("No day object for ", day);
+    // }
 
     return "";
   }

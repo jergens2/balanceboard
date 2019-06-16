@@ -3,7 +3,7 @@ import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 import { Subscription, Observable, fromEvent } from 'rxjs';
 import { IActivityDropdownListItem } from './activity-dropdown-list-item.interface';
-import { ActivityTree } from '../../dashboard/activities/activity-tree.model';
+import { ActivityTree } from '../document-definitions/activity-category-definition/activity-tree.class';
 import { ActivityCategoryDefinition } from '../document-definitions/activity-category-definition/activity-category-definition.class';
 import { ActivityCategoryDefinitionService } from '../document-definitions/activity-category-definition/activity-category-definition.service';
 

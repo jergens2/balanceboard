@@ -1,31 +1,9 @@
 <div class="activities-root">
-
-  <div class="activities-header">
-    Activities
+  <div class="activities-header">Activities</div>
+  <div class="time-view-container">
+    <app-time-views [configuration]="timeViewConfiguration"></app-time-views>
   </div>
-
-  <div class="body">
-
-    <div class="activity-display" *ngIf="action == 'activities_list'">
-      <app-activities-list (activitySelected)="onActivitySelected($event)"></app-activities-list>
-    </div>
-  
-    <div class="activity-display" *ngIf="action == 'display'">
-      <app-activity-display [selectedActivity]="displayedActivity" (displayClosed)="onDisplayClosed()">
-      </app-activity-display>
-    </div>
-  
-    <div class="activity-display" *ngIf="action == 'default'">
-      <app-activities-default-view (newActivity)="onClickCreateNewActivity()"></app-activities-default-view>
-    </div>
-  
-    <div class="activity-display" *ngIf="action == 'form'">
-      <app-user-defined-activity-form (formClosed)="onFormClosed()">
-      </app-user-defined-activity-form>
-    </div>
+  <div class="activities-list">
+    Activities List
   </div>
-  
-
-  
-
 </div>

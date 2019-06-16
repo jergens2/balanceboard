@@ -1,6 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimeViewsService } from './time-views.service';
 import * as moment from 'moment';
+import { TimeViewDataSource } from './time-view-data-source.enum';
+import { ActivityDayDataService } from '../document-data/activity-day-data/activity-day-data.service';
+import { ActivityDayData } from '../document-data/activity-day-data/activity-day-data.class';
+import { TimeViewConfiguration } from './time-view-configuration.interface';
 
 @Component({
   selector: 'app-time-views',
@@ -9,11 +13,10 @@ import * as moment from 'moment';
 })
 export class TimeViewsComponent implements OnInit {
 
-  constructor(private timeViewsService: TimeViewsService) { }
+  constructor(private timeViewsService: TimeViewsService, private activityDataService: ActivityDayDataService) { }
 
 
-
-  @Input() timeViewData: any;
+  @Input() configuration: TimeViewConfiguration;
 
   timeView: string = "YEAR";
   customViewTimeRange: any = null;
@@ -24,31 +27,12 @@ export class TimeViewsComponent implements OnInit {
   rangeDayCount: number = 0;
 
   ngOnInit() {
-    this.timeViewsService.currentDayDataRange$.subscribe((range)=>{
-      if(range != null){
-        console.log("range is ", range)
-        this.customViewTimeRange = range;
-        this.timeView = "CUSTOM";
-      }
-      // this.rangeStartDate = moment(range.startDate);
-      // this.rangeEndDate = moment(range.endDate);
-      // this.rangeDayCount = this.rangeEndDate.diff(this.rangeStartDate, "days") + 1;
 
-      // if(this.rangeDayCount == 1){
-      //   this.timeView = "DAY";
-      // }else if(this.rangeDayCount > 1 && this.rangeDayCount <= 7){
-      //   this.timeView = "WEEK";
-      // }else if(this.rangeDayCount > 7 && this.rangeDayCount <= 42){
-      //   this.timeView = "SIX_WEEKS";
-      // }else if(this.rangeDayCount > 42 && this.rangeDayCount <= 366){
-      //   this.timeView = "YEAR";
-      // }else{
-      //   this.timeView = "MULTIPLE_YEARS";
-      // }
-
-
-
-    })
+    // if(this.configuration){
+    //   console.log("Configuration:", this.configuration);
+    // }else{
+    //   console.log("No configuration was provided.")
+    // }
   }
 
 

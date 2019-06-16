@@ -1,4 +1,4 @@
-import { ActivityCategoryDefinition } from "../../shared/document-definitions/activity-category-definition/activity-category-definition.class";
+import { ActivityCategoryDefinition } from "./activity-category-definition.class";
 
 export class ActivityTree {
     /*

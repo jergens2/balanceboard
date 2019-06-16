@@ -1,18 +1,18 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinition } from '../activity-category-definition.class';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivityCategoryDefinitionService } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
-import { ActivityTree } from '../activity-tree.model';
+import { ActivityCategoryDefinitionService } from '../activity-category-definition.service';
+import { ActivityTree } from '../activity-tree.class';
 import { faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons';
-import { ModalService } from '../../../modal/modal.service';
-import { Modal } from '../../../modal/modal.class';
-import { IModalOption } from '../../../modal/modal-option.interface';
-import { ModalComponentType } from '../../../modal/modal-component-type.enum';
+import { ModalService } from '../../../../modal/modal.service';
+import { Modal } from '../../../../modal/modal.class';
+import { IModalOption } from '../../../../modal/modal-option.interface';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 
 @Component({
-  selector: 'app-user-defined-activity-form',
-  templateUrl: './user-defined-activity-form.component.html',
-  styleUrls: ['./user-defined-activity-form.component.css']
+  selector: 'app-activity-category-definition-form',
+  templateUrl: './activity-category-definition-form.component.html',
+  styleUrls: ['./activity-category-definition-form.component.css']
 })
 export class ActivityCategoryDefinitionFormComponent implements OnInit {
 

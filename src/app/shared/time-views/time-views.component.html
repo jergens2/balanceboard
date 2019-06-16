@@ -15,12 +15,12 @@
 
 
   <div class="time-view-container">
-    <app-single-day-view *ngIf="timeView == 'DAY'"></app-single-day-view>
-    <app-week-view *ngIf="timeView == 'WEEK'"></app-week-view>
-    <app-six-week-view *ngIf="timeView == 'SIX_WEEKS'"></app-six-week-view>
-    <app-year-view *ngIf="timeView == 'YEAR'"></app-year-view>
-    <app-multi-year-view *ngIf="timeView == 'MULTIPLE_YEARS'"></app-multi-year-view>
-    <app-custom-range-time-view [timeRange]="customViewTimeRange" *ngIf="timeView == 'CUSTOM'"></app-custom-range-time-view>
+    <app-single-day-view *ngIf="timeView == 'DAY'" [configuration]="configuration"></app-single-day-view>
+    <app-week-view *ngIf="timeView == 'WEEK'" [configuration]="configuration"></app-week-view>
+    <app-six-week-view *ngIf="timeView == 'SIX_WEEKS'" [configuration]="configuration"></app-six-week-view>
+    <app-year-view *ngIf="timeView == 'YEAR'" [configuration]="configuration"></app-year-view>
+    <app-multi-year-view *ngIf="timeView == 'MULTIPLE_YEARS'" [configuration]="configuration"></app-multi-year-view>
+    <!-- <app-custom-range-time-view [timeRange]="customViewTimeRange" *ngIf="timeView == 'CUSTOM'"></app-custom-range-time-view> -->
   </div>
 
 
