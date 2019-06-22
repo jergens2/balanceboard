@@ -23,10 +23,10 @@ import { TlefChartComponent } from "./document-data/timelog-entry/timelog-entry-
 import { ActivitySliderBarComponent } from './document-data/timelog-entry/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
 import { TlefActivitiesComponent } from './document-data/timelog-entry/timelog-entry-form/tlef-activities/tlef-activities.component';
 import { RecurringTaskFormComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/recurring-task-form.component";
-import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition/activity-category-definition-form/activity-category-definition-form.component";
 import { RtRepititionsComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/rt-repititions.component";
 import { DtlToolComponent } from './tools/tool-components/dtl-tool/dtl-tool.component';
-import { ColorPickerModule } from 'ngx-color-picker'
+import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition/activity-category-definition-form/activity-category-definition-form.component";
+
 
 
 
@@ -36,7 +36,6 @@ import { ColorPickerModule } from 'ngx-color-picker'
         ReactiveFormsModule,
         FontAwesomeModule,
         BrowserAnimationsModule,
-        ColorPickerModule,
     ],
     declarations: [
         YearViewComponent,
@@ -74,6 +73,7 @@ import { ColorPickerModule } from 'ngx-color-picker'
         TimelogEntryFormComponent,
         RecurringTaskFormComponent,
         DtlToolComponent,
+        ActivityCategoryDefinitionFormComponent,
     ]
 })
 

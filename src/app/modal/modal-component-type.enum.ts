@@ -5,4 +5,5 @@ export enum ModalComponentType{
     Task = "TASK",
     Note = "NOTE",
     RecurringTask = "RECURRING_TASK",
+    ActivityCategoryDefinition  = "ACTIVITY_CATEGORY_DEFINITION",
 }

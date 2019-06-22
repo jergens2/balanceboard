@@ -4,6 +4,14 @@
     <app-time-views [configuration]="timeViewConfiguration"></app-time-views>
   </div>
   <div class="activities-list">
-    Activities List
+    <div>
+        <span style="font-size:1.2em; font-weight:bold;">Activities List</span> <button class="small-button" style="margin-left:15px;" (click)="onClickNewActivity()">New Activity</button>
+    </div>
+    
+    <div>
+      <div *ngFor="let rootActivity of rootActivities">
+        <app-activity [activity]="rootActivity"></app-activity>
+      </div>
+    </div>
   </div>
 </div>
