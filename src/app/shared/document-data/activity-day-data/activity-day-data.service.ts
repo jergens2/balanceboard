@@ -150,7 +150,16 @@ export class ActivityDayDataService implements ServiceAuthenticates{
   }
 
   private buildActivityDayDataFromResponse(responseData: any): ActivityDayData{
-    return new ActivityDayData(responseData._id, responseData.userId, responseData.dateYYYYMMDD, responseData.activityDataItems, this.activityCategoryDefinitionService);
+    let data =  new ActivityDayData(responseData._id, responseData.userId, responseData.dateYYYYMMDD, responseData.activityDataItems, this.activityCategoryDefinitionService);
+    // console.log("Building data: ", data); 
+    let sum = 0;
+    data.activityItems.forEach((val)=>{
+      sum+= val.durationMinutes;
+    })
+    // if(sum < 1400){
+    //   console.log(data.dateYYYYMMDD + " : bad sum: " + sum);
+    // }
+    return data;
   }
 
 

@@ -26,16 +26,8 @@ export class TimelogService {
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
-
-    this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'days'), moment().endOf('day').add(1, 'days'));
+    this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'years'), moment().endOf('day').add(1, 'years'));
     this.subscribeToUpdates();
-
-    // this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'year'), moment().endOf('day').add(1, 'year'));
-
-
-
-
-
     return this._loginComplete$.asObservable();
   }
 
@@ -219,25 +211,25 @@ export class TimelogService {
     return itleActivities;
   }
 
-  private superSpecialBuildActivityDataRoutine() {
+  // private superSpecialBuildActivityDataRoutine() {
 
-      console.log("Warning: super special routine")
-      // this.timelogEntries.forEach((tle)=>{
-      //   this.ZZupdateTimelogEntry(tle)
-      // })
+  //     console.log("Warning: super special routine")
+  //     // this.timelogEntries.forEach((tle)=>{
+  //     //   this.ZZupdateTimelogEntry(tle)
+  //     // })
         
-      let startDate = moment("2018-12-17");
-      let currentDate = moment(startDate);
-      let sub = new Subscription;
-      while(currentDate.isBefore(moment())){
-        console.log("Building activity day data for date: "+ currentDate.format('YYYY-MM-DD'))
-        sub.unsubscribe();
-        let data: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, currentDate.format("YYYY-MM-DD"), this.generateActivityData(currentDate), this.activityCategoryDefinitionService )
-        this.activityDataService.httpSaveActivityDayData(data);
-        currentDate = moment(currentDate).add(1, "day");
-      }
+  //     let startDate = moment("2018-12-17");
+  //     let currentDate = moment(startDate);
+  //     let sub = new Subscription;
+  //     while(currentDate.isBefore(moment())){
+  //       console.log("Building activity day data for date: "+ currentDate.format('YYYY-MM-DD'))
+  //       sub.unsubscribe();
+  //       let data: ActivityDayData = new ActivityDayData("", this._authStatus.user.id, currentDate.format("YYYY-MM-DD"), this.generateActivityData(currentDate), this.activityCategoryDefinitionService )
+  //       this.activityDataService.httpSaveActivityDayData(data);
+  //       currentDate = moment(currentDate).add(1, "day");
+  //     }
 
-  }
+  // }
 
 
 
@@ -264,6 +256,18 @@ export class TimelogService {
 
 
   private updateActivityData(timelogEntry: TimelogEntry) {
+
+
+    // for(let date = moment("2019-01-01"); date.isBefore(moment("2019-06-20")); date = moment(date).add(1,"days")){
+    //   console.log("Doing the thing: ", date.format("YYYY-MM-DD"));
+      
+    //   let activityData: ActivityDayDataItem[] = this.generateActivityData(date);
+    //   this.activityDataService.httpUpdateActivityDayDataByDate(date, activityData);
+    // }
+
+
+
+
     if(timelogEntry.startTime.format('YYYY-MM-DD') == timelogEntry.endTime.format('YYYY-MM-DD')){
       let activityData: ActivityDayDataItem[] = this.generateActivityData(timelogEntry.startTime);
       this.activityDataService.httpUpdateActivityDayDataByDate(timelogEntry.startTime, activityData);
@@ -281,7 +285,7 @@ export class TimelogService {
       let crossesEnd: boolean = (timelogEntry.startTime.isBefore(date.endOf("day")) && timelogEntry.endTime.isSameOrAfter(date.endOf("day")));
       return (crossesStart || isDuring || crossesEnd);
     });
-    console.log("  TimelogEntries for date " + date.format('YYYY-MM-DD'), timelogEntries);
+    // console.log("  TimelogEntries for date " + date.format('YYYY-MM-DD') + "("+timelogEntries.length+")", timelogEntries);
     let activityData: ActivityDayDataItem[] = [];
     timelogEntries.forEach((timelogEntry: TimelogEntry) => {
       let crossesStart: boolean = (timelogEntry.startTime.isSameOrBefore(date.startOf("day")) && timelogEntry.endTime.isAfter(date.startOf("day")));
@@ -326,6 +330,7 @@ export class TimelogService {
       }
       return 0;
     });
+    console.log("Returning activity data: ", activityData);
     return activityData;
   }
 

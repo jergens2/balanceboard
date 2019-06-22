@@ -173,7 +173,12 @@ export class AuthenticationService {
 
 
       timerSubscription = timer(200, 200).subscribe(() => {
-        console.log("Auth:" , this._serviceAuthentications)
+        console.log("Not yet authenticated: ");
+        this._serviceAuthentications.forEach((val)=>{
+          if(!val.isAuthenticated){
+            console.log("  ", val.name);
+          }
+        });
         allComplete = true;
         this._serviceAuthentications.forEach((serviceAuth) => {
           if (serviceAuth.isAuthenticated == false) {
