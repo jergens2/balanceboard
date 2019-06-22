@@ -9,6 +9,8 @@ import { Modal } from '../../../../modal/modal.class';
 import { IModalOption } from '../../../../modal/modal-option.interface';
 import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 
+
+
 @Component({
   selector: 'app-activity-category-definition-form',
   templateUrl: './activity-category-definition-form.component.html',
@@ -27,19 +29,22 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
   parentActivity: ActivityCategoryDefinition = null;
 
-  @Input() public set activity(activity: ActivityCategoryDefinition) {
-    this._activity = activity;
-    this._action = "edit";
-    let topLevelActivityString = activity.userId + "_TOP_LEVEL";
-    if (activity.parentTreeId == topLevelActivityString) {
-      this.ifTopLevelActivity = true;
-      this.parentActivity = null;
-    } else {
-      this.ifTopLevelActivity = false;
-      this.parentActivity = this.activityCategoryDefinitionService.findActivityByTreeId(activity.parentTreeId);
+  @Input("activityCategoryDefinition") public set activity(activity: ActivityCategoryDefinition) {
+    if(activity){
+      this._activity = activity;
+      this._action = "edit";
+      let topLevelActivityString = activity.userId + "_TOP_LEVEL";
+      if (activity.parentTreeId == topLevelActivityString) {
+        this.ifTopLevelActivity = true;
+        this.parentActivity = null;
+      } else {
+        this.ifTopLevelActivity = false;
+        this.parentActivity = this.activityCategoryDefinitionService.findActivityByTreeId(activity.parentTreeId);
+      }
+  
+      this.colorPickerValue = activity.color;
     }
-
-    this.colorPickerValue = activity.color;
+    
   }
   public get activity(): ActivityCategoryDefinition {
     return this._activity;
@@ -53,7 +58,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     return this._action;
   }
 
-  @Output() formClosed: EventEmitter<string> = new EventEmitter<string>();
+  // @Output() formClosed: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private modalService: ModalService) { }
 
@@ -113,7 +118,8 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
   }
 
   onClickCancel() {
-    this.formClosed.emit("CANCEL");
+    // this.formClosed.emit("CANCEL");
+    this.modalService.closeModal();
   }
 
   onClickSaveActivity() {
@@ -140,7 +146,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
         let saveNewActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition('', '', '', this.activityForm.controls['name'].value, this.activityForm.controls['description'].value, parentActivityId, this.activityForm.controls['color'].value);
         this.activityCategoryDefinitionService.saveActivity(saveNewActivity);
-        this.formClosed.emit("SAVE_NEW");
+        // this.formClosed.emit("SAVE_NEW");
       } else {
         console.log("Is parentActivityID null ? ", parentActivityId);
         console.log("Error : Form is invalid.");
@@ -156,14 +162,21 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
         modifyActivity.parentTreeId = parentActivityId;
         modifyActivity.color =  this.activityForm.controls['color'].value;
         this.activityCategoryDefinitionService.updateActivity(modifyActivity);
-        this.formClosed.emit("SAVE_EDIT");
+        // this.formClosed.emit("SAVE_EDIT");
       } else {
         console.log("Error : Form is invalid.")
       }
     }
 
 
+    this.modalService.closeModal();
+  }
 
+  public get saveDisabled(): string{
+    if(this.activityForm.invalid){
+      return "disabled";
+    }
+    return "";
   }
 
   onClickDeleteActivity(){   
@@ -181,7 +194,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     let modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
       if(selectedOption.value == "Yes"){
         this.activityCategoryDefinitionService.deleteActivity(this.activity);
-        this.formClosed.emit("DELETE");
+        // this.formClosed.emit("DELETE");
       }else if(selectedOption.value == "No"){
 
       }else{

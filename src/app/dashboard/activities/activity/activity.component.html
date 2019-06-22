@@ -1,0 +1,13 @@
+<div class="activity-root">
+  <div class="header-container">
+    <div [style.background-color]="activity.color" class="header">
+      {{ activity.name }}
+    </div>
+
+  </div>
+  <div>
+    <div *ngFor="let childActivity of activity.children" class="child-activity">
+      <app-activity [activity]="childActivity"></app-activity>
+    </div>
+  </div>
+</div>

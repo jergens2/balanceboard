@@ -8,6 +8,9 @@ import { ActivityDayData, ActivityDayDataItem } from '../../shared/document-data
 import { TimeViewDayData } from '../../shared/time-views/time-view-day-data-interface';
 import * as moment from 'moment';
 import { ActivityCategoryDefinition } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
+import { ModalService } from '../../modal/modal.service';
+import { Modal } from '../../modal/modal.class';
+import { ModalComponentType } from '../../modal/modal-component-type.enum';
 
 @Component({
   selector: 'app-activities',
@@ -16,7 +19,10 @@ import { ActivityCategoryDefinition } from '../../shared/document-definitions/ac
 })
 export class ActivitiesComponent implements OnInit {
 
-  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private activityDataService: ActivityDayDataService) { }
+  constructor(
+    private activityCategoryDefinitionService: ActivityCategoryDefinitionService, 
+    private activityDataService: ActivityDayDataService,
+    private modalService: ModalService) { }
 
   private activityTree: ActivityTree;
   private allActivityData: ActivityDayData[] = [];
@@ -33,7 +39,27 @@ export class ActivitiesComponent implements OnInit {
       this.buildTimeViewConfiguration();
     });
     this.buildTimeViewConfiguration();
+
+    console.log("Root: ", this.activityTree.rootActivities)
   }
+
+
+  public get rootActivities(): ActivityCategoryDefinition[]{
+    if(this.activityTree){
+      return this.activityTree.rootActivities;
+    }else{
+      return [];
+    }
+  }
+
+  onClickNewActivity(){
+    let modal: Modal = new Modal("New Activity", "", null, [], null, ModalComponentType.ActivityCategoryDefinition)
+    this.modalService.activeModal = modal;
+    this.modalService.modalResponse$.subscribe((response)=>{
+      console.log("modal response:", response);
+    });
+  }
+
 
   private _timeViewConfiguration: TimeViewConfiguration;
   private buildTimeViewConfiguration() {

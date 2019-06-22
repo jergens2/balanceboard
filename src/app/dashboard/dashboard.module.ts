@@ -46,6 +46,7 @@ import { TreemapTaskGroupComponent } from './tasks/views/treemap-view/treemap-ta
 import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.component';
 import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule-planner.component';
 import { ActivitiesComponent } from './activities/activities.component';
+import { ActivityComponent } from './activities/activity/activity.component';
 
 
 @NgModule({
@@ -95,6 +96,8 @@ import { ActivitiesComponent } from './activities/activities.component';
     SchedulePlannerComponent,
 
     ActivitiesComponent,
+
+    ActivityComponent,
 
   ],
   providers: [],
