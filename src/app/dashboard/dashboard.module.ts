@@ -46,11 +46,8 @@ import { TreemapTaskGroupComponent } from './tasks/views/treemap-view/treemap-ta
 import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.component';
 import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule-planner.component';
 import { ActivitiesComponent } from './activities/activities.component';
-<<<<<<< HEAD
 import { SocialComponent } from './social/social.component';
-=======
 import { ActivityComponent } from './activities/activity/activity.component';
->>>>>>> wowza
 
 
 @NgModule({
@@ -101,11 +98,8 @@ import { ActivityComponent } from './activities/activity/activity.component';
 
     ActivitiesComponent,
 
-<<<<<<< HEAD
     SocialComponent,
-=======
     ActivityComponent,
->>>>>>> wowza
 
   ],
   providers: [],
