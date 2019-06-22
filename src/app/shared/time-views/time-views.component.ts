@@ -5,6 +5,7 @@ import { TimeViewDataSource } from './time-view-data-source.enum';
 import { ActivityDayDataService } from '../document-data/activity-day-data/activity-day-data.service';
 import { ActivityDayData } from '../document-data/activity-day-data/activity-day-data.class';
 import { TimeViewConfiguration } from './time-view-configuration.interface';
+import { TimeViewDayData } from './time-view-day-data-interface';
 
 @Component({
   selector: 'app-time-views',
@@ -33,6 +34,10 @@ export class TimeViewsComponent implements OnInit {
     // }else{
     //   console.log("No configuration was provided.")
     // }
+  }
+
+  onDateClicked(day: TimeViewDayData){
+    console.log("Date clicked: ", day);
   }
 
 

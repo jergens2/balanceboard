@@ -3,8 +3,22 @@
     flex-direction: column;
 }
 
-.incoming-request, .outgoing-request{
-    padding:3px;
-    border:1px solid rgb(209, 209, 209);
+.requests{
+    display:flex;
+    flex-direction: column;
+}
+
+.request-container{
+    
+    
     margin:3px;
+    display:flex;
+    flex-direction: row;
+}
+.request{
+    border:1px solid rgb(209, 209, 209);
+    padding:5px;
+    flex-shrink: 2;
+    display:flex;
+    flex-direction: column;
 }

@@ -15,7 +15,7 @@
               <div *ngFor="let day of month.daysOfMonth" class="day-container">
                 <div *ngIf="day == null" class="null-day" ></div>
                 <div *ngIf="day != null" class="day" [ngClass]="{'highlighted-day':day.isHighlighted}" [ngStyle]="day.style"
-                  (mousedown)="onMouseDownDay(day)" (mouseover)="onMouseOverDay(day, $event)" (mouseup)="onMouseUpDay(day)">
+                  (mousedown)="onMouseDownDay(day)" (mouseover)="onMouseOverDay(day, $event)" (mouseup)="onMouseUpDay(day)" (click)="onClickDay(day)">
                   <div class="day-date" *ngIf="day.date">
                     {{ day.date.format('DD') }}
                   </div>
