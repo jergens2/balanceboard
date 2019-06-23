@@ -76,15 +76,16 @@ export class AuthenticationService {
   loginAttempt$: Subject<boolean> = new Subject();
 
   loginAttempt(authData: AuthData) {
+    console.log("Login attempt:", authData);
     this.http.post<{ message: string, data: any }>(this.serverUrl + "/api/authentication/authenticate", authData)
       .pipe<AuthStatus>(map((response) => {
-        let settings: any[] = Object.assign([], response.data.user.userSettings);
+        let settings: any[] = Object.assign([], response.data.userAccount.userSettings);
         let userSettings: UserSetting[] = [];
         for (let setting of settings) {
           let userSetting: UserSetting = new UserSetting(setting.name, setting.booleanValue, setting.numericValue, setting.stringValue);
           userSettings.push(userSetting);
         }
-        let responseAuthStatus = new AuthStatus(response.data.token, new User(response.data.user._id, response.data.user.email, userSettings), true);
+        let responseAuthStatus = new AuthStatus(response.data.token, new User(response.data.userAccount._id, response.data.userAccount.email, userSettings), true);
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
@@ -92,6 +93,7 @@ export class AuthenticationService {
         this.loginRoutine(authStatus);
 
       }, (error) => {
+        console.log("Login attempt failed: ", error);
         this.loginAttempt$.next(false);
       })
   }

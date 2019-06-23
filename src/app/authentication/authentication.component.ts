@@ -29,7 +29,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   formMessage: string = "";
   errorMessage: string = "";
 
-  authData: AuthData = { user: null, password: '' };
+  authData: AuthData = { userAccount: null, password: '' };
 
 
   registrationForm: FormGroup;
@@ -73,7 +73,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
 
     if (this.loginForm.valid) {
       let loginUser = new User('', this.loginForm.controls['emailAddress'].value, []);
-      this.authData = { user: loginUser, password: this.loginForm.controls['password'].value }
+      this.authData = { userAccount: loginUser, password: this.loginForm.controls['password'].value }
       this.authService.loginAttempt$.subscribe((successful: boolean) => {
         if(successful){
           this.setAction("waiting");
@@ -130,7 +130,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
       this.setAction("waiting");
       let defaultSettings: UserSetting[] = this.userSettingsService.createDefaultSettings();
       let newUser = new User(null, this.registrationForm.controls['emailAddress'].value, defaultSettings);
-      this.authData = { user: newUser, password: this.registrationForm.controls['password'].value };
+      this.authData = { userAccount: newUser, password: this.registrationForm.controls['password'].value };
       this.authService.registerUser$(this.authData).subscribe((response: { data: any, message: string }) => {
         if (response != null) {
           this.setAction("successful_registration");
