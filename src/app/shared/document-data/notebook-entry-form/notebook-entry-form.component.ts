@@ -38,7 +38,7 @@ export class NotebookEntryFormComponent implements OnInit {
 
   ngOnInit() {
     this.notepadForm = new FormGroup({
-      'dateCreated': new FormControl(this._currentDate.format('YYYY-MM-DD'), Validators.required),
+      "journalDate": new FormControl(this._currentDate.format('YYYY-MM-DD'), Validators.required),
       "title": new FormControl("", Validators.required),
       "tags": new FormControl(""),
       "noteBody": new FormControl(null, Validators.required),
@@ -65,13 +65,15 @@ export class NotebookEntryFormComponent implements OnInit {
   onClickSaveNote(){
 
     let textContent = this.notepadForm.get('noteBody').value;
-    let title = this.notepadForm.get('title').value;
+    let title = this.notepadForm.get('title').value; 
     let tags: string[] = this.getTags((this.notepadForm.get('tags').value as string));
-    console.log("tags are:", tags);
+    let journalDate: moment.Moment = this.notepadForm.controls['journalDate'].value;
 
-    let notebookEntry: NotebookEntry = new NotebookEntry('','', moment(), NotebookEntryTypes.Note, textContent, title, tags);
 
-    this.notebooksService.saveNotebookEntry(notebookEntry);
+    let notebookEntry: NotebookEntry = new NotebookEntry('','', journalDate, NotebookEntryTypes.Note, textContent, title, tags);
+
+    console.log("Saving note:", notebookEntry);
+    // this.notebooksService.saveNotebookEntry(notebookEntry);
     this.toolsService.closeTool(ToolComponents.Notepad);
   }
 
@@ -87,5 +89,9 @@ export class NotebookEntryFormComponent implements OnInit {
   }
 
 
+  setDate: boolean = false;
+  onClickSetDate(){
+    this.setDate = true;
+  }
 
 }

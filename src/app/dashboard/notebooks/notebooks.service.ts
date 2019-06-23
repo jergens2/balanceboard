@@ -96,6 +96,7 @@ export class NotebooksService {
 
   private saveNotebookEntryHttp(notebookEntry: NotebookEntry) {
 
+    notebookEntry.userId = this._authStatus.user.id;
 
     let requestUrl: string = this.serverUrl + "/api/notebook/create";
     const httpOptions = {
@@ -105,18 +106,7 @@ export class NotebooksService {
       })
     };
 
-    let requestBody: any = {
-      userId: this._authStatus.user.id,
-      journalDate: notebookEntry.journalDate.toISOString(),
-      dateCreated: notebookEntry.dateCreated.toISOString(),
-      dateModified: notebookEntry.dateModified.toISOString(),
-      type: notebookEntry.type,
-      textContent: notebookEntry.textContent,
-      title: notebookEntry.title,
-      tags: notebookEntry.tags,
-      data: notebookEntry.data,
-    };
-
+    let requestBody: any = notebookEntry.httpSave;
 
 
     this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)

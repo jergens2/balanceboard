@@ -5,6 +5,34 @@ import { NotebookEntryTypes } from './notebook-entry-types.enum';
 
 export class NotebookEntry {
 
+    public get httpSave(): any{
+        return {
+            userId: this.userId,
+            journalDate: this.journalDate.toISOString(),
+            dateCreated: this.dateCreated.toISOString(),
+            dateModified: this.dateModified.toISOString(),
+            type: this.type,
+            textContent: this.textContent,
+            title: this.title,
+            tags: this.tags,
+            data: this.data,
+          };      
+    }
+    public get httpUpdate(): any{
+        return {
+            id: this.id,
+            userId: this.userId,
+            journalDate: this.journalDate.toISOString(),
+            dateCreated: this.dateCreated.toISOString(),
+            dateModified: this.dateModified.toISOString(),
+            type: this.type,
+            textContent: this.textContent,
+            title: this.title,
+            tags: this.tags,
+            data: this.data,
+          };      
+    }
+
     id: string;
     userId: string;
 
