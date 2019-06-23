@@ -67,13 +67,13 @@ export class NotebookEntryFormComponent implements OnInit {
     let textContent = this.notepadForm.get('noteBody').value;
     let title = this.notepadForm.get('title').value; 
     let tags: string[] = this.getTags((this.notepadForm.get('tags').value as string));
-    let journalDate: moment.Moment = this.notepadForm.controls['journalDate'].value;
+    let journalDate: moment.Moment = moment(this.notepadForm.controls['journalDate'].value);
 
 
     let notebookEntry: NotebookEntry = new NotebookEntry('','', journalDate, NotebookEntryTypes.Note, textContent, title, tags);
 
-    console.log("Saving note:", notebookEntry);
-    // this.notebooksService.saveNotebookEntry(notebookEntry);
+    // console.log("Saving note:", notebookEntry);
+    this.notebooksService.saveNotebookEntry(notebookEntry);
     this.toolsService.closeTool(ToolComponents.Notepad);
   }
 
