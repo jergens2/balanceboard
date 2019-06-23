@@ -80,6 +80,7 @@ export class AuthenticationService {
   loginAttempt$: Subject<boolean> = new Subject();
 
   loginAttempt(authData: AuthData) {
+    console.log("Login attempt:", authData);
     this.http.post<{ message: string, data: any }>(this.serverUrl + "/api/authentication/authenticate", authData)
       .pipe<AuthStatus>(map((response) => {
         let settings: any[] = Object.assign([], response.data.userAccount.userSettings);
@@ -96,6 +97,7 @@ export class AuthenticationService {
         this.loginRoutine(authStatus);
 
       }, (error) => {
+        console.log("Login attempt failed: ", error);
         this.loginAttempt$.next(false);
       })
   }

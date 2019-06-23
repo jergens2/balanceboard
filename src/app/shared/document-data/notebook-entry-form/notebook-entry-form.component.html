@@ -1,7 +1,12 @@
 <div class="notepad-root">
   <div class="notepad-body" [formGroup]="notepadForm">
     <div class="body-row">
-      {{ date }}
+      <div class="static-date" *ngIf="!setDate" (click)="onClickSetDate()">
+          {{ date }}
+      </div>
+      <div *ngIf="setDate">
+        <input type="date" formControlName="journalDate" class="clean-input">
+      </div>
     </div>
     <div class="body-row">
       <input type="text" formControlName="title" placeholder="Title" class="notepad-input" style="font-weight:bold;">
