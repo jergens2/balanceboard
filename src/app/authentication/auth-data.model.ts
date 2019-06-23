@@ -1,6 +1,7 @@
-import { User } from "./user.model";
+
+import { UserAccount } from "../shared/document-definitions/user-account/user-account.class";
 
 export interface AuthData { 
-    userAccount: User;
+    userAccount: UserAccount;
     password: string;
 }
