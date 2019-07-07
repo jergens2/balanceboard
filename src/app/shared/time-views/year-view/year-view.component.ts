@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { SizeService } from '../../app-screen-size/size.service';
 import { AppScreenSize } from '../../app-screen-size/app-screen-size.enum';
 import { OnScreenSizeChanged } from '../../app-screen-size/on-screen-size-changed.interface';
-import { IYearViewData } from './year-view-data.interface';
+import { YearViewData } from './year-view-data.interface';
 import { TimeViewsService } from '../time-views.service';
 import { TimeViewDayData } from '../time-view-day-data-interface';
 import { TimeViewConfiguration } from '../time-view-configuration.interface';
