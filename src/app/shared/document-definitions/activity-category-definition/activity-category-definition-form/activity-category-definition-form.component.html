@@ -5,9 +5,14 @@
       <div class="header-name">
         <span>{{ headerAction }}</span><span style="font-weight:bold;font-size:1.1em;">{{ activityName }}</span>
       </div>
-      <div class="header-margin">
-        <button *ngIf="this.action == 'edit'" class="btn btn-sm btn-danger header-delete-button"
-          (click)="onClickDeleteActivity()">Delete Activity</button>
+      <div class="header-margin header-delete-button" *ngIf="this.action == 'edit'">
+        <div *ngIf="!confirmDelete">
+            <button  class="btn btn-sm btn-secondary"
+            (click)="onClickTrash()"><fa-icon [icon]="faTrashAlt"></fa-icon></button>
+        </div>
+        <div *ngIf="confirmDelete">
+            <button class="btn btn-sm btn-danger" (click)="onClickDeleteActivity()">Confirm: delete <span style="font-weight: bold;">{{ activityName }}</span>?</button>
+        </div>
       </div>
 
 

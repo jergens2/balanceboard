@@ -3,7 +3,7 @@ import { ActivityCategoryDefinition } from '../activity-category-definition.clas
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivityCategoryDefinitionService } from '../activity-category-definition.service';
 import { ActivityTree } from '../activity-tree.class';
-import { faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons';
+import { faCheckCircle, faCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { ModalService } from '../../../../modal/modal.service';
 import { Modal } from '../../../../modal/modal.class';
 import { IModalOption } from '../../../../modal/modal-option.interface';
@@ -20,6 +20,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
   faCheckCircle = faCheckCircle;
   faCircle = faCircle;
+  faTrashAlt = faTrashAlt;
 
   ifTopLevelActivity: boolean = true;
 
@@ -180,29 +181,13 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     return "";
   }
 
-  onClickDeleteActivity(){   
-    let modalOptions: IModalOption[] = [
-      {
-        value: "Yes",
-        dataObject: null
-      },
-      {
-        value: "No",
-        dataObject: null
-      }
-    ];  
-    let modal: Modal = new Modal("Delect Activity", "Confirm: Delete Activity?", null, modalOptions, {}, ModalComponentType.Default);
-    let modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption)=>{
-      if(selectedOption.value == "Yes"){
-        this.activityCategoryDefinitionService.deleteActivity(this.activity);
-        // this.formClosed.emit("DELETE");
-      }else if(selectedOption.value == "No"){
-
-      }else{
-        //error 
-      }
-    });
-    this.modalService.activeModal = modal;
+  confirmDelete: boolean = false;
+  onClickTrash(){   
+    this.confirmDelete = true;
+  }
+  onClickDeleteActivity(){
+    this.activityCategoryDefinitionService.deleteActivity(this.activity);
+    this.modalService.closeModal();
   }
 
 }

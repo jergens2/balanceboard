@@ -52,7 +52,6 @@ export class ActivityComponent implements OnInit {
         value: "Cancel",
         dataObject: null,
       }
-
     ]
     let modal: Modal = new Modal("Delect Activity: "+this.activity.name + "?", "", null, modalOptions, null, ModalComponentType.Confirm);
     this.modalService.activeModal = modal;
