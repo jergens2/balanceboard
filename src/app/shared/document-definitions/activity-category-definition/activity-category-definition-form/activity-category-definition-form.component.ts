@@ -172,9 +172,11 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
   }
 
   public get saveDisabled(): string{
-    if(this.activityForm.invalid){
-      return "disabled";
-    }
+    // if(this.activityForm.valid){
+    //   return "";
+    // }else{
+    //   return "disabled";
+    // }
     return "";
   }
 

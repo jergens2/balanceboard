@@ -19,30 +19,30 @@ import { ModalComponentType } from '../../modal/modal-component-type.enum';
 })
 export class ActivitiesComponent implements OnInit {
 
-/*
-
-For each activity, properties to have:
--increase or decrease hours per week?
--generic priority
--activity related to time (duration) or incidences (count), example brush teeth, smoke cigarette, thc, alcohol, etc.  
--mental focus required (high, normal, low)
--enjoyment (high, normal, low)
--purpose statement (why do you do this?)
--ideal range rules, recurrences:
-  -- this will merge into recurring activities  
-  e.g. once per day, twice per day, 45 min per day is good, 2 hours per day is too much / unnecessary
-  overwatch:  0-5 hours per week is good
-              5-10 hours per week is acceptable
-              over 10 hours per week is bad.
--mandatoryness
-
-*/
+  /*
+  
+  For each activity, properties to have:
+  -increase or decrease hours per week?
+  -generic priority
+  -activity related to time (duration) or incidences (count), example brush teeth, smoke cigarette, thc, alcohol, etc.  
+  -mental focus required (high, normal, low)
+  -enjoyment (high, normal, low)
+  -purpose statement (why do you do this?)
+  -ideal range rules, recurrences:
+    -- this will merge into recurring activities  
+    e.g. once per day, twice per day, 45 min per day is good, 2 hours per day is too much / unnecessary
+    overwatch:  0-5 hours per week is good
+                5-10 hours per week is acceptable
+                over 10 hours per week is bad.
+  -mandatoryness
+  
+  */
 
 
 
 
   constructor(
-    private activityCategoryDefinitionService: ActivityCategoryDefinitionService, 
+    private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
     private activityDataService: ActivityDayDataService,
     private modalService: ModalService) { }
 
@@ -67,18 +67,18 @@ For each activity, properties to have:
   }
 
 
-  public get rootActivities(): ActivityCategoryDefinition[]{
-    if(this.activityTree){
+  public get rootActivities(): ActivityCategoryDefinition[] {
+    if (this.activityTree) {
       return this.activityTree.rootActivities;
-    }else{
+    } else {
       return [];
     }
   }
 
-  onClickNewActivity(){
+  onClickNewActivity() {
     let modal: Modal = new Modal("New Activity", "", null, [], null, ModalComponentType.ActivityCategoryDefinition)
     this.modalService.activeModal = modal;
-    this.modalService.modalResponse$.subscribe((response)=>{
+    this.modalService.modalResponse$.subscribe((response) => {
       console.log("modal response:", response);
     });
   }
@@ -99,11 +99,11 @@ For each activity, properties to have:
       }
     }
 
-    function findTopActivity(data: ActivityDayData): ActivityDayDataItem{
-      let result: ActivityDayDataItem = data.activityItems.find((activityItem)=>{
+    function findTopActivity(data: ActivityDayData): ActivityDayDataItem {
+      let result: ActivityDayDataItem = data.activityItems.find((activityItem) => {
         return activityItem.activityTreeId != "5b9c362dd71b00180a7cf701_default_sleep";
       });
-      if(!result){
+      if (!result) {
         result = data.activityItems[0];
       }
       return result;

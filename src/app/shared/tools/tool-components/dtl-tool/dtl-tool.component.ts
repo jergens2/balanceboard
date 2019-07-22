@@ -50,7 +50,7 @@ export class DtlToolComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // this.dtclItems = [];
     
-    let today: moment.Moment = moment();
+    const today: moment.Moment = moment();
 
     this.dailyTaskListService.dailyTaskLists$.subscribe((allDTLs: DailyTaskList[])=>{
       this.dailyTaskList = this.dailyTaskListService.todaysDailyTaskList;
