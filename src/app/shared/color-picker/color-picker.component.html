@@ -1,3 +1,6 @@
 <div class="color-picker-root">
-  <div class="color-value" *ngFor="let value of colorPickerValues" [style.background-color]="value"></div>
+  <div class="values-container">
+      <div class="color-value" *ngFor="let value of colorPickerValues" [style.background-color]="value" (click)="onClickColor(value)"></div>
+  </div>
+ 
 </div>

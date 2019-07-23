@@ -7,11 +7,13 @@
       </div>
       <div class="header-margin header-delete-button" *ngIf="this.action == 'edit'">
         <div *ngIf="!confirmDelete">
-            <button  class="btn btn-sm btn-secondary"
-            (click)="onClickTrash()"><fa-icon [icon]="faTrashAlt"></fa-icon></button>
+          <button class="btn btn-sm btn-secondary" (click)="onClickTrash()">
+            <fa-icon [icon]="faTrashAlt"></fa-icon>
+          </button>
         </div>
         <div *ngIf="confirmDelete">
-            <button class="btn btn-sm btn-danger" (click)="onClickDeleteActivity()">Confirm: delete <span style="font-weight: bold;">{{ activityName }}</span>?</button>
+          <button class="btn btn-sm btn-danger" (click)="onClickDeleteActivity()">Confirm: delete <span
+              style="font-weight: bold;">{{ activityName }}</span>?</button>
         </div>
       </div>
 
@@ -50,19 +52,21 @@
 
       </div>
       <div class="form-row">
-        <div class="form-row-label">Color</div>
-        <!-- <input class="form-control form-row-input" type="text" placeholder="Color" formControlName="color"
-          [style.background]="colorPickerValue" [(colorPicker)]="colorPickerValue" [value]="colorPickerValue"
-          [cpPosition]="'bottom'"> -->
+        <div class="form-row-label" style="display:flex;flex-direction: row;">
+          Color
+          <div *ngIf="colorPicked" style="margin-left:15px;display:flex;flex-direction: row;align-items: center;">
+            <div class="color-block" [style.background-color]="pickedColor"></div>
+            <div>{{ pickedColor }}</div>
+          </div>
+        </div>
+        <app-color-picker (colorSelected)="onColorSelected($event)"></app-color-picker>
+      </div>
 
+      <div class="action-buttons">
+        <button class="btn btn-primary btn-sm m-1" (click)="onClickSaveActivity()" [disabled]="saveDisabled">Save
+          Activity</button>
+        <button class="btn btn-secondary btn-sm m-1" (click)="onClickCancel()">Cancel</button>
       </div>
 
     </div>
-
-    <div class="action-buttons">
-      <button class="btn btn-primary btn-sm m-1" (click)="onClickSaveActivity()" [disabled]="saveDisabled">Save Activity</button>
-      <button class="btn btn-secondary btn-sm m-1" (click)="onClickCancel()">Cancel</button>
-    </div>
-
   </div>
-</div>

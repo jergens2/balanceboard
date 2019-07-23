@@ -42,7 +42,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
         this.parentActivity = this.activityCategoryDefinitionService.findActivityByTreeId(activity.parentTreeId);
       }
   
-      this.colorPickerValue = activity.color;
+      this.pickedColor = activity.color;
     }
     
   }
@@ -64,7 +64,8 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
   activityForm: FormGroup = null;
   private activityTree: ActivityTree = null;
-  colorPickerValue: string = "#fafafa";
+  pickedColor: string = "#fafafa";
+
 
 
 
@@ -117,6 +118,12 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     }
   }
 
+  colorPicked: boolean = false;
+  onColorSelected(value: string){
+    this.colorPicked = true;
+    this.pickedColor = value;
+  }
+
   onClickCancel() {
     // this.formClosed.emit("CANCEL");
     this.modalService.closeModal();
@@ -124,7 +131,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
   onClickSaveActivity() {
 
-    this.activityForm.patchValue({'color': this.colorPickerValue});
+    // this.activityForm.patchValue({'color': this.pickedColor});
 
     let parentActivityId: string;
     if (this.ifTopLevelActivity) {
@@ -189,5 +196,6 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     this.activityCategoryDefinitionService.deleteActivity(this.activity);
     this.modalService.closeModal();
   }
+
 
 }
