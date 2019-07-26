@@ -20,7 +20,8 @@ import { SocialService } from '../shared/document-definitions/user-account/socia
 export class AuthenticationComponent implements OnInit, OnDestroy {
 
 
-  faKey = faKey;
+
+  faKey = faKey; 
   faUser = faUser;
   faUnlock = faUnlock;
   faSpinner = faSpinner;
