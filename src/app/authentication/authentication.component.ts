@@ -4,6 +4,7 @@ import { AuthenticationService } from './authentication.service';
 import { AuthData } from './auth-data.interface';
 import { AuthStatus } from './auth-status.class';
 import { faKey, faUser, faUnlock, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { UserAccount } from '../shared/document-definitions/user-account/user-account.class';
 import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
 import { UserSettingsService } from '../shared/document-definitions/user-account/user-settings/user-settings.service';
@@ -19,8 +20,8 @@ import { SocialService } from '../shared/document-definitions/user-account/socia
 })
 export class AuthenticationComponent implements OnInit, OnDestroy {
 
-
-
+  
+  faGithub = faGithub;
   faKey = faKey; 
   faUser = faUser;
   faUnlock = faUnlock;

@@ -22,13 +22,13 @@ export class TreemapViewComponent implements OnInit {
 
   taskGroups: TaskGroup[] = [];
 
-  @ViewChild('treeContainer') treeContainerElement: ElementRef;
+  // @ViewChild('treeContainer') treeContainerElement: ElementRef;
 
   @HostListener('window:resize', ['$event']) onResize(event) {
     console.log("HOSTLISTENER RESIZE:");
-    let height: number = this.treeContainerElement.nativeElement.clientHeight;
-    let width: number = this.treeContainerElement.nativeElement.clientWidth;
-    this.buildTreeMap(width, height);
+    // let height: number = this.treeContainerElement.nativeElement.clientHeight;
+    // let width: number = this.treeContainerElement.nativeElement.clientWidth;
+    // this.buildTreeMap(width, height);
   }
 
   ngOnInit() {
@@ -51,10 +51,10 @@ export class TreemapViewComponent implements OnInit {
     });
 
 
-    let height: number = this.treeContainerElement.nativeElement.clientHeight;
-    let width: number = this.treeContainerElement.nativeElement.clientWidth;
+    // let height: number = this.treeContainerElement.nativeElement.clientHeight;
+    // let width: number = this.treeContainerElement.nativeElement.clientWidth;
     //For some reason that I'm not quite sure why, I need to subract 10 for the first time;
-    this.buildTreeMap(width, height-10);
+    // this.buildTreeMap(width, height-10);
   }
 
 

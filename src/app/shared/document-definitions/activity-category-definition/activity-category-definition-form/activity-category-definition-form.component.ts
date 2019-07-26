@@ -76,7 +76,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
         'name': new FormControl(null, Validators.required),
         'description': new FormControl(),
         'parent': new FormControl(null, Validators.required),
-        'color': new FormControl(null, Validators.required)
+        'color': new FormControl("#ffffff", Validators.required)
 
       });
     } else if (this._action == "edit") {
