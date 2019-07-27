@@ -1,5 +1,6 @@
-<div class="root">
-  <div class="authentication">
+<div class="root background-image">
+
+  <div class="authentication" >
     <div class="title">
       balanceboard
     </div>
@@ -9,37 +10,53 @@
     </div>
 
     <div class="form-area">
+
+      <!-- INITIAL -->
       <div *ngIf="action == 'welcome'">
-        <button class="btn btn-block btn-primary" style="grid-row:1 / span 1; grid-column: 1 / -1;" (click)="this.action = 'login'">
+        <button class="btn login-button" style="grid-row:1 / span 1; grid-column: 1 / -1;"
+          (click)="this.action = 'login'">
           Login
+          <fa-icon [icon]="faSignInAlt" style="font-size:0.7em;"></fa-icon>
         </button>
-        <button class="btn btn-block btn-secondary" style="grid-row:2 / span 1; grid-column: 1 / -1;" (click)="this.action = 'register'">
-          Sign Up
+        <button class="btn signup-button" style="grid-row:2 / span 1; grid-column: 1 / -1;"
+          (click)="this.action = 'register'">
+          Sign Up 
+          <fa-icon [icon]="faUserPlus" style="font-size:0.7em;"></fa-icon>
         </button>
-
-
       </div>
+      <!-- end of INITIAL -->
 
+
+
+      <!-- LOGIN -->
       <div *ngIf="action == 'login'" [formGroup]="loginForm">
         <div class="input-container">
-          <input formControlName="emailAddress" type="email" class="form-control" placeholder="email" style="grid-row:1 / span 1; grid-column: 1 / -1;">
+          <input formControlName="emailAddress" type="email" class="form-control" placeholder="email"
+            style="grid-row:1 / span 1; grid-column: 1 / -1;">
           <fa-icon [icon]="faUser" class="auth-icon" style="grid-row:1 / span 1; grid-column: 2 / span 1;"></fa-icon>
-          <input formControlName="password" type="password" class="form-control" placeholder="password" style="grid-row:2 / span 1; grid-column: 1 / -1;">
+          <input formControlName="password" type="password" class="form-control" placeholder="password"
+            style="grid-row:2 / span 1; grid-column: 1 / -1;">
           <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
         </div>
 
         <div class="action-buttons-container">
-          <button class="btn btn-sm btn-primary mx-1" (click)="onClickLogin()">Login <fa-icon [icon]="faUnlock" class="auth-icon"></fa-icon>
+          <button class="btn btn-sm btn-primary mx-1" (click)="onClickLogin()" [disabled]="loginDisabled">Login <fa-icon [icon]="faUnlock"
+              class="auth-icon"></fa-icon>
           </button>
           <button class="btn btn-sm btn-secondary mx-1" (click)="this.action  = 'welcome'">Cancel</button>
         </div>
       </div>
+      <!-- end of LOGIN -->
 
+
+      <!-- SIGN UP -->
       <div *ngIf="action == 'register'" [formGroup]="registrationForm">
         <div class="input-container">
-          <input formControlName="emailAddress" type="email" class="form-control" placeholder="email" style="grid-row:1 / span 1; grid-column: 1 / -1;">
+          <input formControlName="emailAddress" type="email" class="form-control" placeholder="email"
+            style="grid-row:1 / span 1; grid-column: 1 / -1;">
           <fa-icon [icon]="faUser" class="auth-icon" style="grid-row:1 / span 1; grid-column: 2 / span 1;"></fa-icon>
-          <input formControlName="password" type="password" class="form-control" placeholder="password" style="grid-row:2 / span 1; grid-column: 1 / -1;">
+          <input formControlName="password" type="password" class="form-control" placeholder="password"
+            style="grid-row:2 / span 1; grid-column: 1 / -1;">
           <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
         </div>
 
@@ -50,13 +67,17 @@
           <button class="btn btn-sm btn-secondary mx-1" (click)="onClickCancelRegistration()">Cancel</button>
         </div>
       </div>
+      <!-- end of SIGN UP -->
 
+
+      <!-- CONFIRMATION -->
       <div *ngIf="action == 'confirm_registration'" [formGroup]="confirmRegistrationForm">
         <div class="input-container">
           <div style="grid-row:1 / span 1; grid-column: 1 / -1;">
             {{ registrationForm.controls['emailAddress'].value.toLowerCase() }}
           </div>
-          <input formControlName="password" type="password" class="form-control" placeholder="confirm password" style="grid-row:2 / span 1; grid-column: 1 / -1;">
+          <input formControlName="password" type="password" class="form-control" placeholder="confirm password"
+            style="grid-row:2 / span 1; grid-column: 1 / -1;">
           <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
         </div>
         <div class="action-buttons-container">
@@ -65,19 +86,22 @@
           <button class="btn btn-sm btn-secondary mx-1" (click)="this.action  = 'register'">Back</button>
         </div>
       </div>
+      <!-- end of CONFIRMATION -->
 
 
+      <!-- SUCCESS -->
       <div *ngIf="action == 'successful_registration'">
         <div class="successful-registration">
           Woohoo! <br>
           {{ authData.userAccount.email }} has been successfully registered.
         </div>
         <div class="action-buttons-container">
-          <button class="btn btn-sm btn-primary mx-1" (click)="onClickContinuePostRegistration()">Login <fa-icon [icon]="faUnlock"
-              class="auth-icon"></fa-icon>
+          <button class="btn btn-sm btn-primary mx-1" (click)="onClickContinuePostRegistration()">Login <fa-icon
+              [icon]="faUnlock" class="auth-icon"></fa-icon>
           </button>
         </div>
       </div>
+      <!-- end of SUCCESS -->
 
 
       <div *ngIf="action == 'waiting'" class="waiting">
@@ -98,13 +122,16 @@
 
     </div>
 
-    
+
   </div>
-  
+
   <div class="footer">
+    <!-- <div class="github-link-container"> -->
       <a href="https://github.com/jersan/balanceboard" target="_blank" class="github-link">
         <fa-icon [icon]="faGithub" style="font-size:1.5em;"></fa-icon>
       </a>
+    <!-- </div> -->
+
   </div>
 
 

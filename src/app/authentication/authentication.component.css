@@ -1,3 +1,11 @@
+@font-face{
+    font-family: Ubuntu-Regular; 
+    src: url("../../assets/fonts/Ubuntu/Ubuntu-Regular.ttf");
+}
+/* @font-face{
+    font-family: Patua-One;
+    src: url("../../assets/fonts/Patua_One/PatuaOne-Regular.ttf");
+} */
 
 .root{
     width: 100%;
@@ -6,25 +14,58 @@
     display:flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: center; */
+    justify-content: space-between;
+    font-family: 'Ubuntu-Regular';
+}
+.background-image{
+    background: url("../../assets/bg2.JPG") no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 .authentication{
-
-    margin-top: 150px;
+    margin-top:20px;
     padding: 25px;
     height: 300px;
-    width: 400px;
-    background-color: rgb(240, 240, 240);
-    border-radius: 1px;
-    /* border: 1px solid rgb(197, 197, 197); */
+    width: 360px;
+    border-radius: 25px;    /* border: 1px solid rgb(197, 197, 197); */
     text-align: center;
+    border:1px solid rgba(255, 255, 255, 0);
 }
-.title{
+.authentication-focused{
+    /* border:1px solid rgb(0, 58, 134); */
+    /* background-color: rgba(255, 255, 255, 0.2); */
+    background: rgb(63,94,251);
+    background: linear-gradient(135deg, rgba(63,94,251,0.1) 0%, rgba(118,70,252,0.1) 100%);
+}
 
+
+.title{
     font-size:2em;
-    /* font-family: 'Comfortaa', cursive; */
-    /* font-family: 'Patua One', cursive; */
 }
+
+.login-button{
+    border: 1px solid rgba(43, 128, 207, 1);;
+    border: none;
+    border-radius: 10px;
+    margin:5px;
+    background-color:rgba(43, 128, 207, 0.5);
+    padding:5px;
+    width:100px;
+}
+.signup-button{
+    border: 1px solid rgba(85, 165, 148, 1);
+    border: none;
+    border-radius: 10px;
+    margin:5px;
+    background-color:rgba(85, 165, 148, 0.5);
+    padding:5px;
+    width:100px;
+}
+
+
+
 
 .form-message{
     height: 50px;
@@ -42,12 +83,15 @@
 
     margin-left: auto;
     margin-right: auto;
+
+    
 }
 
 .form-control{
     /* border: 1px solid rgb(212, 212, 212); */
     background-color: rgb(212, 212, 212);
     padding-right:25px;
+    border: 1px solid rgba(0, 0, 0, 0.103);
 }
 
 .action-buttons-container{
@@ -93,5 +137,14 @@
 }
 
 .github-link{
-    color: black;
+    background-color:rgba(255, 255, 255, 0.2);
+    color: rgb(0, 60, 138);
+    border-radius:5px;
+    width:40px;
+    height:40px;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }

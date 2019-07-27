@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthenticationService } from './authentication.service';
 import { AuthData } from './auth-data.interface';
 import { AuthStatus } from './auth-status.class';
-import { faKey, faUser, faUnlock, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faKey, faUser, faUnlock, faSpinner, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { UserAccount } from '../shared/document-definitions/user-account/user-account.class';
 import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
@@ -26,6 +26,8 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   faUser = faUser;
   faUnlock = faUnlock;
   faSpinner = faSpinner;
+  faSignInAlt = faSignInAlt;
+  faUserPlus = faUserPlus;
 
   action: string = "welcome";
 
@@ -155,6 +157,17 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     }
 
 
+  }
+
+
+  // authenticationFocused: boolean = false;
+  // onMouseEnterAuthenticationBox(){
+  //   this.authenticationFocused = true;
+  //   console.log("We ")
+  // }
+
+  get loginDisabled(): string{
+    return this.loginForm.valid ? "" : "disabled";
   }
 
 
