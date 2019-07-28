@@ -90,11 +90,13 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
       this.activityForm = new FormGroup({
         'name': new FormControl(this.activity.name, Validators.required),
-        'description': new FormControl(),
+        'description': new FormControl(this.activity.description),
         'parent': new FormControl(parentActivityId, Validators.required),
         'color': new FormControl(this.activity.color, Validators.required)
 
       });
+
+      this.onColorSelected(this.activity.color);
     }
   }
 
@@ -122,6 +124,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
   onColorSelected(value: string){
     this.colorPicked = true;
     this.pickedColor = value;
+    this.activityForm.controls["color"].setValue(value);
   }
 
   onClickCancel() {
