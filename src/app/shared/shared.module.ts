@@ -26,6 +26,7 @@ import { RecurringTaskFormComponent } from "./document-definitions/recurring-tas
 import { RtRepititionsComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/rt-repititions.component";
 import { DtlToolComponent } from './tools/tool-components/dtl-tool/dtl-tool.component';
 import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition/activity-category-definition-form/activity-category-definition-form.component";
+import { BrowseActivityComponent } from './activity-input-dropdown/browse-activity/browse-activity.component';
 
 
 
@@ -60,6 +61,7 @@ import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/
         ActivityCategoryDefinitionFormComponent,
         RtRepititionsComponent,
         DtlToolComponent,
+        BrowseActivityComponent,
     ],
     exports: [
         CommonModule,

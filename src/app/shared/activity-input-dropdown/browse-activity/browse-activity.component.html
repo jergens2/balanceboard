@@ -1,0 +1,20 @@
+<div class="activity-root">
+    <div class="activity-header">
+        <div class="activity-expand-arrow icon-button" (click)="onClickExpand()">
+            <fa-icon [icon]="faCaretRight" *ngIf="!isExpanded && activity.children.length > 0"></fa-icon>
+            <fa-icon [icon]="faCaretDown" *ngIf="isExpanded && activity.children.length > 0"></fa-icon>
+        </div>
+
+        <div class="activity-selection" (click)="onSelectActivity(activity)">
+            <div class="activity-color-block" [style.background-color]="activity.color"></div>
+            {{ activity.name }}
+        </div>
+
+
+    </div>
+    <div class="activity-children" *ngIf="isExpanded">
+        <app-browse-activity *ngFor="let childActivity of activity.children" [activity]="childActivity" (activitySelected)="onSelectActivity($event)"
+            class="child-activity">
+        </app-browse-activity>
+    </div>
+</div>

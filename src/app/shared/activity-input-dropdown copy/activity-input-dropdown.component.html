@@ -1,0 +1,39 @@
+<div class="root">
+
+
+  <div class="activity-input-container">
+    <input type="text" class="activity-text-input" style="width:100%;" placeholder="Search for activity"
+      [value]="activityTextInputValue" (keyup)="onActivityInputKeyUp($event)">
+    <fa-icon class="activity-dropdown-button" [icon]="faCaretDown" (click)="onClickActivityDropdownArrow()">
+    </fa-icon>
+  </div>
+  <div *ngIf="activitiesDropDownList.length > 0" class="activity-dropdown-list"
+    [style.height]="activityDropdownHeight(activitiesDropDownList)" (mouseleave)="onMouseLeaveDropdownList()"
+    (mouseenter)="onMouseEnterDropdownList()">
+    <div *ngFor="let listItem of activitiesDropDownList" class="activity-dropdown-list-item"
+      [style.margin-left]="dropdownListItemMarginLeft(listItem)">
+      <div class="activity-dropdown-list-item-arrow" (click)="onClickActivityDropdownItemArrow(listItem)">
+        <div *ngIf="activityHasChildren(listItem)">
+          <fa-icon [icon]="faCaretRight" *ngIf="!listItem.isExpanded"></fa-icon>
+          <fa-icon [icon]="faCaretDown" *ngIf="listItem.isExpanded"></fa-icon>
+        </div>
+
+      </div>
+      <div class="activity-dropdown-list-item-name" (click)="onClickActivityDropdownItem(listItem)">
+        {{ listItem.activity.name }}
+      </div>
+
+    </div>
+  </div>
+  <div *ngIf="activitiesSearchList.length > 0" class="activity-dropdown-list"
+    [style.height]="activityDropdownHeight(activitiesSearchList)" (mouseleave)="onMouseLeaveDropdownList()"
+    (mouseenter)="onMouseEnterDropdownList()">
+    <div *ngFor="let listItem of activitiesSearchList" class="activity-dropdown-list-item">
+      <div class="activity-dropdown-list-item-name" (click)="onClickActivityDropdownItem(listItem)">
+        {{ listItem.activity.name }}
+      </div>
+    </div>
+  </div>
+
+
+</div>

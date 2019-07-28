@@ -1,8 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { faCaretDown, faCaretRight, faSitemap, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 import { Subscription, Observable, fromEvent } from 'rxjs';
-import { ActivityDropdownListItem } from './activity-dropdown-list-item.interface';
+import { IActivityDropdownListItem } from './activity-dropdown-list-item.interface';
 import { ActivityTree } from '../document-definitions/activity-category-definition/activity-tree.class';
 import { ActivityCategoryDefinition } from '../document-definitions/activity-category-definition/activity-category-definition.class';
 import { ActivityCategoryDefinitionService } from '../document-definitions/activity-category-definition/activity-category-definition.service';
@@ -15,29 +15,13 @@ import { ActivityCategoryDefinitionService } from '../document-definitions/activ
 export class ActivityInputDropdownComponent implements OnInit {
 
 
-  faSitemap = faSitemap;
-  faSearch = faSearch;
-
-  searchAction: string = "search";
-  onChangeAction(newAction: string){
-    this.searchAction = newAction;
-  }
-
-  onActivitySelected(activity: ActivityCategoryDefinition){
-    this.valueChanged.emit(activity);
-  }
-
-
-
-
-
   faCaretDown = faCaretDown;
   faCaretRight = faCaretRight;
 
 
-  activitiesDropDownList: ActivityDropdownListItem[] = [];
-  activitiesSearchList: ActivityDropdownListItem[] = [];
-  private dropdownListTree: ActivityDropdownListItem[] = [];
+  activitiesDropDownList: IActivityDropdownListItem[] = [];
+  activitiesSearchList: IActivityDropdownListItem[] = [];
+  private dropdownListTree: IActivityDropdownListItem[] = [];
   activityTextInputValue: string = "";
 
   private activitiesTree: ActivityTree = null;
@@ -62,9 +46,9 @@ export class ActivityInputDropdownComponent implements OnInit {
   }
 
   private buildDropdownListTree() {
-    function buildChildDropdownItems(parent: ActivityCategoryDefinition, generationNumber: number): ActivityDropdownListItem {
+    function buildChildDropdownItems(parent: ActivityCategoryDefinition, generationNumber: number): IActivityDropdownListItem {
       if (parent.children.length > 0) {
-        let children: ActivityDropdownListItem[] = [];
+        let children: IActivityDropdownListItem[] = [];
         for (let child of parent.children) {
           children.push(buildChildDropdownItems(child, generationNumber + 1));
         }
@@ -74,12 +58,12 @@ export class ActivityInputDropdownComponent implements OnInit {
       }
     }
 
-    let listItems: ActivityDropdownListItem[] = []
+    let listItems: IActivityDropdownListItem[] = []
     for (let activity of this.activitiesTree.rootActivities) {
       if (activity.children.length == 0) {
         listItems.push({ activity: activity, isExpanded: false, generationNumber: 0, children: [] })
       } else {
-        let children: ActivityDropdownListItem[] = [];
+        let children: IActivityDropdownListItem[] = [];
         for (let child of activity.children) {
           children.push(buildChildDropdownItems(child, 1));
         }
@@ -124,7 +108,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     }
   }
 
-  onClickActivityDropdownItem(listItem: ActivityDropdownListItem) {
+  onClickActivityDropdownItem(listItem: IActivityDropdownListItem) {
 
     this.activityTextInputValue = listItem.activity.name;
     this.selectedActivity = listItem.activity;
@@ -133,7 +117,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     this.onValueChanged(this.selectedActivity);
   }
 
-  onClickActivityDropdownItemArrow(listItem: ActivityDropdownListItem) {
+  onClickActivityDropdownItemArrow(listItem: IActivityDropdownListItem) {
     if (listItem.isExpanded) {
       listItem.isExpanded = false;
     } else {
@@ -145,8 +129,8 @@ export class ActivityInputDropdownComponent implements OnInit {
 
 
   private viewTreeList() {
-    function getChildListItems(listItem: ActivityDropdownListItem): ActivityDropdownListItem[] {
-      let children: ActivityDropdownListItem[] = [];
+    function getChildListItems(listItem: IActivityDropdownListItem): IActivityDropdownListItem[] {
+      let children: IActivityDropdownListItem[] = [];
       if (listItem.isExpanded && listItem.children.length > 0) {
         for (let child of listItem.children) {
           children.push(child);
@@ -158,14 +142,14 @@ export class ActivityInputDropdownComponent implements OnInit {
 
 
     // if (this.activitiesDropDownList.length > 0) {
-    //   let updatedDropdownList: ActivityDropdownListItem[] = [];
+    //   let updatedDropdownList: IActivityDropdownListItem[] = [];
     //   for (let listItem of this.activitiesDropDownList) {
     //     updatedDropdownList.push(listItem);
     //     updatedDropdownList.push(...getChildListItems(listItem))
     //   }
     //   this.activitiesDropDownList = Object.assign([], updatedDropdownList);
     // } else {
-      let updatedDropdownList: ActivityDropdownListItem[] = [];
+      let updatedDropdownList: IActivityDropdownListItem[] = [];
       for (let listItem of this.dropdownListTree) {
         updatedDropdownList.push(listItem);
         updatedDropdownList.push(...getChildListItems(listItem))
@@ -186,14 +170,23 @@ export class ActivityInputDropdownComponent implements OnInit {
   }
 
   private searchForActivities(searchValue: string): boolean {
-    let searchResults: ActivityDropdownListItem[] = [];
+
+
+
+    let searchResults: IActivityDropdownListItem[] = [];
+    // let activityResults: ActivityCategoryDefinition[] = [];
     let activitiesArray: ActivityCategoryDefinition[] = Object.assign([], this.activitiesTree.allActivities);
     for (let activity of activitiesArray) {
       if (activity.name.toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
-        let listItem: ActivityDropdownListItem = { activity: activity, isExpanded: false, generationNumber: 0, children: [] }
+
+        let listItem: IActivityDropdownListItem = { activity: activity, isExpanded: false, generationNumber: 0, children: [] }
+
         searchResults.push(listItem);
+
+
       }
     }
+
     searchResults.sort((a, b)=>{
       if(a.activity.name > b.activity.name){
         return 1;
@@ -203,6 +196,7 @@ export class ActivityInputDropdownComponent implements OnInit {
       }
       return 0;
     })
+
     if(searchResults.length > 0){
       this.activitiesSearchList = searchResults;
       return true;
@@ -228,7 +222,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     this.dropdownMenuSubscription.unsubscribe();
   }
 
-  activityHasChildren(listItem: ActivityDropdownListItem) {
+  activityHasChildren(listItem: IActivityDropdownListItem) {
     if (listItem.activity.children.length > 0) {
       return true;
     }
@@ -246,7 +240,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     }
   }
 
-  dropdownListItemMarginLeft(listItem: ActivityDropdownListItem): string {
+  dropdownListItemMarginLeft(listItem: IActivityDropdownListItem): string {
     let px = listItem.generationNumber * 15;
     return "" + px + "px";
   }

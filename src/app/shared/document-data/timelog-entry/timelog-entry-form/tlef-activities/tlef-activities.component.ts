@@ -34,6 +34,7 @@ export class TlefActivitiesComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("Timelog Entry tool opened");
     if (this.modifyTimelogEntry) {
       this.timelogEntryStart = this.modifyTimelogEntry.startTime;
       this.timelogEntryEnd = this.modifyTimelogEntry.endTime;

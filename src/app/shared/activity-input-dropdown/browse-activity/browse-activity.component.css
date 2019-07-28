@@ -1,0 +1,53 @@
+
+.activity-root{
+    display:flex;
+    flex-direction: column;
+}
+
+.activity-header{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.activity-selection{
+    flex-grow:2;
+    border: 1px solid white;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    padding:3px;
+    margin-right:5px;
+    border-radius:3px;
+}
+.activity-selection:hover{
+    border: 1px solid gray;
+    cursor: pointer;
+}
+
+
+.activity-expand-arrow{
+    width:20px;
+    height:20px;
+    padding:3px;
+    margin-left:4px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.activity-color-block{
+    width:20px;
+    height:20px;
+    border-radius:4px;
+    margin-right:4px;
+    border:1px solid rgba(0, 0, 0, 0.2);
+}
+
+.activity-children{
+    display:flex;
+    flex-direction: column;
+}
+
+.child-activity{
+    margin-left: 5px;
+}
