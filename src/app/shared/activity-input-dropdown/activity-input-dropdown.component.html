@@ -5,7 +5,8 @@
     <div class="action-search-container" *ngIf="searchAction == 'search'">
       <div class="action-search">
         <fa-icon [icon]="faSearch"></fa-icon>
-        <input type="text" class="search-input" placeholder="Search for activity">
+        <input type="text" class="search-input" placeholder="Search for activity" [value]="activityTextInputValue" (keyup)="onActivityInputKeyUp($event)">
+        <!-- [value]="activityTextInputValue" -->
       </div>
 
 

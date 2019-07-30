@@ -23,9 +23,8 @@ export class ActivityCategoryDefinition {
         this.description = description;
         this.parentTreeId = parentActivityId;
         this.color = color;
-
-
         this._children = [];
+        this._fullNamePath = "/"+this.name;
     }
 
     /*
@@ -33,6 +32,15 @@ export class ActivityCategoryDefinition {
         the childActivityIds represents that "truth" of Id belongingness.  the children property are just data pulled in at run time
 
     */
+
+    private _fullNamePath: string;
+    public setFullPath(fullPath: string){
+        console.log("setting full path: " + fullPath);
+        this._fullNamePath = fullPath;
+    }
+    public get fullNamePath(): string{
+        return this._fullNamePath;
+    }
 
     get children(): ActivityCategoryDefinition[] {
         return this._children;

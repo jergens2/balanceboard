@@ -53,6 +53,9 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    let start: moment.Moment = moment();
+    console.log("Timelog Entry Form component init.")
+
     if(this.modifyTimelogEntry){
       this.action = "MODIFY";
       this.timelogEntryStart = this.modifyTimelogEntry.startTime;
@@ -91,6 +94,8 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     }
     
     this.initiated = true;
+    let end: moment.Moment = moment();
+    console.log("Timelog Entry Form component init is complete - " + end.diff(start, "milliseconds") + " ms")
   }
   ngOnDestroy() {
     this.clockSubscription.unsubscribe();

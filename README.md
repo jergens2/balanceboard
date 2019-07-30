@@ -27,3 +27,12 @@ If you are interested in this project and would like to support its development,
 34cJQ6zunDqL6fSsKt1qpfPmq3kthPTJso
 
 If you donate, please send me an email, at jeremysandau@protonmail.com, so that I can personally thank you for your support, and, if interested, provide you with development updates.
+
+
+# Future plans and improvements
+
+Eventually, I intend on incorporating several other feauture and applications within balanceboard, including:
+-Encrypted chat
+-Encrypted email service
+-Encrypted Password manager
+-Decentralised data storage 

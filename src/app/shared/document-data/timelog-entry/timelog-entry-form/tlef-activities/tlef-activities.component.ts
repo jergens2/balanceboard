@@ -88,15 +88,34 @@ export class TlefActivitiesComponent implements OnInit {
       maximumPercent = (100 - ((this.activityItems.length - 1) * minimumActivityPercent));
     }
 
+
+
     let activityItem: TLEFActivityListItem = new TLEFActivityListItem(activity, durationMinutes, durationPercent, this.timelogEntryMinutes, maximumPercent);
 
-    this.activityItems.push(activityItem);
+    this.activityItems = this.addNewActivityItem(activityItem);
+
+    // this.activityItems.push(activityItem);
 
     this.updateChangeSubscriptions();
     this.updatePercentages(activityItem);
 
     // this.updateForm();
   }
+
+  private addNewActivityItem(activityItem: TLEFActivityListItem): TLEFActivityListItem[] {
+    let currentItems = this.activityItems;
+    let alreadyIn: boolean = false;
+    for(let item of currentItems){
+      if(item.activity.treeId == activityItem.activity.treeId){
+        alreadyIn = true;
+      }
+    }
+    if(!alreadyIn){
+      currentItems.push(activityItem);
+    }
+    return currentItems;
+  }
+
 
   private changeSubscriptions: Subscription[] = [];
   private updateChangeSubscriptions() {
