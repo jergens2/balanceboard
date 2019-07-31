@@ -74,7 +74,11 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       });
       
     }else{
+      let start: moment.Moment = moment(); 
+      console.log("Is this the slow part ?");
       this.mostRecentTimelogEntry = this.timelogService.mostRecentTimelogEntry;
+      let end: moment.Moment = moment();
+      console.log(end.diff(start, "milliseconds") + " ms")
       this.timelogEntryStart = moment(this.mostRecentTimelogEntry.endTime);
       this.timelogEntryEnd = moment(this._now);
 

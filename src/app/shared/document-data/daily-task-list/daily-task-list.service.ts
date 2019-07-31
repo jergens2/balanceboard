@@ -66,6 +66,7 @@ export class DailyTaskListService {
         // 'Authorization': 'my-auth-token'  
       })
     };
+    console.log("Sending request: " + getUrl);
     this.httpClient.get<{message: string;data: any;}>(getUrl, httpOptions)
       .pipe<DailyTaskList[]>(map((response: {message: string;data: any[];}) => {
         return response.data.map((data) => {
@@ -74,7 +75,9 @@ export class DailyTaskListService {
       }))
       .subscribe((dailyTaskList: DailyTaskList[]) => {
         this._dailyTaskLists$.next(dailyTaskList);
+        console.log("received daily task list: ", dailyTaskList)
         if(!this.todaysDailyTaskList){
+          console.log("Todays daily task list does not exist, so, generating one.")
           this.httpSaveDailyTaskList(this.recurringTaskService.generateDailyTaskList(this._today));
         }
         this.updateSubscriptions();
@@ -139,7 +142,7 @@ export class DailyTaskListService {
   }
 
   private buildDailyTaskListFromResponse(responseData): DailyTaskList{
-    return new DailyTaskList(responseData._id, responseData.userId, responseData.taskListItems, responseData.dateYYYYMMDD, this.recurringTaskService);
+    return new DailyTaskList(responseData._id, responseData.userId, responseData.taskListItems, responseData.dateYYYYMMDD);
   }
 
 

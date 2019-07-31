@@ -34,7 +34,8 @@ export class TlefActivitiesComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("Timelog Entry tool opened");
+    let start: moment.Moment = moment();
+    console.log("TLEF Activities component opened");
     if (this.modifyTimelogEntry) {
       this.timelogEntryStart = this.modifyTimelogEntry.startTime;
       this.timelogEntryEnd = this.modifyTimelogEntry.endTime;
@@ -56,6 +57,8 @@ export class TlefActivitiesComponent implements OnInit {
       });
       this.tlefActivitiesChanged.emit(this.activityItems);
     }
+    let end: moment.Moment = moment();
+    console.log("TLEF Activities component opened is complete: " + end.diff(start, "milliseconds") + " ms")
   }
 
   onMouseEnterActivity(activityItem: TLEFActivityListItem) {

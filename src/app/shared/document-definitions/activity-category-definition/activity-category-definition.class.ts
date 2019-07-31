@@ -35,7 +35,6 @@ export class ActivityCategoryDefinition {
 
     private _fullNamePath: string;
     public setFullPath(fullPath: string){
-        console.log("setting full path: " + fullPath);
         this._fullNamePath = fullPath;
     }
     public get fullNamePath(): string{

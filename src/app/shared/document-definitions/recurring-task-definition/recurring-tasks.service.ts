@@ -52,9 +52,9 @@ export class RecurringTasksService {
   }
 
   public generateDailyTaskList(date: moment.Moment): DailyTaskList{
-    console.log("Warning:  this method is disabled.");
-    // return new DailyTaskList("", this._authStatus.user.id, this.getDTLItemsForDate(date), date.format("YYYY-MM-DD"), this);
-    return null;
+    let dtl = new DailyTaskList("", this._authStatus.user.id, this.getDTLItemsForDate(date), date.format("YYYY-MM-DD"));
+    console.log("Generating new DTL: ", dtl);
+    return dtl;
   }
 
   private getDTLItemsForDate(date: moment.Moment): DailyTaskListItem[]{

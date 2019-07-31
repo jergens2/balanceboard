@@ -37,9 +37,9 @@ export class DailyTaskList {
     tasks: DailyTaskListItem[] = [];
     dateYYYYMMDD: string;
 
-    private _recurringTasksService: RecurringTasksService;
-    constructor(id: string, userId: string, tasks: DailyTaskListItem[], dateYYYYMMDD: string, private recurringTasksService: RecurringTasksService){ 
-        this._recurringTasksService = recurringTasksService;
+    // private _recurringTasksService: RecurringTasksService;
+    constructor(id: string, userId: string, tasks: DailyTaskListItem[], dateYYYYMMDD: string){ 
+        // this._recurringTasksService = recurringTasksService;
 
 
         this.id = id;
@@ -49,9 +49,9 @@ export class DailyTaskList {
 
     }
 
-    public recurringTask(taskItem: DailyTaskListItem): RecurringTaskDefinition{
-        return this._recurringTasksService.getRecurringTaskById(taskItem.recurringTaskId);
-    }
+    // public recurringTask(taskItem: DailyTaskListItem): RecurringTaskDefinition{
+    //     return this._recurringTasksService.getRecurringTaskById(taskItem.recurringTaskId);
+    // }
 
     public get date(): moment.Moment{
         return moment(this.dateYYYYMMDD).startOf("day");

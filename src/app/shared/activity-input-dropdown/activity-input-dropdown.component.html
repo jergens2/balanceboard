@@ -2,12 +2,23 @@
 
   <div class="input-container">
 
-    <div class="action-search-container" *ngIf="searchAction == 'search'">
-      <div class="action-search">
-        <fa-icon [icon]="faSearch"></fa-icon>
-        <input type="text" class="search-input" placeholder="Search for activity" [value]="activityTextInputValue" (keyup)="onActivityInputKeyUp($event)">
-        <!-- [value]="activityTextInputValue" -->
+    <div class="search-box-container" *ngIf="searchAction == 'search'">
+      <div class="search-box" [ngClass]="{'search-box-expanded': searchBoxExpanded}">
+        <div class="action-search">
+          <fa-icon [icon]="faSearch" style="margin-left:3px;"></fa-icon>
+          <input type="text" class="search-input" placeholder="Search for activity" [(value)]="activityTextInputValue"
+            (keyup)="onActivityInputKeyUp($event)">
+          <!-- [value]="activityTextInputValue" -->
+        </div>
+        <div class="search-results" *ngIf="searchBoxExpanded">
+          <div class="search-result" *ngFor="let searchResult of searchResults" (click)="onClickSearchResult(searchResult)" [ngClass]="{'search-result-cursor':isArrowSelected(searchResult)}">
+            <span>{{ fullNamePathStart(searchResult) }}</span>
+            <span class="search-result-match">{{ fullNamePathMatch(searchResult) }}</span>
+            <span>{{ fullNamePathEnd(searchResult) }}</span>
+          </div>
+        </div>
       </div>
+
 
 
       <button class="btn action-button" title="Browse activity tree" (click)="onChangeAction('browse')">

@@ -18,7 +18,7 @@
   <div class="dtcl-items" *ngIf="!noTasks && !allTasksComplete">
     <div *ngFor="let dailyTaskItem of dailyTaskItems" class="dtcl-item">
       <div>
-        {{ dailyTaskList.recurringTask(dailyTaskItem).name }}
+        {{ recurringTask(dailyTaskItem).name }}
       </div>
       <div>
         <fa-icon [icon]="faCircle" class="incomplete-check" (click)="onClickCheckTask(dailyTaskItem)"

@@ -10,6 +10,8 @@ import { ToolsService } from '../../tools.service';
 import { DayDataService } from '../../../document-data/day-data/day-data.service';
 import { Subscription } from 'rxjs';
 import { DailyTaskListService } from '../../../document-data/daily-task-list/daily-task-list.service';
+import { RecurringTasksService } from '../../../document-definitions/recurring-task-definition/recurring-tasks.service';
+import { RecurringTaskDefinition } from '../../../document-definitions/recurring-task-definition/recurring-task-definition.class';
 
 
 @Component({
@@ -37,7 +39,7 @@ export class DtlToolComponent implements OnInit, OnDestroy {
   faCheckCircleSolid = faCheckCircleSolid;
   faTasks = faTasks;
 
-  constructor(private toolsService: ToolsService,  private router: Router, private dailyTaskListService: DailyTaskListService) { }
+  constructor(private toolsService: ToolsService, private router: Router, private dailyTaskListService: DailyTaskListService, private recurringTasksService: RecurringTasksService) { }
 
   // dtclItems: DailyTaskListItem[];
 
@@ -49,62 +51,68 @@ export class DtlToolComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // this.dtclItems = [];
-    
+
     const today: moment.Moment = moment();
 
-    this.dailyTaskListService.dailyTaskLists$.subscribe((allDTLs: DailyTaskList[])=>{
+    this.dailyTaskListService.dailyTaskLists$.subscribe((allDTLs: DailyTaskList[]) => {
       this.dailyTaskList = this.dailyTaskListService.todaysDailyTaskList;
     });
     this.dailyTaskList = this.dailyTaskListService.todaysDailyTaskList;
     console.log("This.dailyTaskList is ", this.dailyTaskList);
-    
-    if(this.dailyTaskList.tasks.length == 0){
+
+    if (this.dailyTaskList.tasks.length == 0) {
       this.noTasks = true;
     }
 
   }
-  ngOnDestroy(){
+
+
+  public recurringTask(taskItem: DailyTaskListItem): RecurringTaskDefinition {
+    return this.recurringTasksService.getRecurringTaskById(taskItem.recurringTaskId);
+  }
+
+  ngOnDestroy() {
     // this._dtlSubscription.unsubscribe();
   }
 
-  onClickCheckTask(dtclItem: DailyTaskListItem){
+  onClickCheckTask(dtclItem: DailyTaskListItem) {
     this.dailyTaskList.onClickCheckTask(dtclItem);
   }
 
-  public get dailyTaskItems(): DailyTaskListItem[]{
-    if(this.dailyTaskList){
+  public get dailyTaskItems(): DailyTaskListItem[] {
+    if (this.dailyTaskList) {
       return this.dailyTaskList.tasks;
-    }else{
+    } else {
       return [];
     }
   }
 
-  public isComplete(task: DailyTaskListItem){
+  public isComplete(task: DailyTaskListItem) {
     return this.dailyTaskList.isComplete(task);
   }
 
   private allTasksCompleteManualSwitch: boolean = false;
-  public get allTasksComplete(): boolean{
-    if(this.allTasksCompleteManualSwitch){
+  public get allTasksComplete(): boolean {
+    if (this.allTasksCompleteManualSwitch) {
       return false;
     }
     return this.dailyTaskList.allTasksComplete;
   }
 
-  onClickManageRecurringTasks(){
+  onClickManageRecurringTasks() {
     this.router.navigate(['/recurring-tasks']);
     this.toolsService.closeTool();
   }
 
-  onClickShowTasksButton(){
+  onClickShowTasksButton() {
     this.allTasksCompleteManualSwitch = !this.allTasksCompleteManualSwitch;
   }
 
   public showTasksButton: boolean = false;
-  onMouseEnterAllComplete(){
+  onMouseEnterAllComplete() {
     this.showTasksButton = true;
   }
-  onMouseLeaveAllComplete(){
+  onMouseLeaveAllComplete() {
     this.showTasksButton = false;
     this.allTasksCompleteManualSwitch = false;
   }
