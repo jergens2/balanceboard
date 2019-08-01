@@ -34,7 +34,7 @@ export class ActivityTree {
 
         for (let activity of allActivities) {
             if (activity.parentTreeId.endsWith("TOP_LEVEL")) {
-                activity.setFullPath("/"+activity.name);
+                activity.setFullPath("/"+activity.name+"/");
                 rootActivities.push(activity)
             }
         }
@@ -107,7 +107,7 @@ export class ActivityTree {
     findChildActivities(activityNode: ActivityCategoryDefinition, allActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition {
         for (let activity of allActivities) {
             if (activity.parentTreeId == activityNode.treeId) {
-                activity.setFullPath(activityNode.fullNamePath + "/" + activity.name);
+                activity.setFullPath(activityNode.fullNamePath + activity.name + "/");
                 activityNode.addChild(activity);
             }
         }

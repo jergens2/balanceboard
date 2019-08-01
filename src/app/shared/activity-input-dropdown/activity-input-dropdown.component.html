@@ -7,15 +7,36 @@
         <div class="action-search">
           <fa-icon [icon]="faSearch" style="margin-left:3px;"></fa-icon>
           <input type="text" class="search-input" placeholder="Search for activity" [(value)]="activityTextInputValue"
-            (keyup)="onActivityInputKeyUp($event)">
+            (keyup)="onActivityInputKeyUp($event)"
+            (keydown)="onActivityInputKeyDown($event)">
           <!-- [value]="activityTextInputValue" -->
         </div>
         <div class="search-results" *ngIf="searchBoxExpanded">
-          <div class="search-result" *ngFor="let searchResult of searchResults" (click)="onClickSearchResult(searchResult)" [ngClass]="{'search-result-cursor':isArrowSelected(searchResult)}">
+          <div class="search-result" *ngFor="let searchResult of searchResults"
+            (click)="onClickSearchResult(searchResult)"
+            [ngClass]="{'search-result-cursor':isArrowSelected(searchResult)}">
             <span>{{ fullNamePathStart(searchResult) }}</span>
             <span class="search-result-match">{{ fullNamePathMatch(searchResult) }}</span>
             <span>{{ fullNamePathEnd(searchResult) }}</span>
           </div>
+        </div>
+        <div class="create-new-activity" *ngIf="createNewActivity">
+          <div>
+            Create new activity: <span style="font-weight:bold; color: black">{{ createNewActivity.name }}</span>
+          </div>
+          <div>
+            Description: {{ createNewActivity.description }}
+          </div>
+          <div style="display:flex;flex-direction: row;align-items:center;">
+            Color:
+            <div style="width:10px;height:10px;margin-left:3px;margin-right:3px;"
+              [style.background-color]="createNewActivity.color"></div>
+            {{ createNewActivity.color }}
+          </div>
+          <button class="btn save-new-activity-button" (click)="onClickSaveNewActivity()" *ngIf="!savingActivity">Save new activity</button>
+          <button class="btn save-new-activity-button" *ngIf="savingActivity">
+            <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon> Saving...
+          </button>
         </div>
       </div>
 

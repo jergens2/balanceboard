@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivityCategoryDefinition } from './activity-category-definition.class';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 import { defaultActivities } from './default-activity-category-definitions';
 import { serverUrl } from '../../../serverurl';
@@ -138,7 +138,15 @@ export class ActivityCategoryDefinitionService {
       })
   }
 
+
+  public saveActivity$(activity: ActivityCategoryDefinition): Observable<ActivityCategoryDefinition>{
+    this.saveActivity(activity);
+    return this.saveActivityComplete$.asObservable();
+  }
+
+  private saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
   saveActivity(activity: ActivityCategoryDefinition) {
+    console.log("Saving activity: " + activity.name);
     let newActivity = activity;
     newActivity.userId = this._authStatus.user.id;
 
@@ -164,6 +172,7 @@ export class ActivityCategoryDefinitionService {
       .subscribe((activity: ActivityCategoryDefinition) => {
         this._activitiesTree.addActivityToTree(activity);
         this._activitiesTree$.next(this._activitiesTree);
+        this.saveActivityComplete$.next(activity);
       })
   }
 

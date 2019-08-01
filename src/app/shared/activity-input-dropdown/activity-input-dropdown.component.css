@@ -37,6 +37,29 @@
     color: gray;
     overflow-y: auto;
 }
+.create-new-activity{
+    margin:5px;
+    border: 1px solid rgb(194, 194, 194);
+    border-radius: 5px;
+    padding: 5px;
+    font-size:0.9em;
+    color:rgb(68, 68, 68);
+    display:flex;
+    flex-direction: column;
+}
+.save-new-activity-button{
+    flex-shrink:2;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: rgb(98, 250, 255);
+    height:24px;
+    font-size:0.8em;
+    margin:auto;
+    border: 1px solid rgb(209, 209, 209);
+    border-radius: 10px;
+}
 
 .action-search{
     margin-top:0px;
