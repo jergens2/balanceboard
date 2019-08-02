@@ -15,7 +15,7 @@ export class ActivityCategoryDefinition {
     public color: string;
     public icon: string;
 
-    constructor(id: string, userId: string, treeId:string, name: string, description: string, parentActivityId: string, color: string) {
+    constructor(id: string, userId: string, treeId: string, name: string, description: string, parentActivityId: string, color: string) {
         this.id = id;
         this.userId = userId;
         this.treeId = treeId;
@@ -24,7 +24,7 @@ export class ActivityCategoryDefinition {
         this.parentTreeId = parentActivityId;
         this.color = color;
         this._children = [];
-        this._fullNamePath = "/"+this.name;
+        this._fullNamePath = "/" + this.name;
     }
 
     /*
@@ -34,13 +34,13 @@ export class ActivityCategoryDefinition {
     */
 
     private _fullNamePath: string;
-    public setFullPath(fullPath: string){
+    public setFullPath(fullPath: string) {
         this._fullNamePath = fullPath;
     }
-    public get fullNamePath(): string{
+    public get fullNamePath(): string {
         return this._fullNamePath;
     }
-    public fullNamePathIndexOf(searchValue: string): number{
+    public fullNamePathIndexOf(searchValue: string, preciseMatch?: boolean): number {
         /*
             This method returns the position in the path where the searchValue is found.
             for example, full path is:
@@ -48,17 +48,24 @@ export class ActivityCategoryDefinition {
             /[0]/[1]/[2]
             and searchValue is: "second"
             then the return value would be 1
-        */        
+        */
+
         let foundIndex: number = -1;
-        this.fullNamePathSplit.forEach((pathName: string)=>{
-            if(pathName.toLowerCase().indexOf(searchValue) == 0){
-                foundIndex = this.fullNamePathSplit.indexOf(pathName);
+        this.fullNamePathSplit.forEach((pathName: string) => {
+            if(preciseMatch){
+                if (pathName.toLowerCase().indexOf(searchValue) == 0 && pathName.length == searchValue.length) {
+                    foundIndex = this.fullNamePathSplit.indexOf(pathName);
+                }
+            }else{
+                if (pathName.toLowerCase().indexOf(searchValue) == 0) {
+                    foundIndex = this.fullNamePathSplit.indexOf(pathName);
+                }
             }
         });
         return foundIndex;
     }
-    public get fullNamePathSplit(): string[]{
-        return this.fullNamePath.split("/").filter((path)=>{return path != "";});
+    public get fullNamePathSplit(): string[] {
+        return this.fullNamePath.split("/").filter((path) => { return path != ""; });
     }
 
     // public findDescendant(descendantName: string): ActivityCategoryDefinition{
@@ -74,7 +81,7 @@ export class ActivityCategoryDefinition {
     //         }
     //     }
     // }
-    
+
 
 
     get children(): ActivityCategoryDefinition[] {
@@ -87,22 +94,22 @@ export class ActivityCategoryDefinition {
     addChild(childCategory: ActivityCategoryDefinition) {
         this._children.push(childCategory);
     }
-    removeChildren(){
+    removeChildren() {
         this._children = [];
     }
     removeChild(childCategory: ActivityCategoryDefinition) {
-        if(this._children.length > 0){
-            if(this._children.indexOf(childCategory) > -1){
-                this._children.splice(this._children.indexOf(childCategory),1);
+        if (this._children.length > 0) {
+            if (this._children.indexOf(childCategory) > -1) {
+                this._children.splice(this._children.indexOf(childCategory), 1);
                 return;
-            }else{
-                for(let child of this._children){
-                    if(child.children.length > 0){
+            } else {
+                for (let child of this._children) {
+                    if (child.children.length > 0) {
                         child.removeChild(childCategory);
                     }
                 }
             }
-        }else{
+        } else {
             return;
         }
         return;

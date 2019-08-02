@@ -78,14 +78,21 @@ export class ActivityInputDropdownComponent implements OnInit {
   private onInputValueChanged(event: KeyboardEvent){
     let targetValue: string = (event.target as HTMLInputElement).value
     this.activityTextInputValue = targetValue;
+    let initiateSearch:boolean = false;
+    let searchValue: string;
     if (event.key == "ArrowUp") {
       this.arrowUp();
     } else if (event.key == "ArrowDown") {
       this.arrowDown();
     } else if (event.key == "ArrowRight" ) {
       this.arrowRight();
+      initiateSearch = true;
+      searchValue = this.activityTextInputValue;
     }else {
-      let searchValue: string = targetValue;
+      initiateSearch = true;
+      searchValue = targetValue;
+    }
+    if(initiateSearch){
       if (searchValue.length == 0) {
         this.searchResults = [];
       } else if (searchValue.length > 0) {
@@ -109,7 +116,6 @@ export class ActivityInputDropdownComponent implements OnInit {
   }
   private arrowRight() {
     this.activityTextInputValue = this.searchResults[this.arrowCursorIndex].name;
-    // this.onClickSearchResult(this.searchResults[this.arrowCursorIndex]);
   }
 
   isArrowSelected(searchResult): boolean {
@@ -175,6 +181,9 @@ export class ActivityInputDropdownComponent implements OnInit {
 
   public get searchBoxExpanded(): boolean {
     if (this.searchResults.length > 0) {
+      return true;
+    }
+    if (this.createNewActivities.length > 0){
       return true;
     }
     return false;

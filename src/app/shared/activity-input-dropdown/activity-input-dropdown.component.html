@@ -10,7 +10,8 @@
             (keyup)="onActivityInputKeyUp($event)" (keydown)="onActivityInputKeyDown($event)">
           <!-- [value]="activityTextInputValue" -->
         </div>
-        <div class="search-results" *ngIf="searchBoxExpanded">
+
+        <div class="search-results" *ngIf="searchResults.length > 0">
           <div class="search-result" *ngFor="let searchResult of searchResults"
             (click)="onClickSearchResult(searchResult)"
             [ngClass]="{'search-result-cursor':isArrowSelected(searchResult)}">
@@ -19,29 +20,32 @@
             <span>{{ fullNamePathEnd(searchResult) }}</span>
           </div>
         </div>
-        <div class="create-new-activity" *ngIf="createNewActivities.length > 0">
-          <div>
+
+        <div class="create-new-activities-container" *ngIf="createNewActivities.length > 0">
+          <div style="font-size:0.9em">
             <span *ngIf="createNewActivities.length == 1">Create new activity</span>
             <span *ngIf="createNewActivities.length > 1">Create {{ createNewActivities.length }} new activities</span>
           </div>
-
-          <div *ngFor="let activity of createNewActivities">
-            <div>
-              Name: {{ activity.name }}
-            </div>
-            <div>
-              Description: {{ activity.description }}
-            </div>
-            <div style="display:flex;flex-direction: row;align-items:center;">
-              Color:
-              <div style="width:10px;height:10px;margin-left:3px;margin-right:3px;"
-                [style.background-color]="activity.color"></div>
-              {{ activity.color }}
-            </div>
+          <div class="create-new-activities" >
+              <div *ngFor="let activity of createNewActivities">
+                  <div>
+                    Name: <span style="font-size:1.1em;font-weight:bold;">{{ activity.name }}</span>
+                  </div>
+                  <div>
+                    Description: {{ activity.description }}
+                  </div>
+                  <div style="display:flex;flex-direction: row;align-items:center;">
+                    Color:
+                    <div style="width:10px;height:10px;margin-left:3px;margin-right:3px;"
+                      [style.background-color]="activity.color"></div>
+                    {{ activity.color }}
+                  </div>
+                </div>
           </div>
+          
 
 
-          <button class="btn save-new-activity-button" (click)="onClickSaveNewActivity()" *ngIf="!savingActivity">
+          <button class="btn save-new-activity-button" (click)="onClickSaveNewActivities()" *ngIf="!savingActivity">
               <span *ngIf="createNewActivities.length == 1">Save new activity</span>
               <span *ngIf="createNewActivities.length > 1">Save {{ createNewActivities.length }} new activities</span>
           </button>

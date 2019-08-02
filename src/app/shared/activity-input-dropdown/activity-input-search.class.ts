@@ -15,6 +15,7 @@ export class ActivityInputSearch {
         let searchResults: ActivityCategoryDefinition[] = [];
 
         if (searchValue.length === 1 && searchValue.charAt(0) === "/") {
+            this.createNewActivity$.next();
             return this.activitiesTree.allActivities.sort((activity1, activity2) => {
                 if (activity1.fullNamePath < activity2.fullNamePath) {
                     return -1;
@@ -27,7 +28,7 @@ export class ActivityInputSearch {
         } else {
             let baseMatches: ActivityCategoryDefinition[] = this.findbaseMatches(searchValue);
             if (baseMatches.length == 0) {
-                // console.log(" No base matches, so making a root-level activity");
+                console.log(" No base matches, so making a root-level activity");
                 this.initiateCreationOfNewActivity(searchValue, null);
                 searchResults = [];
             }
@@ -39,13 +40,15 @@ export class ActivityInputSearch {
                     // console.log("There were no full matches, so we're gonna find the parent and create new.");
                     let parentActivity: ActivityCategoryDefinition = this.findParentActivity(baseMatches, searchValue);
                     this.initiateCreationOfNewActivity(searchValue, parentActivity)
-                } else if (fullMatches.length == 1) {
+                } else if (fullMatches.length >= 1) {
                     // console.log("There was one full match");
+                    this.createNewActivity$.next();
                     searchResults = fullMatches;
-                } else if (fullMatches.length > 1) {
-                    // console.log("There were more than 1 full match");
-                    searchResults = fullMatches;
-                }
+                } 
+                // else if (fullMatches.length > 1) {
+                //     // console.log("There were more than 1 full match");
+                //     searchResults = fullMatches;
+                // }
 
             }
         }
@@ -60,12 +63,22 @@ export class ActivityInputSearch {
             return val != "";
         });
         let rootSearchWord = pathNames[0];
-        this.activitiesTree.allActivities.forEach((activity) => {
-            let index: number = activity.fullNamePathIndexOf(rootSearchWord);
-            if (activity.fullNamePathIndexOf(rootSearchWord) > -1) {
-                matches.push(activity);
-            }
-        });
+        //I'm a slasher:  https://www.youtube.com/watch?v=wE0s31IODJA
+        let isSlasher: boolean = searchValue.charAt(searchValue.length-1) === "/";
+        let moreThanOne: boolean = pathNames.length > 1;
+        if(!moreThanOne && !isSlasher){
+            this.activitiesTree.allActivities.forEach((activity) => {
+                if (activity.fullNamePathIndexOf(rootSearchWord) > -1) {
+                    matches.push(activity);
+                }
+            });
+        }else{
+            this.activitiesTree.allActivities.forEach((activity) => {
+                if (activity.fullNamePathIndexOf(rootSearchWord, true) > -1) {
+                    matches.push(activity);
+                }
+            });
+        }
         return matches;
     }
     private findFullMatches(baseMatches: ActivityCategoryDefinition[], searchValue: string): ActivityCategoryDefinition[] {
@@ -150,7 +163,6 @@ export class ActivityInputSearch {
 
         if (!parentActivity) {
             // Create new Root-level activity
-
             if(pathNames.length == 1){
                 let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition("", "", "", pathNames[0], "Root level activity", "", "#ffffff");
                 newActivity.setFullPath("/" + name + "/");
@@ -175,7 +187,9 @@ export class ActivityInputSearch {
             }
             return null;
         } else if (parentActivity) {
-            // Create new activity, child of another
+            if(pathNames.length < 2){
+                console.log("errororkorkeokroekreokreork")
+            }
 
 
 

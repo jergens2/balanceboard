@@ -29,7 +29,7 @@
     max-height: 34px;
 }
 .search-box-expanded{
-    max-height:200px;
+    max-height:300px;
 }
 
 .search-results{
@@ -37,7 +37,7 @@
     color: gray;
     overflow-y: auto;
 }
-.create-new-activity{
+.create-new-activities-container{
     margin:5px;
     border: 1px solid rgb(194, 194, 194);
     border-radius: 5px;
@@ -46,6 +46,15 @@
     color:rgb(68, 68, 68);
     display:flex;
     flex-direction: column;
+    flex-grow:2;
+    max-height:250px;
+}
+.create-new-activities{
+    display:flex;
+    flex-direction: column;
+    flex-grow: 2;
+    overflow-y: auto;
+    border-top:1px solid rgb(194, 194, 194);
 }
 .save-new-activity-button{
     flex-shrink:2;
