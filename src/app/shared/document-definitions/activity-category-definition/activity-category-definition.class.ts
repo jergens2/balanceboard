@@ -58,7 +58,7 @@ export class ActivityCategoryDefinition {
         return foundIndex;
     }
     public get fullNamePathSplit(): string[]{
-        return this.fullNamePath.split("/");
+        return this.fullNamePath.split("/").filter((path)=>{return path != "";});
     }
 
     // public findDescendant(descendantName: string): ActivityCategoryDefinition{

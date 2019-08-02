@@ -117,22 +117,28 @@ export class ActivityInputDropdownComponent implements OnInit {
   }
 
 
-  createNewActivity: ActivityCategoryDefinition = null; 
+  createNewActivities: ActivityCategoryDefinition[] = []; 
   savingActivity: boolean = false;
-  onClickSaveNewActivity(){
+  onClickSaveNewActivities(){
     this.savingActivity = true;
-    this.activityCategoryDefinitionService.saveActivity$(this.createNewActivity).subscribe((activitySaved)=>{
-      this.onClickSearchResult(activitySaved);
-      console.log("Activity was saved:" + activitySaved);
-      this.savingActivity = false;
-    });
+    // this.activityCategoryDefinitionService.saveActivity$(this.createNewActivity).subscribe((activitySaved)=>{
+    //   this.onClickSearchResult(activitySaved);
+    //   console.log("Activity was saved:" + activitySaved);
+    //   this.savingActivity = false;
+    // });
     
   }
   private searchForActivities(searchValue: string) {
     let activitySearch: ActivityInputSearch = new ActivityInputSearch(this.activitiesTree);
-    activitySearch.createNewActivity$.subscribe((createNewActivity: ActivityCategoryDefinition)=>{
-      this.createNewActivity = createNewActivity;
+
+    activitySearch.createNewActivity$.subscribe((createNewActivities: ActivityCategoryDefinition[])=>{
+      if(createNewActivities && createNewActivities.length > 0){
+        this.createNewActivities = createNewActivities;
+      }else{
+        this.createNewActivities = [];
+      }
     })
+
     this.searchResults = activitySearch.searchForActivities(searchValue);
   }
   searchResults: ActivityCategoryDefinition[] = [];
@@ -141,7 +147,7 @@ export class ActivityInputDropdownComponent implements OnInit {
   onClickSearchResult(searchResult: ActivityCategoryDefinition) {
     this.valueChanged.emit(searchResult);
     this.activityTextInputValue = "";
-    this.createNewActivity = null;
+    this.createNewActivities = [];
     this.searchResults = [];
   }
 

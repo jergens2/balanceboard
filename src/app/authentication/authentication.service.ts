@@ -175,10 +175,10 @@ export class AuthenticationService {
 
 
       timerSubscription = timer(200, 200).subscribe(() => {
-        console.log("Not yet authenticated: ");
+        // console.log("Not yet authenticated: ");
         this._serviceAuthentications.forEach((val)=>{
           if(!val.isAuthenticated){
-            console.log("  ", val.name);
+            // console.log("  ", val.name);
           }
         });
         allComplete = true;
@@ -194,7 +194,7 @@ export class AuthenticationService {
         }
       });
     } else {
-      console.log("Cannot execute login routine because the authStatus.isAuthenticated == false");
+      // console.log("Cannot execute login routine because the authStatus.isAuthenticated == false");
       this.completeLogin(authStatus);
     }
 
