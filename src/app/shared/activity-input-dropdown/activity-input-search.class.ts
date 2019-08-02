@@ -13,7 +13,6 @@ export class ActivityInputSearch {
 
     public searchForActivities(searchValue: string): ActivityCategoryDefinition[] {
         let searchResults: ActivityCategoryDefinition[] = [];
-
         if (searchValue.length === 1 && searchValue.charAt(0) === "/") {
             this.createNewActivity$.next();
             return this.activitiesTree.allActivities.sort((activity1, activity2) => {
@@ -28,31 +27,20 @@ export class ActivityInputSearch {
         } else {
             let baseMatches: ActivityCategoryDefinition[] = this.findbaseMatches(searchValue);
             if (baseMatches.length == 0) {
-                console.log(" No base matches, so making a root-level activity");
                 this.initiateCreationOfNewActivity(searchValue, null);
                 searchResults = [];
             }
             else {
-                // console.log(" Yes base matches, so returning or finding parent if 0.  Base matches are:")
-                // baseMatches.forEach((bm)=>{ console.log("  - " + bm.fullNamePath)})
                 let fullMatches: ActivityCategoryDefinition[] = this.findFullMatches(baseMatches, searchValue);
                 if (fullMatches.length == 0) {
-                    // console.log("There were no full matches, so we're gonna find the parent and create new.");
                     let parentActivity: ActivityCategoryDefinition = this.findParentActivity(baseMatches, searchValue);
                     this.initiateCreationOfNewActivity(searchValue, parentActivity)
                 } else if (fullMatches.length >= 1) {
-                    // console.log("There was one full match");
                     this.createNewActivity$.next();
                     searchResults = fullMatches;
-                } 
-                // else if (fullMatches.length > 1) {
-                //     // console.log("There were more than 1 full match");
-                //     searchResults = fullMatches;
-                // }
-
+                }
             }
         }
-
         return searchResults;
     }
 
@@ -64,15 +52,15 @@ export class ActivityInputSearch {
         });
         let rootSearchWord = pathNames[0];
         //I'm a slasher:  https://www.youtube.com/watch?v=wE0s31IODJA
-        let isSlasher: boolean = searchValue.charAt(searchValue.length-1) === "/";
+        let isSlasher: boolean = searchValue.charAt(searchValue.length - 1) === "/";
         let moreThanOne: boolean = pathNames.length > 1;
-        if(!moreThanOne && !isSlasher){
+        if (!moreThanOne && !isSlasher) {
             this.activitiesTree.allActivities.forEach((activity) => {
                 if (activity.fullNamePathIndexOf(rootSearchWord) > -1) {
                     matches.push(activity);
                 }
             });
-        }else{
+        } else {
             this.activitiesTree.allActivities.forEach((activity) => {
                 if (activity.fullNamePathIndexOf(rootSearchWord, true) > -1) {
                     matches.push(activity);
@@ -95,17 +83,17 @@ export class ActivityInputSearch {
         let fullMatches: ActivityCategoryDefinition[] = [];
         baseMatches.forEach((baseMatch: ActivityCategoryDefinition) => {
             let startIndex: number = baseMatch.fullNamePathIndexOf(startName);
-            if(startIndex > -1){
+            if (startIndex > -1) {
                 let isFullMatch: boolean = true;
                 for (let i = 0; i < pathNames.length; i++) {
-                    if(startIndex < baseMatch.fullNamePathSplit.length){
+                    if (startIndex < baseMatch.fullNamePathSplit.length) {
                         let checkIndex = baseMatch.fullNamePathSplit[startIndex].toLowerCase().indexOf(pathNames[i].toLowerCase());
                         if (checkIndex != 0) {
                             isFullMatch = false;
                         }
-                    }else if(startIndex >= baseMatch.fullNamePathSplit.length){
+                    } else if (startIndex >= baseMatch.fullNamePathSplit.length) {
                         isFullMatch = false;
-                    }                    
+                    }
                     startIndex++;
                 }
                 if (isFullMatch) {
@@ -125,27 +113,27 @@ export class ActivityInputSearch {
             return val != "";
         });
         let shortestBaseMatch: ActivityCategoryDefinition;
-        let sortByShortest = baseMatches.sort((match1, match2)=>{
-            if(match1.fullNamePath.length < match2.fullNamePath.length){
+        let sortByShortest = baseMatches.sort((match1, match2) => {
+            if (match1.fullNamePath.length < match2.fullNamePath.length) {
                 return -1;
             }
-            if(match1.fullNamePath.length > match2.fullNamePath.length){
+            if (match1.fullNamePath.length > match2.fullNamePath.length) {
                 return 1;
             }
             return 0;
-            
+
         });
         shortestBaseMatch = sortByShortest[0];
         let currentBaseMatch: ActivityCategoryDefinition = shortestBaseMatch;
-        for(let i=1;i<pathNames.length; i++){
+        for (let i = 1; i < pathNames.length; i++) {
             let childMatchFound: boolean = false;
-            currentBaseMatch.children.forEach((child)=>{
-                if(child.name.toLowerCase() === pathNames[i]){
+            currentBaseMatch.children.forEach((child) => {
+                if (child.name.toLowerCase() === pathNames[i]) {
                     childMatchFound;
                     currentBaseMatch = child;
                 }
             });
-            if(!childMatchFound){
+            if (!childMatchFound) {
                 foundParent = currentBaseMatch;
             }
         }
@@ -154,48 +142,58 @@ export class ActivityInputSearch {
 
 
     createNewActivity$: Subject<ActivityCategoryDefinition[]> = new Subject();
-    initiateCreationOfNewActivity(searchValue: string, parentActivity?: ActivityCategoryDefinition): ActivityCategoryDefinition {
-
-
+    initiateCreationOfNewActivity(searchValue: string, parentActivity?: ActivityCategoryDefinition) {
         let pathNames: string[] = searchValue.split("/").filter((val) => {
             return val != "";
         });
-
         if (!parentActivity) {
             // Create new Root-level activity
-            if(pathNames.length == 1){
+            if (pathNames.length == 1) {
                 let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition("", "", "", pathNames[0], "Root level activity", "", "#ffffff");
                 newActivity.setFullPath("/" + name + "/");
-                this.createNewActivity$.next([newActivity]); 
-            }else if(pathNames.length > 1){
+                this.createNewActivity$.next([newActivity]);
+            } else if (pathNames.length > 1) {
                 let newActivities: ActivityCategoryDefinition[] = [];
                 let currentFullPath: string = "/";
-                for(let i=0;i<pathNames.length; i++){
+                for (let i = 0; i < pathNames.length; i++) {
                     currentFullPath += pathNames[i] + "/";
                     let activityName: string = pathNames[i];
                     let newActivity: ActivityCategoryDefinition;
-                    if(i == 0){
+                    if (i == 0) {
                         newActivity = new ActivityCategoryDefinition("", "", "", activityName, "New root level activity", "", "#ffffff");
-                    }else if(i > 0){
-                        let parentName = pathNames[i-1];
-                        newActivity = new ActivityCategoryDefinition("", "", "", activityName, "Child of "+ parentName, "", "#ffffff");
+                    } else if (i > 0) {
+                        let parentName = pathNames[i - 1];
+                        newActivity = new ActivityCategoryDefinition("", "", "", activityName, "Child of " + parentName, "", "#ffffff");
                     }
                     newActivity.setFullPath(currentFullPath);
                     newActivities.push(newActivity);
                 }
                 this.createNewActivity$.next(newActivities);
             }
-            return null;
         } else if (parentActivity) {
-            if(pathNames.length < 2){
-                console.log("errororkorkeokroekreokreork")
+            if (pathNames.length < 2) {
+                console.log("Bigly error")
+                this.createNewActivity$.next(null);
+            } else {
+                let newActivities: ActivityCategoryDefinition[] = [];
+                let currentPathIndex: number = -1;
+                for (let i = pathNames.length - 1; i >= 0; i--) {
+                    if (pathNames[i] === parentActivity.name.toLowerCase()) {
+                        if (currentPathIndex == -1) {
+                            currentPathIndex = i + 1;
+                        }
+                    }
+                }
+                while (currentPathIndex < pathNames.length) {
+                    let activityName: string = pathNames[currentPathIndex];
+                    let parentName: string = pathNames[currentPathIndex - 1];
+                    let newActivity = new ActivityCategoryDefinition("", "", "", activityName, "Child of " + parentName, "", "#ffffff");
+                    newActivity.setFullPath(parentActivity.fullNamePath + activityName + "/");
+                    newActivities.push(newActivity);
+                    currentPathIndex++;
+                }
+                this.createNewActivity$.next(newActivities);
             }
-
-
-
-            console.log("Warning: incomplete. Its not a root activity, its a child of " + parentActivity.name);
-            this.createNewActivity$.next();
-            return parentActivity;
         }
     }
 
