@@ -72,6 +72,9 @@ export class ActivityInputDropdownComponent implements OnInit {
   onActivityInputKeyUp(event: KeyboardEvent) {
     this.onInputValueChanged(event);
   }
+
+  
+
   private onInputValueChanged(event: KeyboardEvent){
     let targetValue: string = (event.target as HTMLInputElement).value
     this.activityTextInputValue = targetValue;
@@ -105,8 +108,8 @@ export class ActivityInputDropdownComponent implements OnInit {
     }
   }
   private arrowRight() {
-    this.activityTextInputValue = this.searchResults[this.arrowCursorIndex].fullNamePath;
-    this.onClickSearchResult(this.searchResults[this.arrowCursorIndex]);
+    this.activityTextInputValue = this.searchResults[this.arrowCursorIndex].name;
+    // this.onClickSearchResult(this.searchResults[this.arrowCursorIndex]);
   }
 
   isArrowSelected(searchResult): boolean {
@@ -126,11 +129,11 @@ export class ActivityInputDropdownComponent implements OnInit {
     
   }
   private searchForActivities(searchValue: string) {
-    let activitySearch: ActivityInputSearch = new ActivityInputSearch();
+    let activitySearch: ActivityInputSearch = new ActivityInputSearch(this.activitiesTree);
     activitySearch.createNewActivity$.subscribe((createNewActivity: ActivityCategoryDefinition)=>{
       this.createNewActivity = createNewActivity;
     })
-    this.searchResults = activitySearch.searchForActivities(searchValue, this.activitiesTree);
+    this.searchResults = activitySearch.searchForActivities(searchValue);
   }
   searchResults: ActivityCategoryDefinition[] = [];
 
