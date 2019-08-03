@@ -140,21 +140,10 @@ export class ActivityCategoryDefinitionService {
 
 
   public saveActivity$(activity: ActivityCategoryDefinition): Observable<ActivityCategoryDefinition>{
-    this.saveActivity(activity);
-    return this.saveActivityComplete$.asObservable();
-  }
-
-  private saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
-  saveActivity(activity: ActivityCategoryDefinition) {
-    console.log("Saving activity: " + activity.name);
+    let saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
     let newActivity = activity;
     newActivity.userId = this._authStatus.user.id;
-
-    /*
-      TODO:  Eventually need to add a check in here to make sure that treeIds are unique per user.
-    */
     newActivity.treeId = this._authStatus.user.id + "_" + activity.name.replace(" ", "_");
-
     const postUrl = this._serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -162,7 +151,6 @@ export class ActivityCategoryDefinitionService {
         // 'Authorization': 'my-auth-token'
       })
     };
-
     this.httpClient.post<{ message: string, data: any }>(postUrl, activity, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response) => {
         let data = response.data;
@@ -172,7 +160,31 @@ export class ActivityCategoryDefinitionService {
       .subscribe((activity: ActivityCategoryDefinition) => {
         this._activitiesTree.addActivityToTree(activity);
         this._activitiesTree$.next(this._activitiesTree);
-        this.saveActivityComplete$.next(activity);
+        saveActivityComplete$.next(activity);
+      })
+    return saveActivityComplete$.asObservable();
+  }
+
+  saveActivity(activity: ActivityCategoryDefinition) {
+    let newActivity = activity;
+    newActivity.userId = this._authStatus.user.id;
+    newActivity.treeId = this._authStatus.user.id + "_" + activity.name.replace(" ", "_");
+    const postUrl = this._serverUrl + "/api/activity-category-definition/create";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    this.httpClient.post<{ message: string, data: any }>(postUrl, activity, httpOptions)
+      .pipe<ActivityCategoryDefinition>(map((response) => {
+        let data = response.data;
+        let activity = new ActivityCategoryDefinition(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
+        return activity;
+      }))
+      .subscribe((activity: ActivityCategoryDefinition) => {
+        this._activitiesTree.addActivityToTree(activity);
+        this._activitiesTree$.next(this._activitiesTree);
       })
   }
 

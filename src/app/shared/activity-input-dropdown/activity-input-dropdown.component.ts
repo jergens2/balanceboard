@@ -1,12 +1,13 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { faCaretDown, faCaretRight, faSitemap, faSearch, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-import { Subscription, Observable, fromEvent } from 'rxjs';
+import { Subscription, Observable, fromEvent, Subject, timer } from 'rxjs';
 import { ActivityDropdownListItem } from './activity-dropdown-list-item.interface';
 import { ActivityTree } from '../document-definitions/activity-category-definition/activity-tree.class';
 import { ActivityCategoryDefinition } from '../document-definitions/activity-category-definition/activity-category-definition.class';
 import { ActivityCategoryDefinitionService } from '../document-definitions/activity-category-definition/activity-category-definition.service';
 import { ActivityInputSearch } from './activity-input-search.class';
+import { ActivityChainLink, SaveActivityChain } from './save-activity-chain.class';
 
 @Component({
   selector: 'app-activity-input-dropdown',
@@ -54,7 +55,7 @@ export class ActivityInputDropdownComponent implements OnInit {
 
   ngOnInit() {
     this.activitiesTree = this.activityCategoryDefinitionService.activitiesTree;
-    this.activityCategoryDefinitionService.activitiesTree$.subscribe((newTree)=>{
+    this.activityCategoryDefinitionService.activitiesTree$.subscribe((newTree) => {
       console.log("Updating tree");
       this.activitiesTree = newTree;
     })
@@ -64,8 +65,7 @@ export class ActivityInputDropdownComponent implements OnInit {
   activityTextInputValue: string = "";
 
   onActivityInputKeyDown(event: KeyboardEvent) {
-    if(event.key == "Backspace"){
-      console.log("keydown")
+    if (event.key == "Backspace") {
       this.onInputValueChanged(event);
     }
   }
@@ -73,33 +73,33 @@ export class ActivityInputDropdownComponent implements OnInit {
     this.onInputValueChanged(event);
   }
 
-  
 
-  private onInputValueChanged(event: KeyboardEvent){
+
+  private onInputValueChanged(event: KeyboardEvent) {
     let targetValue: string = (event.target as HTMLInputElement).value
     this.activityTextInputValue = targetValue;
-    let initiateSearch:boolean = false;
+    let initiateSearch: boolean = false;
     let searchValue: string;
     if (event.key == "ArrowUp") {
       this.arrowUp();
     } else if (event.key == "ArrowDown") {
       this.arrowDown();
-    } else if (event.key == "ArrowRight" ) {
+    } else if (event.key == "ArrowRight") {
       this.arrowRight();
       initiateSearch = true;
       searchValue = this.activityTextInputValue;
-    }else {
+    } else {
       initiateSearch = true;
       searchValue = targetValue;
     }
-    if(initiateSearch){
-      if (searchValue.length == 0) {
-        this.searchResults = [];
-      } else if (searchValue.length > 0) {
-        this.searchForActivities(searchValue.toLowerCase());
-      } else {
-        console.log("Error with searchValue: " + searchValue);
-      }
+
+    if (searchValue.length == 0) {
+      this.searchResults = [];
+      this.createNewActivities = [];
+    }
+
+    if (initiateSearch) {
+      this.searchForActivities(searchValue);
     }
   }
 
@@ -115,7 +115,9 @@ export class ActivityInputDropdownComponent implements OnInit {
     }
   }
   private arrowRight() {
-    this.activityTextInputValue = this.searchResults[this.arrowCursorIndex].name;
+    if (this.arrowCursorIndex >= 0) {
+      this.activityTextInputValue = this.searchResults[this.arrowCursorIndex].activity.fullNamePath;
+    }
   }
 
   isArrowSelected(searchResult): boolean {
@@ -123,59 +125,135 @@ export class ActivityInputDropdownComponent implements OnInit {
   }
 
 
-  createNewActivities: ActivityCategoryDefinition[] = []; 
-  savingActivity: boolean = false;
-  onClickSaveNewActivities(){
-    this.savingActivity = true;
-    // this.activityCategoryDefinitionService.saveActivity$(this.createNewActivity).subscribe((activitySaved)=>{
-    //   this.onClickSearchResult(activitySaved);
-    //   console.log("Activity was saved:" + activitySaved);
-    //   this.savingActivity = false;
-    // });
-    
-  }
-  private searchForActivities(searchValue: string) {
-    let activitySearch: ActivityInputSearch = new ActivityInputSearch(this.activitiesTree);
 
-    activitySearch.createNewActivity$.subscribe((createNewActivities: ActivityCategoryDefinition[])=>{
-      if(createNewActivities && createNewActivities.length > 0){
+  private saveActivityChain: SaveActivityChain;
+  private searchForActivities(searchValue: string) {
+    let activitySearch: ActivityInputSearch = new ActivityInputSearch(this.activityCategoryDefinitionService);
+
+    activitySearch.createNewActivity$.subscribe((createNewActivities: ActivityCategoryDefinition[]) => {
+      if (createNewActivities && createNewActivities.length > 0) {
         this.createNewActivities = createNewActivities;
-      }else{
+        this.saveActivityChain = new SaveActivityChain(createNewActivities, this.activityCategoryDefinitionService);
+      } else {
         this.createNewActivities = [];
+        this.saveActivityChain = null;
       }
     })
 
-    this.searchResults = activitySearch.searchForActivities(searchValue);
+    this.searchResults = activitySearch.searchForActivities(searchValue).map((searchResult) => {
+      let result = {
+        activity: searchResult,
+        sections: this.parseSearchResultSections(searchResult)
+      }
+      return result;
+    });
   }
-  searchResults: ActivityCategoryDefinition[] = [];
-
+  searchResults: {
+    activity: ActivityCategoryDefinition,
+    sections: {
+      value: string,
+      isBold: boolean
+    }[],
+  }[] = [];
 
   onClickSearchResult(searchResult: ActivityCategoryDefinition) {
     this.valueChanged.emit(searchResult);
     this.activityTextInputValue = "";
     this.createNewActivities = [];
     this.searchResults = [];
+    this.arrowCursorIndex = -1;
+  }
+
+  createNewActivities: ActivityCategoryDefinition[] = [];
+  savingActivity: boolean = false;
+  onClickSaveNewActivities() {
+    this.savingActivity = true;
+    let isCompleteSubscription: Subscription = new Subscription();
+    isCompleteSubscription = this.saveActivityChain.saveActivities$().subscribe((isComplete)=>{
+      if(isComplete){
+        this.savingActivity = false;
+        isCompleteSubscription.unsubscribe();
+      }
+      console.log("Back in the component now:  its complete.");
+    })
   }
 
 
 
 
-  public fullNamePathStart(searchResult: ActivityCategoryDefinition): string {
-    let subString: string = this.activityTextInputValue;
-    let index: number = searchResult.fullNamePath.toLowerCase().indexOf(subString.toLowerCase());
-    return searchResult.fullNamePath.substring(0, index);
+  private parseSearchResultSections(searchResult: ActivityCategoryDefinition): { value: string, isBold: boolean }[] {
+    let sections: any[] = [];
+    let searchValue = this.activityTextInputValue.toLowerCase();
+    let fullPath: string = searchResult.fullNamePath.toLowerCase();
+
+
+    if (fullPath.indexOf(searchValue) > -1) {
+      let startIndex: number = fullPath.indexOf(searchValue);
+      let endIndex: number = startIndex + searchValue.length;
+
+      let startSection = {
+        value: searchResult.fullNamePath.slice(0, startIndex),
+        isBold: false,
+      };
+      let midSection = {
+        value: searchResult.fullNamePath.slice(startIndex, endIndex),
+        isBold: true,
+      };
+      let endSection = {
+        value: searchResult.fullNamePath.slice(endIndex, fullPath.length - 1),
+        isBold: false,
+      };
+      sections = [startSection, midSection, endSection];
+    } else {
+      let matchFound: boolean = false;
+      let matchStartIndex: number = -1;
+      let matchEndIndex: number = -1;
+      for (let currentFullPathIndex = 0; currentFullPathIndex < fullPath.length; currentFullPathIndex++) {
+        let searchEndIndex = searchValue.length;
+        let currentFullPath: string = fullPath.slice(currentFullPathIndex, fullPath.length);
+        if (searchValue.length > currentFullPath.length) {
+          searchEndIndex = currentFullPath.length;
+        }
+        let currentSearchValue: string = searchValue.slice(0, searchEndIndex);
+        for (let currentSearchValueEndIndex = currentSearchValue.length; currentSearchValueEndIndex > 0; currentSearchValueEndIndex--) {
+          let reducedSearchValue: string = currentSearchValue.slice(0, currentSearchValueEndIndex);
+          if (currentFullPath.indexOf(reducedSearchValue) > -1) {
+            if (!matchFound) {
+              matchStartIndex = currentFullPath.indexOf(reducedSearchValue) + currentFullPathIndex;
+              matchEndIndex = matchStartIndex + reducedSearchValue.length;
+              matchFound = true;
+            }
+          }
+        }
+      }
+
+      if (matchFound) {
+        let startSection = {
+          value: searchResult.fullNamePath.slice(0, matchStartIndex),
+          isBold: false,
+        };
+        let midSection = {
+          value: searchResult.fullNamePath.slice(matchStartIndex, matchEndIndex),
+          isBold: true,
+        };
+        let endSection = {
+          value: searchResult.fullNamePath.slice(matchEndIndex, fullPath.length),
+          isBold: false,
+        };
+        sections = [startSection, midSection, endSection];
+      } else {
+        sections = [{
+          value: searchResult.fullNamePath,
+          isBold: false,
+        }]
+      }
+
+    }
+    return sections;
   }
-  public fullNamePathMatch(searchResult: ActivityCategoryDefinition): string {
-    let subString: string = this.activityTextInputValue;
-    let index: number = searchResult.fullNamePath.toLowerCase().indexOf(subString.toLowerCase());
-    return searchResult.fullNamePath.substring(index, index + subString.length);
-  }
-  public fullNamePathEnd(searchResult: ActivityCategoryDefinition): string {
-    let subString: string = this.activityTextInputValue;
-    let index: number = searchResult.fullNamePath.toLowerCase().indexOf(subString.toLowerCase()) + subString.length;
-    let pathEnd: string = searchResult.fullNamePath.substring(index, searchResult.fullNamePath.length);
-    return pathEnd;
-  }
+
+
+
 
 
 
@@ -183,7 +261,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     if (this.searchResults.length > 0) {
       return true;
     }
-    if (this.createNewActivities.length > 0){
+    if (this.createNewActivities.length > 0) {
       return true;
     }
     return false;
