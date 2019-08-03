@@ -20,6 +20,7 @@ export class SaveActivityChain{
             this.startLink.linkSaved$.subscribe((chainIsComplete: boolean)=>{
                 if(chainIsComplete == true){
                     console.log("the chain is complete. ");
+                    isSaved$.next(true);
                 }
             });
             this.startLink.saveChainLink();
