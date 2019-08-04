@@ -8,6 +8,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AuthStatus } from '../../../authentication/auth-status.class';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.class';
+import { Guid } from '../../utilities/guid.class';
 @Injectable({
   providedIn: 'root'
 })
@@ -143,7 +144,8 @@ export class ActivityCategoryDefinitionService {
     let saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
     let newActivity = activity;
     newActivity.userId = this._authStatus.user.id;
-    newActivity.treeId = this._authStatus.user.id + "_" + activity.name.replace(" ", "_");
+    let guid: string = Guid.newGuid();
+    newActivity.treeId = this._authStatus.user.id + "_" + Guid.newGuid();
     const postUrl = this._serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
       headers: new HttpHeaders({

@@ -76,30 +76,36 @@ export class ActivityInputDropdownComponent implements OnInit {
 
 
   private onInputValueChanged(event: KeyboardEvent) {
-    let targetValue: string = (event.target as HTMLInputElement).value
-    this.activityTextInputValue = targetValue;
-    let initiateSearch: boolean = false;
-    let searchValue: string;
-    if (event.key == "ArrowUp") {
-      this.arrowUp();
-    } else if (event.key == "ArrowDown") {
-      this.arrowDown();
-    } else if (event.key == "ArrowRight") {
-      this.arrowRight();
-      initiateSearch = true;
-      searchValue = this.activityTextInputValue;
-    } else {
-      initiateSearch = true;
-      searchValue = targetValue;
-    }
-
-    if (searchValue.length == 0) {
+    let target: HTMLInputElement = (event.target as HTMLInputElement);
+    if (target != null && target.value != null && target.value != ""){
+      let targetValue: string = (event.target as HTMLInputElement).value;
+      this.activityTextInputValue = targetValue;
+      let initiateSearch: boolean = false;
+      let searchValue: string;
+      if (event.key == "ArrowUp") {
+        this.arrowUp();
+      } else if (event.key == "ArrowDown") {
+        this.arrowDown();
+      } else if (event.key == "ArrowRight") {
+        this.arrowRight();
+        initiateSearch = true;
+        searchValue = this.activityTextInputValue;
+      } else {
+        initiateSearch = true;
+        searchValue = targetValue;
+      }
+  
+      if (searchValue.length == 0) {
+        this.searchResults = [];
+        this.createNewActivities = [];
+      }
+  
+      if (initiateSearch) {
+        this.searchForActivities(searchValue);
+      }
+    }else{
       this.searchResults = [];
       this.createNewActivities = [];
-    }
-
-    if (initiateSearch) {
-      this.searchForActivities(searchValue);
     }
   }
 
@@ -143,7 +149,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     this.searchResults = activitySearch.searchForActivities(searchValue).map((searchResult) => {
       let result = {
         activity: searchResult,
-        sections: this.parseSearchResultSections(searchResult)
+        sections: this.parseSearchResultSections(searchResult),
       }
       return result;
     });
@@ -169,9 +175,10 @@ export class ActivityInputDropdownComponent implements OnInit {
   onClickSaveNewActivities() {
     this.savingActivity = true;
     let isCompleteSubscription: Subscription = new Subscription();
-    isCompleteSubscription = this.saveActivityChain.saveActivities$().subscribe((isComplete)=>{
-      if(isComplete){
+    isCompleteSubscription = this.saveActivityChain.saveActivities$().subscribe((bottomActivity: ActivityCategoryDefinition)=>{
+      if(bottomActivity != null){
         this.savingActivity = false;
+        this.onClickSearchResult(bottomActivity);
         isCompleteSubscription.unsubscribe();
       }
       console.log("Back in the component now:  its complete.");

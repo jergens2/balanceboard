@@ -14,13 +14,12 @@ export class SaveActivityChain{
     }
 
     private startLink: ActivityChainLink;
-    public saveActivities$(): Observable<boolean> {
-        let isSaved$: Subject<boolean> = new Subject;
+    public saveActivities$(): Observable<ActivityCategoryDefinition> {
+        let isSaved$: Subject<ActivityCategoryDefinition> = new Subject();
         if(this.startLink){
-            this.startLink.linkSaved$.subscribe((chainIsComplete: boolean)=>{
-                if(chainIsComplete == true){
-                    console.log("the chain is complete. ");
-                    isSaved$.next(true);
+            this.startLink.linkSaved$.subscribe((bottomActivity: ActivityCategoryDefinition)=>{
+                if(bottomActivity != null){
+                    isSaved$.next(bottomActivity);
                 }
             });
             this.startLink.saveChainLink();
@@ -40,10 +39,6 @@ export class SaveActivityChain{
                 }
             }
             startLink = chainLinks[chainLinks.length-1];
-            console.log("chain links: " );
-            chainLinks.forEach((val)=>{
-                console.log("  "+ val.activity.name);
-            })
             return startLink;
         }else{
             console.log("Error, no activities to save.");
@@ -71,8 +66,8 @@ export class ActivityChainLink{
         this.activity.parentTreeId = parentTreeId;
     }
 
-    private _linkSaved$: Subject<boolean> = new Subject();
-    public get linkSaved$():Observable<boolean>{
+    private _linkSaved$: Subject<ActivityCategoryDefinition> = new Subject();
+    public get linkSaved$():Observable<ActivityCategoryDefinition>{
         return this._linkSaved$.asObservable();
     }
     public saveChainLink(){ 
@@ -85,13 +80,13 @@ export class ActivityChainLink{
             let treeId: string = savedActivity.treeId;
             if(this.nextChainLink != null){
                 this.nextChainLink.updateParentTreeId(treeId);
-                this.nextChainLink.linkSaved$.subscribe((linkIsSaved: boolean)=>{
-                    this._linkSaved$.next(linkIsSaved);
+                this.nextChainLink.linkSaved$.subscribe((bottomActivity: ActivityCategoryDefinition)=>{
+                    this._linkSaved$.next(bottomActivity);
                 });
                 this.nextChainLink.saveChainLink();
             }else{ 
                 console.log("finished at the bottom.  NEXT");
-                this._linkSaved$.next(true);
+                this._linkSaved$.next(this.activity);
             }
         });
     }

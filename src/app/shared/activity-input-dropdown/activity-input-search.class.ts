@@ -28,13 +28,13 @@ export class ActivityInputSearch {
         } else {
             let baseMatches: ActivityCategoryDefinition[] = this.findbaseMatches(searchValue);
             if (baseMatches.length == 0) {
-                searchResults = this.initiateCreationOfNewActivity(searchValue, null);
+                searchResults = [this.initiateCreationOfNewActivity(searchValue, null)];
             }
             else {
                 let fullMatches: ActivityCategoryDefinition[] = this.findFullMatches(baseMatches, searchValue);
                 if (fullMatches.length == 0) {
                     let parentActivity: ActivityCategoryDefinition = this.findParentActivity(baseMatches, searchValue);
-                    searchResults = this.initiateCreationOfNewActivity(searchValue, parentActivity)
+                    searchResults = [this.initiateCreationOfNewActivity(searchValue, parentActivity)];
                 } else if (fullMatches.length >= 1) {
                     this.createNewActivity$.next();
                     searchResults = fullMatches;
@@ -142,11 +142,11 @@ export class ActivityInputSearch {
 
 
     createNewActivity$: Subject<ActivityCategoryDefinition[]> = new Subject();
-    initiateCreationOfNewActivity(searchValue: string, parentActivity?: ActivityCategoryDefinition) : ActivityCategoryDefinition[]{
+    initiateCreationOfNewActivity(searchValue: string, parentActivity?: ActivityCategoryDefinition) : ActivityCategoryDefinition{
         let pathNames: string[] = searchValue.split("/").filter((val) => {
             return val != "";
         });
-        let returnSearchResults: ActivityCategoryDefinition[] = [];
+        let returnActivity: ActivityCategoryDefinition = null;
         if (!parentActivity) {
             // Create new Root-level activity
             let parentActivityId: string = this.activitiesService.userId + "_TOP_LEVEL"
@@ -155,7 +155,7 @@ export class ActivityInputSearch {
                 let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition("", "", "", pathNames[0], "Root level activity", parentActivityId , "#ffffff");
                 newActivity.setFullPath("/" + pathNames[0] + "/");
                 this.createNewActivity$.next([newActivity]);
-                returnSearchResults = [newActivity];
+                returnActivity = newActivity;
             } else if (pathNames.length > 1) {
                 let newActivities: ActivityCategoryDefinition[] = [];
                 let currentFullPath: string = "/";
@@ -170,7 +170,7 @@ export class ActivityInputSearch {
                         newActivity = new ActivityCategoryDefinition("", "", "", activityName, "Child of " + parentName, "", "#ffffff");
                     }
                     newActivity.setFullPath(currentFullPath);
-                    returnSearchResults = [newActivity];
+                    returnActivity = newActivity;
                     
                     newActivities.push(newActivity);
                 }
@@ -178,7 +178,7 @@ export class ActivityInputSearch {
                 
             }
         } else if (parentActivity) {
-            returnSearchResults = [parentActivity];
+            returnActivity = parentActivity;
             if (pathNames.length < 2) {
                 console.log("Bigly error")
                 this.createNewActivity$.next(null);
@@ -208,7 +208,7 @@ export class ActivityInputSearch {
                 this.createNewActivity$.next(newActivities);
             }
         }
-        return returnSearchResults;
+        return returnActivity;
     }
 
 }
