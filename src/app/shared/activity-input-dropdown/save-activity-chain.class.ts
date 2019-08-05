@@ -10,7 +10,7 @@ export class SaveActivityChain{
         this.activitiesToSave = activitiesToSave;
         this.activitiesService = activitiesService;
         this.startLink = this.buildChain();
-        
+        console.log("Startlink: ", this.startLink)
     }
 
     private startLink: ActivityChainLink;
@@ -71,10 +71,9 @@ export class ActivityChainLink{
         return this._linkSaved$.asObservable();
     }
     public saveChainLink(){ 
-        // console.log("First we are going to save this one: " + this.activity.name);
-        // if(this.nextChainLink){
-        //     this.nextChainLink.saveChainLink();
-        // }
+        if(!this.nextChainLink){
+            
+        }
         this.activitiesService.saveActivity$(this.activity).subscribe((savedActivity: ActivityCategoryDefinition)=>{
             console.log("Activity saved : " + savedActivity);
             let treeId: string = savedActivity.treeId;

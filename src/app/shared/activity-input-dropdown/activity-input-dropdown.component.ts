@@ -81,7 +81,8 @@ export class ActivityInputDropdownComponent implements OnInit {
       let targetValue: string = (event.target as HTMLInputElement).value;
       this.activityTextInputValue = targetValue;
       let initiateSearch: boolean = false;
-      let searchValue: string;
+      let searchValue: string = this.activityTextInputValue;
+      console.log(event.key)
       if (event.key == "ArrowUp") {
         this.arrowUp();
       } else if (event.key == "ArrowDown") {
@@ -90,7 +91,13 @@ export class ActivityInputDropdownComponent implements OnInit {
         this.arrowRight();
         initiateSearch = true;
         searchValue = this.activityTextInputValue;
-      } else {
+      } else if (event.key == "Enter") {
+        if(this.searchResults.length == 1){
+          this.onClickSearchResult(this.searchResults[0].activity);
+        }else if(this.arrowCursorIndex >= 0 && this.arrowCursorIndex < this.searchResults.length){
+          this.onClickSearchResult(this.searchResults[this.arrowCursorIndex].activity);
+        }
+      }else{
         initiateSearch = true;
         searchValue = targetValue;
       }
@@ -121,8 +128,11 @@ export class ActivityInputDropdownComponent implements OnInit {
     }
   }
   private arrowRight() {
-    if (this.arrowCursorIndex >= 0) {
-      this.activityTextInputValue = this.searchResults[this.arrowCursorIndex].activity.fullNamePath;
+    if (this.arrowCursorIndex >= 0 && this.arrowCursorIndex < this.searchResults.length) {
+      console.log("index is " + this.arrowCursorIndex)
+      console.log("Search results is ", this.searchResults);
+      this.activityTextInputValue = this.searchResults[this.arrowCursorIndex].activity.name;
+      this.arrowCursorIndex = -1;
     }
   }
 
@@ -152,7 +162,15 @@ export class ActivityInputDropdownComponent implements OnInit {
         sections: this.parseSearchResultSections(searchResult),
       }
       return result;
-    });
+    }).sort((searchResult1, searchResult2)=>{
+      if(searchResult1.activity.fullNamePath < searchResult2.activity.fullNamePath){
+        return -1;
+      }
+      if(searchResult1.activity.fullNamePath > searchResult2.activity.fullNamePath){
+        return 1;
+      }
+      return 0;
+    })
   }
   searchResults: {
     activity: ActivityCategoryDefinition,

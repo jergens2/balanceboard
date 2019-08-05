@@ -2,6 +2,7 @@ import { ActivityCategoryDefinition } from "../document-definitions/activity-cat
 import { ActivityTree } from "../document-definitions/activity-category-definition/activity-tree.class";
 import { Subject } from "rxjs";
 import { ActivityCategoryDefinitionService } from "../document-definitions/activity-category-definition/activity-category-definition.service";
+import { Guid } from "../utilities/guid.class";
 
 
 
@@ -47,7 +48,7 @@ export class ActivityInputSearch {
 
     private findbaseMatches(searchValue: string): ActivityCategoryDefinition[] {
         let matches: ActivityCategoryDefinition[] = [];
-        let pathNames: string[] = searchValue.split("/").filter((val) => {
+        let pathNames: string[] = searchValue.toLowerCase().split("/").filter((val) => {
             return val != "";
         });
         let rootSearchWord = pathNames[0];
@@ -76,7 +77,7 @@ export class ActivityInputSearch {
             then searchValue of /balanceboard/new/ returns with value
             and  searchValue of /balanceboard/nex/ returns empty array
         */
-        let pathNames: string[] = searchValue.split("/").filter((val) => {
+        let pathNames: string[] = searchValue.toLowerCase().split("/").filter((val) => {
             return val != "";
         });
         let startName: string = pathNames[0];
@@ -109,7 +110,7 @@ export class ActivityInputSearch {
             e.g., searchValue = "/exists/new/subnew/subnew" will return activity 'exists' 
         */
         let foundParent: ActivityCategoryDefinition = null;
-        let pathNames: string[] = searchValue.split("/").filter((val) => {
+        let pathNames: string[] = searchValue.toLowerCase().split("/").filter((val) => {
             return val != "";
         });
         let shortestBaseMatch: ActivityCategoryDefinition;
@@ -142,7 +143,7 @@ export class ActivityInputSearch {
 
 
     createNewActivity$: Subject<ActivityCategoryDefinition[]> = new Subject();
-    initiateCreationOfNewActivity(searchValue: string, parentActivity?: ActivityCategoryDefinition) : ActivityCategoryDefinition{
+    initiateCreationOfNewActivity(searchValue: string, parentActivity?: ActivityCategoryDefinition): ActivityCategoryDefinition {
         let pathNames: string[] = searchValue.split("/").filter((val) => {
             return val != "";
         });
@@ -151,8 +152,8 @@ export class ActivityInputSearch {
             // Create new Root-level activity
             let parentActivityId: string = this.activitiesService.userId + "_TOP_LEVEL"
             if (pathNames.length == 1) {
-    
-                let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition("", "", "", pathNames[0], "Root level activity", parentActivityId , "#ffffff");
+
+                let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition("", "", "", pathNames[0], "Root level activity", parentActivityId, "#ffffff");
                 newActivity.setFullPath("/" + pathNames[0] + "/");
                 this.createNewActivity$.next([newActivity]);
                 returnActivity = newActivity;
@@ -164,18 +165,18 @@ export class ActivityInputSearch {
                     let activityName: string = pathNames[i];
                     let newActivity: ActivityCategoryDefinition;
                     if (i == 0) {
-                        newActivity = new ActivityCategoryDefinition("", "", "", activityName, "New root level activity", parentActivityId, "#ffffff");                        
+                        newActivity = new ActivityCategoryDefinition("", "", "", activityName, "New root level activity", parentActivityId, "#ffffff");
                     } else if (i > 0) {
                         let parentName = pathNames[i - 1];
                         newActivity = new ActivityCategoryDefinition("", "", "", activityName, "Child of " + parentName, "", "#ffffff");
                     }
                     newActivity.setFullPath(currentFullPath);
                     returnActivity = newActivity;
-                    
+
                     newActivities.push(newActivity);
                 }
                 this.createNewActivity$.next(newActivities);
-                
+
             }
         } else if (parentActivity) {
             returnActivity = parentActivity;
@@ -186,7 +187,7 @@ export class ActivityInputSearch {
                 let newActivities: ActivityCategoryDefinition[] = [];
                 let currentPathIndex: number = -1;
                 for (let i = pathNames.length - 1; i >= 0; i--) {
-                    if (pathNames[i] === parentActivity.name.toLowerCase()) {
+                    if (pathNames[i].toLowerCase() === parentActivity.name.toLowerCase()) {
                         if (currentPathIndex == -1) {
                             currentPathIndex = i + 1;
                         }
@@ -196,9 +197,8 @@ export class ActivityInputSearch {
                     let activityName: string = pathNames[currentPathIndex];
                     let parentName: string = pathNames[currentPathIndex - 1];
                     let parentId: string = "";
-                    if( parentActivity.name == parentName){
+                    if (parentActivity.name.toLowerCase() == parentName.toLowerCase()) {
                         parentId = parentActivity.treeId;
-                        
                     }
                     let newActivity = new ActivityCategoryDefinition("", "", "", activityName, "Child of " + parentName, parentId, parentActivity.color);
                     newActivity.setFullPath(parentActivity.fullNamePath + activityName + "/");

@@ -144,7 +144,6 @@ export class ActivityCategoryDefinitionService {
     let saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
     let newActivity = activity;
     newActivity.userId = this._authStatus.user.id;
-    let guid: string = Guid.newGuid();
     newActivity.treeId = this._authStatus.user.id + "_" + Guid.newGuid();
     const postUrl = this._serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
@@ -153,7 +152,7 @@ export class ActivityCategoryDefinitionService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, activity, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, newActivity, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response) => {
         let data = response.data;
         let activity = new ActivityCategoryDefinition(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
@@ -170,7 +169,7 @@ export class ActivityCategoryDefinitionService {
   saveActivity(activity: ActivityCategoryDefinition) {
     let newActivity = activity;
     newActivity.userId = this._authStatus.user.id;
-    newActivity.treeId = this._authStatus.user.id + "_" + activity.name.replace(" ", "_");
+    newActivity.treeId = this._authStatus.user.id + "_" + Guid.newGuid();
     const postUrl = this._serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -178,7 +177,7 @@ export class ActivityCategoryDefinitionService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, activity, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, newActivity, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response) => {
         let data = response.data;
         let activity = new ActivityCategoryDefinition(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
