@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DayTemplate } from './day-template.model';
+import { DayTemplate } from './day-template.class';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { AuthStatus } from '../../../authentication/auth-status.class';
@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 
 import * as moment from 'moment';
-import { ITemplateTimeRange } from './template-time-range.interface';
+
 import { ServiceAuthenticates } from '../../../authentication/service-authentication.interface';
 
 @Injectable({
@@ -30,14 +30,12 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
   logout(){
     this._authStatus = null;
-    this._dayTemplates = [];
-    this._dayTemplates$.next(this._dayTemplates);
+    this._dayTemplates$.next([]);
   }
 
-  private _dayTemplates: DayTemplate[] = [];
-  private _dayTemplates$: Subject<DayTemplate[]> = new Subject();
+  private _dayTemplates$: BehaviorSubject<DayTemplate[]> = new BehaviorSubject([]);
   public get dayTemplates(): DayTemplate[] {
-    return Object.assign([], this._dayTemplates);
+    return this._dayTemplates$.getValue();
   }
   public get dayTemplates$(): Observable<DayTemplate[]> { 
     return this._dayTemplates$.asObservable();
@@ -54,19 +52,20 @@ export class DayTemplatesService implements ServiceAuthenticates {
     };
     return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe(map((response) => {
-        let rd: any[] = response.data;
-        return rd.map((dataObject: any) => {
-          return new DayTemplate(dataObject._id, dataObject.userId, dataObject.name, dataObject.color, dataObject.sleepTimeRanges, dataObject.nonDiscretionaryTimeRanges, dataObject.discretionaryTimeRanges);;
-        })
+        let rd: any[] = response.data as any[];
+        if(rd.length > 0){
+          return rd.map((dataObject: any) => {
+            return this.buildDayTemplateFromResponse(dataObject);
+          });
+        }else{
+          this.generateDefaultDayTemplates();
+          return [];
+        }        
       }))
       .subscribe((dayTemplates: DayTemplate[]) => {
-        if(dayTemplates.length == 0){
-          this.buildDefaultTemplates();
-        }else{
-          this._dayTemplates = dayTemplates;
-          this._dayTemplates$.next(this._dayTemplates);
+          this._dayTemplates$.next(dayTemplates);
           this._loginComplete$.next(true);
-        }
+        
       });
 
   }
@@ -84,15 +83,13 @@ export class DayTemplatesService implements ServiceAuthenticates {
     };
 
 
-    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate.httpUpdate, httpOptions)
       .pipe<DayTemplate>(map((response) => {
-        let rd: any = response.data;
-        let newDayTemplate: DayTemplate = new DayTemplate(rd._id, rd.userId, rd.name, rd.color, rd.sleepTimeRanges, rd.nonDiscretionaryTimeRanges, rd.discretionaryTimeRanges);
-        return newDayTemplate;
+        return this.buildDayTemplateFromResponse(response.data);
       }))
       .subscribe((updatedTemplate: DayTemplate) => {
 
-        let templates = this._dayTemplates
+        let templates = this.dayTemplates
         for(let template of templates){
           if(template.id == updatedTemplate.id){
             templates.splice(templates.indexOf(template), 1, updatedTemplate)
@@ -111,15 +108,14 @@ export class DayTemplatesService implements ServiceAuthenticates {
       })
     };
     
-    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate.httpSave, httpOptions)
       .pipe<DayTemplate>(map((response) => {
-        let rd: any = response.data;
-        return new DayTemplate(rd._id, rd.userId, rd.name, rd.color, rd.sleepTimeRanges, rd.nonDiscretionaryTimeRanges, rd.discretionaryTimeRanges);
+        return this.buildDayTemplateFromResponse(response.data);
       }))
       .subscribe((dayTemplate: DayTemplate) => {
-
-        this._dayTemplates.push(dayTemplate);
-        this._dayTemplates$.next(this._dayTemplates);
+        let templates = this.dayTemplates;
+        templates.push(dayTemplate);
+        this._dayTemplates$.next(templates);
       })
   }
 
@@ -132,71 +128,37 @@ export class DayTemplatesService implements ServiceAuthenticates {
       })
     };
 
-    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate.httpDelete, httpOptions)
       .subscribe((response) => {
-        let dayTemplates: DayTemplate[] = this._dayTemplates;
+        let dayTemplates: DayTemplate[] = this.dayTemplates;
         dayTemplates.splice(dayTemplates.indexOf(dayTemplate), 1);
 
         this._dayTemplates$.next(dayTemplates);
       })
   }
 
-  private buildDefaultTemplates(){
-
-    console.log("Building default day templates");
-
-    let sleepTimeRanges: ITemplateTimeRange[] = [
-      {
-        startHour: 0,
-        startMinute: 0,
-        endHour: 7,
-        endMinute: 0 
-      },
-      {
-        startHour: 23,
-        startMinute: 0,
-        endHour: 24,
-        endMinute: 0 
-      }
-    ];
-
-    let workDayNonDiscretionaryTimeRanges: ITemplateTimeRange[] = [
-      {
-        startHour: 8,
-        startMinute: 0,
-        endHour: 16,
-        endMinute: 0
-      }
-    ];
-    let workDayDiscretionaryTimeRanges: ITemplateTimeRange[] = [
-      {
-        startHour: 16,
-        startMinute: 0,
-        endHour: 23,
-        endMinute: 0
-      }
-    ]
-
-    let restDayDiscretionaryTimeRanges: ITemplateTimeRange[] = [
-      {
-        startHour: 7,
-        startMinute: 0,
-        endHour: 23,
-        endMinute: 0
-      }
-    ]
-
-    let defaultWorkDayTemplate: DayTemplate = new DayTemplate('',this._authStatus.user.id, "Default Template: Work Day", "#dbe8ff", sleepTimeRanges, workDayNonDiscretionaryTimeRanges, workDayDiscretionaryTimeRanges);
-    let defaultRestDayTemplate: DayTemplate = new DayTemplate('',this._authStatus.user.id, "Default Template: Rest Day", "#c5ff99", sleepTimeRanges, [], restDayDiscretionaryTimeRanges);
-
-
-
-    // warning: this is all asynchronous, but its basically being treated as if it is synchronous..  I can't forsee this necessarily being a problem, as it will happen quickly on the first login of the user, but something to keep an eye on if problems arise.
-
-    this.saveDayTemplateHTTP(defaultWorkDayTemplate);
-    this.saveDayTemplateHTTP(defaultRestDayTemplate);
+  private buildDayTemplateFromResponse(responseData: any): DayTemplate{
+    console.log("Building day template from response: " , responseData);
+    return null;
   }
 
+  private generateDefaultDayTemplates(){
+    let newTemplates: DayTemplate[] = [];
 
+    let defaultDayTemplate: DayTemplate = new DayTemplate("", this._authStatus.user.id, "Default Day");
+    defaultDayTemplate.delineations = [
+      {
+        startAt: {hour: 7, minute: 30, second: 0},
+        endAt: null,
+      },
+      {
+        startAt: {hour: 10, minute: 30, second: 0},
+        endAt: null,
+      }
+    ];
+    this.saveDayTemplateHTTP(defaultDayTemplate);
+
+
+  }
 
 }

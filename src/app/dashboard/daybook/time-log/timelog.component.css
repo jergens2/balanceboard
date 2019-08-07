@@ -58,7 +58,7 @@
 .caret-container{
     width:100%; 
     display:flex;
-    justify-content: center;
+    justify-content: space-between;
     flex-shrink: 2;
     padding:0px;
     line-height: 1;

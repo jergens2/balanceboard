@@ -1,4 +1,4 @@
-import { DayTemplate } from "./day-template.model";
+import { DayTemplate } from "./day-template.class";
 
 export interface IDayTemplateItem{
     dayTemplate: DayTemplate;

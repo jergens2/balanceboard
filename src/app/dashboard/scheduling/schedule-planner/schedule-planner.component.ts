@@ -6,6 +6,8 @@ import { ITimeBlock } from './time-block.interface';
 import { ScheduleItem } from './schedule-item.class';
 import { SchedulingService } from '../scheduling.service';
 import { ItemSelection } from './item-selection.class';
+import { DayTemplatesService } from '../day-templates/day-templates.service';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-schedule-planner',
@@ -14,7 +16,9 @@ import { ItemSelection } from './item-selection.class';
 })
 export class SchedulePlannerComponent implements OnInit {
 
-  constructor(private sizeService: SizeService, private schedulingService: SchedulingService) { }
+  constructor(private sizeService: SizeService, private schedulingService: SchedulingService, private dayTemplateService: DayTemplatesService) { }
+
+  faSpinner = faSpinner;
 
   size: AppScreenSize;
   scheduleItems: ScheduleItem[] = [];
@@ -27,15 +31,30 @@ export class SchedulePlannerComponent implements OnInit {
     scheduleItems: ScheduleItem[]
   } = null;
 
+  loading: boolean = true;;
+
   ngOnInit() {
+    this.size = this.sizeService.appScreenSize;
     this.sizeService.appScreenSize$.subscribe((size: AppScreenSize) => {
       this.size = size;
-    })
+    });
+    
+
+
+    this.dayTemplateService.dayTemplates$.subscribe((dayTemplates)=>{
+      if(dayTemplates.length > 0){
+        console.log("dayTemplates received: ", dayTemplates);
+        this.buildPlannerGraphic();
+        this.loading = false;
+      }else{
+
+      }
+    });
     // this.schedulingService.scheduleItems$.subscribe((scheduleItems: ScheduleItem[])=>{
     //   this.scheduleItems = scheduleItems;
     // })
-    this.size = this.sizeService.appScreenSize;
-    this.buildPlannerGraphic();
+    
+
   }
 
 
@@ -161,6 +180,7 @@ export class SchedulePlannerComponent implements OnInit {
     if(this.selection){
       this.selection.mouseUp();
     }
+    this.isGrabbing = false;
   }
   
   onMouseEnterTimeBlock(block: ITimeBlock){

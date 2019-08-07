@@ -1,4 +1,4 @@
-import { DayTemplate } from "../day-templates/day-template.model";
+import { DayTemplate } from "../day-templates/day-template.class";
 import * as moment from 'moment';
 
 export class ScheduleRotation{

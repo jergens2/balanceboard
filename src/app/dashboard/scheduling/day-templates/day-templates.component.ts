@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DayTemplatesService } from './day-templates.service';
-import { DayTemplate } from './day-template.model';
+import { DayTemplate } from './day-template.class';
 
 @Component({
   selector: 'app-day-templates',

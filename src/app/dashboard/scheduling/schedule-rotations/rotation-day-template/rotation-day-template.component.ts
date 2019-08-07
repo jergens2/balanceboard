@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { DayTemplate } from '../../day-templates/day-template.model';
+import { DayTemplate } from '../../day-templates/day-template.class';
 import { IDayTemplateItem } from '../../day-templates/day-template-item.interface';
 import { Modal } from '../../../../modal/modal.class';
 import { Subscription } from 'rxjs';

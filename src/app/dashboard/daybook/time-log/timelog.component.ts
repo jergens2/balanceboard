@@ -4,9 +4,10 @@ import { Subscription, timer, Subject } from 'rxjs';
 import { TimelogEntryTile } from './timelog-entry-tile/timelog-entry-tile.class';
 import { TimelogEntry } from '../../../shared/document-data/timelog-entry/timelog-entry.class';
 import { TimelogService } from '../../../shared/document-data/timelog-entry/timelog.service';
-import { faSpinner, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCaretUp, faCaretDown, faCogs } from '@fortawesome/free-solid-svg-icons';
 import { ITimeWindow } from './time-window.interface';
 import { ActivityCategoryDefinitionService } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
+import { Router } from '@angular/router';
 
 
 
@@ -19,8 +20,9 @@ import { ActivityCategoryDefinitionService } from '../../../shared/document-defi
 })
 export class TimeLogComponent implements OnInit, OnDestroy {
 
-  constructor(private timelogService: TimelogService, private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
+  constructor(private timelogService: TimelogService, private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private router: Router) { }
 
+  faCogs = faCogs;
   faSpinner = faSpinner;
   faCaretUp = faCaretUp;
   faCaretDown = faCaretDown;
@@ -661,6 +663,18 @@ export class TimeLogComponent implements OnInit, OnDestroy {
       //every five minutes
       this.timeWindow = this.activeTimeWindow;
     })
+  }
+
+
+  hoverTimelog: boolean = false;
+  onMouseEnterTimelog(){
+    this.hoverTimelog = true;
+  }
+  onMouseLeaveTimelog(){
+    this.hoverTimelog = false;
+  }
+  onClickTimelogSettings(){
+    this.router.navigate(["/schedule-planner"]);
   }
 
 

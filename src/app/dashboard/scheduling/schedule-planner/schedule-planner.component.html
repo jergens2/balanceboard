@@ -3,7 +3,9 @@
     Schedule Planner
   </div>
 
-  <div class="planner-graphic-container">
+
+  <div *ngIf="loading" class="loader"><fa-icon [icon]="faSpinner" [spin]="true"></fa-icon></div>
+  <div class="planner-graphic-container" *ngIf="!loading">
 
 
     <div class="planner-graphic" [ngStyle]="plannerGraphic.graphicStyle" (mouseleave)="onMouseLeaveGraphic()"

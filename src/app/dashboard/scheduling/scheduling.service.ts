@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ScheduleRotation } from './schedule-rotations/schedule-rotation.model';
 import { Observable, BehaviorSubject } from 'rxjs';
 import * as moment from 'moment';
-import { DayTemplate } from './day-templates/day-template.model';
+import { DayTemplate } from './day-templates/day-template.class';
 import { ScheduleItem } from './schedule-planner/schedule-item.class';
 
 @Injectable({

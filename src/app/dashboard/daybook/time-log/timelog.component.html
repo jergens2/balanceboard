@@ -1,12 +1,14 @@
-<div class="root">
+<div class="root" (mouseenter)="onMouseEnterTimelog()" (mouseleave)="onMouseLeaveTimelog()">
   <div *ngIf="ifLoading" class="loading">
     <fa-icon class="loading-spinner" [icon]="faSpinner" [spin]="true"></fa-icon>
   </div>
   <div *ngIf="!ifLoading" class="timelog">
     <div class="caret-container">
-
+      <div style="width:30px;"></div>
       <fa-icon [icon]="faCaretUp" class="caret" (click)="onClickCaret('UP')"></fa-icon>
-
+      <div style="width:30px;">
+        <fa-icon *ngIf="hoverTimelog" [icon]="faCogs" class="icon-button" (click)="onClickTimelogSettings()"></fa-icon>
+      </div>
 
     </div>
     <div class="timelog-grid-container">
@@ -34,7 +36,9 @@
 
 
     <div class="caret-container">
+      <div style="width:30px;"></div>
       <fa-icon [icon]="faCaretDown" class="caret" (click)="onClickCaret('DOWN')"></fa-icon>
+      <div style="width:30px;"></div>
     </div>
 
   </div>
