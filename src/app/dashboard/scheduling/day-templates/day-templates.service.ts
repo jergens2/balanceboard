@@ -9,6 +9,7 @@ import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import * as moment from 'moment';
 
 import { ServiceAuthenticates } from '../../../authentication/service-authentication.interface';
+import { Delineation } from './delineation.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +40,18 @@ export class DayTemplatesService implements ServiceAuthenticates {
   }
   public get dayTemplates$(): Observable<DayTemplate[]> { 
     return this._dayTemplates$.asObservable();
+  }
+
+  public dayTemplateDelineationsForDate(dateYYYYMMDD: string): Delineation[]{
+    
+    return [];
+  }
+
+  public dayTemplateForDate(dateYYYYMMDD: string): DayTemplate{
+    
+
+
+    return null;
   }
 
 
@@ -143,8 +156,6 @@ export class DayTemplatesService implements ServiceAuthenticates {
   }
 
   private generateDefaultDayTemplates(){
-    let newTemplates: DayTemplate[] = [];
-
     let defaultDayTemplate: DayTemplate = new DayTemplate("", this._authStatus.user.id, "Default Day");
     defaultDayTemplate.delineations = [
       {
@@ -157,8 +168,6 @@ export class DayTemplatesService implements ServiceAuthenticates {
       }
     ];
     this.saveDayTemplateHTTP(defaultDayTemplate);
-
-
   }
 
 }
