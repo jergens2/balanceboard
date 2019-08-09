@@ -23,6 +23,8 @@ import { DailyTaskListService } from '../shared/document-data/daily-task-list/da
 import { ServiceAuthentication } from './service-authentication.interface';
 import { ActivityDayDataService } from '../shared/document-data/activity-day-data/activity-day-data.service';
 import { SocialService } from '../shared/document-definitions/user-account/social.service';
+import { DaybookHttpRequestService } from '../dashboard/daybook/api/daybook-http-request.service';
+import { DaybookService } from '../dashboard/daybook/daybook.service';
 
 
 @Injectable()
@@ -49,6 +51,8 @@ export class AuthenticationService {
     private timeViewsService: TimeViewsService,
     private dailyTaskListService: DailyTaskListService,
     private socialService: SocialService,
+    private daybookHttpRequestService: DaybookHttpRequestService,
+    private daybookService: DaybookService,
   ) { }
 
   private serverUrl = serverUrl;
@@ -71,6 +75,9 @@ export class AuthenticationService {
     { name: "timeViews", subscription: new Subscription, isAuthenticated: false, },
     { name: "dailyTaskList", subscription: new Subscription, isAuthenticated: false, },
     { name: "social", subscription: new Subscription, isAuthenticated: false, },
+    
+    { name: "daybookHttp", subscription: new Subscription, isAuthenticated: false, },
+    { name: "daybook", subscription: new Subscription, isAuthenticated: false, },
   ]
 
   registerNewUserAccount$(authData: AuthData): Observable<Object> {
@@ -161,7 +168,11 @@ export class AuthenticationService {
           });
         }
       });
-
+      this._serviceAuthentications.find((sub) => { return sub.name == "daybookHttp" }).subscription = this.daybookHttpRequestService.login$(authStatus).subscribe((loginComplete: boolean) => {
+        
+        this.daybookService.login(authStatus);
+        this._serviceAuthentications.find((sub) => { return sub.name == "daybookHttp" }).isAuthenticated = loginComplete;
+      });
 
 
       let allComplete: boolean = true;
@@ -273,6 +284,9 @@ export class AuthenticationService {
     this.notebooksService.logout();
     this.recurringTaskService.logout();
     this.timeViewsService.logout();
+    // this.socialService.logout();
+    this.daybookHttpRequestService.logout();
+    this.daybookService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));

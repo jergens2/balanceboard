@@ -49,7 +49,8 @@ export class DayDataComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-
+    let asdf: moment.Moment = moment();
+    // asdf.utc
 
     // this.buildHeaderMenu();
     // let dateRegExp: RegExp = new RegExp(/[0-9]{4}(-[0-9]{2}){2}/);
