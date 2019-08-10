@@ -8,7 +8,7 @@ import { Subject, Observable, BehaviorSubject } from 'rxjs';
 
 import * as moment from 'moment';
 
-import { ServiceAuthenticates } from '../../../authentication/service-authentication.interface';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 import { Delineation } from './delineation.interface';
 
 @Injectable({
@@ -42,13 +42,20 @@ export class DayTemplatesService implements ServiceAuthenticates {
     return this._dayTemplates$.asObservable();
   }
 
-  public dayTemplateDelineationsForDate(dateYYYYMMDD: string): Delineation[]{
+  // public dayTemplateDelineationsForDate(dateYYYYMMDD: string): Delineation[]{
     
-    return [];
-  }
+  //   return [];
+  // }
 
   public dayTemplateForDate(dateYYYYMMDD: string): DayTemplate{
-    
+    let dayTemplates: DayTemplate[] = this.dayTemplates;
+    if(dayTemplates.length == 1){
+      return dayTemplates[0];
+    }else{
+      dayTemplates.forEach((dayTemplate: DayTemplate)=>{
+        dayTemplate
+      })
+    }
 
 
     return null;
@@ -56,7 +63,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
 
   private getTemplatesHTTP(){
-    const getUrl = this.serverUrl + "/api/dayScheduleTemplate/" + this._authStatus.user.id;
+    const getUrl = this.serverUrl + "/api/schedule-day-template/" + this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -71,7 +78,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
             return this.buildDayTemplateFromResponse(dataObject);
           });
         }else{
-          this.generateDefaultDayTemplates();
+          this.generateDefaultDayTemplate();
           return [];
         }        
       }))
@@ -87,7 +94,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
     console.log("Updating dayTemplate: ", dayTemplate);
 
 
-    const postUrl = this.serverUrl + "/api/dayScheduleTemplate/update";
+    const postUrl = this.serverUrl + "/api/schedule-day-template/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -113,7 +120,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
   }
 
   private saveDayTemplateHTTP(dayTemplate: DayTemplate){
-    const postUrl = this.serverUrl + "/api/dayScheduleTemplate/create";
+    const postUrl = this.serverUrl + "/api/schedule-day-template/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -129,11 +136,11 @@ export class DayTemplatesService implements ServiceAuthenticates {
         let templates = this.dayTemplates;
         templates.push(dayTemplate);
         this._dayTemplates$.next(templates);
-      })
+      });
   }
 
   private deleteTemplateHTTP(dayTemplate: DayTemplate){
-    const postUrl = this.serverUrl + "/api/dayScheduleTemplate/delete";
+    const postUrl = this.serverUrl + "/api/schedule-day-template/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -151,23 +158,31 @@ export class DayTemplatesService implements ServiceAuthenticates {
   }
 
   private buildDayTemplateFromResponse(responseData: any): DayTemplate{
-    console.log("Building day template from response: " , responseData);
-    return null;
+    // console.log("Building day template from response: " , responseData);
+
+    let dayTemplate: DayTemplate = new DayTemplate(responseData._id, responseData.userId, responseData.name);
+    dayTemplate.color = responseData.color;
+    dayTemplate.delineations = responseData.delineations;
+    return dayTemplate;
   }
 
-  private generateDefaultDayTemplates(){
+  private generateDefaultDayTemplate(): DayTemplate{
+    // console.log("Generating default day template");
     let defaultDayTemplate: DayTemplate = new DayTemplate("", this._authStatus.user.id, "Default Day");
     defaultDayTemplate.delineations = [
       {
+        name: "Wake up",
         startAt: {hour: 7, minute: 30, second: 0},
         endAt: null,
       },
       {
+        name: "Bed time",
         startAt: {hour: 10, minute: 30, second: 0},
         endAt: null,
       }
     ];
     this.saveDayTemplateHTTP(defaultDayTemplate);
+    return defaultDayTemplate;
   }
 
 }

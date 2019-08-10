@@ -19,9 +19,9 @@ export class DaybookHttpRequestService {
   login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
     this._loginComplete$.next(true);
-    let rangeStart: moment.Moment = moment().startOf("year");
-    let rangeEnd: moment.Moment = moment().endOf("year");
-    this.fetchDaybookDayItemsInRange(rangeStart, rangeEnd);
+    let rangeStartYYYYMMDD: string = moment().startOf("year").format("YYYY-MM-DD");
+    let rangeEndYYYYMMDD: string = moment().endOf("year").format("YYYY-MM-DD");
+    this.fetchDaybookDayItemsInRange(rangeStartYYYYMMDD, rangeEndYYYYMMDD);
     return this._loginComplete$.asObservable();
   }
 
@@ -41,6 +41,7 @@ export class DaybookHttpRequestService {
 
   public updateDaybookDayItem(daybookDayItem: DaybookDayItem) {
     const postUrl = serverUrl + "/api/daybook-day-item/update";
+    daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -49,7 +50,7 @@ export class DaybookHttpRequestService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
-        return this.buildDaybookDayItem(response.data as DaybookDayItemHttpShape);
+        return this.buildDaybookDayItem(response.data as any);
       }))
       .subscribe((returnedDaybookDayItem: DaybookDayItem) => {
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
@@ -64,15 +65,17 @@ export class DaybookHttpRequestService {
 
   saveDaybookDayItem(daybookDayItem: DaybookDayItem): DaybookDayItem {
     const postUrl = serverUrl + "/api/daybook-day-item/create";
+    daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
+    console.log("saving daybookDayItem,", daybookDayItem.httpShape);
     this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
-        return this.buildDaybookDayItem(response.data as DaybookDayItemHttpShape);
+        return this.buildDaybookDayItem(response.data as any);
       }))
       .subscribe((daybookDayItem: DaybookDayItem) => {
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
@@ -103,8 +106,8 @@ export class DaybookHttpRequestService {
 
 
 
-  private fetchDaybookDayItemsInRange(rangeStart: moment.Moment, rangeEnd: moment.Moment){
-    const getUrl = serverUrl + "/api/daybook-day-item/" + this._authStatus.user.id + "/" + rangeStart.toISOString() + "/" + rangeEnd.toISOString();
+  private fetchDaybookDayItemsInRange(rangeStartYYYYMMDD: string, rangeEndYYYYMMDD: string){
+    const getUrl = serverUrl + "/api/daybook-day-item/" + this._authStatus.user.id + "/" + rangeStartYYYYMMDD + "/" + rangeEndYYYYMMDD;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -113,7 +116,7 @@ export class DaybookHttpRequestService {
     };
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<DaybookDayItem[]>(map((response) => {
-        return this.buildDaybookDayItems(response.data as DaybookDayItemHttpShape[]);
+        return this.buildDaybookDayItemFromResponse(response.data as any[]);
       }))
       .subscribe((daybookDayItems: DaybookDayItem[]) => {
         this._daybookDayItems$.next(daybookDayItems);
@@ -121,7 +124,15 @@ export class DaybookHttpRequestService {
       });
   }
 
-  private buildDaybookDayItems(dayItemsHttp: DaybookDayItemHttpShape[]): DaybookDayItem[]{
+  private buildDaybookDayItemFromResponse(dayItemsHttp: DaybookDayItemHttpShape[]): DaybookDayItem[]{
+    console.log("Not implemented:  In this method, we need to do a property by property check");
+    /**
+     * to see if the incoming object has all the requisite properties.  
+     * The reason being that, over time new properties will likely be added and the shape will change.  
+     * This method here is where we validate every property, and update the object if not up to modern version.
+     * 
+     *  
+     */ 
     let daybookDayItems: DaybookDayItem[] = [];
     dayItemsHttp.forEach((dayItemHttp)=>{
       daybookDayItems.push(this.buildDaybookDayItem(dayItemHttp));
@@ -131,7 +142,7 @@ export class DaybookHttpRequestService {
   private buildDaybookDayItem(dayItemHttp: DaybookDayItemHttpShape): DaybookDayItem{
     let daybookDayItem: DaybookDayItem = new DaybookDayItem(dayItemHttp.dateYYYYMMDD);
     daybookDayItem.setHttpShape(dayItemHttp);
-    return daybookDayItem
+    return daybookDayItem;
   }
 
 }

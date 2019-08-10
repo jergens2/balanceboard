@@ -7,24 +7,7 @@ import { AuthData } from './auth-data.interface';
 import { AuthStatus } from './auth-status.class';
 import { serverUrl } from '../serverurl';
 import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
-import { ActivityCategoryDefinitionService } from '../shared/document-definitions/activity-category-definition/activity-category-definition.service';
-import { TimelogService } from '../shared/document-data/timelog-entry/timelog.service';
-import { ActivityTree } from '../shared/document-definitions/activity-category-definition/activity-tree.class';
-import { UserSettingsService } from '../shared/document-definitions/user-account/user-settings/user-settings.service';
-import { DayTemplatesService } from '../dashboard/scheduling/day-templates/day-templates.service';
-import { DayDataService } from '../shared/document-data/day-data/day-data.service';
-import { TaskService } from '../dashboard/tasks/task.service';
-import { DayData } from '../shared/document-data/day-data/day-data.class';
-import { NotebookEntry } from '../dashboard/notebooks/notebook-entry/notebook-entry.model';
-import { NotebooksService } from '../dashboard/notebooks/notebooks.service';
-import { RecurringTasksService } from '../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
-import { TimeViewsService } from '../shared/time-views/time-views.service';
-import { DailyTaskListService } from '../shared/document-data/daily-task-list/daily-task-list.service';
-import { ServiceAuthentication } from './service-authentication.interface';
-import { ActivityDayDataService } from '../shared/document-data/activity-day-data/activity-day-data.service';
-import { SocialService } from '../shared/document-definitions/user-account/social.service';
-import { DaybookHttpRequestService } from '../dashboard/daybook/api/daybook-http-request.service';
-import { DaybookService } from '../dashboard/daybook/daybook.service';
+import { ServiceAuthenticationService } from './service-authentication/service-authentication.service';
 
 
 @Injectable()
@@ -39,20 +22,7 @@ export class AuthenticationService {
 
   constructor(
     private http: HttpClient,
-    private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
-    private activityDayDataService: ActivityDayDataService,
-    private timelogService: TimelogService,
-    private userSettingsService: UserSettingsService,
-    private dayTemplatesService: DayTemplatesService,
-    private dayDataService: DayDataService,
-    private notebooksService: NotebooksService,
-    private taskService: TaskService,
-    private recurringTaskService: RecurringTasksService,
-    private timeViewsService: TimeViewsService,
-    private dailyTaskListService: DailyTaskListService,
-    private socialService: SocialService,
-    private daybookHttpRequestService: DaybookHttpRequestService,
-    private daybookService: DaybookService,
+    private serviceAuthenticationService: ServiceAuthenticationService,
   ) { }
 
   private serverUrl = serverUrl;
@@ -61,24 +31,6 @@ export class AuthenticationService {
     return this._authStatusSubject$.getValue().token;
   }
 
-
-  private _serviceAuthentications: ServiceAuthentication[] = [
-    { name: "activities", subscription: new Subscription, isAuthenticated: false, },
-    { name: "timelog", subscription: new Subscription, isAuthenticated: false, },
-    { name: "activityDayData", subscription: new Subscription, isAuthenticated: false, },
-
-    { name: "dayTemplates", subscription: new Subscription, isAuthenticated: false, },
-    { name: "notebooks", subscription: new Subscription, isAuthenticated: false, },
-    { name: "tasks", subscription: new Subscription, isAuthenticated: false, },
-    { name: "recurringTaskDefinitions", subscription: new Subscription, isAuthenticated: false, },
-
-    { name: "timeViews", subscription: new Subscription, isAuthenticated: false, },
-    { name: "dailyTaskList", subscription: new Subscription, isAuthenticated: false, },
-    { name: "social", subscription: new Subscription, isAuthenticated: false, },
-    
-    { name: "daybookHttp", subscription: new Subscription, isAuthenticated: false, },
-    { name: "daybook", subscription: new Subscription, isAuthenticated: false, },
-  ]
 
   registerNewUserAccount$(authData: AuthData): Observable<Object> {
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)
@@ -116,96 +68,12 @@ export class AuthenticationService {
     */
 
     if (authStatus.isAuthenticated) {
-
-      this.userSettingsService.userSettings$.subscribe((changedSettings: UserSetting[]) => {
-        let currentStatus = this._authStatusSubject$.getValue();
-        if (currentStatus.user != null) {
-          let authStatus = Object.assign({}, currentStatus);
-          authStatus.user.userSettings = changedSettings;
-          // console.log("AuthService: updating authStatus after settings have been changed:", authStatus);
-          this._authStatusSubject$.next(authStatus);
-        }
-
-      })
-
-      this.userSettingsService.login(authStatus);
-
-      this._serviceAuthentications.find((sub) => { return sub.name == "social" }).subscription = this.socialService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        this._serviceAuthentications.find((sub) => { return sub.name == "social" }).isAuthenticated = loginComplete;
-      });
-
-      this._serviceAuthentications.find((sub) => { return sub.name == "tasks" }).subscription = this.taskService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        this._serviceAuthentications.find((sub) => { return sub.name == "tasks" }).isAuthenticated = loginComplete;
-      });
-      this._serviceAuthentications.find((sub) => { return sub.name == "recurringTaskDefinitions" }).subscription = this.recurringTaskService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        if (loginComplete) {
-          this._serviceAuthentications.find((sub) => { return sub.name == "recurringTaskDefinitions" }).isAuthenticated = loginComplete;
-          this._serviceAuthentications.find((sub) => { return sub.name == "dailyTaskList" }).subscription = this.dailyTaskListService.login$(authStatus).subscribe((dtlLoginComplete: boolean) => {
-            this._serviceAuthentications.find((sub) => { return sub.name == "dailyTaskList" }).isAuthenticated = dtlLoginComplete;
-          });
-        }
-      });
-      this._serviceAuthentications.find((sub) => { return sub.name == "notebooks" }).subscription = this.notebooksService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        if (loginComplete != null) {
-          this._serviceAuthentications.find((sub) => { return sub.name == "notebooks" }).isAuthenticated = loginComplete;
-        }
-      });
-      this._serviceAuthentications.find((sub) => { return sub.name == "dayTemplates" }).subscription = this.dayTemplatesService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        this._serviceAuthentications.find((sub) => { return sub.name == "dayTemplates" }).isAuthenticated = loginComplete;
-      });
-
-      this._serviceAuthentications.find((sub) => { return sub.name == "timeViews" }).subscription = this.timeViewsService.login$().subscribe((loginComplete: boolean) => {
-        this._serviceAuthentications.find((sub) => { return sub.name == "timeViews" }).isAuthenticated = loginComplete;
-      });
-      this._serviceAuthentications.find((sub) => { return sub.name == "activities" }).subscription = this.activityCategoryDefinitionService.login$(authStatus).subscribe((activitiesLoginComplete: boolean) => {
-        if (activitiesLoginComplete) {
-          this._serviceAuthentications.find((sub) => { return sub.name == "activities" }).isAuthenticated = activitiesLoginComplete;
-          this._serviceAuthentications.find((sub) => { return sub.name == "timelog" }).subscription = this.timelogService.login$(authStatus).subscribe((timelogLoginComplete: boolean) => {
-            this._serviceAuthentications.find((sub) => { return sub.name == "timelog" }).isAuthenticated = timelogLoginComplete;
-          });
-          this._serviceAuthentications.find((sub) => { return sub.name == "activityDayData" }).subscription = this.activityDayDataService.login$(authStatus).subscribe((activityDayDataLoginComplete: boolean) => {
-            this._serviceAuthentications.find((sub) => { return sub.name == "activityDayData" }).isAuthenticated = activityDayDataLoginComplete;
-          });
-        }
-      });
-      this._serviceAuthentications.find((sub) => { return sub.name == "daybookHttp" }).subscription = this.daybookHttpRequestService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        
-        this.daybookService.login(authStatus);
-        this._serviceAuthentications.find((sub) => { return sub.name == "daybookHttp" }).isAuthenticated = loginComplete;
-      });
-
-
-      let allComplete: boolean = true;
-      this._serviceAuthentications.forEach((serviceAuth) => {
-        if (serviceAuth.isAuthenticated == false) {
-          allComplete = false
-        }
-      });
-      let timerSubscription: Subscription = new Subscription();
-
-
-
-      timerSubscription = timer(200, 200).subscribe(() => {
-        // console.log("Not yet authenticated: ");
-        this._serviceAuthentications.forEach((val)=>{
-          if(!val.isAuthenticated){
-            // console.log("  ", val.name);
-          }
-        });
-        allComplete = true;
-        this._serviceAuthentications.forEach((serviceAuth) => {
-          if (serviceAuth.isAuthenticated == false) {
-            allComplete = false
-            // console.log(this._serviceAuthentications)
-          }
-        });
-        if (allComplete) {
+      this.serviceAuthenticationService.loginServices$(authStatus).subscribe((serviceLoginsComplete: boolean)=>{
+        if(serviceLoginsComplete === true){
           this.completeLogin(authStatus);
-          timerSubscription.unsubscribe();
         }
       });
-    } else {
-      // console.log("Cannot execute login routine because the authStatus.isAuthenticated == false");
+    }else{
       this.completeLogin(authStatus);
     }
 
@@ -270,23 +138,7 @@ export class AuthenticationService {
   logout() {
     // console.log("logging out of auth service");
     localStorage.clear();
-
-    this._serviceAuthentications.forEach((serviceAuthentiation: ServiceAuthentication) => {
-      serviceAuthentiation.subscription.unsubscribe();
-    })
-
-    this.timelogService.logout();
-    this.activityCategoryDefinitionService.logout();
-    this.userSettingsService.logout();
-    this.dayTemplatesService.logout();
-    this.dayDataService.logout();
-    this.taskService.logout();
-    this.notebooksService.logout();
-    this.recurringTaskService.logout();
-    this.timeViewsService.logout();
-    // this.socialService.logout();
-    this.daybookHttpRequestService.logout();
-    this.daybookService.logout();
+    this.serviceAuthenticationService.logout();
 
     this._authStatusSubject$.next(new AuthStatus(null, null, false));
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));

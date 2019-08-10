@@ -20,6 +20,9 @@ export class SocialService {
     this.getFriendRequests();
     return this._loginComplete$.asObservable();
   }
+  public logout(){
+    this._authStatus = null;
+  }
   public get userAccount(): UserAccount {
     return this._authStatus.user;
   }

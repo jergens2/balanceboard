@@ -14,6 +14,7 @@ export class TimeViewsService {
 
 
   login$() {
+    console.log("Time Views Service:  What does this service do?  Do we still need it after the restructuring?  ")
     this._range = { startDate: moment().subtract(366, "days"), endDate: moment().add(366, "days") };
     this._loginComplete$.next(true);
     return this._loginComplete$.asObservable();

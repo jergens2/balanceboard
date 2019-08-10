@@ -9,7 +9,7 @@ import { serverUrl } from '../../../serverurl';
 import { map } from 'rxjs/operators';
 import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
 import { ActivityDayData, ActivityDayDataItem } from './activity-day-data.class';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication.interface';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 
 
 @Injectable({

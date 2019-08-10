@@ -4,17 +4,20 @@ import { BehaviorSubject, Observable, Subject, timer, Subscription } from 'rxjs'
 import * as moment from 'moment';
 import { DaybookDayItem } from './api/daybook-day-item.class';
 import { AuthStatus } from '../../authentication/auth-status.class';
+import { DayTemplatesService } from '../scheduling/day-templates/day-templates.service';
+import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DaybookService {
+export class DaybookService implements ServiceAuthenticates{
 
-  constructor(private daybookHttpRequestService: DaybookHttpRequestService) { }
+  constructor(private daybookHttpRequestService: DaybookHttpRequestService, private dayTemplatesService: DayTemplatesService) { }
 
   private authStatus: AuthStatus;
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
-  public login(authStatus: AuthStatus) {
+  private _loginComplete$: Subject<boolean> = new Subject();
+  public login$(authStatus: AuthStatus): Observable<boolean>{
     this.authStatus = authStatus;
     this._daybookDayItems$.next(this.daybookHttpRequestService.daybookDayItems);
     this.daybookHttpRequestService.daybookDayItems$.subscribe((daybookDayItems: DaybookDayItem[]) => {
@@ -22,6 +25,7 @@ export class DaybookService {
       this.updateTodayAndActiveDay();
     });
     this.initiateClock();
+    return this._loginComplete$;
   }
 
   public logout() {
@@ -65,6 +69,7 @@ export class DaybookService {
         this._today$.next(this._today);
       }
     });
+    this._loginComplete$.next(true);
   }
 
   private updateTodayAndActiveDay(){
@@ -98,6 +103,8 @@ export class DaybookService {
 
   private startANewDay(newDateYYYYMMDD: string): DaybookDayItem{
     let newDay: DaybookDayItem = new DaybookDayItem(newDateYYYYMMDD);
+    newDay.dayTemplateId = this.dayTemplatesService.dayTemplateForDate(newDateYYYYMMDD).id;
+    console.log("id is added;", newDay);
     return this.daybookHttpRequestService.saveDaybookDayItem(newDay);
   }
 
