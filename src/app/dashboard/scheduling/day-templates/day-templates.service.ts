@@ -42,24 +42,6 @@ export class DayTemplatesService implements ServiceAuthenticates {
     return this._dayTemplates$.asObservable();
   }
 
-  // public dayTemplateDelineationsForDate(dateYYYYMMDD: string): Delineation[]{
-    
-  //   return [];
-  // }
-
-  public dayTemplateForDate(dateYYYYMMDD: string): DayTemplate{
-    let dayTemplates: DayTemplate[] = this.dayTemplates;
-    if(dayTemplates.length == 1){
-      return dayTemplates[0];
-    }else{
-      dayTemplates.forEach((dayTemplate: DayTemplate)=>{
-        dayTemplate
-      })
-    }
-
-
-    return null;
-  }
 
 
   private getTemplatesHTTP(){

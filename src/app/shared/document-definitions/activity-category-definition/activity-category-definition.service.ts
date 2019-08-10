@@ -9,10 +9,11 @@ import { AuthStatus } from '../../../authentication/auth-status.class';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.class';
 import { Guid } from '../../utilities/guid.class';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 @Injectable({
   providedIn: 'root'
 })
-export class ActivityCategoryDefinitionService {
+export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
 
   constructor(private httpClient: HttpClient) { }
 
