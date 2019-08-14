@@ -6,30 +6,38 @@ import { DaybookDayItem } from './api/daybook-day-item.class';
 import { AuthStatus } from '../../authentication/auth-status.class';
 import { DayTemplatesService } from '../scheduling/day-templates/day-templates.service';
 import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
+import { ScheduleRotationsService } from '../scheduling/schedule-rotations/schedule-rotations.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DaybookService implements ServiceAuthenticates{
 
-  constructor(private daybookHttpRequestService: DaybookHttpRequestService, private dayTemplatesService: DayTemplatesService) { }
+  constructor(private daybookHttpRequestService: DaybookHttpRequestService, private scheduleRotationService: ScheduleRotationsService) { }
 
-  private authStatus: AuthStatus;
+  private _authStatus: AuthStatus;
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
-  private _loginComplete$: Subject<boolean> = new Subject();
+  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public login$(authStatus: AuthStatus): Observable<boolean>{
-    this.authStatus = authStatus;
-    this._daybookDayItems$.next(this.daybookHttpRequestService.daybookDayItems);
+    console.log("daybook Logging in to Daybook Service")
+    this._authStatus = authStatus;
+    if(this.daybookHttpRequestService.daybookDayItems.length == 0){
+      console.log("daybook Logging in:  there were no items.  making a new one.")
+      this.startANewDay(this._todayYYYYMMDD);
+    }
     this.daybookHttpRequestService.daybookDayItems$.subscribe((daybookDayItems: DaybookDayItem[]) => {
-      this._daybookDayItems$.next(daybookDayItems);
-      this.updateTodayAndActiveDay();
+      if(daybookDayItems.length > 0){
+        this._daybookDayItems$.next(daybookDayItems);
+        this.initiateClock();
+      }
     });
-    this.initiateClock();
-    return this._loginComplete$;
+
+
+    return this._loginComplete$.asObservable();
   }
 
   public logout() {
-    this.authStatus = null;
+    this._authStatus = null;
     this.clockSubscription.unsubscribe();
   }
 
@@ -50,7 +58,7 @@ export class DaybookService implements ServiceAuthenticates{
   }
 
 
-  private _activeDayYYYYMMDD: string;
+  private _activeDayYYYYMMDD: string = moment().format("YYYY-MM-DD");
   private _activeDay: DaybookDayItem;
   private _activeDay$: Subject<DaybookDayItem> = new Subject();
   public get activeDay$(): Observable<DaybookDayItem> {
@@ -60,51 +68,60 @@ export class DaybookService implements ServiceAuthenticates{
 
   private clockSubscription: Subscription = new Subscription();
   private initiateClock() {
-
+    console.log("daybook Clock initiating ")
+    this.clockSubscription.unsubscribe();
+    this._clock = moment();
     this.clockSubscription = timer(0, 1000).subscribe((second) => {
       this._clock = moment();
       if (this._clock.format("YYYY-MM-DD") != this._todayYYYYMMDD) {
-        this._todayYYYYMMDD = moment(this._clock).format('YYYY-MM-DD');
-        this._today = this.getDaybookDayItemByDate(this._todayYYYYMMDD);
-        this._today$.next(this._today);
+        console.log("Its not the same day.  we passed midnight")
+        this.updateTodayAndActiveDay(this._clock);
       }
     });
+    this.updateTodayAndActiveDay(this._clock);
+    console.log("daybook NEEEEEEEEEEEEEEEEXT")
     this._loginComplete$.next(true);
   }
 
-  private updateTodayAndActiveDay(){
-    this._today = this.getDaybookDayItemByDate(this._todayYYYYMMDD);
-    this._today$.next(this._today);
-    this._activeDay = this.getDaybookDayItemByDate(this._activeDayYYYYMMDD);
-    this._activeDay$.next(this._activeDay);
+  private updateTodayAndActiveDay(time: moment.Moment){
+    this._todayYYYYMMDD = moment(time).format("YYYY-MM-DD");
+    let todayItem: DaybookDayItem = this.getDaybookDayItemByDate(this._todayYYYYMMDD);
+    if(todayItem){
+      this._today = todayItem;
+      this._today$.next(this._today);
+    }else{
+      this.startANewDay(this._todayYYYYMMDD);
+    }
+
+    if(this._todayYYYYMMDD == this._activeDayYYYYMMDD){
+      this._activeDay$.next(this._today);
+    }else{
+      let activeItem: DaybookDayItem = this.getDaybookDayItemByDate(this._activeDayYYYYMMDD);
+      if(activeItem){
+        this._activeDay = activeItem;
+        this._activeDay$.next(this._activeDay);
+      }else{
+        console.log("daybook ****Warning: Starting a new Active day - Method disabled.");
+        this.startANewDay(this._activeDayYYYYMMDD);
+      }
+    }
   }
 
   private getDaybookDayItemByDate(dateYYYYMMDD: string): DaybookDayItem {
     let foundDaybookDayItem: DaybookDayItem = this._daybookDayItems$.getValue().find((daybookDayItem: DaybookDayItem) => {
       return daybookDayItem.dateYYYYMMDD == dateYYYYMMDD;
     });
-
     if (foundDaybookDayItem) {
-      console.log("The daybookDayItem already exists, Nexting()");
-      this._today$.next(this._today);
-      if(this._activeDayYYYYMMDD == this._todayYYYYMMDD){
-        this._activeDayYYYYMMDD = Object.assign("", this._todayYYYYMMDD);
-        this._activeDay = Object.assign({}, this._today);
-        this._activeDay$.next(this._activeDay);
-      }
       return foundDaybookDayItem;
     } else {
-      console.log("the daybookDayItem did not exist, starting and saving a new one.");
-      return this.startANewDay(this._todayYYYYMMDD);
+      return null;
     }
-
-
   }
 
   private startANewDay(newDateYYYYMMDD: string): DaybookDayItem{
+    console.log("***** Starting a new day: ", newDateYYYYMMDD);
     let newDay: DaybookDayItem = new DaybookDayItem(newDateYYYYMMDD);
-    newDay.dayTemplateId = this.dayTemplatesService.dayTemplateForDate(newDateYYYYMMDD).id;
-    console.log("id is added;", newDay);
+    newDay.dayTemplateId = this.scheduleRotationService.dayTemplateForDate(newDateYYYYMMDD).id;
     return this.daybookHttpRequestService.saveDaybookDayItem(newDay);
   }
 

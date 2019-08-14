@@ -14,7 +14,7 @@ import { DaybookHttpRequestService } from '../../dashboard/daybook/api/daybook-h
 import { DaybookService } from '../../dashboard/daybook/daybook.service';
 import { TimelogService } from '../../shared/document-data/timelog-entry/timelog.service';
 import { AuthStatus } from '../auth-status.class';
-import { Observable, Subject, Subscription, timer, forkJoin } from 'rxjs';
+import { Observable, Subject, Subscription, timer, forkJoin, BehaviorSubject, merge } from 'rxjs';
 import { ServiceAuthentication } from './service-authentication.class';
 import { ScheduleRotationsService } from '../../dashboard/scheduling/schedule-rotations/schedule-rotations.service';
 
@@ -27,7 +27,7 @@ export class ServiceAuthenticationService {
     private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
     private activityDayDataService: ActivityDayDataService,
     private timelogService: TimelogService,
-    // private userSettingsService: UserSettingsService,
+    private userSettingsService: UserSettingsService,
     private dayTemplatesService: DayTemplatesService,
     // private dayDataService: DayDataService,
     private notebooksService: NotebooksService,
@@ -52,137 +52,63 @@ export class ServiceAuthenticationService {
 
   public loginServices$(authStatus: AuthStatus): Observable<boolean> {
 
-
-    console.log("Service logger inner: authStatus", authStatus);
-
     let serviceAuthentications: ServiceAuthentication[] = [];
     let activityCategoryDefinitionSA: ServiceAuthentication = new ServiceAuthentication("ActivityCategoryDefinition", this.activityCategoryDefinitionService);
-    activityCategoryDefinitionSA.addChild(new ServiceAuthentication("Timelog", this.timelogService));
-    activityCategoryDefinitionSA.addChild(new ServiceAuthentication("ActivityDayData", this.activityDayDataService));
+    let timelogSA: ServiceAuthentication = new ServiceAuthentication("Timelog", this.timelogService);
+    timelogSA.setChild(new ServiceAuthentication("ActivityDayData", this.activityDayDataService));
+    activityCategoryDefinitionSA.setChild(timelogSA);
     serviceAuthentications.push(activityCategoryDefinitionSA);
 
 
-    let daybookHttpSA: ServiceAuthentication = new ServiceAuthentication("DaybookHttp", this.daybookHttpRequestService);
-    daybookHttpSA.addChild(new ServiceAuthentication("Daybook", this.daybookService));
+    
     let dayTemplatesSA: ServiceAuthentication = new ServiceAuthentication("DayTemplates", this.dayTemplatesService);
-    dayTemplatesSA.addChild(daybookHttpSA);
-    dayTemplatesSA.addChild(new ServiceAuthentication("ScheduleRotation", this.scheduleRotationService));
+    let scheduleRotationSA: ServiceAuthentication = new ServiceAuthentication("ScheduleRotation", this.scheduleRotationService);
+    let daybookHttpSA: ServiceAuthentication = new ServiceAuthentication("DaybookHttp", this.daybookHttpRequestService);
+    daybookHttpSA.setChild(new ServiceAuthentication("Daybook", this.daybookService));
+    scheduleRotationSA.setChild(daybookHttpSA);
+    dayTemplatesSA.setChild(scheduleRotationSA);
+
     serviceAuthentications.push(dayTemplatesSA);
 
     let recurringTaskDefinitionsSA: ServiceAuthentication = new ServiceAuthentication("RecurringTaskDefinition", this.recurringTaskService);
-    recurringTaskDefinitionsSA.addChild(new ServiceAuthentication("DailyTaskList", this.dailyTaskListService));
+    recurringTaskDefinitionsSA.setChild(new ServiceAuthentication("DailyTaskList", this.dailyTaskListService));
     serviceAuthentications.push(recurringTaskDefinitionsSA);
 
     serviceAuthentications.push(new ServiceAuthentication("Notes", this.notebooksService));
     serviceAuthentications.push(new ServiceAuthentication("Tasks", this.taskService));
     serviceAuthentications.push(new ServiceAuthentication("Social", this.socialService));
-    
-    
-    let loginComplete$: Subject<boolean> = new Subject();
-    forkJoin(serviceAuthentications.map<Observable<boolean>>((serviceAuthentication) => { return serviceAuthentication.login$(authStatus) }))
-      .subscribe((values) => {
-        console.log("Fork join emits val: ", values);
-        let allComplete: boolean = true;
-        values.forEach((value) => {
-          if (value.valueOf() == false) {
-            allComplete = false;
-          }
-        })
-        console.log("all complete then? : ", allComplete);
-        loginComplete$.next(allComplete);
-      });
 
+    serviceAuthentications.push(new ServiceAuthentication("UserSettings", this.userSettingsService));
+    
+    
+    let loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+    serviceAuthentications.forEach((sa)=>{
+      sa.login$(authStatus);
+    })
+
+    
+    /**
+     * I tried for a while to use forkJoin, as well as merge, but couldn't get it to fire properly with this setup.  
+     * i think part of the problem is because I don't necessarily know how to properly use forkJoin or merge.  perhaps those aren't even the right methods.
+     * 
+     * In any case, the timer method below works.  It's a manual method and might look ugly and not as cool as the rxjs methods, but it works :)
+     */
+    let timerSubscription: Subscription = new Subscription();
+    timer(0,300).subscribe((val)=>{
+      let loginComplete :boolean = true;
+      serviceAuthentications.map((sa)=>{ return sa.loginComplete}).forEach((val)=>{
+        if(val === false){
+          loginComplete = false;
+        }
+      })
+      loginComplete$.next(loginComplete);
+      if(loginComplete){
+        timerSubscription.unsubscribe();
+      }
+    });
 
     return loginComplete$.asObservable();
-
-    // private _serviceAuthentications: ServiceAuthentication[] = [
-
-
-
-
-    //     { name: "timeViews", subscription: new Subscription, isAuthenticated: false, },
-
-    //     { name: "social", subscription: new Subscription, isAuthenticated: false, },
-
-
-
-
-
-    /**
-     * 
-     * 
-      this.userSettingsService.userSettings$.subscribe((changedSettings: UserSetting[]) => {
-        let currentStatus = this._authStatusSubject$.getValue();
-        if (currentStatus.user != null) {
-          let authStatus = Object.assign({}, currentStatus);
-          authStatus.user.userSettings = changedSettings;
-          // console.log("AuthService: updating authStatus after settings have been changed:", authStatus);
-          this._authStatusSubject$.next(authStatus);
-        }
-
-      })
-
-      this.userSettingsService.login(authStatus);
-
-      this._serviceAuthentications.find((sub) => { return sub.name == "social" }).subscription = this.socialService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        this._serviceAuthentications.find((sub) => { return sub.name == "social" }).isAuthenticated = loginComplete;
-      });
-
-      this._serviceAuthentications.find((sub) => { return sub.name == "tasks" }).subscription = this.taskService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        this._serviceAuthentications.find((sub) => { return sub.name == "tasks" }).isAuthenticated = loginComplete;
-      });
-
-      this._serviceAuthentications.find((sub) => { return sub.name == "notebooks" }).subscription = this.notebooksService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        if (loginComplete != null) {
-          this._serviceAuthentications.find((sub) => { return sub.name == "notebooks" }).isAuthenticated = loginComplete;
-        }
-      });
-      this._serviceAuthentications.find((sub) => { return sub.name == "dayTemplates" }).subscription = this.dayTemplatesService.login$(authStatus).subscribe((loginComplete: boolean) => {
-        this._serviceAuthentications.find((sub) => { return sub.name == "dayTemplates" }).isAuthenticated = loginComplete;
-      });
-
-      this._serviceAuthentications.find((sub) => { return sub.name == "timeViews" }).subscription = this.timeViewsService.login$().subscribe((loginComplete: boolean) => {
-        this._serviceAuthentications.find((sub) => { return sub.name == "timeViews" }).isAuthenticated = loginComplete;
-      });
-
-
-
-      let allComplete: boolean = true;
-      this._serviceAuthentications.forEach((serviceAuth) => {
-        if (serviceAuth.isAuthenticated == false) {
-          allComplete = false
-        }
-      });
-      let timerSubscription: Subscription = new Subscription();
-
-
-
-      timerSubscription = timer(200, 200).subscribe(() => {
-        // console.log("Not yet authenticated: ");
-        this._serviceAuthentications.forEach((val)=>{
-          if(!val.isAuthenticated){
-            // console.log("Not authenticated: " + val.name);
-          }
-        });
-        allComplete = true;
-        this._serviceAuthentications.forEach((serviceAuth) => {
-          if (serviceAuth.isAuthenticated == false) {
-            allComplete = false
-            // console.log(this._serviceAuthentications)
-          }
-        });
-        if (allComplete) {
-          this.completeLogin(authStatus);
-          timerSubscription.unsubscribe();
-        }
-      });
-     * 
-     * 
-     * 
-     */
-
-
-
   }
 
 

@@ -8,12 +8,13 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
 import { DailyTaskListItem, DailyTaskList } from '../../document-data/daily-task-list/daily-task-list.class';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class RecurringTasksService {
+export class RecurringTasksService implements ServiceAuthenticates {
 
   constructor(private httpClient: HttpClient) { }
 

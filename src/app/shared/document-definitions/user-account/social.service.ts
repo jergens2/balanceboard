@@ -7,11 +7,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { serverUrl } from '../../../serverurl';
 import { FriendRequest } from './friend-request.interface';
 import { map } from 'rxjs/operators';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SocialService {
+export class SocialService implements ServiceAuthenticates{
 
   private _authStatus: AuthStatus;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(true);
@@ -76,7 +77,7 @@ export class SocialService {
             outgoingRequests.push(friendRequest);
           }
         });
-        console.log("Requests, incoming, outgoing:", incomingRequests, outgoingRequests)
+        // console.log("Requests, incoming, outgoing:", incomingRequests, outgoingRequests)
         this._incomingRequests$.next(incomingRequests);
         this._outgoingRequests$.next(outgoingRequests);
 

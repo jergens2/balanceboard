@@ -45,6 +45,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
 
   private getTemplatesHTTP(){
+    console.log("Getting day templates for user");
     const getUrl = this.serverUrl + "/api/schedule-day-template/" + this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -52,22 +53,25 @@ export class DayTemplatesService implements ServiceAuthenticates {
         // 'Authorization': 'my-auth-token'  
       })
     };
-    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe(map((response) => {
+    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+      .pipe<DayTemplate[]>(map((response) => {
         let rd: any[] = response.data as any[];
         if(rd.length > 0){
           return rd.map((dataObject: any) => {
             return this.buildDayTemplateFromResponse(dataObject);
           });
         }else{
-          this.generateDefaultDayTemplate();
           return [];
         }        
       }))
       .subscribe((dayTemplates: DayTemplate[]) => {
+        if(dayTemplates.length > 0){
           this._dayTemplates$.next(dayTemplates);
+          console.log("gucci gang")
           this._loginComplete$.next(true);
-        
+        }else{
+          this.generateDefaultDayTemplate();
+        }       
       });
 
   }
@@ -118,6 +122,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
         let templates = this.dayTemplates;
         templates.push(dayTemplate);
         this._dayTemplates$.next(templates);
+        this._loginComplete$.next(true);
       });
   }
 
@@ -149,7 +154,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
   }
 
   private generateDefaultDayTemplate(): DayTemplate{
-    // console.log("Generating default day template");
+    console.log("Generating default day template");
     let defaultDayTemplate: DayTemplate = new DayTemplate("", this._authStatus.user.id, "Default Day");
     defaultDayTemplate.delineations = [
       {

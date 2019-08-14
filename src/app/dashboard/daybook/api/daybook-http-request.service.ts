@@ -7,18 +7,18 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { DaybookDayItem } from './daybook-day-item.class';
 import { map } from 'rxjs/operators';
 import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DaybookHttpRequestService {
+export class DaybookHttpRequestService implements ServiceAuthenticates{
 
   constructor(private httpClient: HttpClient) { }
   private _authStatus: AuthStatus = null;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
-    this._loginComplete$.next(true);
     let rangeStartYYYYMMDD: string = moment().startOf("year").format("YYYY-MM-DD");
     let rangeEndYYYYMMDD: string = moment().endOf("year").format("YYYY-MM-DD");
     this.fetchDaybookDayItemsInRange(rangeStartYYYYMMDD, rangeEndYYYYMMDD);
@@ -72,7 +72,6 @@ export class DaybookHttpRequestService {
         // 'Authorization': 'my-auth-token'
       })
     };
-    console.log("saving daybookDayItem,", daybookDayItem.httpShape);
     this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
         return this.buildDaybookDayItem(response.data as any);

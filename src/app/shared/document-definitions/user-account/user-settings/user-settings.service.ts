@@ -8,12 +8,13 @@ import { UserAccount } from '../user-account.class';
 import { map } from 'rxjs/operators';
 import { defaultUserSettings } from './default-user-settings';
 import { AuthStatus } from '../../../../authentication/auth-status.class';
+import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserSettingsService {
+export class UserSettingsService implements ServiceAuthenticates{
 
   constructor(private httpClient: HttpClient) { }
 
@@ -40,10 +41,13 @@ export class UserSettingsService {
 
 
 
-  login(authStatus: AuthStatus){
+  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  login$(authStatus: AuthStatus): Observable<boolean>{
     this._authStatus = authStatus;
     // console.log("login(): setting user settings to ", this._authStatus.user.userSettings);
     this.userSettings = this._authStatus.user.userSettings;
+    this._loginComplete$.next(true);
+    return this._loginComplete$.asObservable();
   }
   logout(){
     this._authStatus = null;

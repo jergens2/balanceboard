@@ -1,27 +1,31 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.class';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Scheduler } from 'rxjs';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
-import { DayTemplate } from '../day-templates/day-template.class';
-import { DayTemplatesService } from '../day-templates/day-templates.service';
-import { ScheduleRotation } from './schedule-rotation.model';
+import { ScheduleRotation } from './schedule-rotation.class';
 import { serverUrl } from '../../../../app/serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map, first } from 'rxjs/operators';
 import * as moment from 'moment';
+import { DayTemplatesService } from '../day-templates/day-templates.service';
+import { DayTemplate } from '../day-templates/day-template.class'
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScheduleRotationsService implements ServiceAuthenticates {
 
-  constructor(private dayTemplatesService: DayTemplatesService, private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private dayTemplatesService: DayTemplatesService) { }
   private _authStatus: AuthStatus;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
+    /**
+     * first we check if any objects exist in DB with getScheduleRotationsHTTP().  If not, (for example, new user) then we generate a new one.
+     * generating a new one implements method saveScheduleRotationHTTP() which will complete the login.
+     * if there is already at least 1 in the DB, then login complete will also next true.
+     */
     this.getScheduleRotationsHTTP();
-    this._loginComplete$.next(true);
     return this._loginComplete$.asObservable();
   }
 
@@ -32,7 +36,48 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
 
 
   private _scheduleRotations$: BehaviorSubject<ScheduleRotation[]> = new BehaviorSubject([]);
-  private getScheduleRotationsHTTP(){
+  public get scheduleRotations$(): Observable<ScheduleRotation[]> {
+    return this._scheduleRotations$.asObservable();
+  }
+  public get scheduleRotations(): ScheduleRotation[] {
+    return this._scheduleRotations$.getValue();
+  }
+
+
+  public get activeScheduleRotation(): ScheduleRotation {
+    let scheduleRotations: ScheduleRotation[] = this.scheduleRotations;
+    if(scheduleRotations.length > 0){
+      if(scheduleRotations.length == 1){
+        return scheduleRotations[0];
+      }else{
+        console.log("***** Error - Warning - Not implemented:  Determining the active schedule rotation for multiple scheduleRotations");
+      }
+    }else{
+      console.log("Error:  No activeScheduleRotation")
+      return null;
+    }
+
+  }
+
+
+  public dayTemplateForDate(dateYYYYMMDD: string): DayTemplate {
+    if (this.activeScheduleRotation.startDateYYYYMMDD > dateYYYYMMDD) {
+      console.log("Date is from prior to earliest ScheduleRotation date.  Returning placeholder.")
+      let placeHolder: DayTemplate = new DayTemplate('no_day_template', this._authStatus.user.id, 'Placeholder Day Template');
+      return placeHolder;
+    } else {
+      let itemsLength: number = this.activeScheduleRotation.dayTemplateItems.length;
+      let daysDifference: number = moment(dateYYYYMMDD).diff(this.activeScheduleRotation.startDateYYYYMMDD, "days");
+      if(daysDifference <= itemsLength){
+        return this.activeScheduleRotation.dayTemplateItems[daysDifference];
+      }else if(daysDifference > itemsLength){
+        let dayOfRotationIndex: number = daysDifference % itemsLength;
+        return this.activeScheduleRotation.dayTemplateItems[dayOfRotationIndex];
+      }
+    }
+  }
+
+  private getScheduleRotationsHTTP() {
     const getUrl = serverUrl + "/api/schedule-rotation/" + this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -40,30 +85,33 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
         // 'Authorization': 'my-auth-token'  
       })
     };
-    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe(map((response) => {
+    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+      .pipe<ScheduleRotation[]>(map((response) => {
         let rd: any[] = response.data as any[];
-        if(rd.length > 0){
+        if (rd.length > 0) {
           return rd.map((dataObject: any) => {
             return this.buildScheduleRotationFromResponse(dataObject);
           });
         }else{
-          this.generateDefaultScheduleRotation();
           return [];
-        }        
+        }
       }))
       .subscribe((scheduleRotations: ScheduleRotation[]) => {
-        this.updateActiveScheduleRotation
+        // this.updateActiveScheduleRotation
+        if(scheduleRotations.length == 0){
+          this.generateDefaultScheduleRotation();
+        }else{
           this._scheduleRotations$.next(scheduleRotations);
           this._loginComplete$.next(true);
+        }
       });
   }
 
-  private updateTemplateHTTP(dayTemplate: DayTemplate){
-    console.log("Updating dayTemplate: ", dayTemplate);
+  private updateScheduleRotationHTTP(scheduleRotation: ScheduleRotation) {
+    console.log("Updating scheduleRotation: ", scheduleRotation);
 
 
-    const postUrl = this.serverUrl + "/api/schedule-rotation/update";
+    const postUrl = serverUrl + "/api/schedule-rotation/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -72,23 +120,23 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
     };
 
 
-    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate.httpUpdate, httpOptions)
-      .pipe<DayTemplate>(map((response) => {
-        return this.buildDayTemplateFromResponse(response.data);
+    this.httpClient.post<{ message: string, data: any }>(postUrl, scheduleRotation, httpOptions)
+      .pipe<ScheduleRotation>(map((response) => {
+        return this.buildScheduleRotationFromResponse(response.data);
       }))
-      .subscribe((updatedTemplate: DayTemplate) => {
+      .subscribe((updatedScheduleRotation: ScheduleRotation) => {
 
-        let templates = this.dayTemplates
-        for(let template of templates){
-          if(template.id == updatedTemplate.id){
-            templates.splice(templates.indexOf(template), 1, updatedTemplate)
+        let scheduleRotations = this.scheduleRotations
+        for (let template of scheduleRotations) {
+          if (template.id == updatedScheduleRotation.id) {
+            scheduleRotations.splice(scheduleRotations.indexOf(template), 1, updatedScheduleRotation)
           }
         }
-        this._dayTemplates$.next(templates);
+        this._scheduleRotations$.next(scheduleRotations);
       });
   }
 
-  private saveScheduleRotationHTTP(scheduleRotation: ScheduleRotation){
+  private saveScheduleRotationHTTP(scheduleRotation: ScheduleRotation) {
     scheduleRotation.userId = this._authStatus.user.id;
     const postUrl = serverUrl + "/api/schedule-rotation/create";
     const httpOptions = {
@@ -97,20 +145,20 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
         // 'Authorization': 'my-auth-token'
       })
     };
-    
-    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate.httpSave, httpOptions)
-      .pipe<DayTemplate>(map((response) => {
-        return this.buildDayTemplateFromResponse(response.data);
+    this.httpClient.post<{ message: string, data: any }>(postUrl, scheduleRotation, httpOptions)
+      .pipe<ScheduleRotation>(map((response) => {
+        return this.buildScheduleRotationFromResponse(response.data);
       }))
-      .subscribe((dayTemplate: DayTemplate) => {
-        let templates = this.dayTemplates;
-        templates.push(dayTemplate);
-        this._dayTemplates$.next(templates);
+      .subscribe((scheduleRotation: ScheduleRotation) => {
+        let scheduleRotations = this.scheduleRotations;
+        scheduleRotations.push(scheduleRotation);
+        this._scheduleRotations$.next(scheduleRotations);
+        this._loginComplete$.next(true);
       });
   }
 
-  private deleteTemplateHTTP(dayTemplate: DayTemplate){
-    const postUrl = this.serverUrl + "/api/schedule-day-template/delete";
+  private deleteScheduleRotationHTTP(scheduleRotation: ScheduleRotation) {
+    const postUrl = serverUrl + "/api/schedule-rotation/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -118,46 +166,40 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
       })
     };
 
-    this.httpClient.post<{ message: string, data: any }>(postUrl, dayTemplate.httpDelete, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, { id: scheduleRotation.id }, httpOptions)
       .subscribe((response) => {
-        let dayTemplates: DayTemplate[] = this.dayTemplates;
-        dayTemplates.splice(dayTemplates.indexOf(dayTemplate), 1);
+        let scheduleRotations: ScheduleRotation[] = this.scheduleRotations;
+        scheduleRotations.splice(scheduleRotations.indexOf(scheduleRotation), 1);
 
-        this._dayTemplates$.next(dayTemplates);
+        this._scheduleRotations$.next(scheduleRotations);
       })
   }
 
-  private buildScheduleRotationFromResponse(responseData: any): ScheduleRotation{
-    // console.log("Building scheduleRotation from response: " , responseData);
-    let scheduleRotation: ScheduleRotation = new ScheduleRotation(responseData.startDateYYYYMMDD, responseData.dayTemplates);
+  private buildScheduleRotationFromResponse(responseData: any): ScheduleRotation {
+    // console.log("*****Building scheduleRotation from response: " , responseData);
+    let scheduleRotation: ScheduleRotation = new ScheduleRotation(responseData.startDateYYYYMMDD, responseData.dayTemplateItems);
+    scheduleRotation.id = responseData._id;
     scheduleRotation.userId = this._authStatus.user.id;
     return scheduleRotation;
   }
 
-  private generateDefaultScheduleRotation(): ScheduleRotation{
-    console.log("Generating default Schedule Rotation");
-
+  private generateDefaultScheduleRotation(): ScheduleRotation {
     let startDateYYYYMMDD: string = moment().startOf("week").format("YYYY-MM-DD");
     let firstDayTemplate: DayTemplate = this.dayTemplatesService.dayTemplates[0];
-    let defaultScheduleRotation: ScheduleRotation = new ScheduleRotation(startDateYYYYMMDD, [firstDayTemplate]);
-  
+    // Create an array of 7 default day Templates to create a rotation with 7 days in it.
+    let dayTemplateItems: DayTemplate[] = [
+      firstDayTemplate,
+      firstDayTemplate,
+      firstDayTemplate,
+      firstDayTemplate,
+      firstDayTemplate,
+      firstDayTemplate,
+      firstDayTemplate,
+    ];
+    let defaultScheduleRotation: ScheduleRotation = new ScheduleRotation(startDateYYYYMMDD, dayTemplateItems);
     this.saveScheduleRotationHTTP(defaultScheduleRotation);
     return defaultScheduleRotation;
   }
 
-  // public dayTemplateForDate(dateYYYYMMDD: string): DayTemplate {
-
-
-  //   let dayTemplates: DayTemplate[] = this.dayTemplatesService.dayTemplates;
-  //   if (dayTemplates.length == 1) {
-  //     console.log("Returning the only template");
-  //     return dayTemplates[0];
-  //   } else {
-  //     return this.determineDayTemplateForDate(dayTemplates);
-  //   }
-  // }
-  // private determineDayTemplateForDate(dayTemplates: DayTemplate[]): DayTemplate{
-
-  // }
 
 }

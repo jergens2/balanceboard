@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ScheduleRotation } from './schedule-rotations/schedule-rotation.model';
+import { ScheduleRotation } from './schedule-rotations/schedule-rotation.class';
 import { Observable, BehaviorSubject } from 'rxjs';
 import * as moment from 'moment';
 import { DayTemplate } from './day-templates/day-template.class';

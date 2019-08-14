@@ -7,11 +7,12 @@ import { serverUrl } from '../../serverurl';
 import { AuthStatus } from '../../authentication/auth-status.class';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TaskService {
+export class TaskService implements ServiceAuthenticates{
 
   constructor(private httpClient: HttpClient) { }
 

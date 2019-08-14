@@ -6,16 +6,17 @@ import { AuthStatus } from '../../authentication/auth-status.class';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
+import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class NotebooksService {
+export class NotebooksService implements ServiceAuthenticates {
 
   constructor(private httpClient: HttpClient) { }
 
   private _authStatus: AuthStatus;
-  private _loginComplete: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  private _loginComplete: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
 

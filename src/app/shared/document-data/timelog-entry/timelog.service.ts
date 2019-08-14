@@ -14,13 +14,14 @@ import { ActivityCategoryDefinitionService } from '../../document-definitions/ac
 import { ITLEActivity } from './timelog-entry-activity.interface';
 import { ActivityDayDataService } from '../activity-day-data/activity-day-data.service';
 import { ActivityDayDataItem, ActivityDayData } from '../activity-day-data/activity-day-data.class';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class TimelogService {
+export class TimelogService implements ServiceAuthenticates{
 
   private _authStatus: AuthStatus = null;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
