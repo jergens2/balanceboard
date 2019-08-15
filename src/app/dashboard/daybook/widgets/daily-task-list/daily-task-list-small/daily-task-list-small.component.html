@@ -1,1 +1,14 @@
-<p>daily-task-list-small works!</p>
+<div class="dtl-widget-root">
+    <div class="dtl-widget-header">
+        <div class="header-buffer"></div>
+        <div>
+            Daily Task List
+        </div>
+        <div class="header-buffer">
+            <fa-icon [icon]="faExpand" (click)="onClickExpand()" class="icon-button"></fa-icon>
+        </div>
+    </div>
+    <div class="dtl-widget-body">
+        DTL Items here.
+    </div>
+</div>

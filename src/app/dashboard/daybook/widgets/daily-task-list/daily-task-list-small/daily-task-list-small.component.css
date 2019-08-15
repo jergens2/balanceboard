@@ -1,0 +1,17 @@
+.dtl-widget-root{
+    width:100%;
+    display: flex;
+    flex-direction: column;
+}
+.dtl-widget-header{
+    font-size:0.9em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.header-buffer{
+    width:20px;
+}
+.dtl-widget-body{
+
+}

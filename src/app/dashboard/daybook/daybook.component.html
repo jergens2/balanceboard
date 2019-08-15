@@ -1,25 +1,31 @@
 <div class="daybook-root">
-  <div class="daybook-header font-family-lexend" >
+  <div class="daybook-header font-family-lexend">
     {{ daybookHeader }}
   </div>
-  <div class="layout-grid" *ngIf="daybookIsLoading">
+
+  <div class="layout-flex" *ngIf="daybookIsLoading">
     <div class="spinner-container">
       <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
     </div>
   </div>
-  <div class="layout-grid" *ngIf="!daybookIsLoading" [ngClass]="{'layout-grid-large': appScreenSize > 1, 'layout-grid-slim': appScreenSize <= 1}">
-    <div class="daybook-widget-container" [ngStyle]="timelogWidget.ngStyle" [ngClass]="timelogWidget.ngClass">
-      <app-timelog-small *ngIf="!timelogWidget.isExpanded" class="small-widget" [activeDay]="activeDay"></app-timelog-small>
-      <app-timelog-large *ngIf="timelogWidget.isExpanded" class="large-widget" [activeDay]="activeDay"></app-timelog-large>
+
+  <div class="layout-flex" *ngIf="!daybookIsLoading">
+    <div class="main-widget">
+      <app-timelog-large *ngIf="timelogWidget.isExpanded" [activeDay]="activeDay"
+        [ngStyle]="timelogWidget.ngStyle" [ngClass]="timelogWidget.ngClass"></app-timelog-large>
+      <app-calendar-large *ngIf="calendarWidget.isExpanded" [activeDay]="activeDay"
+        [ngStyle]="calendarWidget.ngStyle" [ngClass]="calendarWidget.ngClass"></app-calendar-large>
+      <app-daily-task-list-large *ngIf="dailyTaskListWidget.isExpanded" [activeDay]="activeDay"
+        [ngClass]="dailyTaskListWidget.ngStyle" [ngClass]="dailyTaskListWidget.ngClass"></app-daily-task-list-large>
     </div>
-    <div class="daybook-widget-container" [ngStyle]="calendarWidget.ngStyle" [ngClass]="calendarWidget.ngClass">
-      <app-calendar-small *ngIf="!calendarWidget.isExpanded" class="small-widget" [activeDay]="activeDay"></app-calendar-small>
-      <app-calendar-large *ngIf="calendarWidget.isExpanded" class="large-widget" [activeDay]="activeDay"></app-calendar-large>
+    <div class="sidebar" *ngIf="appScreenSize > 1">
+      <app-calendar-small *ngIf="!calendarWidget.isExpanded" class="small-widget" [activeDay]="activeDay" (expand)="calendarWidget.onClickExpand()"></app-calendar-small>
+      <app-daily-task-list-small *ngIf="!dailyTaskListWidget.isExpanded" class="small-widget" [activeDay]="activeDay" (expand)="dailyTaskListWidget.onClickExpand()"></app-daily-task-list-small>
+      <app-timelog-small *ngIf="!timelogWidget.isExpanded" class="small-widget" [activeDay]="activeDay" (expand)="timelogWidget.onClickExpand()"></app-timelog-small>
     </div>
-    <div class="daybook-widget-container" [ngClass]="dailyTaskListWidget.ngStyle" [ngClass]="dailyTaskListWidget.ngClass">
-      <app-daily-task-list-small *ngIf="!dailyTaskListWidget.isExpanded" class="small-widget" [activeDay]="activeDay"></app-daily-task-list-small>
-      <app-daily-task-list-large *ngIf="dailyTaskListWidget.isExpanded" class="large-widget" [activeDay]="activeDay"></app-daily-task-list-large>
-    </div>
+
+
+
 
   </div>
 </div>

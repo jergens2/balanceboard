@@ -1,22 +1,28 @@
+import { Subject, Observable } from "rxjs";
+
 export class DaybookWidget{
 
-    private daybookWidgetType: DaybookWidgetType;
+    private _daybookWidgetType: DaybookWidgetType;
+    public get daybookWidgetType(): DaybookWidgetType{
+        return this._daybookWidgetType;
+    }
     constructor(dayBookWidgetType: DaybookWidgetType, isLarge: boolean){
+        this._daybookWidgetType = this.daybookWidgetType;
         if(isLarge){
             this.expand();
         }else{
-            this.shrink();
+            this.minimize();
         }
 
     }
 
-    public shrink(){
+    public minimize(){
         this._isExpanded = false;
         this._ngClass = {
 
         }
         this._ngStyle = {
-            
+
         }
     }
     public expand(){
@@ -28,6 +34,21 @@ export class DaybookWidget{
 
         }
     }
+
+
+    private _widgetSizeChanged$: Subject<string> = new Subject();
+    public get widgetSizeChanged$(): Observable<string> {
+        return this._widgetSizeChanged$.asObservable();
+    } 
+    public onClickExpand(){
+        console.log("Expanding this widget:  EXPAND");
+        this._widgetSizeChanged$.next("EXPAND");
+    }
+    public onClickMinimize(){
+        console.log("Minimizing this widget");
+        this._widgetSizeChanged$.next("MINIMIZE");
+    }
+
     private _isExpanded: boolean = false;
     public get isExpanded(): boolean{
         return this._isExpanded;

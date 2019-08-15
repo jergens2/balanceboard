@@ -1,18 +1,32 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ICalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
-import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faArrowLeft, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
+import { DaybookSmallWidget } from '../../daybook-small-widget.interface';
 
 @Component({
   selector: 'app-calendar-small',
   templateUrl: './calendar-small.component.html',
   styleUrls: ['./calendar-small.component.css']
 })
-export class CalendarSmallComponent implements OnInit {
+export class CalendarSmallComponent implements OnInit, DaybookSmallWidget {
 
   constructor(private router: Router) { }
+
+  faExpand = faExpand;
+
+  @Input() activeDay: DaybookDayItem;
+  @Output() expand: EventEmitter<boolean> = new EventEmitter(); 
+
+
+  onClickExpand(){
+    this.expand.emit(true);
+  }
+
+
+
 
 
   faArrowRight = faArrowRight;
@@ -22,7 +36,7 @@ export class CalendarSmallComponent implements OnInit {
 
   calendarMonthDate: moment.Moment = moment();
 
-  @Input() activeDay: DaybookDayItem;
+  
 
   private _currentDate: moment.Moment = moment();
   @Input() set currentDate(date: moment.Moment){

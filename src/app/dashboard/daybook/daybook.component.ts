@@ -55,16 +55,16 @@ export class DaybookComponent implements OnInit, OnDestroy {
   private setPrimaryWidget(widget: DaybookWidgetType){
     if(widget == "Timelog"){
       this.timelogWidget.expand();
-      this.calendarWidget.shrink();
-      this.dailyTaskListWidget.shrink();
+      this.calendarWidget.minimize();
+      this.dailyTaskListWidget.minimize();
     }else if(widget == "DailyTaskList"){
-      this.timelogWidget.expand();
-      this.calendarWidget.shrink();
-      this.dailyTaskListWidget.shrink();
+      this.timelogWidget.minimize();
+      this.calendarWidget.minimize();
+      this.dailyTaskListWidget.expand();
     }else if(widget == "Calendar"){
-      this.timelogWidget.expand();
-      this.calendarWidget.shrink();
-      this.dailyTaskListWidget.shrink();
+      this.timelogWidget.minimize();
+      this.calendarWidget.expand();
+      this.dailyTaskListWidget.minimize();
     }
   }
   
@@ -73,10 +73,30 @@ export class DaybookComponent implements OnInit, OnDestroy {
   private calendarWidget: DaybookWidget;
   private dailyTaskListWidget: DaybookWidget;
 
+  private widgetSubscriptions: Subscription[] = [];
+
   private arrangeWidgets(){
     this.timelogWidget = new DaybookWidget(DaybookWidgetType.timelog, true);
     this.calendarWidget = new DaybookWidget(DaybookWidgetType.calendar, false);
     this.dailyTaskListWidget = new DaybookWidget(DaybookWidgetType.dailyTaskList, false);
+
+    let timelogClickSubscription: Subscription = this.timelogWidget.widgetSizeChanged$.subscribe((changeDirection: string)=>{
+      if(changeDirection == "EXPAND"){
+        this.setPrimaryWidget(DaybookWidgetType.timelog);
+      }
+    });
+    let calendarClickSubscription: Subscription = this.calendarWidget.widgetSizeChanged$.subscribe((changeDirection: string)=>{
+      if(changeDirection == "EXPAND"){
+        this.setPrimaryWidget(DaybookWidgetType.calendar);
+      }
+    }); 
+    let dailyTaskListClickSubscription: Subscription = this.dailyTaskListWidget.widgetSizeChanged$.subscribe((changeDirection: string)=>{
+      if(changeDirection == "EXPAND"){
+        this.setPrimaryWidget(DaybookWidgetType.dailyTaskList);
+      }
+    }); 
+
+    this.widgetSubscriptions = [timelogClickSubscription, calendarClickSubscription, dailyTaskListClickSubscription];
   }
   
   
@@ -100,12 +120,20 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
 
 
+
   public get daybookHeader(): string{
     return moment(this.daybookService.activeDayYYYYMMDD).format("dddd, MMM DD, YYYY");
   }
 
   ngOnDestroy(){
     this._screenSizeSubscription.unsubscribe();
+    this.widgetSubscriptions.forEach((sub)=>{
+      sub.unsubscribe();
+    })
+    this.widgetSubscriptions = [];
+    this.timelogWidget = null;
+    this.calendarWidget = null;
+    this.dailyTaskListWidget = null;
   }
 
 
