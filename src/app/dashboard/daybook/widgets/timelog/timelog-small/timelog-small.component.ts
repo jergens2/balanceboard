@@ -12,18 +12,12 @@ export class TimelogSmallComponent implements OnInit, DaybookSmallWidget {
 
   constructor() { }
 
-  faExpand = faExpand;
 
   @Input() activeDay: DaybookDayItem;
-  @Output() expand: EventEmitter<boolean> = new EventEmitter();
+
 
   ngOnInit() {
   }
 
-
-
-  public onClickExpand(): void{
-    this.expand.emit(true);
-  }
 
 }

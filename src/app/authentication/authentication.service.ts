@@ -13,7 +13,7 @@ import { ServiceAuthenticationService } from './service-authentication/service-a
 @Injectable()
 export class AuthenticationService {
 
-  private _authStatusSubject$: BehaviorSubject<AuthStatus> = new BehaviorSubject<AuthStatus>(new AuthStatus(null, null, false));
+  private _authStatusSubject$: BehaviorSubject<AuthStatus> = new BehaviorSubject<AuthStatus>(null);
 
   get authStatus$(): Observable<AuthStatus> {
     return this._authStatusSubject$.asObservable();
@@ -27,8 +27,40 @@ export class AuthenticationService {
 
   private serverUrl = serverUrl;
 
-  get token(): string {
-    return this._authStatusSubject$.getValue().token;
+  public get token(): string {
+    if(this._authStatusSubject$.getValue()){
+      return this._authStatusSubject$.getValue().token;
+    }else{
+      return "";
+    }
+  }
+  public get user(): UserAccount{
+    if(this._authStatusSubject$.getValue()){
+      return this._authStatusSubject$.getValue().user;
+    }else{
+      return null;
+    }
+  }
+  public get userId(): string{
+    if(this._authStatusSubject$.getValue()){
+      return this._authStatusSubject$.getValue().user.id;
+    }else{
+      return "";
+    }
+  } 
+  public get userEmail(): string{
+    if(this._authStatusSubject$.getValue()){
+      return this._authStatusSubject$.getValue().user.email;
+    }else{
+      return "";
+    }
+  }
+  public get userSocialId(): string{
+    if(this._authStatusSubject$.getValue()){
+      return this._authStatusSubject$.getValue().user.socialId;
+    }else{
+      return "";
+    }
   }
 
 
@@ -36,7 +68,10 @@ export class AuthenticationService {
     return this.http.post(this.serverUrl + "/api/authentication/register", authData)
   }
 
-  loginAttempt$: Subject<boolean> = new Subject();
+  private _loginAttempt$: Subject<boolean> = new Subject();
+  public get loginAttempt$(): Observable<boolean> { 
+    return this._loginAttempt$.asObservable();
+  } 
 
   loginAttempt(authData: AuthData) {
     console.log("Login attempt:", authData);
@@ -52,12 +87,12 @@ export class AuthenticationService {
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
-        this.loginAttempt$.next(true);
+        this._loginAttempt$.next(true);
         this.loginRoutine(authStatus);
 
       }, (error) => {
         console.log("Login attempt failed: ", error);
-        this.loginAttempt$.next(false);
+        this._loginAttempt$.next(false);
       })
   }
 
@@ -65,6 +100,8 @@ export class AuthenticationService {
     /*
       This is where we can execute things that need to be loaded for the user before displaying the app.
       This mostly includes async tasks like fetching data from the server.
+
+      Delegated to service-authentication-service.ts
     */
 
     if (authStatus.isAuthenticated) {
@@ -82,15 +119,12 @@ export class AuthenticationService {
   completeLogin(authStatus: AuthStatus) {
     // console.log("completeLogin(): ", authStatus.user.email);
     if (authStatus.isAuthenticated) {
-
-
       localStorage.setItem("token", authStatus.token);
       localStorage.setItem("user", JSON.stringify(authStatus.user));
-      // console.log("completing login, authStatus", authStatus.user.email)
       this._authStatusSubject$.next(authStatus);
+      this._appComponentLogin$.next(true);
     } else {
-      // console.log("not authenticated, nexting a bad authstatus");
-      this._authStatusSubject$.next(new AuthStatus(null, null, false));
+      this._authStatusSubject$.next(null);
     }
 
   }
@@ -116,12 +150,10 @@ export class AuthenticationService {
 
   checkLocalStorage() {
     if (!localStorage.getItem("token") || !localStorage.getItem("user")) {
-      // console.log("no local storage, so nexting a bad auth status" )
-      this._authStatusSubject$.next(new AuthStatus(null, null, false));
+      this._authStatusSubject$.next(null);
       this.checkLocalStorage$.next(false);
     } else {
       let user: UserAccount = JSON.parse(localStorage.getItem("user"));
-      // console.log("userEmail from localStorage:" , user.email)
       this.loginRoutine(new AuthStatus(localStorage.getItem("token"), user, true));
       this.checkLocalStorage$.next(true);
     }
@@ -140,9 +172,21 @@ export class AuthenticationService {
     localStorage.clear();
     this.serviceAuthenticationService.logout();
 
-    this._authStatusSubject$.next(new AuthStatus(null, null, false));
+    this._authStatusSubject$.next(null);
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));
     // this._authStatusSubject$.next(null);
+    this._logout$.next();
   }
+
+  private _logout$: Subject<boolean> = new Subject();
+  public get logout$(): Observable<boolean>{
+    return this._logout$.asObservable();
+  }
+
+  private _appComponentLogin$: Subject<boolean> = new Subject();
+  public get appComponentLogin$(): Observable<boolean>{
+    return this._appComponentLogin$.asObservable();
+  }
+
 
 }

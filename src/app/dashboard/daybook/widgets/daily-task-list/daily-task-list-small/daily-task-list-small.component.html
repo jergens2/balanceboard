@@ -1,14 +1,44 @@
 <div class="dtl-widget-root">
-    <div class="dtl-widget-header">
-        <div class="header-buffer"></div>
-        <div>
-            Daily Task List
-        </div>
-        <div class="header-buffer">
-            <fa-icon [icon]="faExpand" (click)="onClickExpand()" class="icon-button"></fa-icon>
-        </div>
+    <div *ngFor="let dailyTaskListItem of dailyTaskListItems">
+        {{ recurringTask(dailyTaskListItem).name }}
     </div>
-    <div class="dtl-widget-body">
-        DTL Items here.
-    </div>
+
 </div>
+
+<!-- 
+
+
+    <div *ngIf="noTasks" style="text-align: center;">
+        There are no tasks that fall on this day.<br>
+        <button class="btn btn-sm btn-primary" (click)="onClickManageRecurringTasks()">Manage Recurring
+            Tasks</button>
+    </div>
+    <div *ngIf="allTasksComplete" class="all-complete" style="display:flex;flex-direction:row;"
+        (mouseenter)="onMouseEnterAllComplete()" (mouseleave)="onMouseLeaveAllComplete()">
+        <div style="width:25px;"></div>
+        <div style="text-align: center;">
+            Woohoo!<br>
+            You've completed all of your tasks for today.<br>
+            <fa-icon [icon]="faCheckCircleSolid" style="font-size:4em;color:rgb(0, 128, 75);"></fa-icon>
+        </div>
+        <div style="width:25px;">
+            <fa-icon [icon]="faTasks" class="icon-button" (click)="onClickShowTasksButton()" *ngIf="showTasksButton">
+            </fa-icon>
+        </div>
+
+    </div>
+    <div class="dtcl-items" *ngIf="!noTasks && !allTasksComplete">
+        <div *ngFor="let dailyTaskItem of dailyTaskItems" class="dtcl-item">
+            <div>
+                {{ recurringTask(dailyTaskItem).name }}
+            </div>
+            <div>
+                <fa-icon [icon]="faCircle" class="incomplete-check" (click)="onClickCheckTask(dailyTaskItem)"
+                    *ngIf="!isComplete(dailyTaskItem)"></fa-icon>
+                <fa-icon [icon]="faCheckCircle" *ngIf="isComplete(dailyTaskItem)" class="completed-check"
+                    (click)="onClickCheckTask(dailyTaskItem)"></fa-icon>
+            </div>
+
+        </div>
+    </div>
+ -->

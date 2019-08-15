@@ -125,7 +125,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
   }
 
   private buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[]{
-    console.log("Not implemented:  In this method, we need to do a property by property check");
+    console.log("Not implemented:  In this method, we need to do a property by property check.  This method fires for each daybookDayItem response item");
     /**
      * to see if the incoming object has all the requisite properties.  
      * The reason being that, over time new properties will likely be added and the shape will change.  

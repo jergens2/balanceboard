@@ -77,9 +77,9 @@ export class DailyTaskListService implements ServiceAuthenticates{
       }))
       .subscribe((dailyTaskList: DailyTaskList[]) => {
         this._dailyTaskLists$.next(dailyTaskList);
-        if(!this.todaysDailyTaskList){
-          this.httpSaveDailyTaskList(this.recurringTaskService.generateDailyTaskList(this._today));
-        }
+        // if(!this.todaysDailyTaskList){
+        //   this.httpSaveDailyTaskList(this.recurringTaskService.generateDailyTaskListItemsForDate(this._today.format("YYYY-MM-DD")) );
+        // }
         this.updateSubscriptions();
         this._loginComplete$.next(true);
       });

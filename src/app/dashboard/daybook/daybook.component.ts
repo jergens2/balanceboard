@@ -6,7 +6,7 @@ import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.enum
 import { DaybookService } from './daybook.service';
 import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
 import { DaybookDayItem } from './api/daybook-day-item.class';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-daybook',
@@ -18,6 +18,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
   constructor(private screenSizeService: SizeService, private daybookService: DaybookService){}
 
   public faSpinner = faSpinner;
+  public faExpand = faExpand;
   private _screenSize: AppScreenSize;
   private _screenSizeSubscription: Subscription = new Subscription();
   public get appScreenSize(): AppScreenSize{

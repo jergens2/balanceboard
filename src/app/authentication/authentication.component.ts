@@ -46,6 +46,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private socialService: SocialService) { }
 
   attemptLogin() {
+    console.log("log in attempt")
     this.setAction("waiting");
     this.authService.loginAttempt(this.authData);
   }
@@ -176,6 +177,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.authData = null;
     this.registrationForm.reset();
     this.confirmRegistrationForm.reset();
   }

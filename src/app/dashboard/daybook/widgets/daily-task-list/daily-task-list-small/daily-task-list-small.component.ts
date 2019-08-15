@@ -2,6 +2,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import { DaybookSmallWidget } from '../../daybook-small-widget.interface';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
+import { DailyTaskListDataItem } from '../../../api/data-items/daily-task-list-data-item.interface';
+import { RecurringTasksService } from '../../../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+import { RecurringTaskDefinition } from '../../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
 
 @Component({
   selector: 'app-daily-task-list-small',
@@ -10,19 +13,22 @@ import { faExpand } from '@fortawesome/free-solid-svg-icons';
 })
 export class DailyTaskListSmallComponent implements OnInit, DaybookSmallWidget {
 
-  constructor() { }
+  constructor(private recurringTaskService: RecurringTasksService) { }
 
-  faExpand = faExpand;
+
 
   @Input() activeDay: DaybookDayItem;
-  @Output() expand: EventEmitter<boolean> = new EventEmitter();
 
+  private _dailyTaskListItems: DailyTaskListDataItem[];
+  public get dailyTaskListItems(): DailyTaskListDataItem[]{
+    return this._dailyTaskListItems;
+  }
   ngOnInit() {
+    this._dailyTaskListItems = this.activeDay.dailyTaskListDataItems;
   }
 
-  onClickExpand(){
-    console.log("Expanding DTL widget");
-    this.expand.emit(true);
+  public recurringTask(dtlItem: DailyTaskListDataItem): RecurringTaskDefinition{
+    return this.recurringTaskService.getRecurringTaskById(dtlItem.recurringTaskId);
   }
 
 }

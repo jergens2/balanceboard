@@ -35,6 +35,17 @@ export class DaybookWidget{
         }
     }
 
+    private _mouseOver: boolean = false;
+    public get mouseOver(): boolean{
+        return this._mouseOver;
+    }
+    public onMouseEnterWidget(){
+        this._mouseOver = true;
+    }
+    public onMouseLeaveWidget(){
+        this._mouseOver = false;
+    }
+
 
     private _widgetSizeChanged$: Subject<string> = new Subject();
     public get widgetSizeChanged$(): Observable<string> {
@@ -43,6 +54,7 @@ export class DaybookWidget{
     public onClickExpand(){
         console.log("Expanding this widget:  EXPAND");
         this._widgetSizeChanged$.next("EXPAND");
+        this._mouseOver = false;
     }
     public onClickMinimize(){
         console.log("Minimizing this widget");

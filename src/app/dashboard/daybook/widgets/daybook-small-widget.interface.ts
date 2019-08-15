@@ -3,8 +3,8 @@ import { EventEmitter } from "@angular/core";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 export interface DaybookSmallWidget{
-    onClickExpand(): void;
+    // onClickExpand(): void;
     activeDay: DaybookDayItem;
-    expand: EventEmitter<boolean>;
-    faExpand: IconDefinition;
+    // expand: EventEmitter<boolean>;
+    // faExpand: IconDefinition;
 }

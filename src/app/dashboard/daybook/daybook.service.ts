@@ -7,13 +7,19 @@ import { AuthStatus } from '../../authentication/auth-status.class';
 import { DayTemplatesService } from '../scheduling/day-templates/day-templates.service';
 import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
 import { ScheduleRotationsService } from '../scheduling/schedule-rotations/schedule-rotations.service';
+import { RecurringTasksService } from '../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DaybookService implements ServiceAuthenticates{
 
-  constructor(private daybookHttpRequestService: DaybookHttpRequestService, private scheduleRotationService: ScheduleRotationsService) { }
+  constructor(
+    private daybookHttpRequestService: DaybookHttpRequestService, 
+    private scheduleRotationService: ScheduleRotationsService,
+    private recurringTaskService: RecurringTasksService,
+    
+    ) { }
 
   private _authStatus: AuthStatus;
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
@@ -126,6 +132,11 @@ export class DaybookService implements ServiceAuthenticates{
     console.log("***** Daybook:  Starting a new day: ", newDateYYYYMMDD);
     let newDay: DaybookDayItem = new DaybookDayItem(newDateYYYYMMDD);
     newDay.dayTemplateId = this.scheduleRotationService.dayTemplateForDate(newDateYYYYMMDD).id;
+
+    console.log("DTL items for date: ", this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD))
+    newDay.dailyTaskListDataItems = this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD);
+
+    console.log("New Daybook day item: ", newDay);
 
     return this.daybookHttpRequestService.saveDaybookDayItem(newDay);
   }

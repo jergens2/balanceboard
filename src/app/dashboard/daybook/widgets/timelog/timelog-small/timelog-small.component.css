@@ -1,16 +1,3 @@
 .timelog-small-body{
-    display:flex;
-    flex-direction: column;
-}
-.timelog-small-header{
-    font-size:0.9em;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-.header-buffer{
-    width:20px;
-}
-.timelog-small-body{
 
 }

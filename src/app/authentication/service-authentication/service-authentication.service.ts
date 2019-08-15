@@ -101,16 +101,16 @@ export class ServiceAuthenticationService {
      * In any case, the timer method below works.  It's a manual method and might look ugly and not as cool as the rxjs methods, but it works :)
      */
     let timerSubscription: Subscription = new Subscription();
-    timer(0,300).subscribe((val)=>{
+    timerSubscription = timer(0,300).subscribe((val)=>{
       let loginComplete :boolean = true;
       serviceAuthentications.map((sa)=>{ return sa.loginComplete}).forEach((val)=>{
         if(val === false){
           loginComplete = false;
         }
-      })
+      });
       this.serviceAuthentications = serviceAuthentications;
-      loginComplete$.next(loginComplete);
       if(loginComplete){
+        loginComplete$.next(loginComplete);
         timerSubscription.unsubscribe();
       }
     });

@@ -7,8 +7,9 @@ import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
-import { DailyTaskListItem, DailyTaskList } from '../../document-data/daily-task-list/daily-task-list.class';
+
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { DailyTaskListDataItem } from '../../../dashboard/daybook/api/data-items/daily-task-list-data-item.interface';
 
 
 @Injectable({
@@ -27,7 +28,7 @@ export class RecurringTasksService implements ServiceAuthenticates {
     this._authStatus = authStatus;
 
     this.httpGetRecurringTasks();
-    return this._loginComplete$;
+    return this._loginComplete$.asObservable();
   }
   logout() {
     this._authStatus = null;
@@ -53,28 +54,24 @@ export class RecurringTasksService implements ServiceAuthenticates {
     })
   }
 
-  public generateDailyTaskList(date: moment.Moment): DailyTaskList{
-    let dtl = new DailyTaskList("", this._authStatus.user.id, this.getDTLItemsForDate(date), date.format("YYYY-MM-DD"));
-    console.log("Generating new DTL: ", dtl);
-    return dtl;
-  }
-
-  private getDTLItemsForDate(date: moment.Moment): DailyTaskListItem[]{
-    let dtlItems: DailyTaskListItem[] = [];
-    console.log("all recurring tasks", this._recurringTasks$.getValue());
+  public generateDailyTaskListItemsForDate(dateYYYYMMDD: string): DailyTaskListDataItem[]{
+    let dtlItems: DailyTaskListDataItem[] = [];
+    // console.log("all recurring tasks", this._recurringTasks$.getValue());d
+    console.log("Recurring tasks: ", this._recurringTasks$.getValue());
     this._recurringTasks$.getValue().filter((recurringTask: RecurringTaskDefinition)=>{
-      return recurringTask.hasTaskOnDate(date);
+      return recurringTask.hasTaskOnDate(dateYYYYMMDD);
     }).forEach((recurringTask: RecurringTaskDefinition)=>{
       dtlItems.push({recurringTaskId: recurringTask.id, completionDate: ""});
     });
-    console.log("DTL ITEMS on "+ date.format("YYYY-MM-DD"), dtlItems);
+    // console.log("DTL ITEMS on "+ dateYYYYMMDD, dtlItems);
     return dtlItems;
   }
 
 
+
   private httpGetRecurringTasks() {
 
-    let getUrl = serverUrl + "/api/recurringTaskDefinition/" + this.userId;
+    let getUrl = serverUrl + "/api/recurring-task-definition/" + this.userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -84,6 +81,7 @@ export class RecurringTasksService implements ServiceAuthenticates {
 
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<RecurringTaskDefinition[]>(map((response: { message: string, data: any }) => {
+        console.log("Response is: ", response);
         let recurringTaskDefinitions: RecurringTaskDefinition[] = [];
         for (let taskData of (response.data as any[])) {
           recurringTaskDefinitions.push(this.buildRecurringTaskDefinitionFromHttp(taskData));
@@ -102,7 +100,7 @@ export class RecurringTasksService implements ServiceAuthenticates {
   }
 
   public httpSaveRecurringTaskDefinition(saveTask: RecurringTaskDefinition) {
-    let saveUrl = serverUrl + "/api/recurringTaskDefinition/create";
+    let saveUrl = serverUrl + "/api/recurring-task-definition/create";
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -124,7 +122,7 @@ export class RecurringTasksService implements ServiceAuthenticates {
   }
 
   public httpUpdateRecurringTaskDefinition(updateTask: RecurringTaskDefinition) {
-    let updateUrl = serverUrl + "/api/recurringTaskDefinition/update";
+    let updateUrl = serverUrl + "/api/recurring-task-definition/update";
 
     const httpOptions = {
       headers: new HttpHeaders({
@@ -154,7 +152,7 @@ export class RecurringTasksService implements ServiceAuthenticates {
   }
 
   public httpDeleteRecurringTask(task: RecurringTaskDefinition) {
-    const postUrl = serverUrl + "/api/recurringTaskDefinition/delete";
+    const postUrl = serverUrl + "/api/recurring-task-definition/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

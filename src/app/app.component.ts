@@ -11,6 +11,7 @@ import { ToolComponents } from './shared/tools/tool-components.enum';
 import { SizeService } from './shared/app-screen-size/size.service';
 import { AppScreenSize } from './shared/app-screen-size/app-screen-size.enum';
 import { OnScreenSizeChanged } from './shared/app-screen-size/on-screen-size-changed.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -21,10 +22,13 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
 
   faSpinner = faSpinner;
 
-  authenticated: boolean = false;
+  private _authenticated: boolean = false;
+  public get authenticated(): boolean {
+    return this._authenticated;
+  }
   loading: boolean = true;
   nightMode: UserSetting = null;
-  sideBarOpen: boolean = false;
+  sideBarOpen: boolean = true;
 
   ifModal: boolean = false;
   ifTools: boolean = false;
@@ -45,10 +49,13 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
 
   private appScreenSize: AppScreenSize;
 
-  ngOnInit() {
+  private authLoginSubscription: Subscription = new Subscription();
+  private authLogoutSubscription: Subscription = new Subscription();
 
+  ngOnInit() {
+    this._authenticated = false;
     this.onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
-    this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize)=>{
+    this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize) => {
       this.onScreenSizeChanged(appScreenSize);
     })
 
@@ -70,41 +77,52 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
     })
 
 
-    this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[]) => {
-      for (let setting of userSettings) {
-        if (setting.name == "night_mode") {
-          this.nightMode = setting;
-        }
-      }
-    });
+    // this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[]) => {
+    //   for (let setting of userSettings) {
+    //     if (setting.name == "night_mode") {
+    //       this.nightMode = setting;
+    //     }
+    //   }
+    // });
 
-    this.authService.authStatus$.subscribe(
-      (authStatus: AuthStatus) => {
-        if (authStatus.isAuthenticated) {
-          this.loading = false;
-          this.authenticated = true;
-        } else {
-          this.authenticated = false;
-        }
-      }
-    )
-    this.authService.checkLocalStorage$.subscribe((isPresent: boolean) => {
-      if (isPresent) {
+    // this.authSubscription = this.authService.authStatus$.subscribe((authStatus: AuthStatus) => {
+    //   console.log("Auth subscription: " , authStatus);
+    //   if (authStatus) {
+    //     if (authStatus.isAuthenticated) {
+    //       this.loading = false;
+    //       this.authenticated = true;
+    //     }
+    //   }
+    // });
 
-      } else {
+    this.authLoginSubscription = this.authService.appComponentLogin$.subscribe((onLogin)=>{
+      if(onLogin === true){
+        this._authenticated = true;
         this.loading = false;
       }
     })
+
+    this.authLogoutSubscription = this.authService.logout$.subscribe((onLogout)=>{
+      this.logout();
+    })
+    this.authService.checkLocalStorage$.subscribe((isPresent: boolean) => {
+      if (isPresent) {
+        this._authenticated = true;
+      } else {
+        this.loading = false;
+        this._authenticated = false;
+      }
+    });
     this.authService.checkLocalStorage();
 
 
   }
 
-  onScreenSizeChanged(appScreenSize: AppScreenSize){
+  onScreenSizeChanged(appScreenSize: AppScreenSize) {
     this.appScreenSize = appScreenSize;
-    if(this.appScreenSize < 2){
+    if (this.appScreenSize < 2) {
       this.sideBarOpen = false;
-    }else if(this.appScreenSize >= 2){
+    } else if (this.appScreenSize >= 2) {
       if (localStorage.getItem("sidebar_is_open") == "true") {
         this.sideBarOpen = true;
       }
@@ -114,6 +132,13 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
   onHeaderSidebarButtonClicked() {
     this.sideBarOpen = !this.sideBarOpen;
     localStorage.setItem("sidebar_is_open", this.sideBarOpen.toString());
+  }
+
+  private logout() {
+    console.log("logging out of app component.");
+    this._authenticated = false;
+    // this.authSubscription.unsubscribe();
+    // this.authLogoutSubscription.unsubscribe();
   }
 
 
