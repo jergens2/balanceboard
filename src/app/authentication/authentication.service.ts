@@ -136,7 +136,7 @@ export class AuthenticationService {
 
 
   logout() {
-    // console.log("logging out of auth service");
+    console.log("logging out of auth service");
     localStorage.clear();
     this.serviceAuthenticationService.logout();
 

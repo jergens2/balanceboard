@@ -31,7 +31,7 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
 
   logout() {
     this._authStatus = null;
-
+    this._scheduleRotations$.next([]);
   }
 
 

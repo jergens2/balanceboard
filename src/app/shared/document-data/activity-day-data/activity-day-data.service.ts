@@ -39,6 +39,8 @@ export class ActivityDayDataService implements ServiceAuthenticates{
   }
   public logout(){
     this._clockSubscription.unsubscribe();
+    this._activityDayDatas$.next([]);
+    this._authStatus = null;
   }
 
 

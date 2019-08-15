@@ -27,6 +27,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
 
   logout() {
     this._authStatus = null;
+    this._daybookDayItems$.next([]);
   }
 
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
@@ -115,7 +116,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
     };
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<DaybookDayItem[]>(map((response) => {
-        return this.buildDaybookDayItemFromResponse(response.data as any[]);
+        return this.buildDaybookDayItemsFromResponse(response.data as any[]);
       }))
       .subscribe((daybookDayItems: DaybookDayItem[]) => {
         this._daybookDayItems$.next(daybookDayItems);
@@ -123,18 +124,29 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
       });
   }
 
-  private buildDaybookDayItemFromResponse(dayItemsHttp: DaybookDayItemHttpShape[]): DaybookDayItem[]{
+  private buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[]{
     console.log("Not implemented:  In this method, we need to do a property by property check");
     /**
      * to see if the incoming object has all the requisite properties.  
      * The reason being that, over time new properties will likely be added and the shape will change.  
      * This method here is where we validate every property, and update the object if not up to modern version.
      * 
-     *  
+     * e.g.
+     * 
+     * Create a new property for DayBookDayItem called "dailyWeightEntry", 
+     * "
+     * let newDaybookDayItem = new DaybookDayItem();
+     * if(!responseDataItem.dailyWeightEntry){
+     *    newDaybookDayItem.dailyWeightEntry = 0;
+     * }
+     * ...
+     * saveUpdatedDaybookDayItem(newDaybookDayItem);
+     * "
+     * 
      */ 
     let daybookDayItems: DaybookDayItem[] = [];
-    dayItemsHttp.forEach((dayItemHttp)=>{
-      daybookDayItems.push(this.buildDaybookDayItem(dayItemHttp));
+    responseDataItems.forEach((responseDataItem)=>{
+      daybookDayItems.push(this.buildDaybookDayItem(responseDataItem));
     });
     return daybookDayItems;
   }

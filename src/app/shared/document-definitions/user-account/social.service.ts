@@ -23,6 +23,8 @@ export class SocialService implements ServiceAuthenticates{
   }
   public logout(){
     this._authStatus = null;
+    this._incomingRequests$.next([]);
+    this._outgoingRequests$.next([]);
   }
   public get userAccount(): UserAccount {
     return this._authStatus.user;

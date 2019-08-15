@@ -1,119 +1,112 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { Subscription, Subject, Observable, BehaviorSubject } from 'rxjs';
-import { faCaretSquareDown, faEdit } from '@fortawesome/free-regular-svg-icons';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HeaderService } from '../../nav/header/header.service';
-import { HeaderMenu } from '../../nav/header/header-menu/header-menu.model';
-import { MenuItem } from '../../nav/header/header-menu/menu-item.model';
-
-import { DayDataService } from '../../shared/document-data/day-data/day-data.service';
-import { DayData } from '../../shared/document-data/day-data/day-data.class';
+import { Subscription } from 'rxjs';
+import { SizeService } from '../../shared/app-screen-size/size.service';
+import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.enum';
+import { DaybookService } from './daybook.service';
+import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
+import { DaybookDayItem } from './api/daybook-day-item.class';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-daybook',
   templateUrl: './daybook.component.html',
   styleUrls: ['./daybook.component.css']
 })
-export class DayDataComponent implements OnInit, OnDestroy {
+export class DaybookComponent implements OnInit, OnDestroy {
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private dayDataService: DayDataService,
-    private headerService: HeaderService) { }
+  constructor(private screenSizeService: SizeService, private daybookService: DaybookService){}
 
-
-  faCaretSquareDown = faCaretSquareDown;
-
-  faEdit = faEdit;
-
-  ifCalendarInside: boolean = false;
-
-
-
-  private _headerMenuSubscriptions: Subscription[] = [];
-
-
-  private _currentDate$: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
-  public get currentDate(): moment.Moment {
-    return this._currentDate$.getValue();
+  public faSpinner = faSpinner;
+  private _screenSize: AppScreenSize;
+  private _screenSizeSubscription: Subscription = new Subscription();
+  public get appScreenSize(): AppScreenSize{
+    return this._screenSize;
   }
-  public get currentDate$(): Observable<moment.Moment> {
-    return this._currentDate$.asObservable();
-  }
-  public set currentDate(newDate) {
-    this._currentDate$.next(moment(newDate));
+  private _activeDay: DaybookDayItem;
+  public activeDay(): DaybookDayItem{
+    return this._activeDay;
   }
 
+  public daybookIsLoading: boolean = true;
 
   ngOnInit() {
+    this._screenSize = this.screenSizeService.appScreenSize;
+    this.screenSizeService.appScreenSize$.subscribe((changedSize)=>{
+      this._screenSize = changedSize;
+      console.log("Screensize changed to: " , this._screenSize)
+    });
+    this._activeDay = this.daybookService.activeDay;
+    console.log("This active day is", this._activeDay)
+    this.daybookService.activeDay$.subscribe((activeDayChanged)=>{
+      if(activeDayChanged){
+        this._activeDay = activeDayChanged;
+      }     
+    });
 
-    let asdf: moment.Moment = moment();
-    // asdf.utc
 
-    // this.buildHeaderMenu();
-    // let dateRegExp: RegExp = new RegExp(/[0-9]{4}(-[0-9]{2}){2}/);
-    // let date: string = this.activatedRoute.snapshot.paramMap.get('isoDate');
+    this.arrangeWidgets();
+    this.setPrimaryWidget(DaybookWidgetType.timelog);
 
-    // if (dateRegExp.test(date)) {
-    //   this.setCurrentDate(moment(date));
-    // } else {
-    //   /*
-    //     is this block necessary, given the fact that the auth service logs in to the daybook service and sets the initial date as moment() ?
-    //   */
-    //   // this.setCurrentDate(moment());
-    // }
-
+    this.daybookIsLoading = false;
   }
 
-  private buildHeaderMenu() {
-    // let daybookHeaderMenuItems: MenuItem[] = [];
 
+  private setPrimaryWidget(widget: DaybookWidgetType){
+    if(widget == "Timelog"){
+      this.timelogWidget.expand();
+      this.calendarWidget.shrink();
+      this.dailyTaskListWidget.shrink();
+    }else if(widget == "DailyTaskList"){
+      this.timelogWidget.expand();
+      this.calendarWidget.shrink();
+      this.dailyTaskListWidget.shrink();
+    }else if(widget == "Calendar"){
+      this.timelogWidget.expand();
+      this.calendarWidget.shrink();
+      this.dailyTaskListWidget.shrink();
+    }
+  }
+  
 
-    // let timelogViewMenuItem = new MenuItem("Time Log View", null, null);
-    // this._headerMenuSubscriptions.push(timelogViewMenuItem.clickEmitted$.subscribe((clicked) => {
-    //   this.changeView("timelog");
-    // }));
+  private timelogWidget: DaybookWidget;
+  private calendarWidget: DaybookWidget;
+  private dailyTaskListWidget: DaybookWidget;
 
-    // let heatmapViewMenuItem = new MenuItem("Heat Map View", null, null);
-    // this._headerMenuSubscriptions.push(heatmapViewMenuItem.clickEmitted$.subscribe((clicked) => {
-    //   this.changeView("heatmap");
-    // }));
+  private arrangeWidgets(){
+    this.timelogWidget = new DaybookWidget(DaybookWidgetType.timelog, true);
+    this.calendarWidget = new DaybookWidget(DaybookWidgetType.calendar, false);
+    this.dailyTaskListWidget = new DaybookWidget(DaybookWidgetType.dailyTaskList, false);
+  }
+  
+  
 
-    // daybookHeaderMenuItems.push(newTimelogEntryMenuItem);
-    // daybookHeaderMenuItems.push(timelogViewMenuItem);
-    // daybookHeaderMenuItems.push(heatmapViewMenuItem);
-
-    // let daybookHeaderMenu: HeaderMenu = new HeaderMenu('DayData', daybookHeaderMenuItems);
-
-    // this.headerService.setCurrentMenu(daybookHeaderMenu);
+  private _timelogContainerClasses: any = {};
+  public get timelogContainerClasses(): any{
+    return this._timelogContainerClasses;
+  }
+  private _calendarContainerClasses: any = {};
+  public get calendarContainerClasses(): any{
+    return this._calendarContainerClasses;
+  }
+  private _dailyTaskListContainerClasses: any = {};
+  public get dailyTaskListContainerClasses(): any{
+    return this._dailyTaskListContainerClasses;
+  }
+  private _activityDataContainerClasses: any = {};
+  public get activityDataContainerClasses(): any{
+    return this._activityDataContainerClasses;
   }
 
-  // private changeView(newView: string) {
-  //   this.currentView = newView;
-  // }
 
 
-
-  ngOnDestroy() {
-    // this._headerMenuSubscriptions.forEach((sub: Subscription) => {
-    //   sub.unsubscribe();
-    // });
-    // // this._currentDaySubscription.unsubscribe();
-    // this.headerService.setCurrentMenu(null);
+  public get daybookHeader(): string{
+    return moment(this.daybookService.activeDayYYYYMMDD).format("dddd, MMM DD, YYYY");
   }
 
-  onChangeDate(date: moment.Moment) {
-    this.currentDate = (moment(date));
-    // this.router.navigate(['/daybook/' + date.format('YYYY-MM-DD')]);
-    // this.changeView("timelog");
+  ngOnDestroy(){
+    this._screenSizeSubscription.unsubscribe();
   }
-
-  onClickToggleCalendar() {
-    this.ifCalendarInside = !this.ifCalendarInside;
-  }
-
 
 
 }

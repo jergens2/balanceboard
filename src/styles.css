@@ -1,6 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
-
-
+/* @font-face{
+  font-family: Ubuntu; 
+  src: url("./assets/fonts/Ubuntu/Ubuntu-Regular.ttf");
+}; */
+@font-face{
+  font-family: Lexend; 
+  src: url("./assets/fonts/Lexend_Deca/LexendDeca-Regular.ttf");
+};
+@font-face{
+  font-family: Ubuntu; 
+  src: url("./assets/fonts/Ubuntu/Ubuntu-Regular.ttf");
+}
+.font-family-lexend{
+  font-family: 'Lexend';
+}
+.font-family-ubuntu{
+  font-family: 'Ubuntu';
+}
 
 .no-select {
     -webkit-touch-callout: none; /* iOS Safari */

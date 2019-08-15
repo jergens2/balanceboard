@@ -1,291 +1,53 @@
-
-/*
-    z-indexes:
-
-    
-    .daybook-menu: 99;
-    .calendar-inside: 11;
-    .time-entry-form-container: 20;
-    .now-time: 9;
-    .time-entry-duration: 5;
-
-
-*/
-
-
-
-.root{
-    width: 100%;
+.daybook-root{
+    width:100%;
     height:100%;
-
-    padding-top: 8px;
-
-    display: flex;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(0, 255, 0, 0.103);
+}
+.spinner-container{
+    width:100%;
+    height:100%;
+    display:flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
+    font-size:2em;
 }
-
-.right-side-pane{
-    margin-left:10px;
-    /* display:flex; */
-    flex-direction: column;
-    justify-content: flex-start;
-    display: none;
-}
-.widget {
-    width:280px;
-    border: 1px solid rgb(165, 165, 165);
-    box-shadow: 0px 5px 6px rgb(166, 195, 219);
-    padding:5px;
-    display:flex;
-    flex-direction:column;
-}
-.widget-header{
-    text-align: center;
-    border-bottom: 1px solid rgb(219, 219, 219);
-}
-
-.daybook {
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: auto;
-}
-
-
-
-.daybook-body{
-
-    border: 1px solid rgb(165, 165, 165);
-    box-shadow: 0px 5px 6px rgb(166, 195, 219);
-
-    display: grid;
-    grid-template-columns: auto;
-    grid-template-rows: 50px auto;
-}
-
 .daybook-header{
-
-    background-color: #fdfdfd;
-    grid-column: 1 / span 1;
-    grid-row: 1 / span 1;
+    font-size:1.4em;
 }
 
-.daybook-menu-button{
-    font-size:1em;
-    align-self: flex-start;
-    vertical-align: top;
-}
-.daybook-menu{
-    background-color: white;
-    padding:3px;
-    position:relative;
-    border: 1px solid gray;
-    width: 200px;
-    z-index: 99;
-
-}
-.daybook-menu-item{
+.layout-grid{
     width:100%;
+    height:100%;
+    display:grid;
+    grid-template-rows: auto;
+    border:1px solid blue;
 }
-.daybook-menu-item:hover{
-    cursor: pointer;
-    background-color: rgb(207, 207, 207);
+.layout-grid-large{
+    max-width: 1000px;
+    grid-template-columns: 75% 25%;
+    background-color: rgba(0, 174, 255, 0.192);
 }
-
-
-.menu-button{
-    border: 1px solid gray;
-    border-radius: 2px;
+.layout-grid-slim{
+    max-width: 768px;
+    grid-template-rows:auto;
+    grid-template-columns: auto;
 }
-
-.toggle-inside-calendar-button-container{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-
-
-}
-
-.toggle-inside-calendar-button{
-    background-color: rgb(109, 184, 255);
-    width:36px;
-    height:36px;
-    padding:3px;
-    border: 1px solid rgb(0, 103, 199);
-    border-radius:3px;
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3em;
-}
-.toggle-inside-calendar-button:hover{
-    cursor: pointer;
-    background-color: rgb(0, 103, 199);
-}
-.calendar-inside{
-    grid-row: 2 / span 1;
+.layout-grid-primary{
+    grid-row: 1 / span 1;
     grid-column: 1 / span 1;
-    z-index: 11;
-
-    margin-left: auto;
+    background-color: rgba(0, 0, 255, 0.075);
+}
+.layout-grid-right{
+    grid-row: 1 / span 1;
+    grid-column: 2 / span 1;
+    background-color: rgba(255, 0, 0, 0.158);
 }
 
-.time-entry-form-container{
-    grid-row: 2 / span 1;
-    grid-column: 1 / span 1;
-
-    z-index: 20;
-
-    background-color: white;
-}
-
-
-
-.daybook-view{
-    grid-row: 2 / span 1;
-    grid-column: 1 / span 1;   
-}
-
-
-
-@media (max-width: 767px){
-    .root{
-        padding-top: 0px;
-    }
-    .daybook { 
-        min-width: 300px;
-        min-height: 624px;
-
-        width: 100%;
-        height: 90vh;
-
-        max-width: 468px;
-        max-height: 624px;
-
-        margin: 0px;
-
-        grid-template-columns: auto;
-        /* background-color: rgb(0, 255, 170); */
-    }
-    .daybook-tabs{
-        display:none;
-    }
-    .daybook-body {
-        /* grid-template-columns: 52px 10px auto; */
-        padding: 1px;
-    }
-    .daybook-header-tab{
-        font-size:0.65em;
-    }
-    .daybook-header-current-day{    
-        font-size: 0.9em;
-    }
-    .hour-label{
-        font-size:0.8em;
-    }
-    .now-time{
-        font-size:0.7em;
-        padding-left: 2px;
-    }
-}
-
-@media  (min-width: 768px) {
-    /* this 767 / 768 number is the cutoff in the main AppComponent for the sidebar */
-
-    .daybook { 
-        min-width: 468px;
-        min-height: 624px;
-
-        width: 468px;
-        height: 624px;
-
-        max-width: 468px;
-        max-height: 624px;
-
-        /* background-color: rgb(255, 196, 232); */
-    }
-
-}
-
-@media (min-height: 730px) and (min-width: 806px) {
-
-    .daybook { 
-        min-width: 525px;
-        min-height: 700px;
-
-        width: 525px;
-        height: 700px;
-
-        max-width: 525px;
-        max-height: 700px;
-
-        /* background-color: rgb(255, 119, 142); */
-    }
-}
-
-@media (min-height: 830px) and (min-width: 880px) {
-    .daybook { 
-        min-width: 600px;
-        min-height: 800px;
-
-        width: 600px;
-        height: 800px;
-
-        max-width: 600px;
-        max-height: 800px;
-
-        /* background-color: rgb(255, 64, 96); */
-    }
-}
-
-@media (min-height: 930px) and (min-width: 970px) {
-
-    .daybook {
-        min-width: 675px;
-        min-height: 900px;
-
-        width: 675px;
-        height: 900px;
-
-        max-width: 675px;
-        max-height: 900px;
-
-        /* background-color: rgb(255, 0, 43); */
-
-    }
-
-
-}
-
-@media (max-height: 729px) and (min-width: 1030px){
-    .right-side-pane{
-        display: flex;
-    }
-    .toggle-inside-calendar-button, .calendar-inside{
-        display:none;
-    }
-}
-@media (min-height: 730px) and (max-height: 829px) and (min-width: 1088px){
-    .right-side-pane{
-        display: flex;
-    }
-    .toggle-inside-calendar-button, .calendar-inside{
-        display:none;
-    }
-}
-@media (min-height: 830px) and (max-height: 929px) and (min-width: 1160px){
-    .right-side-pane{
-        display: flex;
-    }
-    .toggle-inside-calendar-button, .calendar-inside{
-        display:none;
-    }
-}
-@media (min-height: 930px) and (min-width: 1235px){
-    .right-side-pane{
-        display: flex;
-    }
-    .toggle-inside-calendar-button, .calendar-inside{
-        display:none;
-    }
+.daybook-widget-container{
+    margin:5px;
+    border: 1px solid pink;
 }

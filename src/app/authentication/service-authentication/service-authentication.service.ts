@@ -25,8 +25,8 @@ export class ServiceAuthenticationService {
 
   constructor(
     private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
-    private activityDayDataService: ActivityDayDataService,
-    private timelogService: TimelogService,
+    // private activityDayDataService: ActivityDayDataService,
+    // private timelogService: TimelogService,
     private userSettingsService: UserSettingsService,
     private dayTemplatesService: DayTemplatesService,
     // private dayDataService: DayDataService,
@@ -34,7 +34,7 @@ export class ServiceAuthenticationService {
     private taskService: TaskService,
     private recurringTaskService: RecurringTasksService,
     // private timeViewsService: TimeViewsService,
-    private dailyTaskListService: DailyTaskListService,
+    // private dailyTaskListService: DailyTaskListService,
     private socialService: SocialService,
     private daybookHttpRequestService: DaybookHttpRequestService,
     private daybookService: DaybookService,
@@ -47,16 +47,22 @@ export class ServiceAuthenticationService {
   }
 
   public logout() {
-
+    this.serviceAuthentications.forEach((serviceAuthentication)=>{
+      console.log("Logging out of " + serviceAuthentication.name);
+      serviceAuthentication.logout();
+    });
+    this.serviceAuthentications = [];
   }
+
+  private serviceAuthentications: ServiceAuthentication[] = [];
 
   public loginServices$(authStatus: AuthStatus): Observable<boolean> {
 
     let serviceAuthentications: ServiceAuthentication[] = [];
     let activityCategoryDefinitionSA: ServiceAuthentication = new ServiceAuthentication("ActivityCategoryDefinition", this.activityCategoryDefinitionService);
-    let timelogSA: ServiceAuthentication = new ServiceAuthentication("Timelog", this.timelogService);
-    timelogSA.setChild(new ServiceAuthentication("ActivityDayData", this.activityDayDataService));
-    activityCategoryDefinitionSA.setChild(timelogSA);
+    // let timelogSA: ServiceAuthentication = new ServiceAuthentication("Timelog", this.timelogService);
+    // timelogSA.setChild(new ServiceAuthentication("ActivityDayData", this.activityDayDataService));
+    // activityCategoryDefinitionSA.setChild(timelogSA);
     serviceAuthentications.push(activityCategoryDefinitionSA);
 
 
@@ -71,7 +77,7 @@ export class ServiceAuthenticationService {
     serviceAuthentications.push(dayTemplatesSA);
 
     let recurringTaskDefinitionsSA: ServiceAuthentication = new ServiceAuthentication("RecurringTaskDefinition", this.recurringTaskService);
-    recurringTaskDefinitionsSA.setChild(new ServiceAuthentication("DailyTaskList", this.dailyTaskListService));
+    // recurringTaskDefinitionsSA.setChild(new ServiceAuthentication("DailyTaskList", this.dailyTaskListService));
     serviceAuthentications.push(recurringTaskDefinitionsSA);
 
     serviceAuthentications.push(new ServiceAuthentication("Notes", this.notebooksService));
@@ -90,7 +96,7 @@ export class ServiceAuthenticationService {
     
     /**
      * I tried for a while to use forkJoin, as well as merge, but couldn't get it to fire properly with this setup.  
-     * i think part of the problem is because I don't necessarily know how to properly use forkJoin or merge.  perhaps those aren't even the right methods.
+     * i think part of the problem is because I don't necessarily know how to properly use forkJoin or merge.  perhaps those aren't even the right methods for this scenario.
      * 
      * In any case, the timer method below works.  It's a manual method and might look ugly and not as cool as the rxjs methods, but it works :)
      */
@@ -102,6 +108,7 @@ export class ServiceAuthenticationService {
           loginComplete = false;
         }
       })
+      this.serviceAuthentications = serviceAuthentications;
       loginComplete$.next(loginComplete);
       if(loginComplete){
         timerSubscription.unsubscribe();

@@ -3,13 +3,14 @@ import { ICalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
+import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 
 @Component({
-  selector: 'app-daybook-calendar',
-  templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css']
+  selector: 'app-calendar-small',
+  templateUrl: './calendar-small.component.html',
+  styleUrls: ['./calendar-small.component.css']
 })
-export class CalendarComponent implements OnInit {
+export class CalendarSmallComponent implements OnInit {
 
   constructor(private router: Router) { }
 
@@ -21,7 +22,7 @@ export class CalendarComponent implements OnInit {
 
   calendarMonthDate: moment.Moment = moment();
 
-  // today: moment.Moment = moment();
+  @Input() activeDay: DaybookDayItem;
 
   private _currentDate: moment.Moment = moment();
   @Input() set currentDate(date: moment.Moment){

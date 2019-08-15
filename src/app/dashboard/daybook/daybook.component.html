@@ -1,66 +1,25 @@
-<div class="root">
-
-  <div class="daybook">
-
-
-    <!-- <div class="daybook-tabs">
-      <div class="daybook-tab" style="background-color: rgb(232, 255, 232);">
-        <img class="tab-img" [src]="'assets/timelog-title.png'" />
-      </div>
-      <div class="daybook-tab" style="background-color: rgb(230, 241, 255);">
-        <img class="tab-img" [src]="'assets/daily-task-list-title.png'" />
-      </div>
-      <div class="daybook-tab" style="background-color: rgb(254, 255, 225);">
-        <img class="tab-img" [src]="'assets/journal-title.png'" />
-      </div>
-
-    </div> -->
-
-
-    <div class="daybook-body">
-
-      <div class="calendar-inside" *ngIf="ifCalendarInside">
-        <app-daybook-calendar (changedDate)="onChangeDate($event)" [currentDate]="currentDate">
-        </app-daybook-calendar>
-      </div>
-
-      <div class="daybook-header">
-        <app-daybook-header (changedDate)="onChangeDate($event)" [currentDate]="currentDate">
-        </app-daybook-header>
-      </div>
-
-      <!-- <div class="daybook-view" *ngIf="currentView == 'heatmap'">
-        <app-heatmap-view [currentDate]="currentDate"></app-heatmap-view>
-      </div> -->
-
-      <div class="daybook-view" >
-        <app-timelog [currentDate]="currentDate"
-          (changedDate)="onChangeDate($event)">
-        </app-timelog>
-      </div>
-
-
+<div class="daybook-root">
+  <div class="daybook-header font-family-lexend" >
+    {{ daybookHeader }}
+  </div>
+  <div class="layout-grid" *ngIf="daybookIsLoading">
+    <div class="spinner-container">
+      <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
     </div>
   </div>
-
-
-
-  <div class="right-side-pane">
-    <app-daybook-calendar (changedDate)="onChangeDate($event)" [currentDate]="currentDate" style="margin-bottom:10px;">
-    </app-daybook-calendar>
-
-    <!-- <app-primary-objective-widget style="margin-bottom:10px;"></app-primary-objective-widget> -->
-    
-    <app-task-queue-widget style="margin-bottom:10px;"></app-task-queue-widget>
-    <div class="widget">
-      <div class="widget-header">
-        Daily Task List
-      </div>
-      <div class="widget-component">
-          <app-dtl-tool></app-dtl-tool>
-      </div>
+  <div class="layout-grid" *ngIf="!daybookIsLoading" [ngClass]="{'layout-grid-large': appScreenSize > 1, 'layout-grid-slim': appScreenSize <= 1}">
+    <div class="daybook-widget-container" [ngStyle]="timelogWidget.ngStyle" [ngClass]="timelogWidget.ngClass">
+      <app-timelog-small *ngIf="!timelogWidget.isExpanded" class="small-widget" [activeDay]="activeDay"></app-timelog-small>
+      <app-timelog-large *ngIf="timelogWidget.isExpanded" class="large-widget" [activeDay]="activeDay"></app-timelog-large>
     </div>
-    
-  </div>
+    <div class="daybook-widget-container" [ngStyle]="calendarWidget.ngStyle" [ngClass]="calendarWidget.ngClass">
+      <app-calendar-small *ngIf="!calendarWidget.isExpanded" class="small-widget" [activeDay]="activeDay"></app-calendar-small>
+      <app-calendar-large *ngIf="calendarWidget.isExpanded" class="large-widget" [activeDay]="activeDay"></app-calendar-large>
+    </div>
+    <div class="daybook-widget-container" [ngClass]="dailyTaskListWidget.ngStyle" [ngClass]="dailyTaskListWidget.ngClass">
+      <app-daily-task-list-small *ngIf="!dailyTaskListWidget.isExpanded" class="small-widget" [activeDay]="activeDay"></app-daily-task-list-small>
+      <app-daily-task-list-large *ngIf="dailyTaskListWidget.isExpanded" class="large-widget" [activeDay]="activeDay"></app-daily-task-list-large>
+    </div>
 
+  </div>
 </div>

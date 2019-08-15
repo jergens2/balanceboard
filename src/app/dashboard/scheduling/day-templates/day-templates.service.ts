@@ -45,7 +45,6 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
 
   private getTemplatesHTTP(){
-    console.log("Getting day templates for user");
     const getUrl = this.serverUrl + "/api/schedule-day-template/" + this._authStatus.user.id;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -67,7 +66,6 @@ export class DayTemplatesService implements ServiceAuthenticates {
       .subscribe((dayTemplates: DayTemplate[]) => {
         if(dayTemplates.length > 0){
           this._dayTemplates$.next(dayTemplates);
-          console.log("gucci gang")
           this._loginComplete$.next(true);
         }else{
           this.generateDefaultDayTemplate();
@@ -78,8 +76,6 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
   private updateTemplateHTTP(dayTemplate: DayTemplate){
     console.log("Updating dayTemplate: ", dayTemplate);
-
-
     const postUrl = this.serverUrl + "/api/schedule-day-template/update";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -146,7 +142,6 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
   private buildDayTemplateFromResponse(responseData: any): DayTemplate{
     // console.log("Building day template from response: " , responseData);
-
     let dayTemplate: DayTemplate = new DayTemplate(responseData._id, responseData.userId, responseData.name);
     dayTemplate.color = responseData.color;
     dayTemplate.delineations = responseData.delineations;
@@ -154,7 +149,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
   }
 
   private generateDefaultDayTemplate(): DayTemplate{
-    console.log("Generating default day template");
+    console.log("*** DayTemplatesService: Generating default day template");
     let defaultDayTemplate: DayTemplate = new DayTemplate("", this._authStatus.user.id, "Default Day");
     defaultDayTemplate.delineations = [
       {

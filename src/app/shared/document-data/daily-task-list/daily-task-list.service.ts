@@ -39,6 +39,8 @@ export class DailyTaskListService implements ServiceAuthenticates{
   }
   public logout(){
     this._clockSubscription.unsubscribe();
+    this._authStatus = null;
+    this._dailyTaskLists$.next([]);
   }
 
 

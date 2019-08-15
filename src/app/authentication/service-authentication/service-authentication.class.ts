@@ -45,7 +45,8 @@ export class ServiceAuthentication {
         return this.loginComplete$;
     }
     public logout() {
+        this._loginComplete$.next(false);
+        this.service.logout();
         this._loginSubscription.unsubscribe();
-
     }
 }

@@ -1,12 +1,3 @@
-@font-face{
-    font-family: Ubuntu-Regular; 
-    src: url("../../assets/fonts/Ubuntu/Ubuntu-Regular.ttf");
-}
-/* @font-face{
-    font-family: Patua-One;
-    src: url("../../assets/fonts/Patua_One/PatuaOne-Regular.ttf");
-} */
-
 .root{
     width: 100%;
     height: 100vh;
@@ -15,7 +6,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    font-family: 'Ubuntu-Regular';
 }
 .background-image{
     background: url("../../assets/bg2.JPG") no-repeat center center fixed; 

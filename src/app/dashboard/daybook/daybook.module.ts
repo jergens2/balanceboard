@@ -3,16 +3,18 @@ import { CommonModule } from '@angular/common';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { DayDataComponent } from './daybook.component';
-import { CalendarComponent } from './calendar/calendar.component';
+import { DaybookComponent } from './daybook.component';
 
-import { TimeLogComponent } from './time-log/timelog.component';
-import { DayDataHeaderComponent } from './daybook-header/daybook-header.component';
-import { HeatmapViewComponent } from './heatmap-view/heatmap-view.component';
-import { TimelogEntryTileComponent } from './time-log/timelog-entry-tile/timelog-entry-tile.component';
 import { PrimaryTaskWidgetComponent } from './widgets/primary-objective-widget/primary-objective-widget.component';
 import { TaskQueueWidgetComponent } from './widgets/task-queue-widget/task-queue-widget.component';
 import { SharedModule } from '../../shared/shared.module';
+
+import { DailyTaskListSmallComponent } from './widgets/daily-task-list/daily-task-list-small/daily-task-list-small.component';
+import { DailyTaskListLargeComponent } from './widgets/daily-task-list/daily-task-list-large/daily-task-list-large.component';
+import { TimelogLargeComponent } from './widgets/timelog/timelog-large/timelog-large.component';
+import { TimelogSmallComponent } from './widgets/timelog/timelog-small/timelog-small.component';
+import { CalendarLargeComponent } from './widgets/calendar/calendar-large/calendar-large.component';
+import { CalendarSmallComponent } from './widgets/calendar/calendar-small/calendar-small.component';
 
 
 
@@ -26,14 +28,15 @@ import { SharedModule } from '../../shared/shared.module';
     SharedModule
   ],
   declarations: [
-    DayDataComponent,
-    CalendarComponent,
-    TimeLogComponent,
-    DayDataHeaderComponent,
-    HeatmapViewComponent,
+    DaybookComponent,
     PrimaryTaskWidgetComponent,
-    TimelogEntryTileComponent,
     TaskQueueWidgetComponent,
+    DailyTaskListSmallComponent,
+    DailyTaskListLargeComponent,
+    TimelogLargeComponent,
+    TimelogSmallComponent,
+    CalendarLargeComponent,
+    CalendarSmallComponent,
   ],
   exports: [
   ]

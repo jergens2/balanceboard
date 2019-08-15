@@ -28,6 +28,7 @@ export class TaskService implements ServiceAuthenticates{
 
   logout() {
     this._authStatus = null;
+    this._tasks$.next([]);
   }
   /*
     Initially, this service will do a generic HTTP fetch of existing tasks for this userId, and store them in an array.

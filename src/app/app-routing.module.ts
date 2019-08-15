@@ -5,7 +5,7 @@ import { HomeComponent } from "./dashboard/home/home.component";
 import { BodyWeightComponent } from "./dashboard/health/body-weight/body-weight.component";
 import { BuildProfileComponent } from "./dashboard/health/build-profile/build-profile.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
-import { DayDataComponent } from "./dashboard/daybook/daybook.component";
+import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 
 import { UserSettingsComponent } from "./shared/document-definitions/user-account/user-settings/user-settings.component";
 
@@ -27,8 +27,8 @@ const appRoutes: Routes = [
     { path: 'tasks', component: TasksComponent },
 
     { path: 'networth', component: NetWorthComponent },
-    { path: 'daybook', component: DayDataComponent },
-    { path: 'daybook/:isoDate', component: DayDataComponent },
+    { path: 'daybook', component: DaybookComponent },
+    { path: 'daybook/:isoDate', component: DaybookComponent },
 
     { path: 'social', component: SocialComponent }, 
 

@@ -31,6 +31,7 @@ export class RecurringTasksService implements ServiceAuthenticates {
   }
   logout() {
     this._authStatus = null;
+    this._recurringTasks$.next(null);
   }
   public get userId(): string {
     return this._authStatus.user.id;

@@ -25,6 +25,8 @@ export class NotebooksService implements ServiceAuthenticates {
   }
   logout() {
     this._authStatus = null;
+    this._notebookEntries$.next([]);
+    this._tags$.next([]);
   }
 
   private serverUrl = serverUrl;

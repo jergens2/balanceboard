@@ -6,6 +6,7 @@ import { DaybookDayItemHttpShape } from "./daybook-day-item-http-shape.interface
 import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
 import { DaybookActivityDataItem } from "./data-items/daybook-activity-data-item.interface";
 import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
+import { Subject, Observable } from "rxjs";
 
 export class DaybookDayItem {
 
@@ -63,18 +64,40 @@ export class DaybookDayItem {
     }
 
     public get dailyTaskListDataItems(): DailyTaskListDataItem[]{ return this._httpShape.dailyTaskListDataItems; }
-    public set dailyTaskListDataItems(dailyTaskListDataItems: DailyTaskListDataItem[]){ this._httpShape.dailyTaskListDataItems = dailyTaskListDataItems; }
     public get dayTemplateId(): string { return this._httpShape.dayTemplateId; }
-    public set dayTemplateId(dayTemplateId: string) { this._httpShape.dayTemplateId = dayTemplateId; }
     public get scheduledEventIds(): string[] { return this._httpShape.scheduledEventIds; }
-    public set scheduledEventIds(scheduledEventIds: string[]){this._httpShape.scheduledEventIds = scheduledEventIds; }
     public get notebookEntryIds(): string[] { return this._httpShape.notebookEntryIds; }
-    public set notebookEntryIds(notebookEntryIds: string[]){ this._httpShape.notebookEntryIds = notebookEntryIds }
     public get taskItemIds(): string[] { return this._httpShape. taskItemIds; }
-    public set taskItemIds(taskItemIds: string[]){ this._httpShape.taskItemIds = taskItemIds; }
 
+    public set taskItemIds(taskItemIds: string[]){ 
+        this._httpShape.taskItemIds = taskItemIds; 
+        this.dataChanged();
+    }
+    public set dailyTaskListDataItems(dailyTaskListDataItems: DailyTaskListDataItem[]){ 
+        this._httpShape.dailyTaskListDataItems = dailyTaskListDataItems; 
+        this.dataChanged();
+    }
+    public set dayTemplateId(dayTemplateId: string) { 
+        this._httpShape.dayTemplateId = dayTemplateId; 
+        this.dataChanged();
+    }
+    public set scheduledEventIds(scheduledEventIds: string[]){
+        this._httpShape.scheduledEventIds = scheduledEventIds; 
+        this.dataChanged();
+    }
+    public set notebookEntryIds(notebookEntryIds: string[]){ 
+        this._httpShape.notebookEntryIds = notebookEntryIds 
+        this.dataChanged();
+    }
 
-
+    private dataChanged(){
+        console.log("* * * DaybookDayItem: " + this.dateYYYYMMDD + " - Data has changed.  Saving.")
+        this._dataChanged$.next(true);
+    }
+    private _dataChanged$: Subject<boolean> = new Subject();
+    public get dataChanged$(): Observable<boolean> {
+        return this._dataChanged$.asObservable();
+    }
 
 
 
