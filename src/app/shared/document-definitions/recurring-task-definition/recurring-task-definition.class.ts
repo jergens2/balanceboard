@@ -57,27 +57,27 @@ export class RecurringTaskDefinition {
     public hasTaskOnDate(dateYYYYMMDD: string): boolean {
         let hasTaskOnDate: boolean = false;
         
-        console.log("** Repitition ** ******************************************- Has task on date? ", dateYYYYMMDD, this.name);
+        // console.log("** Repitition ** ******************************************- Has task on date? ", dateYYYYMMDD, this.name);
 
         
 
         for (let repitition of this.repititions) {
-            console.log("** Repitition start date format:", moment(repitition.startDate).format("YYYY-MM-DD"))
+            // console.log("** Repitition start date format:", moment(repitition.startDate).format("YYYY-MM-DD"))
             if(moment(repitition.startDate).format("YYYY-MM-DD") === dateYYYYMMDD){
-                console.log("** Repitition ** yayayayaya")
+                // console.log("** Repitition ** yayayayaya")
                 hasTaskOnDate = true;
             }else{
-                console.log("** Repitition ** - ", repitition);
-                console.log("** Repitition ** -    Repitition start date ISO:", repitition.startDate);
+                // console.log("** Repitition ** - ", repitition);
+                // console.log("** Repitition ** -    Repitition start date ISO:", repitition.startDate);
                 let start: moment.Moment = moment(repitition.startDate);
                 let end: moment.Moment = moment(dateYYYYMMDD).endOf("day");
-                console.log("** Repitition ** -    Set the END date to ", end.toISOString(), end.format('YYYY-MM-DD'));
+                // console.log("** Repitition ** -    Set the END date to ", end.toISOString(), end.format('YYYY-MM-DD'));
                 if (end.isSameOrAfter(start)) {
-                    console.log("Okaye")
+                    // console.log("Okaye")
                     let diff: number = moment(end).diff(start, repitition.period);
-                    console.log("** Repitition ** -    its a diff of ", diff, " ", repitition.period);
+                    // console.log("** Repitition ** -    its a diff of ", diff, " ", repitition.period);
                     if(diff%repitition.value == 0){
-                        console.log("** Repitition ** -     *Success: there is a DailyTask for " + this.name + " on date " + dateYYYYMMDD)
+                        // console.log("** Repitition ** -     *Success: there is a DailyTask for " + this.name + " on date " + dateYYYYMMDD)
                         hasTaskOnDate = true; 
                     }
                 }
@@ -85,7 +85,7 @@ export class RecurringTaskDefinition {
             
         }
         if (!hasTaskOnDate) {
-            console.log("** Repitition ** -     *FAIL - no DailyTask for " + this.name + " (start date: " + this.repititions[0].startDate + ") on date " + dateYYYYMMDD)
+            // console.log("** Repitition ** -     *FAIL - no DailyTask for " + this.name + " (start date: " + this.repititions[0].startDate + ") on date " + dateYYYYMMDD)
         }
         return hasTaskOnDate;
     }

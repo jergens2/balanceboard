@@ -15,6 +15,7 @@ import { TimelogLargeComponent } from './widgets/timelog/timelog-large/timelog-l
 import { TimelogSmallComponent } from './widgets/timelog/timelog-small/timelog-small.component';
 import { CalendarLargeComponent } from './widgets/calendar/calendar-large/calendar-large.component';
 import { CalendarSmallComponent } from './widgets/calendar/calendar-small/calendar-small.component';
+import { DayStructureModeComponent } from './widgets/timelog/timelog-large/day-structure-mode/day-structure-mode.component';
 
 
 
@@ -37,6 +38,7 @@ import { CalendarSmallComponent } from './widgets/calendar/calendar-small/calend
     TimelogSmallComponent,
     CalendarLargeComponent,
     CalendarSmallComponent,
+    DayStructureModeComponent,
   ],
   exports: [
   ]

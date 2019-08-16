@@ -73,6 +73,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
         // 'Authorization': 'my-auth-token'
       })
     };
+    // console.log("Notice:  saveDaybookItem() method is disabled (no HTTP request)")
     this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
         return this.buildDaybookDayItem(response.data as any);

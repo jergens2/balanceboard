@@ -1,3 +1,26 @@
-<div class="timelog-root">
-    Bigly timelog
+<div class="timelog-root" (mouseover)="onMouseOverTimelog()" (mouseleave)="onMouseLeaveTimelog()">
+    <div class="timelog-header">
+        <div class="header-buffer"></div>
+        <div>
+            timeloggy
+        </div>
+        <div class="header-buffer" style="justify-content:flex-end;padding-right: 5px;">
+            <div *ngIf="mouseOverTimelog">
+                <fa-icon [icon]="faCog" class="icon-button" (click)="onClickChangeView('day-structure')"
+                    *ngIf="viewMode == 'timelog'"></fa-icon>
+                <fa-icon [icon]="faEye" class="icon-button" (click)="onClickChangeView('timelog')"
+                    *ngIf="viewMode == 'day-structure'"></fa-icon>
+            </div>
+        </div>
+    </div>
+    <div class="timelog-body">
+        <div *ngIf="viewMode == 'timelog'">
+            timelog
+        </div>
+        <div *ngIf="viewMode == 'day-structure'" style="height:100%;">
+                <app-day-structure-mode ></app-day-structure-mode>
+        </div>
+
+    </div>
+
 </div>

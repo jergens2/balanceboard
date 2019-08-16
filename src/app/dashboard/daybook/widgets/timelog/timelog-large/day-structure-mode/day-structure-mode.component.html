@@ -1,0 +1,35 @@
+<div class="day-structure-mode-root">
+    Day Structure
+    <div class="day-structure-chart-container">
+        <div class="day-structure-chart">
+            <div class="chart-label-start-time chart-label-time">
+                12:00 am
+            </div>
+            <div class="chart-label-end-time chart-label-time">
+                11:59 pm
+            </div>
+            <div class="chart-label-column">
+
+            </div>
+            <div class="chart-buffer-column"></div>
+            <div class="chart-time-column">
+
+            </div>
+
+            <div *ngFor="let chartLabelLine of chartLabelLines" class="chart-label-line-container" >
+                <div class="chart-label-line-buffer" [style.height]="chartLabelLine.ngStyle.height">
+
+                </div>
+                <div class="chart-label-line">
+                        <div class="chart-label">
+                            {{ chartLabelLine.label }}
+                        </div>
+                        <div class="chart-line">
+                            <div class="chart-line-border-bottom"></div>
+                        </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>

@@ -134,21 +134,21 @@ export class DaybookService implements ServiceAuthenticates{
     let newDay: DaybookDayItem = new DaybookDayItem(newDateYYYYMMDD);
     newDay.dayTemplateId = this.scheduleRotationService.dayTemplateForDate(newDateYYYYMMDD).id;
 
-    let dailyTaskListItems: DailyTaskListDataItem[] = this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD);
-    if(dailyTaskListItems.length == 0){
-      console.log("Setting and saving default task items");
-      this.recurringTaskService.setAndSaveDefaultTaskItems$().subscribe((taskItems)=>{
-        console.log("Forkjoin subscribed: new task items saved", taskItems);
-        newDay.dailyTaskListDataItems = taskItems;
-      })
+    // let dailyTaskListItems: DailyTaskListDataItem[] = this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD);
+    // if(dailyTaskListItems.length == 0){
+    //   console.log("Setting and saving default task items");
+    //   this.recurringTaskService.setAndSaveDefaultTaskItems$().subscribe((taskItems)=>{
+    //     console.log("Forkjoin subscribed: new task items saved", taskItems);
+    //     newDay.dailyTaskListDataItems = taskItems;
+    //   })
 
-    }else if(dailyTaskListItems.length > 1){
-      newDay.dailyTaskListDataItems = dailyTaskListItems;
-    }
+    // }else if(dailyTaskListItems.length > 1){
+    //   newDay.dailyTaskListDataItems = dailyTaskListItems;
+    // }
 
     console.log("New Daybook day item: ", newDay);
-    return newDay;
-    // return this.daybookHttpRequestService.saveDaybookDayItem(newDay);
+    // return newDay;
+    return this.daybookHttpRequestService.saveDaybookDayItem(newDay);
   }
 
  

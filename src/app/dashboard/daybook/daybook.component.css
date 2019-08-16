@@ -31,7 +31,7 @@
 }
 
 .main-widget{
-    min-width: 360px;
+    min-width: 320px;
     max-width: 768px;
     flex-grow:2;
     height:100%;
