@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.class';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 import { RecurringTaskDefinition } from './recurring-task-definition.class';
 import { defaultRecurringTasks } from '../../../dashboard/scheduling/recurring-tasks/default-recurring-tasks';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, mergeAll, merge } from 'rxjs/operators';
 import * as moment from 'moment';
 
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
@@ -56,17 +56,36 @@ export class RecurringTasksService implements ServiceAuthenticates {
 
   public generateDailyTaskListItemsForDate(dateYYYYMMDD: string): DailyTaskListDataItem[]{
     let dtlItems: DailyTaskListDataItem[] = [];
-    // console.log("all recurring tasks", this._recurringTasks$.getValue());d
-    console.log("Recurring tasks: ", this._recurringTasks$.getValue());
+    console.log("recurring tasks: " , this._recurringTasks$.getValue());
     this._recurringTasks$.getValue().filter((recurringTask: RecurringTaskDefinition)=>{
       return recurringTask.hasTaskOnDate(dateYYYYMMDD);
     }).forEach((recurringTask: RecurringTaskDefinition)=>{
       dtlItems.push({recurringTaskId: recurringTask.id, completionDate: ""});
     });
-    // console.log("DTL ITEMS on "+ dateYYYYMMDD, dtlItems);
+    console.log("Returning dtlItems");
     return dtlItems;
   }
 
+  public setAndSaveDefaultTaskItems$(): Observable<DailyTaskListDataItem[]>{
+    console.log("Setting and saving");
+    let savedItems$: Subject<DailyTaskListDataItem[]>;
+
+    let defaultTasks = defaultRecurringTasks;
+    
+    // let thing = mergeAll();
+    
+    // let saves: Observable<RecurringTaskDefinition>[] = [];
+    let saves: Observable<DailyTaskListDataItem>[] = [];
+    let save: Observable<DailyTaskListDataItem>;
+    defaultTasks.forEach((defaultTask)=>{
+      defaultTask.userId = this._authStatus.user.id;
+      save = this.httpSaveRecurringTaskDefinition$(defaultTask);
+      saves.push(save);
+    });
+    console.log("Returning the saves");
+    return forkJoin(saves);
+
+  }
 
 
   private httpGetRecurringTasks() {
@@ -119,6 +138,25 @@ export class RecurringTasksService implements ServiceAuthenticates {
         this._recurringTasks$.next(currentTasks);
       });
 
+  }
+
+  private httpSaveRecurringTaskDefinition$(saveTask: RecurringTaskDefinition): Observable<DailyTaskListDataItem>{
+    console.log("$Launching rockets, saving new default task ");
+    let saveUrl = serverUrl + "/api/recurring-task-definition/create";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    return this.httpClient.post<{ message: string, data: any }>(saveUrl, saveTask.httpSave, httpOptions)
+      .pipe<DailyTaskListDataItem>(map((response: any) => {
+        let dtlDataItem: DailyTaskListDataItem = {
+          recurringTaskId: response._id,
+          completionDate: "",
+        };
+        return dtlDataItem;
+      }));
   }
 
   public httpUpdateRecurringTaskDefinition(updateTask: RecurringTaskDefinition) {

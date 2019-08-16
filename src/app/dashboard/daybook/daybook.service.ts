@@ -8,6 +8,7 @@ import { DayTemplatesService } from '../scheduling/day-templates/day-templates.s
 import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
 import { ScheduleRotationsService } from '../scheduling/schedule-rotations/schedule-rotations.service';
 import { RecurringTasksService } from '../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+import { DailyTaskListDataItem } from './api/data-items/daily-task-list-data-item.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -133,12 +134,21 @@ export class DaybookService implements ServiceAuthenticates{
     let newDay: DaybookDayItem = new DaybookDayItem(newDateYYYYMMDD);
     newDay.dayTemplateId = this.scheduleRotationService.dayTemplateForDate(newDateYYYYMMDD).id;
 
-    console.log("DTL items for date: ", this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD))
-    newDay.dailyTaskListDataItems = this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD);
+    let dailyTaskListItems: DailyTaskListDataItem[] = this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD);
+    if(dailyTaskListItems.length == 0){
+      console.log("Setting and saving default task items");
+      this.recurringTaskService.setAndSaveDefaultTaskItems$().subscribe((taskItems)=>{
+        console.log("Forkjoin subscribed: new task items saved", taskItems);
+        newDay.dailyTaskListDataItems = taskItems;
+      })
+
+    }else if(dailyTaskListItems.length > 1){
+      newDay.dailyTaskListDataItems = dailyTaskListItems;
+    }
 
     console.log("New Daybook day item: ", newDay);
-
-    return this.daybookHttpRequestService.saveDaybookDayItem(newDay);
+    return newDay;
+    // return this.daybookHttpRequestService.saveDaybookDayItem(newDay);
   }
 
  
