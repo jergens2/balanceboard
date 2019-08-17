@@ -94,12 +94,7 @@ export class ServiceAuthenticationService {
     })
 
     
-    /**
-     * I tried for a while to use forkJoin, as well as merge, but couldn't get it to fire properly with this setup.  
-     * i think part of the problem is because I don't necessarily know how to properly use forkJoin or merge.  perhaps those aren't even the right methods for this scenario.
-     * 
-     * In any case, the timer method below works.  It's a manual method and might look ugly and not as cool as the rxjs methods, but it works :)
-     */
+
     let timerSubscription: Subscription = new Subscription();
     timerSubscription = timer(0,300).subscribe((val)=>{
       let loginComplete :boolean = true;

@@ -16,6 +16,8 @@ import { TimelogSmallComponent } from './widgets/timelog/timelog-small/timelog-s
 import { CalendarLargeComponent } from './widgets/calendar/calendar-large/calendar-large.component';
 import { CalendarSmallComponent } from './widgets/calendar/calendar-small/calendar-small.component';
 import { DayStructureModeComponent } from './widgets/timelog/timelog-large/day-structure-mode/day-structure-mode.component';
+import { NewChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/new-chart-line-area/new-chart-line-area.component';
+import { MoveChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/move-chart-line-area/move-chart-line-area.component';
 
 
 
@@ -39,6 +41,8 @@ import { DayStructureModeComponent } from './widgets/timelog/timelog-large/day-s
     CalendarLargeComponent,
     CalendarSmallComponent,
     DayStructureModeComponent,
+    NewChartLineAreaComponent,
+    MoveChartLineAreaComponent,
   ],
   exports: [
   ]

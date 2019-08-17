@@ -1,0 +1,39 @@
+<div class="move-chart-line-area-root">
+
+    <div class="chart-label-line-container" *ngFor="let chartLabelLine of chartConfiguration.chartLabelLines">
+
+        <div class="chart-label-line-buffer" [style.height]="chartLabelLine.bufferHeight"></div>
+
+        <div class="chart-label-line">
+            <div class="chart-line"
+                [ngClass]="{'chart-line-can-drag': chartLabelLine.canDrag, 'currently-dragging': isDragging }"
+                (mousedown)="chartLabelLine.onMouseDown()" (mouseup)="chartLabelLine.onMouseUp()">
+                <div class="chart-line-border-bottom"></div>
+            </div>
+            <div class="chart-label">
+                {{ chartLabelLine.startLabel }}
+            </div>
+        </div>
+
+        <div class="chart-body-label-area" [ngStyle]="chartLabelLine.style">
+            <div class="chart-body-label">
+                {{ bodyLabel(chartLabelLine) }}
+            </div>
+        </div>
+
+    </div>
+
+    <div class="time-column-rows">
+        <div class="time-column-row" *ngFor="let timeColumnRow of chartConfiguration.timeColumnRows"
+            [ngClass]="{'can-grab': timeColumnRow.hasChartLabelLine }"
+            (mouseover)="timeColumnRow.onMouseOverLine()" (mouseup)="timeColumnRow.onMouseUp()"
+            (mousedown)="timeColumnRow.onMouseDown()">
+
+        </div>
+    </div>
+    <div class="final-time-column-row" (mouseover)="chartConfiguration.finalTimeColumnRow.onMouseOverLine()"
+        (mouseup)="chartConfiguration.finalTimeColumnRow.onMouseUp()"
+        (mousedown)="chartConfiguration.finalTimeColumnRow.onMouseDown()">
+
+    </div>
+</div>

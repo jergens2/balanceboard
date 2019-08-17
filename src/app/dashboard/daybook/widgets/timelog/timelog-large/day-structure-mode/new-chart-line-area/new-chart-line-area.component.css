@@ -1,0 +1,4 @@
+.new-chart-line-area-root{
+    display:grid;
+    grid-template-columns: auto;
+}
