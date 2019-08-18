@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DayDataService } from '../../shared/document-data/day-data/day-data.service';
-import { TimelogService } from '../../tools-menu/tools/tool-components/timelog-entry/timelog.service';
+
+
 import { AuthenticationService } from '../../authentication/authentication.service';
 
 
@@ -12,7 +12,7 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookService: DayDataService, private timelogService: TimelogService, private authService: AuthenticationService) { }
+  constructor(private authService: AuthenticationService) { }
 
   ngOnInit() {
     

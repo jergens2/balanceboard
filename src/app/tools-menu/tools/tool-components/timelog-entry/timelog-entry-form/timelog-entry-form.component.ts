@@ -1,22 +1,20 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { TimelogEntry } from '../timelog-entry.class';
+
 import { FormGroup, FormControl } from '@angular/forms';
 import * as moment from 'moment';
 import { timer, Subscription } from 'rxjs';
 import { ModalService } from '../../../../../modal/modal.service';
 import { ToolsService } from '../../../tools.service';
-import { ActivityCategoryDefinition } from '../../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { TimelogEntryActivity } from '../timelog-entry-activity.class';
 import { DurationString } from './duration-string.class';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import { ActivitySliderBar } from './tlef-activities/tlef-activity-slider-bar/activity-slider-bar.class';
+
 import { TLEFActivityListItem } from './tlef-activities/tlef-activity-slider-bar/tlef-activity-list-item.class';
-import { isUndefined } from 'util';
 import { ActivityCategoryDefinitionService } from '../../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
-import { ITLEActivity } from '../timelog-entry-activity.interface';
+
 import { TimelogEntryFormService } from './timelog-entry-form.service';
+import { DaybookTimelogEntryDataItem } from '../../../../../dashboard/daybook/api/data-items/daybook-timelog-entry-data-item.interface';
+import { TimelogEntryActivity } from '../../../../../dashboard/daybook/api/data-items/timelog-entry-activity.interface';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -31,7 +29,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   constructor(private timelogEntryService: TimelogEntryFormService, private toolsService: ToolsService, private modalService: ModalService, private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
 
-  currentTimelogEntry: TimelogEntry;
+  currentTimelogEntry: DaybookTimelogEntryDataItem;
   timelogEntryForm: FormGroup = new FormGroup({});
 
   clockSubscription: Subscription = new Subscription();
@@ -47,7 +45,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   timelogEntryStart: moment.Moment;
   timelogEntryEnd: moment.Moment;
 
-  @Input('timelogEntry') modifyTimelogEntry: TimelogEntry; 
+  @Input('timelogEntry') modifyTimelogEntry: DaybookTimelogEntryDataItem; 
   action: string = "NEW";
 
 
@@ -58,18 +56,18 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
     if(this.modifyTimelogEntry){
       this.action = "MODIFY";
-      this.timelogEntryStart = this.modifyTimelogEntry.startTime;
-      this.timelogEntryEnd = this.modifyTimelogEntry.endTime;
+      this.timelogEntryStart = moment(this.modifyTimelogEntry.startTimeISO);
+      this.timelogEntryEnd = moment(this.modifyTimelogEntry.endTimeISO);
       let description = "";
-      if(this.modifyTimelogEntry.description){
-        description = this.modifyTimelogEntry.description;
+      if(this.modifyTimelogEntry.note){
+        description = this.modifyTimelogEntry.note;
       }
       
       this.timelogEntryForm = new FormGroup({
-        "startTime": new FormControl(this.modifyTimelogEntry.startTime.format('hh:mm a')),
-        "startDate": new FormControl(this.modifyTimelogEntry.startTime.format('YYYY-MM-DD')),
-        "endTime": new FormControl(this.modifyTimelogEntry.endTime.format('hh:mm a')),
-        "endDate": new FormControl(this.modifyTimelogEntry.endTime.format('YYYY-MM-DD')),
+        "startTime": new FormControl(moment(this.modifyTimelogEntry.startTimeISO).format('hh:mm a')),
+        "startDate": new FormControl(moment(this.modifyTimelogEntry.startTimeISO).format('YYYY-MM-DD')),
+        "endTime": new FormControl(moment(this.modifyTimelogEntry.endTimeISO).format('hh:mm a')),
+        "endDate": new FormControl(moment(this.modifyTimelogEntry.endTimeISO).format('YYYY-MM-DD')),
         "description": new FormControl(description),
       });
       
@@ -117,22 +115,29 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     if(this.modifyTimelogEntry){
       // Currently cannot modify timelog entry start or end time.
       let description: string = this.timelogEntryForm.controls['description'].value;
-      this.modifyTimelogEntry.description = description;
+      this.modifyTimelogEntry.note = description;
       
       this.updateITLEActivities();
-      this.modifyTimelogEntry.setTleActivities(this.itleActivities);
+      this.modifyTimelogEntry.timelogEntryActivities = this.timelogEntryActivities;
 
-      // this.timelogEntryService.updateTimelogEntry(this.modifyTimelogEntry);
+      this.timelogEntryService.updateTimelogEntry(this.modifyTimelogEntry);
       this.modalService.closeModal();
     }else{
       let startTime: string = this.timelogEntryStart.second(0).millisecond(0).toISOString();
       let endTime: string = this.timelogEntryEnd.second(0).millisecond(0).toISOString();
+      let utcOffsetMinutes: number = this.timelogEntryStart.utcOffset();
       let description: string = this.timelogEntryForm.controls['description'].value;
-      // let newTimelogEntry: TimelogEntry = new TimelogEntry("", this.timelogEntryService.userId, startTime, endTime, description, this.activityCategoryDefinitionService);
+      let newTimelogEntry: DaybookTimelogEntryDataItem = {
+        startTimeISO: startTime,
+        endTimeISO: endTime,
+        utcOffsetMinutes: utcOffsetMinutes,
+    
+        note: description,
+        timelogEntryActivities: this.timelogEntryActivities
+      }
       this.updateITLEActivities();
-      // newTimelogEntry.setTleActivities(this.itleActivities);
   
-      // this.timelogEntryService.saveTimelogEntry(newTimelogEntry);
+      this.timelogEntryService.saveTimelogEntry(newTimelogEntry);
       this.toolsService.closeTool();
     }
     
@@ -144,21 +149,21 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   }
 
 
-  private itleActivities: ITLEActivity[] = [];
+  private timelogEntryActivities: TimelogEntryActivity[] = [];
   private updateITLEActivities(){
     let totalDuration = this.timelogEntryMinutes;
-    let itleActivities: ITLEActivity[] = [];
+    let timelogEntryActivities: TimelogEntryActivity[] = [];
     if(this.activityItems.length > 0){
       this.activityItems.forEach((activityItem: TLEFActivityListItem) => {
-        let durationMinutes: number = totalDuration * (activityItem.durationPercent / 100);
-        itleActivities.push({
+        // let durationMinutes: number = totalDuration * (activityItem.durationPercent / 100);
+        timelogEntryActivities.push({
           activityTreeId: activityItem.activity.treeId,
-          durationMinutes: durationMinutes
+          percentage: activityItem.durationPercent,
         });
       });
-      this.itleActivities = itleActivities;
+      this.timelogEntryActivities = timelogEntryActivities;
     }else{
-      this.itleActivities = [];
+      this.timelogEntryActivities = [];
     }
   }
   private activityItems: TLEFActivityListItem[] = [];

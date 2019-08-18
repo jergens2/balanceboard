@@ -23,3 +23,9 @@
     /* height:100%; */
     flex-grow: 2;
 }
+
+.timelog-entry{
+    margin:5px;
+    border:1px solid gray;
+    padding:5px;
+}

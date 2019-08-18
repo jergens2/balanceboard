@@ -2,14 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthenticationService } from './authentication.service';
 import { AuthData } from './auth-data.interface';
-import { AuthStatus } from './auth-status.class';
+
 import { faKey, faUser, faUnlock, faSpinner, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { UserAccount } from '../shared/document-definitions/user-account/user-account.class';
 import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
 import { UserSettingsService } from '../shared/document-definitions/user-account/user-settings/user-settings.service';
-import { ActivityCategoryDefinitionService } from '../shared/document-definitions/activity-category-definition/activity-category-definition.service';
-import { TimelogService } from '../tools-menu/tools/tool-components/timelog-entry/timelog.service';
+
 import { SocialService } from '../shared/document-definitions/user-account/social.service';
 
 

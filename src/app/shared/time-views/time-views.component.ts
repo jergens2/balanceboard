@@ -1,9 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimeViewsService } from './time-views.service';
 import * as moment from 'moment';
-import { TimeViewDataSource } from './time-view-data-source.enum';
-import { ActivityDayDataService } from '../document-data/activity-day-data/activity-day-data.service';
-import { ActivityDayData } from '../document-data/activity-day-data/activity-day-data.class';
+
 import { TimeViewConfiguration } from './time-view-configuration.interface';
 import { TimeViewDayData } from './time-view-day-data-interface';
 
@@ -14,7 +12,7 @@ import { TimeViewDayData } from './time-view-day-data-interface';
 })
 export class TimeViewsComponent implements OnInit {
 
-  constructor(private timeViewsService: TimeViewsService, private activityDataService: ActivityDayDataService) { }
+  constructor(private timeViewsService: TimeViewsService) { }
 
 
   @Input() configuration: TimeViewConfiguration;

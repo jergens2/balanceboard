@@ -16,6 +16,9 @@
     <div class="timelog-body">
         <div *ngIf="viewMode == 'timelog'">
             timelog
+            <div *ngFor="let timelogEntry of timelogEntries" class="timelog-entry">
+                {{ timeFormat(timelogEntry.startTimeISO) }} - {{ timeFormat(timelogEntry.endTimeISO) }}
+            </div>
         </div>
         <div *ngIf="viewMode == 'day-structure'" style="height:100%;">
             <app-day-structure-mode [dayStructureDataItems]="activeDay.dayStructureDataItems"></app-day-structure-mode>

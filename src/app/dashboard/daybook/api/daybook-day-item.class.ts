@@ -123,6 +123,18 @@ export class DaybookDayItem {
         console.log("timelogEntryStartTime value: ", startTime.format("hh:mm a"));
         return startTime;
     }
+
+    public addTimelogEntryItem(timelogEntry: DaybookTimelogEntryDataItem){
+        let timelogEntries = this.daybookTimelogEntryDataItems;
+        timelogEntries.push(timelogEntry);
+        this.daybookTimelogEntryDataItems = timelogEntries;
+        console.log("daybook timelog entries:", this.daybookTimelogEntryDataItems)
+        console.log("this shape: ", this._httpShape)
+        this.dataChanged();
+    }
+    public updateTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem){
+        console.log("Warning: updateTimelogEntry(): this method is not implemented in daybook-day-item.class.ts")
+    }
     /**
      * The following section is for the timelog widget service, if I remember to come back to this:
      */

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.class';
-import { BehaviorSubject, Observable, ObservedValueOf } from 'rxjs';
+import { BehaviorSubject, Observable, ObservedValueOf, Subscription } from 'rxjs';
 import * as moment from 'moment';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
@@ -28,6 +28,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
   logout() {
     this._authStatus = null;
     this._daybookDayItems$.next([]);
+    this._changeSubscriptions.forEach((sub)=>sub.unsubscribe());
   }
 
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
@@ -41,6 +42,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
 
 
   public updateDaybookDayItem(daybookDayItem: DaybookDayItem) {
+    console.log("Sending HTTP update request for daybook day item");
     const postUrl = serverUrl + "/api/daybook-day-item/update";
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
@@ -61,6 +63,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
           }
         }
         this._daybookDayItems$.next(daybookDayItems);
+        this.updateChangeSubscription();
       });
   }
 
@@ -82,6 +85,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
         daybookDayItems.push(daybookDayItem);
         this._daybookDayItems$.next(daybookDayItems);
+        this.updateChangeSubscription();
       });
     return daybookDayItem;
   }
@@ -99,6 +103,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
         daybookDayItems.splice(daybookDayItems.indexOf(daybookDayItem), 1);
         this._daybookDayItems$.next(daybookDayItems);
+        this.updateChangeSubscription();
       });
   }
 
@@ -121,8 +126,20 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
       }))
       .subscribe((daybookDayItems: DaybookDayItem[]) => {
         this._daybookDayItems$.next(daybookDayItems);
+        this.updateChangeSubscription();
         this._loginComplete$.next(true);
       });
+  }
+
+
+  private _changeSubscriptions: Subscription[] = [];
+  private updateChangeSubscription(){
+    this._changeSubscriptions.forEach((sub)=> sub.unsubscribe() );
+    this._daybookDayItems$.getValue().forEach((daybookDayItem: DaybookDayItem)=>{
+      this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent)=>{
+        this.updateDaybookDayItem(daybookDayItem);
+      }));
+    });
   }
 
   private buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[]{

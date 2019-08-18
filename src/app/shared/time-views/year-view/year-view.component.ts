@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
-import { DayDataService } from '../../document-data/day-data/day-data.service';
-import { DayData } from '../../document-data/day-data/day-data.class';
+
 import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
 import { ActivityCategoryDefinition } from '../../document-definitions/activity-category-definition/activity-category-definition.class';
 import { Router } from '@angular/router';
@@ -12,6 +11,7 @@ import { YearViewData } from './year-view-data.interface';
 import { TimeViewsService } from '../time-views.service';
 import { TimeViewDayData } from '../time-view-day-data-interface';
 import { TimeViewConfiguration } from '../time-view-configuration.interface';
+import { DaybookService } from '../../../dashboard/daybook/daybook.service';
 
 @Component({
   selector: 'app-year-view',
@@ -21,7 +21,7 @@ import { TimeViewConfiguration } from '../time-view-configuration.interface';
 export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   constructor(
-    private daybookService: DayDataService,
+    private daybookService: DaybookService,
     private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
     private router: Router,
     private sizeService: SizeService,
@@ -264,19 +264,19 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
   }
 
 
-  private buildDayStyle(dayObject: DayData) {
-    let style: any = {};
-    let activity: ActivityCategoryDefinition;
-    if (dayObject.activityData) {
-      if (dayObject.activityData.length >= 1) {
-        activity = this.activityCategoryDefinitionService.findActivityByTreeId(dayObject.activityData[1].activityTreeId);
-        style = {
-          "background-color": activity.color,
-        }
-      }
-    }
-    return style;
-  }
+  // private buildDayStyle(dayObject: any) {
+  //   let style: any = {};
+  //   let activity: ActivityCategoryDefinition;
+  //   if (dayObject.activityData) {
+  //     if (dayObject.activityData.length >= 1) {
+  //       activity = this.activityCategoryDefinitionService.findActivityByTreeId(dayObject.activityData[1].activityTreeId);
+  //       style = {
+  //         "background-color": activity.color,
+  //       }
+  //     }
+  //   }
+  //   return style;
+  // }
 
   dayData(day: TimeViewDayData): string {
 

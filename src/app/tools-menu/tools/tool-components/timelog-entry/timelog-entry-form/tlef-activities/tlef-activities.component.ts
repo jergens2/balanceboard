@@ -5,8 +5,10 @@ import { ActivityCategoryDefinition } from '../../../../../../shared/document-de
 import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { DurationString } from '../duration-string.class';
-import { TimelogEntry } from '../../timelog-entry.class';
-import { TimelogEntryActivity } from '../../timelog-entry-activity.class';
+
+import { DaybookTimelogEntryDataItem } from '../../../../../../dashboard/daybook/api/data-items/daybook-timelog-entry-data-item.interface';
+import { TimelogEntryActivity } from '../../../../../../dashboard/daybook/api/data-items/timelog-entry-activity.interface';
+import { ActivityCategoryDefinitionService } from '../../../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 
 
 @Component({
@@ -16,11 +18,11 @@ import { TimelogEntryActivity } from '../../timelog-entry-activity.class';
 })
 export class TlefActivitiesComponent implements OnInit {
   faTimes = faTimes;
-  constructor() { }
+  constructor(private activitiesService: ActivityCategoryDefinitionService) { }
 
   @Input() timelogEntryStart: moment.Moment;
   @Input() timelogEntryEnd: moment.Moment;
-  @Input() modifyTimelogEntry: TimelogEntry;
+  @Input() modifyTimelogEntry: DaybookTimelogEntryDataItem;
   @Output() tlefActivitiesChanged: EventEmitter<TLEFActivityListItem[]> = new EventEmitter();
 
   activityItems: TLEFActivityListItem[] = [];
@@ -37,17 +39,21 @@ export class TlefActivitiesComponent implements OnInit {
     let start: moment.Moment = moment();
     console.log("TLEF Activities component opened");
     if (this.modifyTimelogEntry) {
-      this.timelogEntryStart = this.modifyTimelogEntry.startTime;
-      this.timelogEntryEnd = this.modifyTimelogEntry.endTime;
+      this.timelogEntryStart = moment(this.modifyTimelogEntry.startTimeISO);
+      this.timelogEntryEnd = moment(this.modifyTimelogEntry.endTimeISO);
 
       let maxPercent: number = 100;
-      if (this.modifyTimelogEntry.tleActivities.length > 1) {
-        maxPercent = 100 - ((this.modifyTimelogEntry.tleActivities.length - 1) * 2);
+      if (this.modifyTimelogEntry.timelogEntryActivities.length > 1) {
+        maxPercent = 100 - ((this.modifyTimelogEntry.timelogEntryActivities.length - 1) * 2);
       }
       let activityItems: TLEFActivityListItem[] = [];
-      this.modifyTimelogEntry.tleActivities.forEach((tleActivity: TimelogEntryActivity) => {
-        let durationPercent = tleActivity.durationMinutes / this.modifyTimelogEntry.durationMinutes * 100;
-        activityItems.push(new TLEFActivityListItem(tleActivity.activity, tleActivity.durationMinutes, durationPercent, this.modifyTimelogEntry.durationMinutes, maxPercent))
+      this.modifyTimelogEntry.timelogEntryActivities.forEach((tleActivity: TimelogEntryActivity) => {
+        // let durationPercent = tleActivity.durationMinutes / this.modifyTimelogEntry.durationMinutes * 100;
+        let totalDuration: number = moment(this.modifyTimelogEntry.endTimeISO).diff(this.modifyTimelogEntry.startTimeISO, "minutes");
+        let durationMinutes = ((tleActivity.percentage/100) * totalDuration);
+        let durationPercent = tleActivity.percentage;
+        let activity = this.activitiesService.findActivityByTreeId(tleActivity.activityTreeId);
+        activityItems.push(new TLEFActivityListItem(activity, durationMinutes, durationPercent, totalDuration, maxPercent))
       })
 
       this.activityItems = activityItems;

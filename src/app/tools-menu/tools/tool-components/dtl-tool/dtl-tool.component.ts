@@ -6,7 +6,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 
 import { Router } from '@angular/router';
 import { ToolsService } from '../../tools.service';
-import { DayDataService } from '../../../../shared/document-data/day-data/day-data.service';
+
 import { Subscription } from 'rxjs';
 import { DailyTaskListService } from './daily-task-list.service';
 import { RecurringTasksService } from '../../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';

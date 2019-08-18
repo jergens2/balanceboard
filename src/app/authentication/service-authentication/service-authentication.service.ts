@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
 import { ActivityCategoryDefinitionService } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
-import { ActivityDayDataService } from '../../shared/document-data/activity-day-data/activity-day-data.service';
+
 import { UserSettingsService } from '../../shared/document-definitions/user-account/user-settings/user-settings.service';
 import { DayTemplatesService } from '../../dashboard/scheduling/day-templates/day-templates.service';
-import { DayDataService } from '../../shared/document-data/day-data/day-data.service';
+
 import { NotebooksService } from '../../dashboard/notebooks/notebooks.service';
 import { TaskService } from '../../dashboard/tasks/task.service';
 import { RecurringTasksService } from '../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
-import { TimeViewsService } from '../../shared/time-views/time-views.service';
-import { DailyTaskListService } from '../../tools-menu/tools/tool-components/dtl-tool/daily-task-list.service';
+
+
 import { SocialService } from '../../shared/document-definitions/user-account/social.service';
 import { DaybookHttpRequestService } from '../../dashboard/daybook/api/daybook-http-request.service';
 import { DaybookService } from '../../dashboard/daybook/daybook.service';
-import { TimelogService } from '../../tools-menu/tools/tool-components/timelog-entry/timelog.service';
 import { AuthStatus } from '../auth-status.class';
 import { Observable, Subject, Subscription, timer, forkJoin, BehaviorSubject, merge } from 'rxjs';
 import { ServiceAuthentication } from './service-authentication.class';

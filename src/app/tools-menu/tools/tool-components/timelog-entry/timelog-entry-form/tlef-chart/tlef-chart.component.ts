@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import * as moment from 'moment';
-import { TimelogEntry } from '../../timelog-entry.class';
+
 import { DurationString } from '../duration-string.class';
 
 @Component({
@@ -121,7 +121,7 @@ export class TlefChartComponent implements OnInit {
 
     let timeBlocks: {
       style: any,
-      timelogEntry: TimelogEntry,
+      timelogEntry: any,
       isCurrent: boolean,
       isPrevious: boolean,
       isFuture: boolean,

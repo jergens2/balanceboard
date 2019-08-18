@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import { faCog, faEye } from '@fortawesome/free-solid-svg-icons';
 import { TimelogService } from '../timelog.service';
+import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-timelog-large',
@@ -20,6 +22,9 @@ export class TimelogLargeComponent implements OnInit {
   ngOnInit() {
   }
 
+  public get timelogEntries(): DaybookTimelogEntryDataItem[] {
+    return this.activeDay.daybookTimelogEntryDataItems;
+  }
 
   public onMouseOverTimelog(){
     this._mouseOverTimelog = true;
@@ -40,6 +45,10 @@ export class TimelogLargeComponent implements OnInit {
   private _viewMode: string = "timelog";
   public get viewMode(): string{
     return this._viewMode;
+  }
+
+  public timeFormat(timeISO: string): string{
+    return moment(timeISO).format("hh:mm a")
   }
 
 }
