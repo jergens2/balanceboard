@@ -208,13 +208,19 @@ export class DayStructureModeComponent implements OnInit, OnDestroy {
         this.updateElements();
         this._activelyDraggingExistingLine = null;
       } else if (this._activelyDraggingNewLineFixed) {
-
-
-        
-
-        console.log("New chartLine mouseup: " + timeColumnRow.startTime.format('h:mm a') + " , ");
-        // this.removeActiveDraggingLines();
-        this.updateChartLabelLines();
+        if(this._activelyDraggingNewLine){
+          let firstNewLine: DayStructureChartLabelLine = new DayStructureChartLabelLine(this._activelyDraggingNewLineFixed.startTime, this._activelyDraggingNewLineFixed.endTime, this._activelyDraggingNewLineFixed.bodyLabel, this._activelyDraggingNewLineFixed.startLabel, this._activelyDraggingNewLineFixed.style["background-color"]);
+          let secondNewLine: DayStructureChartLabelLine = new DayStructureChartLabelLine(this._activelyDraggingNewLine.startTime, this._activelyDraggingNewLine.endTime, this._activelyDraggingNewLine.bodyLabel, this._activelyDraggingNewLine.startLabel, this._activelyDraggingNewLine.style.backgroundColor);
+          this.removeActiveDraggingLines();
+          this.chartLabelLines.push(firstNewLine);
+          this.chartLabelLines.push(secondNewLine);
+        }else{
+          let newLine: DayStructureChartLabelLine = new DayStructureChartLabelLine(this._activelyDraggingNewLineFixed.startTime, this._activelyDraggingNewLineFixed.endTime, this._activelyDraggingNewLineFixed.bodyLabel, this._activelyDraggingNewLineFixed.startLabel, this._activelyDraggingNewLineFixed.style["background-color"]);
+          newLine.setAsDraggable();
+          this.removeActiveDraggingNewLineFixed();
+          this.chartLabelLines.push(newLine);
+        }
+        this.updateElements();
       }
     }
   }

@@ -8,7 +8,7 @@
 
         <div class="chart-label-line-buffer" [style.height]="chartLabelLine.bufferHeight"></div>
 
-        <div class="chart-label-line" [ngClass]="{'chart-label-line-temporary': chartLabelLine.isTemporary, 'chart-label-line-new': chartLabelLine.isNew }">
+        <div class="chart-label-line" [ngClass]="{'chart-label-line-temporary': chartLabelLine.isTemporary || chartLabelLine.isSecondaryNew, 'chart-label-line-new': chartLabelLine.isNew }">
             <div class="chart-time-label">
                 {{ chartLabelLine.startTime.format("h:mm a") }}
             </div>

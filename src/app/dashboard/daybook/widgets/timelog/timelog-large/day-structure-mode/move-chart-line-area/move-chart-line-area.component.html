@@ -4,7 +4,7 @@
 
         <div class="chart-label-line-buffer" [style.height]="chartLabelLine.bufferHeight"></div>
 
-        <div class="chart-label-line" [ngClass]="{'chart-label-line-temporary': chartLabelLine.isTemporary , 'chart-label-line-new': chartLabelLine.isNew}">
+        <div class="chart-label-line" [ngClass]="{'chart-label-line-temporary': chartLabelLine.isTemporary || chartLabelLine.isSecondaryNew, 'chart-label-line-new': chartLabelLine.isNew }">
             <div class="chart-line"
                 [ngClass]="{'chart-line-can-drag': chartLabelLine.canDrag, 'currently-dragging': isDragging }"
                 (mousedown)="chartLabelLine.onMouseDown()" (mouseup)="chartLabelLine.onMouseUp()">
