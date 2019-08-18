@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { TLEFActivityListItem } from './tlef-activity-slider-bar/tlef-activity-list-item.class';
-import { ActivityCategoryDefinition } from '../../../../document-definitions/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinition } from '../../../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { DurationString } from '../duration-string.class';

@@ -20,8 +20,6 @@ import { NewChartLineAreaComponent } from './widgets/timelog/timelog-large/day-s
 import { MoveChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/move-chart-line-area/move-chart-line-area.component';
 
 
-
-
 @NgModule({
   imports: [
     CommonModule,
@@ -46,5 +44,6 @@ import { MoveChartLineAreaComponent } from './widgets/timelog/timelog-large/day-
   ],
   exports: [
   ]
+  
 })
-export class DayDataModule { }
+export class DaybookModule { }

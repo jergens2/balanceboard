@@ -6,15 +6,15 @@ import { TimelogEntry } from './timelog-entry.class';
 
 import * as moment from 'moment';
 
-import { serverUrl } from '../../../serverurl';
+import { serverUrl } from '../../../../serverurl';
 import { map } from 'rxjs/operators';
-import { AuthStatus } from '../../../authentication/auth-status.class';
+import { AuthStatus } from '../../../../authentication/auth-status.class';
 
-import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinitionService } from '../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { ITLEActivity } from './timelog-entry-activity.interface';
-import { ActivityDayDataService } from '../activity-day-data/activity-day-data.service';
-import { ActivityDayDataItem, ActivityDayData } from '../activity-day-data/activity-day-data.class';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { ActivityDayDataService } from '../../../../shared/document-data/activity-day-data/activity-day-data.service';
+import { ActivityDayDataItem, ActivityDayData } from '../../../../shared/document-data/activity-day-data/activity-day-data.class';
+import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
 
 
 
@@ -26,6 +26,7 @@ export class TimelogService implements ServiceAuthenticates{
   private _authStatus: AuthStatus = null;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus): Observable<boolean> {
+    console.log("Timelog service is going to be depracated.  Destructinated.  Destroyed.  Boom.  First degree murdered. ")
     this._authStatus = authStatus;
     this.fetchTimelogEntrysByRange(moment().startOf('day').subtract(1, 'years'), moment().endOf('day').add(1, 'years'));
     this.subscribeToUpdates();

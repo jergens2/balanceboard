@@ -18,7 +18,6 @@ export class TimelogLargeComponent implements OnInit {
   @Input() activeDay: DaybookDayItem;
 
   ngOnInit() {
-
   }
 
 

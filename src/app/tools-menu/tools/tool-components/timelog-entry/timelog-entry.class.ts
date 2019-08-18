@@ -1,10 +1,10 @@
-import { ActivityCategoryDefinition } from "../../document-definitions/activity-category-definition/activity-category-definition.class";
+import { ActivityCategoryDefinition } from "../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class";
 import * as moment from 'moment';
 // import { TimelogEntryActivity } from "./timelog-entry-activity.class";
 import { ITLEActivity } from "./timelog-entry-activity.interface";
 import { DurationString } from "./timelog-entry-form/duration-string.class";
 import { TimelogEntryActivity } from "./timelog-entry-activity.class";
-import { ActivityCategoryDefinitionService } from "../../document-definitions/activity-category-definition/activity-category-definition.service";
+import { ActivityCategoryDefinitionService } from "../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service";
 
 
 export class TimelogEntry {

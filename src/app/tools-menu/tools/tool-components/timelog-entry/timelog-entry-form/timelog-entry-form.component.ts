@@ -1,12 +1,11 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { TimelogService } from '../timelog.service';
 import { TimelogEntry } from '../timelog-entry.class';
 import { FormGroup, FormControl } from '@angular/forms';
 import * as moment from 'moment';
 import { timer, Subscription } from 'rxjs';
-import { ModalService } from '../../../../modal/modal.service';
-import { ToolsService } from '../../../tools/tools.service';
-import { ActivityCategoryDefinition } from '../../../document-definitions/activity-category-definition/activity-category-definition.class';
+import { ModalService } from '../../../../../modal/modal.service';
+import { ToolsService } from '../../../tools.service';
+import { ActivityCategoryDefinition } from '../../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
 
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { TimelogEntryActivity } from '../timelog-entry-activity.class';
@@ -15,8 +14,9 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { ActivitySliderBar } from './tlef-activities/tlef-activity-slider-bar/activity-slider-bar.class';
 import { TLEFActivityListItem } from './tlef-activities/tlef-activity-slider-bar/tlef-activity-list-item.class';
 import { isUndefined } from 'util';
-import { ActivityCategoryDefinitionService } from '../../../document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinitionService } from '../../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 import { ITLEActivity } from '../timelog-entry-activity.interface';
+import { TimelogEntryFormService } from './timelog-entry-form.service';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -28,9 +28,9 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   faEdit = faEdit;
 
-  constructor(private timelogService: TimelogService, private toolsService: ToolsService, private modalService: ModalService, private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
+  constructor(private timelogEntryService: TimelogEntryFormService, private toolsService: ToolsService, private modalService: ModalService, private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
-  mostRecentTimelogEntry: TimelogEntry;
+
   currentTimelogEntry: TimelogEntry;
   timelogEntryForm: FormGroup = new FormGroup({});
 
@@ -74,12 +74,17 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       });
       
     }else{
-      let start: moment.Moment = moment(); 
-      console.log("Is this the slow part ?");
-      this.mostRecentTimelogEntry = this.timelogService.mostRecentTimelogEntry;
+      let now: moment.Moment = moment(); 
+
+      let timelogEntryStartTime: moment.Moment = this.timelogEntryService.timelogEntryStartTime(now);
+
+      
+
+
+
       let end: moment.Moment = moment();
       console.log(end.diff(start, "milliseconds") + " ms")
-      this.timelogEntryStart = moment(this.mostRecentTimelogEntry.endTime);
+      this.timelogEntryStart = moment(timelogEntryStartTime);
       this.timelogEntryEnd = moment(this._now);
 
       this.timelogEntryForm = new FormGroup({
@@ -92,7 +97,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       
       this.clockSubscription = timer(0, 1000).subscribe(() => {
         this._now = moment();
-        this.timelogEntryStart = moment(this.mostRecentTimelogEntry.endTime);
+        this.timelogEntryStart = moment(timelogEntryStartTime);
         this.timelogEntryEnd = moment(this._now);
       });
     }
@@ -117,17 +122,17 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       this.updateITLEActivities();
       this.modifyTimelogEntry.setTleActivities(this.itleActivities);
 
-      this.timelogService.updateTimelogEntry(this.modifyTimelogEntry);
+      // this.timelogEntryService.updateTimelogEntry(this.modifyTimelogEntry);
       this.modalService.closeModal();
     }else{
       let startTime: string = this.timelogEntryStart.second(0).millisecond(0).toISOString();
       let endTime: string = this.timelogEntryEnd.second(0).millisecond(0).toISOString();
       let description: string = this.timelogEntryForm.controls['description'].value;
-      let newTimelogEntry: TimelogEntry = new TimelogEntry("", this.timelogService.userId, startTime, endTime, description, this.activityCategoryDefinitionService);
+      // let newTimelogEntry: TimelogEntry = new TimelogEntry("", this.timelogEntryService.userId, startTime, endTime, description, this.activityCategoryDefinitionService);
       this.updateITLEActivities();
-      newTimelogEntry.setTleActivities(this.itleActivities);
+      // newTimelogEntry.setTleActivities(this.itleActivities);
   
-      this.timelogService.saveTimelogEntry(newTimelogEntry);
+      // this.timelogEntryService.saveTimelogEntry(newTimelogEntry);
       this.toolsService.closeTool();
     }
     

@@ -1,6 +1,7 @@
 import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
 import { DaybookActivityDataItem } from "./data-items/daybook-activity-data-item.interface";
 import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
+import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 
 
 export interface DaybookDayItemHttpShape{
@@ -12,9 +13,11 @@ export interface DaybookDayItemHttpShape{
     daybookTimelogEntryDataItems: DaybookTimelogEntryDataItem[];
     daybookActivityDataItems: DaybookActivityDataItem[];
     dailyTaskListDataItems: DailyTaskListDataItem[];
+    dayStructureDataItems: DayStructureDataItem[];
     // dailyWeightLogDataItem:
 
     // These represent references to data stored in other tables in the database.
+    
     dayTemplateId: string;
     scheduledEventIds: string[];
     notebookEntryIds: string[];

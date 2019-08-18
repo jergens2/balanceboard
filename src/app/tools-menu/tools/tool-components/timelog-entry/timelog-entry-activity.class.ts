@@ -1,5 +1,5 @@
-import { ActivityCategoryDefinition } from "../../document-definitions/activity-category-definition/activity-category-definition.class";
-import { ActivityCategoryDefinitionService } from "../../document-definitions/activity-category-definition/activity-category-definition.service";
+import { ActivityCategoryDefinition } from "../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class";
+import { ActivityCategoryDefinitionService } from "../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service";
 import { ITLEActivity } from "./timelog-entry-activity.interface";
 
 export class TimelogEntryActivity{

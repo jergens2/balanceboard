@@ -9,7 +9,7 @@ import { UserAccount } from '../shared/document-definitions/user-account/user-ac
 import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
 import { UserSettingsService } from '../shared/document-definitions/user-account/user-settings/user-settings.service';
 import { ActivityCategoryDefinitionService } from '../shared/document-definitions/activity-category-definition/activity-category-definition.service';
-import { TimelogService } from '../shared/document-data/timelog-entry/timelog.service';
+import { TimelogService } from '../tools-menu/tools/tool-components/timelog-entry/timelog.service';
 import { SocialService } from '../shared/document-definitions/user-account/social.service';
 
 

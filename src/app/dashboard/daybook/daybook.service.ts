@@ -9,6 +9,8 @@ import { ServiceAuthenticates } from '../../authentication/service-authenticatio
 import { ScheduleRotationsService } from '../scheduling/schedule-rotations/schedule-rotations.service';
 import { RecurringTasksService } from '../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
 import { DailyTaskListDataItem } from './api/data-items/daily-task-list-data-item.interface';
+import { DayStructureDataItem } from './api/data-items/day-structure-data-item.interface';
+import { defaultDayStructureDataItems } from './api/default-day-structure-data-items';
 
 @Injectable({
   providedIn: 'root'
@@ -65,6 +67,9 @@ export class DaybookService implements ServiceAuthenticates{
   private _today$: BehaviorSubject<DaybookDayItem> = new BehaviorSubject(null);
   public get today$(): Observable<DaybookDayItem> {
     return this._today$.asObservable();
+  }
+  public get today(): DaybookDayItem{
+    return this._today$.getValue();
   }
 
 
@@ -132,7 +137,15 @@ export class DaybookService implements ServiceAuthenticates{
   private startANewDay(newDateYYYYMMDD: string): DaybookDayItem{
     console.log("***** Daybook:  Starting a new day: ", newDateYYYYMMDD);
     let newDay: DaybookDayItem = new DaybookDayItem(newDateYYYYMMDD);
-    newDay.dayTemplateId = this.scheduleRotationService.dayTemplateForDate(newDateYYYYMMDD).id;
+
+
+    newDay.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";
+    newDay.dayStructureDataItems = defaultDayStructureDataItems;
+    newDay.daybookTimelogEntryDataItems
+
+
+    // newDay.dayTemplateId = this.scheduleRotationService.dayTemplateForD1ate(newDateYYYYMMDD).id;
+    // console.log("newDay templateId", newDay.dayTemplateId);
 
     // let dailyTaskListItems: DailyTaskListDataItem[] = this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD);
     // if(dailyTaskListItems.length == 0){
@@ -152,8 +165,6 @@ export class DaybookService implements ServiceAuthenticates{
   }
 
  
-
-
 
 
 }

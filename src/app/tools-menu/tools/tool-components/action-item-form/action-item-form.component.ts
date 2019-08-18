@@ -1,12 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { ToolsService } from '../../tools/tools.service';
-import { ToolComponents } from '../../tools/tool-components.enum';
+import { ToolsService } from '../../tools.service';
+import { ToolComponents } from '../../tool-components.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { faCircle, faCheckCircle, IconDefinition } from '@fortawesome/free-regular-svg-icons';
-import { Task } from '../../../dashboard/tasks/task/task.model';
-import { TaskService } from '../../../dashboard/tasks/task.service';
-import { ModalService } from '../../../modal/modal.service';
+import { Task } from '../../../../dashboard/tasks/task/task.model';
+import { TaskService } from '../../../../dashboard/tasks/task.service';
+import { ModalService } from '../../../../modal/modal.service';
 import * as moment from 'moment';
 
 @Component({

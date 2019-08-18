@@ -7,7 +7,7 @@ import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DayData } from './day-data.class';
 import { RecurringTasksService } from '../../document-definitions/recurring-task-definition/recurring-tasks.service';
-import { TimelogService } from '../timelog-entry/timelog.service';
+import { TimelogService } from '../../../tools-menu/tools/tool-components/timelog-entry/timelog.service';
 import { DayDataActivityDataItemInterface, DayDataActivityDataItem } from './data-properties/activity-data-item.class';
 @Injectable({
   providedIn: 'root'

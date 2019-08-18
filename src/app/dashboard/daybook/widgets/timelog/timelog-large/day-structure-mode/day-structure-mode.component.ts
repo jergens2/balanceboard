@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { DayStructureChartLabelLine } from './chart-label-line.class';
 import { DayTemplatesService } from '../../../../../scheduling/day-templates/day-templates.service';
 import * as moment from 'moment';
 import { DayStructureTimeColumnRow } from './time-column-row.class';
 import { Subscription, BehaviorSubject, Observable } from 'rxjs';
+import { DayStructureDataItem } from '../../../../api/data-items/day-structure-data-item.interface';
 
 @Component({
   selector: 'app-day-structure-mode',
@@ -18,6 +19,9 @@ export class DayStructureModeComponent implements OnInit, OnDestroy {
   private timeColumnRows: DayStructureTimeColumnRow[] = [];
   private finalTimeColumnRow: DayStructureTimeColumnRow;
   private chartLabelLines: DayStructureChartLabelLine[] = [];
+
+
+  @Input() dayStructureDataItems: DayStructureDataItem[];
 
 
   ngOnInit() {
@@ -85,18 +89,16 @@ export class DayStructureModeComponent implements OnInit, OnDestroy {
 
   private buildChartLabelLines() {
     let chartLabelLines: DayStructureChartLabelLine[] = [];
-    let initial: DayStructureChartLabelLine = new DayStructureChartLabelLine(moment().startOf("day"), moment().hour(7).minute(30).second(0).millisecond(0), "Sleeping", "Start of day", "rgba(0, 102, 255, 0.3)");
-    let awake: DayStructureChartLabelLine = new DayStructureChartLabelLine(moment().hour(7).minute(30).second(0).millisecond(0), moment().hour(22).minute(30).second(0).millisecond(0), "Awake", "Wake Up", "rgba(255, 136, 0, 0.1)");
-    let sleep: DayStructureChartLabelLine = new DayStructureChartLabelLine(moment().hour(22).minute(30).second(0).millisecond(0), moment().endOf("day"), "Sleeping", "Bed Time", "rgba(0, 102, 255, 0.3)");
-    let final: DayStructureChartLabelLine = new DayStructureChartLabelLine(moment().endOf("day"), moment().endOf("day"), "", "End of day", "");
-    awake.setAsDraggable();
-    sleep.setAsDraggable();
-    chartLabelLines = [
-      initial,
-      awake,
-      sleep,
-      final,
-    ];
+    console.log("Warning:  setting as draggable currently does not prevent the line from being dragged.  need to perform a check at the proper place")
+    this.dayStructureDataItems.forEach((dsdi)=>{
+      let newChartLabelLine: DayStructureChartLabelLine = new DayStructureChartLabelLine(moment(dsdi.startTimeISO), moment(dsdi.endTimeISO), dsdi.bodyLabel, dsdi.startLabel, dsdi.bodyBackgroundColor )
+      if(dsdi.isDraggable === true){
+        newChartLabelLine.setAsDraggable();
+      }
+      chartLabelLines.push(newChartLabelLine);
+    });
+
+
     this.chartLabelLines = chartLabelLines;
   }
 

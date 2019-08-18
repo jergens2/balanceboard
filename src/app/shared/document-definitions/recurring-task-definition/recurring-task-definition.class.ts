@@ -1,7 +1,6 @@
 
 import * as moment from 'moment';
 import { RecurringTaskRepitition } from './recurring-task-form/rt-repititions/recurring-task-repitition.interface';
-import { DailyTaskListItem } from '../../document-data/daily-task-list/daily-task-list.class';
 
 
 export class RecurringTaskDefinition {

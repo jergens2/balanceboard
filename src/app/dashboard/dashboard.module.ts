@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { DayDataModule } from './daybook/daybook.module';
+import { DaybookModule } from './daybook/daybook.module';
 
 import { HomeComponent } from './home/home.component';
 
@@ -56,7 +56,7 @@ import { ActivityComponent } from './activities/activity/activity.component';
     ReactiveFormsModule,
     FontAwesomeModule,
     ColorPickerModule,
-    DayDataModule,
+    DaybookModule,
     SharedModule,
   ],
   declarations: [

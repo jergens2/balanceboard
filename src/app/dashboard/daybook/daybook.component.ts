@@ -25,7 +25,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
     return this._screenSize;
   }
   private _activeDay: DaybookDayItem;
-  public activeDay(): DaybookDayItem{
+  public get activeDay(): DaybookDayItem{
     return this._activeDay;
   }
 

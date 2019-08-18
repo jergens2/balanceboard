@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { DailyTaskListItem, DailyTaskList } from '../../../document-data/daily-task-list/daily-task-list.class';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { faCheckCircle as faCheckCircleSolid, faTasks } from '@fortawesome/free-solid-svg-icons';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 import { Router } from '@angular/router';
 import { ToolsService } from '../../tools.service';
-import { DayDataService } from '../../../document-data/day-data/day-data.service';
+import { DayDataService } from '../../../../shared/document-data/day-data/day-data.service';
 import { Subscription } from 'rxjs';
-import { DailyTaskListService } from '../../../document-data/daily-task-list/daily-task-list.service';
-import { RecurringTasksService } from '../../../document-definitions/recurring-task-definition/recurring-tasks.service';
-import { RecurringTaskDefinition } from '../../../document-definitions/recurring-task-definition/recurring-task-definition.class';
+import { DailyTaskListService } from './daily-task-list.service';
+import { RecurringTasksService } from '../../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+import { RecurringTaskDefinition } from '../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
+import { DailyTaskList, DailyTaskListItem } from './daily-task-list.class';
 
 
 @Component({

@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, timer, Subscription } from 'rxjs';
 import { DailyTaskList } from './daily-task-list.class';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthStatus } from '../../../authentication/auth-status.class';
+import { AuthStatus } from '../../../../authentication/auth-status.class';
 
 import * as moment from 'moment';
-import { serverUrl } from '../../../serverurl';
+import { serverUrl } from '../../../../serverurl';
 import { map } from 'rxjs/operators';
-import { RecurringTasksService } from '../../document-definitions/recurring-task-definition/recurring-tasks.service';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { RecurringTasksService } from '../../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
 
 
 @Injectable({

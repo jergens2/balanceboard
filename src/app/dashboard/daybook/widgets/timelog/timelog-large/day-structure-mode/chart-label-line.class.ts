@@ -2,6 +2,7 @@
 import * as moment from 'moment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DayStructureTimeColumnRow } from './time-column-row.class';
+import { DayStructureDataItem } from '../../../../api/data-items/day-structure-data-item.interface';
 
 export class DayStructureChartLabelLine {
 
@@ -15,6 +16,12 @@ export class DayStructureChartLabelLine {
 
   private _bufferHeight: string = "";
 
+  public get dayStructureItem(): DayStructureDataItem{
+    
+    console.log("Warning: property method not implemented");
+    return null;
+
+  }
 
   constructor(startTime: moment.Moment, endTime: moment.Moment, bodyLabel: string, startLabel: string, bodyBackgroundColor: string) {
     this._startTime = moment(startTime);

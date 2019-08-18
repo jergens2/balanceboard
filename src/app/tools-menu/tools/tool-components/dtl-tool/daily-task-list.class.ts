@@ -1,6 +1,5 @@
 import * as moment from 'moment';
-import { RecurringTaskDefinition } from '../../document-definitions/recurring-task-definition/recurring-task-definition.class';
-import { RecurringTasksService } from '../../document-definitions/recurring-task-definition/recurring-tasks.service';
+
 import { Subject, Observable } from 'rxjs';
 
 

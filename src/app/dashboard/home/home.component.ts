@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DayDataService } from '../../shared/document-data/day-data/day-data.service';
-import { TimelogService } from '../../shared/document-data/timelog-entry/timelog.service';
+import { TimelogService } from '../../tools-menu/tools/tool-components/timelog-entry/timelog.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
 
 

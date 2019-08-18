@@ -5,8 +5,9 @@ import { DayDataTaskItem } from './data-properties/task-data.interface';
 import { DayDataTimelogEntryDataItem } from './data-properties/timelog-entry-data.interface';
 import { DayDataNotebookEntry } from './data-properties/day-data-notebook-entry.interface';
 
-import { DailyTaskListItem } from '../daily-task-list/daily-task-list.class';
+
 import { Subject, Observable } from 'rxjs';
+import { DailyTaskListItem } from '../../../tools-menu/tools/tool-components/dtl-tool/daily-task-list.class';
 
 
 
