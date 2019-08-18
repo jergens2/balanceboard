@@ -1,16 +1,34 @@
 <div class="new-chart-line-area-root">
-    <div class="drawn-chart-items">
-        <div class="chart-label-line" *ngFor="let chartLabelLine of chartConfiguration.chartLabelLines">
+
+    <div class="hour-ticks">
+        <div *ngFor="let hourTick of hourTicks" class="hour-tick"></div>
+    </div>
+
+    <div class="chart-label-line-container" *ngFor="let chartLabelLine of chartConfiguration.chartLabelLines">
+
+        <div class="chart-label-line-buffer" [style.height]="chartLabelLine.bufferHeight"></div>
+
+        <div class="chart-label-line" [ngClass]="{'chart-label-line-temporary': chartLabelLine.isTemporary, 'chart-label-line-new': chartLabelLine.isNew }">
+            <div class="chart-time-label">
+                {{ chartLabelLine.startTime.format("h:mm a") }}
+            </div>
+            <div class="chart-line"></div>
+
+        </div>
+
+    </div>
+
+    <div class="time-column-rows">
+        <div class="time-column-row" *ngFor="let timeColumnRow of chartConfiguration.timeColumnRows"
+            (mouseenter)="timeColumnRow.onMouseOverLine()" (mouseup)="timeColumnRow.onMouseUp()"
+            (mousedown)="timeColumnRow.onMouseDown()">
+
+        </div>
+        <div class="final-time-column-row" (mouseenter)="chartConfiguration.finalTimeColumnRow.onMouseOverLine()"
+            (mouseup)="chartConfiguration.finalTimeColumnRow.onMouseUp()"
+            (mousedown)="chartConfiguration.finalTimeColumnRow.onMouseDown()">
 
         </div>
     </div>
-    <div class="time-column-rows">
-        <div class="time-column-row" *ngFor="let timeColumnRow of chartConfiguration.timeColumnRows"
-            (mouseover)="timeColumnRow.onMouseOverLine()" (mouseleave)="timeColumnRow.onMouseLeaveLine()"
-            (mouseup)="timeColumnRow.onMouseUp()">
-            <div class="time-column-row-time-label" (mouseover)="timeColumnRow.onMouseOverTimeLabel()"
-                (mouseleave)="timeColumnRow.onMouseLeaveTimeLabel()">
-            </div>
-        </div>
-    </div>
+
 </div>

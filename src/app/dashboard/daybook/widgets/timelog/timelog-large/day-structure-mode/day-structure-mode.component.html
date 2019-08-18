@@ -3,58 +3,17 @@
     <div class="day-structure-chart-container">
         <div class="day-structure-chart" (mouseleave)="onMouseLeaveChart()">
 
-
-
             <app-new-chart-line-area class="new-chart-line-area" (mouseenter)="onMouseEnterNewChartLineArea()"
                 (mouseleave)="onMouseLeaveNewChartLineArea()" [chartConfiguration]="chartConfiguration"
-                [cursorPosition]="cursorPosition">
+                [cursorPosition]="cursorPosition" [ngClass]="{'currently-dragging': currentlyDragging }">
             </app-new-chart-line-area>
-
 
             <app-move-chart-line-area class="move-chart-line-area" (mouseenter)="onMouseEnterMoveChartLineArea()"
                 (mouseleave)="onMouseLeaveMoveChartLineArea()" [chartConfiguration]="chartConfiguration"
-                [cursorPosition]="cursorPosition"
-                [ngClass]="{'currently-dragging': currentlyDragging }">
+                [cursorPosition]="cursorPosition" [ngClass]="{'currently-dragging': currentlyDragging }">
             </app-move-chart-line-area>
 
-
-
-            <!-- <div *ngFor="let chartLabelLine of chartLabelLines" class="chart-label-line-container">
-                <div class="chart-label-line-buffer" [style.height]="chartLabelLine.bufferHeight">
-                </div>
-                <div class="chart-label-line" [style.z-index]="chartLabelLine.style.z-index">
-                    <div class="chart-time-label">
-                        {{ chartLabelLine.timeLabel }}
-                    </div>
-                    <div class="chart-line-buffer">
-                        <div class="chart-line-border-bottom"></div>
-                    </div>
-                    <div class="chart-line"
-                        [ngClass]="{'chart-line-can-drag': chartLabelLine.canDrag, 'currently-dragging': isDragging }"
-                        (mousedown)="chartLabelLine.onMouseDown()" (mouseup)="chartLabelLine.onMouseUp()">
-                        <div class="chart-line-border-bottom"></div>
-                    </div>
-                    <div class="chart-label">
-                        {{ chartLabelLine.startLabel }}
-                    </div>
-                </div>
-                <div class="chart-body-label-area" [ngStyle]="chartLabelLine.style">
-                    <div class="chart-body-label">
-                        {{ chartLabelLine.bodyLabel }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="chart-time-column">
-                <div class="time-column-row" *ngFor="let timeColumnRow of timeColumnRows"
-                    [ngClass]="{'currently-dragging': isDragging}" (mouseover)="timeColumnRow.onMouseOverLine()"
-                    (mouseleave)="timeColumnRow.onMouseLeaveLine()" (mouseup)="timeColumnRow.onMouseUp()">
-                    <div class="time-column-row-time-label" (mouseover)="timeColumnRow.onMouseOverTimeLabel()"
-                        (mouseleave)="timeColumnRow.onMouseLeaveTimeLabel()">
-
-                    </div>
-                </div>
-            </div> -->
         </div>
+        <div class="buffer-bottom"></div>
     </div>
 </div>

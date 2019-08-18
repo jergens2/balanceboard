@@ -4,7 +4,6 @@
     display:flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(0, 255, 0, 0.103);
 }
 .spinner-container{
     width:100%;

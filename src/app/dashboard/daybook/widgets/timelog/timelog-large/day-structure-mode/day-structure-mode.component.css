@@ -9,8 +9,12 @@
     border: 1px solid orange;
     flex-grow: 2;
     min-height:500px;
+    max-width:400px;
     display:flex;
     flex-direction: column;
+}
+.buffer-bottom{
+    height:8px;
 }
 .day-structure-chart{
     min-height: 500px;
@@ -25,7 +29,6 @@
 .new-chart-line-area{
     width: 60px;
     height:100%;
-    border: 1px solid pink;
     display:flex;
     flex-direction: column;
     cursor: move;
@@ -33,7 +36,6 @@
 .move-chart-line-area{
     flex-grow: 2;
     height: 100%;
-    border: 1px solid lightblue;
     display:flex;
     flex-direction: column;
 }
@@ -63,12 +65,8 @@
     flex-direction: row;
     margin-top: -8px;
 }
-/* .chart-label-line-buffer{
-    padding-left:60px;
-    background-color: rgba(0, 0, 255, 0.075);
-} */
+
 .chart-body-label-area{
-    /* background-color: rgba(255, 0, 0, 0.075); */
     padding-left: 60px;
     margin-top: -8px;
     display:flex;
@@ -81,9 +79,6 @@
 }
 .chart-label{
     font-size: 0.7em;
-    /* width:50px;
-    background-color: white;
-    border: 1px solid rgb(199, 199, 199); */
     flex-shrink: 2;
 
     display: flex;
@@ -130,9 +125,6 @@
 .chart-time-column{
     grid-row: 2 / span 24;
     grid-column: 1 / span 3;
-    /* background-color:rgb(147, 156, 233); */
-    
-
     display: grid;
     grid-template-columns: auto;
     grid-template-rows: repeat(144, 1fr);

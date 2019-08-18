@@ -13,31 +13,31 @@ export class DayStructureTimeColumnRow {
     public max: number;
 
     private _hasChartLabelLine: boolean = false;
-    public setHasChartLabelLine(){
+    public setHasChartLabelLine() {
         this._hasChartLabelLine = true;
     }
-    public setDoesNotHaveChartLabelLine(){
+    public setDoesNotHaveChartLabelLine() {
         this._hasChartLabelLine = false;
     }
-    public get hasChartLabelLine(): boolean{
+    public get hasChartLabelLine(): boolean {
         return this._hasChartLabelLine;
     }
 
 
-    public get chartLabel(): DayStructureChartLabelLine{
+    public get chartLabel(): DayStructureChartLabelLine {
         let minutes: number = this.index * (1440 / this.max);
         let startTime: moment.Moment = moment().startOf("day").add(minutes, "minutes");
         let endTime: moment.Moment = moment(startTime);
-        let newChartLabel = new DayStructureChartLabelLine(startTime, endTime, "", "");
+        let newChartLabel = new DayStructureChartLabelLine(startTime, endTime, "", "", "");
         newChartLabel.setAsTemporary();
         return newChartLabel;
     }
-    public get startTime(): moment.Moment{
+    public get startTime(): moment.Moment {
         //1440 minutes per day
         let increment: number = 1440 / this.max;
-        return moment().startOf("day").add(this.index*increment, "minutes");
+        return moment().startOf("day").add(this.index * increment, "minutes");
     }
-    public get endTime(): moment.Moment{
+    public get endTime(): moment.Moment {
         let increment: number = 1440 / this.max;
         return moment(this.startTime).add(increment, "minutes");
     }
@@ -49,25 +49,28 @@ export class DayStructureTimeColumnRow {
         return this._mouseDown$.asObservable();
     }
     public onMouseDown() {
-        if(this.hasChartLabelLine){
-            this._mouseDown$.next(true);
-        }
+
+        this._mouseDown$.next(true);
+
     }
 
     private _dragging$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-    onMouseOverLine(){ 
+    onMouseOverLine() {
         this._dragging$.next(true);
     }
-    public get dragging$(): Observable<boolean>{
+    public get dragging$(): Observable<boolean> {
+        return this._dragging$.asObservable();
+    }
+    public get mouseOvering$(): Observable<boolean> {
         return this._dragging$.asObservable();
     }
     private _mouseUp$: Subject<boolean> = new Subject();
-    public onMouseUp(){
+    public onMouseUp() {
         this._dragging$.next(false);
         this._mouseDown$.next(false);
         this._mouseUp$.next(true);
     }
-    public get mouseUp$(): Observable<boolean> { 
+    public get mouseUp$(): Observable<boolean> {
         return this._mouseUp$;
     }
 
@@ -85,7 +88,7 @@ export class DayStructureTimeColumnRow {
     public get mouseOverTimeLabel(): boolean {
         return this._mouseOverTimeLabel$.getValue();
     }
-    public get mouseOverTimeLabel$(): Observable<boolean>{
+    public get mouseOverTimeLabel$(): Observable<boolean> {
         return this._mouseOverTimeLabel$.asObservable();
-    } 
+    }
 }

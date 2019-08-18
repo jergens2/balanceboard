@@ -15,7 +15,13 @@ export class NewChartLineAreaComponent implements OnInit {
   @Input() cursorPosition: DayStructureTimeColumnRow;
   @Output() cursorPositionChanged: EventEmitter<any> = new EventEmitter();
 
+  hourTicks: any[] = [];
   ngOnInit() {
+    let hourTicks: any[] = [];
+    for(let i=0; i<25; i++){
+      hourTicks.push(i);
+    }
+    this.hourTicks = hourTicks;
   }
 
 }
