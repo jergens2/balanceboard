@@ -17,11 +17,11 @@
         <div *ngIf="viewMode == 'timelog'">
             timelog
             <div *ngFor="let timelogEntry of timelogEntries" class="timelog-entry">
-                {{ timeFormat(timelogEntry.startTimeISO) }} - {{ timeFormat(timelogEntry.endTimeISO) }}
+                {{ timeFormat(timelogEntry.startTimeISO) }} - {{ timeFormat(timelogEntry.endTimeISO) }}  -  {{ timelogEntry.sleepCycle}}
             </div>
         </div>
         <div *ngIf="viewMode == 'day-structure'" style="height:100%;">
-            <app-day-structure-mode [dayStructureDataItems]="activeDay.dayStructureDataItems"></app-day-structure-mode>
+            <app-day-structure-mode [dayStructureDataItems]="filteredStructureItems"></app-day-structure-mode>
         </div>
 
     </div>

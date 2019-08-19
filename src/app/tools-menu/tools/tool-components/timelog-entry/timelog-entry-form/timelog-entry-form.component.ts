@@ -123,15 +123,16 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       this.timelogEntryService.updateTimelogEntry(this.modifyTimelogEntry);
       this.modalService.closeModal();
     }else{
-      let startTime: string = this.timelogEntryStart.second(0).millisecond(0).toISOString();
-      let endTime: string = this.timelogEntryEnd.second(0).millisecond(0).toISOString();
+      let startTime: string = this.timelogEntryStart.toISOString();
+      let endTime: string = this.timelogEntryEnd.toISOString();
       let utcOffsetMinutes: number = this.timelogEntryStart.utcOffset();
       let description: string = this.timelogEntryForm.controls['description'].value;
       let newTimelogEntry: DaybookTimelogEntryDataItem = {
         startTimeISO: startTime,
         endTimeISO: endTime,
         utcOffsetMinutes: utcOffsetMinutes,
-    
+        isConfirmed: true,
+        sleepCycle: this.timelogEntryService.getSleepCycle(this.timelogEntryStart),
         note: description,
         timelogEntryActivities: this.timelogEntryActivities
       }
@@ -151,7 +152,6 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   private timelogEntryActivities: TimelogEntryActivity[] = [];
   private updateITLEActivities(){
-    let totalDuration = this.timelogEntryMinutes;
     let timelogEntryActivities: TimelogEntryActivity[] = [];
     if(this.activityItems.length > 0){
       this.activityItems.forEach((activityItem: TLEFActivityListItem) => {
@@ -164,6 +164,11 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
       this.timelogEntryActivities = timelogEntryActivities;
     }else{
       this.timelogEntryActivities = [];
+    }
+    if(this.timelogEntryActivities.length > 0){
+      this.formIsValid = true;
+    }else{
+      this.formIsValid = false;
     }
   }
   private activityItems: TLEFActivityListItem[] = [];
@@ -202,7 +207,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   }
 
 
-  public get saveDisabled(): string {
+  public get onClickSaveDisabled(): string {
     if (this.formIsValid) {
       return "";
     } else {

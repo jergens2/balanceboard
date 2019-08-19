@@ -82,7 +82,6 @@ export class ActivityInputDropdownComponent implements OnInit {
       this.activityTextInputValue = targetValue;
       let initiateSearch: boolean = false;
       let searchValue: string = this.activityTextInputValue;
-      console.log(event.key)
       if (event.key == "ArrowUp") {
         this.arrowUp();
       } else if (event.key == "ArrowDown") {

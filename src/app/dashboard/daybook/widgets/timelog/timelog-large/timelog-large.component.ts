@@ -4,6 +4,7 @@ import { faCog, faEye } from '@fortawesome/free-solid-svg-icons';
 import { TimelogService } from '../timelog.service';
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import * as moment from 'moment';
+import { DayStructureDataItem } from '../../../api/data-items/day-structure-data-item.interface';
 
 @Component({
   selector: 'app-timelog-large',
@@ -49,6 +50,12 @@ export class TimelogLargeComponent implements OnInit {
 
   public timeFormat(timeISO: string): string{
     return moment(timeISO).format("hh:mm a")
+  }
+
+  public get filteredStructureItems(): DayStructureDataItem[] { 
+    return this.activeDay.dayStructureDataItems.filter((item)=>{
+      return item.startTimeISO != item.endTimeISO;
+    });
   }
 
 }

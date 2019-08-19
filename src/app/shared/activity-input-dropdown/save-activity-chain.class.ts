@@ -10,7 +10,6 @@ export class SaveActivityChain{
         this.activitiesToSave = activitiesToSave;
         this.activitiesService = activitiesService;
         this.startLink = this.buildChain();
-        console.log("Startlink: ", this.startLink)
     }
 
     private startLink: ActivityChainLink;

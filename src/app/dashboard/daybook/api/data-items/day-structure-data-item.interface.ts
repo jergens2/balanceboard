@@ -1,3 +1,5 @@
+import { DayStructureSleepCycle } from "./day-structure-sleep-cycle.enum";
+
 
 export interface DayStructureDataItem{
     startTimeISO: string;
@@ -6,6 +8,6 @@ export interface DayStructureDataItem{
     startLabel: string;
     bodyBackgroundColor: string;
     activityCategoryDefinitionTreeId: string;
-    isSleeping: boolean;
     isDraggable: boolean;
+    sleepCycle: DayStructureSleepCycle;
 }
