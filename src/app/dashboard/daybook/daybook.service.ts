@@ -23,7 +23,7 @@ export class DaybookService implements ServiceAuthenticates{
     private daybookHttpRequestService: DaybookHttpRequestService, 
     private scheduleRotationService: ScheduleRotationsService,
     private recurringTaskService: RecurringTasksService,
-    
+    private dayTemplatesService: DayTemplatesService,
     ) { }
 
   private _authStatus: AuthStatus;
@@ -158,9 +158,11 @@ export class DaybookService implements ServiceAuthenticates{
 
 
     newDay.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";
-    newDay.dayStructureDataItems = defaultDayStructureDataItems;
+    
+
+    newDay.dayStructureDataItems = this.scheduleRotationService.getDayStructureItemsForDate(newDateYYYYMMDD);
     newDay.generateInitialTimelogEntries();
- 
+    
 
     // newDay.dayTemplateId = this.scheduleRotationService.dayTemplateForD1ate(newDateYYYYMMDD).id;
     // console.log("newDay templateId", newDay.dayTemplateId);

@@ -44,6 +44,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
 
 
+
   private getTemplatesHTTP(){
     const getUrl = this.serverUrl + "/api/schedule-day-template/" + this._authStatus.user.id;
     const httpOptions = {

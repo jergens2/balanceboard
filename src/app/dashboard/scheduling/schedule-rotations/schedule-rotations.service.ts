@@ -9,6 +9,8 @@ import { map, first } from 'rxjs/operators';
 import * as moment from 'moment';
 import { DayTemplatesService } from '../day-templates/day-templates.service';
 import { DayTemplate } from '../day-templates/day-template.class'
+import { DayStructureDataItem } from '../../daybook/api/data-items/day-structure-data-item.interface';
+import { defaultDayStructureDataItems } from '../../daybook/api/default-day-structure-data-items';
 
 @Injectable({
   providedIn: 'root'
@@ -59,8 +61,12 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
 
   }
 
+  public getDayStructureItemsForDate(dateYYYYMMDD: string): DayStructureDataItem[]{
+    console.log("Warning: method not implemented.  returning the default dayStructureDataItems");
+    return defaultDayStructureDataItems;
+  }
 
-  public dayTemplateForDate(dateYYYYMMDD: string): DayTemplate {
+  public getDayTemplateForDate(dateYYYYMMDD: string): DayTemplate {
     if (this.activeScheduleRotation.startDateYYYYMMDD > dateYYYYMMDD) {
       console.log("Date is from prior to earliest ScheduleRotation date.  Returning placeholder.")
       let placeHolder: DayTemplate = new DayTemplate('no_day_template', this._authStatus.user.id, 'Placeholder Day Template');

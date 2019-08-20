@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { DayStructureTimeColumnRow } from './time-column-row.class';
 import { Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { DayStructureDataItem } from '../../../../api/data-items/day-structure-data-item.interface';
+import { DayStructureDataItemType } from '../../../../api/data-items/day-structure-data-item-type.enum';
 
 @Component({
   selector: 'app-day-structure-mode',
@@ -23,6 +24,17 @@ export class DayStructureModeComponent implements OnInit, OnDestroy {
 
   @Input() dayStructureDataItems: DayStructureDataItem[];
 
+  public get sleepCycleItems(): DayStructureDataItem[]{
+    return this.dayStructureDataItems.filter((item)=>{
+      return item.itemType == DayStructureDataItemType.SleepCycle;
+    })
+  }
+
+  public get dayStructureItems(): DayStructureDataItem[]{
+    return this.dayStructureDataItems.filter((item)=>{
+      return item.itemType == DayStructureDataItemType.StructureItem;
+    })
+  }
 
   ngOnInit() {
     this.buildChartLabelLines();
@@ -90,11 +102,9 @@ export class DayStructureModeComponent implements OnInit, OnDestroy {
   private buildChartLabelLines() {
     let chartLabelLines: DayStructureChartLabelLine[] = [];
     console.log("Warning:  setting as draggable currently does not prevent the line from being dragged.  need to perform a check at the proper place")
-    this.dayStructureDataItems.forEach((dsdi)=>{
+    this.dayStructureItems.forEach((dsdi)=>{
       let newChartLabelLine: DayStructureChartLabelLine = new DayStructureChartLabelLine(moment(dsdi.startTimeISO), moment(dsdi.endTimeISO), dsdi.bodyLabel, dsdi.startLabel, dsdi.bodyBackgroundColor )
-      if(dsdi.isDraggable === true){
-        newChartLabelLine.setAsDraggable();
-      }
+      newChartLabelLine.setAsDraggable();
       chartLabelLines.push(newChartLabelLine);
     });
 
