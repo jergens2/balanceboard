@@ -7,6 +7,8 @@ import { Subject, Observable } from "rxjs";
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import * as moment from 'moment';
 import { DayStructureSleepCycle } from "./data-items/day-structure-sleep-cycle.enum";
+import { DayStructureDataItemType } from "./data-items/day-structure-data-item-type.enum";
+import { TimelogWindow } from "../widgets/timelog/timelog-large/timelog-chart/timelog-window.interface";
 
 export class DaybookDayItem {
 
@@ -42,8 +44,6 @@ export class DaybookDayItem {
     }
 
 
-
-
     public get id(): string { return this._httpShape._id; }
     public set id(id: string) {
         this._httpShape._id = id;
@@ -74,8 +74,8 @@ export class DaybookDayItem {
 
     public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this._httpShape.dailyTaskListDataItems; }
     public get dayStructureDataItems(): DayStructureDataItem[] { return this._httpShape.dayStructureDataItems; }
-    public get substantialDayStructureDataItems(): DayStructureDataItem[] { 
-        return this.dayStructureDataItems.filter((item)=>{
+    public get substantialDayStructureDataItems(): DayStructureDataItem[] {
+        return this.dayStructureDataItems.filter((item) => {
             return item.startTimeISO != item.endTimeISO;
         })
     }
@@ -108,6 +108,21 @@ export class DaybookDayItem {
     }
 
 
+    private _previousDay: DaybookDayItem;
+    public set previousDay(previousDay: DaybookDayItem){
+        this._previousDay = previousDay;
+    }
+    public get previousDay(): DaybookDayItem{
+        return this._previousDay;
+    }
+    private _followingDay: DaybookDayItem;
+    public set followingDay(previousDay: DaybookDayItem){
+        this._followingDay = previousDay;
+    }
+    public get followingDay(): DaybookDayItem{
+        return this._previousDay;
+    }
+
 
     private dataChanged() {
         console.log("* * * DaybookDayItem: " + this.dateYYYYMMDD + " - Data has changed.  Saving.")
@@ -119,13 +134,61 @@ export class DaybookDayItem {
     }
 
 
-    public getSleepCycle(timeOfDay: moment.Moment): DayStructureSleepCycle{
+    public getSleepCycle(timeOfDay: moment.Moment): DayStructureSleepCycle {
         return this.positionInSleepCycle(timeOfDay).sleepCycle;
+    }
+
+    public get sleepCycleItems(): DayStructureDataItem[] {
+        return this.dayStructureDataItems.filter((item) => {
+            return (item.itemType == DayStructureDataItemType.SleepCycle && item.startTimeISO != item.endTimeISO);
+        }).sort((sleepItem1, sleepItem2)=>{
+            if(sleepItem1.startTimeISO < sleepItem2.startTimeISO){
+                return -1;
+            }
+            if(sleepItem1.startTimeISO > sleepItem2.startTimeISO){
+                return 1;
+            }
+            return 0;
+        });
+    }
+
+    public get dayStructureItems(): DayStructureDataItem[] {
+        return this.dayStructureDataItems.filter((item) => {
+            return item.itemType == DayStructureDataItemType.StructureItem;
+        })
+    }
+
+
+    public getTimelogWindow(windowSizeHours: number): TimelogWindow {
+        let startTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");
+        if(this.sleepCycleItems[0].sleepCycle == DayStructureSleepCycle.Awake){
+            if(this.previousDay){
+                startTime = moment(this.previousDay.sleepCycleItems[this.previousDay.sleepCycleItems.length-1].startTimeISO);
+            }
+        }else if(this.sleepCycleItems[0].sleepCycle == DayStructureSleepCycle.Sleeping){
+            let longestDurationAwakeMinutes: number = 0;
+            let longestDurationAwake: DayStructureDataItem;
+            this.sleepCycleItems.filter((item)=> { return item.sleepCycle == DayStructureSleepCycle.Awake}).forEach((item)=>{
+                let durationMinutes: number = moment(item.endTimeISO).diff(moment(item.startTimeISO), "minutes");
+                if(durationMinutes > longestDurationAwakeMinutes){
+                    longestDurationAwakeMinutes = durationMinutes;
+                    longestDurationAwake = item;
+                };
+            });
+            startTime = moment(longestDurationAwake.startTimeISO);
+        }
+        let endTime: moment.Moment = moment(startTime).add(windowSizeHours, "hours");
+        
+        let window: TimelogWindow = {
+            startTime: startTime,
+            endTime: endTime,
+        }
+        return window;
     }
 
 
 
-    private buildTimelogEntry(nowTime: moment.Moment, startTimeISO: string, endTimeISO: string, sleepCycle: DayStructureSleepCycle): DaybookTimelogEntryDataItem{
+    private buildTimelogEntry(nowTime: moment.Moment, startTimeISO: string, endTimeISO: string, sleepCycle: DayStructureSleepCycle): DaybookTimelogEntryDataItem {
         let timelogEntry: DaybookTimelogEntryDataItem = {
             startTimeISO: startTimeISO,
             endTimeISO: endTimeISO,
@@ -133,7 +196,7 @@ export class DaybookDayItem {
             sleepCycle: sleepCycle,
             timelogEntryActivities: [],
             isConfirmed: false,
-            note: "",  
+            note: "",
         }
         return timelogEntry;
     }
@@ -160,7 +223,7 @@ export class DaybookDayItem {
         let now: moment.Moment = moment();
         let position: DayStructureDataItem = this.positionInSleepCycle(now);
         let index: number = this.substantialDayStructureDataItems.indexOf(position);
-        for(let i=0; i<index; i++){
+        for (let i = 0; i < index; i++) {
 
             let sleepCycle = this.substantialDayStructureDataItems[i].sleepCycle;
             let startTimeISO = this.substantialDayStructureDataItems[i].startTimeISO;
@@ -175,8 +238,8 @@ export class DaybookDayItem {
     }
 
 
-    public getDayStructureItemBySleepType(sleepType: DayStructureSleepCycle): DayStructureDataItem{
-        return this.dayStructureDataItems.find((item)=>{
+    public getDayStructureItemBySleepType(sleepType: DayStructureSleepCycle): DayStructureDataItem {
+        return this.dayStructureDataItems.find((item) => {
             return item.sleepCycle === sleepType;
         })
     }

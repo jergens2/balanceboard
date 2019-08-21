@@ -62,6 +62,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
             daybookDayItems.splice(daybookDayItems.indexOf(daybookDayItem), 1, returnedDaybookDayItem)
           }
         }
+        daybookDayItems = this.linkDaybookItems(daybookDayItems);
         this._daybookDayItems$.next(daybookDayItems);
         this.updateChangeSubscription();
       });
@@ -84,6 +85,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
       .subscribe((daybookDayItem: DaybookDayItem) => {
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
         daybookDayItems.push(daybookDayItem);
+        daybookDayItems = this.linkDaybookItems(daybookDayItems);
         this._daybookDayItems$.next(daybookDayItems);
         this.updateChangeSubscription();
       });
@@ -102,6 +104,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
       .subscribe((response: any) => {
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
         daybookDayItems.splice(daybookDayItems.indexOf(daybookDayItem), 1);
+        daybookDayItems = this.linkDaybookItems(daybookDayItems);
         this._daybookDayItems$.next(daybookDayItems);
         this.updateChangeSubscription();
       });
@@ -125,6 +128,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
         return this.buildDaybookDayItemsFromResponse(response.data as any[]);
       }))
       .subscribe((daybookDayItems: DaybookDayItem[]) => {
+        daybookDayItems = this.linkDaybookItems(daybookDayItems);
         this._daybookDayItems$.next(daybookDayItems);
         this.updateChangeSubscription();
         this._loginComplete$.next(true);
@@ -172,6 +176,26 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
     let daybookDayItem: DaybookDayItem = new DaybookDayItem(dayItemHttp.dateYYYYMMDD);
     daybookDayItem.setHttpShape(dayItemHttp);
     return daybookDayItem;
+  }
+  private linkDaybookItems(items: DaybookDayItem[]): DaybookDayItem[]{
+    for(let i=0; i< items.length; i++){
+      if(i > 0){
+        if(moment(items[i-1].dateYYYYMMDD).isSame(moment(items[i].dateYYYYMMDD).subtract(1, "days"))){
+          items[i].previousDay = items[i-1];
+        }else{
+          console.log("error ?")
+        }
+        
+      }
+      if(i < items.length-1){
+        if(moment(items[i+1].dateYYYYMMDD).isSame(moment(items[i].dateYYYYMMDD).add(1, "days"))){
+          items[i].followingDay = items[i+1];
+        }else{
+          console.log("error ?")
+        }
+      }
+    }
+    return items;
   }
 
 }

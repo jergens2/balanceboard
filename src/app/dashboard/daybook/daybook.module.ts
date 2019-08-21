@@ -18,6 +18,8 @@ import { CalendarSmallComponent } from './widgets/calendar/calendar-small/calend
 import { DayStructureModeComponent } from './widgets/timelog/timelog-large/day-structure-mode/day-structure-mode.component';
 import { NewChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/new-chart-line-area/new-chart-line-area.component';
 import { MoveChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/move-chart-line-area/move-chart-line-area.component';
+import { TimelogChartComponent } from './widgets/timelog/timelog-large/timelog-chart/timelog-chart.component';
+import { TimelogChartItemComponent } from './widgets/timelog/timelog-large/timelog-chart/timelog-chart-item/timelog-chart-row-item.component';
 
 
 @NgModule({
@@ -41,6 +43,8 @@ import { MoveChartLineAreaComponent } from './widgets/timelog/timelog-large/day-
     DayStructureModeComponent,
     NewChartLineAreaComponent,
     MoveChartLineAreaComponent,
+    TimelogChartComponent,
+    TimelogChartItemComponent,
   ],
   exports: [
   ]

@@ -19,11 +19,12 @@
     align-items: center;
     justify-content: center;
 }
-.timelog-body{
-    /* height:100%; */
+
+.flex-column{
+    display:flex;
+    flex-direction: column;
     flex-grow: 2;
 }
-
 .timelog-entry{
     margin:5px;
     border:1px solid gray;

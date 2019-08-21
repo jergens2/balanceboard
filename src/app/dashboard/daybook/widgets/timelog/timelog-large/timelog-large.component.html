@@ -13,16 +13,13 @@
             </div>
         </div>
     </div>
-    <div class="timelog-body">
-        <div *ngIf="viewMode == 'timelog'">
-            timelog
-            <div *ngFor="let timelogEntry of timelogEntries" class="timelog-entry">
-                {{ timeFormat(timelogEntry.startTimeISO) }} - {{ timeFormat(timelogEntry.endTimeISO) }}  -  {{ timelogEntry.sleepCycle}}
-            </div>
-        </div>
-        <div *ngIf="viewMode == 'day-structure'" style="height:100%;">
-            <app-day-structure-mode [dayStructureDataItems]="filteredStructureItems"></app-day-structure-mode>
-        </div>
+    <div class="flex-column">
+        <app-timelog-chart [activeDay]="activeDay" *ngIf="viewMode == 'timelog'" class="flex-column">
+        </app-timelog-chart>
+
+        <app-day-structure-mode [dayStructureDataItems]="filteredStructureItems" *ngIf="viewMode == 'day-structure'"
+            class="flex-column"></app-day-structure-mode>
+
 
     </div>
 

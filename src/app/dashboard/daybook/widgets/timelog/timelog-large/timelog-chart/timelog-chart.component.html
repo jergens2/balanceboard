@@ -1,0 +1,26 @@
+<div class="timelog-chart-root">
+    Timelog chart
+    <div class="timelog-chart-grid" [ngStyle]="timelogChartGrid.ngStyle">
+
+        <div class="timelog-guide-lines" [ngStyle]="timelogGuidelinesNgStyle">
+            <div *ngFor="let timelogGuideLine of timelogGuidelineItems" class="timelog-guide-line">
+                <div class="timelog-guide-line-label">
+                    {{ timelogGuideLine.label }}
+                </div>
+                <div *ngIf="timelogGuideLine.label" class="timelog-guide-line-tick"></div>
+
+            </div>
+        </div>
+        <div class="timelog-guide-lines-border-right" [ngStyle]="timelogGuidelinesBorderRightNgStyle">
+
+        </div>
+
+
+        <div *ngFor="let timelogChartRowItem of timelogChartRowItems" class="timelog-chart-row-item"
+            [ngStyle]="timelogChartRowItem.ngStyle" (click)="timelogChartRowItem.onClick()">
+        </div>
+
+
+
+    </div>
+</div>
