@@ -18,7 +18,14 @@ export class TimelogLargeComponent implements OnInit {
 
   constructor(private timelogService: TimelogService) { }
 
-  @Input() activeDay: DaybookDayItem;
+  private _activeDay: DaybookDayItem;
+  @Input() public set activeDay(activeDay:DaybookDayItem){
+    console.log("timelog large: settting active date", activeDay.dateYYYYMMDD)
+    this._activeDay = activeDay;
+  }
+  public get activeDay():DaybookDayItem{
+    return this._activeDay;
+  }
 
   ngOnInit() {
   }

@@ -180,8 +180,11 @@ export class DaybookDayItem {
         let endTime: moment.Moment = moment(startTime).add(windowSizeHours, "hours");
         
         let window: TimelogWindow = {
+            windowStartTime: moment(startTime).subtract(1, "hour"),
             startTime: startTime,
             endTime: endTime,
+            windowEndTime: moment(endTime).add(1, "hour"),
+            size: endTime.diff(startTime, "hours"),
         }
         return window;
     }

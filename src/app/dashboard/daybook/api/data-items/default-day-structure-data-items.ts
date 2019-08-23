@@ -1,7 +1,7 @@
-import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
+import { DayStructureDataItem } from "./day-structure-data-item.interface";
 import * as moment from 'moment';
-import { DayStructureSleepCycle } from "./data-items/day-structure-sleep-cycle.enum";
-import { DayStructureDataItemType } from "./data-items/day-structure-data-item-type.enum";
+import { DayStructureSleepCycle } from "./day-structure-sleep-cycle.enum";
+import { DayStructureDataItemType } from "./day-structure-data-item-type.enum";
 
 let dayStructureDataItems: DayStructureDataItem[] = [];
 let now: moment.Moment = moment();
@@ -14,7 +14,7 @@ sleepCycleItems.push({
   endTimeISO: moment(now).startOf("day").add(7, "hours").toISOString(),
   bodyLabel: "Sleeping",
   startLabel: "Start of calendar day",
-  bodyBackgroundColor: "rgba(0, 102, 255, 0.3)",
+  bodyBackgroundColor: "rgba(0, 0, 255, 0.247)",
   activityCategoryDefinitionTreeId: "",
   sleepCycle: DayStructureSleepCycle.Sleeping,
   itemType: DayStructureDataItemType.SleepCycle,
@@ -24,7 +24,7 @@ sleepCycleItems.push({
   endTimeISO: moment(now).startOf("day").add(23, "hours").toISOString(),
   bodyLabel: "Wake up",
   startLabel: "Awake",
-  bodyBackgroundColor: "rgba(0, 102, 255, 0.3)",
+  bodyBackgroundColor: "",
   activityCategoryDefinitionTreeId: "",
   sleepCycle: DayStructureSleepCycle.Awake,
   itemType: DayStructureDataItemType.SleepCycle,
@@ -34,7 +34,7 @@ sleepCycleItems.push({
   endTimeISO: moment(now).endOf("day").toISOString(),
   bodyLabel: "Sleeping",
   startLabel: "Fall asleep",
-  bodyBackgroundColor: "rgba(0, 102, 255, 0.3)",
+  bodyBackgroundColor: "rgba(0, 0, 255, 0.247)",
   activityCategoryDefinitionTreeId: "",
   sleepCycle: DayStructureSleepCycle.Sleeping,
   itemType: DayStructureDataItemType.SleepCycle,

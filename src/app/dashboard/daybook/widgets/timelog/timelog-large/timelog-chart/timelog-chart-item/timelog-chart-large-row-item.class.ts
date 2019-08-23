@@ -1,13 +1,16 @@
 import * as moment from 'moment';
 
-export class TimelogChartRowItem{
+export class TimelogChartLargeRowItem{
     
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
+
+    gridRowStart: number = 0;
     
-    constructor(startTime: moment.Moment, endTime: moment.Moment) {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, gridRowStart: number) {
         this._startTime = moment(startTime);
         this._endTime = moment(endTime);
+        this.gridRowStart = gridRowStart;
     }
 
     public get startTime(): moment.Moment{

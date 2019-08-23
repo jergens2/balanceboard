@@ -45,11 +45,25 @@
     margin-top: -8px;
     width:100%;
     text-align: right;
-    position: relative;
-
     display:flex;
     flex-direction: row;
     align-items: center;
+}
+
+.timelog-guide-label-line-container{
+    flex-grow: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height:33px;
+    
+}
+.timelog-guide-line-date-cross{
+    height: 16px;
+    width:100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
 }
 .timelog-guide-line-label{
     width:23px;
@@ -58,5 +72,9 @@
 .timelog-guide-line-tick{
     height:1px;
     flex-grow: 2;
-    border-top: 1px solid rgb(220, 231, 235);
+    /* border-top: 1px solid rgb(220, 231, 235); */
+}
+
+.day-structure-item{
+    grid-column: 3 / span 1;
 }

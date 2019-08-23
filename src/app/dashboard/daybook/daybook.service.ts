@@ -10,7 +10,7 @@ import { ScheduleRotationsService } from '../scheduling/schedule-rotations/sched
 import { RecurringTasksService } from '../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
 import { DailyTaskListDataItem } from './api/data-items/daily-task-list-data-item.interface';
 import { DayStructureDataItem } from './api/data-items/day-structure-data-item.interface';
-import { defaultDayStructureDataItems } from './api/default-day-structure-data-items';
+import { defaultDayStructureDataItems } from './api/data-items/default-day-structure-data-items';
 import { DaybookTimelogEntryDataItem } from './api/data-items/daybook-timelog-entry-data-item.interface';
 import { DayStructureSleepCycle } from './api/data-items/day-structure-sleep-cycle.enum';
 
@@ -99,6 +99,12 @@ export class DaybookService implements ServiceAuthenticates{
   public get activeDay(): DaybookDayItem{
     return this._activeDay$.getValue();
   }
+  public set activeDayYYYYMMDD(changedDayYYYYMMDD: string){
+    this._activeDayYYYYMMDD = changedDayYYYYMMDD;
+    // console.log("we doing some stuff")
+    this.updateTodayAndActiveDay(moment());
+
+  }
   public get activeDayYYYYMMDD(): string{
     return this._activeDayYYYYMMDD;
   }
@@ -132,6 +138,7 @@ export class DaybookService implements ServiceAuthenticates{
     }else{
       let activeItem: DaybookDayItem = this.getDaybookDayItemByDate(this._activeDayYYYYMMDD);
       if(activeItem){
+        // console.log("next")
         this._activeDay$.next(activeItem);
       }else{
         console.log("daybook ****Warning: Starting a new Active day - Method disabled.");
@@ -155,6 +162,14 @@ export class DaybookService implements ServiceAuthenticates{
   private startANewDay(newDateYYYYMMDD: string): DaybookDayItem{
     console.log("***** Daybook:  Starting a new day: ", newDateYYYYMMDD);
     let newDay: DaybookDayItem = new DaybookDayItem(newDateYYYYMMDD);
+
+    /**
+     * NEED TO DO:
+     * 
+     * check if the previous and next days to newDate exist in DB.
+     * If not, we need to create up to all 3 of them at the same time.
+     * a saveMultiple() method required in the http service.
+     */
 
 
     newDay.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";

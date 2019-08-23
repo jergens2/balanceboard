@@ -28,6 +28,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
   public get activeDay(): DaybookDayItem{
     return this._activeDay;
   }
+  public set activeDay(activeDay: DaybookDayItem){
+    this._activeDay = activeDay;
+  }
 
   public daybookIsLoading: boolean = true;
 

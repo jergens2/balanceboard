@@ -10,7 +10,7 @@ import * as moment from 'moment';
 import { DayTemplatesService } from '../day-templates/day-templates.service';
 import { DayTemplate } from '../day-templates/day-template.class'
 import { DayStructureDataItem } from '../../daybook/api/data-items/day-structure-data-item.interface';
-import { defaultDayStructureDataItems } from '../../daybook/api/default-day-structure-data-items';
+import { defaultDayStructureDataItems } from '../../daybook/api/data-items/default-day-structure-data-items';
 
 @Injectable({
   providedIn: 'root'
