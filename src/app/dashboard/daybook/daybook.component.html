@@ -11,11 +11,11 @@
 
   <div class="layout-flex" *ngIf="!daybookIsLoading">
     <div class="main-widget">
-      <app-timelog-large *ngIf="timelogWidget.isExpanded" [activeDay]="activeDay" [ngStyle]="timelogWidget.ngStyle"
+      <app-timelog-large *ngIf="timelogWidget.isExpanded"  [ngStyle]="timelogWidget.ngStyle"
         [ngClass]="timelogWidget.ngClass"></app-timelog-large>
-      <app-calendar-large *ngIf="calendarWidget.isExpanded" [activeDay]="activeDay" [ngStyle]="calendarWidget.ngStyle"
+      <app-calendar-large *ngIf="calendarWidget.isExpanded"  [ngStyle]="calendarWidget.ngStyle"
         [ngClass]="calendarWidget.ngClass"></app-calendar-large>
-      <app-daily-task-list-large *ngIf="dailyTaskListWidget.isExpanded" [activeDay]="activeDay"
+      <app-daily-task-list-large *ngIf="dailyTaskListWidget.isExpanded" 
         [ngClass]="dailyTaskListWidget.ngStyle" [ngClass]="dailyTaskListWidget.ngClass"></app-daily-task-list-large>
     </div>
     <div class="sidebar" *ngIf="appScreenSize > 1">
@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="small-widget-body">
-          <app-calendar-small [activeDay]="activeDay"></app-calendar-small>
+          <app-calendar-small ></app-calendar-small>
         </div>
       </div>
 
@@ -46,7 +46,7 @@
           </div>
         </div>
         <div class="small-widget-body">
-          <app-daily-task-list-small [activeDay]="activeDay"></app-daily-task-list-small>
+          <app-daily-task-list-small ></app-daily-task-list-small>
         </div>
       </div>
 
@@ -61,7 +61,7 @@
           </div>
         </div>
         <div class="small-widget-body">
-          <app-timelog-small [activeDay]="activeDay"></app-timelog-small>
+          <app-timelog-small ></app-timelog-small>
         </div>
       </div>
 

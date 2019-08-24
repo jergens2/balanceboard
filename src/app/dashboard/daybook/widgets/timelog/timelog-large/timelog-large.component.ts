@@ -5,6 +5,7 @@ import { TimelogService } from '../timelog.service';
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import * as moment from 'moment';
 import { DayStructureDataItem } from '../../../api/data-items/day-structure-data-item.interface';
+import { DaybookService } from '../../../daybook.service';
 
 @Component({
   selector: 'app-timelog-large',
@@ -16,18 +17,22 @@ export class TimelogLargeComponent implements OnInit {
   faCog = faCog;
   faEye = faEye;
 
-  constructor(private timelogService: TimelogService) { }
+  constructor(private daybookService: DaybookService) { }
 
-  private _activeDay: DaybookDayItem;
-  @Input() public set activeDay(activeDay:DaybookDayItem){
-    console.log("timelog large: settting active date", activeDay.dateYYYYMMDD)
-    this._activeDay = activeDay;
-  }
-  public get activeDay():DaybookDayItem{
-    return this._activeDay;
-  }
+  // private _activeDay: DaybookDayItem;
+  // public get activeDay():DaybookDayItem{
+  //   return this._activeDay;
+  // }
+  // public set activeDay(activeDay: DaybookDayItem){
+  //   this._activeDay = activeDay;
+  // }
+  public activeDay: DaybookDayItem;
 
   ngOnInit() {
+    this.activeDay = this.daybookService.activeDay;
+    this.daybookService.activeDay$.subscribe((dayChanged)=>{
+      this.activeDay = dayChanged;
+    });
   }
 
   public get timelogEntries(): DaybookTimelogEntryDataItem[] {
@@ -59,10 +64,6 @@ export class TimelogLargeComponent implements OnInit {
     return moment(timeISO).format("hh:mm a")
   }
 
-  public get filteredStructureItems(): DayStructureDataItem[] { 
-    return this.activeDay.dayStructureDataItems.filter((item)=>{
-      return item.startTimeISO != item.endTimeISO;
-    });
-  }
+
 
 }

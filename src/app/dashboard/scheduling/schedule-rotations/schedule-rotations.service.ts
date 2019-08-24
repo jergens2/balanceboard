@@ -10,7 +10,7 @@ import * as moment from 'moment';
 import { DayTemplatesService } from '../day-templates/day-templates.service';
 import { DayTemplate } from '../day-templates/day-template.class'
 import { DayStructureDataItem } from '../../daybook/api/data-items/day-structure-data-item.interface';
-import { defaultDayStructureDataItems } from '../../daybook/api/data-items/default-day-structure-data-items';
+import buildDefaultDataItems  from '../../daybook/api/data-items/default-day-structure-data-items';
 
 @Injectable({
   providedIn: 'root'
@@ -62,8 +62,8 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
   }
 
   public getDayStructureItemsForDate(dateYYYYMMDD: string): DayStructureDataItem[]{
-    console.log("Warning: method not implemented.  returning the default dayStructureDataItems");
-    return defaultDayStructureDataItems;
+    console.log("Finding day structure items for date: " + dateYYYYMMDD);
+    return buildDefaultDataItems(moment(dateYYYYMMDD).startOf("day"));
   }
 
   public getDayTemplateForDate(dateYYYYMMDD: string): DayTemplate {

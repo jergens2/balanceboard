@@ -29,7 +29,7 @@ export class TimelogChartLargeRowItem{
     }
 
     public onClick(){
-        console.log(this.startTime.format("hh:mm a") + " to " + this.endTime.format("hh:mm a"))
+        console.log(this.startTime.format("YYYY-MM-DD hh:mm a") + " to " + this.endTime.format("YYYY-MM-DD hh:mm a"))
     }
 
 }

@@ -7,26 +7,33 @@
                     {{ timelogGuideLine.label }}
                 </div>
                 <div *ngIf="timelogGuideLine.label" class="timelog-guide-label-line-container">
-                    <div *ngIf="timelogGuideLine.dateCross" class="timelog-guide-line-date-cross">
+                    <div *ngIf="timelogGuideLine.dateCross" class="timelog-guide-line-date-cross"
+                        [ngStyle]="timelogGuideLine.textColorNgStyle">
                         {{ timelogGuideLine.dateCross.previousDate }}
                     </div>
                     <div class="timelog-guide-line-tick" [ngStyle]="timelogGuideLine.borderTopNgStyle"></div>
-                    <div *ngIf="timelogGuideLine.dateCross" class="timelog-guide-line-date-cross">
+                    <div *ngIf="timelogGuideLine.dateCross" class="timelog-guide-line-date-cross"
+                        [ngStyle]="timelogGuideLine.textColorNgStyle">
                         {{ timelogGuideLine.dateCross.nextDate }}
                     </div>
                 </div>
 
             </div>
         </div>
-        
+
         <div class="timelog-guide-lines-border-right" [ngStyle]="timelogChart.guidelinesBorderRightNgStyle">
         </div>
 
-        <div class="day-structure-item" *ngFor="let dayStructureItem of timelogChart.dayStructureItems"
-            [ngStyle]="dayStructureItem.ngStyle"></div>
 
         <div *ngFor="let timelogChartRowItem of timelogChart.chartRowItems" class="timelog-chart-row-item"
             [ngStyle]="timelogChartRowItem.ngStyle" (click)="timelogChartRowItem.onClick()">
         </div>
+
+        <div class="day-structure-item" *ngFor="let dayStructureItem of timelogChart.dayStructureItems"
+            [ngStyle]="dayStructureItem.ngStyle">
+            {{ dayStructureItem.bodyLabel }}
+        </div>
+
+
     </div>
 </div>

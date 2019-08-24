@@ -116,11 +116,12 @@ export class DaybookDayItem {
         return this._previousDay;
     }
     private _followingDay: DaybookDayItem;
-    public set followingDay(previousDay: DaybookDayItem){
-        this._followingDay = previousDay;
+    public set followingDay(followingDay: DaybookDayItem){
+        console.log
+        this._followingDay = followingDay;
     }
     public get followingDay(): DaybookDayItem{
-        return this._previousDay;
+        return this._followingDay;
     }
 
 
@@ -222,22 +223,22 @@ export class DaybookDayItem {
             AwakePreSleeping = "AWAKE_PRE_SLEEPING",
             SleepingPostBedtime = "SLEEPING_POST_BEDTIME",
          */
-        let generatedTimelogEntries: DaybookTimelogEntryDataItem[] = [];
-        let now: moment.Moment = moment();
-        let position: DayStructureDataItem = this.positionInSleepCycle(now);
-        let index: number = this.substantialDayStructureDataItems.indexOf(position);
-        for (let i = 0; i < index; i++) {
+        // let generatedTimelogEntries: DaybookTimelogEntryDataItem[] = [];
+        // let now: moment.Moment = moment();
+        // let position: DayStructureDataItem = this.positionInSleepCycle(now);
+        // let index: number = this.substantialDayStructureDataItems.indexOf(position);
+        // for (let i = 0; i < index; i++) {
 
-            let sleepCycle = this.substantialDayStructureDataItems[i].sleepCycle;
-            let startTimeISO = this.substantialDayStructureDataItems[i].startTimeISO;
-            let endTimeISO = this.substantialDayStructureDataItems[i].endTimeISO;
-            console.log("building a timelog entry from ", this.substantialDayStructureDataItems[i])
-            generatedTimelogEntries.push(this.buildTimelogEntry(now, startTimeISO, endTimeISO, sleepCycle));
-        }
-        let startTimeISO = position.startTimeISO;
-        generatedTimelogEntries.push(this.buildTimelogEntry(now, startTimeISO, now.toISOString(), position.sleepCycle));
-        console.log("Generated timelog entries:", generatedTimelogEntries);
-        this.daybookTimelogEntryDataItems = generatedTimelogEntries;
+        //     let sleepCycle = this.substantialDayStructureDataItems[i].sleepCycle;
+        //     let startTimeISO = this.substantialDayStructureDataItems[i].startTimeISO;
+        //     let endTimeISO = this.substantialDayStructureDataItems[i].endTimeISO;
+        //     console.log("building a timelog entry from ", this.substantialDayStructureDataItems[i])
+        //     generatedTimelogEntries.push(this.buildTimelogEntry(now, startTimeISO, endTimeISO, sleepCycle));
+        // }
+        // let startTimeISO = position.startTimeISO;
+        // generatedTimelogEntries.push(this.buildTimelogEntry(now, startTimeISO, now.toISOString(), position.sleepCycle));
+        // console.log("Generated timelog entries:", generatedTimelogEntries);
+        // this.daybookTimelogEntryDataItems = generatedTimelogEntries;
     }
 
 
@@ -250,11 +251,12 @@ export class DaybookDayItem {
     private positionInSleepCycle(time: moment.Moment): DayStructureDataItem {
         let currentPosition: DayStructureDataItem;
         for (let i = 0; i < this.substantialDayStructureDataItems.length; i++) {
-            let isCurrent: boolean = time.isAfter(moment(this.substantialDayStructureDataItems[i].startTimeISO)) && time.isBefore(moment(this.substantialDayStructureDataItems[i].endTimeISO));
+            let isCurrent: boolean = time.isSameOrAfter(moment(this.substantialDayStructureDataItems[i].startTimeISO)) && time.isSameOrBefore(moment(this.substantialDayStructureDataItems[i].endTimeISO));
             if (isCurrent) {
                 currentPosition = this.substantialDayStructureDataItems[i];
             }
         }
+        console.log("Returning position: " , currentPosition);
         return currentPosition;
     }
 

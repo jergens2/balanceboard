@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.class';
-import { BehaviorSubject, Observable, ObservedValueOf, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, ObservedValueOf, Subscription, Subject, scheduled, from, forkJoin } from 'rxjs';
 import * as moment from 'moment';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { DaybookDayItem } from './daybook-day-item.class';
-import { map } from 'rxjs/operators';
+import { map, mergeAll, concatAll, concatMap, mergeMap } from 'rxjs/operators';
 import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 
@@ -68,7 +68,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
       });
   }
 
-  saveDaybookDayItem(daybookDayItem: DaybookDayItem): DaybookDayItem {
+  saveDaybookDayItem(daybookDayItem: DaybookDayItem): void {
     const postUrl = serverUrl + "/api/daybook-day-item/create";
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
@@ -89,7 +89,41 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
         this._daybookDayItems$.next(daybookDayItems);
         this.updateChangeSubscription();
       });
-    return daybookDayItem;
+    // return daybookDayItem;
+  }
+  public saveMultipleDayItems(daybookDayItems: DaybookDayItem[]){
+    // console.log("Saving multiplo: ", daybookDayItems.length)
+    // console.log(daybookDayItems);
+    daybookDayItems.forEach((item)=>{item.userId = this._authStatus.user.id; });
+    from(daybookDayItems).pipe(
+      mergeMap(daybookDayItem=> <Observable<DaybookDayItem>>
+        this.saveDaybookDayItem$(daybookDayItem)
+      )
+    ).subscribe((savedItem: DaybookDayItem)=>{
+      let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
+        daybookDayItems.push(savedItem);
+        daybookDayItems = this.linkDaybookItems(daybookDayItems);
+        this._daybookDayItems$.next(daybookDayItems);
+        this.updateChangeSubscription();
+    });
+
+    
+    
+  }
+  private saveDaybookDayItem$(daybookDayItem): Observable<DaybookDayItem>{
+    const postUrl = serverUrl + "/api/daybook-day-item/create";
+    daybookDayItem.userId = this._authStatus.user.id;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
+    // console.log("Notice:  saveDaybookItem() method is disabled (no HTTP request)")
+    return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
+      .pipe<DaybookDayItem>(map((response) => {
+        return this.buildDaybookDayItem(response.data as any);
+      }));
   }
 
   deleteDaybookDayItem(daybookDayItem: DaybookDayItem) {
@@ -175,23 +209,40 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
   private buildDaybookDayItem(dayItemHttp: DaybookDayItemHttpShape): DaybookDayItem{
     let daybookDayItem: DaybookDayItem = new DaybookDayItem(dayItemHttp.dateYYYYMMDD);
     daybookDayItem.setHttpShape(dayItemHttp);
+    // console.log("Built item: ", daybookDayItem);
     return daybookDayItem;
   }
   private linkDaybookItems(items: DaybookDayItem[]): DaybookDayItem[]{
+    items = items.sort((item1, item2)=>{
+      if(item1.dateYYYYMMDD < item2.dateYYYYMMDD){
+        return -1;
+      }
+      if(item1.dateYYYYMMDD > item2.dateYYYYMMDD){
+        return 1;
+      }
+      return 0;
+    });
     for(let i=0; i< items.length; i++){
+      // console.log("items["+i+"] : " + items[i].dateYYYYMMDD);
       if(i > 0){
-        if(moment(items[i-1].dateYYYYMMDD).isSame(moment(items[i].dateYYYYMMDD).subtract(1, "days"))){
+        if(moment(items[i-1].dateYYYYMMDD).format("YYYY-MM-DD") === moment(items[i].dateYYYYMMDD).subtract(1, "days").format("YYYY-MM-DD")){
           items[i].previousDay = items[i-1];
+          // console.log("items[i]("+items[i].dateYYYYMMDD+").previousDay = " + items[i-1].dateYYYYMMDD );
+          // console.log("items[i]("+items[i].dateYYYYMMDD+").previousDay = " + items[i].previousDay.dateYYYYMMDD );
         }else{
-          console.log("error ?")
+          // console.log("error ?",moment(items[i-1].dateYYYYMMDD).format("YYYY-MM-DD") + " is not zhe same as " + moment(items[i].dateYYYYMMDD).subtract(1, "days").format("YYYY-MM-DD"))
         }
         
       }
       if(i < items.length-1){
-        if(moment(items[i+1].dateYYYYMMDD).isSame(moment(items[i].dateYYYYMMDD).add(1, "days"))){
+        if(moment(items[i+1].dateYYYYMMDD).format("YYYY-MM-DD") === moment(items[i].dateYYYYMMDD).add(1, "days").format("YYYY-MM-DD")){
           items[i].followingDay = items[i+1];
+          // console.log("i is " + i + " " , items[i+1]);
+          // console.log(items[i].followingDay)
+          // console.log("items[i]("+items[i].dateYYYYMMDD+").followingDay = " + items[i+1].dateYYYYMMDD );
+          // console.log("items[i]("+items[i].dateYYYYMMDD+").followingDay = " + items[i].followingDay.dateYYYYMMDD );
         }else{
-          console.log("error ?")
+          // console.log("error ?", moment(items[i+1].dateYYYYMMDD).format("YYYY-MM-DD") + " is not hte same as " + moment(items[i].dateYYYYMMDD).add(1, "days").format("YYYY-MM-DD") )
         }
       }
     }

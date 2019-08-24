@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 import * as moment from 'moment';
 import { TimelogWindow } from './timelog-window.interface';
-import { TimelogChartLargeRowItem } from './timelog-chart-item/timelog-chart-large-row-item.class';
+import { TimelogChartLargeRowItem } from './timelog-chart-large-row-item/timelog-chart-large-row-item.class';
 import { DayStructureDataItem } from '../../../../api/data-items/day-structure-data-item.interface';
 import { TimelogDayStructureItem } from './timelog-day-structure-item.interface';
 import { TimelogChartLarge } from './timelog-chart-large.class';
@@ -18,16 +18,15 @@ export class TimelogChartComponent implements OnInit {
   constructor(private daybookService: DaybookService) { }
 
   private _activeDay: DaybookDayItem;
-  @Input() public set activeDay(activeDay: DaybookDayItem){
-    console.log("active day is set to: " + activeDay.dateYYYYMMDD);
-    this._activeDay = activeDay;
-    if(this._timelogChart){
-      console.log("setting the chart")
-      this._timelogChart.setActiveDay(activeDay);
-    }
-  };
   public get activeDay(): DaybookDayItem{
     return this._activeDay;
+  }
+  public set activeDay(activeDay: DaybookDayItem){
+    this._activeDay = activeDay;
+    if(this._timelogChart){
+      this._timelogChart.setActiveDay(activeDay);
+    }
+    
   }
 
   windowSize: number = 16;
@@ -39,14 +38,18 @@ export class TimelogChartComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.timelogWindow = this.activeDay.getTimelogWindow(this.windowSize);
+    this.activeDay = this.daybookService.activeDay;
+    this.daybookService.activeDay$.subscribe((dayChanged)=>{
+      this.activeDay = dayChanged;
+    });
+    this.timelogWindow = this.activeDay.getTimelogWindow(this.windowSize); 
     this._timelogChart = new TimelogChartLarge(this.timelogWindow, this.activeDay);
-
+    console.log("chart is ", this._timelogChart)
     // this.daybookService.activeDay$.subscribe(())
 
     this._timelogChart.timelogDateChanged$.subscribe((changedDate: moment.Moment)=>{
       this.daybookService.activeDayYYYYMMDD = changedDate.format("YYYY-MM-DD");
-    })
+    });
   }
 
 

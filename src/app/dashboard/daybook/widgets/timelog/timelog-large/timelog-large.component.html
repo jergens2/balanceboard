@@ -2,23 +2,23 @@
     <div class="timelog-header">
         <div class="header-buffer"></div>
         <div>
-            timeloggy
+            timeloggy - Active day:  {{ activeDay.dateYYYYMMDD }}
         </div>
         <div class="header-buffer" style="justify-content:flex-end;padding-right: 5px;">
-            <div *ngIf="mouseOverTimelog">
+            <!-- <div *ngIf="mouseOverTimelog">
                 <fa-icon [icon]="faCog" class="icon-button" (click)="onClickChangeView('day-structure')"
                     *ngIf="viewMode == 'timelog'"></fa-icon>
                 <fa-icon [icon]="faEye" class="icon-button" (click)="onClickChangeView('timelog')"
                     *ngIf="viewMode == 'day-structure'"></fa-icon>
-            </div>
+            </div> -->
         </div>
     </div>
     <div class="flex-column">
-        <app-timelog-chart [activeDay]="activeDay" *ngIf="viewMode == 'timelog'" class="flex-column">
+        <app-timelog-chart *ngIf="viewMode == 'timelog'" class="flex-column">
         </app-timelog-chart>
 
-        <app-day-structure-mode [dayStructureDataItems]="filteredStructureItems" *ngIf="viewMode == 'day-structure'"
-            class="flex-column"></app-day-structure-mode>
+        <!-- <app-day-structure-mode  *ngIf="viewMode == 'day-structure'"
+            class="flex-column"></app-day-structure-mode> -->
 
 
     </div>

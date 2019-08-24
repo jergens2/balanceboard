@@ -19,7 +19,7 @@ import { DayStructureModeComponent } from './widgets/timelog/timelog-large/day-s
 import { NewChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/new-chart-line-area/new-chart-line-area.component';
 import { MoveChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/move-chart-line-area/move-chart-line-area.component';
 import { TimelogChartComponent } from './widgets/timelog/timelog-large/timelog-chart/timelog-chart-large.component';
-import { TimelogChartItemComponent } from './widgets/timelog/timelog-large/timelog-chart/timelog-chart-item/timelog-chart-large-row-item.component';
+import { TimelogChartItemComponent } from './widgets/timelog/timelog-large/timelog-chart/timelog-chart-large-row-item/timelog-chart-large-row-item.component';
 
 
 @NgModule({
