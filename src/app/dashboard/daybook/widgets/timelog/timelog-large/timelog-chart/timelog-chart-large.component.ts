@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import { TimelogWindow } from './timelog-window.interface';
 import { TimelogChartLargeRowItem } from './timelog-chart-large-row-item/timelog-chart-large-row-item.class';
 import { DayStructureDataItem } from '../../../../api/data-items/day-structure-data-item.interface';
-import { TimelogDayStructureItem } from './timelog-day-structure-item.interface';
+import { TimelogDayStructureItem } from './timelog-day-structure-item.class';
 import { TimelogChartLarge } from './timelog-chart-large.class';
 import { DaybookService } from '../../../../daybook.service';
 

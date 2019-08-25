@@ -144,14 +144,10 @@ export class DaybookService implements ServiceAuthenticates {
         let saveNewDays: DaybookDayItem[] = [];
         if(!activeItem.previousDay){
           newPreviousDay = this.buildNewDaybookDayItem(moment(activeItem.dateYYYYMMDD).subtract(1, "days").format("YYYY-MM-DD"));
+          saveNewDays.push(newPreviousDay);
         }
         if(!activeItem.followingDay){
           newFollowingDay = this.buildNewDaybookDayItem(moment(activeItem.dateYYYYMMDD).add(1, "days").format("YYYY-MM-DD"));
-        }
-        if(newPreviousDay){
-          saveNewDays.push(newPreviousDay);
-        }
-        if(newFollowingDay){
           saveNewDays.push(newFollowingDay);
         }
         if(saveNewDays.length > 0){

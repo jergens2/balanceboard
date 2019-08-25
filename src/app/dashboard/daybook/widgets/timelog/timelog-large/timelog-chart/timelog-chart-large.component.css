@@ -29,6 +29,7 @@
 
 .timelog-guide-lines{
     grid-column: 1 / -1;
+    grid-row: 2 / -1;
     display:flex;
     flex-direction: column;
     justify-content: space-between;
@@ -36,6 +37,7 @@
 }
 .timelog-guide-lines-border-right{
     grid-column: 1 / span 1;
+    grid-row: 2 / -2;
     border-right: 1px solid rgb(220, 231, 235);
 }
 .timelog-guide-line{
@@ -83,10 +85,38 @@
     align-items: center;
     color: gray;
     font-size: 0.8em;
-    border: 1px solid rgba(83, 83, 83, 0.1);
-    background-color: rgba(0, 0, 0, 0.01);
+    /* border: 1px solid rgba(83, 83, 83, 0.1); */
+    /* background-color: rgba(0, 0, 0, 0.01); */
     border-radius: 10px;
+    position: relative;
+    z-index: 1;
 }
-/* .day-structure-item:hover{
-    border: 1px solid gray;
+/* .day-structure-item-border-bottom{
+    background-color:blue;
+}
+.day-structure-item-border-top{
+    background-color:red;
+}
+.day-structure-item-border-all{
+
 } */
+.day-structure-item-border-bottom-hover{
+    border-left: 1px solid rgba(83, 83, 83, 0.3);
+    border-right: 1px solid rgba(83, 83, 83, 0.3);
+    border-bottom: 1px solid rgba(83, 83, 83, 0.3);
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    cursor: pointer;
+}
+.day-structure-item-border-top-hover{
+    border-left: 1px solid rgba(83, 83, 83, 0.3);
+    border-right: 1px solid rgba(83, 83, 83, 0.3);
+    border-top: 1px solid rgba(83, 83, 83, 0.3);
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    cursor: pointer;
+}
+.day-structure-item-border-all-hover{
+    border: 1px solid rgba(83, 83, 83, 0.3);
+    cursor: pointer;
+}

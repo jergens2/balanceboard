@@ -1,7 +1,7 @@
 import { TimelogWindow } from "./timelog-window.interface";
 import { TimelogChartLargeRowItem } from "./timelog-chart-large-row-item/timelog-chart-large-row-item.class";
 import * as moment from 'moment';
-import { TimelogDayStructureItem } from "./timelog-day-structure-item.interface";
+import { TimelogDayStructureItem } from "./timelog-day-structure-item.class";
 import { DaybookDayItem } from "../../../../api/daybook-day-item.class";
 import { DayStructureDataItemType } from "../../../../api/data-items/day-structure-data-item-type.enum";
 import { Subject, Observable } from "rxjs";
@@ -13,8 +13,7 @@ export class TimelogChartLarge {
 
     window: TimelogWindow
     chartGrid: any;
-    guidelinesBorderRightNgStyle: any;
-    guidelinesNgStyle: any;
+
 
     chartRowItems: TimelogChartLargeRowItem[] = [];
     guidelineItems: any[] = [];
@@ -45,7 +44,7 @@ export class TimelogChartLarge {
     public wheelUp() {
 
 
-        
+
         let newStartTime: moment.Moment = moment(this.window.startTime).add(1, "hour");
         let newEndTime: moment.Moment = moment(this.window.endTime).add(1, "hour");
         this.window = {
@@ -86,7 +85,7 @@ export class TimelogChartLarge {
 
     private checkForDateChanges() {
         if (this.window.startTime.format("YYYY-MM-DD") != this.activeDay.dateYYYYMMDD) {
-            if (moment(this.window.startTime).startOf("hour").isSame(moment(this.window.startTime).endOf("day").subtract(this.window.size / 2, "hours").startOf("hour")) ) {
+            if (moment(this.window.startTime).startOf("hour").isSame(moment(this.window.startTime).endOf("day").subtract(this.window.size / 2, "hours").startOf("hour"))) {
                 this._timelogDateChanged$.next(this.window.startTime);
             }
         }
@@ -101,61 +100,14 @@ export class TimelogChartLarge {
 
     private buildTimelogChartRowItems(timelogWindow: TimelogWindow) {
         let timelogChartRowItems: TimelogChartLargeRowItem[] = [];
-        let currentTime: moment.Moment = moment(timelogWindow.windowStartTime);
-        let currentRowIndex: number = 1;
-
+        let currentTime: moment.Moment = moment(timelogWindow.startTime);
+        let currentRowIndex: number = 2;
         let timelogGuidelineItems: any[] = [];
-        let timelogGuidelinesGridRowStart = 1;
-        let timelogGuidelinesGridRowSpan = 1;
-
-
-        while (currentTime.isBefore(timelogWindow.windowEndTime)) {
-            if (currentTime.isSameOrAfter(timelogWindow.startTime) && currentTime.isSameOrBefore(timelogWindow.endTime)) {
-                if (timelogGuidelinesGridRowStart == 1) {
-                    timelogGuidelinesGridRowStart = currentRowIndex;
-                }
-                if (timelogGuidelinesGridRowStart > 10) {
-                    timelogGuidelinesGridRowSpan++;
-                }
-                let ampm: string = "a";
-                if (currentTime.isBefore(moment(currentTime).hour(12).minute(0).second(0).millisecond(0))) {
-                    ampm = "a";
-                } else {
-                    ampm = "p";
-                }
-                if (currentTime.minute() == 0) {
-                    let lineColor: string = "rgb(220, 231, 235)";
-                    let dateCross: any = {};
-                    if (currentTime.hour() == 0) {
-                        lineColor = "rgb(166, 196, 207)";
-                        dateCross = {
-                            previousDate: moment(currentTime).subtract(1, "millisecond").format("dddd, MMM DD, YYYY"),
-                            nextDate: moment(currentTime).format("dddd, MMM DD, YYYY"),
-                        }
-                    }
-
-                    timelogGuidelineItems.push({
-                        label: currentTime.format("h") + ampm,
-                        ngStyle: {
-                            "grid-column": "1 / span 1",
-                            "grid-row": "" + currentRowIndex + " / span 1",
-                        },
-                        borderTopNgStyle: {
-                            "border-top": "1px solid "+lineColor,
-                        },
-                        textColorNgStyle: {
-                            "color": lineColor,
-                        },
-                        dateCross: dateCross
-                    });
-                }
-            }
+        while (currentTime.isBefore(timelogWindow.endTime)) {
             let rowStart: moment.Moment = moment(currentTime);
             let rowEnd: moment.Moment = moment(currentTime).add(this.minutesPerIncrement, "minutes");
-            if(moment(rowEnd).hour() == 0 && moment(rowEnd).minute() == 0){
-                
+            if (moment(rowEnd).hour() == 0 && moment(rowEnd).minute() == 0) {
                 rowEnd = moment(currentTime).endOf("day");
-                console.log("its midnight.  setting to 11:59: " + rowEnd.format("YYYY-MM-DD hh:mm a"))
             }
             let newTimelogChartRowItem: TimelogChartLargeRowItem = new TimelogChartLargeRowItem(rowStart, rowEnd, currentRowIndex);
             let rowNgStyle: any = {
@@ -167,15 +119,37 @@ export class TimelogChartLarge {
             currentTime = moment(currentTime).add(this.minutesPerIncrement, "minutes");
             currentRowIndex++;
         }
+        currentTime = moment(timelogWindow.startTime).minute(0).second(0).millisecond(0);
+        for (let hourIndex = 0; hourIndex <= timelogWindow.size; hourIndex++) {
+            let ampm: string = "a";
+            if (currentTime.isBefore(moment(currentTime).hour(12).minute(0).second(0).millisecond(0))) {
+                ampm = "a";
+            } else {
+                ampm = "p";
+            }
+            let lineColor: string = "rgb(220, 231, 235)";
+            let dateCross: any = {};
+            if (currentTime.hour() == 0) {
+                lineColor = "rgb(166, 196, 207)";
+                dateCross = {
+                    previousDate: moment(currentTime).subtract(1, "millisecond").format("dddd, MMM DD, YYYY"),
+                    nextDate: moment(currentTime).format("dddd, MMM DD, YYYY"),
+                }
+            }
+            timelogGuidelineItems.push({
+                label: moment(currentTime).format("h") + ampm,
+                borderTopNgStyle: {
+                    "border-top": "1px solid " + lineColor,
+                },
+                textColorNgStyle: {
+                    "color": lineColor,
+                },
+                dateCross: dateCross
+            });
+            currentTime = moment(currentTime).add(hourIndex+1, "hours");
+        }
 
         this.chartRowItems = timelogChartRowItems;
-
-        this.guidelinesNgStyle = {
-            "grid-row": "" + timelogGuidelinesGridRowStart + " / span " + timelogGuidelinesGridRowSpan + "",
-        };
-        this.guidelinesBorderRightNgStyle = {
-            "grid-row": "" + timelogGuidelinesGridRowStart + " / span " + (timelogGuidelinesGridRowSpan - 2) + "",
-        };
         this.guidelineItems = timelogGuidelineItems;
 
         this.chartGrid = {
@@ -193,89 +167,42 @@ export class TimelogChartLarge {
 
 
     private buildDayStructureItems(timelogWindow: TimelogWindow) {
-        // console.log("Building Day structure items for window: " , timelogWindow.startTime.format("YYYY-MM-DD hh:mm a"), timelogWindow.endTime.format("YYYY-MM-DD hh:mm a"))
         let dayStructureItems: TimelogDayStructureItem[] = [];
-
-        // console.log("Building daystructure items for active date: " + this.activeDay.dateYYYYMMDD);
-        // console.log("Previous Date: " + this.activeDay.previousDay.dateYYYYMMDD);
-        // console.log("Following day: " + this.activeDay.followingDay.dateYYYYMMDD);
         let searchItems = [...this.activeDay.previousDay.substantialDayStructureDataItems, ...this.activeDay.substantialDayStructureDataItems, ...this.activeDay.followingDay.substantialDayStructureDataItems];
-        searchItems = searchItems.sort((item1, item2)=>{
-            if(item1.startTimeISO < item2.startTimeISO){
+        searchItems = searchItems.sort((item1, item2) => {
+            if (item1.startTimeISO < item2.startTimeISO) {
                 return -1;
             }
-            if(item1.startTimeISO > item2.startTimeISO){
+            if (item1.startTimeISO > item2.startTimeISO) {
                 return 1;
             }
             return 0;
         });
-        // console.log(this.activeDay.previousDay.dateYYYYMMDD + ": " , this.activeDay.previousDay.substantialDayStructureDataItems)
-        // console.log(this.activeDay.dateYYYYMMDD + ": " ,this.activeDay.substantialDayStructureDataItems)
-        // console.log(this.activeDay.followingDay.dateYYYYMMDD + ": " ,this.activeDay.followingDay.substantialDayStructureDataItems)
-        
-        // console.log("search items for 3 days is: " + searchItems.length)
-        searchItems.forEach((item)=>{
-            // console.log(item.startTimeISO)
-        })
-        let structureSearchItems = searchItems.filter((item)=>{
+        let structureSearchItems = searchItems.filter((item) => {
             return item.itemType == DayStructureDataItemType.StructureItem;
         });
-        // console.log("of those, reduced down to type.StructureItem: " + structureSearchItems.length);
-
         let inRangeItems = structureSearchItems.filter((item) => {
             let crossesStart: boolean = moment(item.startTimeISO).isSameOrBefore(moment(timelogWindow.startTime)) && moment(item.endTimeISO).isAfter(moment(timelogWindow.startTime));
             let during: boolean = moment(item.startTimeISO).isSameOrAfter(moment(timelogWindow.startTime)) && moment(item.endTimeISO).isSameOrBefore(moment(timelogWindow.endTime));
             let crossesEnd: boolean = moment(item.startTimeISO).isBefore(moment(timelogWindow.endTime)) && moment(item.endTimeISO).isSameOrAfter(moment(timelogWindow.endTime));
-            
-            // if(crossesStart){
-            //     // console.log("it crosses start" + moment(item.startTimeISO).format("YYYY-MM-DD hh:mm a"))
-            // }  
-            // if(during){
-            //     // console.log("it crossed during" + moment(item.startTimeISO).format("YYYY-MM-DD hh:mm a"))
-            // }
-            // if(crossesEnd){
-            //     console.log("it crossed end." + moment(item.startTimeISO).format("YYYY-MM-DD hh:mm a"))
-            // }
-            // if(!(crossesEnd || during || crossesStart)){
-            //     console.log("ITS NOT IN THE FRAME FOOL")
-            // }
-
-
-            
             return (crossesStart || during || crossesEnd);
         });
-        // console.log("of those, in range are: " + inRangeItems.length);
-        // inRangeItems.forEach((item)=>{
-        //     console.log(moment(item.startTimeISO).format("YYYY-MM-DD hh:mm a") + " to " + moment(item.endTimeISO).format("YYYY-MM-DD hh:mm a") + " - " + item.bodyLabel)
-        // })
-        // inRangeItems = inRangeItems.filter((item) => { return item.itemType == DayStructureDataItemType.StructureItem; });
-        // console.log("inrange items", inRangeItems)
         inRangeItems.forEach((templateItem) => {
-            let newItem: any = Object.assign({}, templateItem);
+            let newItem: TimelogDayStructureItem = new TimelogDayStructureItem(templateItem);
+            newItem.ngStyle = {};
+            newItem.ngClass = {};
             let crossesStart: boolean = moment(newItem.startTimeISO).isSameOrBefore(moment(timelogWindow.startTime)) && moment(newItem.endTimeISO).isAfter(moment(timelogWindow.startTime));
-            let during: boolean = moment(newItem.startTimeISO).isSameOrAfter(moment(timelogWindow.startTime)) && moment(newItem.endTimeISO).isSameOrBefore(moment(timelogWindow.endTime));
             let crossesEnd: boolean = moment(newItem.startTimeISO).isBefore(moment(timelogWindow.endTime)) && moment(newItem.endTimeISO).isSameOrAfter(moment(timelogWindow.endTime));
             if (crossesStart) {
                 newItem.startTimeISO = timelogWindow.startTime.toISOString();
-                // newItem.ngStyle = {
-                //     "border-left": "1px solid gray",
-                //     "border-right": "1px solid gray",
-                //     "border-bottom": "1px solid gray",
-                // };
+                newItem.border = "BOTTOM";
             }
             else if (crossesEnd) {
                 newItem.endTimeISO = timelogWindow.endTime.toISOString();
-                // newItem.ngStyle = {
-                //     "border-left": "1px solid gray",
-                //     "border-right": "1px solid gray",
-                //     "border-top": "1px solid gray",
-                // };
+                newItem.border = "TOP";
             } else {
-                // newItem.ngStyle = {
-                //     "border": "1px solid gray"
-                // };
+                newItem.border = "ALL";
             }
-            newItem.ngStyle = {};
             let gridRow = this.getGridRow(moment(newItem.startTimeISO), moment(newItem.endTimeISO));
             if (gridRow) {
                 newItem.ngStyle["grid-row"] = gridRow;
@@ -284,8 +211,6 @@ export class TimelogChartLarge {
             } else {
                 console.log("no grid row");
             }
-
-
         });
 
         this.dayStructureItems = dayStructureItems;
@@ -304,8 +229,8 @@ export class TimelogChartLarge {
             }
             if (row.endTime.isSame((endTime))) {
                 // console.log(""+row.endTime.format("YYYY-MM-DD hh:mm a") + " is the same end as " + endTime.format("YYYY-MM-DD hh:mm a"))
-                gridRowEnd = row.gridRowStart+1;
-                
+                gridRowEnd = row.gridRowStart + 1;
+
             }
         });
         if (!gridRowStart || !gridRowEnd) {
