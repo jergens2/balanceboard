@@ -7,13 +7,11 @@
                     {{ timelogGuideLine.label }}
                 </div>
                 <div *ngIf="timelogGuideLine.label" class="timelog-guide-label-line-container">
-                    <div *ngIf="timelogGuideLine.dateCross" class="timelog-guide-line-date-cross"
-                        [ngStyle]="timelogGuideLine.textColorNgStyle">
+                    <div *ngIf="timelogGuideLine.dateCross" class="timelog-guide-line-date-cross">
                         {{ timelogGuideLine.dateCross.previousDate }}
                     </div>
                     <div class="timelog-guide-line-tick" [ngStyle]="timelogGuideLine.borderTopNgStyle"></div>
-                    <div *ngIf="timelogGuideLine.dateCross" class="timelog-guide-line-date-cross"
-                        [ngStyle]="timelogGuideLine.textColorNgStyle">
+                    <div *ngIf="timelogGuideLine.dateCross" class="timelog-guide-line-date-cross">
                         {{ timelogGuideLine.dateCross.nextDate }}
                     </div>
                 </div>

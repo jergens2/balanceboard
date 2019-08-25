@@ -66,6 +66,7 @@
     display:flex;
     flex-direction: row;
     justify-content: center;
+    color: rgb(70, 119, 148);
 }
 .timelog-guide-line-label{
     width:23px;
