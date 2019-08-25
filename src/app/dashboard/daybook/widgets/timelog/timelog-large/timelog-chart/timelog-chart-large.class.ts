@@ -122,13 +122,13 @@ export class TimelogChartLarge {
         currentTime = moment(timelogWindow.startTime).minute(0).second(0).millisecond(0);
         for (let hourIndex = 0; hourIndex <= timelogWindow.size; hourIndex++) {
             let ampm: string = "a";
-            if (currentTime.isBefore(moment(currentTime).hour(12).minute(0).second(0).millisecond(0))) {
+            if (currentTime.hour() < 12) {
                 ampm = "a";
-            } else {
+            } else if (currentTime.hour() >= 12 ){
                 ampm = "p";
             }
             let lineColor: string = "rgb(220, 231, 235)";
-            let dateCross: any = {};
+            let dateCross: any = null;
             if (currentTime.hour() == 0) {
                 lineColor = "rgb(166, 196, 207)";
                 dateCross = {
@@ -146,7 +146,7 @@ export class TimelogChartLarge {
                 },
                 dateCross: dateCross
             });
-            currentTime = moment(currentTime).add(hourIndex+1, "hours");
+            currentTime = moment(currentTime).add(1, "hours");
         }
 
         this.chartRowItems = timelogChartRowItems;
@@ -154,7 +154,7 @@ export class TimelogChartLarge {
 
         this.chartGrid = {
             ngStyle: {
-                "grid-template-rows": "8px repeat(" + this.chartRowItems.length + ", 1fr) 8px",
+                "grid-template-rows": "8px repeat(" + this.chartRowItems.length + ", 1fr) 8px 9px",
             },
             windowSize: this.window.size,
             startTime: timelogWindow.windowStartTime,
