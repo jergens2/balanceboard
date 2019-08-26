@@ -35,6 +35,7 @@ export class DaybookDayItem{
             dailyTaskListDataItems: [],
             dayStructureDataItems: [],
             sleepCycleDataItems: [],
+            dailyWeightLogEntryKg: 0,
             dayTemplateId: "",
             scheduledEventIds: [],
             notebookEntryIds: [],
@@ -79,6 +80,12 @@ export class DaybookDayItem{
         this.dataChanged();
     }
 
+    public get dailyWeightLogEntryKg(): number { return this._httpShape.dailyWeightLogEntryKg; }
+    public set dailyWeightLogEntryKg(kg: number){ 
+        this._httpShape.dailyWeightLogEntryKg = kg;
+        this.dataChanged();
+    }
+    
     public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this._httpShape.dailyTaskListDataItems; }
     
     public get dayTemplateId(): string { return this._httpShape.dayTemplateId; }
@@ -136,24 +143,7 @@ export class DaybookDayItem{
     }
 
 
-    public getTimelogWindow(windowSizeHours: number): TimelogWindow {
 
-        /**
-         *  I think I might just get rid of the TimelogWindow entirely, and just use the 2 variables as reference points (wakeup and fallasleep time);
-         * 
-         */
-        let startTime: moment.Moment = moment(this.wakeUpTime);
-        let endTime: moment.Moment = moment(this.fallAsleepTime);
-        
-        let window: TimelogWindow = {
-            windowStartTime: moment(startTime).subtract(1, "hour"),
-            startTime: startTime,
-            endTime: endTime,
-            windowEndTime: moment(endTime).add(1, "hour"),
-            size: endTime.diff(startTime, "hours"),
-        }
-        return window;
-    }
 
 
 
@@ -212,6 +202,24 @@ export class DaybookDayItem{
 
     // private _wakeUpTime: moment.Moment;
     // private _fallAsleepTime: moment.Moment;
+    public getTimelogWindow(windowSizeHours: number): TimelogWindow {
+
+        /**
+         *  I think I might just get rid of the TimelogWindow entirely, and just use the 2 variables as reference points (wakeup and fallasleep time);
+         * 
+         */
+        let startTime: moment.Moment = moment(this.wakeUpTime).subtract(1, "hour");
+        let endTime: moment.Moment = moment(this.fallAsleepTime).add(1, "hour");
+        
+        let window: TimelogWindow = {
+            windowStartTime: moment(startTime).subtract(1, "hour"),
+            startTime: startTime,
+            endTime: endTime,
+            windowEndTime: moment(endTime).add(1, "hour"),
+            size: endTime.diff(startTime, "hours"),
+        }
+        return window;
+    }
 
     public get fallAsleepTime(): moment.Moment{
         let fallAsleepTime = this.sleepStructureDataItems.find((item)=>{

@@ -16,7 +16,7 @@ export interface DaybookDayItemHttpShape{
     dailyTaskListDataItems: DailyTaskListDataItem[];
     dayStructureDataItems: DayStructureDataItem[];
     sleepCycleDataItems: DayStructureSleepCycleDataItem[];
-    // dailyWeightLogDataItem:
+    dailyWeightLogEntryKg: number;
 
     // These represent references to data stored in other tables in the database.
     

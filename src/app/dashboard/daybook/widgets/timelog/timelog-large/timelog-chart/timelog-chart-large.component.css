@@ -90,7 +90,6 @@
 }
 .timelog-guide-line-tick{
     height:1px;
-    flex-grow: 2;
     /* border-top: 1px solid rgb(220, 231, 235); */
 }
 
@@ -109,10 +108,10 @@
     position: relative;
     z-index: 13;
 }
-.day-structure-item:hover{
+/* .day-structure-item:hover{
     border: 1px solid gray;
     background-color: rgba(128, 128, 128, 0.055);
-}
+} */
 /* .day-structure-item-border-bottom{
     border-left: 1px solid rgba(146, 146, 146, 0.1);
     border-right: 1px solid rgba(146, 146, 146, 0.1);

@@ -278,12 +278,11 @@ export class TimelogChartLarge {
 
 
     private _nowTime: moment.Moment = moment();
-    // private _wakeUpTime: moment.Moment = moment(this.activeDay.wakeUpTime);
-    // private _bedTime: moment.Moment = moment(this.activeDay.bedTime)
+
 
     private _nowLine: any = null;
     private _wakeUpLine: any = null;
-    private _bedTimeLine: any = null;
+    private _fallAsleepLine: any = null;
 
     private timerSubscription: Subscription = new Subscription();
     private initiateNowClock() {
@@ -304,7 +303,34 @@ export class TimelogChartLarge {
             }else{
                 this._nowLine = null;
             }
+            if(moment(this.activeDay.wakeUpTime).isSameOrAfter(moment(this.window.startTime)) && moment(this.activeDay.wakeUpTime).isSameOrBefore(moment(this.window.endTime))){
+                let durationMilliseconds = this.window.endTime.diff(this.window.startTime, "milliseconds");
+                let percentage: number = (this.activeDay.wakeUpTime.diff(this.window.startTime, "milliseconds") / durationMilliseconds) * 100;
+                this._wakeUpLine = {
+                    ngClass: {
 
+                    },
+                    ngStyle: {
+                        "height":""+percentage.toFixed(2)+"%",
+                    }
+                }
+            }else{
+                this._wakeUpLine = null;
+            }
+            if(moment(this.activeDay.fallAsleepTime).isSameOrAfter(moment(this.window.startTime)) && moment(this.activeDay.fallAsleepTime).isSameOrBefore(moment(this.window.endTime))){
+                let durationMilliseconds = this.window.endTime.diff(this.window.startTime, "milliseconds");
+                let percentage: number = (this.activeDay.fallAsleepTime.diff(this.window.startTime, "milliseconds") / durationMilliseconds) * 100;
+                this._fallAsleepLine = {
+                    ngClass: {
+
+                    },
+                    ngStyle: {
+                        "height":""+percentage.toFixed(2)+"%",
+                    }
+                }
+            }else{
+                this._fallAsleepLine = null;
+            }
         });
     }
 
@@ -315,8 +341,8 @@ export class TimelogChartLarge {
     public get wakeUpLine(): any{
         return this._wakeUpLine;
     }
-    public get bedTimeLine(): any{
-        return this._bedTimeLine;
+    public get fallAsleepLine(): any{
+        return this._fallAsleepLine;
     }
 
 
