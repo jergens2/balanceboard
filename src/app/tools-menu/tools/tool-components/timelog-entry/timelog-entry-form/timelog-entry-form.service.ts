@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { DaybookService } from '../../../../../dashboard/daybook/daybook.service';
 import * as moment from 'moment';
 import { DaybookTimelogEntryDataItem } from '../../../../../dashboard/daybook/api/data-items/daybook-timelog-entry-data-item.interface';
-import { DayStructureSleepCycle } from '../../../../../dashboard/daybook/api/data-items/day-structure-sleep-cycle.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +22,6 @@ export class TimelogEntryFormService {
     this.daybookService.today.updateTimelogEntry(timelogEntry);
   }
 
-  public getSleepCycle(time: moment.Moment): DayStructureSleepCycle{
-    return this.daybookService.getSleepCycle(time);
-  }
+
 
 }

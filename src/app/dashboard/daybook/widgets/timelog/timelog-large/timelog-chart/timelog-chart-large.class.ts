@@ -3,8 +3,8 @@ import { TimelogChartLargeRowItem } from "./timelog-chart-large-row-item/timelog
 import * as moment from 'moment';
 import { TimelogDayStructureItem } from "./timelog-day-structure-item.class";
 import { DaybookDayItem } from "../../../../api/daybook-day-item.class";
-import { DayStructureDataItemType } from "../../../../api/data-items/day-structure-data-item-type.enum";
-import { Subject, Observable } from "rxjs";
+import { Subject, Observable, timer, Subscription } from "rxjs";
+import { DayStructureTimeOfDay } from "../../../../api/data-items/day-structure-time-of-day.enum";
 
 export class TimelogChartLarge {
 
@@ -27,6 +27,7 @@ export class TimelogChartLarge {
         console.log("timelog chart window: " + this.window.startTime.format("YYYY-MM-DD hh:mm a") + " to " + this.window.endTime.format("YYYY-MM-DD hh:mm a"))
         this.buildTimelogChartRowItems(this.window);
 
+        this.initiateNowClock();
         // console.log("timelog window is: " + timelogWindow.startTime.format("h:mm a") + " to " + timelogWindow.endTime.format("h:mm a"));
 
         // let startTime: moment.Moment = moment(timelogWindow.startTime).subtract(1, "hour");
@@ -34,7 +35,17 @@ export class TimelogChartLarge {
 
 
 
-
+        /**
+         * 
+         * 2019-08-25
+         * 
+         * Something to consider with regards to performance and method here
+         * every time the timelog window changes, the whole chart is rebuilt essentially, all the timelogChartRowItems, of which there are a few hundred, so it does take a considerable number of milliseconds,
+         * and so when scrolling it is very laggy feeling.
+         * 
+         * perhaps a mechanism to improve performance would be to, in stead of rebuilding every time, just make the changes.  not sure how difficult that would be but it might improve the performance.
+         * for example, in stead of rebuilding all rows, just remove the ones from the one end, and add new ones to the other end.  in stead of doing... hundreds of operations, perhaps it would only be tens of operations.
+         */
 
 
     }
@@ -73,6 +84,7 @@ export class TimelogChartLarge {
 
     private setWindow(timelogWindow: TimelogWindow) {
         this.window = timelogWindow;
+        this.initiateNowClock();
         this.buildTimelogChartRowItems(this.window);
         this.checkForDateChanges();
     }
@@ -124,7 +136,7 @@ export class TimelogChartLarge {
             let ampm: string = "a";
             if (currentTime.hour() < 12) {
                 ampm = "a";
-            } else if (currentTime.hour() >= 12 ){
+            } else if (currentTime.hour() >= 12) {
                 ampm = "p";
             }
             let lineColor: string = "rgb(220, 231, 235)";
@@ -168,7 +180,7 @@ export class TimelogChartLarge {
 
     private buildDayStructureItems(timelogWindow: TimelogWindow) {
         let dayStructureItems: TimelogDayStructureItem[] = [];
-        let searchItems = [...this.activeDay.previousDay.substantialDayStructureDataItems, ...this.activeDay.substantialDayStructureDataItems, ...this.activeDay.followingDay.substantialDayStructureDataItems];
+        let searchItems = [...this.activeDay.previousDay.dayStructureDataItems, ...this.activeDay.dayStructureDataItems, ...this.activeDay.followingDay.dayStructureDataItems];
         searchItems = searchItems.sort((item1, item2) => {
             if (item1.startTimeISO < item2.startTimeISO) {
                 return -1;
@@ -178,10 +190,7 @@ export class TimelogChartLarge {
             }
             return 0;
         });
-        let structureSearchItems = searchItems.filter((item) => {
-            return item.itemType == DayStructureDataItemType.StructureItem;
-        });
-        let inRangeItems = structureSearchItems.filter((item) => {
+        let inRangeItems = searchItems.filter((item) => {
             let crossesStart: boolean = moment(item.startTimeISO).isSameOrBefore(moment(timelogWindow.startTime)) && moment(item.endTimeISO).isAfter(moment(timelogWindow.startTime));
             let during: boolean = moment(item.startTimeISO).isSameOrAfter(moment(timelogWindow.startTime)) && moment(item.endTimeISO).isSameOrBefore(moment(timelogWindow.endTime));
             let crossesEnd: boolean = moment(item.startTimeISO).isBefore(moment(timelogWindow.endTime)) && moment(item.endTimeISO).isSameOrAfter(moment(timelogWindow.endTime));
@@ -193,20 +202,45 @@ export class TimelogChartLarge {
             newItem.ngClass = {};
             let crossesStart: boolean = moment(newItem.startTimeISO).isSameOrBefore(moment(timelogWindow.startTime)) && moment(newItem.endTimeISO).isAfter(moment(timelogWindow.startTime));
             let crossesEnd: boolean = moment(newItem.startTimeISO).isBefore(moment(timelogWindow.endTime)) && moment(newItem.endTimeISO).isSameOrAfter(moment(timelogWindow.endTime));
+            let preceedsMidnight: boolean = moment(newItem.endTimeISO).isSame(moment(newItem.endTimeISO).endOf("day"));
+            let followsMidnight: boolean = moment(newItem.startTimeISO).isSame(moment(newItem.startTimeISO).startOf("day"));
+
+            newItem.border = "ALL";
+            newItem.ngClass = ["day-structure-item-border-all"];
+
             if (crossesStart) {
                 newItem.startTimeISO = timelogWindow.startTime.toISOString();
                 newItem.border = "BOTTOM";
+                newItem.ngClass = ["day-structure-item-border-bottom"];
             }
-            else if (crossesEnd) {
+            if (crossesEnd) {
                 newItem.endTimeISO = timelogWindow.endTime.toISOString();
                 newItem.border = "TOP";
-            } else {
-                newItem.border = "ALL";
+                newItem.ngClass = ["day-structure-item-border-top"];
             }
+            if (preceedsMidnight) {
+                newItem.border = "TOP";
+                newItem.ngClass = ["day-structure-item-border-top"];
+            }
+            if (followsMidnight) {
+                newItem.border = "BOTTOM";
+                newItem.ngClass = ["day-structure-item-border-bottom"];
+            }
+
+            if(newItem.timeOfDay == DayStructureTimeOfDay.Morning){
+                newItem.bodyLabel = moment(newItem.startTimeISO).format("dddd") + " Morning"; 
+            }
+            if(newItem.timeOfDay == DayStructureTimeOfDay.Afternoon){
+                newItem.bodyLabel = moment(newItem.startTimeISO).format("dddd") + " Afternoon"; 
+            }
+            if(newItem.timeOfDay == DayStructureTimeOfDay.Evening){
+                newItem.bodyLabel = moment(newItem.startTimeISO).format("dddd") + " Evening"; 
+            }
+
             let gridRow = this.getGridRow(moment(newItem.startTimeISO), moment(newItem.endTimeISO));
             if (gridRow) {
                 newItem.ngStyle["grid-row"] = gridRow;
-                newItem.ngStyle["background-color"] = templateItem.bodyBackgroundColor;
+                // newItem.ngStyle["background-color"] = templateItem.bodyBackgroundColor;
                 dayStructureItems.push(newItem);
             } else {
                 console.log("no grid row");
@@ -241,5 +275,49 @@ export class TimelogChartLarge {
             return "" + gridRowStart + " / " + gridRowEnd;
         }
     }
+
+
+    private _nowTime: moment.Moment = moment();
+    // private _wakeUpTime: moment.Moment = moment(this.activeDay.wakeUpTime);
+    // private _bedTime: moment.Moment = moment(this.activeDay.bedTime)
+
+    private _nowLine: any = null;
+    private _wakeUpLine: any = null;
+    private _bedTimeLine: any = null;
+
+    private timerSubscription: Subscription = new Subscription();
+    private initiateNowClock() {
+        this.timerSubscription.unsubscribe();
+        this.timerSubscription = timer(0, 15000).subscribe((tick) => {
+            this._nowTime = moment();
+            if(moment(this._nowTime).isSameOrAfter(moment(this.window.startTime)) && moment(this._nowTime).isSameOrBefore(moment(this.window.endTime))){
+                let durationMilliseconds = this.window.endTime.diff(this.window.startTime, "milliseconds");
+                let percentage: number = (this._nowTime.diff(this.window.startTime, "milliseconds") / durationMilliseconds) * 100;
+                this._nowLine = {
+                    ngClass: {
+
+                    },
+                    ngStyle: {
+                        "height":""+percentage.toFixed(2)+"%",
+                    }
+                }
+            }else{
+                this._nowLine = null;
+            }
+
+        });
+    }
+
+
+    public get nowLine(): any {
+        return this._nowLine;
+    }
+    public get wakeUpLine(): any{
+        return this._wakeUpLine;
+    }
+    public get bedTimeLine(): any{
+        return this._bedTimeLine;
+    }
+
 
 }

@@ -5,7 +5,6 @@ import * as moment from 'moment';
 import { DayStructureTimeColumnRow } from './time-column-row.class';
 import { Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { DayStructureDataItem } from '../../../../api/data-items/day-structure-data-item.interface';
-import { DayStructureDataItemType } from '../../../../api/data-items/day-structure-data-item-type.enum';
 
 @Component({
   selector: 'app-day-structure-mode',
@@ -25,15 +24,18 @@ export class DayStructureModeComponent implements OnInit, OnDestroy {
   @Input() dayStructureDataItems: DayStructureDataItem[];
 
   public get sleepCycleItems(): DayStructureDataItem[]{
-    return this.dayStructureDataItems.filter((item)=>{
-      return item.itemType == DayStructureDataItemType.SleepCycle;
-    })
+    // return this.dayStructureDataItems.filter((item)=>{
+    //   return item.itemType == DayStructureDataItemType.SleepCycle;
+    // })
+    return [];
   }
 
   public get dayStructureItems(): DayStructureDataItem[]{
-    return this.dayStructureDataItems.filter((item)=>{
-      return item.itemType == DayStructureDataItemType.StructureItem;
-    })
+    // return this.dayStructureDataItems.filter((item)=>{
+    //   return item.itemType == DayStructureDataItemType.StructureItem;
+    // })
+    console.log("bigly disabled");
+    return [];
   }
 
   ngOnInit() {

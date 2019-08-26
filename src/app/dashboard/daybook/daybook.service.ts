@@ -8,11 +8,7 @@ import { DayTemplatesService } from '../scheduling/day-templates/day-templates.s
 import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
 import { ScheduleRotationsService } from '../scheduling/schedule-rotations/schedule-rotations.service';
 import { RecurringTasksService } from '../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
-import { DailyTaskListDataItem } from './api/data-items/daily-task-list-data-item.interface';
-import { DayStructureDataItem } from './api/data-items/day-structure-data-item.interface';
-import  buildDefaultDataItems from './api/data-items/default-day-structure-data-items';
-import { DaybookTimelogEntryDataItem } from './api/data-items/daybook-timelog-entry-data-item.interface';
-import { DayStructureSleepCycle } from './api/data-items/day-structure-sleep-cycle.enum';
+
 
 @Injectable({
   providedIn: 'root'
@@ -62,22 +58,22 @@ export class DaybookService implements ServiceAuthenticates {
    *  _activeDay is for the view, whatever day that the user is looking at, including if today.  Starts on today, but then changes if user navigates to a different date. 
    */
 
-  public getSleepCycle(time: moment.Moment): DayStructureSleepCycle {
-    if (time.format('YYYY-MM-DD') === this._todayYYYYMMDD) {
-      return this.today.getSleepCycle(time);
-    } else {
-      let dayBookDayItemOnDate: DaybookDayItem = this.getDaybookDayItemByDate(time.format("YYYY-MM-DD"));
-      if (dayBookDayItemOnDate) {
-        return dayBookDayItemOnDate.getSleepCycle(time);
-      } else {
-        console.log("Warning: daybook.service: new daybook day item is being created for: " + time.format("YYYY-MM-DD"))
-        let newDaybookDayItem: DaybookDayItem = new DaybookDayItem(time.format("YYYY-MM-DD"));
-        newDaybookDayItem.dayStructureDataItems = buildDefaultDataItems(time);
-        this.daybookHttpRequestService.saveDaybookDayItem(newDaybookDayItem);
-        return newDaybookDayItem.getSleepCycle(time);
-      }
-    }
-  }
+  // public getSleepCycle(time: moment.Moment): DayStructureSleepCycle {
+  //   if (time.format('YYYY-MM-DD') === this._todayYYYYMMDD) {
+  //     return this.today.getSleepCycle(time);
+  //   } else {
+  //     let dayBookDayItemOnDate: DaybookDayItem = this.getDaybookDayItemByDate(time.format("YYYY-MM-DD"));
+  //     if (dayBookDayItemOnDate) {
+  //       return dayBookDayItemOnDate.getSleepCycle(time);
+  //     } else {
+  //       console.log("Warning: daybook.service: new daybook day item is being created for: " + time.format("YYYY-MM-DD"))
+  //       let newDaybookDayItem: DaybookDayItem = new DaybookDayItem(time.format("YYYY-MM-DD"));
+  //       newDaybookDayItem.dayStructureDataItems = buildDefaultDataItems(time);
+  //       this.daybookHttpRequestService.saveDaybookDayItem(newDaybookDayItem);
+  //       return newDaybookDayItem.getSleepCycle(time);
+  //     }
+  //   }
+  // }
 
 
   private _clock: moment.Moment;
@@ -207,6 +203,7 @@ export class DaybookService implements ServiceAuthenticates {
     console.log("Building a new Daybook item: " , dateYYYYMMDD);
     daybookDayItem.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";
     daybookDayItem.dayStructureDataItems = this.scheduleRotationService.getDayStructureItemsForDate(dateYYYYMMDD);
+    daybookDayItem.sleepStructureDataItems = this.scheduleRotationService.getSleepCycleItemsForDate(dateYYYYMMDD);
     daybookDayItem.generateInitialTimelogEntries();
 
     console.log("Structure items: ", daybookDayItem.dayStructureDataItems)

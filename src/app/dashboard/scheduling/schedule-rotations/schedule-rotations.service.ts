@@ -11,6 +11,8 @@ import { DayTemplatesService } from '../day-templates/day-templates.service';
 import { DayTemplate } from '../day-templates/day-template.class'
 import { DayStructureDataItem } from '../../daybook/api/data-items/day-structure-data-item.interface';
 import buildDefaultDataItems  from '../../daybook/api/data-items/default-day-structure-data-items';
+import buildDefaultSleepItems from '../../daybook/api/data-items/default-sleep-cycle-items';
+import { DayStructureSleepCycleDataItem } from '../../daybook/api/data-items/day-structure-sleep-cycle-data-item.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +66,9 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
   public getDayStructureItemsForDate(dateYYYYMMDD: string): DayStructureDataItem[]{
     console.log("Finding day structure items for date: " + dateYYYYMMDD);
     return buildDefaultDataItems(moment(dateYYYYMMDD).startOf("day"));
+  }
+  public getSleepCycleItemsForDate(dateYYYYMMDD: string): DayStructureSleepCycleDataItem[]{
+    return buildDefaultSleepItems(dateYYYYMMDD);
   }
 
   public getDayTemplateForDate(dateYYYYMMDD: string): DayTemplate {

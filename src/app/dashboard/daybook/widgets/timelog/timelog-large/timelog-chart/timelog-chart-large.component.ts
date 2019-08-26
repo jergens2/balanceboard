@@ -29,7 +29,7 @@ export class TimelogChartComponent implements OnInit {
     
   }
 
-  windowSize: number = 16;
+  windowSize: number = 18;
 
   private timelogWindow: TimelogWindow;
   private _timelogChart: TimelogChartLarge;
@@ -51,7 +51,6 @@ export class TimelogChartComponent implements OnInit {
       this.daybookService.activeDayYYYYMMDD = changedDate.format("YYYY-MM-DD");
     });
   }
-
 
 
 

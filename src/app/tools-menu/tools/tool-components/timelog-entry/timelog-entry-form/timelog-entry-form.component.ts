@@ -132,7 +132,6 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
         endTimeISO: endTime,
         utcOffsetMinutes: utcOffsetMinutes,
         isConfirmed: true,
-        sleepCycle: this.timelogEntryService.getSleepCycle(this.timelogEntryStart),
         note: description,
         timelogEntryActivities: this.timelogEntryActivities
       }

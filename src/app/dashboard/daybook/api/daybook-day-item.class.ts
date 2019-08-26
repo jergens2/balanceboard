@@ -6,12 +6,11 @@ import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.in
 import { Subject, Observable } from "rxjs";
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import * as moment from 'moment';
-import { DayStructureSleepCycle } from "./data-items/day-structure-sleep-cycle.enum";
-import { DayStructureDataItemType } from "./data-items/day-structure-data-item-type.enum";
+import { DayStructureSleepCycleAction } from "./data-items/day-structure-sleep-cycle-action.enum";
 import { TimelogWindow } from "../widgets/timelog/timelog-large/timelog-chart/timelog-window.interface";
+import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
 
-export class DaybookDayItem {
-
+export class DaybookDayItem{
 
 
     private _httpShape: DaybookDayItemHttpShape;
@@ -35,6 +34,7 @@ export class DaybookDayItem {
             daybookActivityDataItems: [],
             dailyTaskListDataItems: [],
             dayStructureDataItems: [],
+            sleepCycleDataItems: [],
             dayTemplateId: "",
             scheduledEventIds: [],
             notebookEntryIds: [],
@@ -67,18 +67,20 @@ export class DaybookDayItem {
         this._httpShape.daybookActivityDataItems = activityDataItems;
     }
 
+    public get dayStructureDataItems(): DayStructureDataItem[] { return this._httpShape.dayStructureDataItems; }
     public set dayStructureDataItems(dayStructureDataItems: DayStructureDataItem[]) {
         this._httpShape.dayStructureDataItems = dayStructureDataItems;
         this.dataChanged();
     }
 
-    public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this._httpShape.dailyTaskListDataItems; }
-    public get dayStructureDataItems(): DayStructureDataItem[] { return this._httpShape.dayStructureDataItems; }
-    public get substantialDayStructureDataItems(): DayStructureDataItem[] {
-        return this.dayStructureDataItems.filter((item) => {
-            return item.startTimeISO != item.endTimeISO;
-        })
+    public get sleepStructureDataItems(): DayStructureSleepCycleDataItem[] { return this._httpShape.sleepCycleDataItems; }
+    public set sleepStructureDataItems(sleepCycleItems: DayStructureSleepCycleDataItem[]) {
+        this._httpShape.sleepCycleDataItems = sleepCycleItems;
+        this.dataChanged();
     }
+
+    public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this._httpShape.dailyTaskListDataItems; }
+    
     public get dayTemplateId(): string { return this._httpShape.dayTemplateId; }
     public get scheduledEventIds(): string[] { return this._httpShape.scheduledEventIds; }
     public get notebookEntryIds(): string[] { return this._httpShape.notebookEntryIds; }
@@ -117,7 +119,6 @@ export class DaybookDayItem {
     }
     private _followingDay: DaybookDayItem;
     public set followingDay(followingDay: DaybookDayItem){
-        console.log
         this._followingDay = followingDay;
     }
     public get followingDay(): DaybookDayItem{
@@ -135,50 +136,14 @@ export class DaybookDayItem {
     }
 
 
-    public getSleepCycle(timeOfDay: moment.Moment): DayStructureSleepCycle {
-        return this.positionInSleepCycle(timeOfDay).sleepCycle;
-    }
-
-    public get sleepCycleItems(): DayStructureDataItem[] {
-        return this.dayStructureDataItems.filter((item) => {
-            return (item.itemType == DayStructureDataItemType.SleepCycle && item.startTimeISO != item.endTimeISO);
-        }).sort((sleepItem1, sleepItem2)=>{
-            if(sleepItem1.startTimeISO < sleepItem2.startTimeISO){
-                return -1;
-            }
-            if(sleepItem1.startTimeISO > sleepItem2.startTimeISO){
-                return 1;
-            }
-            return 0;
-        });
-    }
-
-    public get dayStructureItems(): DayStructureDataItem[] {
-        return this.dayStructureDataItems.filter((item) => {
-            return item.itemType == DayStructureDataItemType.StructureItem;
-        })
-    }
-
-
     public getTimelogWindow(windowSizeHours: number): TimelogWindow {
-        let startTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");
-        if(this.sleepCycleItems[0].sleepCycle == DayStructureSleepCycle.Awake){
-            if(this.previousDay){
-                startTime = moment(this.previousDay.sleepCycleItems[this.previousDay.sleepCycleItems.length-1].startTimeISO);
-            }
-        }else if(this.sleepCycleItems[0].sleepCycle == DayStructureSleepCycle.Sleeping){
-            let longestDurationAwakeMinutes: number = 0;
-            let longestDurationAwake: DayStructureDataItem;
-            this.sleepCycleItems.filter((item)=> { return item.sleepCycle == DayStructureSleepCycle.Awake}).forEach((item)=>{
-                let durationMinutes: number = moment(item.endTimeISO).diff(moment(item.startTimeISO), "minutes");
-                if(durationMinutes > longestDurationAwakeMinutes){
-                    longestDurationAwakeMinutes = durationMinutes;
-                    longestDurationAwake = item;
-                };
-            });
-            startTime = moment(longestDurationAwake.startTimeISO);
-        }
-        let endTime: moment.Moment = moment(startTime).add(windowSizeHours, "hours");
+
+        /**
+         *  I think I might just get rid of the TimelogWindow entirely, and just use the 2 variables as reference points (wakeup and fallasleep time);
+         * 
+         */
+        let startTime: moment.Moment = moment(this.wakeUpTime);
+        let endTime: moment.Moment = moment(this.fallAsleepTime);
         
         let window: TimelogWindow = {
             windowStartTime: moment(startTime).subtract(1, "hour"),
@@ -192,12 +157,11 @@ export class DaybookDayItem {
 
 
 
-    private buildTimelogEntry(nowTime: moment.Moment, startTimeISO: string, endTimeISO: string, sleepCycle: DayStructureSleepCycle): DaybookTimelogEntryDataItem {
+    private buildTimelogEntry(nowTime: moment.Moment, startTimeISO: string, endTimeISO: string): DaybookTimelogEntryDataItem {
         let timelogEntry: DaybookTimelogEntryDataItem = {
             startTimeISO: startTimeISO,
             endTimeISO: endTimeISO,
             utcOffsetMinutes: nowTime.utcOffset(),
-            sleepCycle: sleepCycle,
             timelogEntryActivities: [],
             isConfirmed: false,
             note: "",
@@ -242,23 +206,34 @@ export class DaybookDayItem {
     }
 
 
-    public getDayStructureItemBySleepType(sleepType: DayStructureSleepCycle): DayStructureDataItem {
-        return this.dayStructureDataItems.find((item) => {
-            return item.sleepCycle === sleepType;
-        })
+    // private setSleepCycleTimes(){
+    //     this._wakeUpTime = 
+    // }
+
+    // private _wakeUpTime: moment.Moment;
+    // private _fallAsleepTime: moment.Moment;
+
+    public get fallAsleepTime(): moment.Moment{
+        let fallAsleepTime = this.sleepStructureDataItems.find((item)=>{
+            return item.sleepAction == DayStructureSleepCycleAction.FallAsleep;
+        });
+        if(fallAsleepTime){
+            return moment(fallAsleepTime.time);
+        }else{
+            console.log("Error with fallAsleepTime");
+        }
+    }
+    public get wakeUpTime(): moment.Moment{
+        let wakeUpTime = this.sleepStructureDataItems.find((item)=>{
+            return item.sleepAction == DayStructureSleepCycleAction.WakeUp;
+        });
+        if(wakeUpTime){
+            return moment(wakeUpTime.time);
+        }else{
+            console.log("Error with fallAsleepTime");
+        }
     }
 
-    private positionInSleepCycle(time: moment.Moment): DayStructureDataItem {
-        let currentPosition: DayStructureDataItem;
-        for (let i = 0; i < this.substantialDayStructureDataItems.length; i++) {
-            let isCurrent: boolean = time.isSameOrAfter(moment(this.substantialDayStructureDataItems[i].startTimeISO)) && time.isSameOrBefore(moment(this.substantialDayStructureDataItems[i].endTimeISO));
-            if (isCurrent) {
-                currentPosition = this.substantialDayStructureDataItems[i];
-            }
-        }
-        console.log("Returning position: " , currentPosition);
-        return currentPosition;
-    }
 
     public timelogEntryStartTime(fromNow: moment.Moment): moment.Moment {
         let startTime: moment.Moment = moment();
@@ -293,26 +268,6 @@ export class DaybookDayItem {
             console.log("Error: can't delete timelogEntry", timelogEntry)
         }
     }
-    /**
-     * The following section is for the timelog widget service, if I remember to come back to this:
-     */
 
-    // public addDaybookTimelogEntryDataItem(timelogEntry: DaybookTimelogEntryDataItem){
-    //     this._httpShape.daybookTimelogEntryDataItems.push(timelogEntry);
-    //     this.updateActivityDataItems();
-    // }
-    // public removeDaybookTimelogEntryDataItem(timelogEntry: DaybookTimelogEntryDataItem){
-    //     let foundEntry = this._httpShape.daybookTimelogEntryDataItems.find((existingTimelogEntry)=>{
-    //         let sameStart: boolean = timelogEntry.startTimeISO == existingTimelogEntry.startTimeISO;
-    //         let sameEnd: boolean = timelogEntry.endTimeISO == existingTimelogEntry.endTimeISO;
-    //         let isSame: boolean = sameStart && sameEnd;
-    //         return isSame;
-    //     });
-    //     if(foundEntry){
-    //         let index = this._httpShape.daybookTimelogEntryDataItems.indexOf(foundEntry);
-    //         this._httpShape.daybookTimelogEntryDataItems.splice(index, 1);
-    //     }
-    //     this.updateActivityDataItems();
-    // }
 
 }

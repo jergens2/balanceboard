@@ -1,7 +1,6 @@
 import { DayStructureDataItem } from "../../../../api/data-items/day-structure-data-item.interface";
-import { DayStructureSleepCycle } from "../../../../api/data-items/day-structure-sleep-cycle.enum";
-import { DayStructureDataItemType } from "../../../../api/data-items/day-structure-data-item-type.enum";
 import * as moment from 'moment';
+import { DayStructureTimeOfDay } from "../../../../api/data-items/day-structure-time-of-day.enum";
 
 export class TimelogDayStructureItem implements DayStructureDataItem{
     ngStyle: any;
@@ -12,8 +11,7 @@ export class TimelogDayStructureItem implements DayStructureDataItem{
     startLabel: string;
     bodyBackgroundColor: string;
     activityCategoryDefinitionTreeId: string;
-    sleepCycle: DayStructureSleepCycle;
-    itemType: DayStructureDataItemType;
+    timeOfDay: DayStructureTimeOfDay;
 
     constructor(dayStructureDataItem: DayStructureDataItem){
         this.startTimeISO = dayStructureDataItem.startTimeISO;
@@ -22,8 +20,8 @@ export class TimelogDayStructureItem implements DayStructureDataItem{
         this.startLabel = dayStructureDataItem.startLabel;
         this.bodyBackgroundColor = dayStructureDataItem.bodyBackgroundColor;
         this.activityCategoryDefinitionTreeId = dayStructureDataItem.activityCategoryDefinitionTreeId;
-        this.sleepCycle = dayStructureDataItem.sleepCycle;
-        this.itemType = dayStructureDataItem.itemType;
+
+        this.timeOfDay = dayStructureDataItem.timeOfDay;
     }
 
     public get startTime(): moment.Moment{
@@ -35,29 +33,29 @@ export class TimelogDayStructureItem implements DayStructureDataItem{
 
     public border: string = "ALL";
 
-    private _mouseIsOver: boolean = false;
-    public get mouseIsOver(): boolean{
-        return this._mouseIsOver;
-    }
-    public onMouseEnter(){
-        this._mouseIsOver = true;
-        if(this.border == "ALL"){
-            this.ngClass = ["day-structure-item-border-all-hover"];
-        }else if(this.border == "TOP"){
-            this.ngClass = ["day-structure-item-border-top-hover"];
-        }else if(this.border == "BOTTOM"){
-            this.ngClass = ["day-structure-item-border-bottom-hover"];
-        }
-    }
-    public onMouseLeave(){
-        this._mouseIsOver = false;
-        if(this.border == "ALL"){
-            this.ngClass = [];
-        }else if(this.border == "TOP"){
-            this.ngClass = [];
-        }else if(this.border == "BOTTOM"){
-            this.ngClass = [];
-        }
+    // private _mouseIsOver: boolean = false;
+    // public get mouseIsOver(): boolean{
+    //     return this._mouseIsOver;
+    // }
+    // public onMouseEnter(){
+    //     this._mouseIsOver = true;
+    //     if(this.border == "ALL"){
+    //         this.ngClass = ["day-structure-item-border-all-hover"];
+    //     }else if(this.border == "TOP"){
+    //         this.ngClass = ["day-structure-item-border-top-hover"];
+    //     }else if(this.border == "BOTTOM"){
+    //         this.ngClass = ["day-structure-item-border-bottom-hover"];
+    //     }
+    // }
+    // public onMouseLeave(){
+    //     this._mouseIsOver = false;
+    //     if(this.border == "ALL"){
+    //         this.ngClass = ["day-structure-item-border-all"];
+    //     }else if(this.border == "TOP"){
+    //         this.ngClass = ["day-structure-item-border-top"];
+    //     }else if(this.border == "BOTTOM"){
+    //         this.ngClass = ["day-structure-item-border-bottom"];
+    //     }
         
-    }
+    // }
 }
