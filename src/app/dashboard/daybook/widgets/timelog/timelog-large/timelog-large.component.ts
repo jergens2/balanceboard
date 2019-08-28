@@ -17,7 +17,7 @@ export class TimelogLargeComponent implements OnInit {
   faCog = faCog;
   faEye = faEye;
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookService, private timelogService: TimelogService) { }
 
   // private _activeDay: DaybookDayItem;
   // public get activeDay():DaybookDayItem{

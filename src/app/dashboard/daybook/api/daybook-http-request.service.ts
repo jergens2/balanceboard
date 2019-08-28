@@ -246,7 +246,13 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
         }
       }
     }
+    console.log("Linked items: " , items);
+    console.log("Item, with preceding and following dates: ");
+    items.forEach((item)=>{
+      // console.log("Item: " + item.dateYYYYMMDD + " , pre, following: " + item.previousDay.dateYYYYMMDD + "  " + item.followingDay.dateYYYYMMDD);
+    })
     return items;
+    
   }
 
 }

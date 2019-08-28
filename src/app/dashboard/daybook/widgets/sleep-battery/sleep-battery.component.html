@@ -1,0 +1,21 @@
+<div class="battery-root">
+    <div class="battery">
+        <div class="battery-top-terminal-nub"></div>
+        <div class="percentage-container">
+            <div class="percentage">
+                <div [ngStyle]="percentageNgStyle" style="border-radius:3px;"></div>
+            </div>
+            <div class="percentage-label">
+                {{ batteryCharge }}
+            </div>
+        </div>
+    </div>
+    <div style="display:flex;flex-direction: column;justify-content: center;" class="light-text">
+        <div>
+            {{ timeSinceWakeup }}
+        </div>
+        <div>
+            {{ timeUntilBedtime }}
+        </div>
+    </div>
+</div>

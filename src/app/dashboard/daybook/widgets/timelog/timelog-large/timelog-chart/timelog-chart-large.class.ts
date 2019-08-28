@@ -23,8 +23,8 @@ export class TimelogChartLarge {
         this.window = timelogWindow;
         this.activeDay = activeDay;
 
-        console.log("building timelog chart: " + this.activeDay.dateYYYYMMDD);
-        console.log("timelog chart window: " + this.window.startTime.format("YYYY-MM-DD hh:mm a") + " to " + this.window.endTime.format("YYYY-MM-DD hh:mm a"))
+        // console.log("building timelog chart: " + this.activeDay.dateYYYYMMDD);
+        // console.log("timelog chart window: " + this.window.startTime.format("YYYY-MM-DD hh:mm a") + " to " + this.window.endTime.format("YYYY-MM-DD hh:mm a"))
         this.buildTimelogChartRowItems(this.window);
 
         this.initiateNowClock();
@@ -91,7 +91,7 @@ export class TimelogChartLarge {
 
     activeDay: DaybookDayItem
     public setActiveDay(activeDay: DaybookDayItem) {
-        console.log("timelogchart: activeDay changed to: " + activeDay.dateYYYYMMDD)
+        // console.log("timelogchart: activeDay changed to: " + activeDay.dateYYYYMMDD)
         this.activeDay = activeDay;
     }
 

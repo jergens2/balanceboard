@@ -1,4 +1,42 @@
-<div class="timelog-entry-form-root" [formGroup]="timelogEntryForm" *ngIf="initiated">
+<div class="timelog-entry-form-root">
+  <div class="message-section section">
+    <span style="font-size:1.2em;">{{ message }}</span><br>
+    <span>{{ currentTime.format("dddd, MMM Do YYYY")}}</span>
+    <span class="prominent-data">{{ currentTime.format("h:mm:ss a")}}</span>
+  </div>
+
+
+  <div class="sleep-details-section section" [formGroup]="timesFormGroup">
+    <div style="display:flex;flex-direction: column;">
+      <span style="font-size:0.9em;color:gray;">What time did you fall asleep last night?</span>
+      <div style="display:flex;flex-direction: row;">
+        <input type="time" formControlName="fallAsleepTime" style="flex-grow:2;margin-right:5px;"
+          class="clean-input">
+      </div>
+    </div>
+    <div style="display:flex;flex-direction: column;">
+      <span style="font-size:0.9em;color:gray;">What time did you wake up this morning?</span>
+      <div style="display:flex;flex-direction: row;">
+        <input type="time" formControlName="wakeupTime" style="flex-grow:2;margin-right:5px;" class="clean-input">
+        
+      </div>
+    </div>
+    <div style="display:flex;flex-direction: row-reverse">
+        <button class="btn btn-sm small-button neato-blue" (click)="onClickSleepTimes()">Save</button>
+    </div>
+  </div>
+  <div class="section">
+    <app-sleep-battery [wakeupTime]="wakeupTime" [bedtime]="bedtime"></app-sleep-battery>
+  </div>
+
+  <div class="bedtime-section section">
+    Bedtime: {{ bedtime.format("hh:mm a") }}
+  </div>
+
+</div>
+
+
+<!-- <div class="timelog-entry-form-root" [formGroup]="timelogEntryForm" *ngIf="initiated">
 
 
   <div class="section" style="display:flex;flex-direction: row; align-items: center;">
@@ -17,11 +55,6 @@
   </div>
 
 
-  <!-- Timelog Entry Form Chart -->
-  <!-- <div class="section">
-    
-    <app-tlef-chart [timelogEntryStart]="timelogEntryStart" [timelogEntryEnd]="timelogEntryEnd"></app-tlef-chart>
-  </div> -->
 
 
   <div class="section" *ngIf="!editingTimes" style="display:flex;flex-direction: row;justify-content: space-between;">
@@ -74,4 +107,4 @@
     <button class="btn btn-secondary btn-sm" (click)="onClickClose()" style="margin-left:5px;">Cancel</button>
   </div>
 
-</div>
+</div> -->

@@ -106,7 +106,7 @@
     /* background-color: rgba(0, 0, 0, 0.01); */
     border: none;
     position: relative;
-    z-index: 13;
+    z-index: 1;
 }
 /* .day-structure-item:hover{
     border: 1px solid gray;

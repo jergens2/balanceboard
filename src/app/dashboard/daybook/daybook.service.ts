@@ -171,7 +171,7 @@ export class DaybookService implements ServiceAuthenticates {
   }
 
   private startANewDay(newDateYYYYMMDD: string): void {
-    console.log("***** Daybook:  Starting a new day: ", newDateYYYYMMDD);
+    // console.log("***** Daybook:  Starting a new day: ", newDateYYYYMMDD);
     let newDay: DaybookDayItem = this.buildNewDaybookDayItem(newDateYYYYMMDD);
 
 
@@ -200,13 +200,13 @@ export class DaybookService implements ServiceAuthenticates {
 
   private buildNewDaybookDayItem(dateYYYYMMDD: string): DaybookDayItem {
     let daybookDayItem: DaybookDayItem = new DaybookDayItem(dateYYYYMMDD);
-    console.log("Building a new Daybook item: " , dateYYYYMMDD);
+    // console.log("Building a new Daybook item: " , dateYYYYMMDD);
     daybookDayItem.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";
     daybookDayItem.dayStructureDataItems = this.scheduleRotationService.getDayStructureItemsForDate(dateYYYYMMDD);
     daybookDayItem.sleepStructureDataItems = this.scheduleRotationService.getSleepCycleItemsForDate(dateYYYYMMDD);
     daybookDayItem.generateInitialTimelogEntries();
 
-    console.log("Structure items: ", daybookDayItem.dayStructureDataItems)
+    // console.log("Structure items: ", daybookDayItem.dayStructureDataItems)
 
 
     // daybookDayItem.dayTemplateId = this.scheduleRotationService.dayTemplateForD1ate(newDateYYYYMMDD).id;

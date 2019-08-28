@@ -1,10 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 import * as moment from 'moment';
 import { TimelogWindow } from './timelog-window.interface';
-import { TimelogChartLargeRowItem } from './timelog-chart-large-row-item/timelog-chart-large-row-item.class';
-import { DayStructureDataItem } from '../../../../api/data-items/day-structure-data-item.interface';
-import { TimelogDayStructureItem } from './timelog-day-structure-item.class';
 import { TimelogChartLarge } from './timelog-chart-large.class';
 import { DaybookService } from '../../../../daybook.service';
 
@@ -39,14 +36,11 @@ export class TimelogChartComponent implements OnInit {
 
   ngOnInit() {
     this.activeDay = this.daybookService.activeDay;
+    this.timelogWindow = this.activeDay.getTimelogWindow(this.windowSize); 
+    this._timelogChart = new TimelogChartLarge(this.timelogWindow, this.activeDay);
     this.daybookService.activeDay$.subscribe((dayChanged)=>{
       this.activeDay = dayChanged;
     });
-    this.timelogWindow = this.activeDay.getTimelogWindow(this.windowSize); 
-    this._timelogChart = new TimelogChartLarge(this.timelogWindow, this.activeDay);
-    console.log("chart is ", this._timelogChart)
-    // this.daybookService.activeDay$.subscribe(())
-
     this._timelogChart.timelogDateChanged$.subscribe((changedDate: moment.Moment)=>{
       this.daybookService.activeDayYYYYMMDD = changedDate.format("YYYY-MM-DD");
     });

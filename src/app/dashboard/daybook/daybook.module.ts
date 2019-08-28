@@ -23,6 +23,12 @@ import { TimelogChartItemComponent } from './widgets/timelog/timelog-large/timel
 import { PointsWidgetSmallComponent } from './widgets/points/points-widget-small/points-widget-small.component';
 import { PointsWidgetLargeComponent } from './widgets/points/points-widget-large/points-widget-large.component';
 
+import { TimelogEntryFormComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form.component';
+import { TlefActivitiesComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activities.component';
+import { TlefChartComponent } from './widgets/timelog/timelog-entry-form/tlef-chart/tlef-chart.component';
+import { ActivitySliderBarComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
+import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.component';
+
 
 @NgModule({
   imports: [
@@ -49,8 +55,17 @@ import { PointsWidgetLargeComponent } from './widgets/points/points-widget-large
     TimelogChartItemComponent,
     PointsWidgetSmallComponent,
     PointsWidgetLargeComponent,
+    TimelogEntryFormComponent,
+    TlefActivitiesComponent,
+    TlefChartComponent,
+    ActivitySliderBarComponent,
+    SleepBatteryComponent,
   ],
   exports: [
+    TimelogEntryFormComponent,
+    TlefActivitiesComponent,
+    TlefChartComponent,
+    ActivitySliderBarComponent,
   ]
   
 })

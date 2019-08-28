@@ -38,10 +38,10 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this._screenSize = this.screenSizeService.appScreenSize;
     this.screenSizeService.appScreenSize$.subscribe((changedSize)=>{
       this._screenSize = changedSize;
-      console.log("Screensize changed to: " , this._screenSize)
+      // console.log("Screensize changed to: " , this._screenSize)
     });
     this._activeDay = this.daybookService.activeDay;
-    console.log("This active day is", this._activeDay)
+    // console.log("This active day is", this._activeDay)
     this.daybookService.activeDay$.subscribe((activeDayChanged)=>{
       if(activeDayChanged){
         this._activeDay = activeDayChanged;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { DaybookService } from '../../../../../dashboard/daybook/daybook.service';
+import { DaybookService } from '../../../daybook.service';
 import * as moment from 'moment';
-import { DaybookTimelogEntryDataItem } from '../../../../../dashboard/daybook/api/data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
 
 @Injectable({
   providedIn: 'root'

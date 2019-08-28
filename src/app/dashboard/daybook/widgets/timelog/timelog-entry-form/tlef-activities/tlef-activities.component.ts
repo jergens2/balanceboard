@@ -6,8 +6,8 @@ import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { DurationString } from '../duration-string.class';
 
-import { DaybookTimelogEntryDataItem } from '../../../../../../dashboard/daybook/api/data-items/daybook-timelog-entry-data-item.interface';
-import { TimelogEntryActivity } from '../../../../../../dashboard/daybook/api/data-items/timelog-entry-activity.interface';
+import { DaybookTimelogEntryDataItem } from '../../../../api/data-items/daybook-timelog-entry-data-item.interface';
+import { TimelogEntryActivity } from '../../../../api/data-items/timelog-entry-activity.interface';
 import { ActivityCategoryDefinitionService } from '../../../../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
 
 
