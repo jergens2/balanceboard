@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { timer } from 'rxjs';
 import * as moment from 'moment';
-import { DurationString } from '../timelog/timelog-entry-form/duration-string.class';
+import { DurationString } from '../../../../shared/utilities/duration-string.class';
+import { SleepBatteryConfiguration } from './sleep-battery-configuration.interface';
 
 @Component({
   selector: 'app-sleep-battery',
@@ -18,18 +19,20 @@ export class SleepBatteryComponent implements OnInit {
 
   private _wakeupTime: moment.Moment;
   private _bedtime: moment.Moment;
-  @Input() public set wakeupTime(wakeupTime: moment.Moment){
-    this._wakeupTime = moment(wakeupTime);
-    if(this._bedtime && this._wakeupTime){
-      this.updateBattery();
-    }
+  
+  private _batteryConfiguration: SleepBatteryConfiguration;
+  public get batteryConfiguration(): SleepBatteryConfiguration{
+    return this._batteryConfiguration;
   }
-  @Input() public set bedtime(bedtime: moment.Moment){
-    this._bedtime = moment(bedtime);
-    if(this._bedtime && this._wakeupTime){
-      this.updateBattery();
-    }
+
+  @Input() public set configuration(configuration: SleepBatteryConfiguration ){
+    this._batteryConfiguration = configuration;
+    this._wakeupTime = this._batteryConfiguration.wakeupTime;
+    this._bedtime = this._batteryConfiguration.bedtime;
+    this.updateBattery();
+    
   }
+
   public get wakeupTime(): moment.Moment{
     return this._wakeupTime;
   }
@@ -39,6 +42,7 @@ export class SleepBatteryComponent implements OnInit {
 
 
   percentageNgStyle: any = {};
+  colorNgClass: string[] = [];
 
   ngOnInit() {
     this.updateBattery();
@@ -46,6 +50,12 @@ export class SleepBatteryComponent implements OnInit {
       this.updateBattery();
     });
   }
+
+  public onClickBattery(){
+    console.log("Battery was clicked.  DO what next?  Navigate to a page which displays battery energy levels, and ability to configure it?")
+  }
+
+
 
 
   private _timeUntilBedtime: string ="";
@@ -64,21 +74,24 @@ export class SleepBatteryComponent implements OnInit {
     let totalDayDurationMinutes: number = moment(this.bedtime).diff(this.wakeupTime, "minutes");
     this._percentage = (1 - (awakeForMinutes / totalDayDurationMinutes)) * 100;
 
-    let currentBatteryColor: string = "white";
+    let colorNgClass: string[] = [];
     if (this._percentage < 25) {
-      currentBatteryColor = "red";
+      colorNgClass = ["lowest-quarter"];
     } else if (this._percentage >= 25 && this._percentage < 50) {
-      currentBatteryColor = "orange";
+      colorNgClass = ["low-quarter"];
     } else if (this._percentage >= 50 && this._percentage < 75) {
-      currentBatteryColor = "yellow";
+      colorNgClass = ["high-quarter"];
     } else if (this._percentage >= 75) {
-      currentBatteryColor = "lime";
+      colorNgClass = ["highest-quarter"];
     }
 
+
+    this.colorNgClass = colorNgClass;
+
     this.percentageNgStyle = {
-      "background-color": currentBatteryColor,
       "height": "" + this._percentage.toFixed(2) + "%",
     }
+
     this._batteryCharge = "" + this._percentage.toFixed(0) + "%";
 
 
@@ -97,9 +110,22 @@ export class SleepBatteryComponent implements OnInit {
         timeSinceWakeup = DurationString.calculateDurationString(this.wakeupTime, now, true) + " since wake up";
     }
     this._timeSinceWakeup = timeSinceWakeup;
-
+    
+    let shape = this._batteryConfiguration.shape;
+    if(shape == "LARGE"){
+      this._batteryNgClass = ["large-battery"];
+    }else if(shape == "SMALL"){
+      this._batteryNgClass = ["small-battery"];
+    }
 
   }
+
+  private _batteryNgClass: any = {};
+  public get batteryNgClass(): any{
+    return this._batteryNgClass;
+  }
+
+
   private _batteryCharge: string = "";
   public get batteryCharge(): string {
     return this._batteryCharge;

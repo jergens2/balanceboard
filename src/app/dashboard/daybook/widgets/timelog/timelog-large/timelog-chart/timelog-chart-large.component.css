@@ -2,6 +2,7 @@
     border: 1px solid blue;
     min-width: 320px;
     min-height: 640px;
+    
     width:100%;
 
     flex-grow: 2;
@@ -12,6 +13,8 @@
 .timelog-chart-grid{
     width:100%;
     flex-grow: 2;
+    /* max-height: 660px; */
+    /* This is where we can set the max height for when screensize changes.  where the timelog-chart-grid class is being used. */
     display: grid;
     grid-template-columns: 25px 50px 1fr 15px 30px;
 
@@ -37,6 +40,8 @@
 .now-line{
     width:100%;
     border-bottom: 1px solid rgb(255, 30, 0);
+    position: relative;
+    z-index: 1;
 }
 .sleep-line{
     width:100%;

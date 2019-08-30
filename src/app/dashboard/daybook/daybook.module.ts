@@ -28,6 +28,7 @@ import { TlefActivitiesComponent } from './widgets/timelog/timelog-entry-form/tl
 import { TlefChartComponent } from './widgets/timelog/timelog-entry-form/tlef-chart/tlef-chart.component';
 import { ActivitySliderBarComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
 import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.component';
+import { TimelogEntryFormSectionComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form-section/timelog-entry-form-section.component';
 
 
 @NgModule({
@@ -60,6 +61,7 @@ import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.com
     TlefChartComponent,
     ActivitySliderBarComponent,
     SleepBatteryComponent,
+    TimelogEntryFormSectionComponent,
   ],
   exports: [
     TimelogEntryFormComponent,

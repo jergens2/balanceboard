@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import * as moment from 'moment';
 
-import { DurationString } from '../duration-string.class';
+import { DurationString } from '../../../../../../shared/utilities/duration-string.class';
 
 @Component({
   selector: 'app-tlef-chart',

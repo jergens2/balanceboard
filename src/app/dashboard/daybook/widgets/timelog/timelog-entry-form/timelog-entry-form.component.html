@@ -1,110 +1,135 @@
 <div class="timelog-entry-form-root">
-  <div class="message-section section">
-    <span style="font-size:1.2em;">{{ message }}</span><br>
-    <span>{{ currentTime.format("dddd, MMM Do YYYY")}}</span>
-    <span class="prominent-data">{{ currentTime.format("h:mm:ss a")}}</span>
+  <div class="message-section">
+    <span style="font-size:0.7em;color:gray;">Morning Briefing</span><br>
+    <span style="font-size:1.2em;">{{ timelogEntryForm.message }}</span><br>
+    <span>{{ timelogEntryForm.currentTime.format("dddd, MMM Do YYYY")}}</span>
+    <span class="prominent-data">{{ timelogEntryForm.currentTime.format("h:mm:ss a")}}</span>
   </div>
 
 
-  <div class="sleep-details-section section" [formGroup]="timesFormGroup">
-    <div style="display:flex;flex-direction: column;">
-      <span style="font-size:0.9em;color:gray;">What time did you fall asleep last night?</span>
-      <div style="display:flex;flex-direction: row;">
-        <input type="time" formControlName="fallAsleepTime" style="flex-grow:2;margin-right:5px;"
-          class="clean-input">
-      </div>
-    </div>
-    <div style="display:flex;flex-direction: column;">
-      <span style="font-size:0.9em;color:gray;">What time did you wake up this morning?</span>
-      <div style="display:flex;flex-direction: row;">
-        <input type="time" formControlName="wakeupTime" style="flex-grow:2;margin-right:5px;" class="clean-input">
-        
-      </div>
-    </div>
-    <div style="display:flex;flex-direction: row-reverse">
-        <button class="btn btn-sm small-button neato-blue" (click)="onClickSleepTimes()">Save</button>
-    </div>
-  </div>
-  <div class="section">
-    <app-sleep-battery [wakeupTime]="wakeupTime" [bedtime]="bedtime"></app-sleep-battery>
-  </div>
-
-  <div class="bedtime-section section">
-    Bedtime: {{ bedtime.format("hh:mm a") }}
-  </div>
-
-</div>
-
-
-<!-- <div class="timelog-entry-form-root" [formGroup]="timelogEntryForm" *ngIf="initiated">
-
-
-  <div class="section" style="display:flex;flex-direction: row; align-items: center;">
-    <div class="section-header">
-      Current time:
-    </div>
-    <div style="flex-grow:2;display:flex;justify-content: space-between;align-items: center;padding-left:10px;">
-      <span class="current-time">
-        {{ currentTime.format('h:mm:ss a') }}
-      </span>
-      <span>
-        {{ currentTime.format('MMMM Do, YYYY') }}
-      </span>
-    </div>
-
-  </div>
-
-
-
-
-  <div class="section" *ngIf="!editingTimes" style="display:flex;flex-direction: row;justify-content: space-between;">
-    <div style="font-weight:bold;">
-      {{ timelogEntryStart.format('h:mm a') }} - {{ timelogEntryEnd.format('h:mm a') }}
-    </div>
-    <div>
-      <button class="btn btn-sm">
-        <fa-icon [icon]="faEdit" (click)="onClickEditTimes()"></fa-icon>
-      </button>
-    </div>
-
-  </div>
-
-  <div class="section" *ngIf="editingTimes" style="display:flex;flex-direction: column;">
-    <div style="display:flex;flex-direction: row;">
-      <div style="width:80px;height:30px;">
-        Start time:
-      </div>
-      <div>
-        {{ timelogEntryStart.format('h:mm a') }}
-      </div>
-    </div>
-    <div style="display:flex;flex-direction: row;">
-      <div style="width:80px;height:30px;">
-        End time:
-      </div>
-      <div>
-        {{ timelogEntryEnd.format('h:mm a') }}
-      </div>
-    </div>
-  </div>
-
-
-  <div class="section" style="margin-bottom:5px;padding-bottom:5px;">
-    <div class="section-header">
-      Activities
-    </div>
-    <app-tlef-activities [timelogEntryStart]="timelogEntryStart" [timelogEntryEnd]="timelogEntryEnd" [modifyTimelogEntry]="modifyTimelogEntry" (tlefActivitiesChanged)="onActivitiesChanged($event)"></app-tlef-activities>
+  <div style="font-weight:bold;font-size:1.1em;">
     
   </div>
 
-  <div class="section">
-    <input formControlName="description" type="text" class="clean-input"
-      placeholder="Description / additional details...">
+  <div class="form-section">
+
+
+    <div class="banner" (click)="onClickBanner('SLEEP_SECTION')" *ngIf="!timelogEntryForm.sleepSectionExpanded">
+      <!-- <div>
+        <app-sleep-battery [configuration]="timelogEntryForm.batteryConfiguration">
+        </app-sleep-battery>
+      </div> -->
+      <div style="flex-grow:2; display:flex; flex-direction: row; justify-content: center;">
+        <span style="margin-right:5px;">Sleep quality: Good</span>
+        <fa-icon [icon]="faBed" style="color: rgb(0, 96, 223); margin-left:1px; margin-right:1px;"></fa-icon>
+        <fa-icon [icon]="faBed" style="color: rgb(0, 96, 223); margin-left:1px; margin-right:1px;"></fa-icon>
+        <fa-icon [icon]="faBed" style="color: rgb(0, 96, 223); margin-left:1px; margin-right:1px;"></fa-icon>
+        <fa-icon [icon]="faBed" style="color: rgb(0, 96, 223); margin-left:1px; margin-right:1px;"></fa-icon>
+        <fa-icon [icon]="faBed" style="color: rgb(215, 215, 215); margin-left:1px; margin-right:1px;"></fa-icon>
+      </div>
+    </div>
+
+    <div class="expanded-section" *ngIf="timelogEntryForm.sleepSectionExpanded" [formGroup]="sleepTimesFormGroup">
+      <div style="display:flex;flex-direction: column;">
+        <span style="font-size:0.9em;color:gray;">What time did you fall asleep last night?</span>
+        <div style="display:flex;flex-direction: row;">
+          <input type="time" formControlName="fallAsleepTime" style="flex-grow:2;margin-right:5px;" class="clean-input">
+        </div>
+      </div>
+      <div style="display:flex;flex-direction: column;">
+        <span style="font-size:0.9em;color:gray;">What time did you wake up this morning?</span>
+        <div style="display:flex;flex-direction: row;">
+          <input type="time" formControlName="wakeupTime" style="flex-grow:2;margin-right:5px;" class="clean-input">
+        </div>
+      </div>
+      <div style="display:flex;flex-direction: row-reverse">
+        <button class="btn btn-sm small-button neato-blue" (click)="onClickSleepTimes()">Save</button>
+      </div>
+      <app-sleep-battery [configuration]="timelogEntryForm.batteryConfiguration">
+      </app-sleep-battery>
+    </div>
+
+    <div class="section-completion">
+      <fa-icon [icon]="faCheckCircle" *ngIf="true" style="color: green;"></fa-icon>
+      <fa-icon [icon]="faCircle" *ngIf="false"></fa-icon>
+    </div>
   </div>
 
-  <div class="buttons-container">
-    <button class="btn btn-primary btn-sm" (click)="onClickSaveTimelogEntry()" [disabled]="onClickSaveDisabled">Save</button>
-    <button class="btn btn-secondary btn-sm" (click)="onClickClose()" style="margin-left:5px;">Cancel</button>
+
+
+
+
+
+  <div class="form-section">
+
+    <div class="banner" *ngIf="true">
+      Morning Routine
+    </div>
+    <div class="expanded-section" *ngIf="false"></div>
+
+    <div class="section-completion">
+      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+    </div>
   </div>
 
-</div> -->
+  <div class="form-section">
+
+    <div class="banner" *ngIf="true">
+      Morning Activities
+    </div>
+    <div class="expanded-section" *ngIf="false"></div>
+
+    <div class="section-completion">
+      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+    </div>
+  </div>
+
+  <div class="form-section">
+
+    <div class="banner" *ngIf="true">
+      Afternoon Activities
+    </div>
+    <div class="expanded-section" *ngIf="false"></div>
+
+    <div class="section-completion">
+      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+    </div>
+  </div>
+
+  <div class="form-section">
+
+    <div class="banner" *ngIf="true">
+      Evening Activities
+    </div>
+    <div class="expanded-section" *ngIf="false"></div>
+
+    <div class="section-completion">
+      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+    </div>
+  </div>
+
+  <div class="form-section">
+
+    <div class="banner" *ngIf="true">
+      Evening Routine
+    </div>
+    <div class="expanded-section" *ngIf="false"></div>
+
+    <div class="section-completion">
+      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+    </div>
+  </div>
+
+  <div class="form-section">
+
+      <div class="banner" *ngIf="true">
+        Bedtime
+      </div>
+      <div class="expanded-section" *ngIf="false"></div>
+  
+      <div class="section-completion">
+        <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+      </div>
+    </div>
+
+</div>

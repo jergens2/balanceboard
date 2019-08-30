@@ -1,9 +1,9 @@
-<div class="battery-root">
-    <div class="battery">
+<div *ngIf="batteryConfiguration.shape == 'LARGE'" class="battery-container" (click)="onClickBattery()">
+    <div class="battery-large">
         <div class="battery-top-terminal-nub"></div>
-        <div class="percentage-container">
+        <div class="percentage-container percentage-container-large">
             <div class="percentage">
-                <div [ngStyle]="percentageNgStyle" style="border-radius:3px;"></div>
+                <div [ngStyle]="percentageNgStyle" [ngClass]="colorNgClass" style="border-radius:3px;"></div>
             </div>
             <div class="percentage-label">
                 {{ batteryCharge }}
@@ -14,8 +14,22 @@
         <div>
             {{ timeSinceWakeup }}
         </div>
-        <div>
+        <!-- <div>
             {{ timeUntilBedtime }}
+        </div> -->
+    </div>
+</div>
+
+<div *ngIf="batteryConfiguration.shape == 'SMALL'" class="battery-container">
+    <div class="battery-small">
+        <div class="battery-top-terminal-nub-small"></div>
+        <div class="percentage-container percentage-container-small">
+            <div class="percentage">
+                <div [ngStyle]="percentageNgStyle" [ngClass]="colorNgClass" style="border-radius: 1px;"></div>
+            </div>
         </div>
+    </div>
+    <div class="percentage-label-small">
+        {{ batteryCharge }}
     </div>
 </div>
