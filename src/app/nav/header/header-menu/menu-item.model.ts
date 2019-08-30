@@ -1,13 +1,17 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { EventEmitter } from "@angular/core";
 import { HeaderMenu } from "./header-menu.model";
+import { SidebarNewItemButton } from "../../sidebar/sidebar-new-item-button.interface";
+import { ToolComponents } from "../../../tools-menu/tools/tool-components.enum";
 
-export class MenuItem {
+export class MenuItem implements SidebarNewItemButton{
     routerLink: string;
     icon: IconDefinition;
     title: string;
 
     subMenu: HeaderMenu = null;
+
+    
 
     constructor(title: string, routerLink: string, icon: IconDefinition) {
         this.title = title;
@@ -31,4 +35,10 @@ export class MenuItem {
             this.subMenu.closeMenu();
         }
     }
+
+
+
+    sidebarToolComponent: ToolComponents = null;
+    sidebarToolComponentMouseOver: boolean = false;
+
 }

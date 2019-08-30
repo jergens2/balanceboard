@@ -2,7 +2,7 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { faCogs, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faSignOutAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from '../header/header-menu/menu-item.model';
 import { appMenuItems } from '../app-menu-items';
 import { AuthStatus } from '../../authentication/auth-status.class';
@@ -14,6 +14,8 @@ import { Modal } from '../../modal/modal.class';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { ModalService } from '../../modal/modal.service';
+import { ToolsService } from '../../tools-menu/tools/tools.service';
+import { ToolComponents } from '../../tools-menu/tools/tool-components.enum';
 
 @Component({
   selector: 'app-sidebar',
@@ -22,10 +24,10 @@ import { ModalService } from '../../modal/modal.service';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
 
-  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private router: Router, private modalService:ModalService) { }
+  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private router: Router, private modalService: ModalService, private toolsService: ToolsService) { }
 
 
-
+  faPlus = faPlus;
   faCogs = faCogs;
   faSignOutAlt = faSignOutAlt;
 
@@ -37,31 +39,52 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   // nightMode: UserSetting = null;
 
-  public get email(): string{
+  public get email(): string {
     return this.authService.userEmail;
   }
-  public get userId(): string{
+  public get userId(): string {
     return this.authService.userId;
   }
 
   ngOnInit() {
     this.menuItems = appMenuItems;
+
+
+
   }
+
+  public onClickMenuItem(menuItem: MenuItem){
+    if(menuItem.sidebarToolComponentMouseOver){
+      this.toolsService.openTool(menuItem.sidebarToolComponent);
+    }else{
+      this.router.navigate([menuItem.routerLink]);
+    }
+
+  }
+
+  public onMouseEnterSidebarNewItemButton(menuItem: MenuItem){
+    menuItem.sidebarToolComponentMouseOver = true;
+  }
+  public onMouseLeaveSidebarNewItemButton(menuItem: MenuItem){
+    menuItem.sidebarToolComponentMouseOver = false;
+  }
+
+
 
   get routerLinkActiveClass(): string {
     // if(this.nightMode.booleanValue){
     //   return "active-link-night-mode";
     // }else{
-      return "active-link";
+    return "active-link";
     // }
   }
 
 
-  onClick(button: string){
+  onClick(button: string) {
     this.router.navigate(['/' + button]);
   }
 
-  onClickLogout(){
+  onClickLogout() {
 
     let options: IModalOption[] = [
       {
@@ -73,7 +96,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         dataObject: null,
       }
     ];
-    let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm );
+    let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm);
     modal.headerIcon = faSignOutAlt;
     // this._modalSubscription = 
     this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
@@ -90,11 +113,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
 
   }
 
-  private logout(){
+  private logout() {
     console.log("Sidebar logout");
     this.authService.logout();
   }

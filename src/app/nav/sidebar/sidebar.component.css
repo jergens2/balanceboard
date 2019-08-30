@@ -27,37 +27,103 @@
 
 
 .sidebar-button{
-    font-family: 'Roboto', sans-serif;
-    font-weight: bold;
-    font-size: 0.9em;
-    color: #3d3d3d;
-    padding-left:20px;
-    border-top-right-radius: 25px;
-    border-bottom-right-radius: 25px;
     margin:0px;
     min-height: 40px;
     height:40px;
     line-height: 40px;
-    display: flex;
+
+    display:grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 50px;
+}
+
+.sidebar-button-router-link{
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+
+    display:flex;
     flex-direction: row;
+
+
+    padding-left:20px;
+
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #3d3d3d;
+
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
 }
-.sidebar-button:focus{
-    outline:0;
-    /* border: 1px solid #ddeaff; */
-    /* todo: need to add some style here for accessibility */ 
-}
-.sidebar-button:hover{
+.sidebar-button:hover .sidebar-button-router-link,.sidebar-new-item-button { 
     cursor:pointer;
     background: #f4f4f4;
 }
 
-.sidebar-button-night-mode{
+
+
+.sidebar-button-router-link:focus{
+    outline:0;
+    /* border: 1px solid #ddeaff; */
+    /* todo: need to add some style here for accessibility */ 
+}
+
+
+.sidebar-new-item-button-container{
+    grid-row: 1 / -1;
+    grid-column: 2 / span 1;
+
+    padding-right:5px;
+
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+
+    cursor:pointer;
+}
+
+
+.sidebar-new-item-button{
+    width:25px;
+    height:25px;
+    border-radius: 20px;
+    
+    background-color: white;
+    border: 1px solid rgb(230, 230, 230);
+    color: rgb(230, 230, 230);
+
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    vertical-align: middle;
+    font-size:1.0em;
+}
+.sidebar-new-item-button:hover{
+    background-color: rgb(0, 96, 223);
+    color: white;
+    border: 1px solid rgb(0, 96, 223);
+    cursor: pointer;
+}
+
+.new-item-button{
+    width:25px;
+    height:25px;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+/* .sidebar-button-night-mode{
     color: #d4d4d4;
     background: black;
 }
 .sidebar-button-night-mode:hover{
     background: rgb(20, 41, 158);
-}
+} */
 
 
 .active-link{
@@ -72,12 +138,4 @@
 }
 .active-link-night-mode:hover{
     background: rgb(20, 41, 158);
-}
-
-.fa{
-    width:25px;
-}
-
-.incomplete-sidebar-button{
-    color: red;
 }
