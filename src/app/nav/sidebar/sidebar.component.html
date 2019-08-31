@@ -12,7 +12,7 @@
   </div>
 
 
-  <div *ngFor="let menuItem of menuItems" class="sidebar-button no-select" (click)="onClickMenuItem(menuItem)">
+  <div *ngFor="let menuItem of menuItems" class="sidebar-button no-select" (click)="onClickMenuItem(menuItem)" (mouseenter)="onMouseEnterSidebarNewItemButton(menuItem)" (mouseleave)="onMouseLeaveSidebarNewItemButton(menuItem)">
 
     <div class="sidebar-button-router-link" [routerLinkActive]='routerLinkActiveClass'
       [routerLink]="menuItem.routerLink">
@@ -23,9 +23,8 @@
         {{ menuItem.title }}
       </div>
     </div>
-    <div *ngIf="menuItem.sidebarToolComponent" class="sidebar-new-item-button-container">
-      <div class="sidebar-new-item-button" (mouseenter)="onMouseEnterSidebarNewItemButton(menuItem)"
-        (mouseleave)="onMouseLeaveSidebarNewItemButton(menuItem)">
+    <div *ngIf="menuItem.sidebarToolComponent" class="sidebar-new-item-button-container" >
+      <div class="sidebar-new-item-button" [ngClass]="{'sidebar-new-item-button-mouse-over': menuItem.sidebarToolComponentMouseOver}">
         <fa-icon [icon]="faPlus" class="new-item-button"></fa-icon>
       </div>
 

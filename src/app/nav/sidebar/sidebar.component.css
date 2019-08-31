@@ -90,8 +90,8 @@
     border-radius: 20px;
     
     background-color: white;
-    border: 1px solid rgb(230, 230, 230);
-    color: rgb(230, 230, 230);
+    border: 1px solid rgb(240, 240, 240);
+    color: rgb(240, 240, 240);
 
     display:flex;
     flex-direction: row;
@@ -101,12 +101,18 @@
     vertical-align: middle;
     font-size:1.0em;
 }
+.sidebar-new-item-button-mouse-over{
+    background-color: white;
+    color: rgb(150, 150, 150);
+    border: 1px solid rgb(150, 150, 150);
+}
 .sidebar-new-item-button:hover{
     background-color: rgb(0, 96, 223);
     color: white;
     border: 1px solid rgb(0, 96, 223);
     cursor: pointer;
 }
+
 
 .new-item-button{
     width:25px;
@@ -128,6 +134,11 @@
 
 .active-link{
     background: #ddeaff;
+}
+.active-link .sidebar-new-item-button{
+    background-color: white;
+    color: rgb(150, 150, 150);
+    border: 1px solid rgb(150, 150, 150);
 }
 .active-link:hover{
     background: #ddeaff;

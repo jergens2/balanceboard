@@ -5,7 +5,7 @@ import * as moment from 'moment';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { DaybookDayItem } from './daybook-day-item.class';
-import { map, mergeAll, concatAll, concatMap, mergeMap } from 'rxjs/operators';
+import { map, mergeAll, concatAll, concatMap, mergeMap, combineLatest } from 'rxjs/operators';
 import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 
@@ -92,21 +92,16 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
     // return daybookDayItem;
   }
   public saveMultipleDayItems(daybookDayItems: DaybookDayItem[]){
-    // console.log("Saving multiplo: ", daybookDayItems.length)
+    console.log("Saving multiplo: ", daybookDayItems.length)
     // console.log(daybookDayItems);
     daybookDayItems.forEach((item)=>{item.userId = this._authStatus.user.id; });
-    from(daybookDayItems).pipe(
-      mergeMap(daybookDayItem=> <Observable<DaybookDayItem>>
-        this.saveDaybookDayItem$(daybookDayItem)
-      )
-    ).subscribe((savedItem: DaybookDayItem)=>{
+    forkJoin(daybookDayItems.map<Observable<DaybookDayItem>>((item)=>{return this.saveDaybookDayItem$(item)})).subscribe((savedItems: DaybookDayItem[])=>{
       let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
-        daybookDayItems.push(savedItem);
-        daybookDayItems = this.linkDaybookItems(daybookDayItems);
-        this._daybookDayItems$.next(daybookDayItems);
-        this.updateChangeSubscription();
-    });
-
+      daybookDayItems = daybookDayItems.concat(savedItems);
+      daybookDayItems = this.linkDaybookItems(daybookDayItems);
+      this._daybookDayItems$.next(daybookDayItems);
+      this.updateChangeSubscription();
+    })
     
     
   }
@@ -213,6 +208,10 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
     return daybookDayItem;
   }
   private linkDaybookItems(items: DaybookDayItem[]): DaybookDayItem[]{
+    items.forEach((item)=>{
+      item.previousDay = null;
+      item.followingDay = null;
+    });
     items = items.sort((item1, item2)=>{
       if(item1.dateYYYYMMDD < item2.dateYYYYMMDD){
         return -1;
@@ -249,7 +248,15 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
     console.log("Linked items: " , items);
     console.log("Item, with preceding and following dates: ");
     items.forEach((item)=>{
-      // console.log("Item: " + item.dateYYYYMMDD + " , pre, following: " + item.previousDay.dateYYYYMMDD + "  " + item.followingDay.dateYYYYMMDD);
+      let prev = "";
+      let fol = "";
+      if(item.previousDay){
+        prev = item.previousDay.dateYYYYMMDD
+      }
+      if(item.followingDay){
+        fol = item.followingDay.dateYYYYMMDD
+      }
+      console.log("Item: " + item.dateYYYYMMDD + " , pre, following: " + prev + "  " + fol);
     })
     return items;
     
