@@ -1,0 +1,54 @@
+<div class="sleep-section-root" [formGroup]="sleepTimesFormGroup">
+
+    <div class="sleep-section">
+        <div style="font-size:0.8em;color:gray;">
+            How well-rested do you feel after this sleep?
+        </div>
+        <div style="display: flex;flex-direction: row; align-items: center;">
+            <fa-icon *ngFor="let sleepQualityBed of sleepQualityBeds" [icon]="faBed" class="sleep-quality"
+                (click)="onClickSleepQuality(sleepQualityBed)" [ngClass]="sleepQuality(sleepQualityBed)"></fa-icon>
+            <div style="font-size:0.9em; font-weight: bold; margin-left:15px;">
+                {{ sleepQualityString }}
+            </div>
+        </div>
+    </div>
+
+    <div class="sleep-section">
+        <div class="section-row">
+            <div style="font-size:0.8em;color:gray;">Approx. when did you <u>fall asleep</u> <span>
+                    {{ fallAsleepDateTime }}</span>?</div>
+            <div class="input-row">
+                <fa-icon [icon]="faMinusCircle" class="icon-button"
+                    (click)="onClickChangeTime('SUBTRACT', 'FALL_ASLEEP')">
+                </fa-icon>
+                <input type="time" formControlName="fallAsleepTime" class="time-input" required>
+                <fa-icon [icon]="faPlusCircle" class="icon-button" (click)="onClickChangeTime('ADD', 'FALL_ASLEEP')">
+                </fa-icon>
+            </div>
+        </div>
+
+        <div class="section-row">
+            <div style="font-size:0.8em;color:gray;">What time did you wake up this morning?</div>
+            <div class="input-row">
+                <fa-icon [icon]="faMinusCircle" class="icon-button" (click)="onClickChangeTime('SUBTRACT', 'WAKE_UP')">
+                </fa-icon>
+                <input type="time" formControlName="wakeupTime" class="time-input" required>
+                <fa-icon [icon]="faPlusCircle" class="icon-button" (click)="onClickChangeTime('ADD', 'WAKE_UP')">
+                </fa-icon>
+            </div>
+        </div>
+    </div>
+
+    <div style="font-size: 0.9em;">
+        Sleep duration: <span style="font-weight: bold;">{{ sleepDuration }}</span>
+    </div>
+
+    <div style="display:flex;flex-direction: row-reverse">
+        <button class="btn btn-sm small-button neato-blue" (click)="onClickSleepTimes()">Save</button>
+    </div>
+
+
+    <!-- 
+    <app-sleep-battery [configuration]="timelogEntryForm.batteryConfiguration">
+    </app-sleep-battery> -->
+</div>

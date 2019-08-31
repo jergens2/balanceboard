@@ -12,14 +12,14 @@ export class Timelog{
 
         this.buildTimelogEntryForm();
     }
-    private _activeDay;
+    private _activeDay: DaybookDayItem;
 
     previousDayFallAsleepTime: moment.Moment;
     wakeUpTime: moment.Moment;
     weightLogEntryKg: number;
 
     private buildTimelogEntryForm(){
-        let timelogEntryForm: TimelogEntryForm = new TimelogEntryForm();
+        let timelogEntryForm: TimelogEntryForm = new TimelogEntryForm(this._activeDay.dateYYYYMMDD);
 
         this._timelogEntryForm = timelogEntryForm;
     }

@@ -6,18 +6,30 @@ import { TimelogEntryFormSectionType } from './timelog-entry-form-section/timelo
 import { SleepBatteryConfiguration } from '../../sleep-battery/sleep-battery-configuration.interface';
 
 export class TimelogEntryForm {
-    constructor() {
+
+    private userName: string = "Jeremy";
+
+    constructor(dateYYYYMMDD: string) {
+        this.dateYYYYMMDD = dateYYYYMMDD;
         // this.buildFormSections();
         this.updateTimes();
         timer(0, 1000).subscribe((tick) => {
             this._currentTime = moment();
+            if (this.currentTime.hour() < 12) {
+                this._message = "Good morning " + this.userName;
+            } else if (this.currentTime.hour() >= 12 && this.currentTime.hour() < 18) {
+                this._message = "Good afternoon " + this.userName;
+            } else if (this.currentTime.hour() >= 18) {
+                this._message = "Good evening " + this.userName;
+            }
         });
         timer(0, 60000).subscribe((tick) => {
             this.updateTimes();
         })
     }
 
-    
+    dateYYYYMMDD: string = "";
+
     private _message: string = "";
     public get message(): string {
         return this._message;
@@ -52,10 +64,13 @@ export class TimelogEntryForm {
     public get lastNightFallAsleepTimeHHmm(): string {
         return this._lastNightFallAsleepTime.format("HH:mm");
     }
+    public get lastNightFallAsleepTime(): moment.Moment {
+        return moment(this._lastNightFallAsleepTime);
+    }
 
 
-    public onClickBanner(bannerName: string){
-        if(bannerName == "SLEEP_SECTION"){
+    public onClickBanner(bannerName: string) {
+        if (bannerName == "SLEEP_SECTION") {
             this.sleepSectionExpanded = true;
             this._batteryConfiguration["shape"] = "LARGE";
         }
@@ -134,9 +149,9 @@ export class TimelogEntryForm {
         this.updateBatteryConfiguration();
     }
 
-    private updateBatteryConfiguration(){
-        let shape:string = "LARGE";
-        if(!this.sleepSectionExpanded){
+    private updateBatteryConfiguration() {
+        let shape: string = "LARGE";
+        if (!this.sleepSectionExpanded) {
             shape = "SMALL"
         }
         let batteryConfiguration: SleepBatteryConfiguration = {
@@ -148,7 +163,7 @@ export class TimelogEntryForm {
     }
 
     private _batteryConfiguration: SleepBatteryConfiguration = null;
-    public get batteryConfiguration(): SleepBatteryConfiguration{
+    public get batteryConfiguration(): SleepBatteryConfiguration {
         return this._batteryConfiguration;
     }
 

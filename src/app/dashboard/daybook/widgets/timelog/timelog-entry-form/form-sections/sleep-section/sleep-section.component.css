@@ -1,0 +1,67 @@
+
+
+.sleep-section-root{
+    width:100%;
+    padding:5px;
+    display:flex;
+    flex-direction: column;
+}
+
+.sleep-section{
+    display:flex;  
+    flex-direction: column;
+    padding: 5px;
+    margin-bottom:5px;
+    /* border-bottom: 1px solid gray; */
+}
+
+.section-row{
+    display:flex;
+    flex-direction: column;
+    width:100%;
+    margin-bottom: 3px;
+}
+.input-row{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.time-input{
+    margin-left:5px;
+    margin-right:5px;
+    border-radius:3px;
+    border: 1px solid gray;
+}
+
+.sleep-quality{
+    font-size:1.3em;
+    margin-right:2px;
+    cursor: pointer;
+    color: rgb(215, 215, 215);
+}
+
+.sleep-quality-very-poor{
+    color: rgb(0, 16, 37);
+}
+.sleep-quality-poor{
+    color: rgb(0, 38, 83);
+}
+.sleep-quality-okay{
+    color: rgb(0, 57, 131);
+}
+.sleep-quality-well{
+    color: rgb(0, 83, 190);
+}
+.sleep-quality-very-well{
+    color: rgb(0, 110, 255);
+}
+
+
+.small-button{
+    font-size:0.7em;
+}
+.neato-blue{
+    background-color: rgb(0, 96, 223);
+    color:white;
+}

@@ -11,9 +11,7 @@
     
   </div>
 
-  <div class="form-section">
-
-
+  <div class="form-section" >
     <div class="banner" (click)="onClickBanner('SLEEP_SECTION')" *ngIf="!timelogEntryForm.sleepSectionExpanded">
       <!-- <div>
         <app-sleep-battery [configuration]="timelogEntryForm.batteryConfiguration">
@@ -28,30 +26,12 @@
         <fa-icon [icon]="faBed" style="color: rgb(215, 215, 215); margin-left:1px; margin-right:1px;"></fa-icon>
       </div>
     </div>
-
-    <div class="expanded-section" *ngIf="timelogEntryForm.sleepSectionExpanded" [formGroup]="sleepTimesFormGroup">
-      <div style="display:flex;flex-direction: column;">
-        <span style="font-size:0.9em;color:gray;">What time did you fall asleep last night?</span>
-        <div style="display:flex;flex-direction: row;">
-          <input type="time" formControlName="fallAsleepTime" style="flex-grow:2;margin-right:5px;" class="clean-input">
-        </div>
-      </div>
-      <div style="display:flex;flex-direction: column;">
-        <span style="font-size:0.9em;color:gray;">What time did you wake up this morning?</span>
-        <div style="display:flex;flex-direction: row;">
-          <input type="time" formControlName="wakeupTime" style="flex-grow:2;margin-right:5px;" class="clean-input">
-        </div>
-      </div>
-      <div style="display:flex;flex-direction: row-reverse">
-        <button class="btn btn-sm small-button neato-blue" (click)="onClickSleepTimes()">Save</button>
-      </div>
-      <app-sleep-battery [configuration]="timelogEntryForm.batteryConfiguration">
-      </app-sleep-battery>
+    <div class="expanded-section" *ngIf="timelogEntryForm.sleepSectionExpanded" >
+      <app-sleep-section [timelogEntryForm]="timelogEntryForm"></app-sleep-section>
     </div>
-
     <div class="section-completion">
-      <fa-icon [icon]="faCheckCircle" *ngIf="true" style="color: green;"></fa-icon>
-      <fa-icon [icon]="faCircle" *ngIf="false"></fa-icon>
+      <fa-icon [icon]="faCheckCircle" *ngIf="true" style="color: green;" class="completion-button"></fa-icon>
+      <fa-icon [icon]="faCircle" *ngIf="false" class="completion-button"></fa-icon>
     </div>
   </div>
 
@@ -68,7 +48,7 @@
     <div class="expanded-section" *ngIf="false"></div>
 
     <div class="section-completion">
-      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+      <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
     </div>
   </div>
 
@@ -80,7 +60,7 @@
     <div class="expanded-section" *ngIf="false"></div>
 
     <div class="section-completion">
-      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+      <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
     </div>
   </div>
 
@@ -92,7 +72,7 @@
     <div class="expanded-section" *ngIf="false"></div>
 
     <div class="section-completion">
-      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+      <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
     </div>
   </div>
 
@@ -104,7 +84,7 @@
     <div class="expanded-section" *ngIf="false"></div>
 
     <div class="section-completion">
-      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+      <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
     </div>
   </div>
 
@@ -116,7 +96,7 @@
     <div class="expanded-section" *ngIf="false"></div>
 
     <div class="section-completion">
-      <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+      <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
     </div>
   </div>
 
@@ -128,7 +108,7 @@
       <div class="expanded-section" *ngIf="false"></div>
   
       <div class="section-completion">
-        <fa-icon [icon]="faCircle" style="color:gray;"></fa-icon>
+        <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
       </div>
     </div>
 
