@@ -4,29 +4,29 @@
     <span style="font-size:1.2em;">{{ timelogEntryForm.message }}</span><br>
     <span>{{ timelogEntryForm.currentTime.format("dddd, MMM Do YYYY")}}</span>
     <span class="prominent-data">{{ timelogEntryForm.currentTime.format("h:mm:ss a")}}</span>
+
   </div>
 
 
-  <div style="font-weight:bold;font-size:1.1em;">
-    
-  </div>
 
-  <div class="form-section" >
+
+  <div class="form-section">
     <div class="banner" (click)="onClickBanner('SLEEP_SECTION')" *ngIf="!timelogEntryForm.sleepSectionExpanded">
-      <!-- <div>
-        <app-sleep-battery [configuration]="timelogEntryForm.batteryConfiguration">
-        </app-sleep-battery>
-      </div> -->
-      <div style="flex-grow:2; display:flex; flex-direction: row; justify-content: center;">
-        <span style="margin-right:5px;">Sleep quality: Good</span>
-        <fa-icon [icon]="faBed" style="color: rgb(0, 96, 223); margin-left:1px; margin-right:1px;"></fa-icon>
-        <fa-icon [icon]="faBed" style="color: rgb(0, 96, 223); margin-left:1px; margin-right:1px;"></fa-icon>
-        <fa-icon [icon]="faBed" style="color: rgb(0, 96, 223); margin-left:1px; margin-right:1px;"></fa-icon>
-        <fa-icon [icon]="faBed" style="color: rgb(0, 96, 223); margin-left:1px; margin-right:1px;"></fa-icon>
-        <fa-icon [icon]="faBed" style="color: rgb(215, 215, 215); margin-left:1px; margin-right:1px;"></fa-icon>
+      <div class="banner-title">
+        Awake at {{ timelogEntryForm.wakeupTime.format('hh:mm a') }}
       </div>
+      <div class="banner-content">
+        <div style="margin-right:5px;">
+          <fa-icon [icon]="faBed" class="sleep-quality-bed" *ngFor="let sleepQualityBed of sleepQualityBeds"
+            [ngClass]="sleepQuality(sleepQualityBed)"></fa-icon>
+        </div>
+        <div>
+          {{ timelogEntryForm.sleepDurationShort }}
+        </div>
+      </div>
+
     </div>
-    <div class="expanded-section" *ngIf="timelogEntryForm.sleepSectionExpanded" >
+    <div class="expanded-section" *ngIf="timelogEntryForm.sleepSectionExpanded">
       <app-sleep-section [timelogEntryForm]="timelogEntryForm"></app-sleep-section>
     </div>
     <div class="section-completion">
@@ -34,11 +34,6 @@
       <fa-icon [icon]="faCircle" *ngIf="false" class="completion-button"></fa-icon>
     </div>
   </div>
-
-
-
-
-
 
   <div class="form-section">
 
@@ -102,14 +97,25 @@
 
   <div class="form-section">
 
-      <div class="banner" *ngIf="true">
-        Bedtime
+    <div class="banner" *ngIf="true">
+      <div class="banner-title">
+        Bedtime at {{ timelogEntryForm.bedtime.format('hh:mm a') }}
       </div>
-      <div class="expanded-section" *ngIf="false"></div>
-  
-      <div class="section-completion">
-        <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
+      <div class="banner-content">
+        {{ timelogEntryForm.timeUntilBedtime }}
       </div>
     </div>
+    <div class="expanded-section" *ngIf="false"></div>
+
+    <div class="section-completion">
+      <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
+    </div>
+  </div>
+
+  <div class="awake-for-section">
+    Awake for {{ timelogEntryForm.timeSinceWakeup}}
+    <app-sleep-battery style="margin-left:5px;" [configuration]="timelogEntryForm.batteryConfiguration" [shape]="small">
+    </app-sleep-battery>
+  </div>
 
 </div>

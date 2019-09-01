@@ -9,6 +9,8 @@ import * as moment from 'moment';
 import { DayStructureSleepCycleAction } from "./data-items/day-structure-sleep-cycle-action.enum";
 import { TimelogWindow } from "../widgets/timelog/timelog-large/timelog-chart/timelog-window.interface";
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
+import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
+import { SleepQuality } from "../widgets/timelog/timelog-entry-form/form-sections/sleep-section/sleep-quality.enum";
 
 export class DaybookDayItem{
 
@@ -35,6 +37,15 @@ export class DaybookDayItem{
             dailyTaskListDataItems: [],
             dayStructureDataItems: [],
             sleepCycleDataItems: [],
+            sleepProfile: {
+                previousFallAsleepTimeISO: "",
+                previousFallAsleepTimeUtcOffsetMinutes: 0,
+                wakeupTimeISO: "",
+                wakeupTimeUtcOffsetMinutes: 0,
+                sleepQuality: SleepQuality.Okay,
+                bedtimeISO: "",
+                bedtimeUtcOffsetMinutes: 0,
+            },
             dailyWeightLogEntryKg: 0,
             dayTemplateId: "",
             scheduledEventIds: [],
@@ -79,6 +90,16 @@ export class DaybookDayItem{
         this._httpShape.sleepCycleDataItems = sleepCycleItems;
         this.dataChanged();
     }
+
+    public get sleepProfile(): DaybookDayItemSleepProfile { return this._httpShape.sleepProfile; }
+    public set sleepProfile(sleepProfile: DaybookDayItemSleepProfile) {
+        this._httpShape.sleepProfile = sleepProfile;
+        console.log("Sleep profile changed:", this._httpShape.sleepProfile)
+        this.dataChanged();
+    }
+    // public get sleepQuality(): SleepQuality{
+    //     if(this._httpShape.sleepProfile.sleepQuality)
+    // }
 
     public get dailyWeightLogEntryKg(): number { return this._httpShape.dailyWeightLogEntryKg; }
     public set dailyWeightLogEntryKg(kg: number){ 
@@ -141,8 +162,6 @@ export class DaybookDayItem{
     public get dataChanged$(): Observable<boolean> {
         return this._dataChanged$.asObservable();
     }
-
-
 
 
 

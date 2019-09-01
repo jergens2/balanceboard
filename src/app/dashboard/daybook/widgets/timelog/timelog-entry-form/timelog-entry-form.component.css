@@ -9,13 +9,25 @@
 .message-section{
     width:90%;
     align-items: center;
-    border-bottom:1px solid gray;
+    border-bottom:1px solid rgb(207, 207, 207);
     display:flex;
     flex-direction: column;
-    margin-bottom:10px;
+    padding-bottom:5px;
+    margin-bottom:5px;
 }
 
-
+.awake-for-section{
+    width:90%;
+    margin-top:5px;
+    color:gray;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size:0.8em;
+    padding-top: 5px;
+    border-top:1px solid rgb(207, 207, 207);
+}
 
 .form-section{
     display:flex;
@@ -55,24 +67,40 @@
 
     display:flex;
     flex-direction: row;
-    justify-content: space-between; 
     align-items: center;
+    justify-content: space-between;
 
     font-size: 0.9em;
 
-    border: 1px solid rgb(221, 221, 221);
+    border: 1px solid white;
     border-radius: 5px;
+}
+.banner-content{
+    flex-grow: 2;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+.banner-content-double{
+    height:40px;
+    display:flex;
+    flex-direction: column
 }
 .banner:hover{
     border:1px solid rgb(0, 96, 223);
+    cursor: pointer;
+}
+.banner-title{
+    font-weight:bold;
+    color: rgb(99, 99, 99);
+    margin-right:5px;
 }
 .expanded-section{
     flex-grow: 2;
     padding:1px;
-    padding-left:3px;
-    padding-right:3px;
-    border: 1px solid rgb(221, 221, 221);
     border-radius: 5px;
+    border:1px solid rgb(0, 96, 223);
 }
 
 
@@ -93,8 +121,25 @@
 }
 
 
-
-
+.sleep-quality-bed{
+    color: rgb(215, 215, 215);
+    margin-right:1px;
+}
+.sleep-quality-very-poor{
+    color: rgb(0, 16, 37);
+}
+.sleep-quality-poor{
+    color: rgb(0, 38, 83);
+}
+.sleep-quality-okay{
+    color: rgb(0, 57, 131);
+}
+.sleep-quality-well{
+    color: rgb(0, 83, 190);
+}
+.sleep-quality-very-well{
+    color: rgb(0, 110, 255);
+}
 
 
 

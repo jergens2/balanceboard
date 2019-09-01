@@ -3,6 +3,7 @@ import { DaybookActivityDataItem } from "./data-items/daybook-activity-data-item
 import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
+import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
 
 
 export interface DaybookDayItemHttpShape{
@@ -16,6 +17,7 @@ export interface DaybookDayItemHttpShape{
     dailyTaskListDataItems: DailyTaskListDataItem[];
     dayStructureDataItems: DayStructureDataItem[];
     sleepCycleDataItems: DayStructureSleepCycleDataItem[];
+    sleepProfile: DaybookDayItemSleepProfile;
     dailyWeightLogEntryKg: number;
 
     // These represent references to data stored in other tables in the database.

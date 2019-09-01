@@ -5,6 +5,7 @@ import { faPlus, faMinus, faPlusCircle, faMinusCircle, faBed } from '@fortawesom
 import * as moment from 'moment';
 import { SleepQuality } from './sleep-quality.enum';
 import { DurationString } from '../../../../../../../shared/utilities/duration-string.class';
+import { DaybookDayItemSleepProfile } from '../../../../../api/data-items/daybook-day-item-sleep-profile.interface';
 
 @Component({
   selector: 'app-sleep-section',
@@ -18,13 +19,13 @@ export class SleepSectionComponent implements OnInit {
   sleepTimesFormGroup: FormGroup;
 
   sleepQualityBeds: any[] = [];
-  private _sleepQuality: SleepQuality = SleepQuality.Okay;
+  private _sleepQuality: SleepQuality;
   private _sleepDuration: string = "";
 
   @Input() timelogEntryForm: TimelogEntryForm;
 
   ngOnInit() {
-
+    this._sleepQuality = this.timelogEntryForm.sleepQuality;
     this.sleepQualityBeds = [
       SleepQuality.VeryPoor,
       SleepQuality.Poor,
@@ -47,6 +48,7 @@ export class SleepSectionComponent implements OnInit {
 
   public onClickSleepQuality(sleepQuality: SleepQuality){
     this._sleepQuality = sleepQuality;
+    this.timelogEntryForm.sleepQuality = sleepQuality;
   }
 
   
@@ -73,11 +75,17 @@ export class SleepSectionComponent implements OnInit {
     return this._sleepQuality.toString();
   }
 
-  public onClickSleepTimes() {
-    // this.timelogEntryForm.saveTimes();
-    let wakeupTime: any = this.parseFormTimeInput(this.sleepTimesFormGroup.controls["wakeupTime"].value);
-    let fallAsleepTime: any = this.parseFormTimeInput(this.sleepTimesFormGroup.controls["fallAsleepTime"].value);
-    this.timelogEntryForm.onClickSaveSleepTimes(wakeupTime, fallAsleepTime);
+  public onClickSave() {
+    let sleepProfile: DaybookDayItemSleepProfile = {
+      previousFallAsleepTimeISO: this._fallAsleepTime.toISOString(),
+      previousFallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
+      wakeupTimeISO: this._wakeupTime.toISOString(),
+      wakeupTimeUtcOffsetMinutes: this._wakeupTime.utcOffset(),
+      sleepQuality: this._sleepQuality,
+      bedtimeISO: this.timelogEntryForm.bedtime.toISOString(),
+      bedtimeUtcOffsetMinutes: this.timelogEntryForm.bedtime.utcOffset(),
+    }
+    this.timelogEntryForm.onClickSaveSleepTimes(sleepProfile);
   }
 
 

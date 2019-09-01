@@ -1,7 +1,7 @@
 export enum SleepQuality{
-    VeryPoor = "Very poor",
-    Poor = "Poor",
-    Okay = "Okay",
-    Well = "Well",
-    VeryWell = "Very well",
+    VeryPoor = "Very poorly rested",
+    Poor = "Poorly rested",
+    Okay = "Adequately rested",
+    Well = "Well-rested",
+    VeryWell = "Very well-rested",
 }

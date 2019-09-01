@@ -1,4 +1,4 @@
-<div *ngIf="batteryConfiguration.shape == 'LARGE'" class="battery-container" (click)="onClickBattery()">
+<div *ngIf="shape == 'LARGE'" class="battery-container" (click)="onClickBattery()">
     <div class="battery-large">
         <div class="battery-top-terminal-nub"></div>
         <div class="percentage-container percentage-container-large">
@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<div *ngIf="batteryConfiguration.shape == 'SMALL'" class="battery-container">
+<div *ngIf="shape == 'SMALL'" class="battery-container">
     <div class="battery-small">
         <div class="battery-top-terminal-nub-small"></div>
         <div class="percentage-container percentage-container-small">

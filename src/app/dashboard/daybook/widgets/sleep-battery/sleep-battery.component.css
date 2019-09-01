@@ -50,7 +50,6 @@
     grid-template-rows: 1fr;
     grid-template-columns: 1fr;
     background-color: rgb(238, 238, 238);
-
 }
 .percentage-container-large{   
     border: 2px solid rgb(121, 121, 121);
@@ -86,6 +85,10 @@
     font-size: 0.7em;
     color:rgb(97, 97, 97);
     margin-left: 3px;
+
+    display:flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .light-text{

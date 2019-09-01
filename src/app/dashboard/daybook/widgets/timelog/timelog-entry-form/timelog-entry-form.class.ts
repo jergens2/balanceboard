@@ -1,17 +1,20 @@
 import * as moment from 'moment';
 import { timer } from 'rxjs';
 import { DurationString } from '../../../../../shared/utilities/duration-string.class';
-import { TimelogEntryFormSection } from './timelog-entry-form-section/timelog-entry-form-section.class';
-import { TimelogEntryFormSectionType } from './timelog-entry-form-section/timelog-entry-form-section-type.enum';
 import { SleepBatteryConfiguration } from '../../sleep-battery/sleep-battery-configuration.interface';
+import { SleepQuality } from './form-sections/sleep-section/sleep-quality.enum';
+import { DaybookDayItem } from '../../../api/daybook-day-item.class';
+import { DaybookDayItemSleepProfile } from '../../../api/data-items/daybook-day-item-sleep-profile.interface';
 
 export class TimelogEntryForm {
 
     private userName: string = "Jeremy";
 
-    constructor(dateYYYYMMDD: string) {
-        this.dateYYYYMMDD = dateYYYYMMDD;
-        // this.buildFormSections();
+    private activeDay: DaybookDayItem;
+
+    constructor(activeDay: DaybookDayItem) {
+        this.activeDay = activeDay;
+        this.setParameters();
         this.updateTimes();
         timer(0, 1000).subscribe((tick) => {
             this._currentTime = moment();
@@ -28,7 +31,25 @@ export class TimelogEntryForm {
         })
     }
 
-    dateYYYYMMDD: string = "";
+    private setParameters(){
+        if(this.activeDay.sleepProfile.bedtimeISO){
+            console.log("Setting bed time to: ", this.activeDay.sleepProfile.bedtimeISO)
+            this._bedTime = moment(this.activeDay.sleepProfile.bedtimeISO);
+        }
+        if(this.activeDay.sleepProfile.previousFallAsleepTimeISO){
+            console.log("setting fall asleep time to: ", this.activeDay.sleepProfile.previousFallAsleepTimeISO)
+            this._lastNightFallAsleepTime = moment(this.activeDay.sleepProfile.previousFallAsleepTimeISO);
+        }
+        if(this.activeDay.sleepProfile.wakeupTimeISO){
+            console.log("setting wakeup time: ", this.activeDay.sleepProfile.wakeupTimeISO);
+            this._wakeupTime = moment(this.activeDay.sleepProfile.wakeupTimeISO);
+        }
+        this._sleepQuality = this.activeDay.sleepProfile.sleepQuality;
+    }       
+
+    public updateActiveDay(activeDay: DaybookDayItem){
+        this.activeDay = activeDay;
+    }
 
     private _message: string = "";
     public get message(): string {
@@ -76,66 +97,49 @@ export class TimelogEntryForm {
         }
     }
 
-    public onClickSaveSleepTimes(wakeupTime: { hour: number, minute: number }, fallAsleepTime: { hour: number, minute: number }) {
-        // console.log("boola woola", wakeupTime);
-        // console.log("ola bolw", fallAsleepTime);
-        this._wakeupTime = moment(this._wakeupTime).hour(wakeupTime.hour).minute(wakeupTime.minute);
-        this._lastNightFallAsleepTime = moment(this._lastNightFallAsleepTime).hour(fallAsleepTime.hour).minute(fallAsleepTime.minute);
-        // console.log("Warning:  this method does not account for fall asleep times which occurred after midnight (therefore this morning)")
-        // console.log("currently, it is assumed that you fell asleep yesterday, before midnight.  therefore any times past midnight will yield... incorrect results")
+    public onClickSaveSleepTimes(sleepProfile: DaybookDayItemSleepProfile) {
+        this._wakeupTime = moment(sleepProfile.wakeupTimeISO);
+        this._lastNightFallAsleepTime = moment(sleepProfile.previousFallAsleepTimeISO);
         this.updateTimes();
         this.sleepSectionExpanded = false;
-        this._batteryConfiguration["shape"] = "SMALL";
+        this.activeDay.sleepProfile = sleepProfile
     }
 
-    private _formSections: any[] = [];
-    private buildFormSections() {
-        /**
-         *     SleepTimes = "SLEEP_TIMES",
-    Bedtime = "BEDTIME",
-    MorningRoutine = "MORNING_ROUTINE",
-    EveningRoutine = "EVENING_ROUTINE",
-    MorningActivities = "MORNING_ACTIVITIES",
-    AfternoonActivities = "AFTERNOON_ACTIVITIES",
-    EveningActivities = "EVENING_ACTIVITIES",
-         */
-
-
-        let formSections: any[] = [];
-        formSections.push(new TimelogEntryFormSection(TimelogEntryFormSectionType.SleepTimes));
-        formSections.push(new TimelogEntryFormSection(TimelogEntryFormSectionType.MorningRoutine));
-        formSections.push(new TimelogEntryFormSection(TimelogEntryFormSectionType.MorningRoutine));
-        formSections.push(new TimelogEntryFormSection(TimelogEntryFormSectionType.MorningRoutine));
-        formSections.push(new TimelogEntryFormSection(TimelogEntryFormSectionType.MorningRoutine));
-        formSections.push(new TimelogEntryFormSection(TimelogEntryFormSectionType.MorningRoutine));
-        formSections.push(new TimelogEntryFormSection(TimelogEntryFormSectionType.MorningRoutine));
-        formSections.push(new TimelogEntryFormSection(TimelogEntryFormSectionType.MorningRoutine));
-        this._formSections = formSections;
-    }
-    public get formSections(): any[] {
-        return this._formSections;
-    }
 
     sleepSectionExpanded: boolean = false;
 
+
+    private _sleepQuality: SleepQuality = SleepQuality.Okay;
+    public set sleepQuality(sleepQuality: SleepQuality){
+        this._sleepQuality = sleepQuality;
+    }
+    public get sleepQuality(): SleepQuality{
+        return this._sleepQuality;
+    }
+    public get sleepDuration(): string{
+        return DurationString.calculateDurationString(this.lastNightFallAsleepTime, this.wakeupTime);
+    }
+    public get sleepDurationShort(): string{
+        return DurationString.calculateDurationString(this.lastNightFallAsleepTime, this.wakeupTime, true);
+    }
 
 
     private updateTimes() {
 
         if (this.currentTime.hour() < 12) {
-            this._message = "Good morning Jeremy";
+            this._message = "Good morning " + this.userName;
         } else if (this.currentTime.hour() >= 12 && this.currentTime.hour() < 18) {
-            this._message = "Good afternoon Jeremy";
+            this._message = "Good afternoon " + this.userName;
         } else if (this.currentTime.hour() >= 18) {
-            this._message = "Good evening Jeremy";
+            this._message = "Good evening " + this.userName;
         }
 
 
         let timeUntilBedtime = "";
         if (this.currentTime.isBefore(this._bedTime)) {
-            timeUntilBedtime = DurationString.calculateDurationString(this.currentTime, this._bedTime, true) + " until bedtime";
+            timeUntilBedtime = DurationString.calculateDurationString(this.currentTime, this._bedTime, true) + " remaining";
         } else {
-            timeUntilBedtime = DurationString.calculateDurationString(this._bedTime, this.currentTime, true) + " past bedtime";
+            timeUntilBedtime = DurationString.calculateDurationString(this._bedTime, this.currentTime, true) + " past pedtime";
         }
         this._timeUntilBedtime = timeUntilBedtime;
 
@@ -143,21 +147,16 @@ export class TimelogEntryForm {
         if (this.currentTime.isBefore(this._wakeupTime)) {
             timeSinceWakeup = "";
         } else if (this.currentTime.isAfter(this._wakeupTime)) {
-            timeSinceWakeup = DurationString.calculateDurationString(this._wakeupTime, this.currentTime, true) + " since wake up";
+            timeSinceWakeup = DurationString.calculateDurationString(this._wakeupTime, this.currentTime, true);
         }
         this._timeSinceWakeup = timeSinceWakeup;
         this.updateBatteryConfiguration();
     }
 
     private updateBatteryConfiguration() {
-        let shape: string = "LARGE";
-        if (!this.sleepSectionExpanded) {
-            shape = "SMALL"
-        }
         let batteryConfiguration: SleepBatteryConfiguration = {
             wakeupTime: this.wakeupTime,
             bedtime: this.bedtime,
-            shape: shape,
         }
         this._batteryConfiguration = batteryConfiguration;
     }

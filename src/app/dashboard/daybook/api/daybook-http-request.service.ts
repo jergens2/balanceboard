@@ -167,9 +167,11 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
 
   private _changeSubscriptions: Subscription[] = [];
   private updateChangeSubscription(){
+    console.log("Updating subscriptiuo")
     this._changeSubscriptions.forEach((sub)=> sub.unsubscribe() );
     this._daybookDayItems$.getValue().forEach((daybookDayItem: DaybookDayItem)=>{
       this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent)=>{
+        console.log("we received an update foolio");
         this.updateDaybookDayItem(daybookDayItem);
       }));
     });

@@ -30,8 +30,9 @@ export class SleepBatteryComponent implements OnInit {
     this._wakeupTime = this._batteryConfiguration.wakeupTime;
     this._bedtime = this._batteryConfiguration.bedtime;
     this.updateBattery();
-    
   }
+
+  @Input() shape: string;
 
   public get wakeupTime(): moment.Moment{
     return this._wakeupTime;
@@ -45,6 +46,12 @@ export class SleepBatteryComponent implements OnInit {
   colorNgClass: string[] = [];
 
   ngOnInit() {
+    if(this.shape != "SMALL" && this.shape != "LARGE"){
+      this.shape = "SMALL";
+    }
+
+    console.log("shape and confg: ", this.shape, this.batteryConfiguration)
+
     this.updateBattery();
     timer(0, 60000).subscribe((tick) => {
       this.updateBattery();
@@ -111,10 +118,9 @@ export class SleepBatteryComponent implements OnInit {
     }
     this._timeSinceWakeup = timeSinceWakeup;
     
-    let shape = this._batteryConfiguration.shape;
-    if(shape == "LARGE"){
+    if(this.shape == "LARGE"){
       this._batteryNgClass = ["large-battery"];
-    }else if(shape == "SMALL"){
+    }else if(this.shape == "SMALL"){
       this._batteryNgClass = ["small-battery"];
     }
 

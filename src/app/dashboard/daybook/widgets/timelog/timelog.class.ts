@@ -19,7 +19,7 @@ export class Timelog{
     weightLogEntryKg: number;
 
     private buildTimelogEntryForm(){
-        let timelogEntryForm: TimelogEntryForm = new TimelogEntryForm(this._activeDay.dateYYYYMMDD);
+        let timelogEntryForm: TimelogEntryForm = new TimelogEntryForm(this._activeDay);
 
         this._timelogEntryForm = timelogEntryForm;
     }
