@@ -18,7 +18,7 @@ import { ActivityInputDropdownComponent } from "./activity-input-dropdown/activi
 
 import { RecurringTaskFormComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/recurring-task-form.component";
 import { RtRepititionsComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/rt-repititions.component";
-import { ActivityCategoryDefinitionFormComponent } from "./document-definitions/activity-category-definition/activity-category-definition-form/activity-category-definition-form.component";
+import { ActivityCategoryDefinitionFormComponent } from "../dashboard/activities/activity-category-definition-form/activity-category-definition-form.component";
 import { BrowseActivityComponent } from './activity-input-dropdown/browse-activity/browse-activity.component';
 
 

@@ -1,4 +1,4 @@
-import { ActivityCategoryDefinition } from "../../../../../../../shared/document-definitions/activity-category-definition/activity-category-definition.class";
+import { ActivityCategoryDefinition } from "../../../../../../activities/api/activity-category-definition/activity-category-definition.class";
 import { ActivitySliderBar } from "./activity-slider-bar.class";
 import { Subject, Observable } from "rxjs";
 import { ITLEFActivitySliderBarItem } from "./activity-slider-bar-item.interface";

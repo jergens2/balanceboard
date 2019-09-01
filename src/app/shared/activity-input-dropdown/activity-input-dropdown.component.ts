@@ -3,9 +3,9 @@ import { faCaretDown, faCaretRight, faSitemap, faSearch, faSpinner } from '@fort
 
 import { Subscription, Observable, fromEvent, Subject, timer } from 'rxjs';
 import { ActivityDropdownListItem } from './activity-dropdown-list-item.interface';
-import { ActivityTree } from '../document-definitions/activity-category-definition/activity-tree.class';
-import { ActivityCategoryDefinition } from '../document-definitions/activity-category-definition/activity-category-definition.class';
-import { ActivityCategoryDefinitionService } from '../document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityTree } from '../../dashboard/activities/api/activity-category-definition/activity-tree.class';
+import { ActivityCategoryDefinition } from '../../dashboard/activities/api/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinitionService } from '../../dashboard/activities/api/activity-category-definition/activity-category-definition.service';
 import { ActivityInputSearch } from './activity-input-search.class';
 import { ActivityChainLink, SaveActivityChain } from './save-activity-chain.class';
 

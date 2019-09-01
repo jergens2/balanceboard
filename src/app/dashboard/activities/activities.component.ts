@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivityCategoryDefinitionService } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
-import { ActivityTree } from '../../shared/document-definitions/activity-category-definition/activity-tree.class';
+import { ActivityCategoryDefinitionService } from './api/activity-category-definition/activity-category-definition.service';
+import { ActivityTree } from './api/activity-category-definition/activity-tree.class';
 
 
 import { TimeViewConfiguration } from '../../shared/time-views/time-view-configuration.interface';
 
 import { TimeViewDayData } from '../../shared/time-views/time-view-day-data-interface';
 import * as moment from 'moment';
-import { ActivityCategoryDefinition } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinition } from './api/activity-category-definition/activity-category-definition.class';
 import { ModalService } from '../../modal/modal.service';
 import { Modal } from '../../modal/modal.class';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';

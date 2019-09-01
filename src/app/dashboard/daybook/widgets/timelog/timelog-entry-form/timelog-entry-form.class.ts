@@ -107,6 +107,8 @@ export class TimelogEntryForm {
 
 
     sleepSectionExpanded: boolean = false;
+    morningRoutineSectionExpanded: boolean = false;
+    eveningRoutineSectionExpanded: boolean = false;
 
 
     private _sleepQuality: SleepQuality = SleepQuality.Okay;
@@ -122,6 +124,16 @@ export class TimelogEntryForm {
     public get sleepDurationShort(): string{
         return DurationString.calculateDurationString(this.lastNightFallAsleepTime, this.wakeupTime, true);
     }
+
+
+    public get morningRoutine(): any{
+        return this.activeDay.morningRoutine;
+    }  
+    public get eveningRoutine(): any{
+        return this.activeDay.eveningRoutine;
+    }
+
+
 
 
     private updateTimes() {

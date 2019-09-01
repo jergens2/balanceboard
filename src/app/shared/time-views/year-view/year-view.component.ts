@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 
-import { ActivityCategoryDefinitionService } from '../../document-definitions/activity-category-definition/activity-category-definition.service';
-import { ActivityCategoryDefinition } from '../../document-definitions/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinitionService } from '../../../dashboard/activities/api/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinition } from '../../../dashboard/activities/api/activity-category-definition/activity-category-definition.class';
 import { Router } from '@angular/router';
 import { SizeService } from '../../app-screen-size/size.service';
 import { AppScreenSize } from '../../app-screen-size/app-screen-size.enum';

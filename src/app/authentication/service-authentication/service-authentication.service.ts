@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivityCategoryDefinitionService } from '../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinitionService } from '../../dashboard/activities/api/activity-category-definition/activity-category-definition.service';
 
 import { UserSettingsService } from '../../shared/document-definitions/user-account/user-settings/user-settings.service';
 import { DayTemplatesService } from '../../dashboard/scheduling/day-templates/day-templates.service';

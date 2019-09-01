@@ -30,6 +30,9 @@ import { ActivitySliderBarComponent } from './widgets/timelog/timelog-entry-form
 import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.component';
 import { TimelogEntryFormSectionComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form-section/timelog-entry-form-section.component';
 import { SleepSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/sleep-section/sleep-section.component';
+import { MorningRoutineSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/morning-routine-section/morning-routine-section.component';
+import { EveningRoutineSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/evening-routine-section/evening-routine-section.component';
+import { RoutineSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/routine-section/routine-section.component';
 
 
 @NgModule({
@@ -64,6 +67,9 @@ import { SleepSectionComponent } from './widgets/timelog/timelog-entry-form/form
     SleepBatteryComponent,
     TimelogEntryFormSectionComponent,
     SleepSectionComponent,
+    MorningRoutineSectionComponent,
+    EveningRoutineSectionComponent,
+    RoutineSectionComponent,
   ],
   exports: [
     TimelogEntryFormComponent,

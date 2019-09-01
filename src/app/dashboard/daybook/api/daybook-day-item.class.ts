@@ -153,6 +153,14 @@ export class DaybookDayItem{
         return this._followingDay;
     }
 
+    public get morningRoutine(): any{
+        return "sup";
+    }
+    public get eveningRoutine(): any{
+        return "sup";
+    }
+
+
 
     private dataChanged() {
         console.log("* * * DaybookDayItem: " + this.dateYYYYMMDD + " - Data has changed.  Saving.")
@@ -165,67 +173,9 @@ export class DaybookDayItem{
 
 
 
-
-    private buildTimelogEntry(nowTime: moment.Moment, startTimeISO: string, endTimeISO: string): DaybookTimelogEntryDataItem {
-        let timelogEntry: DaybookTimelogEntryDataItem = {
-            startTimeISO: startTimeISO,
-            endTimeISO: endTimeISO,
-            utcOffsetMinutes: nowTime.utcOffset(),
-            timelogEntryActivities: [],
-            isConfirmed: false,
-            note: "",
-        }
-        return timelogEntry;
-    }
-
-    public generateInitialTimelogEntries() {
-
-        /**
-         * 2019-08-18
-         * Note:  This method assumes in a standard circadian sleep cycle, meaning you go to bed some time in the evening and wake up some time in the morning.
-         * this method currently does not account for someone who does shift work, who might have to wake up at 6pm.
-         * Need to add that functionality at some point.
-         * 
-         * For now, assuming the following pattern holds true for each day:
-         *  
-            SleepingPreWakeup = "SLEEPING_PRE_WAKEUP",
-            Wakeup = "WAKEUP",
-            PostWakeup = "POST_WAKEUP",
-            Awake = "AWAKE",
-            Bedtime = "BEDTIME",
-            AwakePreSleeping = "AWAKE_PRE_SLEEPING",
-            SleepingPostBedtime = "SLEEPING_POST_BEDTIME",
-         */
-        // let generatedTimelogEntries: DaybookTimelogEntryDataItem[] = [];
-        // let now: moment.Moment = moment();
-        // let position: DayStructureDataItem = this.positionInSleepCycle(now);
-        // let index: number = this.substantialDayStructureDataItems.indexOf(position);
-        // for (let i = 0; i < index; i++) {
-
-        //     let sleepCycle = this.substantialDayStructureDataItems[i].sleepCycle;
-        //     let startTimeISO = this.substantialDayStructureDataItems[i].startTimeISO;
-        //     let endTimeISO = this.substantialDayStructureDataItems[i].endTimeISO;
-        //     console.log("building a timelog entry from ", this.substantialDayStructureDataItems[i])
-        //     generatedTimelogEntries.push(this.buildTimelogEntry(now, startTimeISO, endTimeISO, sleepCycle));
-        // }
-        // let startTimeISO = position.startTimeISO;
-        // generatedTimelogEntries.push(this.buildTimelogEntry(now, startTimeISO, now.toISOString(), position.sleepCycle));
-        // console.log("Generated timelog entries:", generatedTimelogEntries);
-        // this.daybookTimelogEntryDataItems = generatedTimelogEntries;
-    }
-
-
-    // private setSleepCycleTimes(){
-    //     this._wakeUpTime = 
-    // }
-
-    // private _wakeUpTime: moment.Moment;
-    // private _fallAsleepTime: moment.Moment;
     public getTimelogWindow(windowSizeHours: number): TimelogWindow {
-
         /**
          *  I think I might just get rid of the TimelogWindow entirely, and just use the 2 variables as reference points (wakeup and fallasleep time);
-         * 
          */
         let startTime: moment.Moment = moment(this.wakeUpTime).subtract(1, "hour");
         let endTime: moment.Moment = moment(this.fallAsleepTime).add(1, "hour");
@@ -261,22 +211,6 @@ export class DaybookDayItem{
         }
     }
 
-
-    public timelogEntryStartTime(fromNow: moment.Moment): moment.Moment {
-        let startTime: moment.Moment = moment();
-        if (this.daybookTimelogEntryDataItems.length > 0) {
-            console.log("there were timelog entries already, so returning the end of the most recent one.")
-            startTime = moment(this.daybookTimelogEntryDataItems[this.daybookTimelogEntryDataItems.length - 1].endTimeISO);
-        } else {
-            console.log("returning the most recent daystructure item")
-            let filtered = this.dayStructureDataItems.filter((structureItem) => {
-                return moment(structureItem.startTimeISO).isBefore(fromNow);
-            });
-            startTime = moment(filtered[filtered.length - 1].startTimeISO);
-        }
-        console.log("timelogEntryStartTime value: ", startTime.format("hh:mm a"));
-        return startTime;
-    }
 
     public addTimelogEntryItem(timelogEntry: DaybookTimelogEntryDataItem) {
         let timelogEntries = this.daybookTimelogEntryDataItems;

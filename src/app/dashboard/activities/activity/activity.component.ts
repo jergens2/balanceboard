@@ -1,12 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivityCategoryDefinition } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinition } from '../api/activity-category-definition/activity-category-definition.class';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { Modal } from '../../../modal/modal.class';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 import { ModalService } from '../../../modal/modal.service';
 import { IModalOption } from '../../../modal/modal-option.interface';
-import { ActivityCategoryDefinitionService } from '../../../shared/document-definitions/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinitionService } from '../api/activity-category-definition/activity-category-definition.service';
 
 @Component({
   selector: 'app-activity',

@@ -1,13 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ActivityCategoryDefinition } from '../activity-category-definition.class';
+import { ActivityCategoryDefinition } from '../api/activity-category-definition/activity-category-definition.class';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivityCategoryDefinitionService } from '../activity-category-definition.service';
-import { ActivityTree } from '../activity-tree.class';
+import { ActivityCategoryDefinitionService } from '../api/activity-category-definition/activity-category-definition.service';
+import { ActivityTree } from '../api/activity-category-definition/activity-tree.class';
 import { faCheckCircle, faCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
-import { ModalService } from '../../../../modal/modal.service';
-import { Modal } from '../../../../modal/modal.class';
-import { IModalOption } from '../../../../modal/modal-option.interface';
-import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
+import { ModalService } from '../../../modal/modal.service';
+import { ActivityCategoryDefinitionHttpShape } from '../api/activity-category-definition/activity-category-definition-http-shape.interface';
+import { Guid } from '../../../shared/utilities/guid.class';
+import { ActivityDurationSetting } from '../api/activity-category-definition/activity-duration.enum';
+
 
 
 @Component({
@@ -30,7 +31,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
   parentActivity: ActivityCategoryDefinition = null;
 
   @Input("activityCategoryDefinition") public set activity(activity: ActivityCategoryDefinition) {
-    if(activity){
+    if (activity) {
       this._activity = activity;
       this._action = "edit";
       let topLevelActivityString = activity.userId + "_TOP_LEVEL";
@@ -41,10 +42,10 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
         this.ifTopLevelActivity = false;
         this.parentActivity = this.activityCategoryDefinitionService.findActivityByTreeId(activity.parentTreeId);
       }
-  
+
       this.pickedColor = activity.color;
     }
-    
+
   }
   public get activity(): ActivityCategoryDefinition {
     return this._activity;
@@ -54,7 +55,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     this._action = action;
   }
 
-  get action(): string{
+  get action(): string {
     return this._action;
   }
 
@@ -82,9 +83,9 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     } else if (this._action == "edit") {
 
       let parentActivityId: string = "";
-      if(this.ifTopLevelActivity){
+      if (this.ifTopLevelActivity) {
         parentActivityId = this.activityCategoryDefinitionService.userId + "_TOP_LEVEL";
-      }else{
+      } else {
         parentActivityId = this.parentActivity.treeId;
       }
 
@@ -106,7 +107,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
   }
 
   get activityName(): string {
-    if(this._activity){
+    if (this._activity) {
       return this._activity.name;
     }
     return "";
@@ -121,7 +122,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
   }
 
   colorPicked: boolean = false;
-  onColorSelected(value: string){
+  onColorSelected(value: string) {
     this.colorPicked = true;
     this.pickedColor = value;
     this.activityForm.controls["color"].setValue(value);
@@ -151,26 +152,42 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
     if (this._action == "new") {
       if (this.activityForm.valid && parentActivityId != null) {
-        console.log("saving new activity");
+       
+        let newActivity: ActivityCategoryDefinitionHttpShape = {
+          _id: "",
+          userId: this.activityCategoryDefinitionService.userId,
 
+          treeId: Guid.newGuid(),
+          parentTreeId: parentActivityId,
 
-        let saveNewActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition('', '', '', this.activityForm.controls['name'].value, this.activityForm.controls['description'].value, parentActivityId, this.activityForm.controls['color'].value);
+          name: this.activityForm.controls['name'].value,
+          description: this.activityForm.controls['description'].value,
+          color: this.activityForm.controls['color'].value,
+          icon: "",
+
+          durationSetting: ActivityDurationSetting.VariableLength,
+          specifiedDurationMinutes: 0,
+          targets: [],
+        }
+        console.log("saving new activity: ", newActivity);
+
+        let saveNewActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition(newActivity);
         this.activityCategoryDefinitionService.saveActivity(saveNewActivity);
-        // this.formClosed.emit("SAVE_NEW");
+        
       } else {
         console.log("Is parentActivityID null ? ", parentActivityId);
         console.log("Error : Form is invalid.");
       }
 
     }
-    else if(this._action == "edit"){
+    else if (this._action == "edit") {
       if (this.activityForm.valid) {
 
         let modifyActivity: ActivityCategoryDefinition = Object.assign({}, this.activity);
-        modifyActivity.name =  this.activityForm.controls['name'].value;
+        modifyActivity.name = this.activityForm.controls['name'].value;
         modifyActivity.description = this.activityForm.controls['description'].value;
         modifyActivity.parentTreeId = parentActivityId;
-        modifyActivity.color =  this.activityForm.controls['color'].value;
+        modifyActivity.color = this.activityForm.controls['color'].value;
         this.activityCategoryDefinitionService.updateActivity(modifyActivity);
         // this.formClosed.emit("SAVE_EDIT");
       } else {
@@ -182,7 +199,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     this.modalService.closeModal();
   }
 
-  public get saveDisabled(): string{
+  public get saveDisabled(): string {
     // if(this.activityForm.valid){
     //   return "";
     // }else{
@@ -192,10 +209,10 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
   }
 
   confirmDelete: boolean = false;
-  onClickTrash(){   
+  onClickTrash() {
     this.confirmDelete = true;
   }
-  onClickDeleteActivity(){
+  onClickDeleteActivity() {
     this.activityCategoryDefinitionService.deleteActivity(this.activity);
     this.modalService.closeModal();
   }

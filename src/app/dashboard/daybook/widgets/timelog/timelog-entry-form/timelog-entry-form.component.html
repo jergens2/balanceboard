@@ -37,10 +37,12 @@
 
   <div class="form-section">
 
-    <div class="banner" *ngIf="true">
+    <div class="banner" *ngIf="!timelogEntryForm.morningRoutineSectionExpanded">
       Morning Routine
     </div>
-    <div class="expanded-section" *ngIf="false"></div>
+    <div class="expanded-section" *ngIf="timelogEntryForm.morningRoutineSectionExpanded">
+      <app-routine-section [timelogEntryForm]="timelogEntryForm" [routine]="MORNING"></app-routine-section>
+    </div>
 
     <div class="section-completion">
       <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
@@ -85,10 +87,12 @@
 
   <div class="form-section">
 
-    <div class="banner" *ngIf="true">
+    <div class="banner" *ngIf="!timelogEntryForm.eveningRoutineSectionExpanded">
       Evening Routine
     </div>
-    <div class="expanded-section" *ngIf="false"></div>
+    <div class="expanded-section" *ngIf="timelogEntryForm.eveningRoutineSectionExpanded">
+      <app-routine-section [timelogEntryForm]="timelogEntryForm" [routine]="EVENING"></app-routine-section>
+    </div>
 
     <div class="section-completion">
       <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon>
@@ -118,4 +122,8 @@
     </app-sleep-battery>
   </div>
 
+
+  <div class="form-section">
+    Temporary.  <app-activity-input-dropdown></app-activity-input-dropdown>
+  </div>
 </div>

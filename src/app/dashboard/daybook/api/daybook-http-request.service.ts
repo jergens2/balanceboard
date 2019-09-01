@@ -12,7 +12,7 @@ import { ServiceAuthenticates } from '../../../authentication/service-authentica
 @Injectable({
   providedIn: 'root'
 })
-export class DaybookHttpRequestService implements ServiceAuthenticates{
+export class DaybookHttpRequestService implements ServiceAuthenticates {
 
   constructor(private httpClient: HttpClient) { }
   private _authStatus: AuthStatus = null;
@@ -28,14 +28,14 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
   logout() {
     this._authStatus = null;
     this._daybookDayItems$.next([]);
-    this._changeSubscriptions.forEach((sub)=>sub.unsubscribe());
+    this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
   }
 
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
   public get daybookDayItems$(): Observable<DaybookDayItem[]> {
     return this._daybookDayItems$.asObservable();
   }
-  public get daybookDayItems(): DaybookDayItem[]{
+  public get daybookDayItems(): DaybookDayItem[] {
     return this._daybookDayItems$.getValue();
   }
 
@@ -91,21 +91,21 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
       });
     // return daybookDayItem;
   }
-  public saveMultipleDayItems(daybookDayItems: DaybookDayItem[]){
+  public saveMultipleDayItems(daybookDayItems: DaybookDayItem[]) {
     console.log("Saving multiplo: ", daybookDayItems.length)
     // console.log(daybookDayItems);
-    daybookDayItems.forEach((item)=>{item.userId = this._authStatus.user.id; });
-    forkJoin(daybookDayItems.map<Observable<DaybookDayItem>>((item)=>{return this.saveDaybookDayItem$(item)})).subscribe((savedItems: DaybookDayItem[])=>{
+    daybookDayItems.forEach((item) => { item.userId = this._authStatus.user.id; });
+    forkJoin(daybookDayItems.map<Observable<DaybookDayItem>>((item: DaybookDayItem) => { return this.saveDaybookDayItem$(item) })).subscribe((savedItems: DaybookDayItem[]) => {
       let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
       daybookDayItems = daybookDayItems.concat(savedItems);
       daybookDayItems = this.linkDaybookItems(daybookDayItems);
       this._daybookDayItems$.next(daybookDayItems);
       this.updateChangeSubscription();
     })
-    
-    
+
+
   }
-  private saveDaybookDayItem$(daybookDayItem): Observable<DaybookDayItem>{
+  private saveDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
     const postUrl = serverUrl + "/api/daybook-day-item/create";
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
@@ -144,7 +144,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
 
 
 
-  private fetchDaybookDayItemsInRange(rangeStartYYYYMMDD: string, rangeEndYYYYMMDD: string){
+  private fetchDaybookDayItemsInRange(rangeStartYYYYMMDD: string, rangeEndYYYYMMDD: string) {
     const getUrl = serverUrl + "/api/daybook-day-item/" + this._authStatus.user.id + "/" + rangeStartYYYYMMDD + "/" + rangeEndYYYYMMDD;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -166,102 +166,102 @@ export class DaybookHttpRequestService implements ServiceAuthenticates{
 
 
   private _changeSubscriptions: Subscription[] = [];
-  private updateChangeSubscription(){
+  private updateChangeSubscription() {
     console.log("Updating subscriptiuo")
-    this._changeSubscriptions.forEach((sub)=> sub.unsubscribe() );
-    this._daybookDayItems$.getValue().forEach((daybookDayItem: DaybookDayItem)=>{
-      this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent)=>{
+    this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
+    this._daybookDayItems$.getValue().forEach((daybookDayItem: DaybookDayItem) => {
+      this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent) => {
         console.log("we received an update foolio");
         this.updateDaybookDayItem(daybookDayItem);
       }));
     });
   }
 
-  private buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[]{
-    console.log("Not implemented:  In this method, we need to do a property by property check.  This method fires for each daybookDayItem response item");
-    /**
-     * to see if the incoming object has all the requisite properties.  
-     * The reason being that, over time new properties will likely be added and the shape will change.  
-     * This method here is where we validate every property, and update the object if not up to modern version.
-     * 
-     * e.g.
-     * 
-     * Create a new property for DayBookDayItem called "dailyWeightEntry", 
-     * "
-     * let newDaybookDayItem = new DaybookDayItem();
-     * if(!responseDataItem.dailyWeightEntry){
-     *    newDaybookDayItem.dailyWeightEntry = 0;
-     * }
-     * ...
-     * saveUpdatedDaybookDayItem(newDaybookDayItem);
-     * "
-     * 
-     */ 
+  private buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[] {
     let daybookDayItems: DaybookDayItem[] = [];
-    responseDataItems.forEach((responseDataItem)=>{
+    responseDataItems.forEach((responseDataItem: any) => {
       daybookDayItems.push(this.buildDaybookDayItem(responseDataItem));
     });
     return daybookDayItems;
   }
-  private buildDaybookDayItem(dayItemHttp: DaybookDayItemHttpShape): DaybookDayItem{
-    let daybookDayItem: DaybookDayItem = new DaybookDayItem(dayItemHttp.dateYYYYMMDD);
-    daybookDayItem.setHttpShape(dayItemHttp);
-    // console.log("Built item: ", daybookDayItem);
-    return daybookDayItem;
+
+  private buildDaybookDayItem(dayItemHttpData: any): DaybookDayItem {
+
+    const properties: string[] = ["_id", "userId", "dateYYYYMMDD", "daybookTimelogEntryDataItems",
+      "daybookActivityDataItems", "dailyTaskListDataItems", "dayStructureDataItems", "sleepCycleDataItems",
+      "sleepProfile", "dailyWeightLogEntryKg", "dayTemplateId",
+      "scheduledEventIds", "notebookEntryIds", "taskItemIds"];
+    let dataErrors: boolean = false;
+    properties.forEach(property => {
+      if (!(property in dayItemHttpData)) {
+        console.log("Error with activity data object: missing property: ", property);
+        dataErrors = true;
+      }
+    });
+    if (!dataErrors) {
+      let daybookDayItem: DaybookDayItem = new DaybookDayItem(dayItemHttpData.dateYYYYMMDD);
+      daybookDayItem.setHttpShape(dayItemHttpData);
+      // console.log("Built item: ", daybookDayItem);
+      return daybookDayItem;
+    } else {
+      console.log("DaybookDayItem is not built because of missing property.");
+      return null;
+    }
   }
-  private linkDaybookItems(items: DaybookDayItem[]): DaybookDayItem[]{
-    items.forEach((item)=>{
+
+  private linkDaybookItems(items: DaybookDayItem[]): DaybookDayItem[] {
+    items.forEach((item) => {
       item.previousDay = null;
       item.followingDay = null;
     });
-    items = items.sort((item1, item2)=>{
-      if(item1.dateYYYYMMDD < item2.dateYYYYMMDD){
+    items = items.sort((item1, item2) => {
+      if (item1.dateYYYYMMDD < item2.dateYYYYMMDD) {
         return -1;
       }
-      if(item1.dateYYYYMMDD > item2.dateYYYYMMDD){
+      if (item1.dateYYYYMMDD > item2.dateYYYYMMDD) {
         return 1;
       }
       return 0;
     });
-    for(let i=0; i< items.length; i++){
+    for (let i = 0; i < items.length; i++) {
       // console.log("items["+i+"] : " + items[i].dateYYYYMMDD);
-      if(i > 0){
-        if(moment(items[i-1].dateYYYYMMDD).format("YYYY-MM-DD") === moment(items[i].dateYYYYMMDD).subtract(1, "days").format("YYYY-MM-DD")){
-          items[i].previousDay = items[i-1];
+      if (i > 0) {
+        if (moment(items[i - 1].dateYYYYMMDD).format("YYYY-MM-DD") === moment(items[i].dateYYYYMMDD).subtract(1, "days").format("YYYY-MM-DD")) {
+          items[i].previousDay = items[i - 1];
           // console.log("items[i]("+items[i].dateYYYYMMDD+").previousDay = " + items[i-1].dateYYYYMMDD );
           // console.log("items[i]("+items[i].dateYYYYMMDD+").previousDay = " + items[i].previousDay.dateYYYYMMDD );
-        }else{
+        } else {
           // console.log("error ?",moment(items[i-1].dateYYYYMMDD).format("YYYY-MM-DD") + " is not zhe same as " + moment(items[i].dateYYYYMMDD).subtract(1, "days").format("YYYY-MM-DD"))
         }
-        
+
       }
-      if(i < items.length-1){
-        if(moment(items[i+1].dateYYYYMMDD).format("YYYY-MM-DD") === moment(items[i].dateYYYYMMDD).add(1, "days").format("YYYY-MM-DD")){
-          items[i].followingDay = items[i+1];
+      if (i < items.length - 1) {
+        if (moment(items[i + 1].dateYYYYMMDD).format("YYYY-MM-DD") === moment(items[i].dateYYYYMMDD).add(1, "days").format("YYYY-MM-DD")) {
+          items[i].followingDay = items[i + 1];
           // console.log("i is " + i + " " , items[i+1]);
           // console.log(items[i].followingDay)
           // console.log("items[i]("+items[i].dateYYYYMMDD+").followingDay = " + items[i+1].dateYYYYMMDD );
           // console.log("items[i]("+items[i].dateYYYYMMDD+").followingDay = " + items[i].followingDay.dateYYYYMMDD );
-        }else{
+        } else {
           // console.log("error ?", moment(items[i+1].dateYYYYMMDD).format("YYYY-MM-DD") + " is not hte same as " + moment(items[i].dateYYYYMMDD).add(1, "days").format("YYYY-MM-DD") )
         }
       }
     }
-    console.log("Linked items: " , items);
+    console.log("Linked items: ", items);
     console.log("Item, with preceding and following dates: ");
-    items.forEach((item)=>{
+    items.forEach((item) => {
       let prev = "";
       let fol = "";
-      if(item.previousDay){
+      if (item.previousDay) {
         prev = item.previousDay.dateYYYYMMDD
       }
-      if(item.followingDay){
+      if (item.followingDay) {
         fol = item.followingDay.dateYYYYMMDD
       }
       console.log("Item: " + item.dateYYYYMMDD + " , pre, following: " + prev + "  " + fol);
     })
     return items;
-    
+
   }
 
 }

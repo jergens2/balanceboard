@@ -1,39 +1,58 @@
+import { ActivityDurationSetting } from "./activity-duration.enum";
+import { ActivityTargetConfiguration } from "./activity-target-configuration.interface";
+import { ActivityCategoryDefinitionHttpShape } from "./activity-category-definition-http-shape.interface";
 
 export class ActivityCategoryDefinition {
-    public id: string;
-    public treeId: string;
-    public name: string;
-    public description: string;
 
-    public userId: string;
+    private _httpShape: ActivityCategoryDefinitionHttpShape;
+    public get httpShape(): ActivityCategoryDefinitionHttpShape{
+        return this._httpShape;
+    }
 
-    public parentTreeId: string;
-    public childTreeIds: string[];
+    public get id(): string{ return this._httpShape._id; }
+    public set id(id: string){ this._httpShape._id = id; }
 
-    private _children: ActivityCategoryDefinition[];
+    public get treeId(): string{ return this._httpShape.treeId; }
+    public set treeId(treeId: string){ this._httpShape.treeId = treeId; }
+    
+    public get name(): string{ return this._httpShape.name; }
+    public set name(name: string){ this._httpShape.name = name; }
 
-    public color: string;
-    public icon: string;
+    public get description(): string { return this._httpShape.description; }
+    public set description(description: string){ this._httpShape.description = description; }
 
-    constructor(id: string, userId: string, treeId: string, name: string, description: string, parentActivityId: string, color: string) {
-        this.id = id;
-        this.userId = userId;
-        this.treeId = treeId;
-        this.name = name;
-        this.description = description;
-        this.parentTreeId = parentActivityId;
-        this.color = color;
-        this._children = [];
+    public get userId(): string { return this._httpShape.userId; }
+    public set userId(userId: string){ this._httpShape.userId = userId; }
+
+    public get parentTreeId(): string{ return this._httpShape.parentTreeId; }
+    public set parentTreeId(parentTreeId: string){ this._httpShape.parentTreeId = parentTreeId; }
+
+    public get durationSetting(): ActivityDurationSetting{ return this._httpShape.durationSetting; }
+    public set durationSetting(durationSetting: ActivityDurationSetting){ this._httpShape.durationSetting = durationSetting; }
+
+    public get specifiedDurationMinutes(): number { return this._httpShape.specifiedDurationMinutes; }
+    public set specifiedDurationMinutes(minutes: number){ this._httpShape.specifiedDurationMinutes = minutes; }
+    
+    public get targets(): ActivityTargetConfiguration[] { return this._httpShape.targets; }
+    public set targets(targets: ActivityTargetConfiguration[]){ this._httpShape.targets = targets; }
+    
+    public get color(): string { return this._httpShape.color; }
+    public set color(color: string){ this._httpShape.color = color; }
+
+    public get icon(): string{ return this._httpShape.icon; }
+    public set icon(icon: string){ this._httpShape.icon = icon; }
+
+
+
+    private _children: ActivityCategoryDefinition[] = [];
+    private _fullNamePath: string = "/";
+
+    constructor(httpShape: ActivityCategoryDefinitionHttpShape) {
+        this._httpShape = httpShape;
         this._fullNamePath = "/" + this.name;
     }
 
-    /*
-        Children reflect objects added in to fill in the data for the tree design on the component page.
-        the childActivityIds represents that "truth" of Id belongingness.  the children property are just data pulled in at run time
 
-    */
-
-    private _fullNamePath: string;
     public setFullPath(fullPath: string) {
         this._fullNamePath = fullPath;
     }
@@ -84,7 +103,7 @@ export class ActivityCategoryDefinition {
 
 
 
-    get children(): ActivityCategoryDefinition[] {
+    public get children(): ActivityCategoryDefinition[] {
         return this._children;
     }
     // set children(children: CategorizedActivity[]) {

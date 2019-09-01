@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ActivityCategoryDefinition } from '../../document-definitions/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinition } from '../../../dashboard/activities/api/activity-category-definition/activity-category-definition.class';
 import { faCaretRight, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 @Component({

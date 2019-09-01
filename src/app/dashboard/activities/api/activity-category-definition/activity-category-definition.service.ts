@@ -2,18 +2,20 @@ import { Injectable } from '@angular/core';
 import { ActivityCategoryDefinition } from './activity-category-definition.class';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
-import { defaultActivities } from './default-activity-category-definitions';
-import { serverUrl } from '../../../serverurl';
+
+import { serverUrl } from '../../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../../authentication/auth-status.class';
+import { AuthStatus } from '../../../../authentication/auth-status.class';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.class';
-import { Guid } from '../../utilities/guid.class';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { Guid } from '../../../../shared/utilities/guid.class';
+import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
+import { ActivityCategoryDefinitionHttpShape } from './activity-category-definition-http-shape.interface';
+import { DefaultActivityCategoryDefinitions } from './default-activity-category-definitions.class';
 @Injectable({
   providedIn: 'root'
 })
-export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
+export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -42,8 +44,8 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
   
   
   */
-  
-  
+
+
   findActivityByTreeId(treeId: string): ActivityCategoryDefinition {
     /*
       2019-01-28
@@ -93,33 +95,27 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
       })
     };
     this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
-      .subscribe((response: any) => {
-        // console.log("response is ", response);
-        let responseData = response.data;
-        if (responseData.length > 0) {
-          let allActivities: ActivityCategoryDefinition[] = response.data.map((dataObject) => {
-            let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
-            return newActivity
-          });
-          this._activitiesTree = new ActivityTree(allActivities);
+      .pipe<ActivityCategoryDefinition[]>(map((response) => {
+        return (response.data as any[]).map((dataObject) => {
+          return this.buildActivityFromResponse(dataObject);
+        });
+      }))
+      .subscribe((activities: ActivityCategoryDefinition[]) => {
+
+        if (activities.length > 0) {
+          this._activitiesTree = new ActivityTree(activities);
           // console.log("nexting ", this._activitiesTree);
           this._activitiesTree$.next(this._activitiesTree);
-        } else {
+          this._loginComplete$.next(true);
+        } else if (activities.length == 0) {
           // console.log("response data was 0 or less... creating default activities")
-          this.saveDefaultActivities(defaultActivities)
+          this.saveDefaultActivities(DefaultActivityCategoryDefinitions.defaultActivities(this.userId));
         }
-        this._loginComplete$.next(true);
+
       });
   }
 
   saveDefaultActivities(defaultActivities: ActivityCategoryDefinition[]) {
-    let userDefaultActivities = defaultActivities.map((activity) => {
-      let newTreeId = this._authStatus.user.id + "_" + activity.treeId;
-      let newParentTreeId = this._authStatus.user.id + "_" + activity.parentTreeId.replace(" ", "_");
-
-      return new ActivityCategoryDefinition(activity.id, this._authStatus.user.id, newTreeId, activity.name, activity.description, newParentTreeId, activity.color);
-    })
-
     const postUrl = this._serverUrl + "/api/activity-category-definition/createDefault";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -127,21 +123,22 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, userDefaultActivities, httpOptions)
-      .pipe(map((response) => {
-        return response.data.map((dataObject) => {
-          let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition(dataObject._id, dataObject.userId, dataObject.treeId, dataObject.name, dataObject.description, dataObject.parentTreeId, dataObject.color)
-          return newActivity
-        })
+    this.httpClient.post<{ message: string, data: any }>(postUrl, defaultActivities.map((activity)=> {return activity.httpShape; }), httpOptions)
+      .pipe<ActivityCategoryDefinition[]>(map((response) => {
+        return (response.data as any[]).map((dataObject) => {
+          let activity: ActivityCategoryDefinition = this.buildActivityFromResponse(dataObject);
+          return activity;
+        });
       }))
       .subscribe((allActivities: ActivityCategoryDefinition[]) => {
         this._activitiesTree = new ActivityTree(allActivities);
         this._activitiesTree$.next(this._activitiesTree);
+        this._loginComplete$.next(true);
       })
   }
 
 
-  public saveActivity$(activity: ActivityCategoryDefinition): Observable<ActivityCategoryDefinition>{
+  public saveActivity$(activity: ActivityCategoryDefinition): Observable<ActivityCategoryDefinition> {
     let saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
     let newActivity = activity;
     newActivity.userId = this._authStatus.user.id;
@@ -153,11 +150,9 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, newActivity, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, newActivity.httpShape, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response) => {
-        let data = response.data;
-        let activity = new ActivityCategoryDefinition(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
-        return activity;
+        return this.buildActivityFromResponse(response.data);
       }))
       .subscribe((activity: ActivityCategoryDefinition) => {
         this._activitiesTree.addActivityToTree(activity);
@@ -178,11 +173,9 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, newActivity, httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, newActivity.httpShape, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response) => {
-        let data = response.data;
-        let activity = new ActivityCategoryDefinition(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
-        return activity;
+        return this.buildActivityFromResponse(response.data);
       }))
       .subscribe((activity: ActivityCategoryDefinition) => {
         this._activitiesTree.addActivityToTree(activity);
@@ -198,11 +191,9 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post(updateUrl, unsentActivity, httpOptions)
+    this.httpClient.post(updateUrl, unsentActivity.httpShape, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response: { message: string, data: any }) => {
-        let data = response.data;
-        let updatedActivity = new ActivityCategoryDefinition(data._id, data.userId, data.treeId, data.name, data.description, data.parentTreeId, data.color);
-        return updatedActivity;
+        return this.buildActivityFromResponse(response.data);
       }))
       .subscribe((updatedActivity: ActivityCategoryDefinition) => {
         this._activitiesTree.pruneActivityFromTree(unsentActivity);
@@ -219,7 +210,7 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post(deleteUrl, activity, httpOptions)
+    this.httpClient.post(deleteUrl, activity.httpShape, httpOptions)
       .subscribe((response: { message: string, status: string, data: any }) => {
         if (response.status == "SUCCESS") {
           this._activitiesTree.pruneActivityFromTree(activity);
@@ -229,7 +220,35 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates{
   }
 
 
-
+  private buildActivityFromResponse(data: any): ActivityCategoryDefinition {
+    const properties: string[] = [ "_id", "userId", "treeId", "parentTreeId", "name", "description", "color", "icon", "durationSetting", "specifiedDurationMinutes", "targets" ];
+    let dataErrors: boolean = false;
+    properties.forEach(property => {
+      if(!(property in data)){
+        console.log("Error with activity data object: missing property: " , property); 
+        dataErrors = true;
+      }
+    });
+    if(!dataErrors){
+      let buildActivityHttpShape: ActivityCategoryDefinitionHttpShape = {
+        _id: data._id,
+        userId: data.userId,
+        treeId: data.treeId,
+        parentTreeId: data.parentTreeId,
+        name: data.name,
+        description: data.description,
+        color: data.color,
+        icon: data.icon,
+        durationSetting: data.durationSetting,
+        specifiedDurationMinutes: data.specifiedDurationMinutes,
+        targets: data.targets,
+      }
+      return new ActivityCategoryDefinition(buildActivityHttpShape);
+    }else{
+      console.log("Activity is not built because of missing property.");
+      return null;
+    }
+  }
 
 
 

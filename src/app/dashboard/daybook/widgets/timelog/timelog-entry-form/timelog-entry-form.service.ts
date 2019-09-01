@@ -11,9 +11,9 @@ export class TimelogEntryFormService {
   constructor(private daybookService: DaybookService) { }
 
 
-  public timelogEntryStartTime(fromNow: moment.Moment): moment.Moment{
-    return this.daybookService.today.timelogEntryStartTime(fromNow);
-  }
+  // public timelogEntryStartTime(fromNow: moment.Moment): moment.Moment{
+  //   return this.daybookService.today.timelogEntryStartTime(fromNow);
+  // }
 
   public saveTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem){
     this.daybookService.today.addTimelogEntryItem(timelogEntry);

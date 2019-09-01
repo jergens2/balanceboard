@@ -33,7 +33,7 @@ export class ActivityTree {
         let rootActivities: ActivityCategoryDefinition[] = [];
 
         for (let activity of allActivities) {
-            if (activity.parentTreeId.endsWith("TOP_LEVEL")) {
+            if (activity.parentTreeId.endsWith("_TOP_LEVEL")) {
                 activity.setFullPath("/"+activity.name+"/");
                 rootActivities.push(activity)
             }
