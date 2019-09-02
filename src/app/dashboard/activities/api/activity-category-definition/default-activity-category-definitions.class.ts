@@ -26,8 +26,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: workColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -41,8 +42,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: workColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -56,8 +58,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: workColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
 
@@ -78,8 +81,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
 
@@ -94,8 +98,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -109,8 +114,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -124,8 +130,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         const choresTreeId: string = userId + "_" + Guid.newGuid();
@@ -140,8 +147,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -155,8 +163,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -170,8 +179,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -185,8 +195,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -200,8 +211,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         const hygieneTreeId: string = userId + "_" + Guid.newGuid();
@@ -216,8 +228,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -231,8 +244,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -246,8 +260,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.Short,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -261,8 +276,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: maintenanceColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
 
@@ -284,8 +300,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: leisureColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -299,8 +316,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: leisureColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -314,8 +332,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: leisureColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -329,8 +348,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: leisureColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -344,8 +364,9 @@ export class DefaultActivityCategoryDefinitions {
                 color: leisureColor,
                 icon: "",
                 durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: 0,
+                specifiedDurationMinutes: -1,
                 targets: [],
+                isConfigured: true,
             }
         ));
         return activities;

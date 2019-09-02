@@ -166,8 +166,9 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
           icon: "",
 
           durationSetting: ActivityDurationSetting.VariableLength,
-          specifiedDurationMinutes: 0,
+          specifiedDurationMinutes: -1,
           targets: [],
+          isConfigured: true,
         }
         console.log("saving new activity: ", newActivity);
 

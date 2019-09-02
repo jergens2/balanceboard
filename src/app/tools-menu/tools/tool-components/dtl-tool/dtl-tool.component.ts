@@ -9,7 +9,7 @@ import { ToolsService } from '../../tools.service';
 
 import { Subscription } from 'rxjs';
 import { DailyTaskListService } from './daily-task-list.service';
-import { RecurringTasksService } from '../../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+import { RoutineDefinitionService } from '../../../../dashboard/activities/routines/routine-definition/api/routine-definition.service';
 import { RecurringTaskDefinition } from '../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
 import { DailyTaskList, DailyTaskListItem } from './daily-task-list.class';
 
@@ -39,7 +39,7 @@ export class DtlToolComponent implements OnInit, OnDestroy {
   faCheckCircleSolid = faCheckCircleSolid;
   faTasks = faTasks;
 
-  constructor(private toolsService: ToolsService, private router: Router, private dailyTaskListService: DailyTaskListService, private recurringTasksService: RecurringTasksService) { }
+  constructor(private toolsService: ToolsService, private router: Router, private dailyTaskListService: DailyTaskListService, private routineDefinitionService: RoutineDefinitionService) { }
 
   // dtclItems: DailyTaskListItem[];
 
@@ -67,9 +67,9 @@ export class DtlToolComponent implements OnInit, OnDestroy {
   }
 
 
-  public recurringTask(taskItem: DailyTaskListItem): RecurringTaskDefinition {
-    return this.recurringTasksService.getRecurringTaskById(taskItem.recurringTaskId);
-  }
+  // public recurringTask(taskItem: DailyTaskListItem): RecurringTaskDefinition {
+  //   return this.recurringTasksService.getRecurringTaskById(taskItem.recurringTaskId);
+  // }
 
   ngOnDestroy() {
     // this._dtlSubscription.unsubscribe();

@@ -48,6 +48,7 @@ import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule
 import { ActivitiesComponent } from './activities/activities.component';
 import { SocialComponent } from './social/social.component';
 import { ActivityComponent } from './activities/activity/activity.component';
+import { RoutineComponent } from './activities/routines/routine/routine.component';
 
 
 @NgModule({
@@ -100,6 +101,7 @@ import { ActivityComponent } from './activities/activity/activity.component';
 
     SocialComponent,
     ActivityComponent,
+    RoutineComponent,
 
   ],
   providers: [],

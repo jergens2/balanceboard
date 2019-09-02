@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RecurringTaskDefinition } from '../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
 import * as moment from 'moment';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { RecurringTasksService } from '../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+// import { RecurringTasksService } from '../../activities/routines/routine-definition/api/routine-definition.service';
 import { ModalService } from '../../../modal/modal.service';
 import {  Modal } from '../../../modal/modal.class';
 import { ModalComponentType } from '../../../../app/modal/modal-component-type.enum';
@@ -16,7 +16,7 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 })
 export class RecurringTasksComponent implements OnInit {
 
-  constructor(private recurringTasksService: RecurringTasksService, private modalService: ModalService) { }
+  constructor(private modalService: ModalService) { }
 
 
   faCheck = faCheck;
@@ -30,7 +30,7 @@ export class RecurringTasksComponent implements OnInit {
 
   ngOnInit() {
 
-    this.recurringTasks = this.recurringTasksService.recurringTasks;
+    // this.recurringTasks = this.recurringTasksService.recurringTasks;
 
 
     let today: moment.Moment = moment().endOf("day");
@@ -70,7 +70,7 @@ export class RecurringTasksComponent implements OnInit {
     let modal: Modal = new Modal("Delete Recurring Task Definition", "Confirm: Delete Recurring Task Definition?", null, modalOptions, {}, ModalComponentType.Default);
     this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Yes") {
-        this.recurringTasksService.httpDeleteRecurringTask(task);
+        // this.recurringTasksService.httpDeleteRecurringTask(task);
       } else if (selectedOption.value == "No") {
 
       } else {

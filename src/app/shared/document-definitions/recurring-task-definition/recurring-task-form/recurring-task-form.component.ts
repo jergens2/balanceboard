@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ModalService } from '../../../../modal/modal.service';
-import { RecurringTasksService } from '../recurring-tasks.service';
+// import { RecurringTasksService } from '../../../../dashboard/activities/routines/routine-definition/api/routine-definition.service';
 import { RecurringTaskRepitition } from './rt-repititions/recurring-task-repitition.interface';
 import { RecurringTaskDefinition } from '../recurring-task-definition.class';
 
@@ -12,7 +12,7 @@ import { RecurringTaskDefinition } from '../recurring-task-definition.class';
 })
 export class RecurringTaskFormComponent implements OnInit {
 
-  constructor(private modalService: ModalService, private recurringTaskService: RecurringTasksService) { }
+  constructor(private modalService: ModalService) { }
 
   recurringTaskForm: FormGroup;
   repititions: RecurringTaskRepitition[] = [];
@@ -46,13 +46,13 @@ export class RecurringTaskFormComponent implements OnInit {
       this.updateTask.groupIds = [];
       this.updateTask.activityTreeId = "";
       this.updateTask.repititions = this.repititions;
-      this.recurringTaskService.httpUpdateRecurringTaskDefinition(this.updateTask);
+      // this.recurringTaskService.httpUpdateRecurringTaskDefinition(this.updateTask);
     }else{
       let name: string = this.recurringTaskForm.controls["name"].value;
-      let saveTask: RecurringTaskDefinition = new RecurringTaskDefinition("", this.recurringTaskService.userId, name, this.repititions);
-      saveTask.groupIds = [];
-      saveTask.activityTreeId = "";
-      this.recurringTaskService.httpSaveRecurringTaskDefinition(saveTask);
+      // let saveTask: RecurringTaskDefinition = new RecurringTaskDefinition("", this.recurringTaskService.userId, name, this.repititions);
+      // saveTask.groupIds = [];
+      // saveTask.activityTreeId = "";
+      // this.recurringTaskService.httpSaveRecurringTaskDefinition(saveTask);
     }
 
     this.modalService.closeModal();

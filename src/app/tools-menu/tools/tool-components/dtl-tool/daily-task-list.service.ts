@@ -7,7 +7,7 @@ import { AuthStatus } from '../../../../authentication/auth-status.class';
 import * as moment from 'moment';
 import { serverUrl } from '../../../../serverurl';
 import { map } from 'rxjs/operators';
-import { RecurringTasksService } from '../../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+import { RoutineDefinitionService } from '../../../../dashboard/activities/routines/routine-definition/api/routine-definition.service';
 import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
 
 
@@ -18,7 +18,7 @@ export class DailyTaskListService implements ServiceAuthenticates{
 
   private serverUrl = serverUrl;
 
-  constructor(private httpClient: HttpClient, private recurringTaskService: RecurringTasksService) { }
+  constructor(private httpClient: HttpClient, private routineDefinitionService: RoutineDefinitionService) { }
 
   private _authStatus: AuthStatus;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);

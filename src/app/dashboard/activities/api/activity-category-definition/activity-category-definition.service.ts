@@ -242,6 +242,7 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
         durationSetting: data.durationSetting,
         specifiedDurationMinutes: data.specifiedDurationMinutes,
         targets: data.targets,
+        isConfigured: data.isConfigured,
       }
       return new ActivityCategoryDefinition(buildActivityHttpShape);
     }else{

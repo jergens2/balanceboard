@@ -3,8 +3,8 @@ import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import { DaybookSmallWidget } from '../../daybook-small-widget.interface';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
 import { DailyTaskListDataItem } from '../../../api/data-items/daily-task-list-data-item.interface';
-import { RecurringTasksService } from '../../../../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
-import { RecurringTaskDefinition } from '../../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
+// import { RecurringTasksService } from '../../../../activities/routines/routine-definition/api/routine-definition.service';
+// import { RecurringTaskDefinition } from '../../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
 import { DaybookService } from '../../../daybook.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { DaybookService } from '../../../daybook.service';
 })
 export class DailyTaskListSmallComponent implements OnInit, DaybookSmallWidget {
 
-  constructor(private recurringTaskService: RecurringTasksService, private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookService) { }
 
 
 
@@ -32,8 +32,8 @@ export class DailyTaskListSmallComponent implements OnInit, DaybookSmallWidget {
     this._dailyTaskListItems = this.activeDay.dailyTaskListDataItems;
   }
 
-  public recurringTask(dtlItem: DailyTaskListDataItem): RecurringTaskDefinition{
-    return this.recurringTaskService.getRecurringTaskById(dtlItem.recurringTaskId);
-  }
+  // public recurringTask(dtlItem: DailyTaskListDataItem): RecurringTaskDefinition{
+    // return this.recurringTaskService.getRecurringTaskById(dtlItem.recurringTaskId);
+  // }
 
 }

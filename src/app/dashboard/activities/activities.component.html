@@ -5,13 +5,26 @@
   </div>
   <div class="activities-list">
     <div>
-        <span style="font-size:1.2em; font-weight:bold;">Activities List</span> <button class="small-button" style="margin-left:15px;" (click)="onClickNewActivity()">New Activity</button>
+      <span style="font-size:1.2em; font-weight:bold;">Activities List</span> <button class="small-button"
+        style="margin-left:15px;" (click)="onClickNewActivity()">New Activity</button>
     </div>
-    
+
+    <div *ngFor="let rootActivity of rootActivities">
+      <app-activity [activity]="rootActivity"></app-activity>
+    </div>
+
+  </div>
+
+  <div class="activities-list">
     <div>
-      <div *ngFor="let rootActivity of rootActivities">
-        <app-activity [activity]="rootActivity"></app-activity>
-      </div>
+      <span style="font-size:1.2em; font-weight:bold;">Routines</span> 
+      <button class="small-button"
+        style="margin-left:15px;" (click)="onClickNewRoutine()">New Routine</button>
+    </div>
+
+    <div *ngFor="let routine of routines">
+      <app-routine [routine]="routine"></app-routine>
+
     </div>
   </div>
 </div>

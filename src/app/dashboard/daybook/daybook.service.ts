@@ -7,7 +7,7 @@ import { AuthStatus } from '../../authentication/auth-status.class';
 import { DayTemplatesService } from '../scheduling/day-templates/day-templates.service';
 import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
 import { ScheduleRotationsService } from '../scheduling/schedule-rotations/schedule-rotations.service';
-import { RecurringTasksService } from '../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+import { RoutineDefinitionService } from '../activities/routines/routine-definition/api/routine-definition.service';
 
 
 @Injectable({
@@ -18,7 +18,7 @@ export class DaybookService implements ServiceAuthenticates {
   constructor(
     private daybookHttpRequestService: DaybookHttpRequestService,
     private scheduleRotationService: ScheduleRotationsService,
-    private recurringTaskService: RecurringTasksService,
+    private routineDefinitionService: RoutineDefinitionService,
     private dayTemplatesService: DayTemplatesService,
   ) { }
 

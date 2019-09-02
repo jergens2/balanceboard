@@ -167,6 +167,7 @@ export class ActivityInputSearch {
                     durationSetting: ActivityDurationSetting.VariableLength,
                     specifiedDurationMinutes: 0,
                     targets: [],
+                    isConfigured: false,
                 }
                 let newActivity = new ActivityCategoryDefinition(activityHttpShape);
                 newActivity.setFullPath("/" + pathNames[0] + "/");
@@ -197,6 +198,7 @@ export class ActivityInputSearch {
                             durationSetting: ActivityDurationSetting.VariableLength,
                             specifiedDurationMinutes: 0,
                             targets: [],
+                            isConfigured: false,
                         }
                         newActivity = new ActivityCategoryDefinition(activityHttpShape);
                         parentActivityId = firstTreeId;
@@ -216,6 +218,7 @@ export class ActivityInputSearch {
                             durationSetting: ActivityDurationSetting.VariableLength,
                             specifiedDurationMinutes: 0,
                             targets: [],
+                            isConfigured: false,
                         }
                         newActivity = new ActivityCategoryDefinition(activityHttpShape);
                         parentActivityId = newTreeId;
@@ -262,6 +265,7 @@ export class ActivityInputSearch {
                         durationSetting: ActivityDurationSetting.VariableLength,
                         specifiedDurationMinutes: 0,
                         targets: [],
+                        isConfigured: false,
                     }
                     let newActivity = new ActivityCategoryDefinition(activityHttpShape);
                     newActivity.setFullPath(parentActivity.fullNamePath + activityName + "/");

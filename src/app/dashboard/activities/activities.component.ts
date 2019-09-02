@@ -11,6 +11,8 @@ import { ActivityCategoryDefinition } from './api/activity-category-definition/a
 import { ModalService } from '../../modal/modal.service';
 import { Modal } from '../../modal/modal.class';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
+import { RoutineDefinitionService } from './routines/routine-definition/api/routine-definition.service';
+import { RoutineDefinition } from './routines/routine-definition/api/routine-definition.class';
 
 @Component({
   selector: 'app-activities',
@@ -19,31 +21,13 @@ import { ModalComponentType } from '../../modal/modal-component-type.enum';
 })
 export class ActivitiesComponent implements OnInit {
 
-  /*
-  
-  For each activity, properties to have:
-  -increase or decrease hours per week?
-  -generic priority
-  -activity related to time (duration) or incidences (count), example brush teeth, smoke cigarette, thc, alcohol, etc.  
-  -mental focus required (high, normal, low)
-  -enjoyment (high, normal, low)
-  -purpose statement (why do you do this?)
-  -ideal range rules, recurrences:
-    -- this will merge into recurring activities  
-    e.g. once per day, twice per day, 45 min per day is good, 2 hours per day is too much / unnecessary
-    overwatch:  0-5 hours per week is good
-                5-10 hours per week is acceptable
-                over 10 hours per week is bad.
-  -mandatoryness
-  
-  */
 
 
 
 
   constructor(
     private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
-
+    private routineDefinitionService: RoutineDefinitionService,
     private modalService: ModalService) { }
 
   private activityTree: ActivityTree;
@@ -56,12 +40,20 @@ export class ActivitiesComponent implements OnInit {
       this.buildTimeViewConfiguration();
     });
 
+    this._routines = this.routineDefinitionService.routineDefinitions;
+    this.routineDefinitionService.routineDefinitions$.subscribe((routineDefs)=>{
+      this._routines = routineDefs;
+    })
 
     this.buildTimeViewConfiguration();
 
     console.log("Root: ", this.activityTree.rootActivities)
   }
 
+  private _routines: RoutineDefinition[] = [];
+  public get routines(): RoutineDefinition[] { 
+    return this._routines;
+  }
 
   public get rootActivities(): ActivityCategoryDefinition[] {
     if (this.activityTree) {

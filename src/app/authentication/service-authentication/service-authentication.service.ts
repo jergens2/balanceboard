@@ -6,7 +6,7 @@ import { DayTemplatesService } from '../../dashboard/scheduling/day-templates/da
 
 import { NotebooksService } from '../../dashboard/notebooks/notebooks.service';
 import { TaskService } from '../../dashboard/tasks/task.service';
-import { RecurringTasksService } from '../../shared/document-definitions/recurring-task-definition/recurring-tasks.service';
+import { RoutineDefinitionService } from '../../dashboard/activities/routines/routine-definition/api/routine-definition.service';
 
 
 import { SocialService } from '../../shared/document-definitions/user-account/social.service';
@@ -31,7 +31,7 @@ export class ServiceAuthenticationService {
     // private dayDataService: DayDataService,
     private notebooksService: NotebooksService,
     private taskService: TaskService,
-    private recurringTaskService: RecurringTasksService,
+    private routineDefinitionService: RoutineDefinitionService,
     // private timeViewsService: TimeViewsService,
     // private dailyTaskListService: DailyTaskListService,
     private socialService: SocialService,
@@ -59,9 +59,9 @@ export class ServiceAuthenticationService {
 
     let serviceAuthentications: ServiceAuthentication[] = [];
     let activityCategoryDefinitionSA: ServiceAuthentication = new ServiceAuthentication("ActivityCategoryDefinition", this.activityCategoryDefinitionService);
-    // let timelogSA: ServiceAuthentication = new ServiceAuthentication("Timelog", this.timelogService);
-    // timelogSA.setChild(new ServiceAuthentication("ActivityDayData", this.activityDayDataService));
-    // activityCategoryDefinitionSA.setChild(timelogSA);
+    let routineDefinitionSA: ServiceAuthentication = new ServiceAuthentication("RoutineDefinition", this.routineDefinitionService);
+    activityCategoryDefinitionSA.setChild(routineDefinitionSA);
+
     serviceAuthentications.push(activityCategoryDefinitionSA);
 
 
@@ -75,9 +75,7 @@ export class ServiceAuthenticationService {
 
     serviceAuthentications.push(dayTemplatesSA);
 
-    let recurringTaskDefinitionsSA: ServiceAuthentication = new ServiceAuthentication("RecurringTaskDefinition", this.recurringTaskService);
-    // recurringTaskDefinitionsSA.setChild(new ServiceAuthentication("DailyTaskList", this.dailyTaskListService));
-    serviceAuthentications.push(recurringTaskDefinitionsSA);
+    
 
     serviceAuthentications.push(new ServiceAuthentication("Notes", this.notebooksService));
     serviceAuthentications.push(new ServiceAuthentication("Tasks", this.taskService));
