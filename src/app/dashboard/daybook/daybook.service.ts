@@ -7,7 +7,8 @@ import { AuthStatus } from '../../authentication/auth-status.class';
 import { DayTemplatesService } from '../scheduling/day-templates/day-templates.service';
 import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
 import { ScheduleRotationsService } from '../scheduling/schedule-rotations/schedule-rotations.service';
-import { RoutineDefinitionService } from '../activities/routines/routine-definition/api/routine-definition.service';
+import { RoutineDefinitionService } from '../activities/routines/api/routine-definition.service';
+import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
 
 
 @Injectable({
@@ -19,6 +20,7 @@ export class DaybookService implements ServiceAuthenticates {
     private daybookHttpRequestService: DaybookHttpRequestService,
     private scheduleRotationService: ScheduleRotationsService,
     private routineDefinitionService: RoutineDefinitionService,
+    private activitiesService: ActivityCategoryDefinitionService,
     private dayTemplatesService: DayTemplatesService,
   ) { }
 
@@ -153,7 +155,7 @@ export class DaybookService implements ServiceAuthenticates {
     this._loginComplete$.next(true);
   }
 
-  private getDaybookDayItemByDate(dateYYYYMMDD: string): DaybookDayItem {
+  private getDaybookDayItemByDate(dateYYYYMMDD: string): DaybookDayItem {   
     let foundDaybookDayItem: DaybookDayItem = this._daybookDayItems$.getValue().find((daybookDayItem: DaybookDayItem) => {
       return daybookDayItem.dateYYYYMMDD == dateYYYYMMDD;
     });
@@ -187,6 +189,10 @@ export class DaybookService implements ServiceAuthenticates {
     daybookDayItem.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";
     daybookDayItem.dayStructureDataItems = this.scheduleRotationService.getDayStructureItemsForDate(dateYYYYMMDD);
     daybookDayItem.sleepStructureDataItems = this.scheduleRotationService.getSleepCycleItemsForDate(dateYYYYMMDD);
+
+
+    daybookDayItem.routines = this.activitiesService.activitiesTree.activityRoutines.filter((routine)=>{ return routine.isScheduledOnDate(dateYYYYMMDD); });
+    daybookDayItem.scheduledActivities = this.activitiesService.activitiesTree.allActivities.filter((routine)=>{ return routine.isScheduledOnDate(dateYYYYMMDD); });
 
     // console.log("Structure items: ", daybookDayItem.dayStructureDataItems)
 

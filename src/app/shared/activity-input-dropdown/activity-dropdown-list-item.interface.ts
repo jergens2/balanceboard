@@ -1,4 +1,4 @@
-import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition/activity-category-definition.class";
+import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
 
 
 export interface ActivityDropdownListItem{

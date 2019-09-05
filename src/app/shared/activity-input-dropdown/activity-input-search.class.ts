@@ -1,10 +1,10 @@
-import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition/activity-category-definition.class";
-import { ActivityTree } from "../../dashboard/activities/api/activity-category-definition/activity-tree.class";
+import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
+import { ActivityTree } from "../../dashboard/activities/api/activity-tree.class";
 import { Subject } from "rxjs";
-import { ActivityCategoryDefinitionService } from "../../dashboard/activities/api/activity-category-definition/activity-category-definition.service";
+import { ActivityCategoryDefinitionService } from "../../dashboard/activities/api/activity-category-definition.service";
 import { Guid } from "../utilities/guid.class";
-import { ActivityCategoryDefinitionHttpShape } from "../../dashboard/activities/api/activity-category-definition/activity-category-definition-http-shape.interface";
-import { ActivityDurationSetting } from "../../dashboard/activities/api/activity-category-definition/activity-duration.enum";
+import { ActivityCategoryDefinitionHttpShape } from "../../dashboard/activities/api/activity-category-definition-http-shape.interface";
+import { ActivityDurationSetting } from "../../dashboard/activities/api/activity-duration.enum";
 
 
 
@@ -19,7 +19,7 @@ export class ActivityInputSearch {
         let searchResults: ActivityCategoryDefinition[] = [];
         if (searchValue.length === 1 && searchValue.charAt(0) === "/") {
             this.createNewActivity$.next();
-            return this.activitiesService.activitiesTree.allActivities.sort((activity1, activity2) => {
+            return this.activitiesService.activitiesTree.allActivitiesAndRoutines.sort((activity1, activity2) => {
                 if (activity1.fullNamePath < activity2.fullNamePath) {
                     return -1;
                 }
@@ -58,13 +58,13 @@ export class ActivityInputSearch {
         let isSlasher: boolean = searchValue.charAt(searchValue.length - 1) === "/";
         let moreThanOne: boolean = pathNames.length > 1;
         if (!moreThanOne && !isSlasher) {
-            this.activitiesService.activitiesTree.allActivities.forEach((activity) => {
+            this.activitiesService.activitiesTree.allActivitiesAndRoutines.forEach((activity) => {
                 if (activity.fullNamePathIndexOf(rootSearchWord) > -1) {
                     matches.push(activity);
                 }
             });
         } else {
-            this.activitiesService.activitiesTree.allActivities.forEach((activity) => {
+            this.activitiesService.activitiesTree.allActivitiesAndRoutines.forEach((activity) => {
                 if (activity.fullNamePathIndexOf(rootSearchWord, true) > -1) {
                     matches.push(activity);
                 }
@@ -168,6 +168,9 @@ export class ActivityInputSearch {
                     specifiedDurationMinutes: 0,
                     targets: [],
                     isConfigured: false,
+                    scheduleConfiguration: null,
+                    isRoutine: false,
+                    routineMembersActivityIds: [],
                 }
                 let newActivity = new ActivityCategoryDefinition(activityHttpShape);
                 newActivity.setFullPath("/" + pathNames[0] + "/");
@@ -199,6 +202,9 @@ export class ActivityInputSearch {
                             specifiedDurationMinutes: 0,
                             targets: [],
                             isConfigured: false,
+                            scheduleConfiguration: null,
+                            isRoutine: false,
+                            routineMembersActivityIds: [],
                         }
                         newActivity = new ActivityCategoryDefinition(activityHttpShape);
                         parentActivityId = firstTreeId;
@@ -219,6 +225,9 @@ export class ActivityInputSearch {
                             specifiedDurationMinutes: 0,
                             targets: [],
                             isConfigured: false,
+                            scheduleConfiguration: null,
+                            isRoutine: false,
+                            routineMembersActivityIds: [],
                         }
                         newActivity = new ActivityCategoryDefinition(activityHttpShape);
                         parentActivityId = newTreeId;
@@ -266,6 +275,9 @@ export class ActivityInputSearch {
                         specifiedDurationMinutes: 0,
                         targets: [],
                         isConfigured: false,
+                        scheduleConfiguration: null,
+                        isRoutine: false,
+                        routineMembersActivityIds: [],
                     }
                     let newActivity = new ActivityCategoryDefinition(activityHttpShape);
                     newActivity.setFullPath(parentActivity.fullNamePath + activityName + "/");

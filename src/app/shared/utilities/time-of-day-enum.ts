@@ -5,5 +5,6 @@ export enum TimeOfDay{
     Evening = "EVENING",
     
     Any = "Any",
+    Variates = "Variates",
     SpecifiedRange = "SPECIFIED_RANGE",
 }

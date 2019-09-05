@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivityCategoryDefinitionService } from './api/activity-category-definition/activity-category-definition.service';
-import { ActivityTree } from './api/activity-category-definition/activity-tree.class';
+import { ActivityCategoryDefinitionService } from './api/activity-category-definition.service';
+import { ActivityTree } from './api/activity-tree.class';
 
 
 import { TimeViewConfiguration } from '../../shared/time-views/time-view-configuration.interface';
 
 import { TimeViewDayData } from '../../shared/time-views/time-view-day-data-interface';
 import * as moment from 'moment';
-import { ActivityCategoryDefinition } from './api/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinition } from './api/activity-category-definition.class';
 import { ModalService } from '../../modal/modal.service';
 import { Modal } from '../../modal/modal.class';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
-import { RoutineDefinitionService } from './routines/routine-definition/api/routine-definition.service';
-import { RoutineDefinition } from './routines/routine-definition/api/routine-definition.class';
+import { RoutineDefinitionService } from './routines/api/routine-definition.service';
+import { RoutineDefinition } from './routines/api/routine-definition.class';
 
 @Component({
   selector: 'app-activities',
@@ -35,24 +35,22 @@ export class ActivitiesComponent implements OnInit {
 
   ngOnInit() {
     this.activityTree = this.activityCategoryDefinitionService.activitiesTree;
+    this._activityRoutines = this.activityTree.activityRoutines;
+
     this.activityCategoryDefinitionService.activitiesTree$.subscribe((changedTree) => {
       this.activityTree = changedTree;
+      this._activityRoutines = this.activityTree.activityRoutines;
       this.buildTimeViewConfiguration();
     });
-
-    this._routines = this.routineDefinitionService.routineDefinitions;
-    this.routineDefinitionService.routineDefinitions$.subscribe((routineDefs)=>{
-      this._routines = routineDefs;
-    })
 
     this.buildTimeViewConfiguration();
 
     console.log("Root: ", this.activityTree.rootActivities)
   }
 
-  private _routines: RoutineDefinition[] = [];
-  public get routines(): RoutineDefinition[] { 
-    return this._routines;
+  private _activityRoutines: ActivityCategoryDefinition[] = [];
+  public get activityRoutines(): ActivityCategoryDefinition[] { 
+    return this._activityRoutines;
   }
 
   public get rootActivities(): ActivityCategoryDefinition[] {
@@ -63,14 +61,16 @@ export class ActivitiesComponent implements OnInit {
     }
   }
 
-  onClickNewActivity() {
+  public onClickNewActivity() {
     let modal: Modal = new Modal("New Activity", "", null, [], null, ModalComponentType.ActivityCategoryDefinition)
     this.modalService.activeModal = modal;
     this.modalService.modalResponse$.subscribe((response) => {
       console.log("modal response:", response);
     });
   }
-
+  public onClickNewRoutine(){
+    console.log("New routine button clicked");
+  }
 
   private _timeViewConfiguration: TimeViewConfiguration;
   private buildTimeViewConfiguration() {
@@ -86,48 +86,9 @@ export class ActivitiesComponent implements OnInit {
         return "rgb(" + r + ", " + g + ", " + b + ")";
       }
     }
-
-    // function findTopActivity(data: ActivityDayData): ActivityDayDataItem {
-    //   let result: ActivityDayDataItem = data.activityItems.find((activityItem) => {
-    //     return activityItem.activityTreeId != "5b9c362dd71b00180a7cf701_default_sleep";
-    //   });
-    //   if (!result) {
-    //     result = data.activityItems[0];
-    //   }
-    //   return result;
-    // }
-
-
-    // if (this.allActivityData.length > 0 && this.activityTree) {
-    //   let minValue: number = 0;
-    //   let maxValue: number = 0;
-    //   let data: TimeViewDayData[] = [];
-
-    //   this.allActivityData.forEach((activityData: ActivityDayData) => {
-    //     let topActivity: ActivityDayDataItem = findTopActivity(activityData);
-    //     data.push({
-    //       dateYYYYMMDD: activityData.dateYYYYMMDD,
-    //       value: topActivity.durationMinutes,
-    //       name: this.activityTree.findActivityByTreeId(topActivity.activityTreeId).name,
-    //       date: moment(activityData.dateYYYYMMDD).startOf("day"),
-    //       style: {
-    //         "background-color": hexToRGB(this.activityTree.findActivityByTreeId(topActivity.activityTreeId).color, 0.5),
-    //       },
-    //       isHighlighted: false,
-    //       mouseOver: false,
-    //     });
-    //   });
-
-    //   let configuration: TimeViewConfiguration = {
-    //     units: "top activity",
-    //     singleValueType: false,
-    //     minValue: minValue,
-    //     maxValue: maxValue,
-    //     data: data,
-    //   }
-    //   this._timeViewConfiguration = configuration;
-    // }
   }
+
+
   public get timeViewConfiguration(): TimeViewConfiguration {
     return this._timeViewConfiguration;
   }

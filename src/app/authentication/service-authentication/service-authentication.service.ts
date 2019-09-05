@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivityCategoryDefinitionService } from '../../dashboard/activities/api/activity-category-definition/activity-category-definition.service';
+import { ActivityCategoryDefinitionService } from '../../dashboard/activities/api/activity-category-definition.service';
 
 import { UserSettingsService } from '../../shared/document-definitions/user-account/user-settings/user-settings.service';
 import { DayTemplatesService } from '../../dashboard/scheduling/day-templates/day-templates.service';
 
 import { NotebooksService } from '../../dashboard/notebooks/notebooks.service';
 import { TaskService } from '../../dashboard/tasks/task.service';
-import { RoutineDefinitionService } from '../../dashboard/activities/routines/routine-definition/api/routine-definition.service';
+import { RoutineDefinitionService } from '../../dashboard/activities/routines/api/routine-definition.service';
 
 
 import { SocialService } from '../../shared/document-definitions/user-account/social.service';

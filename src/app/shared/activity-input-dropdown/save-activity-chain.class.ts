@@ -1,6 +1,6 @@
-import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition/activity-category-definition.class";
+import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
 import { Subject, Observable } from "rxjs";
-import { ActivityCategoryDefinitionService } from "../../dashboard/activities/api/activity-category-definition/activity-category-definition.service";
+import { ActivityCategoryDefinitionService } from "../../dashboard/activities/api/activity-category-definition.service";
 
 export class SaveActivityChain{
 

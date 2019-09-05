@@ -1,5 +1,6 @@
 import { ActivityDurationSetting } from "./activity-duration.enum";
 import { ActivityTargetConfiguration } from "./activity-target-configuration.interface";
+import { ScheduleConfiguration } from "../../../shared/utilities/schedule-configuration.interface";
 
 export interface ActivityCategoryDefinitionHttpShape{
     _id: string;
@@ -16,6 +17,17 @@ export interface ActivityCategoryDefinitionHttpShape{
     durationSetting: ActivityDurationSetting;
     specifiedDurationMinutes: number;
     targets: ActivityTargetConfiguration[];
+
+
+    scheduleConfiguration: ScheduleConfiguration;
+
+    isRoutine: boolean;
+
+    
+    routineMembersActivityIds: string[];
+    // eventually perhaps a property to contain "non-activity" items, whatever they may be.  "Conditions", for example.
+    // "House is clean" could be a condition.
+    // not sure if those things would go here or not.
 
     isConfigured: boolean;
 }

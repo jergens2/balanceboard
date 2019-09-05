@@ -11,6 +11,8 @@ import { TimelogWindow } from "../widgets/timelog/timelog-large/timelog-chart/ti
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
 import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
 import { SleepQuality } from "../widgets/timelog/timelog-entry-form/form-sections/sleep-section/sleep-quality.enum";
+import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
+import { ActivityTree } from "../../activities/api/activity-tree.class";
 
 export class DaybookDayItem{
 
@@ -24,10 +26,7 @@ export class DaybookDayItem{
     }
 
     constructor(dateYYYYMMDD) {
-        this.generateNewDaybook(dateYYYYMMDD);
-    }
-
-    private generateNewDaybook(dateYYYYMMDD: string) {
+        console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
         let shape: DaybookDayItemHttpShape = {
             _id: "",
             userId: "",
@@ -153,12 +152,22 @@ export class DaybookDayItem{
         return this._followingDay;
     }
 
-    public get morningRoutine(): any{
-        return "sup";
+    
+    private _routines: ActivityCategoryDefinition[] = [];
+    public set routines(routines: ActivityCategoryDefinition[]){
+        this._routines = routines;
     }
-    public get eveningRoutine(): any{
-        return "sup";
+    public get routines(): ActivityCategoryDefinition[]{ 
+        return this._routines;
     }
+    private _scheduledActivities: ActivityCategoryDefinition[] = [];
+    public set scheduledActivities(scheduledActivities: ActivityCategoryDefinition[]){
+        this._scheduledActivities = scheduledActivities;
+    }
+    public get scheduledActivities(): ActivityCategoryDefinition[]{ 
+        return this._scheduledActivities;
+    }
+
 
 
 
@@ -177,6 +186,7 @@ export class DaybookDayItem{
         /**
          *  I think I might just get rid of the TimelogWindow entirely, and just use the 2 variables as reference points (wakeup and fallasleep time);
          */
+        console.log("Getting timelog window.  Do we even still need this method?")
         let startTime: moment.Moment = moment(this.wakeUpTime).subtract(1, "hour");
         let endTime: moment.Moment = moment(this.fallAsleepTime).add(1, "hour");
         
@@ -188,6 +198,18 @@ export class DaybookDayItem{
             size: endTime.diff(startTime, "hours"),
         }
         return window;
+    }
+
+
+    public get timeOfLastAction(): moment.Moment{
+        /* This method is a time marker of the last thing that the user inputted in the day,
+        *   For example, I open BB at 10:30pm, and mark down what I did from 6pm to 10:30pm, and that's the last action I do that day.
+            
+        */
+        console.log("Not implemented");
+        // if(this.)
+        
+        return moment();
     }
 
     public get fallAsleepTime(): moment.Moment{

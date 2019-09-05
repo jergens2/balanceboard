@@ -16,11 +16,7 @@ export class RoutineSectionComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    if(this.routineString == "MORNING"){
-      this.routine = this.timelogEntryForm.morningRoutine;
-    }else if(this.routineString == "EVENING"){
-      this.routine = this.timelogEntryForm.eveningRoutine;
-    }
+
   }
 
 }

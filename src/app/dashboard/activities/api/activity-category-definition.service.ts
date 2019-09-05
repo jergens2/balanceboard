@@ -3,13 +3,13 @@ import { ActivityCategoryDefinition } from './activity-category-definition.class
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 
-import { serverUrl } from '../../../../serverurl';
+import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../../../authentication/auth-status.class';
+import { AuthStatus } from '../../../authentication/auth-status.class';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.class';
-import { Guid } from '../../../../shared/utilities/guid.class';
-import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
+import { Guid } from '../../../shared/utilities/guid.class';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 import { ActivityCategoryDefinitionHttpShape } from './activity-category-definition-http-shape.interface';
 import { DefaultActivityCategoryDefinitions } from './default-activity-category-definitions.class';
 @Injectable({
@@ -84,6 +84,8 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
     this._authStatus = null;
     this._activitiesTree$.next(null);
   }
+
+
 
 
   private fetchActivities() {
@@ -221,7 +223,14 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
 
 
   private buildActivityFromResponse(data: any): ActivityCategoryDefinition {
-    const properties: string[] = [ "_id", "userId", "treeId", "parentTreeId", "name", "description", "color", "icon", "durationSetting", "specifiedDurationMinutes", "targets" ];
+    const properties: string[] = [ "_id", "userId", "treeId", "parentTreeId", 
+      "name", "description", "color", "icon", "durationSetting", 
+      "specifiedDurationMinutes", "targets",
+      "scheduleConfiguration", "isRoutine",
+      "routineMembersActivityIds", "isConfigured",
+    ];
+  
+    
     let dataErrors: boolean = false;
     properties.forEach(property => {
       if(!(property in data)){
@@ -243,12 +252,48 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
         specifiedDurationMinutes: data.specifiedDurationMinutes,
         targets: data.targets,
         isConfigured: data.isConfigured,
+        scheduleConfiguration: data.scheduleConfiguration,
+        isRoutine: data.isRoutine,
+        routineMembersActivityIds: data.routineMembersActivityIds,
       }
       return new ActivityCategoryDefinition(buildActivityHttpShape);
     }else{
       console.log("Activity is not built because of missing property.");
       return null;
     }
+  }
+
+
+  public get defaultMorningRoutineActivities(): string[]{
+    let morningRoutineActivityIds: string [] = [];
+    const morningActivityNames: string[] = [
+      "Make the bed",
+      "Brush teeth",
+      "Drink water",
+      "Take vitamins and medications",
+      "Feed the dog",
+      "Water the plants",
+    ];
+    this.activitiesTree.allActivities.forEach((activity: ActivityCategoryDefinition)=>{
+      if(morningActivityNames.indexOf(activity.name) > -1){
+        morningRoutineActivityIds.push(activity.treeId);
+      }
+    });
+    console.log("Found some morning routine activity Ids.", morningRoutineActivityIds)
+    return morningRoutineActivityIds;
+  }
+  public get defaultEveningRoutineActivities(): string[]{
+    let eveningRoutineActivityIds: string [] = [];
+    const eveningActivityNames: string[] = [
+      "Brush teeth",
+    ];
+    this.activitiesTree.allActivities.forEach((activity: ActivityCategoryDefinition)=>{
+      if(eveningActivityNames.indexOf(activity.name) > -1){
+        eveningRoutineActivityIds.push(activity.treeId);
+      }
+    });
+    console.log("Found some evening routine activity Ids.", eveningRoutineActivityIds)
+    return eveningRoutineActivityIds;
   }
 
 

@@ -126,13 +126,6 @@ export class TimelogEntryForm {
     }
 
 
-    public get morningRoutine(): any{
-        return this.activeDay.morningRoutine;
-    }  
-    public get eveningRoutine(): any{
-        return this.activeDay.eveningRoutine;
-    }
-
 
 
 

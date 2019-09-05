@@ -1,6 +1,10 @@
 import { ActivityCategoryDefinition } from "./activity-category-definition.class";
-import { Guid } from "../../../../shared/utilities/guid.class";
+import { Guid } from "../../../shared/utilities/guid.class";
 import { ActivityDurationSetting } from "./activity-duration.enum";
+import { ScheduleConfiguration } from "../../../shared/utilities/schedule-configuration.interface";
+import * as moment from 'moment';
+import { TimeUnit } from "../../../shared/utilities/time-unit.enum";
+import { TimeOfDay } from "../../../shared/utilities/time-of-day-enum";
 
 export class DefaultActivityCategoryDefinitions {
 
@@ -29,6 +33,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -45,6 +52,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -61,6 +71,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
 
@@ -84,6 +97,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
 
@@ -101,6 +117,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -117,6 +136,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -133,6 +155,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         const choresTreeId: string = userId + "_" + Guid.newGuid();
@@ -150,6 +175,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -166,6 +194,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -182,6 +213,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -198,6 +232,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -214,6 +251,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         const hygieneTreeId: string = userId + "_" + Guid.newGuid();
@@ -231,6 +271,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -247,13 +290,17 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
+        const brushTeethTreeId: string = userId + "_" + Guid.newGuid();
         activities.push(new ActivityCategoryDefinition(
             {
                 _id: "",
                 userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
+                treeId: brushTeethTreeId,
                 parentTreeId: hygieneTreeId,
                 name: "Brush teeth",
                 description: "Brush teeth",
@@ -263,6 +310,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -279,6 +329,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
 
@@ -303,6 +356,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -319,6 +375,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -335,6 +394,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -351,6 +413,9 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
             }
         ));
         activities.push(new ActivityCategoryDefinition(
@@ -367,6 +432,83 @@ export class DefaultActivityCategoryDefinitions {
                 specifiedDurationMinutes: -1,
                 targets: [],
                 isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
+            }
+        ));
+
+
+        const wakeupRoutineConfiguration: ScheduleConfiguration = {
+            repititions: [{
+                value: 1,
+                unit: TimeUnit.Day,
+                startsOnDateTimeISO: moment().startOf("year").toISOString(),
+            }],
+        
+            timeOfDay: TimeOfDay.Morning,
+            timeOfDayRanges: [],
+        
+            daysOfWeek: [],
+            daysOfWeekExcluded: [],
+        };
+        const bedtimeRoutineConfiguration: ScheduleConfiguration = {
+            repititions: [{
+                value: 1,
+                unit: TimeUnit.Day,
+                startsOnDateTimeISO: moment().startOf("year").toISOString(),
+            }],
+        
+            timeOfDay: TimeOfDay.Evening,
+            timeOfDayRanges: [],
+        
+            daysOfWeek: [],
+            daysOfWeekExcluded: [],
+        }
+
+        const routineColor: string = "#0084ff";
+
+        activities.push(new ActivityCategoryDefinition(
+            {
+                _id: "",
+                userId: userId,
+                treeId: userId + "_" + Guid.newGuid(),
+                parentTreeId: userId + topLevel,
+                name: "Wakeup Routine",
+                description: "Things dong after waking up",
+                color: routineColor,
+                icon: "",
+                durationSetting: ActivityDurationSetting.VariableLength,
+                specifiedDurationMinutes: -1,
+                targets: [],
+                isConfigured: true,
+                scheduleConfiguration: wakeupRoutineConfiguration,
+                isRoutine: true,
+                routineMembersActivityIds: [
+                    brushTeethTreeId
+                ],
+            }
+        ));
+
+        activities.push(new ActivityCategoryDefinition(
+            {
+                _id: "",
+                userId: userId,
+                treeId: userId + "_" + Guid.newGuid(),
+                parentTreeId: userId + topLevel,
+                name: "Bedtime Routine",
+                description: "Things before going to sleep",
+                color: routineColor,
+                icon: "",
+                durationSetting: ActivityDurationSetting.VariableLength,
+                specifiedDurationMinutes: -1,
+                targets: [],
+                isConfigured: true,
+                scheduleConfiguration: bedtimeRoutineConfiguration,
+                isRoutine: true,
+                routineMembersActivityIds: [
+                    brushTeethTreeId
+                ],
             }
         ));
         return activities;

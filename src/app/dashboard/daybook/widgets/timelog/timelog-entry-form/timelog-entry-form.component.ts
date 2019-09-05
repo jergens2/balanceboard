@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import * as moment from 'moment';
-import { faEdit, faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
+import { faCheckCircle as faCheckCircle2, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faCircle, faCheckCircle, faCheckSquare } from '@fortawesome/free-regular-svg-icons';
 import { TimelogEntryForm } from './timelog-entry-form.class';
 import { faBed } from '@fortawesome/free-solid-svg-icons';
 import { SleepQuality } from './form-sections/sleep-section/sleep-quality.enum';
@@ -65,7 +66,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   faEdit = faEdit;
   faBed = faBed;
   faCircle = faCircle;
-  faCheckCircle = faCheckCircle;
+  faCheck = faCheck;
 
   ngOnDestroy() {
     this.timelogEntryForm = null;

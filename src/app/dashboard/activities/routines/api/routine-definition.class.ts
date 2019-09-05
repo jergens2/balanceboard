@@ -1,7 +1,7 @@
 import { RoutineDefinitionHttpShape } from "./routine-definition-http-shape.interface";
 import { RoutineDefinitionFrequency } from "./routine-definition-frequency.interface";
-import { TimeOfDay } from "../../../../../shared/utilities/time-of-day-enum";
-import { TimeRange } from "../../../../../shared/utilities/time-range.interface";
+import { TimeOfDay } from "../../../../shared/utilities/time-of-day-enum";
+import { TimeRange } from "../../../../shared/utilities/time-range.interface";
 
 export class RoutineDefinition{
 
@@ -17,7 +17,7 @@ export class RoutineDefinition{
     public get userId(): string{ return this._httpShape.userId; }
     public get routineTreeId(): string { return this._httpShape.routineTreeId; }
     public get name(): string{ return this._httpShape.name };
-    public get frequency(): RoutineDefinitionFrequency { return this._httpShape.frequency; }
+    public get frequencies(): RoutineDefinitionFrequency[] { return this._httpShape.frequencies; }
     public get timeOfDay(): TimeOfDay { return this._httpShape.timeOfDay; }
     public get timeOfDayRanges(): TimeRange[] { return this._httpShape.timeOfDayRanges; }
     public get activityIds(): string[] { return this._httpShape.activityIds; }

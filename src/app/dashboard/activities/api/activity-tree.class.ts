@@ -15,7 +15,17 @@ export class ActivityTree {
     private _allActivities: ActivityCategoryDefinition[];
 
     get allActivities(): ActivityCategoryDefinition[] {
+        return this._allActivities.filter((activity)=>{
+            return (!activity.isRoutine)
+        });
+    }
+    public get allActivitiesAndRoutines(): ActivityCategoryDefinition[]{
         return this._allActivities;
+    }
+
+    private _activityRoutines: ActivityCategoryDefinition[] = [];
+    public get activityRoutines(): ActivityCategoryDefinition[]{
+        return this._activityRoutines;
     }
 
     constructor(allActivities: ActivityCategoryDefinition[]) {
@@ -53,6 +63,9 @@ export class ActivityTree {
             rootActivity = this.findChildActivities(rootActivity, allActivities);
 
         }
+
+        this._activityRoutines = rootActivities.filter((activity)=>{ return activity.isRoutine === true; });
+        rootActivities = rootActivities.filter((activity)=>{ return activity.isRoutine === false });
         return rootActivities;
     }
 
@@ -150,4 +163,9 @@ export class ActivityTree {
         this._rootActivities = this.buildActivityTree(this.allActivities);
     }
 
+    public getScheduledRoutinesAndActivitiesByDate(dateYYYYMMDD: string): ActivityCategoryDefinition[]{
+        return this._allActivities.filter((activity: ActivityCategoryDefinition) => {
+            return activity.isScheduledOnDate(dateYYYYMMDD);
+        });
+    }
 }

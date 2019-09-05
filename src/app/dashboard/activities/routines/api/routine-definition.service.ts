@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
-import { AuthStatus } from '../../../../../authentication/auth-status.class';
+import { AuthStatus } from '../../../../authentication/auth-status.class';
 import { Observable, Subject, BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 
 
-import { serverUrl } from '../../../../../serverurl';
+import { serverUrl } from '../../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map, mergeAll, merge } from 'rxjs/operators';
 import * as moment from 'moment';
 
-import { ServiceAuthenticates } from '../../../../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
 
 import { RoutineDefinition } from './routine-definition.class';
 import { RoutineDefinitionHttpShape } from './routine-definition-http-shape.interface';
 import { DefaultRoutineDefinitions } from './default-routine-definitions.class';
+import { ActivityCategoryDefinitionService } from '../../api/activity-category-definition.service';
 
 
 @Injectable({
@@ -20,7 +21,7 @@ import { DefaultRoutineDefinitions } from './default-routine-definitions.class';
 })
 export class RoutineDefinitionService implements ServiceAuthenticates {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private activitiesService: ActivityCategoryDefinitionService) { }
 
   private _authStatus: AuthStatus;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -28,6 +29,8 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
 
 
   login$(authStatus: AuthStatus): Observable<boolean> {
+    console.log("RoutineDefinitionService: Logging in - ")
+    console.log("I don't think we need this CRUD any more.  Perhpas Cannibalize this method for another CRUD.")
     this._authStatus = authStatus;
 
     this.httpGetRoutineDefinitions();
@@ -173,7 +176,7 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
 
 
   private saveDefaultRoutineDefinitions(){
-    let defaultRoutines = DefaultRoutineDefinitions.defaultRoutineDefinitions(this.userId);
+    let defaultRoutines = DefaultRoutineDefinitions.defaultRoutineDefinitions(this.userId, this.activitiesService.defaultMorningRoutineActivities, this.activitiesService.defaultEveningRoutineActivities);
     console.log("Building and saving default routine definitions...");
     forkJoin(defaultRoutines.map<Observable<RoutineDefinition>>((routineDef: RoutineDefinition) => { return this.httpSaveRoutineDefinition$(routineDef) })).subscribe((savedRoutineDefs: RoutineDefinition[]) => {
       let routineDefinitions: RoutineDefinition[] = this.routineDefinitions;
@@ -186,9 +189,22 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
 
 
   private buildRoutineDefinitionFromHttp(dataObject: any): RoutineDefinition {
+
+    /**
+     * A note about this method:
+     * 
+     * it won't always catch missing properties, for example
+     * i renamed frequency to frequencies.
+     * 
+     * but 2 objects in the DB still had the proprty name "frequency" but mongodb automatically added an empty value when sending the db item, because it is sending a type of the Model 
+     * So, it has the property frequencies with no value in it, and the method below does not catch it,
+     * 
+     */
+
+
     const properties: string[] = ["_id", "userId", "routineTreeId", "name",
-      "frequency", "timeOfDay", "timeOfDayRanges", "activityIds",
-      "childOfRoutineId",];
+      "frequencies", "timeOfDay", "timeOfDayRanges", "activityIds",
+      "childOfRoutineId"];
 
     let dataErrors: boolean = false;
     properties.forEach(property => {
@@ -203,7 +219,7 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
         userId: dataObject.userId,
         routineTreeId: dataObject.routineTreeId,
         name: dataObject.name,
-        frequency: dataObject.frequency,
+        frequencies: dataObject.frequencies,
         timeOfDay: dataObject.timeOfDay,
         timeOfDayRanges: dataObject.timeOfDayRanges,
         activityIds: dataObject.activityIds,

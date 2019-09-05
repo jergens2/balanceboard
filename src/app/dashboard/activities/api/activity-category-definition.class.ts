@@ -1,6 +1,11 @@
 import { ActivityDurationSetting } from "./activity-duration.enum";
 import { ActivityTargetConfiguration } from "./activity-target-configuration.interface";
 import { ActivityCategoryDefinitionHttpShape } from "./activity-category-definition-http-shape.interface";
+import { ScheduleConfiguration } from "../../../shared/utilities/schedule-configuration.interface";
+import { ScheduleRepitition } from "../../../shared/utilities/schedule-repitition.interface";
+import * as moment from 'moment';
+import { TimeUnit } from "../../../shared/utilities/time-unit.enum";
+import { ScheduleRepititionCalculator } from "../../../shared/utilities/schedule-repitition-calculator.class";
 
 export class ActivityCategoryDefinition {
 
@@ -41,6 +46,35 @@ export class ActivityCategoryDefinition {
 
     public get icon(): string{ return this._httpShape.icon; }
     public set icon(icon: string){ this._httpShape.icon = icon; }
+
+    public get scheduleConfiguration(): ScheduleConfiguration{ return this._httpShape.scheduleConfiguration; }
+    public set scheduleConfiguration(conf: ScheduleConfiguration){ this._httpShape.scheduleConfiguration = conf; }
+    public isScheduledOnDate(dateYYYYMMDD: string): boolean{
+        if(this.scheduleConfiguration != null){
+            this.scheduleConfiguration.repititions.filter((repitition: ScheduleRepitition)=>{
+                let dayAfterStart: boolean = moment(repitition.startsOnDateTimeISO).isBefore(moment(dateYYYYMMDD));
+                return dayAfterStart;
+            }).forEach((repitition: ScheduleRepitition)=>{
+                if(ScheduleRepititionCalculator.repititionIsOnDay(repitition, dateYYYYMMDD)){
+                    return true;
+                }                
+            });
+            return false;
+        }else{
+            return false;
+        }
+    }
+
+    public get isRoutine(): boolean{ return this._httpShape.isRoutine; }
+    public set isRoutine(isRoutine: boolean){ this._httpShape.isRoutine = isRoutine; }
+
+    public get routineMembersActivityIds(): string[] { return this._httpShape.routineMembersActivityIds; }
+    public set routineMembersActivityIds(ids: string[]){ this._httpShape.routineMembersActivityIds = ids; }
+
+    public get isConfigured(): boolean { return this._httpShape.isConfigured;   }
+    // public set isConfigured(isConfigured: boolean) { this._httpShape.isConfigured = isConfigured };
+
+
 
 
 

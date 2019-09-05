@@ -1,13 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ActivityCategoryDefinition } from '../api/activity-category-definition/activity-category-definition.class';
+import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivityCategoryDefinitionService } from '../api/activity-category-definition/activity-category-definition.service';
-import { ActivityTree } from '../api/activity-category-definition/activity-tree.class';
+import { ActivityCategoryDefinitionService } from '../api/activity-category-definition.service';
+import { ActivityTree } from '../api/activity-tree.class';
 import { faCheckCircle, faCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
-import { ActivityCategoryDefinitionHttpShape } from '../api/activity-category-definition/activity-category-definition-http-shape.interface';
+import { ActivityCategoryDefinitionHttpShape } from '../api/activity-category-definition-http-shape.interface';
 import { Guid } from '../../../shared/utilities/guid.class';
-import { ActivityDurationSetting } from '../api/activity-category-definition/activity-duration.enum';
+import { ActivityDurationSetting } from '../api/activity-duration.enum';
 
 
 
@@ -169,6 +169,9 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
           specifiedDurationMinutes: -1,
           targets: [],
           isConfigured: true,
+          scheduleConfiguration: null,
+          isRoutine: false,
+          routineMembersActivityIds: [],
         }
         console.log("saving new activity: ", newActivity);
 

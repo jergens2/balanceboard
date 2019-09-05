@@ -9,7 +9,7 @@ import { ToolsService } from '../../tools.service';
 
 import { Subscription } from 'rxjs';
 import { DailyTaskListService } from './daily-task-list.service';
-import { RoutineDefinitionService } from '../../../../dashboard/activities/routines/routine-definition/api/routine-definition.service';
+import { RoutineDefinitionService } from '../../../../dashboard/activities/routines/api/routine-definition.service';
 import { RecurringTaskDefinition } from '../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
 import { DailyTaskList, DailyTaskListItem } from './daily-task-list.class';
 
