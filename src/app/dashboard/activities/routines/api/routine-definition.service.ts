@@ -176,15 +176,16 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
 
 
   private saveDefaultRoutineDefinitions(){
-    let defaultRoutines = DefaultRoutineDefinitions.defaultRoutineDefinitions(this.userId, this.activitiesService.defaultMorningRoutineActivities, this.activitiesService.defaultEveningRoutineActivities);
-    console.log("Building and saving default routine definitions...");
-    forkJoin(defaultRoutines.map<Observable<RoutineDefinition>>((routineDef: RoutineDefinition) => { return this.httpSaveRoutineDefinition$(routineDef) })).subscribe((savedRoutineDefs: RoutineDefinition[]) => {
-      let routineDefinitions: RoutineDefinition[] = this.routineDefinitions;
-      routineDefinitions = routineDefinitions.concat(savedRoutineDefs);
-      this._routineDefinitions$.next(routineDefinitions);
-      console.log("Default routine definitions saved. ", routineDefinitions);
-      this._loginComplete$.next(true);
-    })
+    // let defaultRoutines = DefaultRoutineDefinitions.defaultRoutineDefinitions(this.userId, this.activitiesService.defaultMorningRoutineActivities, this.activitiesService.defaultEveningRoutineActivities);
+    // console.log("Building and saving default routine definitions...");
+    // forkJoin(defaultRoutines.map<Observable<RoutineDefinition>>((routineDef: RoutineDefinition) => { return this.httpSaveRoutineDefinition$(routineDef) })).subscribe((savedRoutineDefs: RoutineDefinition[]) => {
+    //   let routineDefinitions: RoutineDefinition[] = this.routineDefinitions;
+    //   routineDefinitions = routineDefinitions.concat(savedRoutineDefs);
+    //   this._routineDefinitions$.next(routineDefinitions);
+    //   console.log("Default routine definitions saved. ", routineDefinitions);
+    //   this._loginComplete$.next(true);
+    // })
+    this._loginComplete$.next(true);
   }
 
 

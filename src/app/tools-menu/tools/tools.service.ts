@@ -17,13 +17,20 @@ export class ToolsService {
   }
 
   public closeTool(component?: ToolComponents){
-    console.log("closing tool");
-    this._currentTool$.next(null);
+    if(component == this.currentTool){
+      this._currentTool$.next(null);
+    }else{
+      console.log("IT was not the same component, or is missing value.")
+      console.log("Not fully implemented");
+    }
   }
 
 
   private _currentTool$: BehaviorSubject<ToolComponents> = new BehaviorSubject(null);
   public get currentTool$(): Observable<ToolComponents> {
     return this._currentTool$.asObservable();
+  }
+  public get currentTool(): ToolComponents{
+    return this._currentTool$.getValue();
   }
 }

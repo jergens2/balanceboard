@@ -1,13 +1,15 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import * as moment from 'moment';
-import { faCheckCircle as faCheckCircle2, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle as faCheckCircle2, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faEdit, faCircle, faCheckCircle, faCheckSquare } from '@fortawesome/free-regular-svg-icons';
 import { TimelogEntryForm } from './timelog-entry-form.class';
 import { faBed } from '@fortawesome/free-solid-svg-icons';
 import { SleepQuality } from './form-sections/sleep-section/sleep-quality.enum';
 import { DaybookService } from '../../../daybook.service';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
+import { ToolsService } from '../../../../../tools-menu/tools/tools.service';
+import { ToolComponents } from '../../../../../tools-menu/tools/tool-components.enum';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -16,7 +18,7 @@ import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 })
 export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private toolsService: ToolsService, private daybookService: DaybookService) { }
 
   private activeDay: DaybookDayItem;
 
@@ -63,10 +65,15 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   }
 
 
+  public onClickCloseTool(){
+    this.toolsService.closeTool(ToolComponents.TimelogEntry);
+  }
+
   faEdit = faEdit;
   faBed = faBed;
   faCircle = faCircle;
   faCheck = faCheck;
+  faTimes = faTimes;
 
   ngOnDestroy() {
     this.timelogEntryForm = null;

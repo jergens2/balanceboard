@@ -1,8 +1,8 @@
 <div class="tools-root">
   <div class="tool" *ngIf="toolName == 'ACTION_ITEM'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <div class="tool-header">
-      <div class="tool-header-item" style="font-size:0.8em;">
+    <div class="tool-header ">
+      <div class="tool-header-item" >
         New action item
       </div>
       <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
@@ -15,7 +15,7 @@
   <div class="tool" *ngIf="toolName == 'NOTEBOOK_ENTRY'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
     <div class="tool-header">
-      <div class="tool-header-item" style="font-size:0.8em;">
+      <div class="tool-header-item font-family-open-sans">
         New Notebook Entry
       </div>
       <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
@@ -27,21 +27,13 @@
 
   <div class="tool" *ngIf="toolName == 'TIMELOG_ENTRY'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <div class="tool-header">
-      <div class="tool-header-item" style="font-size:0.8em;">
-        New Timelog Entry
-      </div>
-      <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
-    </div>
-    <div class="tool-body">
       <app-timelog-entry-form></app-timelog-entry-form>
-    </div>
   </div>
 
   <div class="tool" *ngIf="toolName == 'FUTURE_EVENT'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
     <div class="tool-header">
-      <div class="tool-header-item" style="font-size:0.8em;">
+      <div class="tool-header-item" >
         New Future Event
       </div>
       <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
@@ -54,7 +46,7 @@
   <div class="tool" *ngIf="toolName == 'DAILY_TASK_LIST'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
     <div class="tool-header">
-      <div class="tool-header-item" style="font-size:0.8em;">
+      <div class="tool-header-item" >
         Daily Task List: {{ currentDate }}
       </div>
       <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>

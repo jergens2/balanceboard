@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { TimelogEntryForm } from '../../timelog-entry-form.class';
-import { faPlus, faMinus, faPlusCircle, faMinusCircle, faBed } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faMinus, faPlusCircle, faMinusCircle, faBed, faCheck, faCircle } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { SleepQuality } from './sleep-quality.enum';
 import { DurationString } from '../../../../../../../shared/utilities/duration-string.class';
@@ -21,6 +21,8 @@ export class SleepSectionComponent implements OnInit {
   sleepQualityBeds: any[] = [];
   private _sleepQuality: SleepQuality;
   private _sleepDuration: string = "";
+
+  isExpanded: boolean = false;
 
   @Input() timelogEntryForm: TimelogEntryForm;
 
@@ -168,5 +170,7 @@ export class SleepSectionComponent implements OnInit {
   faBed = faBed;
   faPlusCircle = faPlusCircle;
   faMinusCircle = faMinusCircle;
+  faCheck = faCheck;
+  faCircle = faCircle;
 
 }

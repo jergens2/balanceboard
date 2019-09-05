@@ -34,7 +34,9 @@ export class ScheduleRepititionCalculator{
                     }
                 }
             } 
+
+            return false;
         }
-        return true;
+        
     }
 }

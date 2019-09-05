@@ -189,7 +189,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
 
     const properties: string[] = ["_id", "userId", "dateYYYYMMDD", "daybookTimelogEntryDataItems",
       "daybookActivityDataItems", "dailyTaskListDataItems", "dayStructureDataItems", "sleepCycleDataItems",
-      "sleepProfile", "dailyWeightLogEntryKg", "dayTemplateId",
+      "sleepProfile", "dailyWeightLogEntryKg", "scheduledActivityIds", "dayTemplateId",
       "scheduledEventIds", "notebookEntryIds", "taskItemIds"];
     let dataErrors: boolean = false;
     properties.forEach(property => {

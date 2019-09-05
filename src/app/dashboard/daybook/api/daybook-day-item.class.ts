@@ -3,7 +3,7 @@ import { DaybookDayItemHttpShape } from "./daybook-day-item-http-shape.interface
 import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
 import { DaybookActivityDataItem } from "./data-items/daybook-activity-data-item.interface";
 import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
-import { Subject, Observable } from "rxjs";
+import { Subject, Observable, scheduled } from "rxjs";
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import * as moment from 'moment';
 import { DayStructureSleepCycleAction } from "./data-items/day-structure-sleep-cycle-action.enum";
@@ -46,6 +46,7 @@ export class DaybookDayItem{
                 bedtimeUtcOffsetMinutes: 0,
             },
             dailyWeightLogEntryKg: 0,
+            scheduledActivityIds: [],
             dayTemplateId: "",
             scheduledEventIds: [],
             notebookEntryIds: [],
@@ -153,19 +154,27 @@ export class DaybookDayItem{
     }
 
     
-    private _routines: ActivityCategoryDefinition[] = [];
-    public set routines(routines: ActivityCategoryDefinition[]){
-        this._routines = routines;
+
+    public get scheduledRoutines(): ActivityCategoryDefinition[]{ 
+        return this._scheduledActivities.filter((scheduledActivity)=>{
+            return scheduledActivity.isRoutine;
+        });
     }
-    public get routines(): ActivityCategoryDefinition[]{ 
-        return this._routines;
-    }
+
+
     private _scheduledActivities: ActivityCategoryDefinition[] = [];
     public set scheduledActivities(scheduledActivities: ActivityCategoryDefinition[]){
+        console.log("Setting", scheduledActivities)
         this._scheduledActivities = scheduledActivities;
+        this._httpShape.scheduledActivityIds = scheduledActivities.map((scheduledActivity)=>{ return scheduledActivity.treeId; });
+        console.log("we set the thingL ", this._httpShape.scheduledActivityIds);
+        this.dataChanged();
     }
     public get scheduledActivities(): ActivityCategoryDefinition[]{ 
         return this._scheduledActivities;
+    }
+    public get scheduledActivityIds(): string[]{ 
+        return this.httpShape.scheduledActivityIds;
     }
 
 

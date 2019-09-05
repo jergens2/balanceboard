@@ -263,39 +263,4 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
     }
   }
 
-
-  public get defaultMorningRoutineActivities(): string[]{
-    let morningRoutineActivityIds: string [] = [];
-    const morningActivityNames: string[] = [
-      "Make the bed",
-      "Brush teeth",
-      "Drink water",
-      "Take vitamins and medications",
-      "Feed the dog",
-      "Water the plants",
-    ];
-    this.activitiesTree.allActivities.forEach((activity: ActivityCategoryDefinition)=>{
-      if(morningActivityNames.indexOf(activity.name) > -1){
-        morningRoutineActivityIds.push(activity.treeId);
-      }
-    });
-    console.log("Found some morning routine activity Ids.", morningRoutineActivityIds)
-    return morningRoutineActivityIds;
-  }
-  public get defaultEveningRoutineActivities(): string[]{
-    let eveningRoutineActivityIds: string [] = [];
-    const eveningActivityNames: string[] = [
-      "Brush teeth",
-    ];
-    this.activitiesTree.allActivities.forEach((activity: ActivityCategoryDefinition)=>{
-      if(eveningActivityNames.indexOf(activity.name) > -1){
-        eveningRoutineActivityIds.push(activity.treeId);
-      }
-    });
-    console.log("Found some evening routine activity Ids.", eveningRoutineActivityIds)
-    return eveningRoutineActivityIds;
-  }
-
-
-
 }

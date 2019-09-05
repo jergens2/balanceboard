@@ -15,11 +15,13 @@
     margin:8px;
     min-width:360px;
 
-    border: 1px solid rgb(81, 117, 150);
+    border: 1px solid rgba(0, 0, 0, 0.2);
     background-color: white;
-    border-radius:1px;
+    border-radius:10px;
 
-    box-shadow: 0px 5px 6px rgb(166, 195, 219);
+    /* padding: 15px; */  
+    /* Put the padding in the individual tool.  this way other elements can be managed without a silly border */
+    box-shadow: 0px 2px 8px hsla(0, 0%, 0%, 0.2);
 }
 .tool-mobile{
     box-shadow: none;
@@ -40,12 +42,9 @@
     vertical-align: middle;
 
 
-    border-bottom: 1px solid rgb(196, 196, 196);
+    /* border-bottom: 1px solid rgb(196, 196, 196); */
 }
-.tool-header-item{
-    padding-left:5px;
-    padding-right:5px;
-}
+
 .icon-button{
     margin-top:0;
     color:gray;

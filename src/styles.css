@@ -11,11 +11,18 @@
   font-family: Ubuntu; 
   src: url("./assets/fonts/Ubuntu/Ubuntu-Regular.ttf");
 }
+@font-face{
+  font-family: OpenSans;
+  src: url("./assets/fonts/Open_Sans/OpenSans-Regular.ttf");
+}
 .font-family-lexend{
   font-family: 'Lexend';
 }
 .font-family-ubuntu{
   font-family: 'Ubuntu';
+}
+.font-family-open-sans{
+  font-family: 'OpenSans';
 }
 
 .no-select {
@@ -42,9 +49,11 @@
 
   font-size: 0.7em;
   color:gray;
-  border: 1px solid gray;
-  background-color:white;
-  font-weight: bold;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color:rgb(252, 253, 253);
+  /* background-color:hsl(200, 33%, 96%); */
+  /* font-weight: bold; */
+  font-weight:400;
   border-radius: 10px;
 }
 .small-button:hover{
@@ -52,6 +61,7 @@
   background-color: rgb(0, 89, 255);
   border: 1px solid rgb(0, 89, 255);
   cursor: pointer;
+  text-decoration: none;
 }
 
 

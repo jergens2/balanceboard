@@ -1,35 +1,25 @@
-.root{
+.activity-input-dropdown-root{
     width:100%;
-
     display:flex;
     flex-direction: column;
 
-}
-
-.input-container{
-    display:flex;
-    flex-direction: row;
-    width:100%;
-}
-
-
-.search-box-container{
-    display:flex;
-    flex-direction: row;
-    align-items: flex-start;
-    flex-grow: 2;
 }
 
 .search-box{
     flex-grow: 2;
     display:flex;
     flex-direction: column;
-    border: 1px solid gray;
+    border: 1px solid hsl(210, 9%, 96%);
+    background-color: hsl(210, 9%, 96%);
     border-radius: 5px;
     max-height: 34px;
 }
+/* .search-box-active{
+    
+} */
 .search-box-expanded{
     max-height:350px;
+    /* border: 1px solid rgba(0, 0, 0, 0.2); */
 }
 
 .search-results{
@@ -48,10 +38,12 @@
     font-weight: bold;
 }
 .create-new-activities-container{
-    margin:5px;
-    border: 1px solid rgb(194, 194, 194);
+
+    margin-top:5px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    /* border: 1px solid rgb(194, 194, 194); */
     background-color:rgb(250, 250, 250);
-    border-radius: 5px;
+
     padding: 5px;
     font-size:0.9em;
     color:rgb(68, 68, 68);
@@ -65,14 +57,30 @@
     flex-direction: column;
     flex-grow: 2;
     overflow-y: auto;
-    border-top:1px solid rgb(194, 194, 194);
+    /* border-top:1px solid rgb(194, 194, 194); */
 }
 .new-activity{
-    margin:3px;
-    padding:3px;
-    border-radius:5px;
-    border: 1px solid rgb(194, 194, 194);
+
+    border-radius:10px;
+    /* border: 1px solid rgb(194, 194, 194); */
+    display:flex; 
+    flex-direction: row; 
+    border: 1px solid rgba(0, 0, 0, 0.1);
     background-color:white;
+    margin-bottom:5px;
+}
+.new-activity-color-bar{
+    width:40px;
+    margin-right:5px;
+    border-top-left-radius:10px;
+    border-bottom-left-radius: 10px;
+}
+.new-activity-content{
+    flex-grow: 2;
+    display:flex;
+    flex-direction:column;
+    padding:5px;
+    font-size: 0.8em;
 }
 .new-activity-name-error{
     color: red;
@@ -104,14 +112,27 @@
     height:34px;
     min-height:34px;
 }
+.search-icon{
+    font-size:0.8em;
+    color:gray;
+    margin-left:10px;
+    margin-right:8px;
+}
 .search-input{
-    margin-left:3px;
     border:none;
     border-radius: 5px;
     flex-grow: 2;
     order: 2;
+
+    background-color: hsl(210, 9%, 96%);
 }
 
+.button-container{
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding:10px;
+}
 
 .action-button{
     padding:3px;

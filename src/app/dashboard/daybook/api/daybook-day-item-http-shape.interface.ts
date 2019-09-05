@@ -21,7 +21,10 @@ export interface DaybookDayItemHttpShape{
     dailyWeightLogEntryKg: number;
 
     // These represent references to data stored in other tables in the database.
+
+    scheduledActivityIds: string[];  // this includes activities and routines.
     
+
     dayTemplateId: string;
     scheduledEventIds: string[];
     notebookEntryIds: string[];

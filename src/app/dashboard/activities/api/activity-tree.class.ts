@@ -164,8 +164,16 @@ export class ActivityTree {
     }
 
     public getScheduledRoutinesAndActivitiesByDate(dateYYYYMMDD: string): ActivityCategoryDefinition[]{
-        return this._allActivities.filter((activity: ActivityCategoryDefinition) => {
-            return activity.isScheduledOnDate(dateYYYYMMDD);
-        });
+        // let z = this.allActivitiesAndRoutines.filter((activity: ActivityCategoryDefinition) => {
+        //     return activity.isScheduledOnDate(dateYYYYMMDD) === true;
+        // });
+        this.allActivitiesAndRoutines.forEach((a)=>{
+            let isScheduled: boolean = a.isScheduledOnDate(dateYYYYMMDD);
+            console.log("Is Scheduled? " + a.name + " ? " +  isScheduled);
+
+
+        })
+        // console.log("z is ", z);
+        return [];
     }
 }

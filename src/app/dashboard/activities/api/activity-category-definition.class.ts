@@ -10,68 +10,70 @@ import { ScheduleRepititionCalculator } from "../../../shared/utilities/schedule
 export class ActivityCategoryDefinition {
 
     private _httpShape: ActivityCategoryDefinitionHttpShape;
-    public get httpShape(): ActivityCategoryDefinitionHttpShape{
+    public get httpShape(): ActivityCategoryDefinitionHttpShape {
         return this._httpShape;
     }
 
-    public get id(): string{ return this._httpShape._id; }
-    public set id(id: string){ this._httpShape._id = id; }
+    public get id(): string { return this._httpShape._id; }
+    public set id(id: string) { this._httpShape._id = id; }
 
-    public get treeId(): string{ return this._httpShape.treeId; }
-    public set treeId(treeId: string){ this._httpShape.treeId = treeId; }
-    
-    public get name(): string{ return this._httpShape.name; }
-    public set name(name: string){ this._httpShape.name = name; }
+    public get treeId(): string { return this._httpShape.treeId; }
+    public set treeId(treeId: string) { this._httpShape.treeId = treeId; }
+
+    public get name(): string { return this._httpShape.name; }
+    public set name(name: string) { this._httpShape.name = name; }
 
     public get description(): string { return this._httpShape.description; }
-    public set description(description: string){ this._httpShape.description = description; }
+    public set description(description: string) { this._httpShape.description = description; }
 
     public get userId(): string { return this._httpShape.userId; }
-    public set userId(userId: string){ this._httpShape.userId = userId; }
+    public set userId(userId: string) { this._httpShape.userId = userId; }
 
-    public get parentTreeId(): string{ return this._httpShape.parentTreeId; }
-    public set parentTreeId(parentTreeId: string){ this._httpShape.parentTreeId = parentTreeId; }
+    public get parentTreeId(): string { return this._httpShape.parentTreeId; }
+    public set parentTreeId(parentTreeId: string) { this._httpShape.parentTreeId = parentTreeId; }
 
-    public get durationSetting(): ActivityDurationSetting{ return this._httpShape.durationSetting; }
-    public set durationSetting(durationSetting: ActivityDurationSetting){ this._httpShape.durationSetting = durationSetting; }
+    public get durationSetting(): ActivityDurationSetting { return this._httpShape.durationSetting; }
+    public set durationSetting(durationSetting: ActivityDurationSetting) { this._httpShape.durationSetting = durationSetting; }
 
     public get specifiedDurationMinutes(): number { return this._httpShape.specifiedDurationMinutes; }
-    public set specifiedDurationMinutes(minutes: number){ this._httpShape.specifiedDurationMinutes = minutes; }
-    
+    public set specifiedDurationMinutes(minutes: number) { this._httpShape.specifiedDurationMinutes = minutes; }
+
     public get targets(): ActivityTargetConfiguration[] { return this._httpShape.targets; }
-    public set targets(targets: ActivityTargetConfiguration[]){ this._httpShape.targets = targets; }
-    
+    public set targets(targets: ActivityTargetConfiguration[]) { this._httpShape.targets = targets; }
+
     public get color(): string { return this._httpShape.color; }
-    public set color(color: string){ this._httpShape.color = color; }
+    public set color(color: string) { this._httpShape.color = color; }
 
-    public get icon(): string{ return this._httpShape.icon; }
-    public set icon(icon: string){ this._httpShape.icon = icon; }
+    public get icon(): string { return this._httpShape.icon; }
+    public set icon(icon: string) { this._httpShape.icon = icon; }
 
-    public get scheduleConfiguration(): ScheduleConfiguration{ return this._httpShape.scheduleConfiguration; }
-    public set scheduleConfiguration(conf: ScheduleConfiguration){ this._httpShape.scheduleConfiguration = conf; }
-    public isScheduledOnDate(dateYYYYMMDD: string): boolean{
-        if(this.scheduleConfiguration != null){
-            this.scheduleConfiguration.repititions.filter((repitition: ScheduleRepitition)=>{
-                let dayAfterStart: boolean = moment(repitition.startsOnDateTimeISO).isBefore(moment(dateYYYYMMDD));
-                return dayAfterStart;
-            }).forEach((repitition: ScheduleRepitition)=>{
-                if(ScheduleRepititionCalculator.repititionIsOnDay(repitition, dateYYYYMMDD)){
-                    return true;
-                }                
+    public get scheduleConfiguration(): ScheduleConfiguration { return this._httpShape.scheduleConfiguration; }
+    public set scheduleConfiguration(conf: ScheduleConfiguration) { this._httpShape.scheduleConfiguration = conf; }
+    public isScheduledOnDate(dateYYYYMMDD: string): boolean {
+        if (this.scheduleConfiguration != null) {
+            console.log("WHy the hell can't I get this to work.  What the F am I missing here?")
+            console.log("Schedule Configuration", this.scheduleConfiguration)
+            this.scheduleConfiguration.repititions.forEach((repitition: ScheduleRepitition) => {
+                let isScheduled: boolean = ScheduleRepititionCalculator.repititionIsOnDay(repitition, dateYYYYMMDD);
+                if (isScheduled === true) {
+                    console.log("Boo yea mano", isScheduled);
+                    return isScheduled;
+                }
             });
             return false;
-        }else{
+        } else {
+            console.log("noooooo")
             return false;
         }
     }
 
-    public get isRoutine(): boolean{ return this._httpShape.isRoutine; }
-    public set isRoutine(isRoutine: boolean){ this._httpShape.isRoutine = isRoutine; }
+    public get isRoutine(): boolean { return this._httpShape.isRoutine; }
+    public set isRoutine(isRoutine: boolean) { this._httpShape.isRoutine = isRoutine; }
 
     public get routineMembersActivityIds(): string[] { return this._httpShape.routineMembersActivityIds; }
-    public set routineMembersActivityIds(ids: string[]){ this._httpShape.routineMembersActivityIds = ids; }
+    public set routineMembersActivityIds(ids: string[]) { this._httpShape.routineMembersActivityIds = ids; }
 
-    public get isConfigured(): boolean { return this._httpShape.isConfigured;   }
+    public get isConfigured(): boolean { return this._httpShape.isConfigured; }
     // public set isConfigured(isConfigured: boolean) { this._httpShape.isConfigured = isConfigured };
 
 
@@ -105,11 +107,11 @@ export class ActivityCategoryDefinition {
 
         let foundIndex: number = -1;
         this.fullNamePathSplit.forEach((pathName: string) => {
-            if(preciseMatch){
+            if (preciseMatch) {
                 if (pathName.toLowerCase().indexOf(searchValue) == 0 && pathName.length == searchValue.length) {
                     foundIndex = this.fullNamePathSplit.indexOf(pathName);
                 }
-            }else{
+            } else {
                 if (pathName.toLowerCase().indexOf(searchValue) == 0) {
                     foundIndex = this.fullNamePathSplit.indexOf(pathName);
                 }
