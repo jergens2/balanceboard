@@ -1,4 +1,5 @@
 import { ActivityCategoryDefinition } from "./activity-category-definition.class";
+import { DaybookDayItemScheduledActivityItem } from "../../daybook/api/data-items/daybook-day-item-scheduled-activity.class";
 
 export class ActivityTree {
     /*
@@ -82,23 +83,23 @@ export class ActivityTree {
         return null;
     }
 
-    findActivityByIdentifier(identifier: string): ActivityCategoryDefinition{
-        for(let activity of this._allActivities){
-            if(activity.treeId == identifier){
-                return activity;
-            }
-        }
-        for(let activity of this._allActivities){
-            if(activity.name == identifier){
-                return activity;
-            }
-        }
-        for(let activity of this._allActivities){
-            if(activity.id == identifier){
-                return activity;
-            }
-        }
-    }
+    // findActivityByIdentifier(identifier: string): ActivityCategoryDefinition{
+    //     for(let activity of this._allActivities){
+    //         if(activity.treeId == identifier){
+    //             return activity;
+    //         }
+    //     }
+    //     for(let activity of this._allActivities){
+    //         if(activity.name == identifier){
+    //             return activity;
+    //         }
+    //     }
+    //     for(let activity of this._allActivities){
+    //         if(activity.id == identifier){
+    //             return activity;
+    //         }
+    //     }
+    // }
 
     activityNameIsUnique(checkActivity:ActivityCategoryDefinition):boolean {
         let namesCount: number = 0;
@@ -163,17 +164,35 @@ export class ActivityTree {
         this._rootActivities = this.buildActivityTree(this.allActivities);
     }
 
-    public getScheduledRoutinesAndActivitiesByDate(dateYYYYMMDD: string): ActivityCategoryDefinition[]{
-        // let z = this.allActivitiesAndRoutines.filter((activity: ActivityCategoryDefinition) => {
-        //     return activity.isScheduledOnDate(dateYYYYMMDD) === true;
-        // });
-        this.allActivitiesAndRoutines.forEach((a)=>{
-            let isScheduled: boolean = a.isScheduledOnDate(dateYYYYMMDD);
-            console.log("Is Scheduled? " + a.name + " ? " +  isScheduled);
+    public buildScheduledActivityItemsOnDate(dateYYYYMMDD: string): DaybookDayItemScheduledActivityItem[]{
+        return this.allActivitiesAndRoutines.filter((activity: ActivityCategoryDefinition) => {
+            return activity.isScheduledOnDate(dateYYYYMMDD) === true;
+            
+        }).map((activity: ActivityCategoryDefinition)=>{
+            return this.buildScheduledActivityItem(activity);
+        });
+    }
 
-
-        })
-        // console.log("z is ", z);
-        return [];
+    private buildScheduledActivityItem(activity: ActivityCategoryDefinition): DaybookDayItemScheduledActivityItem{
+        let routineMemberActivities: DaybookDayItemScheduledActivityItem[] = [];
+        if(activity.isRoutine){
+            console.log("Building a routine.  it might be tricky");
+            activity.routineMembersActivityIds.forEach((treeId)=>{
+                let routineMemberActivity = this.findActivityByTreeId(treeId);
+                if(routineMemberActivity){
+                    routineMemberActivities.push(this.buildScheduledActivityItem(routineMemberActivity));
+                }
+            })
+        }
+        let targetMinutes: number = -1;
+        // console.log("Not implemented:  Determine the corrent target minutes from activity profile.  currently disabled.")
+        let activityItem: DaybookDayItemScheduledActivityItem = {
+            activityTreeId: activity.treeId,
+            isComplete: false,
+            targetMinutes: targetMinutes, 
+            timeMarkedCompleteISO: "",
+            routineMemberActivities: routineMemberActivities, 
+        }
+        return activityItem;
     }
 }

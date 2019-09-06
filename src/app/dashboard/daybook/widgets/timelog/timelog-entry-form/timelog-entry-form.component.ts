@@ -10,6 +10,8 @@ import { DaybookService } from '../../../daybook.service';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import { ToolsService } from '../../../../../tools-menu/tools/tools.service';
 import { ToolComponents } from '../../../../../tools-menu/tools/tool-components.enum';
+import { TimeOfDay } from '../../../../../shared/utilities/time-of-day-enum';
+import { ActivityCategoryDefinition } from '../../../../activities/api/activity-category-definition.class';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -22,21 +24,28 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   private activeDay: DaybookDayItem;
 
-  timelogEntryForm: TimelogEntryForm;
+  
+
+  private _timelogEntryForm: TimelogEntryForm;
+  public get timelogEntryForm(): TimelogEntryForm{
+    return this._timelogEntryForm;
+  }
+
+
+
   ngOnInit() {
     this.activeDay = this.daybookService.activeDay;
-    this.timelogEntryForm = new TimelogEntryForm(this.daybookService.activeDay);
+    this._timelogEntryForm = new TimelogEntryForm(this.daybookService.activeDay);
     this.daybookService.activeDay$.subscribe((activeDay)=>{
       this.activeDay = activeDay;
       this.timelogEntryForm.updateActiveDay(activeDay);
     })
     
-
   }
 
-  public onClickBanner(banner: string) {
-    this.timelogEntryForm.onClickBanner(banner);
-  }
+
+
+
 
   public sleepQualityBeds: SleepQuality[] = [
     SleepQuality.VeryPoor,
@@ -76,6 +85,6 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   faTimes = faTimes;
 
   ngOnDestroy() {
-    this.timelogEntryForm = null;
+    this._timelogEntryForm = null;
   }
 }

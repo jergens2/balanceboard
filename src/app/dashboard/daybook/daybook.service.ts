@@ -189,11 +189,7 @@ export class DaybookService implements ServiceAuthenticates {
     daybookDayItem.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";
     daybookDayItem.dayStructureDataItems = this.scheduleRotationService.getDayStructureItemsForDate(dateYYYYMMDD);
     daybookDayItem.sleepStructureDataItems = this.scheduleRotationService.getSleepCycleItemsForDate(dateYYYYMMDD);
-
-    let thingers = this.activitiesService.activitiesTree.getScheduledRoutinesAndActivitiesByDate(dateYYYYMMDD);
-
-    console.log("Thingers, ", thingers)
-    daybookDayItem.scheduledActivities = thingers;
+    daybookDayItem.setScheduledActivityItems(this.activitiesService.activitiesTree.buildScheduledActivityItemsOnDate(dateYYYYMMDD), this.activitiesService.activitiesTree);
 
     
     // console.log("Structure items: ", daybookDayItem.dayStructureDataItems)

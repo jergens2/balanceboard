@@ -51,18 +51,19 @@ export class ActivityCategoryDefinition {
     public set scheduleConfiguration(conf: ScheduleConfiguration) { this._httpShape.scheduleConfiguration = conf; }
     public isScheduledOnDate(dateYYYYMMDD: string): boolean {
         if (this.scheduleConfiguration != null) {
-            console.log("WHy the hell can't I get this to work.  What the F am I missing here?")
-            console.log("Schedule Configuration", this.scheduleConfiguration)
+            let isScheduled: boolean = false;
+            // console.log("      WHy the hell can't I get this to work.  What the F am I missing here?")
+            // console.log("      Schedule Configuration", this.scheduleConfiguration)
             this.scheduleConfiguration.repititions.forEach((repitition: ScheduleRepitition) => {
-                let isScheduled: boolean = ScheduleRepititionCalculator.repititionIsOnDay(repitition, dateYYYYMMDD);
-                if (isScheduled === true) {
-                    console.log("Boo yea mano", isScheduled);
-                    return isScheduled;
+                if(ScheduleRepititionCalculator.repititionIsOnDay(repitition, dateYYYYMMDD)){
+                    // console.log("      * setting isScheduled to TRUE");
+                    isScheduled = true;
                 }
             });
-            return false;
+            // console.log("      * Returning isScheduled: " , isScheduled);
+            return isScheduled;
         } else {
-            console.log("noooooo")
+            // console.log("      * Returning false because there is no configuration")
             return false;
         }
     }

@@ -1,20 +1,22 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.class';
-import { BehaviorSubject, Observable, ObservedValueOf, Subscription, Subject, scheduled, from, forkJoin } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, forkJoin } from 'rxjs';
 import * as moment from 'moment';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { DaybookDayItem } from './daybook-day-item.class';
-import { map, mergeAll, concatAll, concatMap, mergeMap, combineLatest } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { ActivityCategoryDefinitionService } from '../../activities/api/activity-category-definition.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class DaybookHttpRequestService implements ServiceAuthenticates {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private activitiesService: ActivityCategoryDefinitionService) { }
   private _authStatus: AuthStatus = null;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   login$(authStatus: AuthStatus): Observable<boolean> {
@@ -53,7 +55,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
-        return this.buildDaybookDayItem(response.data as any);
+        return this.buildDaybookDayItemFromResponse(response.data as any);
       }))
       .subscribe((returnedDaybookDayItem: DaybookDayItem) => {
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
@@ -80,7 +82,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     // console.log("Notice:  saveDaybookItem() method is disabled (no HTTP request)")
     this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
-        return this.buildDaybookDayItem(response.data as any);
+        return this.buildDaybookDayItemFromResponse(response.data as any);
       }))
       .subscribe((daybookDayItem: DaybookDayItem) => {
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
@@ -117,7 +119,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     // console.log("Notice:  saveDaybookItem() method is disabled (no HTTP request)")
     return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
-        return this.buildDaybookDayItem(response.data as any);
+        return this.buildDaybookDayItemFromResponse(response.data as any);
       }));
   }
 
@@ -180,16 +182,17 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
   private buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[] {
     let daybookDayItems: DaybookDayItem[] = [];
     responseDataItems.forEach((responseDataItem: any) => {
-      daybookDayItems.push(this.buildDaybookDayItem(responseDataItem));
+      daybookDayItems.push(this.buildDaybookDayItemFromResponse(responseDataItem));
     });
+
     return daybookDayItems;
   }
 
-  private buildDaybookDayItem(dayItemHttpData: any): DaybookDayItem {
+  private buildDaybookDayItemFromResponse(dayItemHttpData: any): DaybookDayItem {
 
     const properties: string[] = ["_id", "userId", "dateYYYYMMDD", "daybookTimelogEntryDataItems",
       "daybookActivityDataItems", "dailyTaskListDataItems", "dayStructureDataItems", "sleepCycleDataItems",
-      "sleepProfile", "dailyWeightLogEntryKg", "scheduledActivityIds", "dayTemplateId",
+      "sleepProfile", "dailyWeightLogEntryKg", "scheduledActivityItems", "dayTemplateId",
       "scheduledEventIds", "notebookEntryIds", "taskItemIds"];
     let dataErrors: boolean = false;
     properties.forEach(property => {
@@ -199,17 +202,32 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
       }
     });
     if (!dataErrors) {
-      let daybookDayItem: DaybookDayItem = new DaybookDayItem(dayItemHttpData.dateYYYYMMDD);
-      daybookDayItem.setHttpShape(dayItemHttpData);
-      // console.log("Built item: ", daybookDayItem);
-      return daybookDayItem;
+      return this.buildDaybookDayItem(dayItemHttpData as DaybookDayItemHttpShape);
     } else {
       console.log("DaybookDayItem is not built because of missing property.");
       return null;
     }
   }
 
+  private buildDaybookDayItem(data: DaybookDayItemHttpShape): DaybookDayItem{
+    
+    /**
+     * This method is where we populate pieces of the DaybookDayItem class object with data from other sources. 
+     */
+
+    let daybookDayItem: DaybookDayItem = new DaybookDayItem(data.dateYYYYMMDD);
+    daybookDayItem.setHttpShape(data);
+    
+    if(daybookDayItem.scheduledActivityItems.length > 0){
+      daybookDayItem.buildScheduledActivities(this.activitiesService.activitiesTree);
+    }
+    
+    return daybookDayItem;
+  }
+
+
   private linkDaybookItems(items: DaybookDayItem[]): DaybookDayItem[] {
+    console.log("Linking items", items);
     items.forEach((item) => {
       item.previousDay = null;
       item.followingDay = null;

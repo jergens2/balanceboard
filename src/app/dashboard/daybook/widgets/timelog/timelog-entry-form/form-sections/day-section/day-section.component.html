@@ -1,0 +1,34 @@
+<div class="day-section-root">
+    <div class="header">
+        <div class="title">
+            {{ daySectionName }}
+        </div>
+        <div class="completion">
+            <!-- <fa-icon [icon]="faCheck" *ngIf="true" style="color: green;" ></fa-icon> -->
+        </div>
+
+    </div>
+
+    <div *ngIf="!isExpanded" class="small-section">
+
+        <div class="small-section-item" *ngFor="let scheduledActivity of daySection.scheduledActivities">
+            <div *ngIf="scheduledActivity.isRoutine" class="routine-section-item">
+                <fa-icon [icon]="faSync" style="color:rgba(0, 89, 255, 0.5);"></fa-icon>
+                <span style="margin-left:5px;margin-right:5px;">{{ scheduledActivity.name }}</span>
+
+                <fa-icon *ngFor="let routineMemberItem of scheduledActivity.routineMemberActivities"
+                    style="font-size:0.4em;color:green;margin-right:2px;" [icon]="faCircle"></fa-icon>
+
+            </div>
+            <div *ngIf="!scheduledActivity.isRoutine">
+                Not a routine, but an activity.
+            </div>
+        </div>
+
+    </div>
+
+    <div *ngIf="isExpanded" class="expanded-section">
+        Expanded
+    </div>
+
+</div>

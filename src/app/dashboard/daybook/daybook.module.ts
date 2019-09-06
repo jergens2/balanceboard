@@ -28,11 +28,8 @@ import { TlefActivitiesComponent } from './widgets/timelog/timelog-entry-form/tl
 import { TlefChartComponent } from './widgets/timelog/timelog-entry-form/tlef-chart/tlef-chart.component';
 import { ActivitySliderBarComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
 import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.component';
-import { TimelogEntryFormSectionComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form-section/timelog-entry-form-section.component';
 import { SleepSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/sleep-section/sleep-section.component';
-import { MorningRoutineSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/morning-routine-section/morning-routine-section.component';
-import { EveningRoutineSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/evening-routine-section/evening-routine-section.component';
-import { RoutineSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/routine-section/routine-section.component';
+import { DaySectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/day-section/day-section.component';
 
 
 @NgModule({
@@ -65,11 +62,8 @@ import { RoutineSectionComponent } from './widgets/timelog/timelog-entry-form/fo
     TlefChartComponent,
     ActivitySliderBarComponent,
     SleepBatteryComponent,
-    TimelogEntryFormSectionComponent,
     SleepSectionComponent,
-    MorningRoutineSectionComponent,
-    EveningRoutineSectionComponent,
-    RoutineSectionComponent,
+    DaySectionComponent,
   ],
   exports: [
     TimelogEntryFormComponent,

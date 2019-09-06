@@ -4,6 +4,7 @@ import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.in
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
 import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
+import { DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
 
 
 export interface DaybookDayItemHttpShape{
@@ -18,11 +19,14 @@ export interface DaybookDayItemHttpShape{
     dayStructureDataItems: DayStructureDataItem[];
     sleepCycleDataItems: DayStructureSleepCycleDataItem[];
     sleepProfile: DaybookDayItemSleepProfile;
+
+    scheduledActivityItems: DaybookDayItemScheduledActivityItem[];  // this includes activities and routines.
+
     dailyWeightLogEntryKg: number;
 
     // These represent references to data stored in other tables in the database.
 
-    scheduledActivityIds: string[];  // this includes activities and routines.
+    
     
 
     dayTemplateId: string;

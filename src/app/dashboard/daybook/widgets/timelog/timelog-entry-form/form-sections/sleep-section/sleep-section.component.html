@@ -79,29 +79,3 @@
     </div>
 
 </div>
-
-
-
-
-<!-- <div class="banner" (click)="onClickBanner('SLEEP_SECTION')" *ngIf="!timelogEntryForm.sleepSectionExpanded">
-        <div class="banner-title">
-          Awake at {{ timelogEntryForm.wakeupTime.format('hh:mm a') }}
-        </div>
-        <div class="banner-content">
-          <div style="margin-right:5px;">
-            <fa-icon [icon]="faBed" class="sleep-quality-bed" *ngFor="let sleepQualityBed of sleepQualityBeds"
-              [ngClass]="sleepQuality(sleepQualityBed)"></fa-icon>
-          </div>
-          <div>
-            {{ timelogEntryForm.sleepDurationShort }}
-          </div>
-        </div>
-
-      </div>
-      <div class="expanded-section" *ngIf="timelogEntryForm.sleepSectionExpanded">
-        <app-sleep-section [timelogEntryForm]="timelogEntryForm" class="form-section"></app-sleep-section>
-      </div>
-      <div class="section-completion">
-        <fa-icon [icon]="faCheck" *ngIf="true" style="color: green;" class="completion-button"></fa-icon>
-        <fa-icon [icon]="faCircle" *ngIf="false" class="completion-button"></fa-icon>
-    </div> -->

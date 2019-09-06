@@ -13,6 +13,7 @@ import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-
 import { SleepQuality } from "../widgets/timelog/timelog-entry-form/form-sections/sleep-section/sleep-quality.enum";
 import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
 import { ActivityTree } from "../../activities/api/activity-tree.class";
+import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
 
 export class DaybookDayItem{
 
@@ -46,7 +47,7 @@ export class DaybookDayItem{
                 bedtimeUtcOffsetMinutes: 0,
             },
             dailyWeightLogEntryKg: 0,
-            scheduledActivityIds: [],
+            scheduledActivityItems: [],  // this includes activities and routines.: [],
             dayTemplateId: "",
             scheduledEventIds: [],
             notebookEntryIds: [],
@@ -56,42 +57,42 @@ export class DaybookDayItem{
     }
 
 
-    public get id(): string { return this._httpShape._id; }
+    public get id(): string { return this.httpShape._id; }
     public set id(id: string) {
         this._httpShape._id = id;
     }
-    public get userId(): string { return this._httpShape.userId; }
+    public get userId(): string { return this.httpShape.userId; }
     public set userId(userId: string) {
         this._httpShape.userId = userId;
     }
 
-    public get dateYYYYMMDD(): string { return this._httpShape.dateYYYYMMDD; }
+    public get dateYYYYMMDD(): string { return this.httpShape.dateYYYYMMDD; }
 
-    public get daybookTimelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this._httpShape.daybookTimelogEntryDataItems; }
+    public get daybookTimelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this.httpShape.daybookTimelogEntryDataItems; }
     public set daybookTimelogEntryDataItems(timelogEntries: DaybookTimelogEntryDataItem[]) {
         this._httpShape.daybookTimelogEntryDataItems = timelogEntries;
         this.updateActivityDataItems();
     }
-    public get daybookActivityDataItems(): DaybookActivityDataItem[] { return this._httpShape.daybookActivityDataItems; }
+    public get daybookActivityDataItems(): DaybookActivityDataItem[] { return this.httpShape.daybookActivityDataItems; }
     private updateActivityDataItems() {
         console.log("Not implemented: Updating Activity Data Items");
         let activityDataItems: DaybookActivityDataItem[] = [];
         this._httpShape.daybookActivityDataItems = activityDataItems;
     }
 
-    public get dayStructureDataItems(): DayStructureDataItem[] { return this._httpShape.dayStructureDataItems; }
+    public get dayStructureDataItems(): DayStructureDataItem[] { return this.httpShape.dayStructureDataItems; }
     public set dayStructureDataItems(dayStructureDataItems: DayStructureDataItem[]) {
         this._httpShape.dayStructureDataItems = dayStructureDataItems;
         this.dataChanged();
     }
 
-    public get sleepStructureDataItems(): DayStructureSleepCycleDataItem[] { return this._httpShape.sleepCycleDataItems; }
+    public get sleepStructureDataItems(): DayStructureSleepCycleDataItem[] { return this.httpShape.sleepCycleDataItems; }
     public set sleepStructureDataItems(sleepCycleItems: DayStructureSleepCycleDataItem[]) {
         this._httpShape.sleepCycleDataItems = sleepCycleItems;
         this.dataChanged();
     }
 
-    public get sleepProfile(): DaybookDayItemSleepProfile { return this._httpShape.sleepProfile; }
+    public get sleepProfile(): DaybookDayItemSleepProfile { return this.httpShape.sleepProfile; }
     public set sleepProfile(sleepProfile: DaybookDayItemSleepProfile) {
         this._httpShape.sleepProfile = sleepProfile;
         console.log("Sleep profile changed:", this._httpShape.sleepProfile)
@@ -101,18 +102,18 @@ export class DaybookDayItem{
     //     if(this._httpShape.sleepProfile.sleepQuality)
     // }
 
-    public get dailyWeightLogEntryKg(): number { return this._httpShape.dailyWeightLogEntryKg; }
+    public get dailyWeightLogEntryKg(): number { return this.httpShape.dailyWeightLogEntryKg; }
     public set dailyWeightLogEntryKg(kg: number){ 
         this._httpShape.dailyWeightLogEntryKg = kg;
         this.dataChanged();
     }
     
-    public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this._httpShape.dailyTaskListDataItems; }
+    public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this.httpShape.dailyTaskListDataItems; }
     
-    public get dayTemplateId(): string { return this._httpShape.dayTemplateId; }
-    public get scheduledEventIds(): string[] { return this._httpShape.scheduledEventIds; }
-    public get notebookEntryIds(): string[] { return this._httpShape.notebookEntryIds; }
-    public get taskItemIds(): string[] { return this._httpShape.taskItemIds; }
+    public get dayTemplateId(): string { return this.httpShape.dayTemplateId; }
+    public get scheduledEventIds(): string[] { return this.httpShape.scheduledEventIds; }
+    public get notebookEntryIds(): string[] { return this.httpShape.notebookEntryIds; }
+    public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
 
 
 
@@ -156,32 +157,48 @@ export class DaybookDayItem{
     
 
     public get scheduledRoutines(): ActivityCategoryDefinition[]{ 
-        return this._scheduledActivities.filter((scheduledActivity)=>{
-            return scheduledActivity.isRoutine;
+        // return this._scheduledActivities.filter((scheduledActivity)=>{
+        //     return scheduledActivity.isRoutine;
+        // });
+        console.log("Warning: method disabled.");
+        return [];
+    }
+
+
+    private _scheduledActivities: DaybookDayItemScheduledActivity[] = [];
+    public buildScheduledActivities(activityTree: ActivityTree){
+        this._scheduledActivities = this.scheduledActivityItems.map((activityItem: DaybookDayItemScheduledActivityItem)=>{ 
+            let activityDefinition: ActivityCategoryDefinition = activityTree.findActivityByTreeId(activityItem.activityTreeId);
+            if(activityDefinition){
+                return this.buildScheduledActivity(activityItem, activityDefinition, activityTree);
+            }
         });
     }
-
-
-    private _scheduledActivities: ActivityCategoryDefinition[] = [];
-    public set scheduledActivities(scheduledActivities: ActivityCategoryDefinition[]){
-        console.log("Setting", scheduledActivities)
-        this._scheduledActivities = scheduledActivities;
-        this._httpShape.scheduledActivityIds = scheduledActivities.map((scheduledActivity)=>{ return scheduledActivity.treeId; });
-        console.log("we set the thingL ", this._httpShape.scheduledActivityIds);
-        this.dataChanged();
+    private buildScheduledActivity(activityItem: DaybookDayItemScheduledActivityItem, activityDefinition: ActivityCategoryDefinition, activityTree: ActivityTree): DaybookDayItemScheduledActivity{
+        let newScheduledActivity = new DaybookDayItemScheduledActivity(activityItem, activityDefinition);
+        if(activityItem.routineMemberActivities.length > 0){
+            newScheduledActivity.setRoutineMembers(activityTree);
+        }
+        return newScheduledActivity;
     }
-    public get scheduledActivities(): ActivityCategoryDefinition[]{ 
+    public get scheduledActivities(): DaybookDayItemScheduledActivity[]{
         return this._scheduledActivities;
     }
-    public get scheduledActivityIds(): string[]{ 
-        return this.httpShape.scheduledActivityIds;
+    public get scheduledActivityItems(): DaybookDayItemScheduledActivityItem[]{ 
+        return this.httpShape.scheduledActivityItems;
     }
+    public setScheduledActivityItems(items: DaybookDayItemScheduledActivityItem[], activityTree: ActivityTree){
+        this._httpShape.scheduledActivityItems = items;
+        this.buildScheduledActivities(activityTree);
+        this.dataChanged();
+    }
+
 
 
 
 
     private dataChanged() {
-        console.log("* * * DaybookDayItem: " + this.dateYYYYMMDD + " - Data has changed.  Saving.")
+        console.log(this.dateYYYYMMDD + " DaybookDayItem dataChanged().")
         this._dataChanged$.next(true);
     }
     private _dataChanged$: Subject<boolean> = new Subject();

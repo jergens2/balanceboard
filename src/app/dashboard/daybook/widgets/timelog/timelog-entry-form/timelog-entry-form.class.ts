@@ -5,6 +5,10 @@ import { SleepBatteryConfiguration } from '../../sleep-battery/sleep-battery-con
 import { SleepQuality } from './form-sections/sleep-section/sleep-quality.enum';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import { DaybookDayItemSleepProfile } from '../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { TimeOfDay } from '../../../../../shared/utilities/time-of-day-enum';
+import { ActivityCategoryDefinition } from '../../../../activities/api/activity-category-definition.class';
+import { DaybookDayItemScheduledActivity } from '../../../api/data-items/daybook-day-item-scheduled-activity.class';
+import { DaySection } from './form-sections/day-section/day-section.interface';
 
 export class TimelogEntryForm {
 
@@ -16,6 +20,7 @@ export class TimelogEntryForm {
         this.activeDay = activeDay;
         this.setParameters();
         this.updateTimes();
+        this.buildDaySections();
         timer(0, 1000).subscribe((tick) => {
             this._currentTime = moment();
             if (this.currentTime.hour() < 12) {
@@ -31,23 +36,70 @@ export class TimelogEntryForm {
         })
     }
 
-    private setParameters(){
-        if(this.activeDay.sleepProfile.bedtimeISO){
+    private _daySections: DaySection[] = [];
+    public get daySections(): DaySection[] {
+        return this._daySections;
+    }
+
+    private buildDaySections() {
+
+        /**
+         * Not handled:  
+         *  TimeOfDay.Any , or 
+         *  TimeOfDay.SpecifiedRange, or 
+         *  TimeOfDay.Variates
+         */
+        const daySections: DaySection[] = [
+            {
+                timeOfDay: TimeOfDay.EarlyMorning,
+                scheduledActivities: this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
+                    return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.EarlyMorning;
+                }),
+            },
+            {
+                timeOfDay: TimeOfDay.Morning,
+                scheduledActivities: this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
+                    return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Morning;
+                }),
+            },
+            {
+                timeOfDay: TimeOfDay.Afternoon,
+                scheduledActivities: this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
+                    return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Afternoon;
+                }),
+            },
+            {
+                timeOfDay: TimeOfDay.Evening,
+                scheduledActivities: this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
+                    return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Evening;
+                }),
+            }
+        ];
+        
+        this._daySections = daySections.filter((section)=>{
+            return section.scheduledActivities.length > 0;
+        });
+    }
+
+
+
+    private setParameters() {
+        if (this.activeDay.sleepProfile.bedtimeISO) {
             console.log("Setting bed time to: ", this.activeDay.sleepProfile.bedtimeISO)
             this._bedTime = moment(this.activeDay.sleepProfile.bedtimeISO);
         }
-        if(this.activeDay.sleepProfile.previousFallAsleepTimeISO){
+        if (this.activeDay.sleepProfile.previousFallAsleepTimeISO) {
             console.log("setting fall asleep time to: ", this.activeDay.sleepProfile.previousFallAsleepTimeISO)
             this._lastNightFallAsleepTime = moment(this.activeDay.sleepProfile.previousFallAsleepTimeISO);
         }
-        if(this.activeDay.sleepProfile.wakeupTimeISO){
+        if (this.activeDay.sleepProfile.wakeupTimeISO) {
             console.log("setting wakeup time: ", this.activeDay.sleepProfile.wakeupTimeISO);
             this._wakeupTime = moment(this.activeDay.sleepProfile.wakeupTimeISO);
         }
         this._sleepQuality = this.activeDay.sleepProfile.sleepQuality;
-    }       
+    }
 
-    public updateActiveDay(activeDay: DaybookDayItem){
+    public updateActiveDay(activeDay: DaybookDayItem) {
         this.activeDay = activeDay;
     }
 
@@ -90,38 +142,27 @@ export class TimelogEntryForm {
     }
 
 
-    public onClickBanner(bannerName: string) {
-        if (bannerName == "SLEEP_SECTION") {
-            this.sleepSectionExpanded = true;
-            this._batteryConfiguration["shape"] = "LARGE";
-        }
-    }
 
     public onClickSaveSleepTimes(sleepProfile: DaybookDayItemSleepProfile) {
         this._wakeupTime = moment(sleepProfile.wakeupTimeISO);
         this._lastNightFallAsleepTime = moment(sleepProfile.previousFallAsleepTimeISO);
         this.updateTimes();
-        this.sleepSectionExpanded = false;
         this.activeDay.sleepProfile = sleepProfile
     }
 
 
-    sleepSectionExpanded: boolean = false;
-    morningRoutineSectionExpanded: boolean = false;
-    eveningRoutineSectionExpanded: boolean = false;
-
 
     private _sleepQuality: SleepQuality = SleepQuality.Okay;
-    public set sleepQuality(sleepQuality: SleepQuality){
+    public set sleepQuality(sleepQuality: SleepQuality) {
         this._sleepQuality = sleepQuality;
     }
-    public get sleepQuality(): SleepQuality{
+    public get sleepQuality(): SleepQuality {
         return this._sleepQuality;
     }
-    public get sleepDuration(): string{
+    public get sleepDuration(): string {
         return DurationString.calculateDurationString(this.lastNightFallAsleepTime, this.wakeupTime);
     }
-    public get sleepDurationShort(): string{
+    public get sleepDurationShort(): string {
         return DurationString.calculateDurationString(this.lastNightFallAsleepTime, this.wakeupTime, true);
     }
 

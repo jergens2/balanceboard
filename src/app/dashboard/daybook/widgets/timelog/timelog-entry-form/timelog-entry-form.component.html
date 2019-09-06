@@ -16,80 +16,13 @@
 
     <app-sleep-section class="form-section" [timelogEntryForm]="timelogEntryForm" ></app-sleep-section>
 
-
-    <div class="form-section">
-
-      <div class="banner" *ngIf="!timelogEntryForm.morningRoutineSectionExpanded">
-        Morning Routine
-      </div>
-      <div class="expanded-section" *ngIf="timelogEntryForm.morningRoutineSectionExpanded">
-        <app-routine-section [timelogEntryForm]="timelogEntryForm" [routine]="MORNING"></app-routine-section>
-      </div>
-
-      <div class="section-completion">
-        <!-- <fa-icon [icon]="faCheck" *ngIf="true" style="color: green;" class="completion-button"></fa-icon> -->
-        <!-- <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon> -->
-      </div>
-    </div>
+    <app-day-section class="form-section" *ngFor="let daySection of timelogEntryForm.daySections" [timelogEntryForm]="timelogEntryForm" [daySection]="daySection"></app-day-section>
 
     <div class="form-section">
 
       <div class="banner" *ngIf="true">
-        Morning Activities
-      </div>
-      <div class="expanded-section" *ngIf="false"></div>
-
-      <div class="section-completion">
-        <!-- <fa-icon [icon]="faCheck" *ngIf="true" style="color: green;" class="completion-button"></fa-icon> -->
-        <!-- <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon> -->
-      </div>
-    </div>
-
-    <div class="form-section">
-
-      <div class="banner" *ngIf="true">
-        Afternoon Activities
-      </div>
-      <div class="expanded-section" *ngIf="false"></div>
-
-      <div class="section-completion">
-        <!-- <fa-icon [icon]="faCheck" *ngIf="true" style="color: green;" class="completion-button"></fa-icon> -->
-        <!-- <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon> -->
-      </div>
-    </div>
-
-    <div class="form-section">
-
-      <div class="banner" *ngIf="true">
-        Evening Activities
-      </div>
-      <div class="expanded-section" *ngIf="false"></div>
-
-      <div class="section-completion">
-        <!-- <fa-icon [icon]="faCheck" *ngIf="true" style="color: green;" class="completion-button"></fa-icon> -->
-        <!-- <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon> -->
-      </div>
-    </div>
-
-    <div class="form-section">
-
-      <div class="banner" *ngIf="!timelogEntryForm.eveningRoutineSectionExpanded">
-        Evening Routine
-      </div>
-      <div class="expanded-section" *ngIf="timelogEntryForm.eveningRoutineSectionExpanded">
-        <app-routine-section [timelogEntryForm]="timelogEntryForm" [routine]="EVENING"></app-routine-section>
-      </div>
-
-      <div class="section-completion">
-        <!-- <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon> -->
-      </div>
-    </div>
-
-    <div class="form-section">
-
-      <div class="banner" *ngIf="true">
-        <div class="banner-title">
-          Bedtime at {{ timelogEntryForm.bedtime.format('hh:mm a') }}
+        <div class="banner-title" style="color: rgb(0, 81, 255);">
+          {{ timelogEntryForm.bedtime.format('hh:mm a') }} bedtime
         </div>
         <div class="banner-content">
           {{ timelogEntryForm.timeUntilBedtime }}
