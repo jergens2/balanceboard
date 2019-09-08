@@ -8,7 +8,9 @@
     font-size:0.8em;
 }
 .small-section-item{
-
+    display:flex;
+    flex-direction: row;
+    align-items: center;
 }
 .expanded-section{
     width:100%;
@@ -32,5 +34,63 @@
     color: gray;
 }
 .section-incomplete-text{
+    color: rgb(196, 196, 196);
+}
+
+.scheduled-routine-items-small{
+    display:flex;
+    flex-direction: row;
+    flex-grow: 2;
+    align-items: center;
+    font-size:0.5em;
+    margin-left:5px;
+    justify-content: flex-start;
+}
+.scheduled-routine-item-small{
+    margin-left: 2px;
+    flex-shrink: 2;
+}
+.scheduled-routine-item-small-complete{
+    color: green;
+}
+.scheduled-routine-item-small-incomplete{
+    color: rgb(196, 196, 196);
+}
+
+
+.routine-header{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+}
+.completion-checkmark{
+    color: green;
+}
+.scheduled-routine-items{
+    display:flex;
+    flex-direction: column;
+    padding-left:10px;
+}
+
+
+.scheduled-routine-item{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+.scheduled-routine-item-circle{
+    margin-right: 3px;
+    font-size:  0.9em;
+    cursor: pointer;
+}
+.scheduled-routine-item-circle:hover{
+    color: green;
+    cursor: pointer;
+}
+.scheduled-routine-item-circle-complete{
+    color: green;
+}
+.scheduled-routine-item-circle-incomplete{
     color: rgb(196, 196, 196);
 }

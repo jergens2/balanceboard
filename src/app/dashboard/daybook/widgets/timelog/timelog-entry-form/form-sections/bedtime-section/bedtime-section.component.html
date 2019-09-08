@@ -1,6 +1,6 @@
 <div *ngIf="!formSection.isExpanded" class="small-section">
     <div class="small-section-item" *ngIf="timelogEntryForm.wakeupSectionIsComplete">
-        Awake for <span style="font-weight:bold;">{{ timelogEntryForm.timeSinceWakeup }}</span>
+        Awake for <span style="font-weight:bold;margin-left: 5px;">{{ timelogEntryForm.timeSinceWakeup }}</span>
         <app-sleep-battery style="margin-left:5px;" [configuration]="timelogEntryForm.batteryConfiguration"
             [shape]="small">
         </app-sleep-battery>

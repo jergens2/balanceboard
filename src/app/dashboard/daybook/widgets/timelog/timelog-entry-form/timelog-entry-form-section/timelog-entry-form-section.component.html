@@ -2,7 +2,7 @@
     (click)="formSection.onClick()"
     [ngClass]="{'form-section-root-expanded': formSection.isExpanded, 'form-section-hover': (formSection.mouseIsOver && !formSection.isExpanded) }">
     <div class="form-section-header">
-        <div class="title" [ngClass]="{'title-incomplete': !formSection.isComplete}">
+        <div class="title" [ngClass]="{'title-incomplete': (!formSection.isComplete && !formSection.isExpanded)}">
             {{ formSection.title }}
         </div>
         <fa-icon class="completion-checkmark" *ngIf="formSection.isComplete" [icon]="faCheck">

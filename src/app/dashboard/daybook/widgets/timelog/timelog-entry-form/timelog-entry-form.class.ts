@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { timer } from 'rxjs';
+import { timer, Subscription } from 'rxjs';
 import { DurationString } from '../../../../../shared/utilities/duration-string.class';
 import { SleepBatteryConfiguration } from '../../sleep-battery/sleep-battery-configuration.interface';
 import { SleepQuality } from './form-sections/wakeup-section/sleep-quality.enum';
@@ -23,9 +23,10 @@ export class TimelogEntryForm {
 
     constructor(activeDay: DaybookDayItem) {
         this.activeDay = activeDay;
-        this.setParameters();
+        this.setSleepParameters();
         this.updateTimes();
-        this.buildFormSections();
+        this.rebuildFormSections();
+
         timer(0, 1000).subscribe((tick) => {
             this._currentTime = moment();
             if (this.currentTime.hour() < 12) {
@@ -46,7 +47,7 @@ export class TimelogEntryForm {
         return this._formSections;
     }
 
-    private buildFormSections() {
+    private rebuildFormSections() {
         let formSections: TimelogEntryFormSection[] = [];
 
         let wakeupSection: TimelogEntryFormSection = new TimelogEntryFormSection(TimelogEntryFormSectionType.WakeupSection, "Wakeup");
@@ -61,6 +62,13 @@ export class TimelogEntryForm {
             return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.EarlyMorning;
         });
         if(earlyMorningSection.scheduledActivities.length > 0){
+            let sectionIsComplete: boolean = true;
+            earlyMorningSection.scheduledActivities.forEach((activity)=>{
+                if(!activity.isComplete){
+                    sectionIsComplete = false;
+                }
+            })
+            earlyMorningSection.isComplete = sectionIsComplete;
             formSections.push(earlyMorningSection);
         }
         
@@ -70,6 +78,13 @@ export class TimelogEntryForm {
             return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Morning;
         });
         if(morningSection.scheduledActivities.length > 0){
+            let sectionIsComplete: boolean = true;
+            morningSection.scheduledActivities.forEach((activity)=>{
+                if(!activity.isComplete){
+                    sectionIsComplete = false;
+                }
+            })
+            morningSection.isComplete = sectionIsComplete;
             formSections.push(morningSection);
         }
 
@@ -78,6 +93,13 @@ export class TimelogEntryForm {
             return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Afternoon;
         });
         if(afternoonSection.scheduledActivities.length > 0){
+            let sectionIsComplete: boolean = true;
+            afternoonSection.scheduledActivities.forEach((activity)=>{
+                if(!activity.isComplete){
+                    sectionIsComplete = false;
+                }
+            })
+            afternoonSection.isComplete = sectionIsComplete;
             formSections.push(afternoonSection);
         }
 
@@ -86,6 +108,13 @@ export class TimelogEntryForm {
             return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Evening;
         });
         if(eveningSection.scheduledActivities.length > 0){
+            let sectionIsComplete: boolean = true;
+            eveningSection.scheduledActivities.forEach((activity)=>{
+                if(!activity.isComplete){
+                    sectionIsComplete = false;
+                }
+            })
+            eveningSection.isComplete = sectionIsComplete;
             formSections.push(eveningSection);
         }
         /**
@@ -103,11 +132,44 @@ export class TimelogEntryForm {
         formSections.push(bedtimeSection);
 
         this._formSections = formSections;
+        this.updateFormSaveSubscriptions();
+    }
+
+    private _formSectionSaveSubscriptions: Subscription[] = [];
+    private updateFormSaveSubscriptions(){
+        this._formSectionSaveSubscriptions.forEach((sub)=>{sub.unsubscribe()});
+        this._formSectionSaveSubscriptions = [];
+        this.formSections.forEach((formSection)=>{
+            let newSub = formSection.onSaveChanges$.subscribe((onSaveChanges)=>{
+                this.updateScheduledActivities(formSection);        
+            });
+            this._formSectionSaveSubscriptions.push(newSub);
+        });
+    }
+
+    private updateScheduledActivities(formSection: TimelogEntryFormSection){
+        console.log("Updating form section data,", formSection.scheduledActivities);
+        let formSectionIsComplete: boolean = true;
+        formSection.scheduledActivities.forEach((scheduledActivity: DaybookDayItemScheduledActivity)=>{
+            if(scheduledActivity.isRoutine){
+                scheduledActivity.updateFullRoutineCompletionStatus();
+            }else if(!scheduledActivity.isRoutine){
+
+            }
+            if(!scheduledActivity.isComplete){
+                formSectionIsComplete = false;
+            }
+        });
+        
+        this.activeDay.updateScheduledActivityItems(formSection.scheduledActivities.map((item)=>{
+            return item.scheduledActivityItem;
+        }));
+        formSection.isComplete = formSectionIsComplete;
     }
 
 
 
-    private setParameters() {
+    private setSleepParameters() {
         if (this.activeDay.sleepProfile.bedtimeISO) {
             // console.log("Setting bed time to: ", this.activeDay.sleepProfile.bedtimeISO)
             this._bedTime = moment(this.activeDay.sleepProfile.bedtimeISO);
@@ -188,11 +250,20 @@ export class TimelogEntryForm {
     public get wakeupSectionIsComplete(): boolean {
         return this.activeDay.sleepProfile.wakeupTimeISO != "" && this.activeDay.sleepProfile.previousFallAsleepTimeISO != "";
     }
+    public get sleepQualityIsComplete(): boolean{
+        return this.activeDay.sleepProfile.sleepQuality != null;
+    }
 
     public onClickSaveSleepProfile(sleepProfile: DaybookDayItemSleepProfile) {
-        this._wakeupTime = moment(sleepProfile.wakeupTimeISO);
-        this._lastNightFallAsleepTime = moment(sleepProfile.previousFallAsleepTimeISO);
-        this._bedTime = moment(sleepProfile.bedtimeISO);
+        if(sleepProfile.wakeupTimeISO){
+            this._wakeupTime = moment(sleepProfile.wakeupTimeISO);
+        }
+        if(sleepProfile.previousFallAsleepTimeISO){
+            this._lastNightFallAsleepTime = moment(sleepProfile.previousFallAsleepTimeISO);
+        }
+        if(sleepProfile.bedtimeISO){
+            this._bedTime = moment(sleepProfile.bedtimeISO);
+        }
         this.updateTimes();
         this.activeDay.sleepProfile = sleepProfile;
     }

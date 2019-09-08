@@ -4,7 +4,7 @@
             <span style="font-size:0.8em;">Duration </span><span
                 style="font-weight: bold;">{{ timelogEntryForm.sleepDurationShort }}</span>
         </div>
-        <div>
+        <div *ngIf="timelogEntryForm.sleepQualityIsComplete">
             <span style="font-size:0.8em;">Quality </span>
             <fa-icon [icon]="faBed" style="margin-left: 2px;" *ngFor="let sleepQualityBed of sleepQualityBeds"
                 [ngClass]="sleepQuality(sleepQualityBed)"></fa-icon>

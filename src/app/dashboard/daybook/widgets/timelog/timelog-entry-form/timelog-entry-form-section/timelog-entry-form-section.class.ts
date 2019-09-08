@@ -1,5 +1,6 @@
 import { TimeOfDay } from "../../../../../../shared/utilities/time-of-day-enum";
 import { DaybookDayItemScheduledActivity } from "../../../../api/data-items/daybook-day-item-scheduled-activity.class";
+import { Subject, Observable } from "rxjs";
 
 export enum TimelogEntryFormSectionType {
     WakeupSection,
@@ -45,6 +46,23 @@ export class TimelogEntryFormSection {
     }
     public onClickClose(){
         this.minimize();
+    }
+    private _saveChanges$: Subject<boolean> = new Subject();
+    public get onSaveChanges$(): Observable<boolean>{
+        return this._saveChanges$.asObservable();
+    }
+    public onClickSave(){
+        this.scheduledActivities.forEach((scheduledActivity)=>{
+            if(scheduledActivity.isRoutine){
+                scheduledActivity.routineMemberActivities.forEach((memberItem)=>{
+                    memberItem.saveChanges();
+                });
+            }else if(!scheduledActivity.isRoutine){
+                
+            }
+        })
+        this._saveChanges$.next(true);
+        this.onClickClose();
     }
     public minimize(){
         this._mouseIsOver = false;

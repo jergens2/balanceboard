@@ -1,16 +1,61 @@
 <div *ngIf="!formSection.isExpanded" class="small-section">
     <div class="small-section-item" *ngFor="let routineItem of scheduledRoutineItems">
-        <fa-icon [icon]="faSyncAlt" style="margin-right:5px;"
-            [ngClass]="{'section-complete-routine-item': formSection.isComplete, 'section-incomplete-routine-item': !formSection.isComplete}">
-        </fa-icon> <span [ngClass]="{'section-complete-text': formSection.isComplete, 'section-incomplete-text': !formSection.isComplete}" class="text">{{ routineItem.name }}</span>
+        <fa-icon [icon]="faSyncAlt" style="margin-right:5px; font-size: 0.7em;"
+            [ngClass]="{'section-complete-routine-item': routineItem.isComplete, 'section-incomplete-routine-item': !routineItem.isComplete}">
+        </fa-icon> <span
+            [ngClass]="{'section-complete-text': routineItem.isComplete, 'section-incomplete-text': !routineItem.isComplete}"
+            class="text">{{ routineItem.name }}</span>
+        <div class="scheduled-routine-items-small">
+            <div *ngFor="let scheduledRoutineMemberItem of routineItem.routineMemberActivities">
+                <fa-icon [icon]="faCircle" class="scheduled-routine-item-small scheduled-routine-item-small-incomplete"
+                    *ngIf="!scheduledRoutineMemberItem.isComplete">
+                </fa-icon>
+                <fa-icon [icon]="faCircleSolid"
+                    class="scheduled-routine-item-small scheduled-routine-item-small-complete"
+                    *ngIf="scheduledRoutineMemberItem.isComplete">
+                </fa-icon>
+            </div>
+
+        </div>
+
     </div>
 </div>
 
 <div *ngIf="formSection.isExpanded" class="expanded-section">
     <div class="expanded-section-item" *ngFor="let routineItem of scheduledRoutineItems">
-        <fa-icon [icon]="faSyncAlt"></fa-icon> {{ routineItem.name }}
+        <div class="routine-header">
+            <fa-icon [icon]="faSyncAlt" style="margin-right:5px; font-size: 0.7em;"
+                [ngClass]="{'section-complete-routine-item': routineItem.isComplete, 'section-incomplete-routine-item': !routineItem.isComplete}">
+            </fa-icon>
+            <div>
+                {{ routineItem.name }}
+            </div>
+            <div style="margin-left:5px;">
+                <fa-icon class="completion-checkmark" *ngIf="routineItem.isComplete" [icon]="faCheck">
+                </fa-icon>
+            </div>
+        </div>
+        <div class="scheduled-routine-items">
+            <div *ngFor="let scheduledRoutineMemberItem of routineItem.routineMemberActivities"
+                class="scheduled-routine-item" (mouseenter)="scheduledRoutineMemberItem.onMouseEnter()"
+                (mouseleave)="scheduledRoutineMemberItem.onMouseLeave()" (click)="scheduledRoutineMemberItem.onClickCircle()">
+                <fa-icon [icon]="faCircle"
+                    class="scheduled-routine-item-circle scheduled-routine-item-circle-incomplete"
+                    *ngIf="!scheduledRoutineMemberItem.markedComplete">
+                </fa-icon>
+                <fa-icon [icon]="faCircleSolid"
+                    class="scheduled-routine-item-circle scheduled-routine-item-circle-complete"
+                    *ngIf="scheduledRoutineMemberItem.markedComplete">
+                </fa-icon>
+                <div>
+                    {{ scheduledRoutineMemberItem.name }}
+                </div>
+            </div>
+        </div>
+
+
     </div>
     <div style="display:flex;flex-direction: row-reverse;">
-        <button class="small-button active-button" (click)="formSection.onClickClose()">Save</button>
+        <button class="small-button active-button" (click)="formSection.onClickSave()">Save</button>
     </div>
 </div>

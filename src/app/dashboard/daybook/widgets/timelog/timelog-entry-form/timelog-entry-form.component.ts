@@ -38,8 +38,10 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     this._timelogEntryForm = new TimelogEntryForm(this.daybookService.activeDay);
     this.daybookService.activeDay$.subscribe((activeDay)=>{
       this.activeDay = activeDay;
-      this.timelogEntryForm.updateActiveDay(activeDay);
-    })
+      if(this.timelogEntryForm){
+        this.timelogEntryForm.updateActiveDay(activeDay);
+      }      
+    });
     
   }
 

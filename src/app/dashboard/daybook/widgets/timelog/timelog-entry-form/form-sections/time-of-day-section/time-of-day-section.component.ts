@@ -3,6 +3,7 @@ import { TimelogEntryForm } from '../../timelog-entry-form.class';
 import { TimeOfDay } from '../../../../../../../shared/utilities/time-of-day-enum';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { faCheck, faSyncAlt, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCircle as faCircleNotSolid } from '@fortawesome/free-regular-svg-icons';
 
 import { DaybookDayItemScheduledActivity } from '../../../../../api/data-items/daybook-day-item-scheduled-activity.class';
 import { TimelogEntryFormSection } from '../../timelog-entry-form-section/timelog-entry-form-section.class';
@@ -40,13 +41,19 @@ export class DaySectionComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    
+    console.log("scheduled routine items : ", this.scheduledRoutineItems);
+    this.scheduledRoutineItems.forEach((item)=>{
+      item.routineMemberActivities.forEach((rma)=>{
+        console.log("RMA: ", rma.name);
+      })
+    })
   }
 
-  
+
 
   faCheck = faCheck;
   faSync = faSyncAlt;
-  faCircle = faCircle;
+  faCircle = faCircleNotSolid;
+  faCircleSolid = faCircle;
   faSyncAlt = faSyncAlt;
 }

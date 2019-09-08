@@ -195,6 +195,16 @@ export class DaybookDayItem{
         this.buildScheduledActivities(activityTree);
         this.dataChanged();
     }
+    public updateScheduledActivityItems(updateScheduledActivityItems: DaybookDayItemScheduledActivityItem[]){
+        this._httpShape.scheduledActivityItems.forEach((storedItem)=>{
+            updateScheduledActivityItems.forEach((updateItem)=>{
+                if(storedItem.activityTreeId == updateItem.activityTreeId){
+                    storedItem = updateItem;
+                }
+            });
+        });
+        this.dataChanged();
+    }
 
 
 

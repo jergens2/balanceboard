@@ -20,8 +20,10 @@ export class BedtimeSectionComponent implements OnInit {
 
 
   bedtimeForm: FormGroup;
+  private _bedtime: moment.Moment;
 
   ngOnInit() { 
+    this._bedtime = moment(this.timelogEntryForm.bedtime);
     this.bedtimeForm = new FormGroup({
       "bedtime": new FormControl(this.timelogEntryForm.bedtime.format('HH:mm'), Validators.required),
     });
@@ -29,11 +31,16 @@ export class BedtimeSectionComponent implements OnInit {
   }
 
   public onClickChangeBedtime(action: string){
+    let bedTimeInput = this.parseFormTimeInput(this.bedtimeForm.controls["fallAsleepTime"].value);
+    let bedtime: moment.Moment = moment(this._bedtime).hour(bedTimeInput.hour).minute(bedTimeInput.minute).second(0).millisecond(0);
     if(action === "ADD"){
-      
+      bedtime = moment(bedtime).add(30, "minutes");
     }else if(action === "SUBTRACT"){
-
+      bedtime = moment(bedtime).subtract(30, "minutes");
     }
+
+    this.bedtimeForm.patchValue({ "bedtime": bedtime.format("HH:mm") });
+    this._bedtime = moment(bedtime);
   }
 
   public onClickSave(){
