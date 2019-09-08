@@ -180,6 +180,26 @@ export class DefaultActivityCategoryDefinitions {
                 routineMembersActivityIds: [],
             }
         ));
+        const makeBedTreeId: string = userId + "_" + Guid.newGuid();
+        activities.push(new ActivityCategoryDefinition(
+            {
+                _id: "",
+                userId: userId,
+                treeId: makeBedTreeId,
+                parentTreeId: choresTreeId,
+                name: "Make the bed",
+                description: "Make the the bed so that it is tidy",
+                color: maintenanceColor,
+                icon: "",
+                durationSetting: ActivityDurationSetting.Short,
+                specifiedDurationMinutes: -1,
+                targets: [],
+                isConfigured: true,
+                scheduleConfiguration: null,
+                isRoutine: false,
+                routineMembersActivityIds: [],
+            }
+        ));
         activities.push(new ActivityCategoryDefinition(
             {
                 _id: "",
@@ -485,7 +505,8 @@ export class DefaultActivityCategoryDefinitions {
                 scheduleConfiguration: wakeupRoutineConfiguration,
                 isRoutine: true,
                 routineMembersActivityIds: [
-                    brushTeethTreeId
+                    brushTeethTreeId,
+                    makeBedTreeId,
                 ],
             }
         ));

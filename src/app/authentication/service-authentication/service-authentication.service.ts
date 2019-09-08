@@ -60,22 +60,20 @@ export class ServiceAuthenticationService {
     let serviceAuthentications: ServiceAuthentication[] = [];
     let activityCategoryDefinitionSA: ServiceAuthentication = new ServiceAuthentication("ActivityCategoryDefinition", this.activityCategoryDefinitionService);
     let routineDefinitionSA: ServiceAuthentication = new ServiceAuthentication("RoutineDefinition", this.routineDefinitionService);
-    activityCategoryDefinitionSA.setChild(routineDefinitionSA);
-
-    serviceAuthentications.push(activityCategoryDefinitionSA);
-
-
-    
+        
     let dayTemplatesSA: ServiceAuthentication = new ServiceAuthentication("DayTemplates", this.dayTemplatesService);
     let scheduleRotationSA: ServiceAuthentication = new ServiceAuthentication("ScheduleRotation", this.scheduleRotationService);
     let daybookHttpSA: ServiceAuthentication = new ServiceAuthentication("DaybookHttp", this.daybookHttpRequestService);
+    
+
     daybookHttpSA.setChild(new ServiceAuthentication("Daybook", this.daybookService));
     scheduleRotationSA.setChild(daybookHttpSA);
     dayTemplatesSA.setChild(scheduleRotationSA);
-
-    serviceAuthentications.push(dayTemplatesSA);
-
+    routineDefinitionSA.setChild(dayTemplatesSA)
+    activityCategoryDefinitionSA.setChild(routineDefinitionSA);
     
+    serviceAuthentications.push(activityCategoryDefinitionSA);
+
 
     serviceAuthentications.push(new ServiceAuthentication("Notes", this.notebooksService));
     serviceAuthentications.push(new ServiceAuthentication("Tasks", this.taskService));

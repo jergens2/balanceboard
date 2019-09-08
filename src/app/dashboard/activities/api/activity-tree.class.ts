@@ -13,15 +13,15 @@ export class ActivityTree {
         return this._rootActivities;
     }
 
-    private _allActivities: ActivityCategoryDefinition[];
+    private _allActivitiesAndRoutines: ActivityCategoryDefinition[];
 
     get allActivities(): ActivityCategoryDefinition[] {
-        return this._allActivities.filter((activity)=>{
+        return this._allActivitiesAndRoutines.filter((activity)=>{
             return (!activity.isRoutine)
         });
     }
     public get allActivitiesAndRoutines(): ActivityCategoryDefinition[]{
-        return this._allActivities;
+        return this._allActivitiesAndRoutines;
     }
 
     private _activityRoutines: ActivityCategoryDefinition[] = [];
@@ -30,7 +30,7 @@ export class ActivityTree {
     }
 
     constructor(allActivities: ActivityCategoryDefinition[]) {
-        this._allActivities = allActivities;
+        this._allActivitiesAndRoutines = allActivities;
         this._rootActivities = this.buildActivityTree(allActivities);
     }
 
@@ -71,8 +71,8 @@ export class ActivityTree {
     }
 
     findActivityByTreeId(treeId: string): ActivityCategoryDefinition{
-        
-        for(let activity of this._allActivities){
+        // console.log("looking for activity by tree id: ", treeId);
+        for(let activity of this._allActivitiesAndRoutines){
             // console.log(activity);
             if(activity.treeId == treeId){
                 // console.log("returning activity ", activity);
@@ -84,17 +84,17 @@ export class ActivityTree {
     }
 
     // findActivityByIdentifier(identifier: string): ActivityCategoryDefinition{
-    //     for(let activity of this._allActivities){
+    //     for(let activity of this._allActivitiesAndRoutines){
     //         if(activity.treeId == identifier){
     //             return activity;
     //         }
     //     }
-    //     for(let activity of this._allActivities){
+    //     for(let activity of this._allActivitiesAndRoutines){
     //         if(activity.name == identifier){
     //             return activity;
     //         }
     //     }
-    //     for(let activity of this._allActivities){
+    //     for(let activity of this._allActivitiesAndRoutines){
     //         if(activity.id == identifier){
     //             return activity;
     //         }
@@ -103,7 +103,7 @@ export class ActivityTree {
 
     activityNameIsUnique(checkActivity:ActivityCategoryDefinition):boolean {
         let namesCount: number = 0;
-        for(let activity of this._allActivities){
+        for(let activity of this._allActivitiesAndRoutines){
             if(activity.name == checkActivity.name){
                 namesCount++;
             }
@@ -141,8 +141,8 @@ export class ActivityTree {
     }
 
     addActivityToTree(activity: ActivityCategoryDefinition) {
-        this._allActivities.push(activity);
-        this._rootActivities = this.buildActivityTree(this.allActivities);
+        this._allActivitiesAndRoutines.push(activity);
+        this._rootActivities = this.buildActivityTree(this.allActivitiesAndRoutines);
     }
 
     pruneActivityFromTree(activityRemove: ActivityCategoryDefinition) {
@@ -155,13 +155,13 @@ export class ActivityTree {
             as a temporary solution, the front end prevents the deletion of any activity that has children - the delete button is only available if the activity has no children.
 
         */
-        for(let activity of this._allActivities){
+        for(let activity of this._allActivitiesAndRoutines){
             if(activity.treeId == activityRemove.treeId){
-                this._allActivities.splice(this._allActivities.indexOf(activity),1);
+                this._allActivitiesAndRoutines.splice(this._allActivitiesAndRoutines.indexOf(activity),1);
             }
         }
 
-        this._rootActivities = this.buildActivityTree(this.allActivities);
+        this._rootActivities = this.buildActivityTree(this.allActivitiesAndRoutines);
     }
 
     public buildScheduledActivityItemsOnDate(dateYYYYMMDD: string): DaybookDayItemScheduledActivityItem[]{

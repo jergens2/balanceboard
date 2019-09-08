@@ -1,0 +1,16 @@
+<div *ngIf="!formSection.isExpanded" class="small-section">
+    <div class="small-section-item" *ngFor="let routineItem of scheduledRoutineItems">
+        <fa-icon [icon]="faSyncAlt" style="margin-right:5px;"
+            [ngClass]="{'section-complete-routine-item': formSection.isComplete, 'section-incomplete-routine-item': !formSection.isComplete}">
+        </fa-icon> <span [ngClass]="{'section-complete-text': formSection.isComplete, 'section-incomplete-text': !formSection.isComplete}" class="text">{{ routineItem.name }}</span>
+    </div>
+</div>
+
+<div *ngIf="formSection.isExpanded" class="expanded-section">
+    <div class="expanded-section-item" *ngFor="let routineItem of scheduledRoutineItems">
+        <fa-icon [icon]="faSyncAlt"></fa-icon> {{ routineItem.name }}
+    </div>
+    <div style="display:flex;flex-direction: row-reverse;">
+        <button class="small-button active-button" (click)="formSection.onClickClose()">Save</button>
+    </div>
+</div>

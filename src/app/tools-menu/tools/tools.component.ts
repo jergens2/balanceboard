@@ -27,7 +27,7 @@ export class ToolsComponent implements OnInit {
   screenSize: AppScreenSize;
   
   ngOnInit() {
-    console.log("Tools component init");
+    // console.log("Tools component init");
     this.sizeService.appScreenSize$.subscribe((size: AppScreenSize)=>{
       this.screenSize = size;
     })
@@ -36,7 +36,7 @@ export class ToolsComponent implements OnInit {
     this.toolsService.currentTool$.subscribe((tool: ToolComponents)=>{
       this.toolName = tool;
     });  
-    console.log("Tools component init COMPLETE");
+    // console.log("Tools component init COMPLETE");
   }
 
   public get currentDate(): string{

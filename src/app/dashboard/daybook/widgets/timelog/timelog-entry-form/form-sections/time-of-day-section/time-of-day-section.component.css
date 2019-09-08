@@ -1,0 +1,36 @@
+
+
+.small-section{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+
+    font-size:0.8em;
+}
+.small-section-item{
+
+}
+.expanded-section{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+
+    font-size: 0.9em;
+}
+
+.section-complete-routine-item{
+    color:rgb(0, 132, 255);
+
+}
+.section-incomplete-routine-item{
+    color:rgb(196, 226, 255);
+}
+.text{
+    size: 0.8em;
+}
+.section-complete-text{
+    color: gray;
+}
+.section-incomplete-text{
+    color: rgb(196, 196, 196);
+}

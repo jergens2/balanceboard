@@ -5,7 +5,7 @@ import { faCheckCircle as faCheckCircle2, faCheck, faTimes } from '@fortawesome/
 import { faEdit, faCircle, faCheckCircle, faCheckSquare } from '@fortawesome/free-regular-svg-icons';
 import { TimelogEntryForm } from './timelog-entry-form.class';
 import { faBed } from '@fortawesome/free-solid-svg-icons';
-import { SleepQuality } from './form-sections/sleep-section/sleep-quality.enum';
+import { SleepQuality } from './form-sections/wakeup-section/sleep-quality.enum';
 import { DaybookService } from '../../../daybook.service';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import { ToolsService } from '../../../../../tools-menu/tools/tools.service';

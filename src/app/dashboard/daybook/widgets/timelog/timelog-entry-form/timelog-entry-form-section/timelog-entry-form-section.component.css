@@ -1,0 +1,50 @@
+.form-section-root{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+    border-radius: 5px;
+    padding:5px;
+    border: 1px solid white;
+}
+.form-section-root-expanded{
+    border: 1px solid hsl(200, 33%, 80%);;
+    background-color: hsl(200, 33%, 96%);
+}
+.form-section-hover{
+    background-color: hsl(200, 33%, 96%);
+    cursor: pointer;
+}
+
+
+.form-section-header{
+    width:100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.title{
+    flex-grow: 2;
+    font-weight:bold;
+    color: rgb(82, 82, 82);
+    font-size: 0.9em;
+}
+.title-prominent{
+    color: rgb(4, 45, 133);
+}
+.title-incomplete{
+    font-weight: 400;
+    color: rgb(150, 150, 150);
+    font-size: 0.9em;
+}
+.completion-checkmark{
+    display:flex;
+    flex-direction: row;
+    align-items: flex-start;
+    color: green;
+}
+.form-section-body{
+    width:100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 5px;
+}

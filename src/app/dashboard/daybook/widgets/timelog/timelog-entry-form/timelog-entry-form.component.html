@@ -1,4 +1,4 @@
-<div class="timelog-entry-form-root font-family-open-sans">
+<div class="timelog-entry-form-root font-family-open-sans no-select">
 
   <div class="form-body">
     <div class="message-section">
@@ -10,36 +10,19 @@
         <span class="prominent-data">{{ timelogEntryForm.currentTime.format("h:mm:ss a")}}</span>
       </div>
       <div class="message-buffer">
-        <fa-icon [icon]="faTimes" class="icon-button" (click)="onClickCloseTool()"></fa-icon>
+        <fa-icon [icon]="faTimes" class="icon-button" style="display:flex;" (click)="onClickCloseTool()"></fa-icon>
       </div>
     </div>
 
-    <app-sleep-section class="form-section" [timelogEntryForm]="timelogEntryForm" ></app-sleep-section>
 
-    <app-day-section class="form-section" *ngFor="let daySection of timelogEntryForm.daySections" [timelogEntryForm]="timelogEntryForm" [daySection]="daySection"></app-day-section>
-
-    <div class="form-section">
-
-      <div class="banner" *ngIf="true">
-        <div class="banner-title" style="color: rgb(0, 81, 255);">
-          {{ timelogEntryForm.bedtime.format('hh:mm a') }} bedtime
-        </div>
-        <div class="banner-content">
-          {{ timelogEntryForm.timeUntilBedtime }}
-        </div>
-      </div>
-      <div class="expanded-section" *ngIf="false"></div>
-
-      <div class="section-completion">
-        <!-- <fa-icon [icon]="faCircle" style="color:gray;" class="completion-button"></fa-icon> -->
-      </div>
-    </div>
+    <app-timelog-entry-form-section class="form-section" *ngFor="let formSection of timelogEntryForm.formSections"
+      [timelogEntryForm]="timelogEntryForm" [formSection]="formSection"></app-timelog-entry-form-section>
 
 
 
   </div>
 
   <div class="form-controls">
-    <button class="small-button">Save and close</button>
+    <button class="small-button" (click)="onClickCloseTool()">Close</button>
   </div>
 </div>

@@ -10,7 +10,7 @@ import { DayStructureSleepCycleAction } from "./data-items/day-structure-sleep-c
 import { TimelogWindow } from "../widgets/timelog/timelog-large/timelog-chart/timelog-window.interface";
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
 import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
-import { SleepQuality } from "../widgets/timelog/timelog-entry-form/form-sections/sleep-section/sleep-quality.enum";
+import { SleepQuality } from "../widgets/timelog/timelog-entry-form/form-sections/wakeup-section/sleep-quality.enum";
 import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
 import { ActivityTree } from "../../activities/api/activity-tree.class";
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
@@ -27,7 +27,7 @@ export class DaybookDayItem{
     }
 
     constructor(dateYYYYMMDD) {
-        console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
+        // console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
         let shape: DaybookDayItemHttpShape = {
             _id: "",
             userId: "",
@@ -42,7 +42,7 @@ export class DaybookDayItem{
                 previousFallAsleepTimeUtcOffsetMinutes: 0,
                 wakeupTimeISO: "",
                 wakeupTimeUtcOffsetMinutes: 0,
-                sleepQuality: SleepQuality.Okay,
+                sleepQuality: null,
                 bedtimeISO: "",
                 bedtimeUtcOffsetMinutes: 0,
             },
@@ -171,8 +171,11 @@ export class DaybookDayItem{
             let activityDefinition: ActivityCategoryDefinition = activityTree.findActivityByTreeId(activityItem.activityTreeId);
             if(activityDefinition){
                 return this.buildScheduledActivity(activityItem, activityDefinition, activityTree);
+            }else{
+                console.log("Could not find activity by tree id ", activityItem.activityTreeId)
             }
         });
+        // console.log("this.scheduledActrivities", this._scheduledActivities);
     }
     private buildScheduledActivity(activityItem: DaybookDayItemScheduledActivityItem, activityDefinition: ActivityCategoryDefinition, activityTree: ActivityTree): DaybookDayItemScheduledActivity{
         let newScheduledActivity = new DaybookDayItemScheduledActivity(activityItem, activityDefinition);

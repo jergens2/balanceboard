@@ -169,11 +169,11 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
 
   private _changeSubscriptions: Subscription[] = [];
   private updateChangeSubscription() {
-    console.log("Updating subscriptiuo")
+    // console.log("Updating subscriptiuo")
     this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
     this._daybookDayItems$.getValue().forEach((daybookDayItem: DaybookDayItem) => {
       this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent) => {
-        console.log("we received an update foolio");
+        // console.log("we received an update foolio");
         this.updateDaybookDayItem(daybookDayItem);
       }));
     });
@@ -227,7 +227,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
 
 
   private linkDaybookItems(items: DaybookDayItem[]): DaybookDayItem[] {
-    console.log("Linking items", items);
+    // console.log("Linking items", items);
     items.forEach((item) => {
       item.previousDay = null;
       item.followingDay = null;
@@ -265,8 +265,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
         }
       }
     }
-    console.log("Linked items: ", items);
-    console.log("Item, with preceding and following dates: ");
+    // console.log("Linked items: ", items);
+    // console.log("Item, with preceding and following dates: ");
     items.forEach((item) => {
       let prev = "";
       let fol = "";
@@ -276,7 +276,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
       if (item.followingDay) {
         fol = item.followingDay.dateYYYYMMDD
       }
-      console.log("Item: " + item.dateYYYYMMDD + " , pre, following: " + prev + "  " + fol);
+      // console.log("Item: " + item.dateYYYYMMDD + " , pre, following: " + prev + "  " + fol);
     })
     return items;
 

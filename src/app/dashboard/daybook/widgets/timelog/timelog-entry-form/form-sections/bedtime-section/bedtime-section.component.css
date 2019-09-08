@@ -1,22 +1,5 @@
 
 
-.day-section-root{
-    width:100%;
-    display:flex;
-    flex-direction: column;
-}
-
-.header{
-    width:100%;
-    display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-.title{
-    font-weight:bold;
-    color: rgb(82, 82, 82);
-    font-size: 0.9em;
-}
 .expanded-section{
     width:100%;
     display:flex;
@@ -25,7 +8,6 @@
 .small-section{
     display:flex;
     flex-direction: column;
-    padding-left:15px;
 }
 .small-section-item{
     display:flex;
@@ -34,9 +16,18 @@
     color:gray;
 }
 
-.routine-section-item{
+
+.input-row{
     display:flex;
     flex-direction: row;
     align-items: center;
+    height:30px;
 }
 
+.time-input{
+    margin-left:5px;
+    margin-right:5px;
+    border-radius:3px;
+    color:black;
+    border: 1px solid grey;
+}

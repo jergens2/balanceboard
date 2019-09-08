@@ -63,7 +63,7 @@ export class DaybookDayItemScheduledActivity{
                 routineMemberActivities.push(newMemberItem);
             }
         });
-        console.log("Setting routine member activities: ", routineMemberActivities);
+        // console.log("Setting routine member activities: ", routineMemberActivities);
         this._routineMemberActivities = routineMemberActivities;
     }
     public get routineMemberActivities(): DaybookDayItemScheduledActivity[] {

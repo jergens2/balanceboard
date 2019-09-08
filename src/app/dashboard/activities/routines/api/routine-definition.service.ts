@@ -29,11 +29,12 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
 
 
   login$(authStatus: AuthStatus): Observable<boolean> {
-    console.log("RoutineDefinitionService: Logging in - ")
-    console.log("I don't think we need this CRUD any more.  Perhpas Cannibalize this method for another CRUD.")
-    this._authStatus = authStatus;
+    // console.log("RoutineDefinitionService: Logging in - ")
+    // console.log("I don't think we need this CRUD any more.  Perhpas Cannibalize this method for another CRUD.")
+    // this._authStatus = authStatus;
 
-    this.httpGetRoutineDefinitions();
+    // this.httpGetRoutineDefinitions();
+    this._loginComplete$.next(true);
     return this._loginComplete$.asObservable();
   }
   logout() {

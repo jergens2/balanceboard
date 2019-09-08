@@ -1,4 +1,4 @@
-import { SleepQuality } from "../../widgets/timelog/timelog-entry-form/form-sections/sleep-section/sleep-quality.enum";
+import { SleepQuality } from "../../widgets/timelog/timelog-entry-form/form-sections/wakeup-section/sleep-quality.enum";
 
 export interface DaybookDayItemSleepProfile{
     previousFallAsleepTimeISO: string,
