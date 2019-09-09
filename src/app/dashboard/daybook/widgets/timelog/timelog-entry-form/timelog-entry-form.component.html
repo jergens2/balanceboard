@@ -13,7 +13,8 @@
         <fa-icon [icon]="faTimes" class="icon-button" style="display:flex;" (click)="onClickCloseTool()"></fa-icon>
       </div>
     </div>
-
+    
+    <app-data-entry-item-input style="width:100%;"></app-data-entry-item-input>
 
     <app-timelog-entry-form-section class="form-section" *ngFor="let formSection of timelogEntryForm.formSections"
       [timelogEntryForm]="timelogEntryForm" [formSection]="formSection"></app-timelog-entry-form-section>

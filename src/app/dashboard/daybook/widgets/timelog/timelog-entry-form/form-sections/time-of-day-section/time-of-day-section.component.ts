@@ -15,7 +15,7 @@ import { TimelogEntryFormSection } from '../../timelog-entry-form-section/timelo
 })
 export class DaySectionComponent implements OnInit {
 
-
+  
   @Input() timelogEntryForm: TimelogEntryForm;
   @Input() formSection: TimelogEntryFormSection;
 

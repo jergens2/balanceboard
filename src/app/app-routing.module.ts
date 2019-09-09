@@ -2,8 +2,6 @@ import { Routes, RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { HomeComponent } from "./dashboard/home/home.component";
 
-import { BodyWeightComponent } from "./dashboard/health/body-weight/body-weight.component";
-import { BuildProfileComponent } from "./dashboard/health/build-profile/build-profile.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
 import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 
@@ -18,6 +16,7 @@ import { RecurringTasksComponent } from "./dashboard/scheduling/recurring-tasks/
 import { SchedulePlannerComponent } from "./dashboard/scheduling/schedule-planner/schedule-planner.component";
 import { ActivitiesComponent } from "./dashboard/activities/activities.component";
 import { SocialComponent } from "./dashboard/social/social.component";
+import { PointsComponent } from "./dashboard/points/points.component";
 
 
 const appRoutes: Routes = [
@@ -47,8 +46,8 @@ const appRoutes: Routes = [
     { path: 'recurring-tasks', component: RecurringTasksComponent },
     // { path: 'year', component: YearViewComponent },
 
-    { path: 'body-weight', component: BodyWeightComponent },
-    { path: 'health-profile', component: BuildProfileComponent },
+    { path: 'points', component: PointsComponent },
+    
 
     // { path: '**', component: PageNotFoundComponent }   
 ];

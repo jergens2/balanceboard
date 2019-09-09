@@ -15,6 +15,8 @@ export class TimelogEntryFormSection {
         this.title = title;
     }
 
+    public timeOfDay: TimeOfDay;
+    public scheduledActivities: DaybookDayItemScheduledActivity[] = [];
     public isComplete: boolean = false;
 
     private _isExpanded: boolean = false;
@@ -141,7 +143,17 @@ export class TimelogEntryFormSection {
         this._isExpanded = false;
     }
 
-    public timeOfDay: TimeOfDay;
-    scheduledActivities: DaybookDayItemScheduledActivity[] = [];
+    private _addingNewItem: boolean = false;
+    public get addingNewItem(): boolean{
+        return this._addingNewItem;
+    }
+    public set addingNewItem(addingNewItem: boolean){
+        this._addingNewItem = addingNewItem;
+    }
+
+    public onClickAddItem(){
+        this._addingNewItem = true;
+    }
+
 
 }

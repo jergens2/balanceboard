@@ -20,6 +20,18 @@ import { RecurringTaskFormComponent } from "./document-definitions/recurring-tas
 import { RtRepititionsComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/rt-repititions.component";
 import { ActivityCategoryDefinitionFormComponent } from "../dashboard/activities/activity-category-definition-form/activity-category-definition-form.component";
 import { BrowseActivityComponent } from './activity-input-dropdown/browse-activity/browse-activity.component';
+import { DataEntryItemInputComponent } from './data-entry-item-input/data-entry-item-input.component';
+import { TimelogEntryInputComponent } from './data-entry-item-input/data-entry-input-components/timelog-entry-input/timelog-entry-input.component';
+import { FinancialEntryInputComponent } from './data-entry-item-input/data-entry-input-components/financial-entry-input/financial-entry-input.component';
+import { ActionItemEntryInputComponent } from './data-entry-item-input/data-entry-input-components/action-item-entry-input/action-item-entry-input.component';
+import { ReminderEntryInputComponent } from './data-entry-item-input/data-entry-input-components/reminder-entry-input/reminder-entry-input.component';
+import { ScheduledEventInputComponent } from './data-entry-item-input/data-entry-input-components/scheduled-event-input/scheduled-event-input.component';
+import { DietaryEntryInputComponent } from './data-entry-item-input/data-entry-input-components/dietary-entry-input/dietary-entry-input.component';
+import { FeelingEntryInputComponent } from './data-entry-item-input/data-entry-input-components/feeling-entry-input/feeling-entry-input.component';
+import { WeightlogEntryInputComponent } from './data-entry-item-input/data-entry-input-components/weightlog-entry-input/weightlog-entry-input.component';
+import { CountEntryInputComponent } from './data-entry-item-input/data-entry-input-components/count-entry-input/count-entry-input.component';
+import { RuleConditionEntryInputComponent } from './data-entry-item-input/data-entry-input-components/rule-condition-entry-input/rule-condition-entry-input.component';
+import { HealthSymptomEntryInputComponent } from './data-entry-item-input/data-entry-input-components/health-symptom-entry-input/health-symptom-entry-input.component';
 
 
 
@@ -50,6 +62,30 @@ import { BrowseActivityComponent } from './activity-input-dropdown/browse-activi
 
         BrowseActivityComponent,
 
+        DataEntryItemInputComponent,
+
+        TimelogEntryInputComponent,
+
+        FinancialEntryInputComponent,
+
+        ActionItemEntryInputComponent,
+
+        ReminderEntryInputComponent,
+
+        ScheduledEventInputComponent,
+
+        DietaryEntryInputComponent,
+
+        FeelingEntryInputComponent,
+
+        WeightlogEntryInputComponent,
+
+        CountEntryInputComponent,
+
+        RuleConditionEntryInputComponent,
+
+        HealthSymptomEntryInputComponent,
+
 
         
     ],
@@ -63,7 +99,7 @@ import { BrowseActivityComponent } from './activity-input-dropdown/browse-activi
 
         RecurringTaskFormComponent,
         ActivityInputDropdownComponent,
-
+        DataEntryItemInputComponent,
     ]
 })
 

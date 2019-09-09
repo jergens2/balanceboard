@@ -6,10 +6,7 @@ import { DaybookModule } from './daybook/daybook.module';
 
 import { HomeComponent } from './home/home.component';
 
-import { HealthComponent } from './health/health.component';
-import { BodyWeightComponent } from './health/body-weight/body-weight.component';
-import { BuildProfileComponent } from './health/build-profile/build-profile.component';
-import { HeightFormComponent } from './health/body-weight/height-form/height-form.component';
+
 import { FinanceComponent } from './finance/finance.component';
 import { BudgetComponent } from './finance/budget/budget.component';
 import { NetWorthComponent } from './finance/net-worth/net-worth.component';
@@ -49,6 +46,7 @@ import { ActivitiesComponent } from './activities/activities.component';
 import { SocialComponent } from './social/social.component';
 import { ActivityComponent } from './activities/activity/activity.component';
 import { RoutineComponent } from './activities/routines/routine/routine.component';
+import { PointsComponent } from './points/points.component';
 
 
 @NgModule({
@@ -64,10 +62,7 @@ import { RoutineComponent } from './activities/routines/routine/routine.componen
 
     HomeComponent,
 
-    HealthComponent,
-    BodyWeightComponent,
-    BuildProfileComponent,
-    HeightFormComponent,
+
     FinanceComponent,
     BudgetComponent,
     NetWorthComponent,
@@ -102,6 +97,7 @@ import { RoutineComponent } from './activities/routines/routine/routine.componen
     SocialComponent,
     ActivityComponent,
     RoutineComponent,
+    PointsComponent,
 
   ],
   providers: [],
