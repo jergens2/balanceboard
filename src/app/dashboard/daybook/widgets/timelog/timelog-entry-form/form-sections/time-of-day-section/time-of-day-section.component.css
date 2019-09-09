@@ -11,6 +11,7 @@
     display:flex;
     flex-direction: row;
     align-items: center;
+    height:20px;
 }
 .expanded-section{
     width:100%;
@@ -29,6 +30,9 @@
 }
 .text{
     size: 0.8em;
+}
+.underline-text{
+    text-decoration: underline green;
 }
 .section-complete-text{
     color: gray;

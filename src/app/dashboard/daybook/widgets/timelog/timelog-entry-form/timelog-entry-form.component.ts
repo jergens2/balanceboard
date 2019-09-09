@@ -36,6 +36,9 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.activeDay = this.daybookService.activeDay;
     this._timelogEntryForm = new TimelogEntryForm(this.daybookService.activeDay);
+    this._timelogEntryForm.formSections.forEach((section)=>{
+      console.log("is section: " + section.title + " the current active time? ", section.isCurrentTimeSection);
+    })
     this.daybookService.activeDay$.subscribe((activeDay)=>{
       this.activeDay = activeDay;
       if(this.timelogEntryForm){

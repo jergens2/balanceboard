@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryForm } from '../../timelog-entry-form.class';
 import { TimeOfDay } from '../../../../../../../shared/utilities/time-of-day-enum';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
-import { faCheck, faSyncAlt, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faSyncAlt, faCircle, faPlusCircle, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faCircle as faCircleNotSolid } from '@fortawesome/free-regular-svg-icons';
 
 import { DaybookDayItemScheduledActivity } from '../../../../../api/data-items/daybook-day-item-scheduled-activity.class';
@@ -47,6 +47,10 @@ export class DaySectionComponent implements OnInit {
         console.log("RMA: ", rma.name);
       })
     })
+    console.log("form section: " + this.formSection.title);
+    console.log("isBeforeCurrentTIme? " , this.formSection.isBeforeCurrentTimeSection);
+    console.log("isCurrentTime? " , this.formSection.isCurrentTimeSection);
+    console.log("isAfterCurrentTime? " , this.formSection.isAfterCurrentTimeSection);
   }
 
 
@@ -56,4 +60,6 @@ export class DaySectionComponent implements OnInit {
   faCircle = faCircleNotSolid;
   faCircleSolid = faCircle;
   faSyncAlt = faSyncAlt;
+  faPlusCircle = faPlusCircle;
+  faPlus = faPlus;
 }

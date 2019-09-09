@@ -19,6 +19,20 @@
         </div>
 
     </div>
+    <div class="small-section-item" *ngIf="formSection.isAfterCurrentTimeSection && scheduledActivities.length == 0">
+        No scheduled activities.
+    </div>
+    <div class="small-section-item"
+        *ngIf="(formSection.isCurrentTimeSection || formSection.isBeforeCurrentTimeSection) && scheduledActivities.length == 0">
+        no activities bro
+    </div>
+    <div class="small-section-item" *ngIf="formSection.mouseIsOver">
+        <button class="small-button" style="display:flex;flex-direction: row;" (click)="onClickAddItem()">
+            <fa-icon [icon]="faPlusCircle" style="margin-right:3px;"></fa-icon>
+            <div>Add item</div>
+        </button>
+    </div>
+    <div class="small-section-item" *ngIf="!formSection.mouseIsOver"></div>
 </div>
 
 <div *ngIf="formSection.isExpanded" class="expanded-section">
@@ -38,7 +52,10 @@
         <div class="scheduled-routine-items">
             <div *ngFor="let scheduledRoutineMemberItem of routineItem.routineMemberActivities"
                 class="scheduled-routine-item" (mouseenter)="scheduledRoutineMemberItem.onMouseEnter()"
-                (mouseleave)="scheduledRoutineMemberItem.onMouseLeave()" (click)="scheduledRoutineMemberItem.onClickCircle()">
+                (mouseleave)="scheduledRoutineMemberItem.onMouseLeave()"
+                (click)="scheduledRoutineMemberItem.onClickCircle()">
+
+
                 <fa-icon [icon]="faCircle"
                     class="scheduled-routine-item-circle scheduled-routine-item-circle-incomplete"
                     *ngIf="!scheduledRoutineMemberItem.markedComplete">
@@ -47,7 +64,7 @@
                     class="scheduled-routine-item-circle scheduled-routine-item-circle-complete"
                     *ngIf="scheduledRoutineMemberItem.markedComplete">
                 </fa-icon>
-                <div>
+                <div [ngClass]="{'underline-text': scheduledRoutineMemberItem.mouseIsOver }">
                     {{ scheduledRoutineMemberItem.name }}
                 </div>
             </div>

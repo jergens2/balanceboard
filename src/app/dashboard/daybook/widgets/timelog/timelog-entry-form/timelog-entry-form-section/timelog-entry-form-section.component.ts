@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryFormSection, TimelogEntryFormSectionType} from './timelog-entry-form-section.class';
 
 import { TimelogEntryForm } from '../timelog-entry-form.class';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCaretRight, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-timelog-entry-form-section',
@@ -19,10 +19,11 @@ export class TimelogEntryFormSectionComponent implements OnInit {
   @Input() timelogEntryForm: TimelogEntryForm; 
 
   ngOnInit() {
-    console.log("form section init:", this.formSection);
   }
 
 
   faCheck = faCheck;
+  faCaretRight = faCaretRight;
+  faCaretDown = faCaretDown;
 
 }

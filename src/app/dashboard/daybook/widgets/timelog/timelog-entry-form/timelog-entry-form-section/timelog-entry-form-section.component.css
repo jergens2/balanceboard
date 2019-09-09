@@ -12,7 +12,7 @@
 }
 .form-section-hover{
     background-color: hsl(200, 33%, 96%);
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
 
@@ -27,6 +27,9 @@
     font-weight:bold;
     color: rgb(82, 82, 82);
     font-size: 0.9em;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
 }
 .title-prominent{
     color: rgb(4, 45, 133);
@@ -36,6 +39,23 @@
     color: rgb(150, 150, 150);
     font-size: 0.9em;
 }
+.title-hover{
+    cursor: pointer;
+    color: rgb(4, 45, 133);
+}
+.title-current-time{
+    text-decoration: underline blue;
+}
+.expand-arrow{
+    color: gray;
+}
+.expand-arrow-hover{
+    color: rgb(0, 89, 255);
+    cursor: pointer;
+}
+
+
+
 .completion-checkmark{
     display:flex;
     flex-direction: row;

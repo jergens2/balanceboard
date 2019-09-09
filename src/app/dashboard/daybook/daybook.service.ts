@@ -27,18 +27,23 @@ export class DaybookService implements ServiceAuthenticates {
   private _authStatus: AuthStatus;
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  private _allSubscriptions: Subscription[] = [];
+
   public login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
     if (this.daybookHttpRequestService.daybookDayItems.length == 0) {
       this.startANewDay(this._todayYYYYMMDD);
     }
-    this.daybookHttpRequestService.daybookDayItems$.subscribe((daybookDayItems: DaybookDayItem[]) => {
+    this._allSubscriptions.push(this.daybookHttpRequestService.daybookDayItems$.subscribe((daybookDayItems: DaybookDayItem[]) => {
       if (daybookDayItems.length > 0) {
         this._daybookDayItems$.next(daybookDayItems);
         this.initiateClock();
       }
-    });
-
+    }));
+    this._allSubscriptions.push(this.activitiesService.activitiesTree$.subscribe((changedTree)=>{
+      this.updateActivityItems(changedTree);
+    }));
 
     return this._loginComplete$.asObservable();
   }
@@ -52,6 +57,10 @@ export class DaybookService implements ServiceAuthenticates {
     this._activeDayYYYYMMDD = this._todayYYYYMMDD;
     this._clock = null;
     this.clockSubscription.unsubscribe();
+    this._allSubscriptions.forEach(sub => {
+      sub.unsubscribe();
+    });
+    this._allSubscriptions = [];
   }
 
 
@@ -214,7 +223,13 @@ export class DaybookService implements ServiceAuthenticates {
 
   }
 
-
+  updateActivityItems(changedTree){
+    console.log("Method not implemented: update activity tree");
+    /**
+     * This method runs any time the activity tree changes.
+     * When this happens, we need to ensure that the active day and following days have proper scheduled activity items.
+     */
+  }
 
 
 }

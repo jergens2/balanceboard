@@ -24,8 +24,8 @@ export class TimelogEntryForm {
     constructor(activeDay: DaybookDayItem) {
         this.activeDay = activeDay;
         this.setSleepParameters();
+        this.buildFormSections();
         this.updateTimes();
-        this.rebuildFormSections();
 
         timer(0, 1000).subscribe((tick) => {
             this._currentTime = moment();
@@ -47,7 +47,7 @@ export class TimelogEntryForm {
         return this._formSections;
     }
 
-    private rebuildFormSections() {
+    private buildFormSections() {
         let formSections: TimelogEntryFormSection[] = [];
 
         let wakeupSection: TimelogEntryFormSection = new TimelogEntryFormSection(TimelogEntryFormSectionType.WakeupSection, "Wakeup");
@@ -58,6 +58,7 @@ export class TimelogEntryForm {
         formSections.push(wakeupSection);
 
         let earlyMorningSection: TimelogEntryFormSection = new TimelogEntryFormSection(TimelogEntryFormSectionType.TimeOfDaySection, "Early morning");
+        earlyMorningSection.timeOfDay = TimeOfDay.EarlyMorning;
         earlyMorningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
             return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.EarlyMorning;
         });
@@ -74,6 +75,7 @@ export class TimelogEntryForm {
         
 
         let morningSection: TimelogEntryFormSection = new TimelogEntryFormSection(TimelogEntryFormSectionType.TimeOfDaySection, "Morning");
+        morningSection.timeOfDay = TimeOfDay.Morning;
         morningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
             return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Morning;
         });
@@ -85,10 +87,11 @@ export class TimelogEntryForm {
                 }
             })
             morningSection.isComplete = sectionIsComplete;
-            formSections.push(morningSection);
         }
+        formSections.push(morningSection);
 
         let afternoonSection: TimelogEntryFormSection = new TimelogEntryFormSection(TimelogEntryFormSectionType.TimeOfDaySection, "Afternoon");
+        afternoonSection.timeOfDay = TimeOfDay.Afternoon;
         afternoonSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
             return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Afternoon;
         });
@@ -100,10 +103,12 @@ export class TimelogEntryForm {
                 }
             })
             afternoonSection.isComplete = sectionIsComplete;
-            formSections.push(afternoonSection);
+        
         }
+        formSections.push(afternoonSection);
 
         let eveningSection: TimelogEntryFormSection = new TimelogEntryFormSection(TimelogEntryFormSectionType.TimeOfDaySection, "Evening");
+        eveningSection.timeOfDay = TimeOfDay.Evening;
         eveningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
             return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Evening;
         });
@@ -115,8 +120,8 @@ export class TimelogEntryForm {
                 }
             })
             eveningSection.isComplete = sectionIsComplete;
-            formSections.push(eveningSection);
         }
+        formSections.push(eveningSection);
         /**
          * Not handled:  
          *  TimeOfDay.Any , or 
@@ -311,12 +316,14 @@ export class TimelogEntryForm {
         if (this.currentTime.isBefore(this._wakeupTime)) {
             timeSinceWakeup = "";
         } else if (this.currentTime.isAfter(this._wakeupTime)) {
-            console.log("WOKE UP AT: ", this._wakeupTime.format('YYYY-MM-DD hh:mm a'))
-            console.log("CURRENT TIME: ", this._currentTime.format('YYYY-MM-DD hh:mm a'))
             timeSinceWakeup = DurationString.calculateDurationString(this._wakeupTime, this.currentTime, true);
         }
         this._timeSinceWakeup = timeSinceWakeup;
         this.updateBatteryConfiguration();
+
+        this.formSections.forEach((formSection)=>{
+            formSection.updateCurrentTimeSection(this.currentTime);
+        });
     }
 
     private updateBatteryConfiguration() {

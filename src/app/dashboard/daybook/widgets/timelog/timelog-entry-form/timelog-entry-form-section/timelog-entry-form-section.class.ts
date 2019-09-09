@@ -1,6 +1,7 @@
 import { TimeOfDay } from "../../../../../../shared/utilities/time-of-day-enum";
 import { DaybookDayItemScheduledActivity } from "../../../../api/data-items/daybook-day-item-scheduled-activity.class";
 import { Subject, Observable } from "rxjs";
+import * as moment from 'moment';
 
 export enum TimelogEntryFormSectionType {
     WakeupSection,
@@ -24,6 +25,11 @@ export class TimelogEntryFormSection {
     public onMouseEnter() { this._mouseIsOver = true; }
     public onMouseLeave() { this._mouseIsOver = false; }
 
+    private _mouseIsOverTitle: boolean = false;
+    public get mouseIsOverTitle(): boolean{ return this._mouseIsOverTitle; }
+    public onMouseEnterTitle(){ this._mouseIsOverTitle = true; }  
+    public onMouseLeaveTitle(){ this._mouseIsOverTitle = false; }
+
     public title: string = "";
 
     private _sectionType: TimelogEntryFormSectionType;
@@ -38,12 +44,78 @@ export class TimelogEntryFormSection {
     public get isBedtimeSection(): boolean{
         return this._sectionType === TimelogEntryFormSectionType.BedtimeSection;
     }
+    public get timeOfDayRange(): { startTime: moment.Moment, endTime: moment.Moment}{
+        if(this.isTimeOfDaySection){
+            if(this.timeOfDay == TimeOfDay.EarlyMorning){
+                return {
+                    startTime: moment().startOf("day"),
+                    endTime: moment().startOf("day").add(6, "hours"),
+                };
+            }else if(this.timeOfDay == TimeOfDay.Morning){
+                return {
+                    startTime: moment().startOf("day").add(6, "hours"),
+                    endTime: moment().startOf("day").add(12, "hours"),
+                };
+            }else if(this.timeOfDay == TimeOfDay.Afternoon){
+                return {
+                    startTime: moment().startOf("day").add(12, "hours"),
+                    endTime: moment().startOf("day").add(18, "hours"),
+                };
+            }else if(this.timeOfDay == TimeOfDay.Evening){
+                return {
+                    startTime: moment().startOf("day").add(18, "hours"),
+                    endTime: moment().endOf("day"),
+                };
+            }
+        }else{
+            return null;
+        }
+    }
+    
+    private _isBeforeCurrentTimeSection: boolean = false;
+    private _isCurrentTimeSection: boolean = false;
+    private _isAfterCurrentTimeSection: boolean = false;
+    public get isBeforeCurrentTimeSection(): boolean{ return this._isBeforeCurrentTimeSection; }
+    public get isCurrentTimeSection(): boolean{ return this._isCurrentTimeSection; }
+    public get isAfterCurrentTimeSection(): boolean{ return this._isAfterCurrentTimeSection; }
+
+    public updateCurrentTimeSection(time: moment.Moment){
+        if(this.isTimeOfDaySection && this.timeOfDayRange){
+            if(time.isSameOrAfter(this.timeOfDayRange.startTime) && time.isSameOrBefore(this.timeOfDayRange.endTime)){
+                this._isCurrentTimeSection = true;
+                this._isBeforeCurrentTimeSection = false;
+                this._isAfterCurrentTimeSection = false;
+            }else if(time.isBefore(this.timeOfDayRange.startTime)){
+                this._isCurrentTimeSection = false;
+                this._isBeforeCurrentTimeSection = false;
+                this._isAfterCurrentTimeSection = true;
+            }else if(time.isAfter(this.timeOfDayRange.endTime)){
+                this._isAfterCurrentTimeSection = false;
+                this._isBeforeCurrentTimeSection = true;
+                this._isCurrentTimeSection = false;
+            }else{
+                console.log("all false");
+                this._isAfterCurrentTimeSection = false;
+                this._isBeforeCurrentTimeSection = false;
+                this._isCurrentTimeSection = false;
+            }
+        }
+    }
+
+
 
     public onClick() {
         if(!this.isExpanded && this.mouseIsOver){
             this._isExpanded = true;
         }        
     }
+
+    public onClickTitle(){
+        if(!this.isExpanded && this.mouseIsOver){
+            this._isExpanded = true;
+        }        
+    }
+
     public onClickClose(){
         this.minimize();
     }
@@ -58,7 +130,7 @@ export class TimelogEntryFormSection {
                     memberItem.saveChanges();
                 });
             }else if(!scheduledActivity.isRoutine){
-                
+
             }
         })
         this._saveChanges$.next(true);
@@ -69,7 +141,7 @@ export class TimelogEntryFormSection {
         this._isExpanded = false;
     }
 
-    public timeOfDay: TimeOfDay
+    public timeOfDay: TimeOfDay;
     scheduledActivities: DaybookDayItemScheduledActivity[] = [];
 
 }
