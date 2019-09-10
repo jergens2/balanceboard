@@ -3,6 +3,8 @@ import { DataEntryItemType } from './data-entry-item-type.enum';
 import { DataEntryInput } from './data-entry-input.class';
 import { faListUl, faDollarSign, faSortNumericUpAlt, faCheck, faWeight, faAppleAlt, faTable } from '@fortawesome/free-solid-svg-icons';
 import { faBell, faClock, faSmile } from '@fortawesome/free-regular-svg-icons';
+import { DaybookService } from '../../dashboard/daybook/daybook.service';
+import { Subject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-data-entry-item-input',
@@ -11,11 +13,19 @@ import { faBell, faClock, faSmile } from '@fortawesome/free-regular-svg-icons';
 })
 export class DataEntryItemInputComponent implements OnInit {
 
-  constructor() { }
+  constructor(private daybookService: DaybookService) { }
 
   inputItemTypes: DataEntryInput[] = []; 
 
+  public get activeInputComponent(): DataEntryInput{
+    return this.inputItemTypes.find((item)=>{
+      return item.isActive;
+    });
+  }
+
   ngOnInit() {
+    // We are currently only implementing 9 out of 11 data types.
+
     const timelogEntryItem: DataEntryInput = new DataEntryInput(DataEntryItemType.TimelogEntry, faTable, "Timelog Entry");
     this.inputItemTypes = [
       timelogEntryItem,
@@ -50,6 +60,22 @@ export class DataEntryItemInputComponent implements OnInit {
         inputItem.isActive = false;
       }
     })
+  }
+
+  public onClickSave(){
+
+    this.activeInputComponent.saveDataEntry();
+    this.close();
+  }
+
+
+  private _onCloseInputTool$: Subject<boolean> = new Subject();
+  public get onCloseInputTool$(): Observable<boolean> {
+    return this._onCloseInputTool$.asObservable();
+  }
+
+  private close(){
+    this._onCloseInputTool$.next(true);
   }
 
 }

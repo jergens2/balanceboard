@@ -1,5 +1,6 @@
 import { DataEntryItemType } from "./data-entry-item-type.enum";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { Subject, Observable } from "rxjs";
 
 export class DataEntryInput{
     constructor(dataType: DataEntryItemType, icon: IconDefinition, title: string){
@@ -21,6 +22,17 @@ export class DataEntryInput{
     }
     public set isActive(isActive: boolean){
         this._isActive = isActive;
+    }
+
+
+    private _onSaveData$: Subject<boolean> = new Subject();
+    public get onSaveData$(): Observable<boolean> {
+        return this._onSaveData$.asObservable();
+    }
+
+
+    public saveDataEntry(){
+        this._onSaveData$.next(true);
     }
 
 }

@@ -1,1 +1,11 @@
-<p>weightlog-entry-input works!</p>
+<div class="weight-log-entry-input">
+    <div class="header">
+        What is your body weight?
+    </div>
+    <div class="input-body" [formGroup]="weightInputForm">
+        <input type="number" formControlName="weightInput" class="weight-input">
+        <div class="unit" (click)="onClickUnit()">
+            {{ unit }}
+        </div>
+    </div>
+</div>

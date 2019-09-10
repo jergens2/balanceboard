@@ -3,23 +3,26 @@
         and accommodate for multiple custom entry items.
 -->
 
-<div class="data-entry-item-input-root">
+<div class="data-entry-item-input-root font-family-open-sans">
     <div class="data-entry-item-input-header">
 
         <fa-icon [icon]="item.icon" *ngFor="let item of inputItemTypes" class="header-item"
             (click)="onClickInputItem(item)" [ngClass]="{'header-item-active': item.isActive}"></fa-icon>
     </div>
     <div class="data-entry-item-input-body">
-        <app-timelog-entry-input *ngIf="inputTypeIs('TIMELOG_ENTRY')"></app-timelog-entry-input>
-        <app-financial-entry-input *ngIf="inputTypeIs('FINANCIAL_ENTRY')"></app-financial-entry-input>
-        <app-action-item-entry-input *ngIf="inputTypeIs('ACTION_ITEM_ENTRY')"></app-action-item-entry-input>
-        <app-reminder-entry-input *ngIf="inputTypeIs('REMINDER_ENTRY')"></app-reminder-entry-input>
-        <app-scheduled-event-input *ngIf="inputTypeIs('SCHEDULED_EVENT_ENTRY')"></app-scheduled-event-input>
-        <app-dietary-entry-input *ngIf="inputTypeIs('DIETARY_ENTRY')"></app-dietary-entry-input>
-        <app-feeling-entry-input *ngIf="inputTypeIs('FEELING_ENTRY')"></app-feeling-entry-input>
-        <app-weightlog-entry-input *ngIf="inputTypeIs('WEIGHTLOG_ENTRY')"></app-weightlog-entry-input>
+        <app-timelog-entry-input *ngIf="inputTypeIs('TIMELOG_ENTRY')" class="input-item"></app-timelog-entry-input>
+        <app-financial-entry-input *ngIf="inputTypeIs('FINANCIAL_ENTRY')" class="input-item"></app-financial-entry-input>
+        <app-action-item-entry-input *ngIf="inputTypeIs('ACTION_ITEM_ENTRY')" class="input-item"></app-action-item-entry-input>
+        <app-reminder-entry-input *ngIf="inputTypeIs('REMINDER_ENTRY')" class="input-item"></app-reminder-entry-input>
+        <app-scheduled-event-input *ngIf="inputTypeIs('SCHEDULED_EVENT_ENTRY')" class="input-item"></app-scheduled-event-input>
+        <app-dietary-entry-input *ngIf="inputTypeIs('DIETARY_ENTRY')" class="input-item"></app-dietary-entry-input>
+        <app-feeling-entry-input *ngIf="inputTypeIs('FEELING_ENTRY')" class="input-item"></app-feeling-entry-input>
+        <app-weightlog-entry-input *ngIf="inputTypeIs('WEIGHTLOG_ENTRY')" class="input-item"></app-weightlog-entry-input>
         <app-count-entry-input *ngIf="inputTypeIs('COUNT_ENTRY')"></app-count-entry-input>
-        <app-rule-condition-entry-input *ngIf="inputTypeIs('RULE_CONDITION_ENTRY')"></app-rule-condition-entry-input>
-        <app-health-symptom-entry-input *ngIf="inputTypeIs('HEALTH_SYMPTOM_ENTRY')"></app-health-symptom-entry-input>
+        <app-rule-condition-entry-input *ngIf="inputTypeIs('RULE_CONDITION_ENTRY')" class="input-item"></app-rule-condition-entry-input>
+        <app-health-symptom-entry-input *ngIf="inputTypeIs('HEALTH_SYMPTOM_ENTRY')" class="input-item"></app-health-symptom-entry-input>
+    </div>
+    <div class="data-entry-item-input-footer">
+        <button class="small-button" (click)="onClickSave()">Save</button>
     </div>
 </div>
