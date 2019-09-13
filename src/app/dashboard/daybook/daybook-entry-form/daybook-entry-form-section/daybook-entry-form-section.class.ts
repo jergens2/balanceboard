@@ -1,16 +1,16 @@
-import { TimeOfDay } from "../../../../../../shared/utilities/time-of-day-enum";
-import { DaybookDayItemScheduledActivity } from "../../../../api/data-items/daybook-day-item-scheduled-activity.class";
+import { TimeOfDay } from "../../../../shared/utilities/time-of-day-enum";
+import { DaybookDayItemScheduledActivity } from "../../api/data-items/daybook-day-item-scheduled-activity.class";
 import { Subject, Observable } from "rxjs";
 import * as moment from 'moment';
 
-export enum TimelogEntryFormSectionType {
+export enum DaybookEntryFormSectionType {
     WakeupSection,
     TimeOfDaySection,
     BedtimeSection
 }
 
-export class TimelogEntryFormSection {
-    constructor(type: TimelogEntryFormSectionType, title: string) {
+export class DaybookEntryFormSection {
+    constructor(type: DaybookEntryFormSectionType, title: string) {
         this._sectionType = type;
         this.title = title;
     }
@@ -34,17 +34,17 @@ export class TimelogEntryFormSection {
 
     public title: string = "";
 
-    private _sectionType: TimelogEntryFormSectionType;
-    public get sectionType(): TimelogEntryFormSectionType { return this._sectionType; }
+    private _sectionType: DaybookEntryFormSectionType;
+    public get sectionType(): DaybookEntryFormSectionType { return this._sectionType; }
 
     public get isWakeupSection(): boolean{
-        return this._sectionType === TimelogEntryFormSectionType.WakeupSection;
+        return this._sectionType === DaybookEntryFormSectionType.WakeupSection;
     }
     public get isTimeOfDaySection(): boolean{
-        return this._sectionType === TimelogEntryFormSectionType.TimeOfDaySection;
+        return this._sectionType === DaybookEntryFormSectionType.TimeOfDaySection;
     }
     public get isBedtimeSection(): boolean{
-        return this._sectionType === TimelogEntryFormSectionType.BedtimeSection;
+        return this._sectionType === DaybookEntryFormSectionType.BedtimeSection;
     }
     public get timeOfDayRange(): { startTime: moment.Moment, endTime: moment.Moment}{
         if(this.isTimeOfDaySection){
@@ -143,16 +143,16 @@ export class TimelogEntryFormSection {
         this._isExpanded = false;
     }
 
-    private _addingNewItem: boolean = false;
-    public get addingNewItem(): boolean{
-        return this._addingNewItem;
+    private _isAddingNewItem: boolean = false;
+    public get isAddingNewItem(): boolean{
+        return this._isAddingNewItem;
     }
-    public set addingNewItem(addingNewItem: boolean){
-        this._addingNewItem = addingNewItem;
+    public set isAddingNewItem(addingNewItem: boolean){
+        this._isAddingNewItem = addingNewItem;
     }
 
     public onClickAddItem(){
-        this._addingNewItem = true;
+        this._isAddingNewItem = true;
     }
 
 

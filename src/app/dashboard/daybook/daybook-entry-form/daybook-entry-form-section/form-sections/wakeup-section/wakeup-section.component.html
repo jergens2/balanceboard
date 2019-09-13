@@ -2,9 +2,9 @@
     <div class="small-section-item" *ngIf="formSection.isComplete">
         <div style="margin-right: 10px;">
             <span style="font-size:0.8em;">Duration </span><span
-                style="font-weight: bold;">{{ timelogEntryForm.sleepDurationShort }}</span>
+                style="font-weight: bold;">{{ daybookEntryForm.sleepDurationShort }}</span>
         </div>
-        <div *ngIf="timelogEntryForm.sleepQualityIsComplete">
+        <div *ngIf="daybookEntryForm.sleepQualityIsComplete">
             <span style="font-size:0.8em;">Quality </span>
             <fa-icon [icon]="faBed" style="margin-left: 2px;" *ngFor="let sleepQualityBed of sleepQualityBeds"
                 [ngClass]="sleepQuality(sleepQualityBed)"></fa-icon>

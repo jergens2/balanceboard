@@ -219,6 +219,9 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     daybookDayItem.setHttpShape(data);
     
     if(daybookDayItem.scheduledActivityItems.length > 0){
+      // TO DO:  probably just change this to run a method that gives the activity tree to the object,
+      // and then inside of the object for any activity that exists in any variable, (scheduled activities, timelog entries, other, etc.),
+      // then build those activity items from inside.
       daybookDayItem.buildScheduledActivities(this.activitiesService.activitiesTree);
     }
     

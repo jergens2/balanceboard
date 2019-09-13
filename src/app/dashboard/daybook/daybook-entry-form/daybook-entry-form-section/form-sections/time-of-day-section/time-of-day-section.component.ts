@@ -1,12 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TimelogEntryForm } from '../../timelog-entry-form.class';
-import { TimeOfDay } from '../../../../../../../shared/utilities/time-of-day-enum';
-import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
+import { DaybookEntryForm } from '../../../daybook-entry-form.class';
+import { TimeOfDay } from '../../../../../../shared/utilities/time-of-day-enum';
+import { ActivityCategoryDefinition } from '../../../../../activities/api/activity-category-definition.class';
 import { faCheck, faSyncAlt, faCircle, faPlusCircle, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faCircle as faCircleNotSolid } from '@fortawesome/free-regular-svg-icons';
 
-import { DaybookDayItemScheduledActivity } from '../../../../../api/data-items/daybook-day-item-scheduled-activity.class';
-import { TimelogEntryFormSection } from '../../timelog-entry-form-section/timelog-entry-form-section.class';
+import { DaybookDayItemScheduledActivity } from '../../../../api/data-items/daybook-day-item-scheduled-activity.class';
+import { DaybookEntryFormSection } from '../../daybook-entry-form-section.class';
 
 @Component({
   selector: 'app-time-of-day-section',
@@ -16,8 +16,8 @@ import { TimelogEntryFormSection } from '../../timelog-entry-form-section/timelo
 export class DaySectionComponent implements OnInit {
 
   
-  @Input() timelogEntryForm: TimelogEntryForm;
-  @Input() formSection: TimelogEntryFormSection;
+  @Input() daybookEntryForm: DaybookEntryForm;
+  @Input() formSection: DaybookEntryFormSection;
 
   public get scheduledRoutineItems(): DaybookDayItemScheduledActivity[]{
     if(this.formSection){
@@ -53,6 +53,10 @@ export class DaySectionComponent implements OnInit {
     console.log("isAfterCurrentTime? " , this.formSection.isAfterCurrentTimeSection);
   }
 
+  onCloseDataEntryItemInput(event : boolean){
+    console.log("Event ", event);
+    this.formSection.isAddingNewItem = false;
+  }
 
 
   faCheck = faCheck;

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-health-symptom-entry-input',
@@ -8,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class HealthSymptomEntryInputComponent implements OnInit {
 
   constructor() { }
-
+  @Input() onClickSave$: Observable<boolean>;
   ngOnInit() {
   }
 

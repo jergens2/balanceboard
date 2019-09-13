@@ -3,17 +3,18 @@ import { DaybookDayItemHttpShape } from "./daybook-day-item-http-shape.interface
 import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
 import { DaybookActivityDataItem } from "./data-items/daybook-activity-data-item.interface";
 import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
-import { Subject, Observable, scheduled } from "rxjs";
+import { Subject, Observable, scheduled, timer } from "rxjs";
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import * as moment from 'moment';
 import { DayStructureSleepCycleAction } from "./data-items/day-structure-sleep-cycle-action.enum";
 import { TimelogWindow } from "../widgets/timelog/timelog-large/timelog-chart/timelog-window.interface";
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
 import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
-import { SleepQuality } from "../widgets/timelog/timelog-entry-form/form-sections/wakeup-section/sleep-quality.enum";
+import { SleepQuality } from "../daybook-entry-form/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum";
 import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
 import { ActivityTree } from "../../activities/api/activity-tree.class";
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
+import { DaybookTimeReferencer } from "./daybook-time-referencer.class";
 
 export class DaybookDayItem{
 
@@ -21,6 +22,7 @@ export class DaybookDayItem{
     private _httpShape: DaybookDayItemHttpShape;
     public setHttpShape(shape: DaybookDayItemHttpShape) {
         this._httpShape = shape;
+        this.buildTimeReferencer();
     }
     public get httpShape(): DaybookDayItemHttpShape {
         return this._httpShape;
@@ -28,6 +30,7 @@ export class DaybookDayItem{
 
     constructor(dateYYYYMMDD) {
         // console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
+        console.log("CONSTRUCTING DAYBOOK ITEM: " + dateYYYYMMDD)
         let shape: DaybookDayItemHttpShape = {
             _id: "",
             userId: "",
@@ -38,15 +41,18 @@ export class DaybookDayItem{
             dayStructureDataItems: [],
             sleepCycleDataItems: [],
             sleepProfile: {
-                previousFallAsleepTimeISO: "",
-                previousFallAsleepTimeUtcOffsetMinutes: 0,
-                wakeupTimeISO: "",
-                wakeupTimeUtcOffsetMinutes: 0,
                 sleepQuality: null,
+
+                wakeupTimeISO: "",
+                wakeupTimeUtcOffsetMinutes: -1,
+                
                 bedtimeISO: "",
-                bedtimeUtcOffsetMinutes: 0,
+                bedtimeUtcOffsetMinutes: -1,
+                
+                fallAsleepTimeISO: "",
+                fallAsleepTimeUtcOffsetMinutes: -1,
             },
-            dailyWeightLogEntryKg: 0,
+            dailyWeightLogEntryKg: -1,
             scheduledActivityItems: [],  // this includes activities and routines.: [],
             dayTemplateId: "",
             scheduledEventIds: [],
@@ -54,6 +60,21 @@ export class DaybookDayItem{
             taskItemIds: [],
         }
         this.setHttpShape(shape);
+    }
+
+    private _previousDay: DaybookDayItem;
+    public set previousDay(previousDay: DaybookDayItem){
+        this._previousDay = previousDay;
+    }
+    public get previousDay(): DaybookDayItem{
+        return this._previousDay;
+    }
+    private _followingDay: DaybookDayItem;
+    public set followingDay(followingDay: DaybookDayItem){
+        this._followingDay = followingDay;
+    }
+    public get followingDay(): DaybookDayItem{
+        return this._followingDay;
     }
 
 
@@ -98,9 +119,7 @@ export class DaybookDayItem{
         console.log("Sleep profile changed:", this._httpShape.sleepProfile)
         this.dataChanged();
     }
-    // public get sleepQuality(): SleepQuality{
-    //     if(this._httpShape.sleepProfile.sleepQuality)
-    // }
+
 
     public get dailyWeightLogEntryKg(): number { return this.httpShape.dailyWeightLogEntryKg; }
     public set dailyWeightLogEntryKg(kg: number){ 
@@ -139,20 +158,7 @@ export class DaybookDayItem{
     }
 
 
-    private _previousDay: DaybookDayItem;
-    public set previousDay(previousDay: DaybookDayItem){
-        this._previousDay = previousDay;
-    }
-    public get previousDay(): DaybookDayItem{
-        return this._previousDay;
-    }
-    private _followingDay: DaybookDayItem;
-    public set followingDay(followingDay: DaybookDayItem){
-        this._followingDay = followingDay;
-    }
-    public get followingDay(): DaybookDayItem{
-        return this._followingDay;
-    }
+
 
     
 
@@ -221,56 +227,26 @@ export class DaybookDayItem{
 
 
 
-    public getTimelogWindow(windowSizeHours: number): TimelogWindow {
-        /**
-         *  I think I might just get rid of the TimelogWindow entirely, and just use the 2 variables as reference points (wakeup and fallasleep time);
-         */
-        console.log("Getting timelog window.  Do we even still need this method?")
-        let startTime: moment.Moment = moment(this.wakeUpTime).subtract(1, "hour");
-        let endTime: moment.Moment = moment(this.fallAsleepTime).add(1, "hour");
-        
-        let window: TimelogWindow = {
-            windowStartTime: moment(startTime).subtract(1, "hour"),
-            startTime: startTime,
-            endTime: endTime,
-            windowEndTime: moment(endTime).add(1, "hour"),
-            size: endTime.diff(startTime, "hours"),
-        }
-        return window;
+    private _timeReferencer: DaybookTimeReferencer = null;
+    public get timeReferencer(): DaybookTimeReferencer{
+        return this._timeReferencer;
+    }
+    private buildTimeReferencer(){
+        let timeReferencer: DaybookTimeReferencer = new DaybookTimeReferencer(this.dateYYYYMMDD, this.dayStructureDataItems, this.sleepProfile, this.daybookTimelogEntryDataItems);
+        this._timeReferencer = timeReferencer;
     }
 
 
-    public get timeOfLastAction(): moment.Moment{
-        /* This method is a time marker of the last thing that the user inputted in the day,
-        *   For example, I open BB at 10:30pm, and mark down what I did from 6pm to 10:30pm, and that's the last action I do that day.
-            
-        */
-        console.log("Not implemented");
-        // if(this.)
-        
-        return moment();
+    public get wakeupTime(): moment.Moment{
+        return this.timeReferencer.wakeupTime;
     }
-
+    public get bedtime(): moment.Moment{
+        return this.timeReferencer.bedtime;
+    }
     public get fallAsleepTime(): moment.Moment{
-        let fallAsleepTime = this.sleepStructureDataItems.find((item)=>{
-            return item.sleepAction == DayStructureSleepCycleAction.FallAsleep;
-        });
-        if(fallAsleepTime){
-            return moment(fallAsleepTime.time);
-        }else{
-            console.log("Error with fallAsleepTime");
-        }
+        return this.timeReferencer.fallAsleepTime;
     }
-    public get wakeUpTime(): moment.Moment{
-        let wakeUpTime = this.sleepStructureDataItems.find((item)=>{
-            return item.sleepAction == DayStructureSleepCycleAction.WakeUp;
-        });
-        if(wakeUpTime){
-            return moment(wakeUpTime.time);
-        }else{
-            console.log("Error with fallAsleepTime");
-        }
-    }
+
 
 
     public addTimelogEntryItem(timelogEntry: DaybookTimelogEntryDataItem) {

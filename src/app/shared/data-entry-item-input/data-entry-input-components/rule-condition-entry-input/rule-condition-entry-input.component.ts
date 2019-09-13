@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-rule-condition-entry-input',
@@ -8,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class RuleConditionEntryInputComponent implements OnInit {
 
   constructor() { }
-
+  @Input() onClickSave$: Observable<boolean>;
   ngOnInit() {
   }
 

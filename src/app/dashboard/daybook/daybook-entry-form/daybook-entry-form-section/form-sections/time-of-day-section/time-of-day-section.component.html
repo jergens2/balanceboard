@@ -26,14 +26,14 @@
         *ngIf="(formSection.isCurrentTimeSection || formSection.isBeforeCurrentTimeSection) && scheduledActivities.length == 0">
         no activities bro
     </div>
-    <div class="small-section-item" *ngIf="formSection.mouseIsOver && !formSection.addingNewItem">
+    <div class="small-section-item" *ngIf="formSection.mouseIsOver && !formSection.isAddingNewItem">
         <button class="small-button" style="display:flex;flex-direction: row;" (click)="formSection.onClickAddItem()">
             <fa-icon [icon]="faPlusCircle" style="margin-right:3px;"></fa-icon>
             <div>Add item</div>
         </button>
     </div>
-    <div class="small-section-item" *ngIf="formSection.mouseIsOver && formSection.addingNewItem">
-        <app-data-entry-item-input style="width:100%;"></app-data-entry-item-input>
+    <div class="small-section-item" *ngIf="formSection.mouseIsOver && formSection.isAddingNewItem">
+        <app-data-entry-item-input style="width:100%;" (close)="onCloseDataEntryItemInput($event)"></app-data-entry-item-input>
     </div>
     <div class="small-section-item" *ngIf="!formSection.mouseIsOver"></div>
 </div>

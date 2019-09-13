@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { TLEFActivityListItem } from './tlef-activity-slider-bar/tlef-activity-list-item.class';
-import { ActivityCategoryDefinition } from '../../../../../activities/api/activity-category-definition.class';
+import { ActivityCategoryDefinition } from '../../../activities/api/activity-category-definition.class';
 import { Subscription } from 'rxjs';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { DurationString } from '../../../../../../shared/utilities/duration-string.class';
+import { DurationString } from '../../../../shared/utilities/duration-string.class';
 
-import { DaybookTimelogEntryDataItem } from '../../../../api/data-items/daybook-timelog-entry-data-item.interface';
-import { TimelogEntryActivity } from '../../../../api/data-items/timelog-entry-activity.interface';
-import { ActivityCategoryDefinitionService } from '../../../../../activities/api/activity-category-definition.service';
+import { DaybookTimelogEntryDataItem } from '../../api/data-items/daybook-timelog-entry-data-item.interface';
+import { TimelogEntryActivity } from '../../api/data-items/timelog-entry-activity.interface';
+import { ActivityCategoryDefinitionService } from '../../../activities/api/activity-category-definition.service';
 
 
 @Component({

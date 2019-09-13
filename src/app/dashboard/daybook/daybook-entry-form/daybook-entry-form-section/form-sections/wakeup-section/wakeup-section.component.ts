@@ -1,13 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { TimelogEntryForm } from '../../timelog-entry-form.class';
+import { DaybookEntryForm } from '../../../daybook-entry-form.class';
 import { faPlusCircle, faMinusCircle, faBed, faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { SleepQuality } from './sleep-quality.enum';
-import { DurationString } from '../../../../../../../shared/utilities/duration-string.class';
-import { DaybookDayItemSleepProfile } from '../../../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { DurationString } from '../../../../../../shared/utilities/duration-string.class';
+import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
-import { TimelogEntryFormSection } from '../../timelog-entry-form-section/timelog-entry-form-section.class';
+import { DaybookEntryFormSection } from '../../daybook-entry-form-section.class';
 
 @Component({
   selector: 'app-wakeup-section',
@@ -26,11 +26,11 @@ export class WakeupSectionComponent implements OnInit {
   private _sleepQuality: SleepQuality;
   private _sleepDuration: string = "";
 
-  @Input() timelogEntryForm: TimelogEntryForm;
-  @Input() formSection: TimelogEntryFormSection;
+  @Input() daybookEntryForm: DaybookEntryForm;
+  @Input() formSection: DaybookEntryFormSection;
 
   ngOnInit() {
-    this._sleepQuality = this.timelogEntryForm.sleepQuality;
+    this._sleepQuality = this.daybookEntryForm.sleepQuality;
     this.sleepQualityBeds = [
       SleepQuality.VeryPoor,
       SleepQuality.Poor,
@@ -39,8 +39,8 @@ export class WakeupSectionComponent implements OnInit {
       SleepQuality.VeryWell,
     ];
 
-    this._fallAsleepTime = this.timelogEntryForm.lastNightFallAsleepTime;
-    this._wakeupTime = this.timelogEntryForm.wakeupTime;
+    this._fallAsleepTime = this.daybookEntryForm.lastNightFallAsleepTime;
+    this._wakeupTime = this.daybookEntryForm.wakeupTime;
 
     this.sleepTimesFormGroup = new FormGroup({
       fallAsleepTime: new FormControl(this._fallAsleepTime.format("HH:mm")),
@@ -56,7 +56,7 @@ export class WakeupSectionComponent implements OnInit {
 
   public onClickSleepQuality(sleepQuality: SleepQuality) {
     this._sleepQuality = sleepQuality;
-    this.timelogEntryForm.sleepQuality = sleepQuality;
+    this.daybookEntryForm.sleepQuality = sleepQuality;
   }
 
 
@@ -186,18 +186,26 @@ export class WakeupSectionComponent implements OnInit {
 
   public onClickSave() {
 
+    /**
+     * Warning:  this is currently discombobulated.
+     * the way it is set up is the previous nights fall asleep time is set from this profile object, which is.... not appropriate.
+     * probably need to improve on this to avoid confusion and bugs
+     */
+
     let sleepProfile: DaybookDayItemSleepProfile = {
-      previousFallAsleepTimeISO: this._fallAsleepTime.toISOString(),
-      previousFallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
+      fallAsleepTimeISO: this._fallAsleepTime.toISOString(),
+      fallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
       wakeupTimeISO: this._wakeupTime.toISOString(),
       wakeupTimeUtcOffsetMinutes: this._wakeupTime.utcOffset(),
       sleepQuality: this._sleepQuality,
-      bedtimeISO: this.timelogEntryForm.sleepProfile.bedtimeISO,
-      bedtimeUtcOffsetMinutes: this.timelogEntryForm.sleepProfile.bedtimeUtcOffsetMinutes,
+      bedtimeISO: this.daybookEntryForm.sleepProfile.bedtimeISO,
+      bedtimeUtcOffsetMinutes: this.daybookEntryForm.sleepProfile.bedtimeUtcOffsetMinutes,
     }
+
+
     this.formSection.isComplete = true;
     this.formSection.title = this.wakeupTime + " wakeup";
-    this.timelogEntryForm.onClickSaveSleepProfile(sleepProfile);
+    this.daybookEntryForm.onClickSaveSleepProfile(sleepProfile);
     this.formSection.onClickClose();
     
   }

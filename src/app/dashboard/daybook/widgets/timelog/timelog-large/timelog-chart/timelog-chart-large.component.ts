@@ -15,33 +15,42 @@ export class TimelogChartComponent implements OnInit {
   constructor(private daybookService: DaybookService) { }
 
   private _activeDay: DaybookDayItem;
-  public get activeDay(): DaybookDayItem{
+  public get activeDay(): DaybookDayItem {
     return this._activeDay;
   }
-  public set activeDay(activeDay: DaybookDayItem){
+  public set activeDay(activeDay: DaybookDayItem) {
     this._activeDay = activeDay;
-    if(this._timelogChart){
+    if (this._timelogChart) {
       this._timelogChart.setActiveDay(activeDay);
     }
-    
+
   }
 
   windowSize: number = 18;
 
   private timelogWindow: TimelogWindow;
   private _timelogChart: TimelogChartLarge;
-  public get timelogChart(): TimelogChartLarge{
+  public get timelogChart(): TimelogChartLarge {
     return this._timelogChart;
   }
 
   ngOnInit() {
     this.activeDay = this.daybookService.activeDay;
-    this.timelogWindow = this.activeDay.getTimelogWindow(this.windowSize); 
+    let startTime: moment.Moment = moment(this.activeDay.dateYYYYMMDD).hour(7).minute(30).second(0).millisecond(0);
+    let endTime: moment.Moment = moment(this.activeDay.dateYYYYMMDD).hour(22).minute(30).second(0).millisecond(0);
+    let window: TimelogWindow = {
+      windowStartTime: moment(startTime).subtract(1, "hour"),
+      startTime: startTime,
+      endTime: endTime,
+      windowEndTime: moment(endTime).add(1, "hour"),
+      size: endTime.diff(startTime, "hours"),
+    }
+    this.timelogWindow = window;
     this._timelogChart = new TimelogChartLarge(this.timelogWindow, this.activeDay);
-    this.daybookService.activeDay$.subscribe((dayChanged)=>{
+    this.daybookService.activeDay$.subscribe((dayChanged) => {
       this.activeDay = dayChanged;
     });
-    this._timelogChart.timelogDateChanged$.subscribe((changedDate: moment.Moment)=>{
+    this._timelogChart.timelogDateChanged$.subscribe((changedDate: moment.Moment) => {
       this.daybookService.activeDayYYYYMMDD = changedDate.format("YYYY-MM-DD");
     });
   }
@@ -49,10 +58,10 @@ export class TimelogChartComponent implements OnInit {
 
 
 
-  public onWheel(event: WheelEvent){
-    if(event.deltaY > 0){
+  public onWheel(event: WheelEvent) {
+    if (event.deltaY > 0) {
       this._timelogChart.wheelUp();
-    }else if(event.deltaY < 0){
+    } else if (event.deltaY < 0) {
       this._timelogChart.wheelDown();
     }
   }

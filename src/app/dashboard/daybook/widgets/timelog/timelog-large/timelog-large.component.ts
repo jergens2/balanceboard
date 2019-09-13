@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import { faCog, faEye } from '@fortawesome/free-solid-svg-icons';
-import { TimelogService } from '../timelog.service';
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import * as moment from 'moment';
 import { DayStructureDataItem } from '../../../api/data-items/day-structure-data-item.interface';
@@ -17,7 +16,7 @@ export class TimelogLargeComponent implements OnInit {
   faCog = faCog;
   faEye = faEye;
 
-  constructor(private daybookService: DaybookService, private timelogService: TimelogService) { }
+  constructor(private daybookService: DaybookService) { }
 
   // private _activeDay: DaybookDayItem;
   // public get activeDay():DaybookDayItem{

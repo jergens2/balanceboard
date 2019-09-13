@@ -25,14 +25,14 @@ export class DataEntryInput{
     }
 
 
-    private _onSaveData$: Subject<boolean> = new Subject();
-    public get onSaveData$(): Observable<boolean> {
-        return this._onSaveData$.asObservable();
-    }
+    // private _onSaveData$: Subject<boolean> = new Subject();
+    // public get onSaveData$(): Observable<boolean> {
+    //     return this._onSaveData$.asObservable();
+    // }
 
 
-    public saveDataEntry(){
-        this._onSaveData$.next(true);
-    }
+    // public saveDataEntry(){
+    //     this._onSaveData$.next(true);
+    // }
 
 }

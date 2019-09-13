@@ -21,14 +21,14 @@
 
     </div>
     <div class="form-section-body">
-        <app-wakeup-section [timelogEntryForm]="timelogEntryForm" [formSection]="formSection"
+        <app-wakeup-section [daybookEntryForm]="daybookEntryForm" [formSection]="formSection"
             *ngIf="formSection.isWakeupSection">
         </app-wakeup-section>
 
-        <app-time-of-day-section [timelogEntryForm]="timelogEntryForm" [formSection]="formSection"
+        <app-time-of-day-section [daybookEntryForm]="daybookEntryForm" [formSection]="formSection"
             *ngIf="formSection.isTimeOfDaySection"></app-time-of-day-section>
 
-        <app-bedtime-section [timelogEntryForm]="timelogEntryForm" [formSection]="formSection"
+        <app-bedtime-section [daybookEntryForm]="daybookEntryForm" [formSection]="formSection"
             *ngIf="formSection.isBedtimeSection">
         </app-bedtime-section>
     </div>

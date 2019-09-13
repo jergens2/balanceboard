@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { DaybookService } from '../../../daybook.service';
+import { DaybookService } from '../daybook.service';
 import * as moment from 'moment';
-import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TimelogEntryFormService {
+export class DaybookEntryFormService {
 
   constructor(private daybookService: DaybookService) { }
 
@@ -16,6 +16,7 @@ export class TimelogEntryFormService {
   // }
 
   public saveTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem){
+    console.log("Saving timelog entry in timelog entry service")
     this.daybookService.today.addTimelogEntryItem(timelogEntry);
   }
   public updateTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem){

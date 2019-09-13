@@ -19,7 +19,7 @@
       <app-notepad-modal *ngIf="modal.modalComponentType == 'NOTE'"></app-notepad-modal>
       <app-action-item-form *ngIf="modal.modalComponentType == 'TASK'" [action]="modal.action"></app-action-item-form>
 
-      <!-- <app-timelog-entry-form *ngIf="modal.modalComponentType == 'TIMELOG_ENTRY'" [timelogEntry]="modal.modalData"></app-timelog-entry-form> -->
+      <!-- <app-daybook-entry-form *ngIf="modal.modalComponentType == 'TIMELOG_ENTRY'" [timelogEntry]="modal.modalData"></app-daybook-entry-form> -->
       <app-recurring-task-form *ngIf="modal.modalComponentType == 'RECURRING_TASK'" [updateTask]="modal.modalData"></app-recurring-task-form>
 
       <!-- <app-activity-category-definition-form 

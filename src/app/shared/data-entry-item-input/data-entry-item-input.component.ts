@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { DataEntryItemType } from './data-entry-item-type.enum';
 import { DataEntryInput } from './data-entry-input.class';
 import { faListUl, faDollarSign, faSortNumericUpAlt, faCheck, faWeight, faAppleAlt, faTable } from '@fortawesome/free-solid-svg-icons';
@@ -22,6 +22,8 @@ export class DataEntryItemInputComponent implements OnInit {
       return item.isActive;
     });
   }
+
+  @Output() close: EventEmitter<boolean> = new EventEmitter();
 
   ngOnInit() {
     // We are currently only implementing 9 out of 11 data types.
@@ -64,18 +66,20 @@ export class DataEntryItemInputComponent implements OnInit {
 
   public onClickSave(){
 
-    this.activeInputComponent.saveDataEntry();
-    this.close();
+    // this.activeInputComponent.saveDataEntry();
+    this._onClickSave$.next(true);
+    this.close.emit(true);
   }
 
+  private _onClickSave$: Subject<boolean> = new Subject();
+  public get onClickSave$(): Observable<boolean>{
+    return this._onClickSave$.asObservable();
+  }
 
   private _onCloseInputTool$: Subject<boolean> = new Subject();
   public get onCloseInputTool$(): Observable<boolean> {
     return this._onCloseInputTool$.asObservable();
   }
 
-  private close(){
-    this._onCloseInputTool$.next(true);
-  }
 
 }

@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TimelogEntryForm } from '../../timelog-entry-form.class';
-import { TimelogEntryFormSection } from '../../timelog-entry-form-section/timelog-entry-form-section.class';
+import { DaybookEntryForm } from '../../../daybook-entry-form.class';
+import { DaybookEntryFormSection } from '../../daybook-entry-form-section.class';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { DaybookDayItemSleepProfile } from '../../../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
 import * as moment from 'moment';
 
 @Component({
@@ -15,19 +15,19 @@ export class BedtimeSectionComponent implements OnInit {
 
   constructor() { }
 
-  @Input() timelogEntryForm: TimelogEntryForm;
-  @Input() formSection: TimelogEntryFormSection;
+  @Input() daybookEntryForm: DaybookEntryForm;
+  @Input() formSection: DaybookEntryFormSection;
 
 
   bedtimeForm: FormGroup;
   private _bedtime: moment.Moment;
 
   ngOnInit() { 
-    this._bedtime = moment(this.timelogEntryForm.bedtime);
+    this._bedtime = moment(this.daybookEntryForm.bedtime);
     this.bedtimeForm = new FormGroup({
-      "bedtime": new FormControl(this.timelogEntryForm.bedtime.format('HH:mm'), Validators.required),
+      "bedtime": new FormControl(this.daybookEntryForm.bedtime.format('HH:mm'), Validators.required),
     });
-    console.log("Bedtime is set to: " + this.timelogEntryForm.bedtime.format('HH:mm'))
+    console.log("Bedtime is set to: " + this.daybookEntryForm.bedtime.format('HH:mm'))
   }
 
   public onClickChangeBedtime(action: string){
@@ -45,13 +45,13 @@ export class BedtimeSectionComponent implements OnInit {
 
   public onClickSave(){
     let bedTimeInput = this.parseFormTimeInput(this.bedtimeForm.controls["bedtime"].value);
-    let bedtime: moment.Moment = moment(this.timelogEntryForm.bedtime).hour(bedTimeInput.hour).minute(bedTimeInput.minute).second(0).millisecond(0);
-    let sleepProfile: DaybookDayItemSleepProfile = this.timelogEntryForm.sleepProfile;
+    let bedtime: moment.Moment = moment(this.daybookEntryForm.bedtime).hour(bedTimeInput.hour).minute(bedTimeInput.minute).second(0).millisecond(0);
+    let sleepProfile: DaybookDayItemSleepProfile = this.daybookEntryForm.sleepProfile;
     sleepProfile["bedtimeISO"] = bedtime.toISOString(),
     sleepProfile["bedtimeUtcOffsetMinutes"] = bedtime.utcOffset(),
-    this.timelogEntryForm.onClickSaveSleepProfile(sleepProfile);
+    this.daybookEntryForm.onClickSaveSleepProfile(sleepProfile);
     this.formSection.isComplete = true;
-    this.formSection.title = this.timelogEntryForm.bedtime.format("h:mm a") + " bedtime";
+    this.formSection.title = this.daybookEntryForm.bedtime.format("h:mm a") + " bedtime";
     this.formSection.onClickClose();
   }
 

@@ -303,9 +303,9 @@ export class TimelogChartLarge {
             }else{
                 this._nowLine = null;
             }
-            if(moment(this.activeDay.wakeUpTime).isSameOrAfter(moment(this.window.startTime)) && moment(this.activeDay.wakeUpTime).isSameOrBefore(moment(this.window.endTime))){
+            if(moment(this.activeDay.wakeupTime).isSameOrAfter(moment(this.window.startTime)) && moment(this.activeDay.wakeupTime).isSameOrBefore(moment(this.window.endTime))){
                 let durationMilliseconds = this.window.endTime.diff(this.window.startTime, "milliseconds");
-                let percentage: number = (this.activeDay.wakeUpTime.diff(this.window.startTime, "milliseconds") / durationMilliseconds) * 100;
+                let percentage: number = (this.activeDay.wakeupTime.diff(this.window.startTime, "milliseconds") / durationMilliseconds) * 100;
                 this._wakeUpLine = {
                     ngClass: {
 

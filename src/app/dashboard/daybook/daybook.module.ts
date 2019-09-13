@@ -23,15 +23,14 @@ import { TimelogChartItemComponent } from './widgets/timelog/timelog-large/timel
 import { PointsWidgetSmallComponent } from './widgets/points/points-widget-small/points-widget-small.component';
 import { PointsWidgetLargeComponent } from './widgets/points/points-widget-large/points-widget-large.component';
 
-import { TimelogEntryFormComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form.component';
-import { TlefActivitiesComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activities.component';
-import { TlefChartComponent } from './widgets/timelog/timelog-entry-form/tlef-chart/tlef-chart.component';
-import { ActivitySliderBarComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
+import { DaybookEntryFormComponent } from './daybook-entry-form/daybook-entry-form.component';
+import { TlefActivitiesComponent } from './daybook-entry-form/tlef-activities/tlef-activities.component';
+import { ActivitySliderBarComponent } from './daybook-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
 import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.component';
-import { WakeupSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/wakeup-section/wakeup-section.component';
-import { DaySectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/time-of-day-section/time-of-day-section.component';
-import { BedtimeSectionComponent } from './widgets/timelog/timelog-entry-form/form-sections/bedtime-section/bedtime-section.component';
-import { TimelogEntryFormSectionComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form-section/timelog-entry-form-section.component';
+import { WakeupSectionComponent } from './daybook-entry-form/daybook-entry-form-section/form-sections/wakeup-section/wakeup-section.component';
+import { DaySectionComponent } from './daybook-entry-form/daybook-entry-form-section/form-sections/time-of-day-section/time-of-day-section.component';
+import { BedtimeSectionComponent } from './daybook-entry-form/daybook-entry-form-section/form-sections/bedtime-section/bedtime-section.component';
+import { DaybookEntryFormSectionComponent } from './daybook-entry-form/daybook-entry-form-section/daybook-entry-form-section.component';
 
 
 @NgModule({
@@ -59,20 +58,18 @@ import { TimelogEntryFormSectionComponent } from './widgets/timelog/timelog-entr
     TimelogChartItemComponent,
     PointsWidgetSmallComponent,
     PointsWidgetLargeComponent,
-    TimelogEntryFormComponent,
+    DaybookEntryFormComponent,
     TlefActivitiesComponent,
-    TlefChartComponent,
     ActivitySliderBarComponent,
     SleepBatteryComponent,
     WakeupSectionComponent,
     DaySectionComponent,
     BedtimeSectionComponent,
-    TimelogEntryFormSectionComponent,
+    DaybookEntryFormSectionComponent,
   ],
   exports: [
-    TimelogEntryFormComponent,
+    DaybookEntryFormComponent,
     TlefActivitiesComponent,
-    TlefChartComponent,
     ActivitySliderBarComponent,
   ]
   
