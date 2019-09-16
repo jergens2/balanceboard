@@ -1,3 +1,30 @@
-<div class="calendar-small-root">
-    Calendar Small
+<div class="calendar-small-root no-select font-family-open-sans">
+    <div class="calendar-header">
+        <div class="header-buffer"></div>
+        <div>
+            {{ monthHeader }}
+        </div>
+
+        <div class="header-buffer">
+            <fa-icon [icon]="faExpand" class="icon-button" (click)="onClickExpand()"></fa-icon>
+        </div>
+    </div>
+    <div class="days-of-week">
+        <div class="day-of-week">S</div>
+        <div class="day-of-week">M</div>
+        <div class="day-of-week">T</div>
+        <div class="day-of-week">W</div>
+        <div class="day-of-week">T</div>
+        <div class="day-of-week">F</div>
+        <div class="day-of-week">S</div>
+    </div>
+    <div class="calendar-body">
+        <div *ngFor="let dayOfCalendar of daysOfCalendar" class="day-of-calendar-container">
+            <div class="day-of-calendar" (click)="onClickCalendarDay(dayOfCalendar)"
+                [ngClass]="{'calendar-day-not-this-month': !dayOfCalendar.isThisMonth, 'calendar-day-active': dayOfCalendar.isActiveDay, 'calendar-day-today': dayOfCalendar.isToday}">
+                {{ dayOfCalendar.date.format("D") }}
+
+            </div>
+        </div>
+    </div>
 </div>

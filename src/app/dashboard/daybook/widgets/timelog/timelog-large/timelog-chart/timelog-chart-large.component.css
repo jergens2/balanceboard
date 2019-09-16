@@ -1,5 +1,4 @@
 .timelog-chart-root{
-    border: 1px solid blue;
     min-width: 320px;
     min-height: 640px;
     
@@ -113,51 +112,3 @@
     position: relative;
     z-index: 1;
 }
-/* .day-structure-item:hover{
-    border: 1px solid gray;
-    background-color: rgba(128, 128, 128, 0.055);
-} */
-/* .day-structure-item-border-bottom{
-    border-left: 1px solid rgba(146, 146, 146, 0.1);
-    border-right: 1px solid rgba(146, 146, 146, 0.1);
-    border-bottom: 1px solid rgba(146, 146, 146, 0.1);
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-}
-.day-structure-item-border-top{
-    border-left: 1px solid rgba(146, 146, 146, 0.1);
-    border-right: 1px solid rgba(146, 146, 146, 0.1);
-    border-top: 1px solid rgba(146, 146, 146, 0.1);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-}
-.day-structure-item-border-all{
-    border: 1px solid rgba(146, 146, 146, 0.1);
-    border-radius: 10px;
-} 
-.day-structure-item-border-bottom-hover{
-    border-left: 1px solid rgba(146, 146, 146, 0.3);
-    border-right: 1px solid rgba(146, 146, 146, 0.3);
-    border-bottom: 1px solid rgba(146, 146, 146, 0.3);
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
-}
-.day-structure-item-border-top-hover{
-    border-left: 1px solid rgba(146, 146, 146, 0.3);
-    border-right: 1px solid rgba(146, 146, 146, 0.3);
-    border-top: 1px solid rgba(146, 146, 146, 0.3);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-}
-.day-structure-item-border-all-hover{
-    border: 1px solid rgba(146, 146, 146, 0.3);
-    border-radius: 10px;
-} */

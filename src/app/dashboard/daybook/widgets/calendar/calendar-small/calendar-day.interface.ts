@@ -1,11 +1,10 @@
 import * as moment from 'moment';
 
-export interface ICalendarDay{
+export interface CalendarDay{
 
-    style: any;
     date: moment.Moment;
     isThisMonth: boolean;
     isToday: boolean;
-    isCurrentDay: boolean;
+    isActiveDay: boolean;
 
 }

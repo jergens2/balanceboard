@@ -9,68 +9,68 @@
     </div>
   </div>
 
-  <div class="layout-flex" *ngIf="!daybookIsLoading">
-    <div class="main-widget">
-      <app-timelog-large *ngIf="timelogWidget.isExpanded"  [ngStyle]="timelogWidget.ngStyle"
-        [ngClass]="timelogWidget.ngClass"></app-timelog-large>
-      <app-calendar-large *ngIf="calendarWidget.isExpanded"  [ngStyle]="calendarWidget.ngStyle"
-        [ngClass]="calendarWidget.ngClass"></app-calendar-large>
-      <app-daily-task-list-large *ngIf="dailyTaskListWidget.isExpanded" 
-        [ngClass]="dailyTaskListWidget.ngStyle" [ngClass]="dailyTaskListWidget.ngClass"></app-daily-task-list-large>
+  <div class="layout-flex-container" *ngIf="!daybookIsLoading">
+    <div class="layout-flex">
+      <div class="main-widget">
+        <app-timelog-large *ngIf="timelogWidget.isExpanded" [ngStyle]="timelogWidget.ngStyle"
+          [ngClass]="timelogWidget.ngClass"></app-timelog-large>
+        <app-calendar-large *ngIf="calendarWidget.isExpanded" [ngStyle]="calendarWidget.ngStyle"
+          [ngClass]="calendarWidget.ngClass"></app-calendar-large>
+        <app-daily-task-list-large *ngIf="dailyTaskListWidget.isExpanded" [ngClass]="dailyTaskListWidget.ngStyle"
+          [ngClass]="dailyTaskListWidget.ngClass"></app-daily-task-list-large>
+      </div>
+      <div class="sidebar" *ngIf="appScreenSize > 1">
+
+        <div class="small-widget" *ngIf="!calendarWidget.isExpanded" (mouseenter)="calendarWidget.onMouseEnterWidget()"
+          (mouseleave)="calendarWidget.onMouseLeaveWidget()">
+          <!-- <div class="small-widget-header">
+            <div class="swh-buffer"></div>
+            <div>Calendar</div>
+            <div class="swh-buffer">
+              <fa-icon [icon]="faExpand" *ngIf="calendarWidget.mouseOver" class="icon-button"
+                (click)="calendarWidget.onClickExpand()"></fa-icon>
+            </div>
+          </div> -->
+          <!-- <div class="small-widget-body"> -->
+          <app-calendar-small (expand)="calendarWidget.onClickExpand()"></app-calendar-small>
+          <!-- </div> -->
+        </div>
+
+        <div class="small-widget" *ngIf="!dailyTaskListWidget.isExpanded"
+          (mouseenter)="dailyTaskListWidget.onMouseEnterWidget()"
+          (mouseleave)="dailyTaskListWidget.onMouseLeaveWidget()">
+          <div class="small-widget-header">
+            <div class="swh-buffer"></div>
+            <div>Daily Task List</div>
+            <div class="swh-buffer">
+              <fa-icon [icon]="faExpand" *ngIf="dailyTaskListWidget.mouseOver" class="icon-button"
+                (click)="dailyTaskListWidget.onClickExpand()"></fa-icon>
+            </div>
+          </div>
+          <div class="small-widget-body">
+            <app-daily-task-list-small></app-daily-task-list-small>
+          </div>
+        </div>
+
+        <div class="small-widget" *ngIf="!timelogWidget.isExpanded" (mouseenter)="timelogWidget.onMouseEnterWidget()"
+          (mouseleave)="timelogWidget.onMouseLeaveWidget()">
+          <div class="small-widget-header">
+            <div class="swh-buffer"></div>
+            <div>Timelog</div>
+            <div class="swh-buffer">
+              <fa-icon [icon]="faExpand" *ngIf="timelogWidget.mouseOver" class="icon-button"
+                (click)="timelogWidget.onClickExpand()"></fa-icon>
+            </div>
+          </div>
+          <div class="small-widget-body">
+            <app-timelog-small></app-timelog-small>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div class="sidebar" *ngIf="appScreenSize > 1">
 
-      <div class="small-widget" *ngIf="!calendarWidget.isExpanded" (mouseenter)="calendarWidget.onMouseEnterWidget()"
-        (mouseleave)="calendarWidget.onMouseLeaveWidget()">
-        <div class="small-widget-header">
-          <div class="swh-buffer"></div>
-          <div>Calendar</div>
-          <div class="swh-buffer">
-            <fa-icon [icon]="faExpand" *ngIf="calendarWidget.mouseOver" class="icon-button"
-              (click)="calendarWidget.onClickExpand()"></fa-icon>
-          </div>
-        </div>
-        <div class="small-widget-body">
-          <app-calendar-small ></app-calendar-small>
-        </div>
-      </div>
-
-      <div class="small-widget" *ngIf="!dailyTaskListWidget.isExpanded"
-        (mouseenter)="dailyTaskListWidget.onMouseEnterWidget()" (mouseleave)="dailyTaskListWidget.onMouseLeaveWidget()">
-        <div class="small-widget-header">
-          <div class="swh-buffer"></div>
-          <div>Daily Task List</div>
-          <div class="swh-buffer">
-            <fa-icon [icon]="faExpand" *ngIf="dailyTaskListWidget.mouseOver" class="icon-button"
-              (click)="dailyTaskListWidget.onClickExpand()"></fa-icon>
-          </div>
-        </div>
-        <div class="small-widget-body">
-          <app-daily-task-list-small ></app-daily-task-list-small>
-        </div>
-      </div>
-
-      <div class="small-widget" *ngIf="!timelogWidget.isExpanded" (mouseenter)="timelogWidget.onMouseEnterWidget()"
-        (mouseleave)="timelogWidget.onMouseLeaveWidget()">
-        <div class="small-widget-header">
-          <div class="swh-buffer"></div>
-          <div>Timelog</div>
-          <div class="swh-buffer">
-            <fa-icon [icon]="faExpand" *ngIf="timelogWidget.mouseOver" class="icon-button"
-              (click)="timelogWidget.onClickExpand()"></fa-icon>
-          </div>
-        </div>
-        <div class="small-widget-body">
-          <app-timelog-small ></app-timelog-small>
-        </div>
-      </div>
-
-
-
-    </div>
-
-
-
+    <div class="layout-flex-bottom-buffer"></div>
 
   </div>
 </div>

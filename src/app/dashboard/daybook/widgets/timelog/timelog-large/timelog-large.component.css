@@ -1,9 +1,9 @@
 .timelog-root{
     width:100%;
     height:100%;
-    border: 1px solid pink;
     display: flex;
     flex-direction: column;
+
 }
 .timelog-header{
     display: flex;

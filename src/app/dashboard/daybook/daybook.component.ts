@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { SizeService } from '../../shared/app-screen-size/size.service';
 import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.enum';
 import { DaybookService } from './daybook.service';
@@ -31,6 +31,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
   public set activeDay(activeDay: DaybookDayItem){
     this._activeDay = activeDay;
   }
+
 
   public daybookIsLoading: boolean = true;
 

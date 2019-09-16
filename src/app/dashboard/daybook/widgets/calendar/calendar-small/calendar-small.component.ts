@@ -1,132 +1,92 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ICalendarDay } from './calendar-day.interface';
+import { CalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 import { faArrowRight, faArrowLeft, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import { DaybookSmallWidget } from '../../daybook-small-widget.interface';
+import { DaybookService } from '../../../daybook.service';
 
 @Component({
   selector: 'app-calendar-small',
   templateUrl: './calendar-small.component.html',
   styleUrls: ['./calendar-small.component.css']
 })
-export class CalendarSmallComponent implements OnInit, DaybookSmallWidget {
+export class CalendarSmallComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private daybookService: DaybookService) { }
 
   faExpand = faExpand;
 
-  @Input() activeDay: DaybookDayItem;
-  @Output() expand: EventEmitter<boolean> = new EventEmitter(); 
+  @Output() expand: EventEmitter<boolean> = new EventEmitter();
 
-
-  onClickExpand(){
+  onClickExpand() {
     this.expand.emit(true);
   }
 
-
-
-
-
-  faArrowRight = faArrowRight;
-  faArrowLeft = faArrowLeft;
-
-  calendarDays: ICalendarDay[] = []
-
-  calendarMonthDate: moment.Moment = moment();
-
-  
-
-  private _currentDate: moment.Moment = moment();
-  @Input() set currentDate(date: moment.Moment){
-    this._currentDate = moment(date);
-    this.calendarDays = this.buildCalendarDays(this._currentDate);
-    this.calendarMonthDate = moment(this._currentDate);
-  }
-  get currentDate(): moment.Moment{
-    return this._currentDate;
-  }
-  @Output() changedDate: EventEmitter<moment.Moment> = new EventEmitter(); 
+  private activeDay: DaybookDayItem;
+  public daysOfCalendar: CalendarDay[] = [];
 
   ngOnInit() {
-    this.calendarDays = this.buildCalendarDays(this.currentDate);
-  }
+    this.activeDay = this.daybookService.activeDay;
 
-  buildCalendarDays(referenceDate: moment.Moment): ICalendarDay[]{
+    this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD));
 
-    let calendarDays: ICalendarDay[] = [];
+    this.daybookService.activeDay$.subscribe((activeDayChanged)=>{
+      this.activeDay = activeDayChanged;
+      console.log("WE REBUILDING BOSS")
+      this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD));
+    });
 
-    let today = moment(referenceDate);
-    let firstDate = moment(today).startOf('month');
-    let lastDate = moment(today).endOf('month');
-
-    let weeksAfterFirstRow: number = Math.ceil((moment(lastDate).date() - (7-moment(firstDate).day())) / 7 );
-    let additionalDays: number = 0;
-    if(weeksAfterFirstRow == 4){
-      additionalDays = 7 + (7-lastDate.day())
-    }else if(weeksAfterFirstRow == 5){
-      additionalDays = (7-lastDate.day())
-    }
-    lastDate = moment(lastDate).add(additionalDays, 'days');
-
-
-    let currentDate = moment(firstDate).subtract(firstDate.day(), 'days');
-    let currentRow: number = 3;
-
-
-    while(currentDate.format('YYYY-MM-DD') < lastDate.format('YYYY-MM-DD')){
-      let isThisMonth: boolean = false;
-      let isToday: boolean = false;
-      let isCurrentDay: boolean = false;
-      if(currentDate.month() == moment(today).month()){
-        isThisMonth = true;
-      }
-      if(currentDate.dayOfYear() == moment().dayOfYear()){
-        isToday = true;
-      }
-      if(currentDate.dayOfYear() == moment(this.currentDate).dayOfYear()){
-        isCurrentDay = true;
-      }
-      let style = { "grid-row": "" + currentRow + " / span 1", "grid-column":"" + (currentDate.day() + 1) + " / span 1" };
-      let calendarDay: ICalendarDay = { date:moment(currentDate) , style: style, isThisMonth: isThisMonth, isToday:isToday, isCurrentDay:isCurrentDay }
-
-      calendarDays.push(calendarDay);
-      currentDate = moment(currentDate).add(1, "days");
-      if(currentDate.day() == 0){
-        currentRow ++;
-      }
-    }
     
-
-    return calendarDays;
   }
 
-  onClickDay(calendarDay: ICalendarDay){
-    this.changedDate.emit(calendarDay.date);
+  public onClickCalendarDay(dayOfCalendar: CalendarDay){
+    this.daybookService.activeDayYYYYMMDD = dayOfCalendar.date.format("YYYY-MM-DD");
   }
 
-  onClickMonthHeader(){
-    
-    if(this.calendarMonthDate.month() == moment().month()){
-      this.router.navigate(['/month-planner']);
+  private buildDaysOfCalendar(activeDate: moment.Moment){
+    let daysOfCalendar: CalendarDay[] = [];
+
+    let firstDate: moment.Moment = moment(activeDate).startOf("month");
+    if(firstDate.day() == 0){
+      firstDate = moment(firstDate).subtract(7, "days");
     }else{
-      this.calendarMonthDate = moment();
-      this.calendarDays = this.buildCalendarDays(this.calendarMonthDate);
+      firstDate = moment(firstDate).startOf("week");
     }
-    //first click:  set the month back to current month
-    //if it's already on the current month then do the router.navigate()
-    
+
+    const lastDate: moment.Moment = moment(firstDate).add(6, "weeks").subtract(1, "day");
+
+    let currentDate: moment.Moment = moment(firstDate);
+    while(currentDate.isSameOrBefore(lastDate)){
+      let isThisMonth: boolean = moment(activeDate).month() == moment(currentDate).month();
+      let isToday: boolean = moment(currentDate).format("YYYY-MM-DD") == moment().format("YYYY-MM-DD");
+      let isActiveDay: boolean = moment(this.activeDay.dateYYYYMMDD).format("YYYY-MM-DD") == moment(currentDate).format("YYYY-MM-DD");
+      let calendarDay: CalendarDay = {
+        date: moment(currentDate),
+        isThisMonth: isThisMonth,
+        isToday: isToday,
+        isActiveDay: isActiveDay,
+      };
+      
+      daysOfCalendar.push(calendarDay);
+
+      currentDate = moment(currentDate).add(1, "days");
+    }
+
+
+    this._monthHeader = moment(activeDate).format("MMMM YYYY");
+    this.daysOfCalendar = daysOfCalendar;
   }
 
-  onClickCalendarLeft(){
-    this.calendarMonthDate = moment(this.calendarMonthDate).subtract(1,'month');
-    this.calendarDays = this.buildCalendarDays(this.calendarMonthDate);
+  private _monthHeader: string = "";
+  public get monthHeader(): string {
+    return this._monthHeader;
   }
 
-  onClickCalendarRight(){
-    this.calendarMonthDate = moment(this.calendarMonthDate).add(1,'month');
-    this.calendarDays = this.buildCalendarDays(this.calendarMonthDate);
-  }
+
+
+
+
 
 }

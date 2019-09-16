@@ -42,13 +42,10 @@ export class DaybookDayItem{
             sleepCycleDataItems: [],
             sleepProfile: {
                 sleepQuality: null,
-
                 wakeupTimeISO: "",
                 wakeupTimeUtcOffsetMinutes: -1,
-                
                 bedtimeISO: "",
                 bedtimeUtcOffsetMinutes: -1,
-                
                 fallAsleepTimeISO: "",
                 fallAsleepTimeUtcOffsetMinutes: -1,
             },

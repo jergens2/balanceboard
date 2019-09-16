@@ -76,6 +76,13 @@ export class DaybookTimeReferencer{
     public get mostRecentTimeMarker(): moment.Moment{
         const currentTime: moment.Moment = moment();
         if(currentTime.format("YYYY-MM-DD") == this.dateYYYYMMDD){
+            console.log("This method is incomplete.  ")
+            // This method currently just grabs the most recent item, in order of: timelogEntry, structureItem, quarterItem
+            // but perhaps we don't necessarily want this behavior.  we want the most RELEVANT time, with respect to these items.
+            // most relevant does not always mean most recently for each of these.
+            // for example, it's 3:00pm, and the most recent timelog entry ended at 10:00am.
+            // this method will return 10:00am.  in stead, what do we want?  something more relevant than that.  the 10:00 is old news.
+            // or perhaps, we just create a different get method entirely:  get relativeTimeMarker()
             let mostRecentTimelogEntryTime: moment.Moment = this.mostRecentTimelogEntryTime;
             if(mostRecentTimelogEntryTime != null){
                 return moment(mostRecentTimelogEntryTime);
