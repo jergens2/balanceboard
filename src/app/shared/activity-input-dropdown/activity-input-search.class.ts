@@ -164,11 +164,12 @@ export class ActivityInputSearch {
                     description: "New root level activity",
                     color: "#ffffff",
                     icon: "",
-                    durationSetting: ActivityDurationSetting.VariableLength,
-                    specifiedDurationMinutes: 0,
-                    targets: [],
-                    isConfigured: false,
+                    durationSetting: ActivityDurationSetting.Duration,
+                    specifiedDurationMinutes: -1,
                     scheduleConfiguration: null,
+                    currentPointsConfiguration: null,
+                    pointsConfigurationHistory: [],
+                    isConfigured: false,
                     isRoutine: false,
                     routineMembersActivityIds: [],
                 }
@@ -186,7 +187,7 @@ export class ActivityInputSearch {
                     currentFullPath += pathNames[i] + "/";
                     let activityName: string = pathNames[i];
                     let newActivity: ActivityCategoryDefinition;
-                    
+
                     if (i == 0) {
                         let firstTreeId = this.activitiesService.userId + "_" + Guid.newGuid();
                         let activityHttpShape: ActivityCategoryDefinitionHttpShape = {
@@ -198,11 +199,12 @@ export class ActivityInputSearch {
                             description: "New root level activity",
                             color: "#ffffff",
                             icon: "",
-                            durationSetting: ActivityDurationSetting.VariableLength,
-                            specifiedDurationMinutes: 0,
-                            targets: [],
-                            isConfigured: false,
+                            durationSetting: ActivityDurationSetting.Duration,
+                            specifiedDurationMinutes: -1,
                             scheduleConfiguration: null,
+                            currentPointsConfiguration: null,
+                            pointsConfigurationHistory: [],
+                            isConfigured: false,
                             isRoutine: false,
                             routineMembersActivityIds: [],
                         }
@@ -221,11 +223,12 @@ export class ActivityInputSearch {
                             description: description,
                             color: "#ffffff",
                             icon: "",
-                            durationSetting: ActivityDurationSetting.VariableLength,
-                            specifiedDurationMinutes: 0,
-                            targets: [],
-                            isConfigured: false,
+                            durationSetting: ActivityDurationSetting.Duration,
+                            specifiedDurationMinutes: -1,
                             scheduleConfiguration: null,
+                            currentPointsConfiguration: null,
+                            pointsConfigurationHistory: [],
+                            isConfigured: false,
                             isRoutine: false,
                             routineMembersActivityIds: [],
                         }
@@ -271,11 +274,12 @@ export class ActivityInputSearch {
                         description: "Child of " + parentName,
                         color: parentActivity.color,
                         icon: "",
-                        durationSetting: ActivityDurationSetting.VariableLength,
-                        specifiedDurationMinutes: 0,
-                        targets: [],
-                        isConfigured: false,
+                        durationSetting: ActivityDurationSetting.Duration,
+                        specifiedDurationMinutes: -1,
                         scheduleConfiguration: null,
+                        currentPointsConfiguration: null,
+                        pointsConfigurationHistory: [],
+                        isConfigured: false,
                         isRoutine: false,
                         routineMembersActivityIds: [],
                     }

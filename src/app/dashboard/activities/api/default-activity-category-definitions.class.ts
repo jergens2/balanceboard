@@ -1,537 +1,292 @@
 import { ActivityCategoryDefinition } from "./activity-category-definition.class";
 import { Guid } from "../../../shared/utilities/guid.class";
 import { ActivityDurationSetting } from "./activity-duration.enum";
-import { ScheduleConfiguration } from "../../../shared/utilities/schedule-configuration.interface";
 import * as moment from 'moment';
+import { ActivityCategoryDefinitionHttpShape } from "./activity-category-definition-http-shape.interface";
 import { TimeUnit } from "../../../shared/utilities/time-unit.enum";
 import { TimeOfDay } from "../../../shared/utilities/time-of-day-enum";
 
+
 export class DefaultActivityCategoryDefinitions {
+
+    public static newTreeId(userId: string): string {
+        return userId + "_" + Guid.newGuid();
+    }
+
+    public static blankActivity(userId: string): ActivityCategoryDefinitionHttpShape {
+        let newBlankActivity: ActivityCategoryDefinitionHttpShape = {
+            _id: "",
+            userId: userId,
+            treeId: DefaultActivityCategoryDefinitions.newTreeId(userId),
+            parentTreeId: userId + "_TOP_LEVEL",
+            name: "name",
+            description: "description",
+            color: "",
+            icon: "",
+            durationSetting: ActivityDurationSetting.Duration,
+            specifiedDurationMinutes: -1,
+            scheduleConfiguration: null,
+            currentPointsConfiguration: null,
+            pointsConfigurationHistory: [],
+            isConfigured: false,
+            isRoutine: false,
+            routineMembersActivityIds: [],
+        }
+        return newBlankActivity;
+    }
 
     public static defaultActivities(userId: string): ActivityCategoryDefinition[] {
 
-        const topLevel: string = "_TOP_LEVEL";
+        const topLevelTreeId: string = userId + "_TOP_LEVEL";
 
         let activities = [];
 
         /*
             Blue gradient for work
         */
-        const workColor: string = "#cee3ff";
-        const workTreeId = userId + "_" + Guid.newGuid();
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: workTreeId,
-                parentTreeId: userId + topLevel,
-                name: "Work",
-                description: "Time spent on jobs, career",
-                color: workColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: workTreeId,
-                name: "Commuting",
-                description: "Time spent commuting to and from job",
-                color: workColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: workTreeId,
-                name: "Job",
-                description: "Time spent on the job",
-                color: workColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
+
+        let work: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        work.parentTreeId = topLevelTreeId;
+        work.name = "Work";
+        work.description = "Time spent on jobs, career"
+        work.color = "#cee3ff";
+
+        activities.push(work);
+
+        let commuting: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        commuting.parentTreeId = work.treeId;
+        commuting.name = "Commuting";
+        commuting.description = "Time spent commuting to and from job"
+        commuting.color = work.color;
+
+        activities.push(commuting);
+
+        let job: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        job.parentTreeId = work.treeId;
+        job.name = "Job";
+        job.description = "Time spent on the job"
+        job.color = work.color;
+
+        activities.push(job);
 
 
         /*
             Green gradient for Routine;
         */
-        const maintenanceColor: string = "#d4ffcc";
-        const maintenanceTreeId: string = userId + "_" + Guid.newGuid();
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: maintenanceTreeId,
-                parentTreeId: userId + topLevel,
-                name: "Maintenance",
-                description: "Time spent on routine, maintenance things, and other necessary activities",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
 
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: maintenanceTreeId,
-                name: "Eating",
-                description: "Eating",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: maintenanceTreeId,
-                name: "Making food",
-                description: "Making / preparing food",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: maintenanceTreeId,
-                name: "Grocery Shopping",
-                description: "Getting groceries",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        const choresTreeId: string = userId + "_" + Guid.newGuid();
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: choresTreeId,
-                parentTreeId: maintenanceTreeId,
-                name: "Household Chores",
-                description: "Chores around the house",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        const makeBedTreeId: string = userId + "_" + Guid.newGuid();
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: makeBedTreeId,
-                parentTreeId: choresTreeId,
-                name: "Make the bed",
-                description: "Make the the bed so that it is tidy",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.Short,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: choresTreeId,
-                name: "Laundry",
-                description: "Laundry",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: choresTreeId,
-                name: "Vacuuming",
-                description: "Vacuuming",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: choresTreeId,
-                name: "Dishes",
-                description: "Dishes",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: choresTreeId,
-                name: "Cleaning",
-                description: "Cleaning",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        const hygieneTreeId: string = userId + "_" + Guid.newGuid();
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: hygieneTreeId,
-                parentTreeId: maintenanceTreeId,
-                name: "Hygiene",
-                description: "Time spent on personal hygiene",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: hygieneTreeId,
-                name: "Showering",
-                description: "Showering",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        const brushTeethTreeId: string = userId + "_" + Guid.newGuid();
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: brushTeethTreeId,
-                parentTreeId: hygieneTreeId,
-                name: "Brush teeth",
-                description: "Brush teeth",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.Short,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: maintenanceTreeId,
-                name: "Errands",
-                description: "Miscellaneous errands",
-                color: maintenanceColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
+        let maintenance: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        maintenance.parentTreeId = topLevelTreeId;
+        maintenance.name = "Maintenance";
+        maintenance.description = "Time spent on routine, maintenance things, and other necessary activities"
+        maintenance.color = "#d4ffcc";
 
+        activities.push(maintenance);
+
+        let eating: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        eating.parentTreeId = maintenance.treeId;
+        eating.name = "Eating";
+        eating.description = "Eating"
+        eating.color = maintenance.color;
+
+        activities.push(eating);
+
+        let makingFood: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        makingFood.parentTreeId = maintenance.treeId;
+        makingFood.name = "Making food";
+        makingFood.description = "Making / preparing food"
+        makingFood.color = maintenance.color;
+
+        activities.push(makingFood);
+
+        let groceryShopping: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        groceryShopping.parentTreeId = maintenance.treeId;
+        groceryShopping.name = "Grocery Shopping";
+        groceryShopping.description = "Getting groceries"
+        groceryShopping.color = maintenance.color;
+
+        activities.push(groceryShopping);
+
+
+        let chores: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        chores.parentTreeId = maintenance.treeId;
+        chores.name = "Household Chores";
+        chores.description = "Chores around the house"
+        chores.color = maintenance.color;
+
+        activities.push(chores);
+
+
+        let makeBed: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        makeBed.parentTreeId = chores.treeId;
+        makeBed.name = "Make the bed";
+        makeBed.description = "Make the the bed so that it is tidy"
+        makeBed.color = chores.color;
+        makeBed.durationSetting = ActivityDurationSetting.Occurrence,
+        makeBed.specifiedDurationMinutes = 5;
+        makeBed.scheduleConfiguration = {
+            timeUnitFrame: TimeUnit.Day,
+            timeFrameFrequency: 1,
+            scheduledOccurrences: [
+                {
+                    minutesPerOccurrence: makeBed.specifiedDurationMinutes,
+                    timeOfDayQuarter: TimeOfDay.Any,
+                    timeOfDayHour: -1,
+                    timeOfDayMinute: -1,
+                },
+            ],
+            startDateTimeISO: moment().startOf("year").toISOString(),
+            timesOfDay: [],
+            timesOfDayRanges: [],
+            timesOfDayExcludedRanges: [],
+            daysOfWeek: [],
+            daysOfWeekExcluded: [],
+            daysOfYear: [],
+        }
+
+
+        activities.push(makeBed);
+
+
+        let laundry: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        laundry.parentTreeId = chores.treeId;
+        laundry.name = "Laundry";
+        laundry.description = "Laundry"
+        laundry.color = chores.color;
+
+        activities.push(laundry);
+
+        let vacuuming: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        vacuuming.parentTreeId = chores.treeId;
+        vacuuming.name = "Vacuuming";
+        vacuuming.description = "Vacuuming"
+        vacuuming.color = chores.color;
+
+        activities.push(vacuuming);
+
+        let dishes: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        dishes.parentTreeId = chores.treeId;
+        dishes.name = "Dishes";
+        dishes.description = "Dishes"
+        dishes.color = chores.color;
+
+        activities.push(dishes);
+
+        let cleaning: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        cleaning.parentTreeId = chores.treeId;
+        cleaning.name = "Cleaning";
+        cleaning.description = "Cleaning"
+        cleaning.color = chores.color;
+
+        activities.push(cleaning);
+
+        let hygiene: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        hygiene.parentTreeId = maintenance.treeId;
+        hygiene.name = "Hygiene";
+        hygiene.description = "Time spent on personal hygiene"
+        hygiene.color = maintenance.color;
+
+        activities.push(hygiene);
+
+        let shower: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        shower.parentTreeId = hygiene.treeId;
+        shower.name = "Shower";
+        shower.description = "Shower"
+        shower.color = hygiene.color;
+
+        activities.push(shower);
+
+
+        let brushTeeth: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        brushTeeth.parentTreeId = hygiene.treeId;
+        brushTeeth.name = "Brush teeth";
+        brushTeeth.description = "Brush teeth"
+        brushTeeth.color = hygiene.color;
+        brushTeeth.durationSetting = ActivityDurationSetting.Occurrence;
+        brushTeeth.specifiedDurationMinutes = 2;
+        brushTeeth.scheduleConfiguration = {
+            timeUnitFrame: TimeUnit.Day,
+            timeFrameFrequency: 1,
+            scheduledOccurrences: [
+                {
+                    minutesPerOccurrence: brushTeeth.specifiedDurationMinutes,
+                    timeOfDayQuarter: TimeOfDay.Morning,
+                    timeOfDayHour: -1,
+                    timeOfDayMinute: -1,
+                },
+                {
+                    minutesPerOccurrence: brushTeeth.specifiedDurationMinutes,
+                    timeOfDayQuarter: TimeOfDay.Evening,
+                    timeOfDayHour: -1,
+                    timeOfDayMinute: -1,
+                },
+            ],
+            startDateTimeISO: moment().startOf("year").toISOString(),
+            timesOfDay: [],
+            timesOfDayRanges: [],
+            timesOfDayExcludedRanges: [],
+            daysOfWeek: [],
+            daysOfWeekExcluded: [],
+            daysOfYear: [],
+        }
+
+        activities.push(brushTeeth);
+
+
+
+        let errands: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        errands.parentTreeId = maintenance.treeId;
+        errands.name = "Errands";
+        errands.description = "Miscellaneous errands"
+        errands.color = maintenance.color;
+
+        activities.push(errands);
 
         /*
             Yellow gradient for leisure;
         */
 
-        const leisureColor: string = "#fff899";
-        const leisureTreeId: string = userId + "_" + Guid.newGuid();
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: leisureTreeId,
-                parentTreeId: userId + topLevel,
-                name: "Leisure",
-                description: "Time spent on leisurely activities",
-                color: leisureColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: leisureTreeId,
-                name: "Reading",
-                description: "Time spent reading",
-                color: leisureColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: leisureTreeId,
-                name: "Video games",
-                description: "Playing video games",
-                color: leisureColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: leisureTreeId,
-                name: "Web Browsing",
-                description: "Browsing the web, social media, etc.",
-                color: leisureColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: leisureTreeId,
-                name: "Exercising",
-                description: "Excercise activities, e.g. walking, bicycling, etc.",
-                color: leisureColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: null,
-                isRoutine: false,
-                routineMembersActivityIds: [],
-            }
-        ));
+        let leisure: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        leisure.name = "Leisure";
+        leisure.description = "Time spent on leisurely activities"
+        leisure.color = "#fff899";
+
+        activities.push(leisure);
+
+        let reading: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        reading.parentTreeId = leisure.treeId;
+        reading.name = "Reading";
+        reading.description = "Time spent reading"
+        reading.color = leisure.color;
+
+        activities.push(reading);
 
 
-        const wakeupRoutineConfiguration: ScheduleConfiguration = {
-            repititions: [{
-                value: 1,
-                unit: TimeUnit.Day,
-                startsOnDateTimeISO: moment().startOf("year").toISOString(),
-            }],
-        
-            timeOfDay: TimeOfDay.Morning,
-            timeOfDayRanges: [],
-        
-            daysOfWeek: [],
-            daysOfWeekExcluded: [],
-        };
-        const bedtimeRoutineConfiguration: ScheduleConfiguration = {
-            repititions: [{
-                value: 1,
-                unit: TimeUnit.Day,
-                startsOnDateTimeISO: moment().startOf("year").toISOString(),
-            }],
-        
-            timeOfDay: TimeOfDay.Evening,
-            timeOfDayRanges: [],
-        
-            daysOfWeek: [],
-            daysOfWeekExcluded: [],
-        }
+        let videoGames: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        videoGames.parentTreeId = leisure.treeId;
+        videoGames.name = "Video Games";
+        videoGames.description = "Playing video games"
+        videoGames.color = leisure.color;
 
-        const routineColor: string = "#0084ff";
+        activities.push(videoGames);
 
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: userId + topLevel,
-                name: "Wakeup Routine",
-                description: "Things dong after waking up",
-                color: routineColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: wakeupRoutineConfiguration,
-                isRoutine: true,
-                routineMembersActivityIds: [
-                    brushTeethTreeId,
-                    makeBedTreeId,
-                ],
-            }
-        ));
+        let webBrowsing: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        webBrowsing.parentTreeId = leisure.treeId;
+        webBrowsing.name = "Web Browsing";
+        webBrowsing.description = "Browsing the web, social media, etc."
+        webBrowsing.color = leisure.color;
 
-        activities.push(new ActivityCategoryDefinition(
-            {
-                _id: "",
-                userId: userId,
-                treeId: userId + "_" + Guid.newGuid(),
-                parentTreeId: userId + topLevel,
-                name: "Bedtime Routine",
-                description: "Things before going to sleep",
-                color: routineColor,
-                icon: "",
-                durationSetting: ActivityDurationSetting.VariableLength,
-                specifiedDurationMinutes: -1,
-                targets: [],
-                isConfigured: true,
-                scheduleConfiguration: bedtimeRoutineConfiguration,
-                isRoutine: true,
-                routineMembersActivityIds: [
-                    brushTeethTreeId
-                ],
-            }
-        ));
+        activities.push(webBrowsing);
+
+        let exercise: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
+        exercise.parentTreeId = leisure.treeId;
+        exercise.name = "Exercising";
+        exercise.description = "Excercise activities, e.g. walking, bicycling, etc."
+        exercise.color = leisure.color;
+
+        activities.push(exercise);
+
+
+
         return activities;
     }
 }

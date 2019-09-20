@@ -62,9 +62,9 @@ export class DaybookEntryForm {
 
         let earlyMorningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, "Early morning");
         earlyMorningSection.timeOfDay = TimeOfDay.EarlyMorning;
-        earlyMorningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
-            return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.EarlyMorning;
-        });
+        // earlyMorningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
+        //     return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.EarlyMorning;
+        // });
         if(earlyMorningSection.scheduledActivities.length > 0){
             let sectionIsComplete: boolean = true;
             earlyMorningSection.scheduledActivities.forEach((activity)=>{
@@ -79,9 +79,9 @@ export class DaybookEntryForm {
 
         let morningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, "Morning");
         morningSection.timeOfDay = TimeOfDay.Morning;
-        morningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
-            return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Morning;
-        });
+        // morningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
+        //     return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Morning;
+        // });
         if(morningSection.scheduledActivities.length > 0){
             let sectionIsComplete: boolean = true;
             morningSection.scheduledActivities.forEach((activity)=>{
@@ -95,9 +95,9 @@ export class DaybookEntryForm {
 
         let afternoonSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, "Afternoon");
         afternoonSection.timeOfDay = TimeOfDay.Afternoon;
-        afternoonSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
-            return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Afternoon;
-        });
+        // afternoonSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
+        //     return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Afternoon;
+        // });
         if(afternoonSection.scheduledActivities.length > 0){
             let sectionIsComplete: boolean = true;
             afternoonSection.scheduledActivities.forEach((activity)=>{
@@ -112,9 +112,9 @@ export class DaybookEntryForm {
 
         let eveningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, "Evening");
         eveningSection.timeOfDay = TimeOfDay.Evening;
-        eveningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
-            return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Evening;
-        });
+        // eveningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
+        //     return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Evening;
+        // });
         if(eveningSection.scheduledActivities.length > 0){
             let sectionIsComplete: boolean = true;
             eveningSection.scheduledActivities.forEach((activity)=>{

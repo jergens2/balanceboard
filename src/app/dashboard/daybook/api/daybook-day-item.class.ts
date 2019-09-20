@@ -30,7 +30,7 @@ export class DaybookDayItem{
 
     constructor(dateYYYYMMDD) {
         // console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
-        console.log("CONSTRUCTING DAYBOOK ITEM: " + dateYYYYMMDD)
+        // console.log("CONSTRUCTING DAYBOOK ITEM: " + dateYYYYMMDD)
         let shape: DaybookDayItemHttpShape = {
             _id: "",
             userId: "",
@@ -175,7 +175,7 @@ export class DaybookDayItem{
             if(activityDefinition){
                 return this.buildScheduledActivity(activityItem, activityDefinition, activityTree);
             }else{
-                console.log("Could not find activity by tree id ", activityItem.activityTreeId)
+                // console.log("Could not find activity by tree id ", activityItem.activityTreeId)
             }
         });
         // console.log("this.scheduledActrivities", this._scheduledActivities);

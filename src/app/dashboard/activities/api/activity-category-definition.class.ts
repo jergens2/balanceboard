@@ -1,11 +1,11 @@
 import { ActivityDurationSetting } from "./activity-duration.enum";
-import { ActivityTargetConfiguration } from "./activity-target-configuration.interface";
+import { ActivityScheduleConfiguration } from "./activity-schedule-configuration.interface";
 import { ActivityCategoryDefinitionHttpShape } from "./activity-category-definition-http-shape.interface";
-import { ScheduleConfiguration } from "../../../shared/utilities/schedule-configuration.interface";
-import { ScheduleRepitition } from "../../../shared/utilities/schedule-repitition.interface";
+
 import * as moment from 'moment';
 import { TimeUnit } from "../../../shared/utilities/time-unit.enum";
 import { ScheduleRepititionCalculator } from "../../../shared/utilities/schedule-repitition-calculator.class";
+import { ActivityPointsConfiguration } from "./activity-points-configuration.interface";
 
 export class ActivityCategoryDefinition {
 
@@ -38,8 +38,15 @@ export class ActivityCategoryDefinition {
     public get specifiedDurationMinutes(): number { return this._httpShape.specifiedDurationMinutes; }
     public set specifiedDurationMinutes(minutes: number) { this._httpShape.specifiedDurationMinutes = minutes; }
 
-    public get targets(): ActivityTargetConfiguration[] { return this._httpShape.targets; }
-    public set targets(targets: ActivityTargetConfiguration[]) { this._httpShape.targets = targets; }
+    public get scheduleConfiguration(): ActivityScheduleConfiguration { return this._httpShape.scheduleConfiguration; }
+    public set scheduleConfiguration(scheduleConfiguration: ActivityScheduleConfiguration) { this._httpShape.scheduleConfiguration = scheduleConfiguration; }
+
+    public get currentPointsConfiguration(): ActivityPointsConfiguration { return this._httpShape.currentPointsConfiguration; }
+    public set currentPointsConfiguration(pointsConfiguration: ActivityPointsConfiguration) { this._httpShape.currentPointsConfiguration = pointsConfiguration; }
+
+    public get pointsConfigurationHistory(): ActivityPointsConfiguration[] { return this._httpShape.pointsConfigurationHistory; }
+    public set pointsConfigurationHistory(pointsConfigurations: ActivityPointsConfiguration[]) { this._httpShape.pointsConfigurationHistory = pointsConfigurations; }
+
 
     public get color(): string { return this._httpShape.color; }
     public set color(color: string) { this._httpShape.color = color; }
@@ -47,25 +54,10 @@ export class ActivityCategoryDefinition {
     public get icon(): string { return this._httpShape.icon; }
     public set icon(icon: string) { this._httpShape.icon = icon; }
 
-    public get scheduleConfiguration(): ScheduleConfiguration { return this._httpShape.scheduleConfiguration; }
-    public set scheduleConfiguration(conf: ScheduleConfiguration) { this._httpShape.scheduleConfiguration = conf; }
     public isScheduledOnDate(dateYYYYMMDD: string): boolean {
-        if (this.scheduleConfiguration != null) {
-            let isScheduled: boolean = false;
-            // console.log("      WHy the hell can't I get this to work.  What the F am I missing here?")
-            // console.log("      Schedule Configuration", this.scheduleConfiguration)
-            this.scheduleConfiguration.repititions.forEach((repitition: ScheduleRepitition) => {
-                if(ScheduleRepititionCalculator.repititionIsOnDay(repitition, dateYYYYMMDD)){
-                    // console.log("      * setting isScheduled to TRUE");
-                    isScheduled = true;
-                }
-            });
-            // console.log("      * Returning isScheduled: " , isScheduled);
-            return isScheduled;
-        } else {
-            // console.log("      * Returning false because there is no configuration")
-            return false;
-        }
+
+        console.log("This method is disabled.");
+        return false;
     }
 
     public get isRoutine(): boolean { return this._httpShape.isRoutine; }

@@ -1,0 +1,44 @@
+.activity-display-item-root{
+    width:100%;
+    flex-shrink: 2;
+    min-height: 320px;
+
+    display:flex;
+    flex-direction: column;
+
+    border: 1px solid rgb(240, 240, 240);
+    border-radius: 10px;
+    padding: 15px;
+}
+.title-container{
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 10px;
+
+    display:flex;
+    flex-direction: row;
+    margin-bottom:15px;
+}
+.title{
+    flex-shrink: 2;
+    display:flex;
+    flex-direction: row;
+    border-bottom-left-radius: 10px;
+    padding-right:15px;
+}
+.title-color{
+    width: 20px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    margin-right: 5px;
+}
+
+.body{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+    
+}
+.body-property{
+
+}

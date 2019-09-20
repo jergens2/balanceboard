@@ -165,11 +165,12 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
           color: this.activityForm.controls['color'].value,
           icon: "",
 
-          durationSetting: ActivityDurationSetting.VariableLength,
+          durationSetting: ActivityDurationSetting.Duration,
           specifiedDurationMinutes: -1,
-          targets: [],
-          isConfigured: true,
           scheduleConfiguration: null,
+          currentPointsConfiguration: null,
+          pointsConfigurationHistory: [],
+          isConfigured: false,
           isRoutine: false,
           routineMembersActivityIds: [],
         }

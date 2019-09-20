@@ -85,8 +85,15 @@ export class CalendarSmallComponent implements OnInit {
   }
 
 
-
-
-
+  private _mouseIsOver: boolean = false;
+  public onMouseEnter(){
+    this._mouseIsOver = true;
+  }
+  public onMouseLeave(){
+    this._mouseIsOver = false;
+  }
+  public get mouseIsOver(): boolean{
+    return this._mouseIsOver;
+  }
 
 }

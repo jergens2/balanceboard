@@ -1,0 +1,42 @@
+<div class="activity-root">
+  <div class="header-container">
+    <div class="header no-select">
+
+
+      <div class="expand-button-container">
+        <div *ngIf="activity.children.length > 0">
+          <fa-icon [icon]="faArrowAltCircleRight" *ngIf="!activityListItem.isExpanded"
+            (click)="activityListItem.onClickExpand()" class="icon-button"></fa-icon>
+          <fa-icon [icon]="faArrowAltCircleDown" *ngIf="activityListItem.isExpanded"
+            (click)="activityListItem.onClickContract()" class="icon-button"></fa-icon>
+        </div>
+
+      </div>
+
+      <div class="header-title" (click)="onClickActivity(activity)">
+        <div class="color-circle" [style.background-color]="activity.color"></div>
+        <div>{{ activity.name }}</div>
+      </div>
+
+      <div *ngIf="activity.children.length > 0" style="font-size:0.8em;margin-left:5px;">
+        ({{ activity.children.length }} children)
+      </div>
+
+    </div>
+
+    <div class="controls" *ngIf="mouseOverHeader">
+      <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEditActivity()"></fa-icon>
+      <fa-icon [icon]="faTimes" class="icon-button" (click)="onClickDeleteActivity()"></fa-icon>
+    </div>
+
+  </div>
+
+  <!-- <div class="expanded-activity" >
+
+  </div> -->
+  <div *ngIf="activityListItem.isExpanded">
+    <div *ngFor="let childActivity of activity.children" class="child-activity">
+      <app-activity-list-item [activity]="childActivity" (activityOpened)="onChildActivityOpened($event)"></app-activity-list-item>
+    </div>
+  </div>
+</div>

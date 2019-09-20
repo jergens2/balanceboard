@@ -1,19 +1,20 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { faEdit, faArrowAltCircleRight, faArrowAltCircleDown } from '@fortawesome/free-regular-svg-icons';
 import { Modal } from '../../../modal/modal.class';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 import { ModalService } from '../../../modal/modal.service';
 import { IModalOption } from '../../../modal/modal-option.interface';
 import { ActivityCategoryDefinitionService } from '../api/activity-category-definition.service';
+import { ActivityListItem } from './activity-list-item.class';
 
 @Component({
-  selector: 'app-activity',
-  templateUrl: './activity.component.html',
-  styleUrls: ['./activity.component.css']
+  selector: 'app-activity-list-item',
+  templateUrl: './activity-list-item.component.html',
+  styleUrls: ['./activity-list-item.component.css']
 })
-export class ActivityComponent implements OnInit {
+export class ActivityListItemComponent implements OnInit {
 
   faTimes = faTimes;
   faEdit = faEdit;
@@ -21,26 +22,28 @@ export class ActivityComponent implements OnInit {
   constructor(private modalService: ModalService, private activitiesService: ActivityCategoryDefinitionService) { }
 
   @Input() activity: ActivityCategoryDefinition;
+  @Output() activityOpened: EventEmitter<ActivityCategoryDefinition> = new EventEmitter();
+  public onClickActivity(){
+    this.activityOpened.emit(this.activity);
+  }
+  public onChildActivityOpened(childActivity: ActivityCategoryDefinition){
+    this.activityOpened.emit(childActivity);
+  }
+
+  activityListItem: ActivityListItem;
 
   ngOnInit() {
+    this.activityListItem = new ActivityListItem(this.activity);
   }
 
-  mouseOverHeader: boolean = false;
-  onMouseEnterHeader(){
-    // console.log("onmouseEnter")
-    this.mouseOverHeader = true;
-  }
+  faArrowAltCircleRight = faArrowAltCircleRight;
+  faArrowAltCircleDown = faArrowAltCircleDown;
 
-  onMouseLeaveHeader(){
-    // console.log("onmouseLeave")
-    this.mouseOverHeader = false;
-  }
 
-  expanded: boolean = false;
-  onClickHeader(){
-    this.expanded = !this.expanded;
-    console.log("Clicked:", this.activity.name)
-  }
+
+
+
+
 
   onClickDeleteActivity(){
     let modalOptions: IModalOption[] = [

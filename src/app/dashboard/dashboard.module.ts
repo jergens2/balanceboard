@@ -44,9 +44,11 @@ import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.com
 import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule-planner.component';
 import { ActivitiesComponent } from './activities/activities.component';
 import { SocialComponent } from './social/social.component';
-import { ActivityComponent } from './activities/activity/activity.component';
+import { ActivityListItemComponent } from './activities/activity-list-item/activity-list-item.component';
 import { RoutineComponent } from './activities/routines/routine/routine.component';
 import { PointsComponent } from './points/points.component';
+import { ActivityDisplayItemComponent } from './activities/activity-display-item/activity-display-item.component';
+import { ActivitySchedulingFormComponent } from './activities/activity-display-item/activity-scheduling-form/activity-scheduling-form.component';
 
 
 @NgModule({
@@ -95,9 +97,11 @@ import { PointsComponent } from './points/points.component';
     ActivitiesComponent,
 
     SocialComponent,
-    ActivityComponent,
+    ActivityListItemComponent,
     RoutineComponent,
     PointsComponent,
+    ActivityDisplayItemComponent,
+    ActivitySchedulingFormComponent,
 
   ],
   providers: [],

@@ -37,6 +37,9 @@ export class ActivitiesComponent implements OnInit {
     this.activityTree = this.activityCategoryDefinitionService.activitiesTree;
     this._activityRoutines = this.activityTree.activityRoutines;
 
+    // this._openActivity = this.activityTree.getSleepActivity();
+    this._openActivity = null;
+
     this.activityCategoryDefinitionService.activitiesTree$.subscribe((changedTree) => {
       this.activityTree = changedTree;
       this._activityRoutines = this.activityTree.activityRoutines;
@@ -47,6 +50,20 @@ export class ActivitiesComponent implements OnInit {
 
     console.log("Root: ", this.activityTree.rootActivities)
   }
+
+
+
+
+  private _openActivity: ActivityCategoryDefinition;
+  public get openActivity(): ActivityCategoryDefinition{
+    return this._openActivity;
+  }
+
+  public onOpenActivity(activity: ActivityCategoryDefinition){
+    console.log("BOOLA WOOLA")
+    this._openActivity = activity;
+  }
+
 
   private _activityRoutines: ActivityCategoryDefinition[] = [];
   public get activityRoutines(): ActivityCategoryDefinition[] { 

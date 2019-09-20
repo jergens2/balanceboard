@@ -1,0 +1,14 @@
+.scheduling-form-root{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+}
+.scheduling-form{
+    display:flex;
+    flex-direction: column;
+}
+.scheduling-form-row{
+    width:100%;
+    display:flex;
+    flex-direction: row;
+}
