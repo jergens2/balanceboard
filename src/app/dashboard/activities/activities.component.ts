@@ -13,6 +13,7 @@ import { Modal } from '../../modal/modal.class';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { RoutineDefinitionService } from './routines/api/routine-definition.service';
 import { RoutineDefinition } from './routines/api/routine-definition.class';
+import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-activities',
@@ -44,11 +45,23 @@ export class ActivitiesComponent implements OnInit {
       this.activityTree = changedTree;
       this._activityRoutines = this.activityTree.activityRoutines;
       this.buildTimeViewConfiguration();
+      this.findScheduledItems();
     });
 
     this.buildTimeViewConfiguration();
 
     console.log("Root: ", this.activityTree.rootActivities)
+  }
+
+
+  private findScheduledItems(){
+    this._scheduledItems = this.activityTree.allActivities.filter((activity)=>{
+      return activity.scheduleConfiguration;
+    });
+  }
+  private _scheduledItems: ActivityCategoryDefinition[] = [];
+  public get scheduledItems(): ActivityCategoryDefinition[]{
+    return this._scheduledItems;
   }
 
 
@@ -110,5 +123,5 @@ export class ActivitiesComponent implements OnInit {
     return this._timeViewConfiguration;
   }
 
-
+  faCalendarAlt = faCalendarAlt;
 }

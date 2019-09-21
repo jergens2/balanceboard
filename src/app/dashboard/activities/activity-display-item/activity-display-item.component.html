@@ -13,11 +13,11 @@
         <div class="body-property">
             is occurrence activity or duration activity?  {{ activity.durationSetting }}
         </div>
-        <div class="body-property" *ngIf="activity.scheduleConfiguration ">
+        <!-- <div class="body-property" *ngIf="activity.scheduleConfiguration ">
             <div *ngFor="let occurrence of activity.scheduleConfiguration.scheduledOccurrences">
                 {{ occurrence.timeOfDayQuarter }}
             </div>
-        </div>
+        </div> -->
         
         <div class="scheduling-configuration">
             <app-activity-scheduling-form [activity]="activity"></app-activity-scheduling-form>

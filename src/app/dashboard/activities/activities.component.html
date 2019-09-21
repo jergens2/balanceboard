@@ -13,15 +13,21 @@
         <button class="small-button" (click)="onClickNewActivity()">New Activity</button>
       </div>
 
-      <div class="item-list">
+      <!-- <div class="item-list">
         <div class="item-list-header"> Routines </div>
         <app-routine *ngFor="let routine of activityRoutines" class="list-item" [routine]="routine"></app-routine>
         <button class="small-button " (click)="onClickNewRoutine()">New Routine</button>
-      </div>
+      </div> -->
     </div>
     <div class="column-right">
       <app-activity-display-item [activity]="openActivity" class="activity-display-item" *ngIf="openActivity"></app-activity-display-item>
     </div>
+  </div>
+  <div style="display:flex;flex-direction: column;">
+    <div>
+      <fa-icon [icon]="faCalendarAlt" style="font-size:2.0em; color: gray;"></fa-icon> Scheduled Items
+    </div>
+    <div *ngFor="let scheduledItem of scheduledItems" class="scheduled-item"></div>
   </div>
 
 </div>

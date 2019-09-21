@@ -34,6 +34,7 @@ export class ActivityListItemComponent implements OnInit {
 
   ngOnInit() {
     this.activityListItem = new ActivityListItem(this.activity);
+    this.activityListItem.onClickExpand();
   }
 
   faArrowAltCircleRight = faArrowAltCircleRight;
