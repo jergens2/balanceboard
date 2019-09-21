@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivityCategoryDefinition } from '../../api/activity-category-definition.class';
 
 import { ActivityScheduleRepitition } from '../../api/activity-schedule-repitition.interface';
-import { ActivityScheduleRepititionDisplay } from './activity-schedule-repitition-display.class';
+import { ActivityRepititionDisplay } from './activity-repitition-display/activity-repitition-display.class';
 
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 
@@ -17,9 +17,9 @@ export class ActivityScheduleDisplayComponent implements OnInit {
   @Input() activity: ActivityCategoryDefinition;
 
   ngOnInit() {
-    let repititionItems: ActivityScheduleRepititionDisplay[] = [];
+    let repititionItems: ActivityRepititionDisplay[] = [];
     this.activity.scheduleRepititions.forEach((repitition: ActivityScheduleRepitition)=>{
-      repititionItems.push(new ActivityScheduleRepititionDisplay(repitition));
+      repititionItems.push(new ActivityRepititionDisplay(repitition));
     })
     console.log("count: ", repititionItems.length);
     this._repititionItems = repititionItems;
@@ -40,8 +40,8 @@ export class ActivityScheduleDisplayComponent implements OnInit {
     this._saveDisabled = !allValid;
   }
 
-  private _repititionItems: ActivityScheduleRepititionDisplay[] = [];
-  public get repititionItems(): ActivityScheduleRepititionDisplay[] {
+  private _repititionItems: ActivityRepititionDisplay[] = [];
+  public get repititionItems(): ActivityRepititionDisplay[] {
     return this._repititionItems;
   }
 

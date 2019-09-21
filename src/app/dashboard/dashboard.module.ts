@@ -50,6 +50,8 @@ import { PointsComponent } from './points/points.component';
 import { ActivityDisplayItemComponent } from './activities/activity-display-item/activity-display-item.component';
 import { ActivityScheduleDisplayComponent } from './activities/activity-display-item/activity-schedule-display/activity-schedule-display.component';
 import { ActivityRepititionDisplayComponent } from './activities/activity-display-item/activity-schedule-display/activity-repitition-display/activity-repitition-display.component';
+import { NewRepititionOccurrenceFormComponent } from './activities/activity-display-item/activity-schedule-display/activity-repitition-display/new-repitition-occurrence-form/new-repitition-occurrence-form.component';
+import { RepititionOccurrenceComponent } from './activities/activity-display-item/activity-schedule-display/activity-repitition-display/repitition-occurrence/repitition-occurrence.component';
 
 
 @NgModule({
@@ -104,6 +106,8 @@ import { ActivityRepititionDisplayComponent } from './activities/activity-displa
     ActivityDisplayItemComponent,
     ActivityScheduleDisplayComponent,
     ActivityRepititionDisplayComponent,
+    NewRepititionOccurrenceFormComponent,
+    RepititionOccurrenceComponent,
 
   ],
   providers: [],

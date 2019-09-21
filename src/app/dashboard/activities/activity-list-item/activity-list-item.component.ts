@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faEdit, faArrowAltCircleRight, faArrowAltCircleDown } from '@fortawesome/free-regular-svg-icons';
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 import { Modal } from '../../../modal/modal.class';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 import { ModalService } from '../../../modal/modal.service';
@@ -39,7 +40,7 @@ export class ActivityListItemComponent implements OnInit {
 
   faArrowAltCircleRight = faArrowAltCircleRight;
   faArrowAltCircleDown = faArrowAltCircleDown;
-
+  faSyncAlt = faSyncAlt;
 
 
 

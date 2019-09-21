@@ -1,19 +1,16 @@
 <div class="repitition-root">
     <div class="schedule-repitition-header">
         This activity repeats every
-        <div style="display:flex;flex-direction: row; align-items: center; margin-left:20px; ">
-            <fa-icon class="icon-button" [icon]="faMinusCircle" (click)="onClickMinusFrequency()"></fa-icon>
+        <div class="frequency-controls">
+            <fa-icon class="frequency-button" [icon]="faMinusCircle" (click)="onClickMinusFrequency()"></fa-icon>
             <span
                 style="font-weight:bold;color: rgb(0, 89, 255);width:30px; font-size: 1.25em; text-align: center;">{{ repitition.frequency }}</span>
-            <fa-icon class="icon-button" [icon]="faPlusCircle" (click)="onClickPlusFrequency()"></fa-icon>
+            <fa-icon class="frequency-button" [icon]="faPlusCircle" (click)="onClickPlusFrequency()"></fa-icon>
         </div>
         <div class="time-unit-frame no-select" style="margin-left:10px;">
-            <div style="width:100%;text-align: center;padding:1px; font-weight: bold;color:rgb(0, 89, 255);"
-                (click)="onClickTimeFrame()" *ngIf="!dropdownListExpanded">
-                {{ timeUnitFrameString(repitition.unit) }}</div>
-            <app-dropdown-list *ngIf="dropdownListExpanded" [listItems]="dayOfWeekListItems(repitition)"
+            <app-dropdown-list [listItems]="dayOfWeekListItems(repitition)"
                 [currentValue]="timeUnitFrameString(repitition.unit)" (listItemSelected)="onListItemSelected($event)"
-                style="width:60px;" class="dropdown-list-component-container"></app-dropdown-list>
+                style="width:65px;" class="dropdown-list-component-container"></app-dropdown-list>
         </div>
     </div>
     <div class="occurrences" *ngIf="occurrences.length > 0">
@@ -42,9 +39,11 @@
         No occurrences configured for unit: {{ timeUnitFrameString(repitition.unit) }}
     </div>
 
-    <button class="medium-button" style="width:160px; margin-top: 10px; margin-left:10px;">
+    <button class="medium-button" style="width:160px; margin-top: 10px; margin-left:10px;" (click)="repitition.onClickNewOccurrence()" *ngIf="!repitition.newOccurrenceFormOpen">
         <fa-icon [icon]="faPlus" style="margin-right:5px;"></fa-icon> Add occurrence
     </button>
+    <app-new-repitition-occurrence-form *ngIf="repitition.newOccurrenceFormOpen">
 
+    </app-new-repitition-occurrence-form>
 
 </div>

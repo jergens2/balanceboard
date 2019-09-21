@@ -1,9 +1,9 @@
-import { ActivityScheduleRepitition } from "../../api/activity-schedule-repitition.interface";
-import { TimeUnit } from "../../../../shared/utilities/time-unit.enum";
-import { ActivityOccurrenceConfiguration } from "../../api/activity-occurrence-configuration.interface";
+import { ActivityScheduleRepitition } from "../../../api/activity-schedule-repitition.interface";
+import { TimeUnit } from "../../../../../shared/utilities/time-unit.enum";
+import { ActivityOccurrenceConfiguration } from "../../../api/activity-occurrence-configuration.interface";
 import { Observable, Subject } from "rxjs";
 
-export class ActivityScheduleRepititionDisplay {
+export class ActivityRepititionDisplay {
     /**
      * This class is for the activity-schedule-display component primarily
      */
@@ -81,15 +81,16 @@ export class ActivityScheduleRepititionDisplay {
         return [];
     }
 
-    // public get occurrencesPlurality(): string{
-    //   if (this.occurrences.length == 1) {
-    //     return "occurrence"
-    //   }
-    //   if (this.occurrences.length > 1) {
-    //     return "occurrences"
-    //   }
-    //   return "";
-    // }
+    private _newOccurrenceFormOpen: boolean = false;
+    public get newOccurrenceFormOpen(): boolean{
+        return this._newOccurrenceFormOpen;
+    }
+    public onClickNewOccurrence(){
+        this._newOccurrenceFormOpen = true;
+    }
+    public onClickSaveNewOccurrence(){
+
+    }
     
     
 

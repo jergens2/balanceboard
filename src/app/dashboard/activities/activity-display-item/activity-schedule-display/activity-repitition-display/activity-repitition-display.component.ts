@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActivityScheduleRepititionDisplay } from '../activity-schedule-repitition-display.class';
+import { ActivityRepititionDisplay } from './activity-repitition-display.class';
 import { faPlusCircle, faMinusCircle, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { TimeUnit } from '../../../../../shared/utilities/time-unit.enum';
 import { ActivityOccurrenceConfiguration } from '../../../api/activity-occurrence-configuration.interface';
@@ -12,11 +12,14 @@ import { ActivityOccurrenceConfiguration } from '../../../api/activity-occurrenc
 export class ActivityRepititionDisplayComponent implements OnInit {
 
   constructor() { }
-  @Input() repitition: ActivityScheduleRepititionDisplay;
+  @Input() repitition: ActivityRepititionDisplay;
 
   ngOnInit() {
     this.setOccurrences();
   }
+
+
+
 
   private setOccurrences(){
     this._occurrences = this.repitition.occurrences.filter((occurrence)=>{ return occurrence.unit == this.repitition.unit; });
