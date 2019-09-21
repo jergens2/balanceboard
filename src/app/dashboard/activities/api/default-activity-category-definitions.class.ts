@@ -25,7 +25,7 @@ export class DefaultActivityCategoryDefinitions {
             icon: "",
             durationSetting: ActivityDurationSetting.Duration,
             specifiedDurationMinutes: -1,
-            scheduleConfiguration: null,
+            scheduleRepititions: [],
             currentPointsConfiguration: null,
             pointsConfigurationHistory: [],
             isConfigured: false,
@@ -123,25 +123,28 @@ export class DefaultActivityCategoryDefinitions {
         makeBed.color = chores.color;
         makeBed.durationSetting = ActivityDurationSetting.Occurrence,
         makeBed.specifiedDurationMinutes = 5;
-        makeBed.scheduleConfiguration = {
-            timeUnitFrame: TimeUnit.Day,
-            timeFrameFrequency: 1,
-            scheduledOccurrences: [
-                {
-                    minutesPerOccurrence: makeBed.specifiedDurationMinutes,
-                    timeOfDayQuarter: TimeOfDay.Any,
-                    timeOfDayHour: -1,
-                    timeOfDayMinute: -1,
-                },
-            ],
-            startDateTimeISO: moment().startOf("year").toISOString(),
-            timesOfDay: [],
-            timesOfDayRanges: [],
-            timesOfDayExcludedRanges: [],
-            daysOfWeek: [],
-            daysOfWeekExcluded: [],
-            daysOfYear: [],
-        }
+        makeBed.scheduleRepititions = [
+            {
+                unit: TimeUnit.Day,
+                frequency: 1,
+                occurrences: [
+                    {
+                        unit: TimeUnit.Day,
+                        minutesPerOccurrence: makeBed.specifiedDurationMinutes,
+                        timeOfDayQuarter: TimeOfDay.Any,
+                        timeOfDayHour: -1,
+                        timeOfDayMinute: -1,
+                        timesOfDay: [],
+                        timesOfDayRanges: [],
+                        timesOfDayExcludedRanges: [],
+                        daysOfWeek: [],
+                        daysOfWeekExcluded: [],
+                        daysOfYear: [],
+                    },
+                ],
+                startDateTimeISO: moment().startOf("year").toISOString(),
+            },
+        ],
 
 
         activities.push(makeBed);
@@ -203,31 +206,43 @@ export class DefaultActivityCategoryDefinitions {
         brushTeeth.color = hygiene.color;
         brushTeeth.durationSetting = ActivityDurationSetting.Occurrence;
         brushTeeth.specifiedDurationMinutes = 2;
-        brushTeeth.scheduleConfiguration = {
-            timeUnitFrame: TimeUnit.Day,
-            timeFrameFrequency: 1,
-            scheduledOccurrences: [
-                {
-                    minutesPerOccurrence: brushTeeth.specifiedDurationMinutes,
-                    timeOfDayQuarter: TimeOfDay.Morning,
-                    timeOfDayHour: -1,
-                    timeOfDayMinute: -1,
-                },
-                {
-                    minutesPerOccurrence: brushTeeth.specifiedDurationMinutes,
-                    timeOfDayQuarter: TimeOfDay.Evening,
-                    timeOfDayHour: -1,
-                    timeOfDayMinute: -1,
-                },
-            ],
-            startDateTimeISO: moment().startOf("year").toISOString(),
-            timesOfDay: [],
-            timesOfDayRanges: [],
-            timesOfDayExcludedRanges: [],
-            daysOfWeek: [],
-            daysOfWeekExcluded: [],
-            daysOfYear: [],
-        }
+        brushTeeth.scheduleRepititions = [
+            {
+                unit: TimeUnit.Day,
+                frequency: 1,
+                occurrences: [
+                    {
+                        unit: TimeUnit.Day,
+                        minutesPerOccurrence: brushTeeth.specifiedDurationMinutes,
+                        timeOfDayQuarter: TimeOfDay.Morning,
+                        timeOfDayHour: -1,
+                        timeOfDayMinute: -1,
+                        timesOfDay: [],
+                        timesOfDayRanges: [],
+                        timesOfDayExcludedRanges: [],
+                        daysOfWeek: [],
+                        daysOfWeekExcluded: [],
+                        daysOfYear: [],
+                    },
+                    {
+                        unit: TimeUnit.Day,
+                        minutesPerOccurrence: brushTeeth.specifiedDurationMinutes,
+                        timeOfDayQuarter: TimeOfDay.Evening,
+                        timeOfDayHour: -1,
+                        timeOfDayMinute: -1,
+                        timesOfDay: [],
+                        timesOfDayRanges: [],
+                        timesOfDayExcludedRanges: [],
+                        daysOfWeek: [],
+                        daysOfWeekExcluded: [],
+                        daysOfYear: [],
+                    },
+                ],
+                startDateTimeISO: moment().startOf("year").toISOString(),
+            },
+        ],
+
+
 
         activities.push(brushTeeth);
 

@@ -1,0 +1,11 @@
+<div class="schedule-display-root font-family-open-sans" *ngIf="activity.scheduleRepititions.length > 0">
+        <app-activity-repitition-display 
+            [repitition]="repitition" 
+            class="schedule-repitition" 
+            *ngFor="let repitition of repititionItems">
+        </app-activity-repitition-display>
+        <div style="display:flex;flex-direction: row-reverse;">
+            <button class="medium-button" [ngClass]="{'button-disabled': saveDisabled }">
+                <fa-icon [icon]="faSave" style="margin-right: 5px;"></fa-icon> Save schedule configuration</button>
+        </div>
+</div>

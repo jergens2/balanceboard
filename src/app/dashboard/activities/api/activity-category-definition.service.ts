@@ -223,11 +223,23 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
 
 
   private buildActivityFromResponse(data: any): ActivityCategoryDefinition {
-    const properties: string[] = [ "_id", "userId", "treeId", "parentTreeId", 
-      "name", "description", "color", "icon", "durationSetting", 
-      "specifiedDurationMinutes", "scheduleConfiguration",
-      "currentPointsConfiguration", "pointsConfigurationHistory","isRoutine",
-      "routineMembersActivityIds", "isConfigured",
+    const properties: string[] = [ 
+        "_id", 
+        "userId", 
+        "treeId", 
+        "parentTreeId", 
+        "name", 
+        "description", 
+        "color", 
+        "icon", 
+        "durationSetting", 
+        "specifiedDurationMinutes", 
+        "scheduleRepititions",
+        "currentPointsConfiguration", 
+        "pointsConfigurationHistory",
+        "isRoutine",
+        "routineMembersActivityIds", 
+        "isConfigured",
     ];
   
     
@@ -250,7 +262,7 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
         icon: data.icon,
         durationSetting: data.durationSetting,
         specifiedDurationMinutes: data.specifiedDurationMinutes,
-        scheduleConfiguration: data.scheduleConfiguration,
+        scheduleRepititions: data.scheduleRepititions,
         currentPointsConfiguration: data.currentPointsConfiguration,
         pointsConfigurationHistory: data.pointsConfigurationHistory,
         isConfigured: data.isConfigured,

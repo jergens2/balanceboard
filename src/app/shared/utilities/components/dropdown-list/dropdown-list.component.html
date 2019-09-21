@@ -1,0 +1,4 @@
+<div class="dropdown-list-root no-select" (mouseleave)="onMouseLeave()">
+    <div class="dropdown-list-item" style="font-weight:bold;color:rgb(0, 89, 255);" (click)="onClickListItem(currentValue)">{{ currentValue }}</div>
+    <div class="dropdown-list-item" *ngFor="let listItem of listItems" (click)="onClickListItem(listItem)" >{{ listItem }}</div>
+</div>

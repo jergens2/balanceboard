@@ -10,7 +10,12 @@
         </div>
         <app-activity-list-item *ngFor="let rootActivity of rootActivities" [activity]="rootActivity"
           (activityOpened)="onOpenActivity($event)" class="list-item"></app-activity-list-item>
-        <button class="small-button" (click)="onClickNewActivity()">New Activity</button>
+        <div style="display:flex;flex-direction:row; margin-top: 10px;">
+            <button class="medium-button" (click)="onClickNewActivity()">
+                <fa-icon [icon]="faPlus" style="margin-right: 5px;"></fa-icon>
+                New Activity</button>
+        </div>
+          
       </div>
 
       <!-- <div class="item-list">
@@ -27,7 +32,9 @@
     <div>
       <fa-icon [icon]="faCalendarAlt" style="font-size:2.0em; color: gray;"></fa-icon> Scheduled Items
     </div>
-    <div *ngFor="let scheduledItem of scheduledItems" class="scheduled-item"></div>
+    <div *ngFor="let scheduledItem of scheduledItems" class="scheduled-item">
+      <app-activity-schedule-display [activity]="scheduledItem"></app-activity-schedule-display>
+    </div>
   </div>
 
 </div>

@@ -1,0 +1,16 @@
+.schedule-display-root{
+    margin: 5px;
+    padding:15px;
+    border-radius:15px;
+
+    display:flex;
+    flex-direction: column;
+
+}
+.schedule-display-root:hover{
+    background-color: rgb(250, 250, 250);
+} 
+
+.schedule-repitition{
+    margin-bottom:10px;
+}

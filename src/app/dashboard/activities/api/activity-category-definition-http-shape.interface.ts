@@ -2,6 +2,7 @@ import { ActivityDurationSetting } from "./activity-duration.enum";
 import { ActivityScheduleConfiguration } from "./activity-schedule-configuration.interface";
 
 import { ActivityPointsConfiguration } from "./activity-points-configuration.interface";
+import { ActivityScheduleRepitition } from "./activity-schedule-repitition.interface";
 
 export interface ActivityCategoryDefinitionHttpShape{
     _id: string;
@@ -18,7 +19,7 @@ export interface ActivityCategoryDefinitionHttpShape{
     durationSetting: ActivityDurationSetting;
     specifiedDurationMinutes: number;
     
-    scheduleConfiguration: ActivityScheduleConfiguration;
+    scheduleRepititions: ActivityScheduleRepitition[];
     currentPointsConfiguration: ActivityPointsConfiguration;
     pointsConfigurationHistory: ActivityPointsConfiguration[];
 

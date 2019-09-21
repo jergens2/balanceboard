@@ -1,10 +1,7 @@
 import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
-import { ActivityTree } from "../../dashboard/activities/api/activity-tree.class";
 import { Subject } from "rxjs";
 import { ActivityCategoryDefinitionService } from "../../dashboard/activities/api/activity-category-definition.service";
-import { Guid } from "../utilities/guid.class";
-import { ActivityCategoryDefinitionHttpShape } from "../../dashboard/activities/api/activity-category-definition-http-shape.interface";
-import { ActivityDurationSetting } from "../../dashboard/activities/api/activity-duration.enum";
+import { DefaultActivityCategoryDefinitions } from "../../dashboard/activities/api/default-activity-category-definitions.class";
 
 
 
@@ -154,26 +151,10 @@ export class ActivityInputSearch {
             // Create new Root-level activity
             let parentActivityId: string = this.activitiesService.userId + "_TOP_LEVEL"
             if (pathNames.length == 1) {
-
-                let activityHttpShape: ActivityCategoryDefinitionHttpShape = {
-                    _id: "",
-                    userId: this.activitiesService.userId,
-                    treeId: this.activitiesService.userId + "_" + Guid.newGuid(),
-                    parentTreeId: parentActivityId,
-                    name: pathNames[0],
-                    description: "New root level activity",
-                    color: "#ffffff",
-                    icon: "",
-                    durationSetting: ActivityDurationSetting.Duration,
-                    specifiedDurationMinutes: -1,
-                    scheduleConfiguration: null,
-                    currentPointsConfiguration: null,
-                    pointsConfigurationHistory: [],
-                    isConfigured: false,
-                    isRoutine: false,
-                    routineMembersActivityIds: [],
-                }
-                let newActivity = new ActivityCategoryDefinition(activityHttpShape);
+                let newActivity = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(this.activitiesService.userId));
+                newActivity.name = pathNames[0];
+                newActivity.parentTreeId = parentActivityId;
+                newActivity.description = "New root level activity";
                 newActivity.setFullPath("/" + pathNames[0] + "/");
                 this.createNewActivity$.next([newActivity]);
                 returnActivity = newActivity;
@@ -189,55 +170,20 @@ export class ActivityInputSearch {
                     let newActivity: ActivityCategoryDefinition;
 
                     if (i == 0) {
-                        let firstTreeId = this.activitiesService.userId + "_" + Guid.newGuid();
-                        let activityHttpShape: ActivityCategoryDefinitionHttpShape = {
-                            _id: "",
-                            userId: this.activitiesService.userId,
-                            treeId: firstTreeId,
-                            parentTreeId: parentActivityId,
-                            name: pathNames[0],
-                            description: "New root level activity",
-                            color: "#ffffff",
-                            icon: "",
-                            durationSetting: ActivityDurationSetting.Duration,
-                            specifiedDurationMinutes: -1,
-                            scheduleConfiguration: null,
-                            currentPointsConfiguration: null,
-                            pointsConfigurationHistory: [],
-                            isConfigured: false,
-                            isRoutine: false,
-                            routineMembersActivityIds: [],
-                        }
-                        newActivity = new ActivityCategoryDefinition(activityHttpShape);
-                        parentActivityId = firstTreeId;
+                        newActivity = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(this.activitiesService.userId));
+                        newActivity.name = pathNames[0];
+                        newActivity.parentTreeId = parentActivityId;
+                        newActivity.description = "New root level activity";
+                        parentActivityId = newActivity.treeId;
                     } else if (i > 0) {
-                        let parentName = pathNames[i - 1];
-                        let description: string = "Child of " + parentName;
-                        let newTreeId: string = this.activitiesService.userId + "_" + Guid.newGuid();
-                        let activityHttpShape: ActivityCategoryDefinitionHttpShape = {
-                            _id: "",
-                            userId: this.activitiesService.userId,
-                            treeId: newTreeId,
-                            parentTreeId: parentActivityId,
-                            name: activityName,
-                            description: description,
-                            color: "#ffffff",
-                            icon: "",
-                            durationSetting: ActivityDurationSetting.Duration,
-                            specifiedDurationMinutes: -1,
-                            scheduleConfiguration: null,
-                            currentPointsConfiguration: null,
-                            pointsConfigurationHistory: [],
-                            isConfigured: false,
-                            isRoutine: false,
-                            routineMembersActivityIds: [],
-                        }
-                        newActivity = new ActivityCategoryDefinition(activityHttpShape);
-                        parentActivityId = newTreeId;
+                        newActivity = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(this.activitiesService.userId));
+                        newActivity.name = activityName;
+                        newActivity.parentTreeId = parentActivityId;
+                        newActivity.description = "Child of " + pathNames[i - 1];
+                        parentActivityId = newActivity.treeId;
                     }
                     newActivity.setFullPath(currentFullPath);
                     returnActivity = newActivity;
-
                     newActivities.push(newActivity);
                 }
                 this.createNewActivity$.next(newActivities);
@@ -265,25 +211,10 @@ export class ActivityInputSearch {
                     if (parentActivity.name.toLowerCase() == parentName.toLowerCase()) {
                         parentId = parentActivity.treeId;
                     }
-                    let activityHttpShape: ActivityCategoryDefinitionHttpShape = {
-                        _id: "",
-                        userId: this.activitiesService.userId,
-                        treeId: this.activitiesService.userId + "_" + Guid.newGuid(),
-                        parentTreeId: parentId,
-                        name: activityName,
-                        description: "Child of " + parentName,
-                        color: parentActivity.color,
-                        icon: "",
-                        durationSetting: ActivityDurationSetting.Duration,
-                        specifiedDurationMinutes: -1,
-                        scheduleConfiguration: null,
-                        currentPointsConfiguration: null,
-                        pointsConfigurationHistory: [],
-                        isConfigured: false,
-                        isRoutine: false,
-                        routineMembersActivityIds: [],
-                    }
-                    let newActivity = new ActivityCategoryDefinition(activityHttpShape);
+                    let newActivity = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(this.activitiesService.userId));
+                    newActivity.name = activityName;
+                    newActivity.parentTreeId = parentId;
+                    newActivity.description = "Child of " + parentName;
                     newActivity.setFullPath(parentActivity.fullNamePath + activityName + "/");
                     newActivities.push(newActivity);
                     currentPathIndex++;

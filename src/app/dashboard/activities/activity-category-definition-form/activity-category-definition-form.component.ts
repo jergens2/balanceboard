@@ -8,6 +8,7 @@ import { ModalService } from '../../../modal/modal.service';
 import { ActivityCategoryDefinitionHttpShape } from '../api/activity-category-definition-http-shape.interface';
 import { Guid } from '../../../shared/utilities/guid.class';
 import { ActivityDurationSetting } from '../api/activity-duration.enum';
+import { DefaultActivityCategoryDefinitions } from '../api/default-activity-category-definitions.class';
 
 
 
@@ -153,31 +154,14 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     if (this._action == "new") {
       if (this.activityForm.valid && parentActivityId != null) {
        
-        let newActivity: ActivityCategoryDefinitionHttpShape = {
-          _id: "",
-          userId: this.activityCategoryDefinitionService.userId,
-
-          treeId: Guid.newGuid(),
-          parentTreeId: parentActivityId,
-
-          name: this.activityForm.controls['name'].value,
-          description: this.activityForm.controls['description'].value,
-          color: this.activityForm.controls['color'].value,
-          icon: "",
-
-          durationSetting: ActivityDurationSetting.Duration,
-          specifiedDurationMinutes: -1,
-          scheduleConfiguration: null,
-          currentPointsConfiguration: null,
-          pointsConfigurationHistory: [],
-          isConfigured: false,
-          isRoutine: false,
-          routineMembersActivityIds: [],
-        }
-        console.log("saving new activity: ", newActivity);
-
-        let saveNewActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition(newActivity);
-        this.activityCategoryDefinitionService.saveActivity(saveNewActivity);
+        let newActivity: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(this.activityCategoryDefinitionService.userId))
+        newActivity.name = this.activityForm.controls['name'].value;
+        newActivity.description = this.activityForm.controls['description'].value;
+        newActivity.color = this.activityForm.controls['color'].value;
+        newActivity.parentTreeId = parentActivityId;
+        
+        console.log("Saving " , newActivity);
+        this.activityCategoryDefinitionService.saveActivity(newActivity);
         
       } else {
         console.log("Is parentActivityID null ? ", parentActivityId);

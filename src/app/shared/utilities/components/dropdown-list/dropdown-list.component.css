@@ -1,0 +1,23 @@
+.dropdown-list-root{
+
+    background-color: rgb(252, 252, 252);
+    border: 1px solid rgb(235, 235, 235);
+    border-radius: 8px;
+    display:flex;
+    flex-direction: column;
+
+    cursor: pointer;
+    width:100%;
+}
+
+.dropdown-list-item{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    color: gray;
+}
+.dropdown-list-item:hover{
+    color: black;
+    font-weight: bold;
+    background-color: rgb(245, 245, 245);
+}

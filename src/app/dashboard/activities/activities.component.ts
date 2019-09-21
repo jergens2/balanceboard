@@ -14,6 +14,7 @@ import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { RoutineDefinitionService } from './routines/api/routine-definition.service';
 import { RoutineDefinition } from './routines/api/routine-definition.class';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-activities',
@@ -56,8 +57,9 @@ export class ActivitiesComponent implements OnInit {
 
   private findScheduledItems(){
     this._scheduledItems = this.activityTree.allActivities.filter((activity)=>{
-      return activity.scheduleConfiguration;
+      return activity.scheduleRepititions.length > 0;
     });
+    console.log("found schedule items:" , this._scheduledItems)
   }
   private _scheduledItems: ActivityCategoryDefinition[] = [];
   public get scheduledItems(): ActivityCategoryDefinition[]{
@@ -124,4 +126,5 @@ export class ActivitiesComponent implements OnInit {
   }
 
   faCalendarAlt = faCalendarAlt;
+  faPlus = faPlus;
 }

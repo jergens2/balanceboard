@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { TimeUnit } from "../../../shared/utilities/time-unit.enum";
 import { ScheduleRepititionCalculator } from "../../../shared/utilities/schedule-repitition-calculator.class";
 import { ActivityPointsConfiguration } from "./activity-points-configuration.interface";
+import { ActivityScheduleRepitition } from "./activity-schedule-repitition.interface";
 
 export class ActivityCategoryDefinition {
 
@@ -38,8 +39,8 @@ export class ActivityCategoryDefinition {
     public get specifiedDurationMinutes(): number { return this._httpShape.specifiedDurationMinutes; }
     public set specifiedDurationMinutes(minutes: number) { this._httpShape.specifiedDurationMinutes = minutes; }
 
-    public get scheduleConfiguration(): ActivityScheduleConfiguration { return this._httpShape.scheduleConfiguration; }
-    public set scheduleConfiguration(scheduleConfiguration: ActivityScheduleConfiguration) { this._httpShape.scheduleConfiguration = scheduleConfiguration; }
+    public get scheduleRepititions(): ActivityScheduleRepitition[] { return this._httpShape.scheduleRepititions; }
+    public set scheduleRepititions(scheduleRepititions: ActivityScheduleRepitition[]) { this._httpShape.scheduleRepititions = scheduleRepititions; }
 
     public get currentPointsConfiguration(): ActivityPointsConfiguration { return this._httpShape.currentPointsConfiguration; }
     public set currentPointsConfiguration(pointsConfiguration: ActivityPointsConfiguration) { this._httpShape.currentPointsConfiguration = pointsConfiguration; }

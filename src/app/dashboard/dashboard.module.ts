@@ -48,7 +48,8 @@ import { ActivityListItemComponent } from './activities/activity-list-item/activ
 import { RoutineComponent } from './activities/routines/routine/routine.component';
 import { PointsComponent } from './points/points.component';
 import { ActivityDisplayItemComponent } from './activities/activity-display-item/activity-display-item.component';
-import { ActivitySchedulingFormComponent } from './activities/activity-display-item/activity-scheduling-form/activity-scheduling-form.component';
+import { ActivityScheduleDisplayComponent } from './activities/activity-display-item/activity-schedule-display/activity-schedule-display.component';
+import { ActivityRepititionDisplayComponent } from './activities/activity-display-item/activity-schedule-display/activity-repitition-display/activity-repitition-display.component';
 
 
 @NgModule({
@@ -101,7 +102,8 @@ import { ActivitySchedulingFormComponent } from './activities/activity-display-i
     RoutineComponent,
     PointsComponent,
     ActivityDisplayItemComponent,
-    ActivitySchedulingFormComponent,
+    ActivityScheduleDisplayComponent,
+    ActivityRepititionDisplayComponent,
 
   ],
   providers: [],
