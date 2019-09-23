@@ -10,11 +10,11 @@
 .body{
     display:flex;
     flex-direction: column;
-    padding:15px;
+    padding:10px;
     border-radius: 10px;
 }
 .footer{
-    padding: 15px;
+    padding: 10px;
     display:flex;
     flex-direction: row-reverse;
 }

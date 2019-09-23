@@ -68,11 +68,16 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
   public onClickSaveConfiguration(){
     this.configurationSaved.emit(this.repititionItems.map((item)=>{ return item.repititionItem; }));
   }
-  public onClickDiscard(){
+  public onClickCLose(){
+    this.configurationSaved.emit(null);
+  }
 
-    console.log("Repititions: ", this.repititionItems);
+  private _unsavedChanges: boolean = false;
+  public get unsavedChanges(): boolean{
+    return this._unsavedChanges;
+  } 
+  public onClickDiscard(){
     let activity = this.activity;
-    console.log("Discarding.  Original valuie is: "+ this.originalValue.length, this.originalValue);
     activity.scheduleRepititions = this.originalValue;
     this._activity = activity;
     this.configurationSaved.emit(null);
@@ -105,6 +110,11 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
       }
     });
     this._saveDisabled = !allValid;
+
+    if(this.repititionItems.length < 1){
+      this._saveDisabled = true;
+    }
+    this._unsavedChanges = true;
   }
 
   private _repititionItems: ActivityRepititionDisplay[] = [];
@@ -139,6 +149,7 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     });
     this.addingRepitition = true;
     this._saveDisabled = true;
+    this._unsavedChanges = true;
   }
 
   public onRepititionDeleted(repitition: ActivityRepititionDisplay){
@@ -148,6 +159,7 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     }else{
       console.log("Error deleting");
     }
+    this._unsavedChanges = true;
   }
 
   faSave = faSave;
