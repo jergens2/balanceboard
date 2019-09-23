@@ -2,6 +2,60 @@ import { TimeUnit } from "./time-unit.enum";
 
 export class TimeUnitConverter {
 
+    public static convertToString(timeUnit: TimeUnit, lowerCase?: boolean){
+        if(timeUnit == TimeUnit.Day){
+            if(lowerCase){
+                return "day";
+            }else{
+                return "Day";
+            }
+        }else if(timeUnit == TimeUnit.Week){
+            if(lowerCase){
+                return "week";
+            }else{
+                return "Week";
+            } 
+        }else if(timeUnit == TimeUnit.Month){
+            if(lowerCase){
+                return "month";
+            }else{
+                return "Month";
+            } 
+        }else if(timeUnit == TimeUnit.Year){
+            if(lowerCase){
+                return "year";
+            }else{
+                return "Year";
+            } 
+        }else if(timeUnit == TimeUnit.Hour){
+            if(lowerCase){
+                return "hour";
+            }else{
+                return "Hour";
+            } 
+        }else if(timeUnit == TimeUnit.Minute){
+            if(lowerCase){
+                return "minute";
+            }else{
+                return "Minute";
+            } 
+        }
+        else if(timeUnit == TimeUnit.Second){
+            if(lowerCase){
+                return "second";
+            }else{
+                return "Second";
+            } 
+        }
+        else if(timeUnit == TimeUnit.Millisecond){
+            if(lowerCase){
+                return "millisecond";
+            }else{
+                return "Millisecond";
+            } 
+        }
+    }
+
     public static convert(value: number, fromUnit: TimeUnit, toUnit: TimeUnit): number {
         /**
          * The Gregorian (western) solar calendar has on average 365.2425 days per year.

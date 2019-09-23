@@ -28,13 +28,13 @@
       <app-activity-display-item [activity]="openActivity" class="activity-display-item" *ngIf="openActivity"></app-activity-display-item>
     </div>
   </div>
-  <div style="display:flex;flex-direction: column;">
+  <!-- <div class="scheduled-items">
     <div>
       <fa-icon [icon]="faCalendarAlt" style="font-size:2.0em; color: gray;"></fa-icon> Scheduled Items
     </div>
     <div *ngFor="let scheduledItem of scheduledItems" class="scheduled-item">
-      <app-activity-schedule-display [activity]="scheduledItem"></app-activity-schedule-display>
+      <app-activity-schedule-configuration [activity]="scheduledItem"></app-activity-schedule-configuration>
     </div>
-  </div>
+  </div> -->
 
 </div>

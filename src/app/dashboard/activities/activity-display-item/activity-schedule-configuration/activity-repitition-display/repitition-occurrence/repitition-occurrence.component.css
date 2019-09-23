@@ -1,0 +1,9 @@
+.occurrence-root{
+    display:flex;
+    flex-direction: row;
+    background-color: rgb(250, 250, 250);
+    border: 1px solid rgba(0, 110, 255, 0.1);
+    margin-bottom:5px;
+    border-radius: 10px;
+    padding:10px;
+}

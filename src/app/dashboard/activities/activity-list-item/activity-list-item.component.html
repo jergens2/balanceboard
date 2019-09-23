@@ -17,7 +17,7 @@
         <div class="color-circle" [style.background-color]="activity.color"></div>
         <div>{{ activity.name }}</div>
         <fa-icon [icon]="faSyncAlt" style="margin-left:5px; color: rgba(0, 110, 255, 0.5);" *ngIf="activity.scheduleRepititions.length > 0"></fa-icon>
-        <div *ngIf="activity.scheduleRepititions.length > 1" style="color:gray;font-size:0.8em;">x {{ activity.scheduleRepititions.length }}</div>
+        <div *ngIf="activity.scheduleRepititions.length > 1" style="color:gray;font-size:0.8em;margin-left: 5px;">x{{ activity.scheduleRepititions.length }}</div>
       </div>
 
       <div *ngIf="activity.children.length > 0" style="font-size:0.8em;margin-left:5px;">

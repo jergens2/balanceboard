@@ -1,17 +1,29 @@
 <div class="occurrence-form-root">
     <div class="occurrence-form-row" style="color:rgb(0, 67, 155);">
-        New occurrence
+        <span *ngIf="editOccurrence">
+            Edit occurrence
+        </span>
+        <span *ngIf="!editOccurrence">
+            New occurrence
+        </span>
     </div>
     <div class="occurrence-form-row">
         Time of day:
 
-        <div style="margin-left: 10px;">
+        <div style="margin-left: 10px;width:115px;">
             <app-dropdown-list [listItems]="timeOfDayList" [currentValue]="timeOfDayString"
                 (listItemSelected)="onListItemSelected($event)" class="dropdown-list-component-container"
                 style="width:115px; ">
             </app-dropdown-list>
         </div>
 
+        <div style="margin-left: 10px; width: 175px;">
+            {{ timeHours }}
+        </div>
+    </div>
+    <div class="occurrence-form-row" style="flex-direction: row-reverse;">
+        <button class="small-button" (click)="onClickCancel()" style="margin-left: 5px;">Cancel</button>
+        <button class="small-button" (click)="onClickSaveOccurrence()">Save occurrence</button>
 
     </div>
     <!-- unit: TimeUnit;

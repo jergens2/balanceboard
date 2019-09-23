@@ -1,16 +1,11 @@
 .schedule-display-root{
-    margin: 5px;
     padding:15px;
-    border-radius:15px;
-
-    display:flex;
+    display: flex;
     flex-direction: column;
-
+    background-color: rgb(249, 252, 255);
+    border-radius: 15px;
+    border: 1px solid rgb(249, 252, 255);
 }
 .schedule-display-root:hover{
-    background-color: rgb(247, 253, 255);
-} 
-
-.schedule-repitition{
-    margin-bottom:10px;
+    border: 1px solid rgba(0, 89, 255, 0.5);
 }

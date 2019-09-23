@@ -1,0 +1,16 @@
+<div class="occurrence-root" *ngIf="!editing" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+    <div style="flex-grow:2;">
+        <app-day-occurrence [occurrence]="occurrence" *ngIf="occurrence.unit == 'DAY'"></app-day-occurrence>
+        <app-week-occurrence [occurrence]="occurrence" *ngIf="occurrence.unit == 'WEEK'"></app-week-occurrence>
+        <app-month-occurrence [occurrence]="occurrence" *ngIf="occurrence.unit == 'MONTH'"></app-month-occurrence>
+        <app-year-occurrence [occurrence]="occurrence" *ngIf="occurrence.unit == 'YEAR'"></app-year-occurrence>
+    </div>
+    <div style="margin-left:10px; display: flex;flex-direction: row;justify-content: center;">
+        <fa-icon [icon]="faPencilAlt" class="icon-button-dim" [ngClass]="{'icon-button': mouseIsOver}" (click)="onClickEdit()" style="margin-right: 5px;"></fa-icon>
+        <fa-icon [icon]="faTrashAlt" class="icon-button-dim" [ngClass]="{'icon-button': mouseIsOver}" (click)="onClickDelete()"></fa-icon>
+    </div>
+
+
+</div>
+<app-new-repitition-occurrence-form *ngIf="editing" (occurrenceSaved)="onOccurrenceSaved($event)" [editOccurrence]="occurrence">
+</app-new-repitition-occurrence-form>

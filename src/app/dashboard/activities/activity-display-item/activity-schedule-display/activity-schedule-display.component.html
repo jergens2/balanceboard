@@ -1,10 +1,20 @@
-<div class="schedule-display-root font-family-open-sans" *ngIf="activity.scheduleRepititions.length > 0">
-    <app-activity-repitition-display [repitition]="repitition" class="schedule-repitition"
-        *ngFor="let repitition of repititionItems">
-    </app-activity-repitition-display>
-    <div style="display:flex;flex-direction: row-reverse;">
-        <button class="medium-button" [ngClass]="{'button-disabled': saveDisabled }">
-            <fa-icon [icon]="faSave" style="margin-right: 5px;"></fa-icon> Save schedule configuration
-        </button>
+<div class="schedule-display-root font-family-open-sans" *ngIf="activity.scheduleRepititions.length == 0">
+    No schedule is configured for this activity.
+    <div>
+        <button class="medium-button" (click)="onClickConfigureSchedule()">Configure schedule</button>
     </div>
+</div>
+<div class="schedule-display-root font-family-open-sans" *ngIf="activity.scheduleRepititions.length > 0">
+    <div style="display:flex;flex-direction: row;">
+        <div style="flex-grow: 2;">
+            Schedule configuration <fa-icon [icon]="faSyncAlt" style="margin-left:5px;color:rgba(0, 89, 255, 0.5);"></fa-icon>
+        </div>
+        <div>
+            <button class="small-button" (click)="onClickEdit()"><fa-icon [icon]="faPencilAlt" style="margin-right:5px;"></fa-icon>Edit</button>
+        </div>
+    </div>
+    <div>
+        {{ scheduleConfigurationSummary }}
+    </div>
+
 </div>

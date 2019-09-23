@@ -1,0 +1,81 @@
+<div class="repitition-root" *ngIf="repitition.isEditing || creatingNew" (mouseenter)="repitition.onMouseEnter()"
+    (mouseleave)="repitition.onMouseLeave()">
+    <div class="body">
+        <div class="schedule-repitition-header">
+            <fa-icon [icon]="faSyncAlt" style="color: rgba(0, 89, 255, 0.5);margin-right:10px;"></fa-icon>
+            Repeats every
+            <div class="frequency-controls">
+                <fa-icon class="frequency-button" [icon]="faMinusCircle" (click)="onClickMinusFrequency()"></fa-icon>
+                <span
+                    style="font-weight:bold;color: rgb(0, 89, 255);width:30px; font-size: 1.25em; text-align: center;">{{ repitition.frequency }}</span>
+                <fa-icon class="frequency-button" [icon]="faPlusCircle" (click)="onClickPlusFrequency()"></fa-icon>
+            </div>
+            <div class="time-unit-frame no-select" style="margin-left:10px;">
+                <app-dropdown-list [listItems]="dayOfWeekListItems(repitition)"
+                    [currentValue]="repitition.timeUnitFrameString" (listItemSelected)="onListItemSelected($event)"
+                    style="width:65px;" class="dropdown-list-component-container"></app-dropdown-list>
+            </div>
+        </div>
+
+        <div style="color:gray; font-size:0.9em; margin-bottom: 5px;">
+            {{occurrences.length }} occurrences per {{ repitition.frequency}} {{ repitition.timeUnitFrameString }}
+        </div>
+
+        <app-repitition-occurrence *ngFor="let occurrence of occurrences" [occurrence]="occurrence"
+            (delete)="repitition.deleteOccurrence(occurrence)"
+            (occurrenceUpdated)="repitition.updateOccurrence($event)">
+        </app-repitition-occurrence>
+
+        <div class="occurrences"
+            style="color: gray;font-size:0.9em;display:flex;flex-direction: row;align-items: center;"
+            *ngIf="occurrences.length == 0">
+            <fa-icon [icon]="faExclamationCircle" style="color:rgba(255, 0, 0, 0.5);margin-right: 10px;"></fa-icon> At
+            least one occurrence is require per repitition
+        </div>
+
+        <app-new-repitition-occurrence-form *ngIf="repitition.newOccurrenceFormOpen"
+            (occurrenceSaved)="repitition.onSaveNewOccurrence($event)">
+        </app-new-repitition-occurrence-form>
+
+        <div style="width:160px; margin-top: 10px; margin-left:10px; height:25px;">
+            <button class="medium-button" (click)="repitition.onClickNewOccurrence()"
+                *ngIf="!repitition.newOccurrenceFormOpen">
+                <fa-icon [icon]="faPlus" style="margin-right:5px;"></fa-icon> Add occurrence
+            </button>
+        </div>
+    </div>
+
+
+
+    <div class="footer" style="margin-top:10px;" *ngIf="!repitition.unsavedChanges && !creatingNew">
+        <button class="small-button" (click)="repitition.onCancelEditing()">Close</button>
+    </div>
+    <div class="footer" style="margin-top:10px;" *ngIf="repitition.unsavedChanges || creatingNew">
+        <button class="small-button" style="margin-left:5px;" (click)="onClickCancel()">Discard</button>
+        <button class="small-button" (click)="onClickSaveRepitition()" [disabled]="!repitition.isValidToSave"
+            [ngClass]="{'button-disabled': !repitition.isValidToSave}">Save</button>
+    </div>
+</div>
+
+<div class="repitition-root" *ngIf="!repitition.isEditing && !creatingNew" (mouseenter)="repitition.onMouseEnter()"
+    (mouseleave)="repitition.onMouseLeave()">
+    <div class="body">
+        <div style="display:flex;flex-direction: row;">
+            <div style="flex-grow:2;">
+                <fa-icon [icon]="faSyncAlt" style="color: rgba(0, 89, 255, 0.5);margin-right:10px;"></fa-icon>
+                Repeats {{ repitition.occurrenceTimes }}, every {{ repitition.frequency }}
+                {{ repitition.timeUnitFrameString }}
+            </div>
+
+            <div style=" display: flex;flex-direction: row;justify-content: center;">
+                <fa-icon [icon]="faPencilAlt"
+                    [ngClass]="{'icon-button': repitition.mouseIsOver, 'icon-button-dim':!repitition.mouseIsOver}"
+                    (click)="repitition.onClickEdit()" style="margin-right: 5px;"></fa-icon>
+                <fa-icon [icon]="faTrashAlt"
+                    [ngClass]="{'icon-button': repitition.mouseIsOver, 'icon-button-dim':!repitition.mouseIsOver}"
+                    (click)="onClickDelete()"></fa-icon>
+            </div>
+
+        </div>
+    </div>
+</div>

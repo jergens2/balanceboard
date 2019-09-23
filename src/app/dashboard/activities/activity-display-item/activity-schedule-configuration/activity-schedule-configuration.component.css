@@ -1,0 +1,28 @@
+.schedule-display-root{
+    display:flex;
+    flex-direction: column;
+    border-radius: 15px;
+    border: 1px solid rgba(0, 89, 255, 0.5);
+}
+.body{
+    display:flex;
+    flex-direction: column;
+    padding:15px;
+}
+
+.schedule-repitition{
+
+}
+
+.medium-button-dim{
+    color: rgb(240, 240, 240);
+}
+
+.bottom-bar{
+    background-color: rgba(0, 89, 255, 0.1);
+    display:flex;
+    flex-direction: row-reverse;
+    padding: 15px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}

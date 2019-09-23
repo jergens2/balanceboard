@@ -5,7 +5,9 @@ import { TimeUnit } from "../../../shared/utilities/time-unit.enum";
 
 export interface ActivityOccurrenceConfiguration{
 
+    index: number;
     unit: TimeUnit;
+    
 
     minutesPerOccurrence: number;
     timeOfDayQuarter: TimeOfDay;

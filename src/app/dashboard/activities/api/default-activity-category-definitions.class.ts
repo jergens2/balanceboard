@@ -129,6 +129,7 @@ export class DefaultActivityCategoryDefinitions {
                 frequency: 1,
                 occurrences: [
                     {
+                        index: 0,
                         unit: TimeUnit.Day,
                         minutesPerOccurrence: makeBed.specifiedDurationMinutes,
                         timeOfDayQuarter: TimeOfDay.Any,
@@ -212,6 +213,7 @@ export class DefaultActivityCategoryDefinitions {
                 frequency: 1,
                 occurrences: [
                     {
+                        index: 0,
                         unit: TimeUnit.Day,
                         minutesPerOccurrence: brushTeeth.specifiedDurationMinutes,
                         timeOfDayQuarter: TimeOfDay.Morning,
@@ -225,6 +227,7 @@ export class DefaultActivityCategoryDefinitions {
                         daysOfYear: [],
                     },
                     {
+                        index: 1,
                         unit: TimeUnit.Day,
                         minutesPerOccurrence: brushTeeth.specifiedDurationMinutes,
                         timeOfDayQuarter: TimeOfDay.Evening,

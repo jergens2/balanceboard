@@ -1,10 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityCategoryDefinition } from '../../api/activity-category-definition.class';
-
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { ActivityScheduleRepitition } from '../../api/activity-schedule-repitition.interface';
-import { ActivityRepititionDisplay } from './activity-repitition-display/activity-repitition-display.class';
+import { TimeOfDayConverter } from '../../../../shared/utilities/time-of-day-converter.class';
+import { TimeUnitConverter } from '../../../../shared/utilities/time-unit-converter.class';
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
-import { faSave } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-activity-schedule-display',
@@ -14,42 +15,55 @@ import { faSave } from '@fortawesome/free-solid-svg-icons';
 export class ActivityScheduleDisplayComponent implements OnInit {
 
   constructor() { }
+
   @Input() activity: ActivityCategoryDefinition;
+  @Output() configure: EventEmitter<boolean> = new EventEmitter();
 
   ngOnInit() {
-    let repititionItems: ActivityRepititionDisplay[] = [];
-    this.activity.scheduleRepititions.forEach((repitition: ActivityScheduleRepitition)=>{
-      repititionItems.push(new ActivityRepititionDisplay(repitition));
-    })
-    console.log("count: ", repititionItems.length);
-    this._repititionItems = repititionItems;
-    this._repititionItems.forEach((repititionItem)=>{
-      repititionItem.settingChanged$.subscribe((event)=>{
-        this.updateValidity();
-      })
-    })
   }
 
-  private updateValidity(){
-    let allValid: boolean = true;
-    this._repititionItems.forEach((item)=>{
-      if(!item.isValidToSave){
-        allValid = false;
+  public onClickConfigureSchedule() {
+    this.configure.emit(true);
+  }
+  public onClickEdit(){
+    this.configure.emit(true);
+  }
+
+  public get scheduleConfigurationSummary(): string {
+
+    let summary: string = "";
+    if (this.activity.scheduleRepititions.length == 1) {
+      return "This activity repeats " + this.scheduleRepititionSummary(this.activity.scheduleRepititions[0]);
+    } else if (this.activity.scheduleRepititions.length > 1) {
+      summary = "This activity repeats ";
+      for (let i = 0; i < this.activity.scheduleRepititions.length; i++) {
+        if(i == this.activity.scheduleRepititions.length-1){
+          summary += this.scheduleRepititionSummary(this.activity.scheduleRepititions[i]);
+        }else{
+          summary += this.scheduleRepititionSummary(this.activity.scheduleRepititions[i]) + ", and ";
+        }
+        
       }
-    });
-    this._saveDisabled = !allValid;
+    }
+    return summary;
   }
 
-  private _repititionItems: ActivityRepititionDisplay[] = [];
-  public get repititionItems(): ActivityRepititionDisplay[] {
-    return this._repititionItems;
+  public scheduleRepititionSummary(repitition: ActivityScheduleRepitition): string{
+    let summary: string = "every "
+    let frequency :string = "";
+    let unit = TimeUnitConverter.convertToString(repitition.unit, true);
+    if (repitition.frequency == 1) {
+      summary += unit;
+    } else {
+      summary += repitition.frequency + " " + unit + "s";
+    }
+    let occurrences: string = repitition.occurrences.length + " times per " + unit;
+    if(repitition.occurrences.length == 1){
+      occurrences = "1 time per " + unit;
+    }
+    return summary + ", " + occurrences;
   }
 
-  private _saveDisabled: boolean = false;
-  public get saveDisabled(): boolean{
-    return this._saveDisabled;
-  }
-
-  faSave = faSave;
-  
+  faPencilAlt = faPencilAlt;
+  faSyncAlt = faSyncAlt;
 }

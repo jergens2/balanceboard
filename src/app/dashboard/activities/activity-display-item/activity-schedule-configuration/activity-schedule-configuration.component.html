@@ -1,0 +1,27 @@
+<div class="schedule-display-root font-family-open-sans" *ngIf="activity.scheduleRepititions.length > 0"
+    (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+    <div class="body">
+        <app-activity-repitition-display [repitition]="repitition" class="schedule-repitition" (delete)="onRepititionDeleted(repitition)"
+            *ngFor="let repitition of repititionItems">
+        </app-activity-repitition-display>
+        <app-activity-repitition-display class="schedule-repitition" *ngIf="addingRepitition"
+        [repitition]="newRepitition" [new]="true"
+            (repititionSaved)="onRepititionSaved($event)">
+        </app-activity-repitition-display>
+        <div style="margin-bottom:10px;height:25px;" *ngIf="!addingRepitition">
+            <button class="medium-button" (click)="onClickAddRepitition()">
+                <fa-icon [icon]="faPlus" style="margin-right:5px;"></fa-icon>Add repitition
+            </button>
+        </div>
+
+    </div>
+
+    <div class="bottom-bar">
+        <button class="medium-button" (click)="onClickDiscard()" style="margin-left: 10px;">Discard Changes</button>
+        <button class="medium-button" [ngClass]="{'button-disabled': saveDisabled }"
+            (click)="onClickSaveConfiguration()" [disabled]="saveDisabled">
+            <fa-icon [icon]="faSave" style="margin-right: 5px;"></fa-icon> Save changes
+        </button>
+
+    </div>
+</div>

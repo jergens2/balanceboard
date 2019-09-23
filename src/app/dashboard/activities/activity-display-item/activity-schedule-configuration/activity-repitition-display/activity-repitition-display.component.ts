@@ -1,8 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityRepititionDisplay } from './activity-repitition-display.class';
-import { faPlusCircle, faMinusCircle, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faMinusCircle, faPlus, faSyncAlt, faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { TimeUnit } from '../../../../../shared/utilities/time-unit.enum';
 import { ActivityOccurrenceConfiguration } from '../../../api/activity-occurrence-configuration.interface';
+import { ActivityScheduleRepitition } from '../../../api/activity-schedule-repitition.interface';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-activity-repitition-display',
@@ -12,23 +15,44 @@ import { ActivityOccurrenceConfiguration } from '../../../api/activity-occurrenc
 export class ActivityRepititionDisplayComponent implements OnInit {
 
   constructor() { }
-  @Input() repitition: ActivityRepititionDisplay;
 
+  private _repitition: ActivityRepititionDisplay;
+  @Input() public set repitition(repitition: ActivityRepititionDisplay){
+    this._repitition = repitition;
+
+  }
+  @Input("new") public set creatingNew(creatingNew: boolean){
+    this._creatingNew = creatingNew;
+  }
+  public get repitition(): ActivityRepititionDisplay{
+    return this._repitition;
+  }
+
+  private _creatingNew: boolean = false;
+  public get creatingNew(): boolean{
+    return this._creatingNew;
+  }
+
+
+  
   ngOnInit() {
-    this.setOccurrences();
+
+  }
+
+  @Output() repititionSaved: EventEmitter<ActivityScheduleRepitition> = new EventEmitter();
+
+  public onClickSaveRepitition(){
+    this.repititionSaved.emit(this.repitition);
+  }
+  public onClickCancel(){
+    this.repititionSaved.emit(null);
   }
 
 
 
 
-  private setOccurrences(){
-    this._occurrences = this.repitition.occurrences.filter((occurrence)=>{ return occurrence.unit == this.repitition.unit; });
-    console.log("Occurrences has been set to: ", this._occurrences);
-  }
-
-  private _occurrences: ActivityOccurrenceConfiguration[] = [];
   public get occurrences(): ActivityOccurrenceConfiguration[]{
-    return this._occurrences;
+    return this.repitition.occurrences;
   } 
 
   public dayOfWeekListItems(): string[] {
@@ -46,7 +70,6 @@ export class ActivityRepititionDisplayComponent implements OnInit {
   public onListItemSelected(listItem: string) {
     if(listItem != ""){
       this.repitition.unit = this.timeUnit(listItem);
-      this.setOccurrences();
     }
     this._dropdownListExpanded = false;
   }
@@ -58,20 +81,7 @@ export class ActivityRepititionDisplayComponent implements OnInit {
     if (frame == "year" || frame == "years") { return TimeUnit.Year; }
   }
 
-  public timeUnitFrameString(unit: TimeUnit): string {
-    if (this.repitition.frequency == 1) {
-      if (unit == TimeUnit.Day) { return "day"; }
-      if (unit == TimeUnit.Week) { return "week"; }
-      if (unit == TimeUnit.Month) { return "month"; }
-      if (unit == TimeUnit.Year) { return "year"; }
-    } else if (this.repitition.frequency > 1) {
-      if (unit == TimeUnit.Day) { return "days"; }
-      if (unit == TimeUnit.Week) { return "weeks"; }
-      if (unit == TimeUnit.Month) { return "months"; }
-      if (unit == TimeUnit.Year) { return "years"; }
-    }
-    return "";
-  }
+  
 
   public onClickPlusFrequency() {
     this.repitition.frequency++;
@@ -93,8 +103,16 @@ export class ActivityRepititionDisplayComponent implements OnInit {
     return "";
   }
 
+  @Output() delete: EventEmitter<any> = new EventEmitter();
+  public onClickDelete(){
+    this.delete.emit(true);
+  }
+
   faPlusCircle = faPlusCircle;
   faMinusCircle = faMinusCircle;
   faPlus = faPlus;
-
+  faExclamationCircle = faExclamationCircle;
+  faSyncAlt = faSyncAlt;
+  faPencilAlt = faPencilAlt;
+  faTrashAlt = faTrashAlt;
 }

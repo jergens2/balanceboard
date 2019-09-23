@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { DaybookModule } from './daybook/daybook.module';
+import { ActivitiesModule } from './activities/activities.module';
 
 import { HomeComponent } from './home/home.component';
 
@@ -42,16 +43,9 @@ import { CategoriesTaskGroupComponent } from './tasks/views/categories-view/cate
 import { TreemapTaskGroupComponent } from './tasks/views/treemap-view/treemap-task-group/treemap-task-group.component';
 import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.component';
 import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule-planner.component';
-import { ActivitiesComponent } from './activities/activities.component';
 import { SocialComponent } from './social/social.component';
-import { ActivityListItemComponent } from './activities/activity-list-item/activity-list-item.component';
-import { RoutineComponent } from './activities/routines/routine/routine.component';
 import { PointsComponent } from './points/points.component';
-import { ActivityDisplayItemComponent } from './activities/activity-display-item/activity-display-item.component';
-import { ActivityScheduleDisplayComponent } from './activities/activity-display-item/activity-schedule-display/activity-schedule-display.component';
-import { ActivityRepititionDisplayComponent } from './activities/activity-display-item/activity-schedule-display/activity-repitition-display/activity-repitition-display.component';
-import { NewRepititionOccurrenceFormComponent } from './activities/activity-display-item/activity-schedule-display/activity-repitition-display/new-repitition-occurrence-form/new-repitition-occurrence-form.component';
-import { RepititionOccurrenceComponent } from './activities/activity-display-item/activity-schedule-display/activity-repitition-display/repitition-occurrence/repitition-occurrence.component';
+
 
 
 @NgModule({
@@ -61,6 +55,7 @@ import { RepititionOccurrenceComponent } from './activities/activity-display-ite
     FontAwesomeModule,
     ColorPickerModule,
     DaybookModule,
+    ActivitiesModule,
     SharedModule,
   ],
   declarations: [
@@ -96,18 +91,9 @@ import { RepititionOccurrenceComponent } from './activities/activity-display-ite
     TreemapTaskGroupComponent,
     TreemapComponent,
     SchedulePlannerComponent,
-
-    ActivitiesComponent,
-
     SocialComponent,
-    ActivityListItemComponent,
-    RoutineComponent,
     PointsComponent,
-    ActivityDisplayItemComponent,
-    ActivityScheduleDisplayComponent,
-    ActivityRepititionDisplayComponent,
-    NewRepititionOccurrenceFormComponent,
-    RepititionOccurrenceComponent,
+
 
   ],
   providers: [],

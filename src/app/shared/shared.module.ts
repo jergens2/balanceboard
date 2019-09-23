@@ -18,7 +18,6 @@ import { ActivityInputDropdownComponent } from "./activity-input-dropdown/activi
 
 import { RecurringTaskFormComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/recurring-task-form.component";
 import { RtRepititionsComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/rt-repititions.component";
-import { ActivityCategoryDefinitionFormComponent } from "../dashboard/activities/activity-category-definition-form/activity-category-definition-form.component";
 import { BrowseActivityComponent } from './activity-input-dropdown/browse-activity/browse-activity.component';
 import { DataEntryItemInputComponent } from './data-entry-item-input/data-entry-item-input.component';
 import { TimelogEntryInputComponent } from './data-entry-item-input/data-entry-input-components/timelog-entry-input/timelog-entry-input.component';
@@ -58,35 +57,23 @@ import { DropdownListComponent } from './utilities/components/dropdown-list/drop
         DirectoryInputComponent,
         ActivityInputDropdownComponent,
         RecurringTaskFormComponent,
-        ActivityCategoryDefinitionFormComponent,
+
         RtRepititionsComponent,
 
         BrowseActivityComponent,
 
         DataEntryItemInputComponent,
-
         TimelogEntryInputComponent,
-
         FinancialEntryInputComponent,
-
         ActionItemEntryInputComponent,
-
         ReminderEntryInputComponent,
-
         ScheduledEventInputComponent,
-
         DietaryEntryInputComponent,
-
         FeelingEntryInputComponent,
-
         WeightlogEntryInputComponent,
-
         CountEntryInputComponent,
-
         RuleConditionEntryInputComponent,
-
         HealthSymptomEntryInputComponent,
-
         DropdownListComponent,
 
 
