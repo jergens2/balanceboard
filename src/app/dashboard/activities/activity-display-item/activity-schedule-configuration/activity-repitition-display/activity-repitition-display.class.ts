@@ -1,7 +1,10 @@
 import { ActivityScheduleRepitition } from "../../../api/activity-schedule-repitition.interface";
 import { TimeUnit } from "../../../../../shared/utilities/time-unit.enum";
 import { ActivityOccurrenceConfiguration } from "../../../api/activity-occurrence-configuration.interface";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, Subscription } from "rxjs";
+import { ActivityRepititionOccurrence } from "./repitition-occurrence/repitition.occurrence.class";
+import { ItemState } from "../../activity-schedule-display/item-state.class";
+import { TimeOfDay } from "../../../../../shared/utilities/time-of-day-enum";
 
 export class ActivityRepititionDisplay {
     /**
@@ -11,37 +14,46 @@ export class ActivityRepititionDisplay {
 
 
     constructor(repitition: ActivityScheduleRepitition) {
+        this._itemState = new ItemState(repitition);
         this._unit = repitition.unit;
         this._frequency = repitition.frequency;
-        this._occurrences = repitition.occurrences;
+        let occurrences: ActivityRepititionOccurrence[] = [];
+        repitition.occurrences.forEach((occurrenceConfig) => {
+            occurrences.push(new ActivityRepititionOccurrence(occurrenceConfig));
+        })
+        this.occurrences = occurrences;
         this._startDateTimeISO = repitition.startDateTimeISO;
         this.update();
     }
 
-    private _isEditing: boolean = false;
-    public get isEditing(): boolean {
-        return this._isEditing;
+    private _itemState: ItemState;
+
+    public get itemState(): ItemState { return this._itemState; }
+    public get isEditing(): boolean { return this._itemState.isEditing };
+
+
+    public onClickEdit() {
+        this._itemState.startEditing();
     }
-    public onClickEdit(){
-        this._isEditing = true;
+    public onCancelEditing() {
+        this._itemState.cancel();
     }
-    public onCancelEditing(){
-        this._isEditing = false;
-    }
-    public onClickDelete(){
+    public onClickDelete() {
         console.log("Delete: Disabled");
     }
-
-    private _unsavedChanges: boolean = false;
-    public get unsavedChanges(): boolean{
-        return this._unsavedChanges;
+    public stopEditing() {
+        this._itemState.isEditing = false;
     }
 
-    public get repititionItem(): ActivityScheduleRepitition {
+    public get unsavedChanges(): boolean {
+        return this._itemState.isChanged;
+    }
+
+    public get exportRepititionItem(): ActivityScheduleRepitition {
         return {
             unit: this.unit,
             frequency: this.frequency,
-            occurrences: this.occurrences,
+            occurrences: this.occurrences.map((occurrence) => { return occurrence.config; }),
             startDateTimeISO: this.startDateTimeISO,
         }
     }
@@ -50,6 +62,7 @@ export class ActivityRepititionDisplay {
     public get unit(): TimeUnit { return this._unit; }
     public set unit(unit: TimeUnit) {
         this._unit = unit;
+        this._itemState.isChanged = true;
         this.update();
     }
 
@@ -57,22 +70,53 @@ export class ActivityRepititionDisplay {
     public get frequency(): number { return this._frequency; }
     public set frequency(frequency: number) {
         this._frequency = frequency;
+        this._itemState.isChanged = true;
         this.update();
     }
 
-    private _occurrences: ActivityOccurrenceConfiguration[];
-    public get occurrences(): ActivityOccurrenceConfiguration[] { return this._occurrences; }
-    public set occurrences(occurrences: ActivityOccurrenceConfiguration[]) {
+    private _occurrences: ActivityRepititionOccurrence[];
+    public get occurrences(): ActivityRepititionOccurrence[] { return this._occurrences; }
+    public set occurrences(occurrences: ActivityRepititionOccurrence[]) {
         this._occurrences = occurrences;
+        this.updateOccurrenceChangeSubscriptions();
+        this._itemState.isChanged = true;
         this.update();
     }
 
-    public get occurrenceTimes(): string{
-        if(this.occurrences.length == 1){
+    private occurrenceChangeSubscriptions: Subscription[] = [];
+    private updateOccurrenceChangeSubscriptions() {
+        this.occurrenceChangeSubscriptions.forEach((sub) => { sub.unsubscribe(); });
+        this.occurrenceChangeSubscriptions = [];
+        this._occurrences.forEach((occurrence) => {
+            this.occurrenceChangeSubscriptions.push(occurrence.delete$.subscribe((onDelete) => {
+                this.deleteOccurrence(occurrence);
+            }));
+            this.occurrenceChangeSubscriptions.push(occurrence.isValid$.subscribe((isValid: boolean) => {
+                this._itemState.isValid = this.validityOfOccurrences();
+            }));
+            this.occurrenceChangeSubscriptions.push(occurrence.isEditing$.subscribe((onEditing) => {
+                this.update();
+            }));
+        });
+
+    }
+
+    private validityOfOccurrences(): boolean {
+        let allValid: boolean = true;
+        for (let i = 0; i < this.occurrences.length; i++) {
+            if (!this.occurrences[i].isValid || this.occurrences[i].isEditing) {
+                allValid = false;
+            }
+        }
+        return allValid;
+    }
+
+    public get occurrenceTimes(): string {
+        if (this.occurrences.length == 1) {
             return "1 time";
-        }else if(this.occurrences.length > 1){
+        } else if (this.occurrences.length > 1) {
             return this.occurrences.length + " times";
-        }else{
+        } else {
             return "error";
         }
     }
@@ -81,18 +125,19 @@ export class ActivityRepititionDisplay {
     public get startDateTimeISO(): string { return this._startDateTimeISO; }
     public set startDateTimeISO(startDateTimeISO: string) {
         this._startDateTimeISO = startDateTimeISO;
+        this._itemState.isChanged = true;
         this.update();
     }
 
-    public updateOccurrence(saveOccurrence: ActivityOccurrenceConfiguration) {
-        this._unsavedChanges = true;
+    public updateOccurrence(saveOccurrence: ActivityRepititionOccurrence) {
+        this._itemState.isChanged = true;
         let occurrences = this.occurrences;
         let index: number = occurrences.findIndex((item) => { return item.index == saveOccurrence.index; })
         occurrences.splice(index, 1, saveOccurrence);
         this.occurrences = this.reIndex(occurrences);
     }
-    public deleteOccurrence(deleteOccurrence: ActivityOccurrenceConfiguration) {
-        this._unsavedChanges = true;
+    public deleteOccurrence(deleteOccurrence: ActivityRepititionOccurrence) {
+        this._itemState.isChanged = true;
         let occurrences = this.occurrences;
         if (occurrences.length == 1) {
             occurrences = [];
@@ -105,10 +150,11 @@ export class ActivityRepititionDisplay {
         this.occurrences = this.reIndex(occurrences);
     }
 
-    public onSaveNewOccurrence(occurrence: ActivityOccurrenceConfiguration) {
+    public onSaveNewOccurrence(occurrence: ActivityRepititionOccurrence) {
         if (occurrence != null) {
             console.log("onSaveNewOccurrence");
-            let occurrences: ActivityOccurrenceConfiguration[] = this.occurrences;
+            occurrence.isEditing = false;
+            let occurrences: ActivityRepititionOccurrence[] = this.occurrences;
             if (occurrence.index == -1) {
                 occurrence.index = this.occurrences.length;
             }
@@ -116,11 +162,12 @@ export class ActivityRepititionDisplay {
 
             this.occurrences = this.reIndex(occurrences);;
         } else {
-            this._newOccurrenceFormOpen = false;
+            
         }
+        this.newOccurrence = null;
     }
 
-    private reIndex(occurrences: ActivityOccurrenceConfiguration[]): ActivityOccurrenceConfiguration[] {
+    private reIndex(occurrences: ActivityRepititionOccurrence[]): ActivityRepititionOccurrence[] {
         console.log("Reindexing: ", occurrences.length, occurrences);
         if (occurrences.length > 1) {
             occurrences = occurrences.sort((o1, o2) => {
@@ -147,25 +194,32 @@ export class ActivityRepititionDisplay {
 
 
 
-    private _isValidToSave: boolean = false;
-    public get isValidToSave(): boolean {
-        return this._isValidToSave;
+
+    public get isValid(): boolean {
+        return this._itemState.isValid;
     }
 
     private update() {
+        let isValidToSave: boolean = true;
         let currentOccurrences: number = this.occurrences.filter((occurrence) => { return occurrence.unit == this.unit; }).length;
         if (currentOccurrences == 0) {
-            this._isValidToSave = false;
+            isValidToSave = false;
         } else if (currentOccurrences > 0) {
-            this._isValidToSave = true;
+            for (let i = 0; i < this.occurrences.length; i++) {
+                if (!this.occurrences[i].isValid) {
+                    isValidToSave = false;
+                }
+                if (this.occurrences[i].isEditing) {
+                    isValidToSave = false;
+                }
+            }
+
         }
-        this._settingChanged$.next(this.isValidToSave);
-        this._newOccurrenceFormOpen = false;
+        this._itemState.isValid = isValidToSave;
+        // this._itemState.isNew = false;
     }
-    private _settingChanged$: Subject<boolean> = new Subject();
-    public get settingChanged$(): Observable<boolean> {
-        return this._settingChanged$.asObservable();
-    }
+
+
 
     public get dayOfWeekListItems(): string[] {
         if (this.frequency == 1) {
@@ -201,25 +255,41 @@ export class ActivityRepititionDisplay {
         return "";
     }
 
-    private _newOccurrenceFormOpen: boolean = false;
-    public get newOccurrenceFormOpen(): boolean {
-        return this._newOccurrenceFormOpen;
-    }
-    public onClickNewOccurrence() {
-        console.log("clickeroo")
-        this._newOccurrenceFormOpen = true;
-    }
-    public onClickSaveNewOccurrence() {
 
+
+    private newOccurrence: ActivityRepititionOccurrence;
+    public onClickNewOccurrence() {
+        this.newOccurrence = new ActivityRepititionOccurrence({
+      
+            index: -1,
+            unit: TimeUnit.Day,
+      
+            minutesPerOccurrence: -1,
+            timeOfDayQuarter: TimeOfDay.Any,
+            timeOfDayHour: -1,
+            timeOfDayMinute: -1,
+      
+      
+            timesOfDay: [],
+            timesOfDayRanges: [],
+      
+            timesOfDayExcludedRanges: [],
+      
+            daysOfWeek: [],
+            daysOfWeekExcluded: [],
+      
+            daysOfYear: [],
+          });
+        this.newOccurrence.isNew = true;
+        this._itemState.isChanged = true;
     }
+
 
     public onMouseLeave() {
         this._mouseIsOver = false;
-        console.log("mouse no lka")
     }
     public onMouseEnter() {
         this._mouseIsOver = true;
-        console.log("mouse la")
     }
     private _mouseIsOver: boolean = false;
     public get mouseIsOver(): boolean {

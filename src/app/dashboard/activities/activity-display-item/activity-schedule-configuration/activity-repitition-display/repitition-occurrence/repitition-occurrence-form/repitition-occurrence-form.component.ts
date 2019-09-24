@@ -1,57 +1,41 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { TimeOfDay } from '../../../../../../shared/utilities/time-of-day-enum';
-import { ActivityOccurrenceConfiguration } from '../../../../api/activity-occurrence-configuration.interface';
-import { TimeUnit } from '../../../../../../shared/utilities/time-unit.enum';
+import { TimeOfDay } from '../../../../../../../shared/utilities/time-of-day-enum';
+import { ActivityOccurrenceConfiguration } from '../../../../../api/activity-occurrence-configuration.interface';
+import { TimeUnit } from '../../../../../../../shared/utilities/time-unit.enum';
+import { ActivityRepititionOccurrence } from '../repitition.occurrence.class';
 
 @Component({
-  selector: 'app-new-repitition-occurrence-form',
-  templateUrl: './new-repitition-occurrence-form.component.html',
-  styleUrls: ['./new-repitition-occurrence-form.component.css']
+  selector: 'app-repitition-occurrence-form',
+  templateUrl: './repitition-occurrence-form.component.html',
+  styleUrls: ['./repitition-occurrence-form.component.css']
 })
-export class NewRepititionOccurrenceFormComponent implements OnInit {
+export class RepititionOccurrenceFormComponent implements OnInit {
 
   constructor() { }
 
 
-  occurrence: ActivityOccurrenceConfiguration;
+  occurrence: ActivityRepititionOccurrence;
 
-  @Input() editOccurrence: ActivityOccurrenceConfiguration;
+  @Input() editOccurrence: ActivityRepititionOccurrence;
+  @Input() newOccurrence: ActivityRepititionOccurrence;
 
   ngOnInit() {
     if(this.editOccurrence){
       this.occurrence = this.editOccurrence;
+    }else if(this.newOccurrence){
+      this.occurrence = this.newOccurrence;
     }else{
-      this.occurrence = {
-      
-        index: -1,
-        unit: TimeUnit.Day,
-  
-        minutesPerOccurrence: -1,
-        timeOfDayQuarter: TimeOfDay.Any,
-        timeOfDayHour: -1,
-        timeOfDayMinute: -1,
-  
-  
-        timesOfDay: [],
-        timesOfDayRanges: [],
-  
-        timesOfDayExcludedRanges: [],
-  
-        daysOfWeek: [],
-        daysOfWeekExcluded: [],
-  
-        daysOfYear: [],
-      }
+      console.log("Error");
     }
     
   }
 
-  @Output() occurrenceSaved: EventEmitter<ActivityOccurrenceConfiguration> = new EventEmitter();
+  @Output() occurrenceSaved: EventEmitter<ActivityRepititionOccurrence> = new EventEmitter();
   public onClickSaveOccurrence() {
     this.occurrenceSaved.emit(this.occurrence);
   }
   public onClickCancel(){
-    this.occurrenceSaved.emit(null);
+    this.occurrence.onClickCancel();
   }
 
   public timeOfDayList: string[] = ["any", "early morning", "morning", "afternoon", "evening", "specify"];
@@ -69,7 +53,7 @@ export class NewRepititionOccurrenceFormComponent implements OnInit {
 
   public onListItemSelected(timeOfDay: string) {
     this._timeOfDay = this.timeOfDay(timeOfDay);
-    this.occurrence.timeOfDayQuarter = this._timeOfDay;
+    this.occurrence.config.timeOfDayQuarter = this._timeOfDay;
   }
 
   private timeOfDay(stringVal: string): TimeOfDay {

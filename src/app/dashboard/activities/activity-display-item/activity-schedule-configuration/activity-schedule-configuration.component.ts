@@ -51,6 +51,12 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     startDateTimeISO: moment().startOf("year").toISOString(),
   });
 
+  public onRepititionUpdated(updateRepitition: ActivityRepititionDisplay){
+    console.log("update la")
+    updateRepitition.stopEditing();
+    this.update();
+    this.updateValidity();
+  }
 
   public onRepititionSaved(repitition: ActivityScheduleRepitition){
 
@@ -66,7 +72,7 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
 
   @Output() configurationSaved: EventEmitter<ActivityScheduleRepitition[]> = new EventEmitter(); 
   public onClickSaveConfiguration(){
-    this.configurationSaved.emit(this.repititionItems.map((item)=>{ return item.repititionItem; }));
+    this.configurationSaved.emit(this.repititionItems.map((item)=>{ return item.exportRepititionItem; }));
   }
   public onClickCLose(){
     this.configurationSaved.emit(null);
@@ -89,7 +95,7 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     this._repititionSusbscriptions = [];
 
     this._repititionItems.forEach((repititionItem)=>{
-      this._repititionSusbscriptions.push(repititionItem.settingChanged$.subscribe((event)=>{
+      this._repititionSusbscriptions.push(repititionItem.itemState.isChanged$.subscribe((event)=>{
         this.updateValidity();
         // this.saveRepititions();
       }));
@@ -105,7 +111,7 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
   private updateValidity(){
     let allValid: boolean = true;
     this._repititionItems.forEach((item)=>{
-      if(!item.isValidToSave){
+      if(!item.isValid){
         allValid = false;
       }
     });

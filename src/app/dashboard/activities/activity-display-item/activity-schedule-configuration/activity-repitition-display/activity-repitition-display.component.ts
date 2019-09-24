@@ -42,7 +42,7 @@ export class ActivityRepititionDisplayComponent implements OnInit {
   @Output() repititionSaved: EventEmitter<ActivityScheduleRepitition> = new EventEmitter();
 
   public onClickSaveRepitition(){
-    this.repititionSaved.emit(this.repitition);
+    this.repititionSaved.emit(this.repitition.exportRepititionItem);
   }
   public onClickCancel(){
     this.repititionSaved.emit(null);
@@ -50,10 +50,6 @@ export class ActivityRepititionDisplayComponent implements OnInit {
 
 
 
-
-  public get occurrences(): ActivityOccurrenceConfiguration[]{
-    return this.repitition.occurrences;
-  } 
 
   public dayOfWeekListItems(): string[] {
     return this.repitition.dayOfWeekListItems;
@@ -94,14 +90,14 @@ export class ActivityRepititionDisplayComponent implements OnInit {
     this.repitition.frequency = currentValue;
   }
 
-  public get occurrencesString(): string {
-    if(this.occurrences.length == 1){
-      return "occurrence";
-    }else if(this.occurrences.length > 1){
-      return "occurrences";
-    }
-    return "";
-  }
+  // public get occurrencesString(): string {
+  //   if(this.repitition.occurrences.length == 1){
+  //     return "occurrence";
+  //   }else if(this.repitition.occurrences.length > 1){
+  //     return "occurrences";
+  //   }
+  //   return "";
+  // }
 
   @Output() delete: EventEmitter<any> = new EventEmitter();
   public onClickDelete(){

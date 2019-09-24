@@ -11,7 +11,7 @@ import { ActivityDisplayItemComponent } from './activity-display-item/activity-d
 import { ActivityScheduleDisplayComponent } from './activity-display-item/activity-schedule-display/activity-schedule-display.component';
 import { ActivityScheduleConfigurationComponent } from './activity-display-item/activity-schedule-configuration/activity-schedule-configuration.component';
 import { ActivityRepititionDisplayComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/activity-repitition-display.component';
-import { NewRepititionOccurrenceFormComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/new-repitition-occurrence-form/new-repitition-occurrence-form.component';
+import { RepititionOccurrenceFormComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/repitition-occurrence-form/repitition-occurrence-form.component';
 import { RepititionOccurrenceComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/repitition-occurrence.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -34,7 +34,7 @@ import { YearOccurrenceComponent } from './activity-display-item/activity-schedu
     ActivityDisplayItemComponent,
     ActivityScheduleConfigurationComponent,
     ActivityRepititionDisplayComponent,
-    NewRepititionOccurrenceFormComponent,
+    RepititionOccurrenceFormComponent,
     RepititionOccurrenceComponent,
     ActivityScheduleDisplayComponent,
     ActivityCategoryDefinitionFormComponent,

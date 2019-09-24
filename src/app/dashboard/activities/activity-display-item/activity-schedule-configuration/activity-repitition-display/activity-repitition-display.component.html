@@ -18,28 +18,29 @@
         </div>
 
         <div style="color:gray; font-size:0.9em; margin-bottom: 5px;">
-            {{occurrences.length }} occurrences per {{ repitition.frequency}} {{ repitition.timeUnitFrameString }}
+            {{ repitition.occurrences.length }} occurrences per {{ repitition.frequency}} {{ repitition.timeUnitFrameString }}
         </div>
 
-        <app-repitition-occurrence *ngFor="let occurrence of occurrences" [occurrence]="occurrence"
+        <app-repitition-occurrence *ngFor="let occurrence of repitition.occurrences" [occurrence]="occurrence"
             (delete)="repitition.deleteOccurrence(occurrence)"
             (occurrenceUpdated)="repitition.updateOccurrence($event)">
         </app-repitition-occurrence>
 
         <div class="occurrences"
             style="color: gray;font-size:0.9em;display:flex;flex-direction: row;align-items: center;"
-            *ngIf="occurrences.length == 0">
+            *ngIf="repitition.occurrences.length == 0">
             <fa-icon [icon]="faExclamationCircle" style="color:rgba(255, 0, 0, 0.5);margin-right: 10px;"></fa-icon> At
             least one occurrence is require per repitition
         </div>
 
-        <app-new-repitition-occurrence-form *ngIf="repitition.newOccurrenceFormOpen"
+        <app-repitition-occurrence-form *ngIf="repitition.newOccurrence"
+            [newOccurrence]="repitition.newOccurrence"
             (occurrenceSaved)="repitition.onSaveNewOccurrence($event)">
-        </app-new-repitition-occurrence-form>
+        </app-repitition-occurrence-form>
 
         <div style="width:160px; margin-top: 10px; margin-left:10px; height:25px;">
             <button class="medium-button" (click)="repitition.onClickNewOccurrence()"
-                *ngIf="!repitition.newOccurrenceFormOpen">
+                *ngIf="!repitition.newOccurrence">
                 <fa-icon [icon]="faPlus" style="margin-right:5px;"></fa-icon> Add occurrence
             </button>
         </div>
@@ -47,13 +48,13 @@
 
 
 
-    <div class="footer" style="margin-top:10px;" *ngIf="!repitition.unsavedChanges && !creatingNew">
+    <div class="footer" style="margin-top:10px;" *ngIf="!repitition.itemState.isChanged && !creatingNew">
         <button class="small-button" (click)="repitition.onCancelEditing()">Close</button>
     </div>
     <div class="footer" style="margin-top:10px;" *ngIf="repitition.unsavedChanges || creatingNew">
         <button class="small-button" style="margin-left:5px;" (click)="onClickCancel()">Discard</button>
-        <button class="small-button" (click)="onClickSaveRepitition()" [disabled]="!repitition.isValidToSave"
-            [ngClass]="{'button-disabled': !repitition.isValidToSave}">Save</button>
+        <button class="small-button" (click)="onClickSaveRepitition()" [disabled]="!repitition.isValid"
+            [ngClass]="{'button-disabled': !repitition.isValid}">Save</button>
     </div>
 </div>
 
