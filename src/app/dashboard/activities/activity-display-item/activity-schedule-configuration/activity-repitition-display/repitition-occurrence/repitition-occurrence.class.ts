@@ -95,7 +95,7 @@ export class ActivityRepititionOccurrence{
     }
 
     public onClickCancel(){
-        this._itemState.cancel();
+        let originalValue = this._itemState.cancelAndReturnOriginalValue();
     }
   
     // public onClickMinusFrequency(){

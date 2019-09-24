@@ -42,9 +42,11 @@ export class ActivityRepititionDisplayComponent implements OnInit {
   @Output() repititionSaved: EventEmitter<ActivityScheduleRepitition> = new EventEmitter();
 
   public onClickSaveRepitition(){
+    this.repitition.onMouseLeave();
     this.repititionSaved.emit(this.repitition.exportRepititionItem);
   }
   public onClickCancel(){
+    this.repitition.onCancelEditing();
     this.repititionSaved.emit(null);
   }
 

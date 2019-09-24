@@ -2,7 +2,7 @@ import { ActivityScheduleRepitition } from "../../../api/activity-schedule-repit
 import { TimeUnit } from "../../../../../shared/utilities/time-unit.enum";
 import { ActivityOccurrenceConfiguration } from "../../../api/activity-occurrence-configuration.interface";
 import { Observable, Subject, Subscription } from "rxjs";
-import { ActivityRepititionOccurrence } from "./repitition-occurrence/repitition.occurrence.class";
+import { ActivityRepititionOccurrence } from "./repitition-occurrence/repitition-occurrence.class";
 import { ItemState } from "../../activity-schedule-display/item-state.class";
 import { TimeOfDay } from "../../../../../shared/utilities/time-of-day-enum";
 
@@ -14,6 +14,10 @@ export class ActivityRepititionDisplay {
 
 
     constructor(repitition: ActivityScheduleRepitition) {
+        this.rebuild(repitition);
+    }
+
+    private rebuild(repitition: ActivityScheduleRepitition){
         this._itemState = new ItemState(repitition);
         this._unit = repitition.unit;
         this._frequency = repitition.frequency;
@@ -21,25 +25,32 @@ export class ActivityRepititionDisplay {
         repitition.occurrences.forEach((occurrenceConfig) => {
             occurrences.push(new ActivityRepititionOccurrence(occurrenceConfig));
         })
-        this.occurrences = occurrences;
+        this._occurrences = occurrences;
+        this.updateOccurrenceChangeSubscriptions();
         this._startDateTimeISO = repitition.startDateTimeISO;
-        this.update();
+
+        this._itemState.reset();
+        this.updateValidity();
+
     }
 
     private _itemState: ItemState;
 
     public get itemState(): ItemState { return this._itemState; }
+    public get isNew(): boolean { return this._itemState.isNew; }
+    public get isChangd(): boolean{ return this._itemState.isChanged; }
     public get isEditing(): boolean { return this._itemState.isEditing };
+    public get isValid(): boolean{ return this._itemState.isValid; }
 
 
     public onClickEdit() {
         this._itemState.startEditing();
     }
-    public onCancelEditing() {
-        this._itemState.cancel();
+    public onCancelEditing(){
+        this.rebuild(this._itemState.cancelAndReturnOriginalValue());
     }
     public onClickDelete() {
-        console.log("Delete: Disabled");
+        this._itemState.onClickDelete();
     }
     public stopEditing() {
         this._itemState.isEditing = false;
@@ -63,7 +74,7 @@ export class ActivityRepititionDisplay {
     public set unit(unit: TimeUnit) {
         this._unit = unit;
         this._itemState.isChanged = true;
-        this.update();
+        this.updateValidity();
     }
 
     private _frequency: number;
@@ -71,7 +82,7 @@ export class ActivityRepititionDisplay {
     public set frequency(frequency: number) {
         this._frequency = frequency;
         this._itemState.isChanged = true;
-        this.update();
+        this.updateValidity();
     }
 
     private _occurrences: ActivityRepititionOccurrence[];
@@ -80,7 +91,7 @@ export class ActivityRepititionDisplay {
         this._occurrences = occurrences;
         this.updateOccurrenceChangeSubscriptions();
         this._itemState.isChanged = true;
-        this.update();
+        this.updateValidity();
     }
 
     private occurrenceChangeSubscriptions: Subscription[] = [];
@@ -89,13 +100,17 @@ export class ActivityRepititionDisplay {
         this.occurrenceChangeSubscriptions = [];
         this._occurrences.forEach((occurrence) => {
             this.occurrenceChangeSubscriptions.push(occurrence.delete$.subscribe((onDelete) => {
+                // console.log("occurrence delete signal");
                 this.deleteOccurrence(occurrence);
             }));
             this.occurrenceChangeSubscriptions.push(occurrence.isValid$.subscribe((isValid: boolean) => {
+                
                 this._itemState.isValid = this.validityOfOccurrences();
+                // console.log("occurrence isValid signal: , ", this._itemState.isValid);
             }));
             this.occurrenceChangeSubscriptions.push(occurrence.isEditing$.subscribe((onEditing) => {
-                this.update();
+                this.updateValidity();
+                // console.log("occurrence edit signal: , ");
             }));
         });
 
@@ -126,7 +141,7 @@ export class ActivityRepititionDisplay {
     public set startDateTimeISO(startDateTimeISO: string) {
         this._startDateTimeISO = startDateTimeISO;
         this._itemState.isChanged = true;
-        this.update();
+        this.updateValidity();
     }
 
     public updateOccurrence(saveOccurrence: ActivityRepititionOccurrence) {
@@ -150,21 +165,21 @@ export class ActivityRepititionDisplay {
         this.occurrences = this.reIndex(occurrences);
     }
 
-    public onSaveNewOccurrence(occurrence: ActivityRepititionOccurrence) {
-        if (occurrence != null) {
+    public onSaveNewOccurrence() {
+        if (this.newOccurrence != null) {
             console.log("onSaveNewOccurrence");
-            occurrence.isEditing = false;
+            this.newOccurrence.isEditing = false;
             let occurrences: ActivityRepititionOccurrence[] = this.occurrences;
-            if (occurrence.index == -1) {
-                occurrence.index = this.occurrences.length;
+            if (this.newOccurrence.index == -1) {
+                this.newOccurrence.index = this.occurrences.length;
             }
-            occurrences.push(occurrence);
-
+            occurrences.push(this.newOccurrence);
+            this.newOccurrence = null;
             this.occurrences = this.reIndex(occurrences);;
         } else {
             
         }
-        this.newOccurrence = null;
+        
     }
 
     private reIndex(occurrences: ActivityRepititionOccurrence[]): ActivityRepititionOccurrence[] {
@@ -191,30 +206,22 @@ export class ActivityRepititionDisplay {
         return occurrences;
     }
 
-
-
-
-
-    public get isValid(): boolean {
-        return this._itemState.isValid;
-    }
-
-    private update() {
+    private updateValidity() {
         let isValidToSave: boolean = true;
         let currentOccurrences: number = this.occurrences.filter((occurrence) => { return occurrence.unit == this.unit; }).length;
         if (currentOccurrences == 0) {
             isValidToSave = false;
+            // console.log("** false because no items");
         } else if (currentOccurrences > 0) {
-            for (let i = 0; i < this.occurrences.length; i++) {
-                if (!this.occurrences[i].isValid) {
-                    isValidToSave = false;
-                }
-                if (this.occurrences[i].isEditing) {
-                    isValidToSave = false;
-                }
-            }
-
+            isValidToSave = this.validityOfOccurrences();
+            // console.log("** validityOfOccurrences = " , this.validityOfOccurrences());
         }
+        if(this.newOccurrence){
+            // console.log("** False because there is a new occurrence.")
+            isValidToSave = false;
+        }
+
+        console.log("Activity Repitition Display is valid?: ", isValidToSave);
         this._itemState.isValid = isValidToSave;
         // this._itemState.isNew = false;
     }
@@ -286,14 +293,13 @@ export class ActivityRepititionDisplay {
 
 
     public onMouseLeave() {
-        this._mouseIsOver = false;
+        this._itemState.onMouseLeave();
     }
     public onMouseEnter() {
-        this._mouseIsOver = true;
+        this._itemState.onMouseEnter();
     }
-    private _mouseIsOver: boolean = false;
     public get mouseIsOver(): boolean {
-        return this._mouseIsOver;
+        return this._itemState.mouseIsOver;
     }
 
 

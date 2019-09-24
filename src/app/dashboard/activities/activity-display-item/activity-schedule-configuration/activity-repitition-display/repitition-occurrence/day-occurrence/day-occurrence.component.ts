@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivityOccurrenceConfiguration } from '../../../../../api/activity-occurrence-configuration.interface';
 import { TimeOfDay } from '../../../../../../../shared/utilities/time-of-day-enum';
-import { ActivityRepititionOccurrence } from '../repitition.occurrence.class';
+import { ActivityRepititionOccurrence } from '../repitition-occurrence.class';
 
 @Component({
   selector: 'app-day-occurrence',

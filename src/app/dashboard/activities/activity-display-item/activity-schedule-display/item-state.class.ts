@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 
 export class ItemState{
 
@@ -6,6 +6,9 @@ export class ItemState{
         this._originalValue = originalValue;
     }
     private _originalValue: any;
+    public get originalValue(): any{ 
+        return this._originalValue;
+    }
 
     private _isEditing$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     private _isNew$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -45,13 +48,24 @@ export class ItemState{
           this._isEditing$.next(true);
           this._isValid$.next(false);
     }
-    public cancel(): any{
+    public cancelAndReturnOriginalValue(): any{
+        this.reset();
+        return this._originalValue;
+    }
+    public reset(): any{
         this._isEditing$.next(false);
         this._isValid$.next(true);
         this._isChanged$.next(false);
-        return this._originalValue;
+        this._isNew$.next(false);
     }
     
+    private _delete$: Subject<boolean> = new Subject(); 
+    public onClickDelete(){
+        this._delete$.next(true);
+    }
+    public get delete$(): Observable<boolean>{ 
+        return this._delete$;
+    }
 
 
 
@@ -72,10 +86,10 @@ export class ItemState{
 
     private _mouseIsOver: boolean = false;
     public get mouseIsOver(): boolean{ return this._mouseIsOver; }
-    public onMouseOver(){
+    public onMouseEnter(){
         this._mouseIsOver = true;
     }
-    public onMOuseLeave(){
+    public onMouseLeave(){
         this._mouseIsOver = false;
     }
 }

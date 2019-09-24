@@ -8,6 +8,7 @@ import { faSave, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { TimeUnit } from '../../../../shared/utilities/time-unit.enum';
 import * as moment from 'moment';
+import { ItemState } from '../activity-schedule-display/item-state.class';
 
 @Component({
   selector: 'app-activity-schedule-configuration',
@@ -26,23 +27,23 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     return this._activity;
   }
 
-  private originalValue: ActivityScheduleRepitition[] = [];
+
+  private _itemState: ItemState;
+  public get itemState(): ItemState{ return this._itemState; }
 
   ngOnInit() {
-    console.log("Activity schedule configuration: ", this.activity.scheduleRepititions)
-    // this.originalValue = Object.assign([], this.activity.scheduleRepititions);
-    this.activity.scheduleRepititions.forEach((repitition)=>{
-      let newRep = Object.assign({}, repitition);
-      this.originalValue.push(newRep);
-    })
-    console.log("original valuie is: "+ this.originalValue.length, this.originalValue);
+    this._itemState = new ItemState(this.activity.scheduleRepititions);
+
     let repititionItems: ActivityRepititionDisplay[] = [];
     this.activity.scheduleRepititions.forEach((repitition: ActivityScheduleRepitition)=>{
       repititionItems.push(new ActivityRepititionDisplay(repitition));
     });
     this._repititionItems = repititionItems;
     this.update();
+
   }
+
+
 
   public newRepitition: ActivityRepititionDisplay = new ActivityRepititionDisplay({
     unit: TimeUnit.Day,
@@ -52,56 +53,75 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
   });
 
   public onRepititionUpdated(updateRepitition: ActivityRepititionDisplay){
-    console.log("update la")
-    updateRepitition.stopEditing();
-    this.update();
-    this.updateValidity();
+    if(updateRepitition != null){
+      updateRepitition.stopEditing();
+      this.update();
+      this.updateValidity();
+      this._itemState.reset();
+      this._itemState.isChanged = true;
+    }
   }
 
   public onRepititionSaved(repitition: ActivityScheduleRepitition){
-
     if(repitition != null){
       console.log("Saving repitition:" , repitition);
       this._repititionItems.push(new ActivityRepititionDisplay(repitition));
       console.log("REPITITION ITEMS: ", this._repititionItems.length, this._repititionItems)
       this.update();
+      this.updateValidity();
+      this._itemState.reset();
+      this._itemState.isChanged = true;
     }
-    this.addingRepitition = false;
-    this.updateValidity();
+    this._addingRepitition = false;
   }
 
   @Output() configurationSaved: EventEmitter<ActivityScheduleRepitition[]> = new EventEmitter(); 
   public onClickSaveConfiguration(){
     this.configurationSaved.emit(this.repititionItems.map((item)=>{ return item.exportRepititionItem; }));
-  }
-  public onClickCLose(){
-    this.configurationSaved.emit(null);
+    this._itemState.reset();
   }
 
-  private _unsavedChanges: boolean = false;
+
+
   public get unsavedChanges(): boolean{
-    return this._unsavedChanges;
+    return this._itemState.isChanged;
   } 
   public onClickDiscard(){
     let activity = this.activity;
-    activity.scheduleRepititions = this.originalValue;
+    activity.scheduleRepititions = this._itemState.cancelAndReturnOriginalValue();
     this._activity = activity;
     this.configurationSaved.emit(null);
+    this._itemState.reset();
   }
 
-  private _repititionSusbscriptions: Subscription[] = [];
+  private _repititionSubscriptions: Subscription[] = [];
   private update(){
-    this._repititionSusbscriptions.forEach((sub)=>{ sub.unsubscribe(); });
-    this._repititionSusbscriptions = [];
+    this._repititionSubscriptions.forEach((sub)=>{ sub.unsubscribe(); });
+    this._repititionSubscriptions = [];
 
     this._repititionItems.forEach((repititionItem)=>{
-      this._repititionSusbscriptions.push(repititionItem.itemState.isChanged$.subscribe((event)=>{
+      this._repititionSubscriptions.push(repititionItem.itemState.isChanged$.subscribe((event)=>{
         this.updateValidity();
-        // this.saveRepititions();
+      }));
+      this._repititionSubscriptions.push(repititionItem.itemState.isNew$.subscribe((event)=>{
+        this.updateValidity();
+      }));
+      this._repititionSubscriptions.push(repititionItem.itemState.isEditing$.subscribe((event)=>{
+        this.updateValidity();
+      }));
+      this._repititionSubscriptions.push(repititionItem.itemState.isValid$.subscribe((event)=>{
+        this.updateValidity();
+      }));
+      this._repititionSubscriptions.push(repititionItem.itemState.delete$.subscribe((deleted)=>{
+        if( deleted === true){
+          this.onRepititionDeleted(repititionItem);
+        }
       }));
     });
+    
   }
 
+  
   // private saveRepititions(){
   //   let activity: ActivityCategoryDefinition = this.activity;
   //   activity.scheduleRepititions = this._repititionItems.map((item)=>{ return item.repititionItem; });
@@ -113,14 +133,25 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     this._repititionItems.forEach((item)=>{
       if(!item.isValid){
         allValid = false;
+        console.log("** false because child isInvalid");
+      }
+      if(item.isEditing || item.isNew){
+        allValid = false;
+        console.log("** false because child isEditing or isNew");
       }
     });
-    this._saveDisabled = !allValid;
-
+    
     if(this.repititionItems.length < 1){
-      this._saveDisabled = true;
+      allValid = false;
+      console.log("** false because no items");
     }
-    this._unsavedChanges = true;
+    if(this.addingRepitition){
+      allValid = false;
+      console.log("** false because adding repititoin ");
+    }
+    this._itemState.isValid = allValid;
+    console.log("Schedule configuration is valid? ", this._itemState.isValid);
+    // this._itemState.isChanged = true;
   }
 
   private _repititionItems: ActivityRepititionDisplay[] = [];
@@ -128,24 +159,26 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     return this._repititionItems;
   }
 
-  private _saveDisabled: boolean = false;
   public get saveDisabled(): boolean{
-    return this._saveDisabled;
+    return !this._itemState.isValid;
   }
 
-  private _mouseIsOver: boolean = false;
+
   public get mouseIsOver(): boolean{
-    return this._mouseIsOver;
+    return this._itemState.mouseIsOver;
   } 
   public onMouseEnter(){
-    this._mouseIsOver = true;
+    this._itemState.onMouseEnter();
   }
   public onMouseLeave(){
-    this._mouseIsOver = false;
+    this._itemState.onMouseLeave();
   }
 
 
-  public addingRepitition: boolean = false;
+  private _addingRepitition: boolean = false;
+  public get addingRepitition(): boolean{
+    return this._addingRepitition;
+  }
   public onClickAddRepitition(){
     this.newRepitition = new ActivityRepititionDisplay({
       unit: TimeUnit.Day,
@@ -153,9 +186,9 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
       occurrences: [],
       startDateTimeISO: moment().startOf("year").toISOString(),
     });
-    this.addingRepitition = true;
-    this._saveDisabled = true;
-    this._unsavedChanges = true;
+    this._addingRepitition = true;
+    this.updateValidity();
+    this._itemState.isEditing = true;
   }
 
   public onRepititionDeleted(repitition: ActivityRepititionDisplay){
@@ -165,7 +198,7 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     }else{
       console.log("Error deleting");
     }
-    this._unsavedChanges = true;
+    this._itemState.isChanged = true;
   }
 
   faSave = faSave;

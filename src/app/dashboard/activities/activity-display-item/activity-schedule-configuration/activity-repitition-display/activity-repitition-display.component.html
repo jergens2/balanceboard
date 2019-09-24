@@ -35,7 +35,7 @@
 
         <app-repitition-occurrence-form *ngIf="repitition.newOccurrence"
             [newOccurrence]="repitition.newOccurrence"
-            (occurrenceSaved)="repitition.onSaveNewOccurrence($event)">
+            (occurrenceSaved)="repitition.onSaveNewOccurrence()">
         </app-repitition-occurrence-form>
 
         <div style="width:160px; margin-top: 10px; margin-left:10px; height:25px;">
@@ -51,7 +51,7 @@
     <div class="footer" style="margin-top:10px;" *ngIf="!repitition.itemState.isChanged && !creatingNew">
         <button class="small-button" (click)="repitition.onCancelEditing()">Close</button>
     </div>
-    <div class="footer" style="margin-top:10px;" *ngIf="repitition.unsavedChanges || creatingNew">
+    <div class="footer" style="margin-top:10px;" *ngIf="repitition.itemState.isChanged || creatingNew">
         <button class="small-button" style="margin-left:5px;" (click)="onClickCancel()">Discard</button>
         <button class="small-button" (click)="onClickSaveRepitition()" [disabled]="!repitition.isValid"
             [ngClass]="{'button-disabled': !repitition.isValid}">Save</button>
@@ -74,7 +74,7 @@
                     (click)="repitition.onClickEdit()" style="margin-right: 5px;"></fa-icon>
                 <fa-icon [icon]="faTrashAlt"
                     [ngClass]="{'icon-button': repitition.mouseIsOver, 'icon-button-dim':!repitition.mouseIsOver}"
-                    (click)="onClickDelete()"></fa-icon>
+                    (click)="repitition.onClickDelete()"></fa-icon>
             </div>
 
         </div>

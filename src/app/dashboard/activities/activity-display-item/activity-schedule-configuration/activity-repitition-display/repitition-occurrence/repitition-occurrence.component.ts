@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityOccurrenceConfiguration } from '../../../../api/activity-occurrence-configuration.interface';
 import { TimeOfDay } from '../../../../../../shared/utilities/time-of-day-enum';
 import { faPlusCircle, faMinusCircle, faTrashAlt, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
-import { ActivityRepititionOccurrence } from './repitition.occurrence.class';
+import { ActivityRepititionOccurrence } from './repitition-occurrence.class';
 
 @Component({
   selector: 'app-repitition-occurrence',

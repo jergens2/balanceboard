@@ -16,10 +16,10 @@
     </div>
 
     <div class="bottom-bar" *ngIf="unsavedChanges">
-        <button class="medium-button" (click)="onClickDiscard()" style="margin-left: 10px;">Discard Changes</button>
+        <button class="medium-button" (click)="onClickDiscard()" style="margin-left: 10px;">Discard</button>
         <button class="medium-button" [ngClass]="{'button-disabled': saveDisabled }"
             (click)="onClickSaveConfiguration()" [disabled]="saveDisabled">
-            <fa-icon [icon]="faSave" style="margin-right: 5px;"></fa-icon> Save changes
+            <fa-icon [icon]="faSave" style="margin-right: 5px;"></fa-icon>Save
         </button>
 
     </div>
