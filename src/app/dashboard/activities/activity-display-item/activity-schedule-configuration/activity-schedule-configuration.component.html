@@ -1,4 +1,4 @@
-<div class="schedule-display-root font-family-open-sans" *ngIf="activity.scheduleRepititions.length > 0"
+<div class="schedule-display-root font-family-open-sans"
     (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
     <div class="body">
         <app-activity-repitition-display [repitition]="repitition" class="schedule-repitition" (repititionSaved)="onRepititionUpdated(repitition)"
@@ -7,7 +7,7 @@
         <app-activity-repitition-display class="schedule-repitition" *ngIf="addingRepitition"
             [repitition]="newRepitition" [new]="true" (repititionSaved)="onRepititionSaved($event)">
         </app-activity-repitition-display>
-        <div style="margin-bottom:10px;height:25px;" *ngIf="!addingRepitition">
+        <div style="margin-top:10px;margin-bottom:10px;height:25px;" *ngIf="!addingRepitition">
             <button class="medium-button" (click)="onClickAddRepitition()">
                 <fa-icon [icon]="faPlus" style="margin-right:5px;"></fa-icon>Add repitition
             </button>
@@ -17,7 +17,7 @@
 
     <div class="bottom-bar" *ngIf="unsavedChanges">
         <button class="medium-button" (click)="onClickDiscard()" style="margin-left: 10px;">Discard</button>
-        <button class="medium-button" [ngClass]="{'button-disabled': saveDisabled }"
+        <button class="medium-button" [ngClass]="{'button-disabled': saveDisabled }" *ngIf="!(repititionItems.length == 0 && itemState.isNew)"
             (click)="onClickSaveConfiguration()" [disabled]="saveDisabled">
             <fa-icon [icon]="faSave" style="margin-right: 5px;"></fa-icon>Save
         </button>

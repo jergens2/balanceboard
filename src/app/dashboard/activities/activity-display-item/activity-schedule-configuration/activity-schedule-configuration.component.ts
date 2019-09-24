@@ -4,7 +4,7 @@ import { ActivityCategoryDefinition } from '../../api/activity-category-definiti
 import { ActivityScheduleRepitition } from '../../api/activity-schedule-repitition.interface';
 import { ActivityRepititionDisplay } from './activity-repitition-display/activity-repitition-display.class';
 
-import { faSave, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faPlus, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { TimeUnit } from '../../../../shared/utilities/time-unit.enum';
 import * as moment from 'moment';
@@ -19,28 +19,34 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
 
   constructor() { }
   private _activity: ActivityCategoryDefinition;
-  @Input() public set activity(activity: ActivityCategoryDefinition){
+  @Input() public set activity(activity: ActivityCategoryDefinition) {
     this._activity = activity;
     this.update();
   }
-  public get activity(): ActivityCategoryDefinition{
+  public get activity(): ActivityCategoryDefinition {
     return this._activity;
   }
 
 
   private _itemState: ItemState;
-  public get itemState(): ItemState{ return this._itemState; }
+  public get itemState(): ItemState { return this._itemState; }
 
   ngOnInit() {
+    let repititionItems: ActivityRepititionDisplay[] = [];
     this._itemState = new ItemState(this.activity.scheduleRepititions);
 
-    let repititionItems: ActivityRepititionDisplay[] = [];
-    this.activity.scheduleRepititions.forEach((repitition: ActivityScheduleRepitition)=>{
-      repititionItems.push(new ActivityRepititionDisplay(repitition));
-    });
+    if (this.activity.scheduleRepititions.length == 0) {
+      this._itemState.isNew = true;
+      this._itemState.isValid = false;
+      this.onClickAddRepitition();
+    } else if (this.activity.scheduleRepititions.length > 0) {
+      this.activity.scheduleRepititions.forEach((repitition: ActivityScheduleRepitition) => {
+        repititionItems.push(new ActivityRepititionDisplay(repitition));
+      });
+    }
+
     this._repititionItems = repititionItems;
     this.update();
-
   }
 
 
@@ -52,8 +58,8 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     startDateTimeISO: moment().startOf("year").toISOString(),
   });
 
-  public onRepititionUpdated(updateRepitition: ActivityRepititionDisplay){
-    if(updateRepitition != null){
+  public onRepititionUpdated(updateRepitition: ActivityRepititionDisplay) {
+    if (updateRepitition != null) {
       updateRepitition.stopEditing();
       this.update();
       this.updateValidity();
@@ -62,9 +68,9 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     }
   }
 
-  public onRepititionSaved(repitition: ActivityScheduleRepitition){
-    if(repitition != null){
-      console.log("Saving repitition:" , repitition);
+  public onRepititionSaved(repitition: ActivityScheduleRepitition) {
+    if (repitition != null) {
+      console.log("Saving repitition:", repitition);
       this._repititionItems.push(new ActivityRepititionDisplay(repitition));
       console.log("REPITITION ITEMS: ", this._repititionItems.length, this._repititionItems)
       this.update();
@@ -73,20 +79,22 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
       this._itemState.isChanged = true;
     }
     this._addingRepitition = false;
+    this.update();
+    this.updateValidity();
   }
 
-  @Output() configurationSaved: EventEmitter<ActivityScheduleRepitition[]> = new EventEmitter(); 
-  public onClickSaveConfiguration(){
-    this.configurationSaved.emit(this.repititionItems.map((item)=>{ return item.exportRepititionItem; }));
+  @Output() configurationSaved: EventEmitter<ActivityScheduleRepitition[]> = new EventEmitter();
+  public onClickSaveConfiguration() {
+    this.configurationSaved.emit(this.repititionItems.map((item) => { return item.exportRepititionItem; }));
     this._itemState.reset();
   }
 
 
 
-  public get unsavedChanges(): boolean{
-    return this._itemState.isChanged;
-  } 
-  public onClickDiscard(){
+  public get unsavedChanges(): boolean {
+    return this._itemState.isChanged || this._itemState.isNew;
+  }
+  public onClickDiscard() {
     let activity = this.activity;
     activity.scheduleRepititions = this._itemState.cancelAndReturnOriginalValue();
     this._activity = activity;
@@ -95,62 +103,58 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
   }
 
   private _repititionSubscriptions: Subscription[] = [];
-  private update(){
-    this._repititionSubscriptions.forEach((sub)=>{ sub.unsubscribe(); });
+  private update() {
+    this._repititionSubscriptions.forEach((sub) => { sub.unsubscribe(); });
     this._repititionSubscriptions = [];
 
-    this._repititionItems.forEach((repititionItem)=>{
-      this._repititionSubscriptions.push(repititionItem.itemState.isChanged$.subscribe((event)=>{
+    this._repititionItems.forEach((repititionItem) => {
+      this._repititionSubscriptions.push(repititionItem.itemState.isChanged$.subscribe((event) => {
         this.updateValidity();
       }));
-      this._repititionSubscriptions.push(repititionItem.itemState.isNew$.subscribe((event)=>{
+      this._repititionSubscriptions.push(repititionItem.itemState.isNew$.subscribe((event) => {
         this.updateValidity();
       }));
-      this._repititionSubscriptions.push(repititionItem.itemState.isEditing$.subscribe((event)=>{
+      this._repititionSubscriptions.push(repititionItem.itemState.isEditing$.subscribe((event) => {
         this.updateValidity();
       }));
-      this._repititionSubscriptions.push(repititionItem.itemState.isValid$.subscribe((event)=>{
+      this._repititionSubscriptions.push(repititionItem.itemState.isValid$.subscribe((event) => {
         this.updateValidity();
       }));
-      this._repititionSubscriptions.push(repititionItem.itemState.delete$.subscribe((deleted)=>{
-        if( deleted === true){
+      this._repititionSubscriptions.push(repititionItem.itemState.delete$.subscribe((deleted) => {
+        if (deleted === true) {
           this.onRepititionDeleted(repititionItem);
         }
       }));
     });
-    
+
   }
 
-  
+
   // private saveRepititions(){
   //   let activity: ActivityCategoryDefinition = this.activity;
   //   activity.scheduleRepititions = this._repititionItems.map((item)=>{ return item.repititionItem; });
   //   this.activity = activity;
   // }
 
-  private updateValidity(){
+  private updateValidity() {
     let allValid: boolean = true;
-    this._repititionItems.forEach((item)=>{
-      if(!item.isValid){
+    this._repititionItems.forEach((item) => {
+      if (!item.isValid) {
         allValid = false;
-        console.log("** false because child isInvalid");
+        // console.log("** false because child isInvalid");
       }
-      if(item.isEditing || item.isNew){
+      if (item.isEditing || item.isNew) {
         allValid = false;
-        console.log("** false because child isEditing or isNew");
+        // console.log("** false because child isEditing or isNew");
       }
     });
-    
-    if(this.repititionItems.length < 1){
+
+    if (this.addingRepitition) {
       allValid = false;
-      console.log("** false because no items");
-    }
-    if(this.addingRepitition){
-      allValid = false;
-      console.log("** false because adding repititoin ");
+      // console.log("** false because adding repititoin ");
     }
     this._itemState.isValid = allValid;
-    console.log("Schedule configuration is valid? ", this._itemState.isValid);
+    // console.log("Schedule configuration is valid? ", this._itemState.isValid);
     // this._itemState.isChanged = true;
   }
 
@@ -159,27 +163,27 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     return this._repititionItems;
   }
 
-  public get saveDisabled(): boolean{
+  public get saveDisabled(): boolean {
     return !this._itemState.isValid;
   }
 
 
-  public get mouseIsOver(): boolean{
+  public get mouseIsOver(): boolean {
     return this._itemState.mouseIsOver;
-  } 
-  public onMouseEnter(){
+  }
+  public onMouseEnter() {
     this._itemState.onMouseEnter();
   }
-  public onMouseLeave(){
+  public onMouseLeave() {
     this._itemState.onMouseLeave();
   }
 
 
   private _addingRepitition: boolean = false;
-  public get addingRepitition(): boolean{
+  public get addingRepitition(): boolean {
     return this._addingRepitition;
   }
-  public onClickAddRepitition(){
+  public onClickAddRepitition() {
     this.newRepitition = new ActivityRepititionDisplay({
       unit: TimeUnit.Day,
       frequency: 1,
@@ -191,11 +195,11 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
     this._itemState.isEditing = true;
   }
 
-  public onRepititionDeleted(repitition: ActivityRepititionDisplay){
+  public onRepititionDeleted(repitition: ActivityRepititionDisplay) {
     let index = this._repititionItems.indexOf(repitition);
-    if(index > -1){
+    if (index > -1) {
       this._repititionItems.splice(index, 1);
-    }else{
+    } else {
       console.log("Error deleting");
     }
     this._itemState.isChanged = true;
@@ -203,5 +207,6 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
 
   faSave = faSave;
   faPlus = faPlus;
-  
+  faExclamationCircle = faExclamationCircle;
+
 }
