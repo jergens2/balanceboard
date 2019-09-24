@@ -21,11 +21,18 @@ export class ActivityRepititionDisplay {
         this._itemState = new ItemState(repitition);
         this._unit = repitition.unit;
         this._frequency = repitition.frequency;
+
         let occurrences: ActivityRepititionOccurrence[] = [];
-        repitition.occurrences.forEach((occurrenceConfig) => {
-            occurrences.push(new ActivityRepititionOccurrence(occurrenceConfig));
-        })
+        if(repitition.occurrences.length == 0){
+            this.onClickNewOccurrence();
+        }else if(repitition.occurrences.length > 0){
+            repitition.occurrences.forEach((occurrenceConfig) => {
+                occurrences.push(new ActivityRepititionOccurrence(occurrenceConfig));
+            });
+        }
         this._occurrences = occurrences;
+
+
         this.updateOccurrenceChangeSubscriptions();
         this._startDateTimeISO = repitition.startDateTimeISO;
 
@@ -38,6 +45,7 @@ export class ActivityRepititionDisplay {
 
     public get itemState(): ItemState { return this._itemState; }
     public get isNew(): boolean { return this._itemState.isNew; }
+    public set isNew(isNew: boolean){ this._itemState.isNew = isNew; }
     public get isChangd(): boolean{ return this._itemState.isChanged; }
     public get isEditing(): boolean { return this._itemState.isEditing };
     public get isValid(): boolean{ return this._itemState.isValid; }
@@ -85,13 +93,21 @@ export class ActivityRepititionDisplay {
         this.updateValidity();
     }
 
-    private _occurrences: ActivityRepititionOccurrence[];
+    private _occurrences: ActivityRepititionOccurrence[] = [];
     public get occurrences(): ActivityRepititionOccurrence[] { return this._occurrences; }
     public set occurrences(occurrences: ActivityRepititionOccurrence[]) {
         this._occurrences = occurrences;
         this.updateOccurrenceChangeSubscriptions();
         this._itemState.isChanged = true;
         this.updateValidity();
+    }
+
+    public get occurrencesCount(): string{
+        if(this.newOccurrence){
+            return (this.occurrences.length + 1).toFixed(0);
+        }else{
+            return (this.occurrences.length).toFixed(0);
+        }
     }
 
     private occurrenceChangeSubscriptions: Subscription[] = [];
@@ -113,7 +129,15 @@ export class ActivityRepititionDisplay {
                 // console.log("occurrence edit signal: , ");
             }));
         });
+        if(this.newOccurrence){
+            this.occurrenceChangeSubscriptions.push(this.newOccurrence.delete$.subscribe((onDelete) => {
+                this.closeNewOccurrence();
+            }));
+            this.occurrenceChangeSubscriptions.push(this.newOccurrence.isValid$.subscribe((isValid: boolean) => {    
+                this._itemState.isValid = this.validityOfOccurrences();
+            }));
 
+        }
     }
 
     private validityOfOccurrences(): boolean {
@@ -264,7 +288,7 @@ export class ActivityRepititionDisplay {
 
 
 
-    private newOccurrence: ActivityRepititionOccurrence;
+    public newOccurrence: ActivityRepititionOccurrence;
     public onClickNewOccurrence() {
         this.newOccurrence = new ActivityRepititionOccurrence({
       
@@ -289,6 +313,13 @@ export class ActivityRepititionDisplay {
           });
         this.newOccurrence.isNew = true;
         this._itemState.isChanged = true;
+        this.updateOccurrenceChangeSubscriptions();
+    }
+    private closeNewOccurrence(){
+        this.newOccurrence = null;
+        this._itemState.updateIsChanged(this.exportRepititionItem);
+        this.updateValidity();
+        this.updateOccurrenceChangeSubscriptions();
     }
 
 

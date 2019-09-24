@@ -190,6 +190,7 @@ export class ActivityScheduleConfigurationComponent implements OnInit {
       occurrences: [],
       startDateTimeISO: moment().startOf("year").toISOString(),
     });
+    this.newRepitition.isNew = true;
     this._addingRepitition = true;
     this.updateValidity();
     this._itemState.isEditing = true;

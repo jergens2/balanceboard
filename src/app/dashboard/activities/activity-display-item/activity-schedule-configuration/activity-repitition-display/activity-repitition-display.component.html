@@ -18,7 +18,7 @@
         </div>
 
         <div style="color:gray; font-size:0.9em; margin-bottom: 10px;">
-            {{ repitition.occurrences.length }} occurrences per {{ repitition.frequency}} {{ repitition.timeUnitFrameString }}
+            {{ repitition.occurrencesCount }} occurrences per {{ repitition.frequency}} {{ repitition.timeUnitFrameString }}
         </div>
 
         <app-repitition-occurrence *ngFor="let occurrence of repitition.occurrences" [occurrence]="occurrence"
@@ -28,7 +28,7 @@
 
         <div class="occurrences"
             style="color: gray;font-size:0.9em;display:flex;flex-direction: row;align-items: center;"
-            *ngIf="repitition.occurrences.length == 0">
+            *ngIf="repitition.occurrences.length == 0 && repitition.isNew && !repitition.newOccurrence">
             <fa-icon [icon]="faExclamationCircle" style="color:rgba(255, 0, 0, 0.5);margin-right: 10px;"></fa-icon> At
             least one occurrence is require per repitition
         </div>

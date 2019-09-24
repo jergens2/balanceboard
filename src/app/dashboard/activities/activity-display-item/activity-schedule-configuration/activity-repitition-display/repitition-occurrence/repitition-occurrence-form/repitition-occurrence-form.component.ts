@@ -35,7 +35,11 @@ export class RepititionOccurrenceFormComponent implements OnInit {
     this.occurrenceSaved.emit(this.occurrence);
   }
   public onClickCancel(){
-    this.occurrence.onClickCancel();
+    if(this.newOccurrence){
+      this.occurrence.onClickDelete();
+    }else if(this.editOccurrence){
+      this.occurrence.onClickCancel();
+    }
   }
 
   public timeOfDayList: string[] = ["any", "early morning", "morning", "afternoon", "evening", "specify"];
