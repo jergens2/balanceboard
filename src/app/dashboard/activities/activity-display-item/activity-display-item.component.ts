@@ -13,41 +13,49 @@ export class ActivityDisplayItemComponent implements OnInit {
   constructor(private activitiesService: ActivityCategoryDefinitionService) { }
 
   private _activity: ActivityCategoryDefinition;
-  @Input() public set activity(activity: ActivityCategoryDefinition){
+  @Input() public set activity(activity: ActivityCategoryDefinition) {
     this._activity = activity;
     this.updateDisplay();
-  }; 
-  public get activity(): ActivityCategoryDefinition{
+  };
+  public get activity(): ActivityCategoryDefinition {
     return this._activity;
   }
 
   ngOnInit() {
-    if(this.activity != null){
+    if (this.activity != null) {
       this.updateDisplay();
     }
   }
 
-  private updateDisplay(){
+  private updateDisplay() {
     this._titleBorderBottom = { "border-bottom": "1px solid " + this.activity.color };
     this.configuringSchedule = false;
   }
 
-  public onConfigurationSaved(repititions: ActivityScheduleRepitition[]){
-    
-    if(repititions != null){
+  public onConfigurationSaved(repititions: ActivityScheduleRepitition[]) {
+
+    if (repititions != null) {
       let activity = this.activity;
       activity.scheduleRepititions = repititions;
       this.activitiesService.updateActivity(activity);
       this.activity = activity;
-    }else{
+    } else {
       console.log("Repititions was null, so it was a discard.")
       console.log("activity:", this.activity);
     }
     this.configuringSchedule = false;
   }
+  public onConfigurationDeleted() {
+    console.log("onconfig deleted")
+    let activity = this.activity;
+    activity.scheduleRepititions = [];
+    this.activitiesService.updateActivity(activity);
+    this.activity = activity;
+    this.configuringSchedule = false;
+  }
 
   private _titleBorderBottom: any = {};
-  public get titleBorderBottom(): any{
+  public get titleBorderBottom(): any {
     return this._titleBorderBottom;
   }
 

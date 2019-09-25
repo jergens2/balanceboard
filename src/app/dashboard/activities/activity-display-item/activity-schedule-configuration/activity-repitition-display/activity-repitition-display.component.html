@@ -17,6 +17,12 @@
             </div>
         </div>
 
+        <div style="width:100%;font-size:0.3em;margin-bottom:5px;display:flex;flex-direction: row;justify-content: space-between">
+            <div *ngFor="let patternItem of patternItems" class="pattern-item">
+                <fa-icon [icon]="patternItem.icon" style="color:rgba(0, 89, 255, 0.8);"></fa-icon>
+            </div>
+        </div>
+
         <div style="color:gray; font-size:0.9em; margin-bottom: 10px;">
             {{ repitition.occurrencesCount }} occurrences per {{ repitition.frequency}} {{ repitition.timeUnitFrameString }}
         </div>

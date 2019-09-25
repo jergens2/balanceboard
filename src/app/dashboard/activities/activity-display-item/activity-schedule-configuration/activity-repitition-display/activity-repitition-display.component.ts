@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityRepititionDisplay } from './activity-repitition-display.class';
-import { faPlusCircle, faMinusCircle, faPlus, faSyncAlt, faPencilAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faMinusCircle, faPlus, faSyncAlt, faPencilAlt, faTrashAlt, faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons';
+import { faCircle as faCircleHollow } from '@fortawesome/free-regular-svg-icons';
 import { TimeUnit } from '../../../../../shared/utilities/time-unit.enum';
 import { ActivityOccurrenceConfiguration } from '../../../api/activity-occurrence-configuration.interface';
 import { ActivityScheduleRepitition } from '../../../api/activity-schedule-repitition.interface';
@@ -17,35 +18,69 @@ export class ActivityRepititionDisplayComponent implements OnInit {
   constructor() { }
 
   private _repitition: ActivityRepititionDisplay;
-  @Input() public set repitition(repitition: ActivityRepititionDisplay){
+  @Input() public set repitition(repitition: ActivityRepititionDisplay) {
     this._repitition = repitition;
 
   }
-  @Input("new") public set creatingNew(creatingNew: boolean){
+  @Input("new") public set creatingNew(creatingNew: boolean) {
     this._creatingNew = creatingNew;
   }
-  public get repitition(): ActivityRepititionDisplay{
+  public get repitition(): ActivityRepititionDisplay {
     return this._repitition;
   }
 
   private _creatingNew: boolean = false;
-  public get creatingNew(): boolean{
+  public get creatingNew(): boolean {
     return this._creatingNew;
   }
 
 
-  
-  ngOnInit() {
 
+  ngOnInit() {
+    this.updatePattern();
+
+  }
+
+  private _patternItems: any[] = [];
+  public get patternItems(): any[] {
+    return this._patternItems;
+  }
+
+  private updatePattern() {
+    let frequency = this.repitition.frequency;
+    const numberOfCircles: number = 30;
+    
+    let patternItems: any[] = [];
+    let currentValue: number = 1;
+    let frequencyVal: number = frequency;
+    while (currentValue <= numberOfCircles) {
+      if (frequencyVal == frequency) {
+        patternItems.push({
+          icon: faCircleSolid,
+        });
+      } else {
+        patternItems.push({
+          icon: faCircleHollow,
+        });
+      }
+      frequencyVal--;
+      if (frequencyVal < 1) {
+        frequencyVal = frequency;
+      }
+      currentValue++;
+    }
+
+
+    this._patternItems = patternItems;
   }
 
   @Output() repititionSaved: EventEmitter<ActivityScheduleRepitition> = new EventEmitter();
 
-  public onClickSaveRepitition(){
+  public onClickSaveRepitition() {
     this.repitition.onMouseLeave();
     this.repititionSaved.emit(this.repitition.exportRepititionItem);
   }
-  public onClickCancel(){
+  public onClickCancel() {
     this.repitition.onCancelEditing();
     this.repititionSaved.emit(null);
   }
@@ -66,10 +101,11 @@ export class ActivityRepititionDisplayComponent implements OnInit {
 
   }
   public onListItemSelected(listItem: string) {
-    if(listItem != ""){
+    if (listItem != "") {
       this.repitition.unit = this.timeUnit(listItem);
     }
     this._dropdownListExpanded = false;
+    this.updatePattern();
   }
 
   public timeUnit(frame: string): TimeUnit {
@@ -79,10 +115,11 @@ export class ActivityRepititionDisplayComponent implements OnInit {
     if (frame == "year" || frame == "years") { return TimeUnit.Year; }
   }
 
-  
+
 
   public onClickPlusFrequency() {
     this.repitition.frequency++;
+    this.updatePattern();
   }
   public onClickMinusFrequency() {
     let currentValue: number = this.repitition.frequency;
@@ -90,6 +127,7 @@ export class ActivityRepititionDisplayComponent implements OnInit {
       currentValue--;
     }
     this.repitition.frequency = currentValue;
+    this.updatePattern();
   }
 
   // public get occurrencesString(): string {
@@ -102,7 +140,7 @@ export class ActivityRepititionDisplayComponent implements OnInit {
   // }
 
   @Output() delete: EventEmitter<any> = new EventEmitter();
-  public onClickDelete(){
+  public onClickDelete() {
     this.delete.emit(true);
   }
 
@@ -113,4 +151,6 @@ export class ActivityRepititionDisplayComponent implements OnInit {
   faSyncAlt = faSyncAlt;
   faPencilAlt = faPencilAlt;
   faTrashAlt = faTrashAlt;
+  faCircleSolid = faCircleSolid;
+  faCircleHollow = faCircleHollow;
 }

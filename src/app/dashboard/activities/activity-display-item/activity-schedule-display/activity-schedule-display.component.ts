@@ -4,7 +4,7 @@ import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { ActivityScheduleRepitition } from '../../api/activity-schedule-repitition.interface';
 import { TimeOfDayConverter } from '../../../../shared/utilities/time-of-day-converter.class';
 import { TimeUnitConverter } from '../../../../shared/utilities/time-unit-converter.class';
-import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSyncAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -16,17 +16,28 @@ export class ActivityScheduleDisplayComponent implements OnInit {
 
   constructor() { }
 
-  @Input() activity: ActivityCategoryDefinition;
+  private _activity: ActivityCategoryDefinition;
+  public get activity(): ActivityCategoryDefinition{    return this._activity; }
+  @Input() public set activity(activity: ActivityCategoryDefinition){
+    this._activity = activity;
+    this.confirmDelete = false;
+  }
   @Output() configure: EventEmitter<boolean> = new EventEmitter();
+  @Output() delete: EventEmitter<boolean> = new EventEmitter();
 
   ngOnInit() {
   }
 
+  public confirmDelete:boolean = false;
   public onClickConfigureSchedule() {
     this.configure.emit(true);
   }
   public onClickEdit(){
     this.configure.emit(true);
+  }
+  public onClickConfirmDelete(){
+    this.delete.emit(true);
+    this.confirmDelete = false;
   }
 
   public get scheduleConfigurationSummary(): string {
@@ -65,5 +76,6 @@ export class ActivityScheduleDisplayComponent implements OnInit {
   }
 
   faPencilAlt = faPencilAlt;
+  faTrashAlt = faTrashAlt;
   faSyncAlt = faSyncAlt;
 }

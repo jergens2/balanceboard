@@ -9,8 +9,10 @@
         <div style="flex-grow: 2;">
             Schedule configuration <fa-icon [icon]="faSyncAlt" style="margin-left:5px;color:rgba(0, 89, 255, 0.5);"></fa-icon>
         </div>
-        <div>
-            <button class="small-button" (click)="onClickEdit()"><fa-icon [icon]="faPencilAlt" style="margin-right:5px;"></fa-icon>Edit</button>
+        <div style="display:flex;flex-direction: row;">
+            <button class="small-button" (click)="onClickEdit()" style="margin-right:5px;"><fa-icon [icon]="faPencilAlt" style="margin-right:5px;"></fa-icon>Edit</button>
+            <button class="small-button delete-button" (click)="confirmDelete = true" *ngIf="!confirmDelete"><fa-icon [icon]="faTrashAlt" style="margin-right:5px;"></fa-icon>Delete</button>
+            <button class="small-button confirm-delete-button" (click)="onClickConfirmDelete()" *ngIf="confirmDelete"><fa-icon [icon]="faTrashAlt" style="margin-right:5px;"></fa-icon>Confirm</button>
         </div>
     </div>
     <div>

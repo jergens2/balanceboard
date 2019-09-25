@@ -15,10 +15,10 @@
         </div>
 
         <div class="scheduling-configuration" *ngIf="configuringSchedule">
-            <app-activity-schedule-configuration [activity]="activity" (configurationSaved)="onConfigurationSaved($event)"></app-activity-schedule-configuration>
+            <app-activity-schedule-configuration [activity]="activity" (configurationSaved)="onConfigurationSaved($event)" ></app-activity-schedule-configuration>
         </div>
         <div class="scheduling-configuration" *ngIf="!configuringSchedule">
-            <app-activity-schedule-display [activity]="activity" (configure)="configuringSchedule = !configuringSchedule"></app-activity-schedule-display>
+            <app-activity-schedule-display [activity]="activity" (configure)="configuringSchedule = !configuringSchedule" (delete)="onConfigurationDeleted()"></app-activity-schedule-display>
         </div>
     </div>
 </div>

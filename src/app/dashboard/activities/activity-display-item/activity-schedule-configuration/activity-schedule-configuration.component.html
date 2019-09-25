@@ -1,8 +1,8 @@
-<div class="schedule-display-root font-family-open-sans"
-    (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+<div class="schedule-display-root font-family-open-sans" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
     <div class="body">
-        <app-activity-repitition-display [repitition]="repitition" class="schedule-repitition" (repititionSaved)="onRepititionUpdated(repitition)"
-            (delete)="onRepititionDeleted(repitition)" *ngFor="let repitition of repititionItems">
+        <app-activity-repitition-display [repitition]="repitition" class="schedule-repitition"
+            (repititionSaved)="onRepititionUpdated(repitition)" (delete)="onRepititionDeleted(repitition)"
+            *ngFor="let repitition of repititionItems">
         </app-activity-repitition-display>
         <app-activity-repitition-display class="schedule-repitition" *ngIf="addingRepitition"
             [repitition]="newRepitition" [new]="true" (repititionSaved)="onRepititionSaved($event)">
@@ -17,13 +17,16 @@
 
     <div class="bottom-bar" *ngIf="unsavedChanges">
         <button class="medium-button" (click)="onClickDiscard()" style="margin-left: 10px;">Discard</button>
-        <button class="medium-button" [ngClass]="{'button-disabled': saveDisabled }" *ngIf="!(repititionItems.length == 0 && itemState.isNew)"
+        <button class="medium-button" [ngClass]="{'button-disabled': saveDisabled }"
             (click)="onClickSaveConfiguration()" [disabled]="saveDisabled">
-            <fa-icon [icon]="faSave" style="margin-right: 5px;"></fa-icon>Save
+            <fa-icon [icon]="faSave" style="margin-right: 5px;"></fa-icon> Save
+            <span *ngIf="itemState.isValid && repititionItems.length == 0" style="margin-left: 5px;font-size:0.9em;">
+                (no configuration)
+            </span>
         </button>
 
     </div>
     <div class="bottom-bar" *ngIf="!unsavedChanges">
-        <button class="medium-button" (click)="onClickDiscard()" >Close</button>
+        <button class="medium-button" (click)="onClickDiscard()">Close</button>
     </div>
 </div>
