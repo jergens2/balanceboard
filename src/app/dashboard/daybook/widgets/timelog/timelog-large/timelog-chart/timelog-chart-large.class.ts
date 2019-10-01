@@ -58,12 +58,11 @@ export class TimelogChartLarge {
 
         let newStartTime: moment.Moment = moment(this.window.startTime).add(1, "hour");
         let newEndTime: moment.Moment = moment(this.window.endTime).add(1, "hour");
+        let size: number = newEndTime.diff(newStartTime, "hours");
         this.window = {
-            windowStartTime: moment(newStartTime).subtract(1, "hour"),
             startTime: newStartTime,
             endTime: newEndTime,
-            windowEndTime: moment(newEndTime).add(1, "hour"),
-            size: this.window.size,
+            size: size,
         }
         this.setWindow(this.window);
     }
@@ -71,12 +70,11 @@ export class TimelogChartLarge {
     public wheelDown() {
         let newStartTime: moment.Moment = moment(this.window.startTime).subtract(1, "hour");
         let newEndTime: moment.Moment = moment(this.window.endTime).subtract(1, "hour");
+        let size: number = newEndTime.diff(newStartTime, "hours");
         this.window = {
-            windowStartTime: moment(newStartTime).subtract(1, "hour"),
             startTime: newStartTime,
             endTime: newEndTime,
-            windowEndTime: moment(newEndTime).add(1, "hour"),
-            size: this.window.size,
+            size: size,
         }
         this.setWindow(this.window);
     }
@@ -100,8 +98,7 @@ export class TimelogChartLarge {
             if (moment(this.window.startTime).startOf("hour").isSame(moment(this.window.startTime).endOf("day").subtract(this.window.size / 2, "hours").startOf("hour"))) {
                 this._timelogDateChanged$.next(this.window.startTime);
             }
-        }
-        if (this.window.endTime.format("YYYY-MM-DD") != this.activeDay.dateYYYYMMDD) {
+        }else if (this.window.endTime.format("YYYY-MM-DD") != this.activeDay.dateYYYYMMDD) {
             if (moment(this.window.endTime).startOf("hour").isSame(moment(this.window.endTime).startOf("day").add(this.window.size / 2, "hours").startOf("hour"))) {
                 this._timelogDateChanged$.next(this.window.endTime);
             }
@@ -111,11 +108,24 @@ export class TimelogChartLarge {
     public get timelogDateChanged$(): Observable<moment.Moment> { return this._timelogDateChanged$.asObservable() };
 
     private buildTimelogChartRowItems(timelogWindow: TimelogWindow) {
+        let startTime: moment.Moment = moment(timelogWindow.startTime);
+        if(startTime.minute() != 0){
+            startTime = moment(startTime).startOf("hour");
+        }
+        let endTime: moment.Moment = moment(timelogWindow.endTime);
+        if(endTime.minute() != 0){
+            endTime = moment(endTime).add(1, "hour").startOf("hour");
+        }
+        let size: number = moment(endTime).diff(startTime, "hours");
+        
         let timelogChartRowItems: TimelogChartLargeRowItem[] = [];
-        let currentTime: moment.Moment = moment(timelogWindow.startTime);
+        let currentTime: moment.Moment = moment(startTime);
         let currentRowIndex: number = 2;
         let timelogGuidelineItems: any[] = [];
-        while (currentTime.isBefore(timelogWindow.endTime)) {
+
+        
+
+        while (currentTime.isBefore(endTime)) {
             let rowStart: moment.Moment = moment(currentTime);
             let rowEnd: moment.Moment = moment(currentTime).add(this.minutesPerIncrement, "minutes");
             if (moment(rowEnd).hour() == 0 && moment(rowEnd).minute() == 0) {
@@ -131,8 +141,10 @@ export class TimelogChartLarge {
             currentTime = moment(currentTime).add(this.minutesPerIncrement, "minutes");
             currentRowIndex++;
         }
-        currentTime = moment(timelogWindow.startTime).minute(0).second(0).millisecond(0);
-        for (let hourIndex = 0; hourIndex <= timelogWindow.size; hourIndex++) {
+
+
+        currentTime = moment(startTime)
+        for (let hourIndex = 0; hourIndex <= size; hourIndex++) {
             let ampm: string = "a";
             if (currentTime.hour() < 12) {
                 ampm = "a";
@@ -161,21 +173,55 @@ export class TimelogChartLarge {
             currentTime = moment(currentTime).add(1, "hours");
         }
 
+        timelogChartRowItems.forEach((rowItem)=>{
+            this.activeDay.timeDelineators.forEach((timeDelineator)=>{
+                if(rowItem.startTime.isSame(moment(timeDelineator))){
+                    rowItem.setAsDelineator();
+                }
+            })
+        })
+
+
         this.chartRowItems = timelogChartRowItems;
         this.guidelineItems = timelogGuidelineItems;
 
         this.chartGrid = {
             ngStyle: {
                 "grid-template-rows": "8px repeat(" + this.chartRowItems.length + ", 1fr) 8px 9px",
+                // the 8 px at the start and the 8px at the end are basically margins/buffers for the chart time labels to have some space.
+                // the extra 9px at the end is for when the bottom is 12am and the day changes and there is text there that needs space.
             },
             windowSize: this.window.size,
-            startTime: timelogWindow.windowStartTime,
-            endTime: timelogWindow.windowEndTime,
+            startTime: startTime,
+            endTime: endTime,
         }
 
         this.buildDayStructureItems(timelogWindow);
+        this.updateChartRowItemSubscriptions();
     }
 
+    private _rowSubscriptions: Subscription[] = [];
+    private updateChartRowItemSubscriptions(){
+        this._rowSubscriptions.forEach((sub)=>{sub.unsubscribe();});
+        this._rowSubscriptions = [];
+        this.chartRowItems.forEach((rowItem)=>{
+            this._rowSubscriptions.push((rowItem.delineatorStatus$.subscribe((status: boolean)=>{
+                if(status === true){
+                    this._newDelineator$.next(rowItem);
+                }else if(status === false){
+                    this._removeDelineator$.next(rowItem);
+                }
+            })));
+        });
+    }
+    private _newDelineator$: Subject<TimelogChartLargeRowItem> = new Subject();
+    public get newDelineator$(): Observable<TimelogChartLargeRowItem>{
+        return this._newDelineator$.asObservable();
+    }
+    private _removeDelineator$: Subject<TimelogChartLargeRowItem> = new Subject();
+    public get removeDelineator$(): Observable<TimelogChartLargeRowItem>{
+        return this._removeDelineator$.asObservable();
+    }
 
 
     private buildDayStructureItems(timelogWindow: TimelogWindow) {
@@ -289,9 +335,14 @@ export class TimelogChartLarge {
         this.timerSubscription.unsubscribe();
         this.timerSubscription = timer(0, 15000).subscribe((tick) => {
             this._nowTime = moment();
-            if(moment(this._nowTime).isSameOrAfter(moment(this.window.startTime)) && moment(this._nowTime).isSameOrBefore(moment(this.window.endTime))){
-                let durationMilliseconds = this.window.endTime.diff(this.window.startTime, "milliseconds");
-                let percentage: number = (this._nowTime.diff(this.window.startTime, "milliseconds") / durationMilliseconds) * 100;
+            let startTime: moment.Moment = moment(this.window.startTime).startOf("hour");
+            let endTime: moment.Moment = moment(this.window.endTime);
+            if(endTime.minute() != 0){
+                endTime = moment(endTime).add(1, "hour").startOf("hour");
+            }
+            if(moment(this._nowTime).isSameOrAfter(moment(startTime)) && moment(this._nowTime).isSameOrBefore(moment(endTime))){
+                let durationMilliseconds = endTime.diff(startTime, "milliseconds");
+                let percentage: number = (this._nowTime.diff(startTime, "milliseconds") / durationMilliseconds) * 100;
                 this._nowLine = {
                     ngClass: {
 
@@ -303,9 +354,9 @@ export class TimelogChartLarge {
             }else{
                 this._nowLine = null;
             }
-            if(moment(this.activeDay.wakeupTime).isSameOrAfter(moment(this.window.startTime)) && moment(this.activeDay.wakeupTime).isSameOrBefore(moment(this.window.endTime))){
-                let durationMilliseconds = this.window.endTime.diff(this.window.startTime, "milliseconds");
-                let percentage: number = (this.activeDay.wakeupTime.diff(this.window.startTime, "milliseconds") / durationMilliseconds) * 100;
+            if(moment(this.activeDay.wakeupTime).isSameOrAfter(moment(startTime)) && moment(this.activeDay.wakeupTime).isSameOrBefore(moment(endTime))){
+                let durationMilliseconds = endTime.diff(startTime, "milliseconds");
+                let percentage: number = (this.activeDay.wakeupTime.diff(startTime, "milliseconds") / durationMilliseconds) * 100;
                 this._wakeUpLine = {
                     ngClass: {
 
@@ -317,9 +368,9 @@ export class TimelogChartLarge {
             }else{
                 this._wakeUpLine = null;
             }
-            if(moment(this.activeDay.fallAsleepTime).isSameOrAfter(moment(this.window.startTime)) && moment(this.activeDay.fallAsleepTime).isSameOrBefore(moment(this.window.endTime))){
-                let durationMilliseconds = this.window.endTime.diff(this.window.startTime, "milliseconds");
-                let percentage: number = (this.activeDay.fallAsleepTime.diff(this.window.startTime, "milliseconds") / durationMilliseconds) * 100;
+            if(moment(this.activeDay.fallAsleepTime).isSameOrAfter(moment(startTime)) && moment(this.activeDay.fallAsleepTime).isSameOrBefore(moment(endTime))){
+                let durationMilliseconds = endTime.diff(startTime, "milliseconds");
+                let percentage: number = (this.activeDay.fallAsleepTime.diff(startTime, "milliseconds") / durationMilliseconds) * 100;
                 this._fallAsleepLine = {
                     ngClass: {
 

@@ -11,7 +11,7 @@ let menuItems: MenuItem[] = [];
 menuItems.push(new MenuItem('Home', '/home', faHome));
 
 let daybookMenu = new MenuItem('Daybook', '/daybook', faBookOpen);
-daybookMenu.sidebarToolComponent = ToolComponents.TimelogEntry;
+// daybookMenu.sidebarToolComponent = ToolComponents.TimelogEntry;
 let daybookMenuItems: MenuItem[] = [new MenuItem('Daily Task List', '/daily-task-list', faListUl)];
 daybookMenu.subMenu = new HeaderMenu('Daybook submenu', daybookMenuItems);
 menuItems.push(daybookMenu);

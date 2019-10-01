@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { TimelogWindow } from './timelog-window.interface';
 import { TimelogChartLarge } from './timelog-chart-large.class';
 import { DaybookService } from '../../../../daybook.service';
+import { TimelogChartLargeRowItem } from './timelog-chart-large-row-item/timelog-chart-large-row-item.class';
 
 @Component({
   selector: 'app-timelog-chart',
@@ -39,10 +40,8 @@ export class TimelogChartComponent implements OnInit {
     let startTime: moment.Moment = moment(this.activeDay.dateYYYYMMDD).hour(7).minute(30).second(0).millisecond(0);
     let endTime: moment.Moment = moment(this.activeDay.dateYYYYMMDD).hour(22).minute(30).second(0).millisecond(0);
     let window: TimelogWindow = {
-      windowStartTime: moment(startTime).subtract(1, "hour"),
       startTime: startTime,
       endTime: endTime,
-      windowEndTime: moment(endTime).add(1, "hour"),
       size: endTime.diff(startTime, "hours"),
     }
     this.timelogWindow = window;
@@ -53,6 +52,14 @@ export class TimelogChartComponent implements OnInit {
     this._timelogChart.timelogDateChanged$.subscribe((changedDate: moment.Moment) => {
       this.daybookService.activeDayYYYYMMDD = changedDate.format("YYYY-MM-DD");
     });
+    this._timelogChart.newDelineator$.subscribe((newDelineator: TimelogChartLargeRowItem)=>{
+      console.log("New delineator");
+      this.daybookService.activeDay.addTimeDelineator(newDelineator.startTime.toISOString());
+    });
+    this._timelogChart.removeDelineator$.subscribe((removeDelineator: TimelogChartLargeRowItem)=>{
+      console.log("Deleting delineator: " + removeDelineator.startTime.toISOString());
+      this.daybookService.activeDay.removeTimeDelineator(removeDelineator.startTime.toISOString());
+    })
   }
 
 

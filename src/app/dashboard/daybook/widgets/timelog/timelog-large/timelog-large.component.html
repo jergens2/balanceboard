@@ -1,24 +1,19 @@
 <div class="timelog-root" (mouseover)="onMouseOverTimelog()" (mouseleave)="onMouseLeaveTimelog()">
     <div class="timelog-header">
-        <div class="header-buffer"></div>
-        <div>
-            timeloggy - Active day:  {{ activeDay.dateYYYYMMDD }}
-        </div>
-        <div class="header-buffer" style="justify-content:flex-end;padding-right: 5px;">
-            <!-- <div *ngIf="mouseOverTimelog">
-                <fa-icon [icon]="faCog" class="icon-button" (click)="onClickChangeView('day-structure')"
-                    *ngIf="viewMode == 'timelog'"></fa-icon>
-                <fa-icon [icon]="faEye" class="icon-button" (click)="onClickChangeView('timelog')"
-                    *ngIf="viewMode == 'day-structure'"></fa-icon>
-            </div> -->
-        </div>
+        <div class="header-item" (click)="onClickHeaderItem('GO_LEFT')"><fa-icon [icon]="faAngleLeft"></fa-icon></div>
+        <div class="header-item" (click)="onClickHeaderItem('SUNDAY')">S</div>
+        <div class="header-item" (click)="onClickHeaderItem('MONDAY')">M</div>
+        <div class="header-item" (click)="onClickHeaderItem('TUESDAY')">T</div>
+        <div class="header-item" (click)="onClickHeaderItem('WEDNESDAY')">W</div>
+        <div class="header-item" (click)="onClickHeaderItem('THURSDAY')">T</div>
+        <div class="header-item" (click)="onClickHeaderItem('FRIDAY')">F</div>
+        <div class="header-item" (click)="onClickHeaderItem('SATURDAY')">S</div>
+        <div class="header-item" (click)="onClickHeaderItem('GO_RIGHT')"><fa-icon [icon]="faAngleRight"></fa-icon></div>
     </div>
     <div class="flex-column">
-        <app-timelog-chart *ngIf="viewMode == 'timelog'" class="flex-column">
-        </app-timelog-chart>
+        <app-timelog-chart class="flex-column"></app-timelog-chart>
 
-        <!-- <app-day-structure-mode  *ngIf="viewMode == 'day-structure'"
-            class="flex-column"></app-day-structure-mode> -->
+        <!-- <app-day-structure-mode class="flex-column"></app-day-structure-mode> -->
 
 
     </div>

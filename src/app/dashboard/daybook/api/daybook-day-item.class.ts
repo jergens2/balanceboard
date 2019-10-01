@@ -10,7 +10,7 @@ import { DayStructureSleepCycleAction } from "./data-items/day-structure-sleep-c
 import { TimelogWindow } from "../widgets/timelog/timelog-large/timelog-chart/timelog-window.interface";
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
 import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
-import { SleepQuality } from "../daybook-entry-form/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum";
+import { SleepQuality } from "../daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum";
 import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
 import { ActivityTree } from "../../activities/api/activity-tree.class";
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
@@ -36,6 +36,7 @@ export class DaybookDayItem{
             userId: "",
             dateYYYYMMDD: dateYYYYMMDD,
             daybookTimelogEntryDataItems: [],
+            timeDelineators: [],
             daybookActivityDataItems: [],
             dailyTaskListDataItems: [],
             dayStructureDataItems: [],
@@ -90,6 +91,27 @@ export class DaybookDayItem{
     public set daybookTimelogEntryDataItems(timelogEntries: DaybookTimelogEntryDataItem[]) {
         this._httpShape.daybookTimelogEntryDataItems = timelogEntries;
         this.updateActivityDataItems();
+        this.dataChanged();
+    }
+    public get timeDelineators(): string[] {return this.httpShape.timeDelineators; }
+    public set timeDelineators(timeDelineators: string[]){ 
+        console.log("setting Time delineators ")
+        this._httpShape.timeDelineators = timeDelineators; 
+        this.dataChanged();
+    }
+    public addTimeDelineator(delineator: string){
+        let timeDelineators = this.timeDelineators;
+        if(timeDelineators.indexOf(delineator) == -1){
+            timeDelineators.push(delineator);
+            this.timeDelineators = timeDelineators;
+        }
+    }
+    public removeTimeDelineator(delineator: string){
+        let timeDelineators = this.timeDelineators;
+        if(timeDelineators.indexOf(delineator) > -1){
+            timeDelineators.splice(timeDelineators.indexOf(delineator), 1);
+            this.timeDelineators = timeDelineators;
+        }
     }
     public get daybookActivityDataItems(): DaybookActivityDataItem[] { return this.httpShape.daybookActivityDataItems; }
     private updateActivityDataItems() {
@@ -263,6 +285,8 @@ export class DaybookDayItem{
             console.log("Error: can't delete timelogEntry", timelogEntry)
         }
     }
+
+
 
 
 }

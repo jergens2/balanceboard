@@ -38,6 +38,11 @@ export class ActivitiesComponent implements OnInit {
   ngOnInit() {
     this.activityTree = this.activityCategoryDefinitionService.activitiesTree;
     this._activityRoutines = this.activityTree.activityRoutines;
+    let things = this.activityTree.scheduleConfigurationActivities;
+    console.log("Things: ")
+    things.forEach((thing)=>{
+      console.log("Schedule item: " , thing.name , " : ", thing)
+    })
 
     // this._openActivity = this.activityTree.getSleepActivity();
     this._openActivity = null;

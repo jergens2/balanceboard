@@ -18,6 +18,14 @@
     grid-template-columns: 25px 50px 1fr 15px 30px;
 
 }
+.delineator-column{
+    
+    grid-row: 2 / -3;
+    grid-column: 2 / span 1;
+    position: relative;
+    border-right: 1px dotted rgb(226, 226, 226);
+}
+
 .timelog-chart-row-item{
     width:100%;
     height:100%;
@@ -26,8 +34,8 @@
     /* background-color: rgba(0, 0, 255, 0.103); */
     z-index: 2;
 }
-.timelog-chart-row-item:hover{
-    background-color: rgba(0, 0, 255, 0.342);
+.row-is-delineator{
+    z-index: 5;
 }
 
 .now-line-container, .sleep-line-container{

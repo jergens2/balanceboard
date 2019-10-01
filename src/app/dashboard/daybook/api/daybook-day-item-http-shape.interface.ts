@@ -14,6 +14,7 @@ export interface DaybookDayItemHttpShape{
 
     // -DataItem suffix types are data which represent the actual record in the database, not a reference. 
     daybookTimelogEntryDataItems: DaybookTimelogEntryDataItem[];
+    timeDelineators: string[];
     daybookActivityDataItems: DaybookActivityDataItem[];
     dailyTaskListDataItems: DailyTaskListDataItem[];
     dayStructureDataItems: DayStructureDataItem[];

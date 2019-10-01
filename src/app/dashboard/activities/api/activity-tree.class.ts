@@ -1,5 +1,6 @@
 import { ActivityCategoryDefinition } from "./activity-category-definition.class";
 import { DaybookDayItemScheduledActivityItem } from "../../daybook/api/data-items/daybook-day-item-scheduled-activity.class";
+import { BehaviorSubject, Observable } from "rxjs";
 
 export class ActivityTree {
     /*
@@ -31,10 +32,10 @@ export class ActivityTree {
 
     constructor(allActivities: ActivityCategoryDefinition[]) {
         this._allActivitiesAndRoutines = allActivities;
-        this._rootActivities = this.buildActivityTree(allActivities);
+        this.buildActivityTree(allActivities);
     }
 
-    private buildActivityTree(allActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition[] {
+    private buildActivityTree(allActivities: ActivityCategoryDefinition[]){
         /*
             Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
         */
@@ -64,10 +65,10 @@ export class ActivityTree {
             rootActivity = this.findChildActivities(rootActivity, allActivities);
 
         }
+        this._rootActivities = rootActivities;
 
         this._activityRoutines = rootActivities.filter((activity)=>{ return activity.isRoutine === true; });
-        rootActivities = rootActivities.filter((activity)=>{ return activity.isRoutine === false });
-        return rootActivities;
+        this._scheduleConfiguredActivities$.next(allActivities.filter((item)=>{ return item.scheduleRepititions.length > 0; }));
     }
 
     findActivityByTreeId(treeId: string): ActivityCategoryDefinition{
@@ -142,7 +143,7 @@ export class ActivityTree {
 
     addActivityToTree(activity: ActivityCategoryDefinition) {
         this._allActivitiesAndRoutines.push(activity);
-        this._rootActivities = this.buildActivityTree(this.allActivitiesAndRoutines);
+        this.buildActivityTree(this.allActivitiesAndRoutines);
     }
 
     pruneActivityFromTree(activityRemove: ActivityCategoryDefinition) {
@@ -161,7 +162,7 @@ export class ActivityTree {
             }
         }
 
-        this._rootActivities = this.buildActivityTree(this.allActivitiesAndRoutines);
+        this.buildActivityTree(this.allActivitiesAndRoutines);
     }
 
     public buildScheduledActivityItemsOnDate(dateYYYYMMDD: string): DaybookDayItemScheduledActivityItem[]{
@@ -195,4 +196,15 @@ export class ActivityTree {
         }
         return activityItem;
     }
+
+
+
+    private _scheduleConfiguredActivities$: BehaviorSubject<ActivityCategoryDefinition[]> = new BehaviorSubject([]);
+    public get scheduleConfigurationActivities(): ActivityCategoryDefinition[]{
+        return this._scheduleConfiguredActivities$.getValue();
+    }
+    public get scheduleConfigurationActivities$(): Observable<ActivityCategoryDefinition[]>{
+        return this._scheduleConfiguredActivities$.asObservable();
+    }
+
 }

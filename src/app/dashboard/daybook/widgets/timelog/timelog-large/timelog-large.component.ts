@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
-import { faCog, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faEye, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import * as moment from 'moment';
 import { DayStructureDataItem } from '../../../api/data-items/day-structure-data-item.interface';
@@ -13,8 +13,7 @@ import { DaybookService } from '../../../daybook.service';
 })
 export class TimelogLargeComponent implements OnInit {
 
-  faCog = faCog;
-  faEye = faEye;
+
 
   constructor(private daybookService: DaybookService) { }
 
@@ -63,6 +62,14 @@ export class TimelogLargeComponent implements OnInit {
     return moment(timeISO).format("hh:mm a")
   }
 
+  public onClickHeaderItem(item: string){
+    console.log("header item clicked: ", item);
+  }
 
 
+
+  faCog = faCog;
+  faEye = faEye;
+  faAngleRight = faAngleRight;
+  faAngleLeft = faAngleLeft;
 }
