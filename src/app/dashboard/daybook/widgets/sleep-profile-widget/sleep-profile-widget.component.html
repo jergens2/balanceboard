@@ -7,12 +7,23 @@
                     times</button>
             </div>
         </div>
-        <div *ngIf="sleepProfileIsSet && activeDayIsToday" class="complete-view">
-
-            <app-sleep-battery [configuration]="batteryConfiguration" [shape]="'LARGE'"></app-sleep-battery>
-            <div class="flex-column">
-                    <button class="medium-button" style="margin-left:auto;" (click)="itemState.startEditing()"><fa-icon [icon]="faEdit"></fa-icon></button>
+        <div *ngIf="sleepProfileIsSet && activeDayIsToday" class="display-flex-column">
+            <div style="width:100%;">
+                <button class="small-button" style="margin-left: auto;" (click)="itemState.startEditing()">
+                    <fa-icon [icon]="faEdit" style="margin-right:5px;"></fa-icon>
+                    Edit
+                </button>
             </div>
+            <div class="display-flex-row">
+                <app-sleep-battery [configuration]="batteryConfiguration" [shape]="'LARGE'"></app-sleep-battery>
+                <div class="display-flex-column" style="font-size:0.8em;">
+                    <span style="color: rgb(0, 89, 255);">Slept for <span style="font-weight:bold;">{{ sleepDurationHours }}</span></span> 
+                    <span>({{ previousFallAsleepTime.format("h:mm a") }} to {{ wakeupTime.format("h:mm a") }}) </span>
+                    <span style="color: rgb(0, 89, 255);margin-top: 15px;">{{ timeUntilBedTime }}</span>
+                    <span>({{ bedTime.format('h:mm a')}})</span>
+                </div>
+            </div>
+
         </div>
 
         <div *ngIf="sleepProfileIsSet && !activeDayIsToday" class="complete-view">

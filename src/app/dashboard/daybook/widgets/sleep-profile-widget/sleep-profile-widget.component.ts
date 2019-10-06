@@ -10,6 +10,7 @@ import { DurationString } from '../../../../shared/utilities/time-utilities/dura
 import { ItemState } from '../../../../shared/utilities/item-state.class';
 import { DaybookDayItem } from '../../api/daybook-day-item.class';
 import { DaybookDayItemSleepProfile } from '../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { Subscription, timer } from 'rxjs';
 
 @Component({
   selector: 'app-sleep-profile-widget',
@@ -45,6 +46,7 @@ export class SleepProfileWidgetComponent implements OnInit {
   public get previousFallAsleepTimeMin(): moment.Moment { return this._previousFallAsleepTimeMin; }
 
 
+
   private _wakeupTime: moment.Moment;
   private _wakeupTimeMin: moment.Moment;
   public get wakeupTime(): moment.Moment { return this._wakeupTime; }
@@ -55,6 +57,8 @@ export class SleepProfileWidgetComponent implements OnInit {
 
   private _sleepDuration: string = "";
   public get sleepDuration(): string { return this._sleepDuration; }
+  private _sleepDurationHours: string = "";
+  public get sleepDurationHours(): string { return this._sleepDurationHours; }
 
 
   public sleepProfileIsSet: boolean = true;
@@ -120,15 +124,36 @@ export class SleepProfileWidgetComponent implements OnInit {
       bedtime: this._bedTime,
     }
 
-    this._sleepDuration = DurationString.calculateDurationString(this._previousFallAsleepTime, this._wakeupTime);
+    this.updateDurationString();
   }
 
-  private timeInputsChanged() {
+  private _timeUntilBedtimeSubscription: Subscription = new Subscription();
+  private updateDurationString() {
     this._wakeupTimeMin = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(18).minute(0).second(0).millisecond(0);
     if (this._wakeupTimeMin.isBefore(this.previousFallAsleepTime)) {
       this._wakeupTimeMin = moment(this.previousFallAsleepTime);
     }
     this._sleepDuration = DurationString.calculateDurationString(this._previousFallAsleepTime, this._wakeupTime);
+    this._sleepDurationHours = DurationString.calculateDurationString(this._previousFallAsleepTime, this._wakeupTime, false, true);
+    this.updateTimeUntilBedtime();
+    
+    if(this.activeDayIsToday){
+      this._timeUntilBedtimeSubscription.unsubscribe();
+      this._timeUntilBedtimeSubscription = timer(0, 60000).subscribe((tick)=>{
+        this.updateTimeUntilBedtime();
+      });
+      
+    }
+    
+  }
+
+  private updateTimeUntilBedtime(){
+    let hoursUntilBedtime: number = moment(this._bedTime).diff(moment(), "hours");
+    if(hoursUntilBedtime > 2){
+      this._timeUntilBedTime = DurationString.calculateDurationString(moment(), this._bedTime, false, true) + " until bedtime";
+    }else{
+      this._timeUntilBedTime = DurationString.calculateDurationString(moment(), this._bedTime, false, false) + " until bedtime";
+    }
   }
 
 
@@ -158,24 +183,24 @@ export class SleepProfileWidgetComponent implements OnInit {
       //   }
       // } 
     }
-    this.timeInputsChanged();
+    this.updateDurationString();
   }
 
 
   public onFallAsleepTimeChanged(time: moment.Moment) {
     this._previousFallAsleepTime = moment(time);
-    this.timeInputsChanged();
+    this.updateDurationString();
   }
 
   public onWakeupTimeChanged(time: moment.Moment) {
     this._wakeupTime = moment(time);
-    this.timeInputsChanged();
+    this.updateDurationString();
   }
 
   public onBedTimeChanged(time: moment.Moment) {
     this._bedTime = moment(time);
     console.log("Bed time changed", this._bedTime.format("YYYY-MM-DD hh:mm a"))
-    this.timeInputsChanged();
+    this.updateDurationString();
   }
 
   public onClickSleepQuality(sleepQuality: SleepQuality) {
@@ -228,6 +253,9 @@ export class SleepProfileWidgetComponent implements OnInit {
       }
     }
   }
+
+  private _timeUntilBedTime: string = "";
+  public get timeUntilBedTime(): string{ return this._timeUntilBedTime; }
 
   public sleepQuality(sleepQuality: SleepQuality): string[] {
     let index = this.sleepQualityBeds.indexOf(sleepQuality);
