@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
-import { TimeOfDay } from '../../../../../../../shared/utilities/time-of-day-enum';
+import { TimeOfDay } from '../../../../../../../shared/utilities/time-utilities/time-of-day-enum';
 import { ActivityOccurrenceConfiguration } from '../../../../../api/activity-occurrence-configuration.interface';
-import { TimeUnit } from '../../../../../../../shared/utilities/time-unit.enum';
+import { TimeUnit } from '../../../../../../../shared/utilities/time-utilities/time-unit.enum';
 import { ActivityRepititionOccurrence } from '../repitition-occurrence.class';
 
 @Component({

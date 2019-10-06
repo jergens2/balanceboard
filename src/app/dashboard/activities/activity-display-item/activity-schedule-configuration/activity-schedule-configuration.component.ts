@@ -6,9 +6,9 @@ import { ActivityRepititionDisplay } from './activity-repitition-display/activit
 
 import { faSave, faPlus, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
-import { TimeUnit } from '../../../../shared/utilities/time-unit.enum';
+import { TimeUnit } from '../../../../shared/utilities/time-utilities/time-unit.enum';
 import * as moment from 'moment';
-import { ItemState } from '../activity-schedule-display/item-state.class';
+import { ItemState } from '../../../../shared/utilities/item-state.class';
 
 @Component({
   selector: 'app-activity-schedule-configuration',

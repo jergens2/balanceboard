@@ -5,13 +5,6 @@
             <div class="now-line" [ngStyle]="timelogChart.nowLine.ngStyle"></div>
         </div>
 
-        <!-- <div class="sleep-line-container" *ngIf="timelogChart.wakeUpLine">
-            <div class="sleep-line" [ngStyle]="timelogChart.wakeUpLine.ngStyle"></div>
-        </div>
-        <div class="sleep-line-container" *ngIf="timelogChart.fallAsleepLine">
-            <div class="sleep-line" [ngStyle]="timelogChart.fallAsleepLine.ngStyle"></div>
-        </div> -->
-
         
         <div class="timelog-guide-lines">
             <div *ngFor="let timelogGuideLine of timelogChart.guidelineItems" class="timelog-guide-line">
@@ -42,10 +35,7 @@
             (mouseleave)="timelogChartRowItem.onMouseLeave()">
         </app-timelog-chart-large-row-item>
 
-        <!-- <div class="day-structure-item" *ngFor="let dayStructureItem of timelogChart.dayStructureItems"
-            [ngStyle]="dayStructureItem.ngStyle" [ngClass]="dayStructureItem.ngClass"
-            (mouseenter)="dayStructureItem.onMouseEnter()" (mouseleave)="dayStructureItem.onMouseLeave()"
-            > -->
+
         <div class="day-structure-item" *ngFor="let dayStructureItem of timelogChart.dayStructureItems"
             [ngStyle]="dayStructureItem.ngStyle">
             {{ dayStructureItem.bodyLabel }}
@@ -54,6 +44,9 @@
         <div class="delineator-column">
 
         </div>
+
+        <app-timelog-entry class="timelog-entry" *ngFor="let timelogEntry of timelogChart.timelogEntries">
+        </app-timelog-entry>
 
     </div>
 </div>

@@ -6,5 +6,5 @@ export interface CalendarDay{
     isThisMonth: boolean;
     isToday: boolean;
     isActiveDay: boolean;
-
+    season: "WINTER" | "SPRING" | "SUMMER" | "AUTUMN";
 }

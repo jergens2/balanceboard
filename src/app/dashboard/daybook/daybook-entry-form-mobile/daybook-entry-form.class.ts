@@ -1,11 +1,11 @@
 import * as moment from 'moment';
 import { timer, Subscription } from 'rxjs';
-import { DurationString } from '../../../shared/utilities/duration-string.class';
+import { DurationString } from '../../../shared/utilities/time-utilities/duration-string.class';
 import { SleepBatteryConfiguration } from '../widgets/sleep-battery/sleep-battery-configuration.interface';
 import { SleepQuality } from './daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookDayItemSleepProfile } from '../api/data-items/daybook-day-item-sleep-profile.interface';
-import { TimeOfDay } from '../../../shared/utilities/time-of-day-enum';
+import { TimeOfDay } from '../../../shared/utilities/time-utilities/time-of-day-enum';
 import { ActivityCategoryDefinition } from '../../activities/api/activity-category-definition.class';
 import { DaybookDayItemScheduledActivity } from '../api/data-items/daybook-day-item-scheduled-activity.class';
 import { DaybookEntryFormSection, DaybookEntryFormSectionType } from './daybook-entry-form-section/daybook-entry-form-section.class';
@@ -337,6 +337,7 @@ export class DaybookEntryForm {
 
     private updateBatteryConfiguration() {
         let batteryConfiguration: SleepBatteryConfiguration = {
+            fallAsleepTime: this.bedtime.subtract(1, "days"),
             wakeupTime: this.wakeupTime,
             bedtime: this.bedtime,
         }

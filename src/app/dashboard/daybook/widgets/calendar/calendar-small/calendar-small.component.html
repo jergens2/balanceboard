@@ -7,7 +7,8 @@
         </div>
 
         <div class="header-buffer">
-            <fa-icon [icon]="faExpand" class="icon-button" (click)="onClickExpand()" *ngIf="mouseIsOver"></fa-icon>
+            <fa-icon [icon]="faExpand" class="icon-button" (click)="onClickExpand()" *ngIf="mouseIsOver && !isLarge">
+            </fa-icon>
         </div>
     </div>
     <div class="days-of-week">
@@ -21,8 +22,16 @@
     </div>
     <div class="calendar-body">
         <div *ngFor="let dayOfCalendar of daysOfCalendar" class="day-of-calendar-container">
-            <div class="day-of-calendar" (click)="onClickCalendarDay(dayOfCalendar)"
-                [ngClass]="{'calendar-day-not-this-month': !dayOfCalendar.isThisMonth, 'calendar-day-active': dayOfCalendar.isActiveDay, 'calendar-day-today': dayOfCalendar.isToday}">
+            <div *ngIf="(isLarge && dayOfCalendar.isThisMonth) || !isLarge " class="day-of-calendar"
+                (click)="onClickCalendarDay(dayOfCalendar)" [ngClass]="{
+                    'winter-day': (dayOfCalendar.season == 'WINTER' && isLarge), 
+                    'spring-day': (dayOfCalendar.season == 'SPRING' && isLarge), 
+                    'summer-day': (dayOfCalendar.season == 'SUMMER' && isLarge), 
+                    'autumn-day': (dayOfCalendar.season == 'AUTUMN' && isLarge), 
+                    'calendar-day-not-this-month': !dayOfCalendar.isThisMonth, 
+                    'calendar-day-active': dayOfCalendar.isActiveDay, 
+                    'calendar-day-today': dayOfCalendar.isToday
+                    }">
                 <div>
                     {{ dayOfCalendar.date.format("D") }}
                 </div>

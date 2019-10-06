@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { timer } from 'rxjs';
 import * as moment from 'moment';
-import { DurationString } from '../../../../shared/utilities/duration-string.class';
+import { DurationString } from '../../../../shared/utilities/time-utilities/duration-string.class';
 import { SleepBatteryConfiguration } from './sleep-battery-configuration.interface';
 
 @Component({
@@ -32,7 +32,7 @@ export class SleepBatteryComponent implements OnInit {
     this.updateBattery();
   }
 
-  @Input() shape: string;
+  @Input() shape: "SMALL" | "LARGE";
 
   public get wakeupTime(): moment.Moment{
     return this._wakeupTime;

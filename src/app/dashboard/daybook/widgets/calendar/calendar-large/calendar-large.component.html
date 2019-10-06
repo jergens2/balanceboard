@@ -1,1 +1,12 @@
-<p>calendar-large works!</p>
+<div class="calendar-large-root">
+
+    <div class="twelve-months">
+        <app-calendar-small class="month" *ngFor="let month of months" [date]="month.firstDate" 
+        [ngClass]="{
+            'winter-month': month.season == 'WINTER', 
+            'spring-month': month.season == 'SPRING',
+            'summer-month': month.season == 'SUMMER',
+            'autumn-month': month.season == 'AUTUMN'}">
+        </app-calendar-small>
+    </div>
+</div>

@@ -3,8 +3,8 @@ import { Guid } from "../../../shared/utilities/guid.class";
 import { ActivityDurationSetting } from "./activity-duration.enum";
 import * as moment from 'moment';
 import { ActivityCategoryDefinitionHttpShape } from "./activity-category-definition-http-shape.interface";
-import { TimeUnit } from "../../../shared/utilities/time-unit.enum";
-import { TimeOfDay } from "../../../shared/utilities/time-of-day-enum";
+import { TimeUnit } from "../../../shared/utilities/time-utilities/time-unit.enum";
+import { TimeOfDay } from "../../../shared/utilities/time-utilities/time-of-day-enum";
 
 
 export class DefaultActivityCategoryDefinitions {

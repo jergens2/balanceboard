@@ -19,6 +19,7 @@ export class CalendarSmallComponent implements OnInit {
   faExpand = faExpand;
 
   @Output() expand: EventEmitter<boolean> = new EventEmitter();
+  @Input() date: moment.Moment;
 
   onClickExpand() {
     this.expand.emit(true);
@@ -27,55 +28,100 @@ export class CalendarSmallComponent implements OnInit {
   private activeDay: DaybookDayItem;
   public daysOfCalendar: CalendarDay[] = [];
 
+  public isLarge: boolean = false;
+
   ngOnInit() {
     this.activeDay = this.daybookService.activeDay;
 
-    this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD));
+    if (this.date) {
+      // Large calendar
+      this.isLarge = true;
+      this.buildDaysOfCalendar(this.date, "LARGE");
+    } else {
+      // Small calendar
+      this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD), "SMALL");
 
-    this.daybookService.activeDay$.subscribe((activeDayChanged)=>{
-      this.activeDay = activeDayChanged;
-      console.log("WE REBUILDING BOSS")
-      this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD));
-    });
+      this.daybookService.activeDay$.subscribe((activeDayChanged) => {
+        this.activeDay = activeDayChanged;
+        console.log("WE REBUILDING BOSS")
+        this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD), "SMALL");
+      });
+    }
 
-    
+
+
+
   }
 
-  public onClickCalendarDay(dayOfCalendar: CalendarDay){
+  public onClickCalendarDay(dayOfCalendar: CalendarDay) {
     this.daybookService.activeDayYYYYMMDD = dayOfCalendar.date.format("YYYY-MM-DD");
   }
 
-  private buildDaysOfCalendar(activeDate: moment.Moment){
+  private buildDaysOfCalendar(date: moment.Moment, size: "SMALL" | "LARGE") {
+
+
+
     let daysOfCalendar: CalendarDay[] = [];
 
-    let firstDate: moment.Moment = moment(activeDate).startOf("month");
-    if(firstDate.day() == 0){
+    let firstDate: moment.Moment = moment(date).startOf("month");
+    if (firstDate.day() == 0) {
       firstDate = moment(firstDate).subtract(7, "days");
-    }else{
+    } else {
       firstDate = moment(firstDate).startOf("week");
     }
 
     const lastDate: moment.Moment = moment(firstDate).add(6, "weeks").subtract(1, "day");
 
     let currentDate: moment.Moment = moment(firstDate);
-    while(currentDate.isSameOrBefore(lastDate)){
-      let isThisMonth: boolean = moment(activeDate).month() == moment(currentDate).month();
+    while (currentDate.isSameOrBefore(lastDate)) {
+      let isThisMonth: boolean = moment(date).month() == moment(currentDate).month();
       let isToday: boolean = moment(currentDate).format("YYYY-MM-DD") == moment().format("YYYY-MM-DD");
       let isActiveDay: boolean = moment(this.activeDay.dateYYYYMMDD).format("YYYY-MM-DD") == moment(currentDate).format("YYYY-MM-DD");
+
+
+      let season: "WINTER" | "SPRING" | "SUMMER" | "AUTUMN" = "WINTER";
+
+
+      /**
+       * For simplicity i just use the date of the 21st for season change regardless of the season,
+       * even though in reality it is not always the 21st.
+       */
+      if (moment(currentDate).isSameOrAfter(moment(currentDate).startOf("year")) &&
+        moment(currentDate).isBefore(moment(currentDate).month(2).date(21))) {
+        season = "WINTER";
+      } else if (moment(currentDate).isSameOrAfter(moment(currentDate).month(2).date(21)) &&
+        moment(currentDate).isBefore(moment(currentDate).month(5).date(21))) {
+        season = "SPRING";
+      } else if (moment(currentDate).isSameOrAfter(moment(currentDate).month(5).date(21)) &&
+        moment(currentDate).isBefore(moment(currentDate).month(8).date(21))) {
+        season = "SUMMER";
+      } else if (moment(currentDate).isSameOrAfter(moment(currentDate).month(8).date(21)) &&
+        moment(currentDate).isBefore(moment(currentDate).month(11).date(21))) {
+        season = "AUTUMN";
+      }else{
+        season = "WINTER";
+      }
+
       let calendarDay: CalendarDay = {
         date: moment(currentDate),
         isThisMonth: isThisMonth,
         isToday: isToday,
         isActiveDay: isActiveDay,
+        season: season,
       };
-      
+
       daysOfCalendar.push(calendarDay);
 
       currentDate = moment(currentDate).add(1, "days");
     }
 
+    if (size == "SMALL") {
+      this._monthHeader = moment(date).format("MMMM YYYY");
+    } else if (size == "LARGE") {
+      this._monthHeader = moment(date).format("MMMM");
+    }
 
-    this._monthHeader = moment(activeDate).format("MMMM YYYY");
+
     this.daysOfCalendar = daysOfCalendar;
   }
 
@@ -86,13 +132,13 @@ export class CalendarSmallComponent implements OnInit {
 
 
   private _mouseIsOver: boolean = false;
-  public onMouseEnter(){
+  public onMouseEnter() {
     this._mouseIsOver = true;
   }
-  public onMouseLeave(){
+  public onMouseLeave() {
     this._mouseIsOver = false;
   }
-  public get mouseIsOver(): boolean{
+  public get mouseIsOver(): boolean {
     return this._mouseIsOver;
   }
 

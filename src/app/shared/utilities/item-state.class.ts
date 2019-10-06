@@ -103,7 +103,6 @@ export class ItemState {
 
 
 
-
     private _mouseIsOver: boolean = false;
     public get mouseIsOver(): boolean { return this._mouseIsOver; }
     public onMouseEnter() {

@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
+import * as moment from 'moment';
+import { DaybookService } from '../../../daybook.service';
 
 @Component({
   selector: 'app-calendar-large',
@@ -8,11 +10,42 @@ import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 })
 export class CalendarLargeComponent implements OnInit {
 
-  constructor() { }
+  constructor(private daybookService: DaybookService) { }
 
-  @Input() activeDay: DaybookDayItem;
 
   ngOnInit() {
+
+    let day: moment.Moment = moment(this.daybookService.activeDay.dateYYYYMMDD).startOf("year");
+    let months = [];
+    for(let i=0; i< 12; i++){
+      months.push(moment(day));
+      day = moment(day).add(1, "month");
+    }
+
+    this.months = months;
+
+    this.daybookService.activeDay$.subscribe((activeDay)=>{
+      let day: moment.Moment = moment(activeDay.dateYYYYMMDD).startOf("year");
+      let months: {firstDate: moment.Moment, season: "WINTER" | "SPRING" | "SUMMER" | "AUTUMN"}[] = [];
+      for(let i=0; i< 12; i++){
+        let season: "WINTER" | "SPRING" | "SUMMER" | "AUTUMN";
+        if(i == 0 || i == 1 || i == 11){
+          season = "WINTER";
+        }else if(i == 2 || i == 3 || i == 4){
+          season = "SPRING";
+        }else if(i == 5 || i == 6 || i == 7){
+          season = "SUMMER";
+        }else if(i == 8 || i == 9 || i == 10){
+          season = "AUTUMN";
+        }
+        months.push({firstDate: moment(day), season: season});
+        day = moment(day).add(1, "month");
+      }
+      console.log("higgy ziggy")
+      this.months = months;
+    });
   }
+
+  public months: {firstDate: moment.Moment, season: "WINTER" | "SPRING" | "SUMMER" | "AUTUMN"}[] = [];
 
 }

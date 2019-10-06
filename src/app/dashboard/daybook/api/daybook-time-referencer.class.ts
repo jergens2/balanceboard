@@ -1,4 +1,4 @@
-import { TimeOfDay } from "../../../shared/utilities/time-of-day-enum";
+import { TimeOfDay } from "../../../shared/utilities/time-utilities/time-of-day-enum";
 import * as moment from 'moment';
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
@@ -42,6 +42,20 @@ export class DaybookTimeReferencer{
     private sleepProfile: DaybookDayItemSleepProfile;
     private timelogEntries: DaybookTimelogEntryDataItem[];
 
+
+    public get lastActionTime(): moment.Moment{
+        let lastActionTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");
+        if(this.sleepProfile.fallAsleepTimeISO){
+            lastActionTime = moment(this.sleepProfile.fallAsleepTimeISO);
+        }else{
+            this.timelogEntries.forEach((timelogEntry)=>{
+                if(moment(timelogEntry.endTimeISO).isAfter(lastActionTime)){
+                    lastActionTime = moment(timelogEntry.endTimeISO);
+                }
+            })
+        }
+        return lastActionTime;
+    }
 
     public get wakeupTime(): moment.Moment{
         if(this.sleepProfile != null){

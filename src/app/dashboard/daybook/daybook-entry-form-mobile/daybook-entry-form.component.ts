@@ -10,7 +10,7 @@ import { DaybookService } from '../daybook.service';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { ToolsService } from '../../../tools-menu/tools/tools.service';
 import { ToolComponents } from '../../../tools-menu/tools/tool-components.enum';
-import { TimeOfDay } from '../../../shared/utilities/time-of-day-enum';
+import { TimeOfDay } from '../../../shared/utilities/time-utilities/time-of-day-enum';
 import { ActivityCategoryDefinition } from '../../activities/api/activity-category-definition.class';
 
 @Component({

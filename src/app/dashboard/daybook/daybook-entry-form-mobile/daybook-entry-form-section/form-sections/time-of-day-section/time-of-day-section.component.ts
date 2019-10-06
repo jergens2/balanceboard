@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DaybookEntryForm } from '../../../daybook-entry-form.class';
-import { TimeOfDay } from '../../../../../../shared/utilities/time-of-day-enum';
+import { TimeOfDay } from '../../../../../../shared/utilities/time-utilities/time-of-day-enum';
 import { ActivityCategoryDefinition } from '../../../../../activities/api/activity-category-definition.class';
 import { faCheck, faSyncAlt, faCircle, faPlusCircle, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faCircle as faCircleNotSolid } from '@fortawesome/free-regular-svg-icons';

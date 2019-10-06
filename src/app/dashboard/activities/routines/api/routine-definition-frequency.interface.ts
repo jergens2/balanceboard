@@ -1,4 +1,4 @@
-import { TimeUnit } from "../../../../shared/utilities/time-unit.enum";
+import { TimeUnit } from "../../../../shared/utilities/time-utilities/time-unit.enum";
 
 export interface RoutineDefinitionFrequency{
     value: number,

@@ -15,6 +15,9 @@
             </div>
             <div class="delineator-line" *ngIf="rowItem.isDelineator">
                 <div class="delineator-line-border-top"></div>
+                <div *ngIf="rowItem.delineatorLabel" style="font-size:0.8em; color:gray;">
+                    {{ rowItem.delineatorLabel }}
+                </div>
                 <div class="delineator-line-delete-button-container" *ngIf="rowItem.mouseIsOver">
                     <fa-icon [icon]="faTimes" class="icon-button" (click)="rowItem.removeDelineator()"></fa-icon>
                 </div>

@@ -32,6 +32,7 @@ import { CountEntryInputComponent } from './data-entry-item-input/data-entry-inp
 import { RuleConditionEntryInputComponent } from './data-entry-item-input/data-entry-input-components/rule-condition-entry-input/rule-condition-entry-input.component';
 import { HealthSymptomEntryInputComponent } from './data-entry-item-input/data-entry-input-components/health-symptom-entry-input/health-symptom-entry-input.component';
 import { DropdownListComponent } from './utilities/components/dropdown-list/dropdown-list.component';
+import { TimeInputComponent } from './utilities/components/time-input/time-input.component';
 
 
 
@@ -75,6 +76,7 @@ import { DropdownListComponent } from './utilities/components/dropdown-list/drop
         RuleConditionEntryInputComponent,
         HealthSymptomEntryInputComponent,
         DropdownListComponent,
+        TimeInputComponent,
 
 
         
@@ -92,6 +94,7 @@ import { DropdownListComponent } from './utilities/components/dropdown-list/drop
         DataEntryItemInputComponent,
 
         DropdownListComponent,
+        TimeInputComponent,
     ]
 })
 

@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityRepititionDisplay } from './activity-repitition-display.class';
 import { faPlusCircle, faMinusCircle, faPlus, faSyncAlt, faPencilAlt, faTrashAlt, faCircle as faCircleSolid } from '@fortawesome/free-solid-svg-icons';
 import { faCircle as faCircleHollow } from '@fortawesome/free-regular-svg-icons';
-import { TimeUnit } from '../../../../../shared/utilities/time-unit.enum';
+import { TimeUnit } from '../../../../../shared/utilities/time-utilities/time-unit.enum';
 import { ActivityOccurrenceConfiguration } from '../../../api/activity-occurrence-configuration.interface';
 import { ActivityScheduleRepitition } from '../../../api/activity-schedule-repitition.interface';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';

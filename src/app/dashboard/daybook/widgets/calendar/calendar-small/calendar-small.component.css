@@ -24,7 +24,7 @@
 .day-of-week{
     flex-grow:2;
     font-size: 0.7em; 
-    color: gray;
+    color: rgb(202, 202, 202);
     /* font-weight:bold; */
     text-align: center;
     display:flex;
@@ -64,12 +64,28 @@
     border-radius: 25px;
 
 }
+
+.winter-day{
+    background-color:rgba(0, 145, 255, 0.1);
+}
+.spring-day{
+    background-color:rgba(7, 212, 0, 0.1);
+}
+.summer-day{
+    background-color:rgba(255, 234, 0, 0.1);
+}
+.autumn-day{
+    background-color:rgba(255, 145, 0, 0.1);
+}
+
 .day-of-calendar:hover{
     background-color: rgba(0, 89, 255, 0.5);
     border:1px solid rgb(0, 89, 255);
     color: white;
     cursor: pointer;
 }
+
+
 
 
 .calendar-day-today{
@@ -87,3 +103,5 @@
 .calendar-day-not-this-month{
     color: rgb(196, 196, 196);
 }
+
+

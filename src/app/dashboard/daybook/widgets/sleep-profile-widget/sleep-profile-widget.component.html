@@ -1,0 +1,76 @@
+<div class="sleep-profile-widget-root">
+    <div *ngIf="!itemState.isEditing" class="flex-column">
+        <div *ngIf="!sleepProfileIsSet" style="display:flex;flex-direction: column;">
+            <div style="color:gray;font-size: 0.8em; display:flex;flex-direction: row;">
+                <fa-icon [icon]="faExclamationTriangle" style="margin-right:5px;"></fa-icon> Sleep times not set
+                <button class="medium-button" style="margin-left:auto;" (click)="itemState.startEditing()">Set sleep
+                    times</button>
+            </div>
+        </div>
+        <div *ngIf="sleepProfileIsSet" class="flex-column">
+            <app-sleep-battery [configuration]="batteryConfiguration" [shape]="'LARGE'"></app-sleep-battery>
+        </div>
+
+    </div>
+    <div *ngIf="itemState.isEditing" class="flex-column">
+        <div class="section-row">
+            <div class="section-row-content">
+                <div style="font-size:0.8em;color:gray;margin-bottom:5px;">
+                    Approximately what time did you <u>fall asleep</u> at the end of your day yesterday?
+                </div>
+                <div class="fall-asleep-date no-select"
+                    [ngClass]="{'fall-asleep-date-active': clickFallAsleepTimeActive}"
+                    (click)="onClickfallAsleepTimeDay()" style="margin-left: 10px;">
+                    {{ fallAsleepDateTime }}
+                </div>
+
+                <app-time-input class="input-row" style="margin-left: 10px;" [timeValue]="fallAsleepTime"
+                    [minValue]="fallAsleepTimeMin" [maxValue]="wakeupTime"
+                    (timeChanged)="onFallAsleepTimeChanged($event)"></app-time-input>
+            </div>
+        </div>
+
+        <div class="section-row">
+            <div class="section-row-content">
+                <div style="font-size:0.8em;color:gray;margin-bottom:5px;">What time did you wake up
+                    {{ wakeupDateTime }}?</div>
+
+                <app-time-input class="input-row" style="margin-left: 10px;" [timeValue]="wakeupTime"
+                    [minValue]="wakeupTimeMin" (timeChanged)="onWakeupTimeChanged($event)"></app-time-input>
+
+            </div>
+        </div>
+
+        <div class="section-row">
+            <div class="section-row-content">
+                <div style="font-size:0.8em;color:gray;">Sleep duration </div>
+                <div style="font-weight: bold;color:rgb(0, 14, 90);">{{ sleepDuration }}</div>
+
+            </div>
+        </div>
+
+        <div class="section-row">
+            <div class="section-row-content">
+                <div style="font-size:0.8em;color:gray;">
+                    How well-rested do you feel after this sleep?
+                </div>
+                <div style="display: flex;flex-direction: row; align-items: center; margin-left: 10px;">
+                    <fa-icon *ngFor="let sleepQualityBed of sleepQualityBeds" [icon]="faBed" class="sleep-quality"
+                        (click)="onClickSleepQuality(sleepQualityBed)" [ngClass]="sleepQuality(sleepQualityBed)">
+                    </fa-icon>
+
+                </div>
+                <div style="font-weight: bold;color:rgb(0, 14, 90); margin-left: 10px;">
+                    {{ sleepQualityString }}
+                </div>
+            </div>
+        </div>
+        <div class="section-row" style="margin-bottom:0px;">
+            <button class="medium-button" style="margin-left:auto;" (click)="onClickSaveSleepTimes()">Save sleep times</button>
+        </div>
+    </div>
+
+
+
+
+</div>

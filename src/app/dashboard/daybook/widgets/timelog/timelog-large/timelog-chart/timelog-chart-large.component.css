@@ -15,7 +15,7 @@
     /* max-height: 660px; */
     /* This is where we can set the max height for when screensize changes.  where the timelog-chart-grid class is being used. */
     display: grid;
-    grid-template-columns: 25px 50px 1fr 15px 30px;
+    grid-template-columns: 25px 80px 1fr 15px 30px;
 
 }
 .delineator-column{

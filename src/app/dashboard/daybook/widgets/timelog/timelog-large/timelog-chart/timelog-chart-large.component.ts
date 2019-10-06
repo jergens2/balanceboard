@@ -39,15 +39,23 @@ export class TimelogChartComponent implements OnInit {
     this.activeDay = this.daybookService.activeDay;
     let startTime: moment.Moment = moment(this.activeDay.dateYYYYMMDD).hour(7).minute(30).second(0).millisecond(0);
     let endTime: moment.Moment = moment(this.activeDay.dateYYYYMMDD).hour(22).minute(30).second(0).millisecond(0);
-    let window: TimelogWindow = {
+    this.timelogWindow = {
       startTime: startTime,
       endTime: endTime,
       size: endTime.diff(startTime, "hours"),
-    }
-    this.timelogWindow = window;
+    };
     this._timelogChart = new TimelogChartLarge(this.timelogWindow, this.activeDay);
     this.daybookService.activeDay$.subscribe((dayChanged) => {
+      console.log("Active day changed");
       this.activeDay = dayChanged;
+      let startTime: moment.Moment = moment(this.activeDay.dateYYYYMMDD).hour(7).minute(30).second(0).millisecond(0);
+      let endTime: moment.Moment = moment(this.activeDay.dateYYYYMMDD).hour(22).minute(30).second(0).millisecond(0);
+      this.timelogWindow = {
+        startTime: startTime,
+        endTime: endTime,
+        size: endTime.diff(startTime, "hours"),
+      };
+      this._timelogChart = new TimelogChartLarge(this.timelogWindow, this.activeDay);
     });
     this._timelogChart.timelogDateChanged$.subscribe((changedDate: moment.Moment) => {
       this.daybookService.activeDayYYYYMMDD = changedDate.format("YYYY-MM-DD");

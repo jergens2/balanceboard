@@ -4,7 +4,7 @@ import { DaybookEntryForm } from '../../../daybook-entry-form.class';
 import { faPlusCircle, faMinusCircle, faBed, faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { SleepQuality } from './sleep-quality.enum';
-import { DurationString } from '../../../../../../shared/utilities/duration-string.class';
+import { DurationString } from '../../../../../../shared/utilities/time-utilities/duration-string.class';
 import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { DaybookEntryFormSection } from '../../daybook-entry-form-section.class';

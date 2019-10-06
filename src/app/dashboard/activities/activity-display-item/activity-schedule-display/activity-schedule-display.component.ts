@@ -2,8 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityCategoryDefinition } from '../../api/activity-category-definition.class';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { ActivityScheduleRepitition } from '../../api/activity-schedule-repitition.interface';
-import { TimeOfDayConverter } from '../../../../shared/utilities/time-of-day-converter.class';
-import { TimeUnitConverter } from '../../../../shared/utilities/time-unit-converter.class';
+import { TimeOfDayConverter } from '../../../../shared/utilities/time-utilities/time-of-day-converter.class';
+import { TimeUnitConverter } from '../../../../shared/utilities/time-utilities/time-unit-converter.class';
 import { faSyncAlt, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 

@@ -60,17 +60,20 @@ export class TimelogChartLargeRowItem{
         this._isDelineator = false;
         this._delineatorStatus$.next(false);
     }
-    public setAsDelineator(){
+    public setAsDelineator(label?: string){
         this._isDelineator = true;
+        if(label){
+            this._delineatorLabel = label;
+        }
     }
+    private _delineatorLabel: string = "";
+    public get delineatorLabel(): string{ return this._delineatorLabel; }
+    
     private _isDelineator: boolean = false;
-    public get isDelineator(): boolean{ 
-        return this._isDelineator;
-    }
+    public get isDelineator(): boolean{ return this._isDelineator; }
+
     private _delineatorStatus$: Subject<boolean> = new Subject();
-    public get delineatorStatus$(): Observable<boolean>{
-        return this._delineatorStatus$.asObservable();
-    }
+    public get delineatorStatus$(): Observable<boolean>{ return this._delineatorStatus$.asObservable(); }
     
 
     // public onClick(){
