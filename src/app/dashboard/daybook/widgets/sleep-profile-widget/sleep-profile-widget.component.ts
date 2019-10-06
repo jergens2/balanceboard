@@ -4,9 +4,12 @@ import { DaybookService } from '../../daybook.service';
 import * as moment from 'moment';
 import { SleepBatteryConfiguration } from '../sleep-battery/sleep-battery-configuration.interface';
 import { faBed, faPlusCircle, faMinusCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { SleepQuality } from '../../daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum';
 import { DurationString } from '../../../../shared/utilities/time-utilities/duration-string.class';
 import { ItemState } from '../../../../shared/utilities/item-state.class';
+import { DaybookDayItem } from '../../api/daybook-day-item.class';
+import { DaybookDayItemSleepProfile } from '../../api/data-items/daybook-day-item-sleep-profile.interface';
 
 @Component({
   selector: 'app-sleep-profile-widget',
@@ -18,22 +21,28 @@ export class SleepProfileWidgetComponent implements OnInit {
   constructor(private daybookService: DaybookService) { }
 
   private _itemState: ItemState;
-  public get itemState(): ItemState{ return this._itemState; }
-  public get mouseIsOver(): boolean{ return this._itemState.mouseIsOver; }
+  public get itemState(): ItemState { return this._itemState; }
+  public get mouseIsOver(): boolean { return this._itemState.mouseIsOver; }
 
   public sleepProfileForm: FormGroup;
   private _batteryConfiguration: SleepBatteryConfiguration;
-  public get batteryConfiguration(): SleepBatteryConfiguration{ return this._batteryConfiguration; }
+  public get batteryConfiguration(): SleepBatteryConfiguration { return this._batteryConfiguration; }
 
   private _sleepQuality: SleepQuality;
   // public get sleepQuality(): SleepQuality { return this._sleepQuality; }
 
-  public sleepQualityBeds: SleepQuality[] = [];
+  public sleepQualityBeds: SleepQuality[] = [
+    SleepQuality.VeryPoor,
+    SleepQuality.Poor,
+    SleepQuality.Okay,
+    SleepQuality.Well,
+    SleepQuality.VeryWell,
+  ];
 
-  private _fallAsleepTime: moment.Moment;
-  private _fallAsleepTimeMin: moment.Moment;
-  public get fallAsleepTime(): moment.Moment { return this._fallAsleepTime; }
-  public get fallAsleepTimeMin(): moment.Moment { return this._fallAsleepTimeMin; }
+  private _previousFallAsleepTime: moment.Moment;
+  private _previousFallAsleepTimeMin: moment.Moment;
+  public get previousFallAsleepTime(): moment.Moment { return this._previousFallAsleepTime; }
+  public get previousFallAsleepTimeMin(): moment.Moment { return this._previousFallAsleepTimeMin; }
 
 
   private _wakeupTime: moment.Moment;
@@ -53,95 +62,99 @@ export class SleepProfileWidgetComponent implements OnInit {
 
 
   ngOnInit() {
+    this.daybookService.activeDay$.subscribe((dayChanged) => {
+      this.reInitiate();
+    });
+  }
 
+
+  private reInitiate() {
+    this.sleepProfileIsSet = true;
     this._itemState = new ItemState(null);
 
-    if(this.daybookService.activeDay.sleepProfile.wakeupTimeISO){
-       this._wakeupTime = moment(this.daybookService.activeDay.sleepProfile.wakeupTimeISO);
-    }else{
+    let sleepProfile: DaybookDayItemSleepProfile = this.daybookService.activeDay.sleepProfile;
+
+    if(sleepProfile.sleepQuality){
+      this._sleepQuality = sleepProfile.sleepQuality;
+    }
+
+    if (sleepProfile.wakeupTimeISO) {
+      this._wakeupTime = moment(sleepProfile.wakeupTimeISO);
+    } else {
       this._wakeupTime = moment(this.daybookService.activeDay.dateYYYYMMDD).hour(7).minute(30);
       this.sleepProfileIsSet = false;
     }
     this._wakeupTimeMin = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(18).minute(0).second(0).millisecond(0);
-    if(this._wakeupTimeMin.isBefore(this.fallAsleepTime)){
-      this._wakeupTimeMin = moment(this.fallAsleepTime);
+    if (this._wakeupTimeMin.isBefore(this.previousFallAsleepTime)) {
+      this._wakeupTimeMin = moment(this.previousFallAsleepTime);
     }
 
 
-    if(this.daybookService.activeDay.previousDay.sleepProfile.fallAsleepTimeISO){
-      this._fallAsleepTime = moment(this.daybookService.activeDay.previousDay.sleepProfile.fallAsleepTimeISO);
-    }else{
-      this._fallAsleepTime = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(22).minute(30);
+    if (sleepProfile.previousFallAsleepTimeISO) {
+      this._previousFallAsleepTime = moment(sleepProfile.previousFallAsleepTimeISO);
+    } else {
+      this._previousFallAsleepTime = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(22).minute(30);
       this.sleepProfileIsSet = false;
     }
-    if(this.daybookService.activeDay.previousDay.timeReferencer.lastActionTime){
-      this._fallAsleepTimeMin = moment(this.daybookService.activeDay.previousDay.timeReferencer.lastActionTime);
-      if(this._fallAsleepTimeMin.isSameOrAfter(moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).endOf("day"))){
+    if (this.daybookService.activeDay.previousDay.timeReferencer.lastActionTime) {
+      this._previousFallAsleepTimeMin = moment(this.daybookService.activeDay.previousDay.timeReferencer.lastActionTime);
+      if (this._previousFallAsleepTimeMin.isSameOrAfter(moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).endOf("day"))) {
         // in this case, it would be after midnight, into this day
       }
     }
 
 
-    if(this.daybookService.activeDay.sleepProfile.bedtimeISO){
-      this._bedTime = moment(this.daybookService.activeDay.sleepProfile.bedtimeISO);
-    }else{
+    if (sleepProfile.bedtimeISO) {
+      this._bedTime = moment(sleepProfile.bedtimeISO);
+      console.log("Reinitiate, bedtime: ", this._bedTime.format("YYYY-MM-DD hh:mm a"))
+    } else {
       this._bedTime = moment(this.daybookService.activeDay.dateYYYYMMDD).hour(22).minute(30);
       this.sleepProfileIsSet = false;
     }
 
-    
+
 
     this._batteryConfiguration = {
-      fallAsleepTime: this._fallAsleepTime,
+      previousFallAsleepTime: this._previousFallAsleepTime,
       wakeupTime: this._wakeupTime,
       bedtime: this._bedTime,
     }
 
-
-    this.sleepQualityBeds = [
-      SleepQuality.VeryPoor,
-      SleepQuality.Poor,
-      SleepQuality.Okay,
-      SleepQuality.Well,
-      SleepQuality.VeryWell,
-    ];
-
-
-    this._sleepDuration = DurationString.calculateDurationString(this._fallAsleepTime, this._wakeupTime);
+    this._sleepDuration = DurationString.calculateDurationString(this._previousFallAsleepTime, this._wakeupTime);
   }
 
-  private timeInputsChanged(){
+  private timeInputsChanged() {
     this._wakeupTimeMin = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(18).minute(0).second(0).millisecond(0);
-    if(this._wakeupTimeMin.isBefore(this.fallAsleepTime)){
-      this._wakeupTimeMin = moment(this.fallAsleepTime);
+    if (this._wakeupTimeMin.isBefore(this.previousFallAsleepTime)) {
+      this._wakeupTimeMin = moment(this.previousFallAsleepTime);
     }
-    this._sleepDuration = DurationString.calculateDurationString(this._fallAsleepTime, this._wakeupTime);
+    this._sleepDuration = DurationString.calculateDurationString(this._previousFallAsleepTime, this._wakeupTime);
   }
 
 
-  public get clickFallAsleepTimeActive(): boolean{
-    if(this._fallAsleepTime.format("YYYY-MM-DD") == this.daybookService.activeDay.dateYYYYMMDD){
+  public get clickFallAsleepTimeActive(): boolean {
+    if (this._previousFallAsleepTime.format("YYYY-MM-DD") == this.daybookService.activeDay.dateYYYYMMDD) {
       return true;
-    }else{
-      if(this._wakeupTime.diff(this._fallAsleepTime, "hours") >= 24){
+    } else {
+      if (this._wakeupTime.diff(this._previousFallAsleepTime, "hours") >= 24) {
         return true;
       }
     }
     return false;
-  } 
-  public onClickfallAsleepTimeDay(){
-    if(this._fallAsleepTime.format("YYYY-MM-DD") == this.daybookService.activeDay.dateYYYYMMDD){
-      this._fallAsleepTime = moment(this._fallAsleepTime).subtract(1, "days");
-    }else{
-      if(this._wakeupTime.diff(this._fallAsleepTime, "hours") >= 24){
-        this._fallAsleepTime = moment(this._fallAsleepTime).add(1, "days");
+  }
+  public onClickpreviousFallAsleepTimeDay() {
+    if (this._previousFallAsleepTime.format("YYYY-MM-DD") == this.daybookService.activeDay.dateYYYYMMDD) {
+      this._previousFallAsleepTime = moment(this._previousFallAsleepTime).subtract(1, "days");
+    } else {
+      if (this._wakeupTime.diff(this._previousFallAsleepTime, "hours") >= 24) {
+        this._previousFallAsleepTime = moment(this._previousFallAsleepTime).add(1, "days");
       }
-      // this._fallAsleepTime = moment(this._fallAsleepTime).add(1, "days");
-      // if(this._fallAsleepTime.isAfter(this._wakeupTime)){
-      //   if(this.daybookService.activeDay.previousDay.sleepProfile.fallAsleepTimeISO){
-      //     this._fallAsleepTime = moment(this.daybookService.activeDay.previousDay.sleepProfile.fallAsleepTimeISO);
+      // this._previousFallAsleepTime = moment(this._previousFallAsleepTime).add(1, "days");
+      // if(this._previousFallAsleepTime.isAfter(this._wakeupTime)){
+      //   if(this.daybookService.activeDay.previousDay.sleepProfile.previousFallAsleepTimeISO){
+      //     this._previousFallAsleepTime = moment(this.daybookService.activeDay.previousDay.sleepProfile.previousFallAsleepTimeISO);
       //   }else{
-      //     this._fallAsleepTime = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(22).minute(30);
+      //     this._previousFallAsleepTime = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(22).minute(30);
       //   }
       // } 
     }
@@ -149,53 +162,68 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
 
-  public onFallAsleepTimeChanged(time: moment.Moment){
-    this._fallAsleepTime = moment(time);
+  public onFallAsleepTimeChanged(time: moment.Moment) {
+    this._previousFallAsleepTime = moment(time);
     this.timeInputsChanged();
   }
 
-  public onWakeupTimeChanged(time: moment.Moment){
+  public onWakeupTimeChanged(time: moment.Moment) {
     this._wakeupTime = moment(time);
     this.timeInputsChanged();
   }
 
-  public onBedTimeChanged(time: moment.Moment){
+  public onBedTimeChanged(time: moment.Moment) {
     this._bedTime = moment(time);
+    console.log("Bed time changed", this._bedTime.format("YYYY-MM-DD hh:mm a"))
     this.timeInputsChanged();
   }
 
-  public onClickSleepQuality(sleepQuality: SleepQuality){
+  public onClickSleepQuality(sleepQuality: SleepQuality) {
     this._sleepQuality = sleepQuality;
   }
 
-  public onClickSaveSleepTimes(){
+  public onClickSaveSleepTimes() {
     console.log("Saving");
-    this._itemState.reset();
+    let sleepProfile: DaybookDayItemSleepProfile = this.daybookService.activeDay.sleepProfile;
+
+    sleepProfile.sleepQuality = this._sleepQuality;
+
+    sleepProfile.previousFallAsleepTimeISO = this._previousFallAsleepTime.toISOString();
+    sleepProfile.previousFallAsleepTimeUtcOffsetMinutes = this._previousFallAsleepTime.utcOffset();
+
+    sleepProfile.wakeupTimeISO = this._wakeupTime.toISOString();
+    sleepProfile.wakeupTimeUtcOffsetMinutes = this._wakeupTime.utcOffset();
+
+    sleepProfile.bedtimeISO = this._bedTime.toISOString();
+    sleepProfile.bedtimeUtcOffsetMinutes = this._bedTime.utcOffset();
+
+    this.daybookService.activeDay.sleepProfile = sleepProfile;
+    this.reInitiate();
   }
 
-  public get fallAsleepDateTime(): string{
-    if(this._fallAsleepTime.format("YYYY-MM-DD") == this.daybookService.activeDay.dateYYYYMMDD){
-      if(this._fallAsleepTime.hour() < 12){
+  public get previousFallAsleepDateTime(): string {
+    if (this._previousFallAsleepTime.format("YYYY-MM-DD") == this.daybookService.activeDay.dateYYYYMMDD) {
+      if (this._previousFallAsleepTime.hour() < 12) {
         return "This morning at";
-      }else{
+      } else {
         return "Today at";
       }
-    }else if(this._fallAsleepTime.format("YYYY-MM-DD") == this.daybookService.activeDay.previousDay.dateYYYYMMDD){
-      if(this._fallAsleepTime.hour() > 18){
+    } else if (this._previousFallAsleepTime.format("YYYY-MM-DD") == this.daybookService.activeDay.previousDay.dateYYYYMMDD) {
+      if (this._previousFallAsleepTime.hour() > 18) {
         return "Yesterday evening at";
-      }else{
+      } else {
         return "Yesterday at";
       }
     }
     return "";
   }
-  public get wakeupDateTime(): string{
-    if(this._wakeupTime.format("YYYY-MM-DD") == this.daybookService.activeDay.previousDay.dateYYYYMMDD){
+  public get wakeupDateTime(): string {
+    if (this._wakeupTime.format("YYYY-MM-DD") == this.daybookService.activeDay.previousDay.dateYYYYMMDD) {
       return " for this day (yesterday)"
-    }else{
-      if(this._wakeupTime.hour() < 12){
+    } else {
+      if (this._wakeupTime.hour() < 12) {
         return "this morning";
-      }else{
+      } else {
         return "today";
       }
     }
@@ -221,17 +249,25 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
   public get sleepQualityString(): string {
-    if(this._sleepQuality){
+    if (this._sleepQuality) {
       return this._sleepQuality.toString();
-    }else{
+    } else {
       return "";
-    }   
+    }
+  }
+
+  public get activeDayIsToday(): boolean {
+    return this.daybookService.activeDayIsToday;
+  }
+
+  public get saveButtonDisabled(): boolean {
+    return (this._sleepQuality == null);
   }
 
 
 
-
   faBed = faBed;
+  faEdit = faEdit;
   faPlusCircle = faPlusCircle;
   faMinusCircle = faMinusCircle;
   faExclamationTriangle = faExclamationTriangle;

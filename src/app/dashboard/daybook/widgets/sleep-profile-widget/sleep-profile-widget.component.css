@@ -9,6 +9,12 @@
     flex-direction: column;
 }
 
+.complete-view{
+    display:flex;
+    flex-direction: row;
+    
+}
+
 
 .section-row{
     display:flex;

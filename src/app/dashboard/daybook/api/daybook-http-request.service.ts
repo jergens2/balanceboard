@@ -16,6 +16,19 @@ import { ActivityCategoryDefinitionService } from '../../activities/api/activity
 })
 export class DaybookHttpRequestService implements ServiceAuthenticates {
 
+  public killKillKill(){
+    const getUrl = serverUrl + "/api/daybook-day-item/kill-kill-kill";
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'  
+      })
+    };
+    this.httpClient.delete<{ message: string, data: any }>(getUrl, httpOptions).subscribe((response)=>{
+      console.log("Kill Kill Kill is complete");
+    })
+  }
+
   constructor(private httpClient: HttpClient, private activitiesService: ActivityCategoryDefinitionService) { }
   private _authStatus: AuthStatus = null;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);

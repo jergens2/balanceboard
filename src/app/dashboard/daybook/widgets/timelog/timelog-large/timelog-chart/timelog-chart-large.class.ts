@@ -236,7 +236,7 @@ export class TimelogChartLarge {
         this.buildDayStructureItems(timelogWindow);
         this.updateChartRowItemSubscriptions();
 
-        this.buildTimelogEntries()
+        this.buildTimelogEntries();
     }
 
     private buildTimelogEntries() {

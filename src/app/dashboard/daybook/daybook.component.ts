@@ -142,4 +142,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
   }
 
 
+  public onClickKillKillKill(){
+    console.log("This method is for destroying all daybookdayitems.")
+    this.daybookService.killKillKill()
+  }
+
 }

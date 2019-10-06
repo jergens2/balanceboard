@@ -4,6 +4,9 @@ export interface DaybookDayItemSleepProfile{
 
     sleepQuality: SleepQuality,
 
+    previousFallAsleepTimeISO: string,
+    previousFallAsleepTimeUtcOffsetMinutes: number,
+
     wakeupTimeISO: string,
     wakeupTimeUtcOffsetMinutes: number,
 
@@ -12,4 +15,5 @@ export interface DaybookDayItemSleepProfile{
 
     fallAsleepTimeISO: string,
     fallAsleepTimeUtcOffsetMinutes: number,
+
 }

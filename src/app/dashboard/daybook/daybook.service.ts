@@ -24,6 +24,10 @@ export class DaybookService implements ServiceAuthenticates {
     private dayTemplatesService: DayTemplatesService,
   ) { }
 
+  public killKillKill(){
+    this.daybookHttpRequestService.killKillKill();
+  }
+
   private _authStatus: AuthStatus;
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -75,6 +79,9 @@ export class DaybookService implements ServiceAuthenticates {
     return this._today$.getValue();
   }
 
+  public get activeDayIsToday(): boolean{
+    return this._activeDayYYYYMMDD == moment().format("YYYY-MM-DD");
+  }
 
   private _activeDayYYYYMMDD: string = moment().format("YYYY-MM-DD");
   private _activeDay$: BehaviorSubject<DaybookDayItem> = new BehaviorSubject(null);

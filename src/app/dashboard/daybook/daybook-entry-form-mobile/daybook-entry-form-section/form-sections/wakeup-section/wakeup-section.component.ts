@@ -20,7 +20,7 @@ export class WakeupSectionComponent implements OnInit {
 
   sleepTimesFormGroup: FormGroup;
 
-  
+
 
   sleepQualityBeds: any[] = [];
   private _sleepQuality: SleepQuality;
@@ -80,12 +80,12 @@ export class WakeupSectionComponent implements OnInit {
   }
 
   public get sleepQualityString(): string {
-    if(this._sleepQuality){
+    if (this._sleepQuality) {
       return this._sleepQuality.toString();
-    }else{
+    } else {
       return "";
     }
-    
+
   }
 
 
@@ -192,14 +192,19 @@ export class WakeupSectionComponent implements OnInit {
      * probably need to improve on this to avoid confusion and bugs
      */
 
+    console.log("Warning:  the following object is not configured properly, the previous and current fall asleep times are using the same value.")
     let sleepProfile: DaybookDayItemSleepProfile = {
-      fallAsleepTimeISO: this._fallAsleepTime.toISOString(),
-      fallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
+      previousFallAsleepTimeISO: this._fallAsleepTime.toISOString(),
+      previousFallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
+
       wakeupTimeISO: this._wakeupTime.toISOString(),
       wakeupTimeUtcOffsetMinutes: this._wakeupTime.utcOffset(),
       sleepQuality: this._sleepQuality,
       bedtimeISO: this.daybookEntryForm.sleepProfile.bedtimeISO,
       bedtimeUtcOffsetMinutes: this.daybookEntryForm.sleepProfile.bedtimeUtcOffsetMinutes,
+
+      fallAsleepTimeISO: this._fallAsleepTime.toISOString(),
+      fallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
     }
 
 
@@ -207,7 +212,7 @@ export class WakeupSectionComponent implements OnInit {
     this.formSection.title = this.wakeupTime + " wakeup";
     this.daybookEntryForm.onClickSaveSleepProfile(sleepProfile);
     this.formSection.onClickClose();
-    
+
   }
 
 

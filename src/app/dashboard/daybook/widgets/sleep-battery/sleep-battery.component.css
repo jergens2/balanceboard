@@ -99,14 +99,14 @@
 
 
 .lowest-quarter{
-    background-color: rgb(163, 0, 0);
+    background-color: rgba(163, 0, 0, 0.5);
 }
 .low-quarter{
-    background-color: rgb(238, 163, 0);
+    background-color: rgba(238, 163, 0, 0.5);
 }
 .high-quarter{
-    background-color: rgb(175, 228, 52);
+    background-color: rgba(175, 228, 52, 0.5);
 }
 .highest-quarter{
-    background-color: rgb(13, 212, 13);
+    background-color: rgba(13, 212, 13, 0.5);
 }

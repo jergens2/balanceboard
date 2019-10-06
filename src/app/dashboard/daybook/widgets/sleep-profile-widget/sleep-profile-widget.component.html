@@ -7,8 +7,19 @@
                     times</button>
             </div>
         </div>
-        <div *ngIf="sleepProfileIsSet" class="flex-column">
+        <div *ngIf="sleepProfileIsSet && activeDayIsToday" class="complete-view">
+
             <app-sleep-battery [configuration]="batteryConfiguration" [shape]="'LARGE'"></app-sleep-battery>
+            <div class="flex-column">
+                    <button class="medium-button" style="margin-left:auto;" (click)="itemState.startEditing()"><fa-icon [icon]="faEdit"></fa-icon></button>
+            </div>
+        </div>
+
+        <div *ngIf="sleepProfileIsSet && !activeDayIsToday" class="complete-view">
+
+            <div class="flex-column">
+                sleep dater
+            </div>
         </div>
 
     </div>
@@ -21,11 +32,11 @@
                 <div class="fall-asleep-date no-select"
                     [ngClass]="{'fall-asleep-date-active': clickFallAsleepTimeActive}"
                     (click)="onClickfallAsleepTimeDay()" style="margin-left: 10px;">
-                    {{ fallAsleepDateTime }}
+                    {{ previousFallAsleepDateTime }}
                 </div>
 
-                <app-time-input class="input-row" style="margin-left: 10px;" [timeValue]="fallAsleepTime"
-                    [minValue]="fallAsleepTimeMin" [maxValue]="wakeupTime"
+                <app-time-input class="input-row" style="margin-left: 10px;" [timeValue]="previousFallAsleepTime"
+                    [minValue]="previousFallAsleepTimeMin" [maxValue]="wakeupTime"
                     (timeChanged)="onFallAsleepTimeChanged($event)"></app-time-input>
             </div>
         </div>
@@ -44,7 +55,7 @@
         <div class="section-row">
             <div class="section-row-content">
                 <div style="font-size:0.8em;color:gray;">Sleep duration </div>
-                <div style="font-weight: bold;color:rgb(0, 14, 90);">{{ sleepDuration }}</div>
+                <div style="font-weight: bold;color:rgb(0, 14, 90);margin-left: 10px;">{{ sleepDuration }}</div>
 
             </div>
         </div>
@@ -60,13 +71,26 @@
                     </fa-icon>
 
                 </div>
-                <div style="font-weight: bold;color:rgb(0, 14, 90); margin-left: 10px;">
+                <div style="font-weight: bold;color:rgb(0, 14, 90); margin-left: 10px; height:24px;">
                     {{ sleepQualityString }}
                 </div>
             </div>
         </div>
+
+        <div class="section-row">
+            <div class="section-row-content">
+                <div style="font-size:0.8em;color:gray;margin-bottom:5px;">When is bedtime?</div>
+
+                <app-time-input class="input-row" style="margin-left: 10px;" [timeValue]="bedTime"
+                    (timeChanged)="onBedTimeChanged($event)"></app-time-input>
+
+            </div>
+        </div>
+
         <div class="section-row" style="margin-bottom:0px;">
-            <button class="medium-button" style="margin-left:auto;" (click)="onClickSaveSleepTimes()">Save sleep times</button>
+            <button class="medium-button" style="margin-left:auto;" (click)="onClickSaveSleepTimes()"
+                [ngClass]="{'button-disabled': saveButtonDisabled}"
+                [disabled]="saveButtonDisabled ? 'disabled' : ''">Save sleep times</button>
         </div>
     </div>
 

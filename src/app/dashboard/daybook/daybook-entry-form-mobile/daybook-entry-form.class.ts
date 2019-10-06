@@ -337,7 +337,7 @@ export class DaybookEntryForm {
 
     private updateBatteryConfiguration() {
         let batteryConfiguration: SleepBatteryConfiguration = {
-            fallAsleepTime: this.bedtime.subtract(1, "days"),
+            previousFallAsleepTime: this.bedtime.subtract(1, "days"),
             wakeupTime: this.wakeupTime,
             bedtime: this.bedtime,
         }

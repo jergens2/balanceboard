@@ -81,6 +81,12 @@ export class SleepBatteryComponent implements OnInit {
     let totalDayDurationMinutes: number = moment(this.bedtime).diff(this.wakeupTime, "minutes");
     this._percentage = (1 - (awakeForMinutes / totalDayDurationMinutes)) * 100;
 
+    console.log("Battery:  bedtime:    " , this.bedtime.format("YYYY-MM-DD hh:mm a"));
+    console.log("Battery:  wakeuptime: " , this.wakeupTime.format("YYYY-MM-DD hh:mm a"))
+    console.log("Battery:  awake for (min): " + awakeForMinutes, " total duration (min): ", totalDayDurationMinutes, " percentage: ", this._percentage )
+
+
+
     let colorNgClass: string[] = [];
     if (this._percentage < 25) {
       colorNgClass = ["lowest-quarter"];
