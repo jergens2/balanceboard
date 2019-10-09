@@ -1,0 +1,6 @@
+.timelog-body-root{
+    border: 1px solid red;
+    flex-grow: 2;
+    display:flex;
+    flex-direction: column;
+}

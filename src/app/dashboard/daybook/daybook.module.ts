@@ -33,6 +33,7 @@ import { BedtimeSectionComponent } from './daybook-entry-form-mobile/daybook-ent
 import { DaybookEntryFormSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/daybook-entry-form-section.component';
 import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-entry/timelog-entry.component';
 import { SleepProfileWidgetComponent } from './widgets/sleep-profile-widget/sleep-profile-widget.component';
+import { TimelogBodyComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-body.component';
 
 
 @NgModule({
@@ -70,6 +71,7 @@ import { SleepProfileWidgetComponent } from './widgets/sleep-profile-widget/slee
     DaybookEntryFormSectionComponent,
     TimelogEntryComponent,
     SleepProfileWidgetComponent,
+    TimelogBodyComponent,
   ],
   exports: [
     DaybookEntryFormComponent,

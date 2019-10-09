@@ -1,0 +1,9 @@
+<div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()" (mouseleave)="itemState.onMouseLeave()"
+    (mousemove)="onMouseMove($event)">
+    <div style="width: 200px; height: 100%; display:grid; grid-template-columns: auto;" [ngStyle]="leRows">
+        <div style="background-color: rgba(0, 89, 255, 0.158); width: 200px;">le time:
+            {{ leTime.format('h:mm a') }} {{ lePosition['margin-top'] }}</div>
+    </div>
+
+
+</div>

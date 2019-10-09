@@ -4,6 +4,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+import { RelativeMousePosition } from '../../shared/utilities/relative-mouse-position.class';
 
 
 @Component({
@@ -17,7 +18,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   faHome = faHome;
 
+  thing: RelativeMousePosition;
+
   ngOnInit() {
+    this.thing = new RelativeMousePosition();
     
   }
 
@@ -25,5 +29,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
 
+  onMouseOver(event: MouseEvent){
+
+  }
 
 }
