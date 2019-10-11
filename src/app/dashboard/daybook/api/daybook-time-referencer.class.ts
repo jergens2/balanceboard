@@ -59,30 +59,30 @@ export class DaybookTimeReferencer{
 
     public get wakeupTime(): moment.Moment{
         if(this.sleepProfile != null){
-            if(this.sleepProfile.wakeupTimeISO != null){
+            if(!(this.sleepProfile.wakeupTimeISO == null || this.sleepProfile.wakeupTimeISO == "") ){
                 return moment(this.sleepProfile.wakeupTimeISO);
             }
         }
-        console.log("Returning default wakeupTime value");
+        // console.log("Returning default wakeupTime value");
         return moment(this.dateYYYYMMDD).hour(DaybookTimeReferencer.defaultWakeupTime.hour()).minute(DaybookTimeReferencer.defaultWakeupTime.minute()).second(0).millisecond(0);
     }
     public get bedtime(): moment.Moment{
         if(this.sleepProfile != null){
-            if(this.sleepProfile.bedtimeISO != null){
+            if(!(this.sleepProfile.bedtimeISO == null || this.sleepProfile.bedtimeISO == "") ){
                 return moment(this.sleepProfile.bedtimeISO);
             }
         }
-        console.log("Returning default wakeupTime value");
+        // console.log("Returning default wakeupTime value");
         return moment(this.dateYYYYMMDD).hour(DaybookTimeReferencer.defaultBedtime.hour()).minute(DaybookTimeReferencer.defaultBedtime.minute()).second(0).millisecond(0);
     
     }
     public get fallAsleepTime(): moment.Moment{
         if(this.sleepProfile != null){
-            if(this.sleepProfile.fallAsleepTimeISO != null){
+            if(!(this.sleepProfile.fallAsleepTimeISO == null || this.sleepProfile.fallAsleepTimeISO == "") ){
                 return moment(this.sleepProfile.fallAsleepTimeISO);
             }
         }
-        console.log("Returning default wakeupTime value");
+        // console.log("Returning default wakeupTime value");
         // as of now, the fall asleep time and bed time will be the same value, even though ultimately i would like to distinguish between the 2 variables to get a more accurate sleep profile.
         return moment(this.dateYYYYMMDD).hour(DaybookTimeReferencer.defaultBedtime.hour()).minute(DaybookTimeReferencer.defaultBedtime.minute()).second(0).millisecond(0);
     

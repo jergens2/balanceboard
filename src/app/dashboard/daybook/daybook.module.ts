@@ -34,6 +34,7 @@ import { DaybookEntryFormSectionComponent } from './daybook-entry-form-mobile/da
 import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-entry/timelog-entry.component';
 import { SleepProfileWidgetComponent } from './widgets/sleep-profile-widget/sleep-profile-widget.component';
 import { TimelogBodyComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-body.component';
+import { TimelogZoomControllerComponent } from './widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-controller.component';
 
 
 @NgModule({
@@ -72,6 +73,7 @@ import { TimelogBodyComponent } from './widgets/timelog/timelog-large/timelog-bo
     TimelogEntryComponent,
     SleepProfileWidgetComponent,
     TimelogBodyComponent,
+    TimelogZoomControllerComponent,
   ],
   exports: [
     DaybookEntryFormComponent,

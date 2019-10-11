@@ -1,0 +1,6 @@
+<div class="zoom-controller-root" (mouseenter)="itemState.onMouseEnter()" (mouseleave)="itemState.onMouseLeave()">
+    <div *ngFor="let zoomButton of zoomButtons" class="zoom-button" [ngClass]="zoomButton.ngClass" (click)="onClickButton(zoomButton)" (mouseenter)="onZoomHover(zoomButton)">
+        <fa-icon *ngIf="zoomButton.icon" [icon]="zoomButton.icon"></fa-icon>
+        <div *ngIf="!zoomButton.icon && zoomButton.name">{{ zoomButton.name }}</div>
+    </div>
+</div>

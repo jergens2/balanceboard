@@ -25,6 +25,7 @@ export class DaybookService implements ServiceAuthenticates {
   ) { }
 
   public killKillKill(){
+    console.log(" Kill kill kill ")
     this.daybookHttpRequestService.killKillKill();
   }
 
@@ -69,7 +70,11 @@ export class DaybookService implements ServiceAuthenticates {
 
 
 
-  private _clock: moment.Moment;
+  private _clock$: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
+  public get clock$(): Observable<moment.Moment> { return this._clock$.asObservable(); }
+  public get clock(): moment.Moment { return this._clock$.getValue(); }
+  private set _clock(time: moment.Moment){ this._clock$.next(time); }
+
   private _todayYYYYMMDD: string = moment().format("YYYY-MM-DD");
   private _today$: BehaviorSubject<DaybookDayItem> = new BehaviorSubject(null);
   public get today$(): Observable<DaybookDayItem> {
@@ -109,12 +114,12 @@ export class DaybookService implements ServiceAuthenticates {
     this._clock = moment();
     this.clockSubscription = timer(0, 1000).subscribe((second) => {
       this._clock = moment();
-      if (this._clock.format("YYYY-MM-DD") != this._todayYYYYMMDD) {
+      if (this.clock.format("YYYY-MM-DD") != this._todayYYYYMMDD) {
         console.log("Its not the same day.  we passed midnight")
-        this.updateTodayAndActiveDay(this._clock);
+        this.updateTodayAndActiveDay(this.clock);
       }
     });
-    this.updateTodayAndActiveDay(this._clock);
+    this.updateTodayAndActiveDay(this.clock);
   }
 
   private updateTodayAndActiveDay(time: moment.Moment) {
@@ -169,6 +174,7 @@ export class DaybookService implements ServiceAuthenticates {
     }
     // console.log("Daybook service login is complete.")
     this._loginComplete$.next(true);
+    this.updateIsPastMidnight();
   }
 
   private getDaybookDayItemByDate(dateYYYYMMDD: string): DaybookDayItem {   
@@ -237,6 +243,16 @@ export class DaybookService implements ServiceAuthenticates {
      * When this happens, we need to ensure that the active day and following days have proper scheduled activity items.
      */
   }
+
+  private updateIsPastMidnight(){
+    let isAfterMidnight: boolean = false;
+    
+
+    this._isAfterMidnight = isAfterMidnight;
+  }
+
+  private _isAfterMidnight: boolean = false;
+  public get isAfterMidnight(): boolean { return this._isAfterMidnight; }
 
 
 }

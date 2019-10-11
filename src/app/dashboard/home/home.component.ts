@@ -29,8 +29,5 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
 
-  onMouseOver(event: MouseEvent){
-
-  }
 
 }

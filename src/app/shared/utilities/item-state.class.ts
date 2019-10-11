@@ -103,12 +103,13 @@ export class ItemState {
 
 
 
-    private _mouseIsOver: boolean = false;
-    public get mouseIsOver(): boolean { return this._mouseIsOver; }
+    private _mouseIsOver$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    public get mouseIsOver(): boolean { return this._mouseIsOver$.getValue(); }
+    public get mouseIsOver$(): Observable<boolean> { return this._mouseIsOver$.asObservable(); }
     public onMouseEnter() {
-        this._mouseIsOver = true;
+        this._mouseIsOver$.next(true);
     }
     public onMouseLeave() {
-        this._mouseIsOver = false;
+        this._mouseIsOver$.next(false);
     }
 }

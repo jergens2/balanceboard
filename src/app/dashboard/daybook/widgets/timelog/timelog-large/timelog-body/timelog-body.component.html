@@ -1,9 +1,30 @@
-<div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()" (mouseleave)="itemState.onMouseLeave()"
-    (mousemove)="onMouseMove($event)">
-    <div style="width: 200px; height: 100%; display:grid; grid-template-columns: auto;" [ngStyle]="leRows">
-        <div style="background-color: rgba(0, 89, 255, 0.158); width: 200px;">le time:
-            {{ leTime.format('h:mm a') }} {{ lePosition['margin-top'] }}</div>
+<div class="timelog-body-grid-container no-select">
+    <div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()"
+        (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)" [ngStyle]="timelogBodyNgStyle">
+
+
+        <div class="guide-line-hours">
+            <div *ngFor="let hour of guideLineHours" class="guide-line-hour" [ngStyle]="hour.ngStyle">
+                <div class="guide-line-hour-label">
+                    {{ hour.label }}
+                </div>
+                <div class="guide-line-hour-line" [ngStyle]="hour.lineNgStyle"></div>
+            </div>
+        </div>
+
+        <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
+            <div></div>
+            <div class="mouse-position-time-label-container">
+                <div class="mouse-position-time-label">
+                    {{ mousePosition.time.format('h:mm a')}}
+                </div>
+                <div style="height:1px; border-top: 1px solid red; flex-grow:2;"></div>
+            </div>
+        </div>
+
+        <div class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
+
+        </div>
+
     </div>
-
-
 </div>
