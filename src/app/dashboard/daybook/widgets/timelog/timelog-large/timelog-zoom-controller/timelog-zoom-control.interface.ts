@@ -2,7 +2,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import * as moment from 'moment';
 import { ItemState } from "../../../../../../shared/utilities/item-state.class";
 
-export interface TimelogZoomButton{
+export interface TimelogZoomControl{
     icon: IconDefinition;
     isActive: boolean;
     isFirst: boolean;

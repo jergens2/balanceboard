@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { TimelogZoomButton } from './timelog-zoom-button.interface';
+import { TimelogZoomControl } from './timelog-zoom-control.interface';
 import { DaybookService } from '../../../../daybook.service';
 import { faWrench, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
@@ -17,9 +17,9 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
   constructor(private daybookService: DaybookService) { }
 
-  private _currentZoomLevel: TimelogZoomButton;
-  @Output() zoomLevel: EventEmitter<TimelogZoomButton> = new EventEmitter();
-  @Output() zoomHover: EventEmitter<TimelogZoomButton> = new EventEmitter();
+  private _currentZoomLevel: TimelogZoomControl;
+  @Output() zoomLevel: EventEmitter<TimelogZoomControl> = new EventEmitter();
+  @Output() zoomHover: EventEmitter<TimelogZoomControl> = new EventEmitter();
 
   ngOnInit() {
 
@@ -113,14 +113,14 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   private _itemState: ItemState = new ItemState(null);
   public get itemState(): ItemState { return this._itemState; }
 
-  private _wakeCycleZoom: TimelogZoomButton;
-  private _twentyFourHourZoom: TimelogZoomButton;
-  private _eightHourZoom: TimelogZoomButton;
-  private _customZoom: TimelogZoomButton;
+  private _wakeCycleZoom: TimelogZoomControl;
+  private _twentyFourHourZoom: TimelogZoomControl;
+  private _eightHourZoom: TimelogZoomControl;
+  private _customZoom: TimelogZoomControl;
 
 
   private buildZoomButtons(currentTime: moment.Moment) {
-    let zoomButtons: TimelogZoomButton[] = [];
+    let zoomButtons: TimelogZoomControl[] = [];
 
 
 
@@ -135,8 +135,8 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       isActive: twentyFourHourZoomActive,
       isFirst: true,
       isLast: false,
-      startTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day"),
-      endTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day").add(24, "hours"),
+      startTime: moment(currentTime).startOf("day"),
+      endTime: moment(currentTime).startOf("day").add(24, "hours"),
       itemState: new ItemState(null),
     };
 
@@ -157,21 +157,37 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       isActive: customZoomActive,
       isFirst: false,
       isLast: true,
-      startTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day"),
-      endTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day").add(24, "hours"),
+      startTime: moment(currentTime).startOf("day"),
+      endTime: moment(currentTime).startOf("day").add(24, "hours"),
       itemState: new ItemState(null),
     };
 
+    if(twentyFourHourZoomActive){
+      this._currentZoomLevel = this._twentyFourHourZoom;
+    }else if(eightHourZoomActive){
+      this._currentZoomLevel = this._eightHourZoom;
+    }else if(customZoomActive){ 
+      this._currentZoomLevel = this._customZoom;
+    }
+
     zoomButtons.push(this._twentyFourHourZoom);
     zoomButtons.push(this._wakeCycleZoom);
-    zoomButtons.push(this._eightHourZoom);
-    zoomButtons.push(this._customZoom);
+    if(this.daybookService.activeDayIsToday){
+      zoomButtons.push(this._eightHourZoom);
+      zoomButtons.push(this._customZoom);
+    }else{
+      this._wakeCycleZoom.isLast = true;
+      if(this._currentZoomLevel.name != this._twentyFourHourZoom.name && this._currentZoomLevel.name != this._wakeCycleZoom.name){
+        this._wakeCycleZoom.isActive = true;
+        this._currentZoomLevel = this._wakeCycleZoom;
+      }
+    }
 
     this._zoomButtons = zoomButtons;
     this.zoomLevel.emit(this._currentZoomLevel);
   }
 
-  public onClickButton(clickedButton: TimelogZoomButton) {
+  public onClickButton(clickedButton: TimelogZoomControl) {
     this._zoomButtons.forEach((button) => {
       if (button.name === clickedButton.name) {
         button.isActive = true;
@@ -182,13 +198,13 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     this._currentZoomLevel = clickedButton;
     this.zoomLevel.emit(this._currentZoomLevel);
   }
-  public onZoomHover(button: TimelogZoomButton) {
+  public onZoomHover(button: TimelogZoomControl) {
     this.zoomHover.emit(button);
   }
 
 
-  private _zoomButtons: TimelogZoomButton[] = [];
-  public get zoomButtons(): TimelogZoomButton[] { return this._zoomButtons; }
+  private _zoomButtons: TimelogZoomControl[] = [];
+  public get zoomButtons(): TimelogZoomControl[] { return this._zoomButtons; }
 
 
   faMoon = faMoon;

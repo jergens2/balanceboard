@@ -6,15 +6,13 @@ import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.in
 import { Subject, Observable, scheduled, timer } from "rxjs";
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import * as moment from 'moment';
-import { DayStructureSleepCycleAction } from "./data-items/day-structure-sleep-cycle-action.enum";
-import { TimelogWindow } from "../widgets/timelog/timelog-large/timelog-chart/timelog-window.interface";
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
 import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
-import { SleepQuality } from "../daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum";
 import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
 import { ActivityTree } from "../../activities/api/activity-tree.class";
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
 import { DaybookTimeReferencer } from "./daybook-time-referencer.class";
+
 
 export class DaybookDayItem{
 
@@ -157,6 +155,7 @@ export class DaybookDayItem{
     public get scheduledEventIds(): string[] { return this.httpShape.scheduledEventIds; }
     public get notebookEntryIds(): string[] { return this.httpShape.notebookEntryIds; }
     public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
+
 
 
 

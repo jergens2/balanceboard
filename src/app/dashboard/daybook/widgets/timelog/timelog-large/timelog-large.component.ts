@@ -5,7 +5,7 @@ import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-tim
 import * as moment from 'moment';
 import { DayStructureDataItem } from '../../../api/data-items/day-structure-data-item.interface';
 import { DaybookService } from '../../../daybook.service';
-import { TimelogZoomButton } from './timelog-zoom-controller/timelog-zoom-button.interface';
+import { TimelogZoomControl } from './timelog-zoom-controller/timelog-zoom-control.interface';
 
 @Component({
   selector: 'app-timelog-large',
@@ -40,16 +40,16 @@ export class TimelogLargeComponent implements OnInit {
   }
 
 
-  public onZoomChanged(zoomButton: TimelogZoomButton){
+  public onZoomChanged(zoomButton: TimelogZoomControl){
     this._zoom = zoomButton;
   }
-  public onZoomHover(zoomButton: TimelogZoomButton){
+  public onZoomHover(zoomButton: TimelogZoomControl){
     this._zoomHover = zoomButton;
   }
 
-  private _zoomHover: TimelogZoomButton = null;
-  public get zoomHover(): TimelogZoomButton{ return this._zoomHover; }
-  private _zoom: TimelogZoomButton = { 
+  private _zoomHover: TimelogZoomControl = null;
+  public get zoomHover(): TimelogZoomControl{ return this._zoomHover; }
+  private _zoom: TimelogZoomControl = { 
     icon: null,
     name: "AWAKE",
     isActive: true,
@@ -59,7 +59,7 @@ export class TimelogLargeComponent implements OnInit {
     startTime: moment(this.daybookService.activeDay.wakeupTime), 
     endTime: moment(this.daybookService.activeDay.bedtime) 
   };
-  public get zoom(): TimelogZoomButton { return this._zoom; }
+  public get zoom(): TimelogZoomControl { return this._zoom; }
 
   faCog = faCog;
   faEye = faEye;

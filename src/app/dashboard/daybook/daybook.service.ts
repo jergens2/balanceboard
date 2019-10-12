@@ -24,7 +24,7 @@ export class DaybookService implements ServiceAuthenticates {
     private dayTemplatesService: DayTemplatesService,
   ) { }
 
-  public killKillKill(){
+  public killKillKill() {
     console.log(" Kill kill kill ")
     this.daybookHttpRequestService.killKillKill();
   }
@@ -46,7 +46,7 @@ export class DaybookService implements ServiceAuthenticates {
         this.initiateClock();
       }
     }));
-    this._allSubscriptions.push(this.activitiesService.activitiesTree$.subscribe((changedTree)=>{
+    this._allSubscriptions.push(this.activitiesService.activitiesTree$.subscribe((changedTree) => {
       this.updateActivityItems(changedTree);
     }));
 
@@ -73,7 +73,7 @@ export class DaybookService implements ServiceAuthenticates {
   private _clock$: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
   public get clock$(): Observable<moment.Moment> { return this._clock$.asObservable(); }
   public get clock(): moment.Moment { return this._clock$.getValue(); }
-  private set _clock(time: moment.Moment){ this._clock$.next(time); }
+  private set _clock(time: moment.Moment) { this._clock$.next(time); }
 
   private _todayYYYYMMDD: string = moment().format("YYYY-MM-DD");
   private _today$: BehaviorSubject<DaybookDayItem> = new BehaviorSubject(null);
@@ -84,7 +84,7 @@ export class DaybookService implements ServiceAuthenticates {
     return this._today$.getValue();
   }
 
-  public get activeDayIsToday(): boolean{
+  public get activeDayIsToday(): boolean {
     return this._activeDayYYYYMMDD == moment().format("YYYY-MM-DD");
   }
 
@@ -177,7 +177,7 @@ export class DaybookService implements ServiceAuthenticates {
     this.updateIsPastMidnight();
   }
 
-  private getDaybookDayItemByDate(dateYYYYMMDD: string): DaybookDayItem {   
+  private getDaybookDayItemByDate(dateYYYYMMDD: string): DaybookDayItem {
     let foundDaybookDayItem: DaybookDayItem = this._daybookDayItems$.getValue().find((daybookDayItem: DaybookDayItem) => {
       return daybookDayItem.dateYYYYMMDD == dateYYYYMMDD;
     });
@@ -213,7 +213,7 @@ export class DaybookService implements ServiceAuthenticates {
     daybookDayItem.sleepStructureDataItems = this.scheduleRotationService.getSleepCycleItemsForDate(dateYYYYMMDD);
     daybookDayItem.setScheduledActivityItems(this.activitiesService.activitiesTree.buildScheduledActivityItemsOnDate(dateYYYYMMDD), this.activitiesService.activitiesTree);
 
-    
+
     // console.log("Structure items: ", daybookDayItem.dayStructureDataItems)
 
 
@@ -236,7 +236,7 @@ export class DaybookService implements ServiceAuthenticates {
 
   }
 
-  updateActivityItems(changedTree){
+  updateActivityItems(changedTree) {
     console.log("Method not implemented: update activity tree");
     /**
      * This method runs any time the activity tree changes.
@@ -244,16 +244,27 @@ export class DaybookService implements ServiceAuthenticates {
      */
   }
 
-  private updateIsPastMidnight(){
-    let isAfterMidnight: boolean = false;
-    if(this.clock.hour() >= 0 && this.clock.hour() <= 6){
-      isAfterMidnight = true;
+  private updateIsPastMidnight() {
+    /**
+     * This method needs to be improved, right now it works adequately for functional purposes but needs to account for other variables eventually.
+     * For example, maybe a person's day is defined as 3pm to 8am, for night-shift related reasons or whatever reason, and so in that case
+     * what happens if it's 7:30 am and they have yet to go to bed?  In that case, we need to account for this circumstance
+     */
+
+    if(this.activeDayIsToday){
+      let isAfterMidnight: boolean = false;
+      if (this.clock.hour() >= 0 && this.clock.hour() <= 6) {
+        isAfterMidnight = true;
+      }
+      this._isAwakeAfterMidnight = isAfterMidnight;
+    }else{
+      this._isAwakeAfterMidnight = false;
     }
-    this._isAfterMidnight = isAfterMidnight;
+    
   }
 
-  private _isAfterMidnight: boolean = false;
-  public get isAfterMidnight(): boolean { return this._isAfterMidnight; }
+  private _isAwakeAfterMidnight: boolean = false;
+  public get isAwakeAfterMidnight(): boolean { return this._isAwakeAfterMidnight; }
 
 
 }

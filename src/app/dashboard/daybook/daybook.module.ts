@@ -31,10 +31,11 @@ import { WakeupSectionComponent } from './daybook-entry-form-mobile/daybook-entr
 import { DaySectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/time-of-day-section/time-of-day-section.component';
 import { BedtimeSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/bedtime-section/bedtime-section.component';
 import { DaybookEntryFormSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/daybook-entry-form-section.component';
-import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-entry/timelog-entry.component';
+import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-entry-DELETE/timelog-entry.component';
 import { SleepProfileWidgetComponent } from './widgets/sleep-profile-widget/sleep-profile-widget.component';
 import { TimelogBodyComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-body.component';
 import { TimelogZoomControllerComponent } from './widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-controller.component';
+import { WeightLogEntryComponent } from './widgets/weight-log-entry/weight-log-entry.component';
 
 
 @NgModule({
@@ -74,6 +75,7 @@ import { TimelogZoomControllerComponent } from './widgets/timelog/timelog-large/
     SleepProfileWidgetComponent,
     TimelogBodyComponent,
     TimelogZoomControllerComponent,
+    WeightLogEntryComponent,
   ],
   exports: [
     DaybookEntryFormComponent,

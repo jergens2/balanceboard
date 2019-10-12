@@ -4,9 +4,12 @@ import { RelativeMousePosition } from '../../../../../../shared/utilities/relati
 import * as moment from 'moment';
 import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
 import { DaybookService } from '../../../../daybook.service';
-import { TimelogZoomButton } from '../timelog-zoom-controller/timelog-zoom-button.interface';
+import { TimelogZoomControl } from '../timelog-zoom-controller/timelog-zoom-control.interface';
 import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
+import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
+import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { Timelog } from '../../timelog.class';
 
 @Component({
   selector: 'app-timelog-body',
@@ -18,36 +21,41 @@ export class TimelogBodyComponent implements OnInit {
   constructor(private daybookService: DaybookService) { }
 
 
+  private _zoomControl: TimelogZoomControl;
 
-  @Input() public set zoom(zoom: TimelogZoomButton) {
-    this._startTime = moment(zoom.startTime);
-    this._endTime = moment(zoom.endTime);
+  @Input() public set zoom(zoomControl: TimelogZoomControl) {
+    /**
+     * The zoom controller subscribes to the activeDay$ changes in daybookService, 
+     * therefore we don't need to do that here, we can just update the variable when this zoom input changes.
+     */
+    this._zoomControl = zoomControl;
     console.log("Zoom changed")
-    // console.log("Start time, end time: ", this._startTime.format('hh:mm a'), this._endTime.format('hh:mm a'));
+    
     this.buildTimelog();
   }
 
-  @Input() public set zoomHover(zoom: TimelogZoomButton) {
+  @Input() public set zoomHover(zoom: TimelogZoomControl) {
     console.log("hovering over zoom: ", zoom);
   }
 
 
+  private _activeDay: DaybookDayItem;
+
   ngOnInit() {
-    // this.daybookService.activeDay$.subscribe((activeDayChanged) => {
-    //   this.buildTimelog();
-    // });
+
   }
 
   private buildTimelog() {
-    console.log("Building timelog")
+    this._activeDay = this.daybookService.activeDay;
+    console.log("Timelog: Active day is: " , this._activeDay.dateYYYYMMDD);
     this.buildGuideLineHours();
     this.updateNowLine();
-    this.updateTimelogEntryItems();
+    this.updateTimelog();
   }
 
   private buildGuideLineHours() {
     let guideLineHours: { label: string, ngStyle: any, lineNgStyle: any }[] = [];
-    let startTime: moment.Moment = moment(this._startTime);
+    let startTime: moment.Moment = moment(this.startTime);
     if (!(startTime.minute() == 0 || startTime.minute() == 30)) {
       if (startTime.minute() >= 0 && startTime.minute() < 30) {
         startTime = moment(startTime).startOf("hour")
@@ -55,7 +63,7 @@ export class TimelogBodyComponent implements OnInit {
         startTime = moment(startTime).startOf("hour").add(30, "minutes");
       }
     }
-    let endTime: moment.Moment = moment(this._endTime);
+    let endTime: moment.Moment = moment(this.endTime);
 
     if (!(endTime.minute() == 0 || endTime.minute() == 30)) {
       if (endTime.minute() >= 0 && endTime.minute() < 30) {
@@ -92,9 +100,9 @@ export class TimelogBodyComponent implements OnInit {
 
   private updateNowLine() {
     let now: moment.Moment = moment();
-    if (now.isSameOrAfter(this._startTime) && now.isSameOrBefore(this._endTime)) {
-      let totalDurationSeconds: number = this._endTime.diff(this._startTime, "seconds");
-      let secondsFromStart: number = now.diff(this._startTime, "seconds");
+    if (now.isSameOrAfter(this.startTime) && now.isSameOrBefore(this.endTime)) {
+      let totalDurationSeconds: number = this.endTime.diff(this.startTime, "seconds");
+      let secondsFromStart: number = now.diff(this.startTime, "seconds");
       let percentFromStart: number = (secondsFromStart / totalDurationSeconds) * 100;
       let percentRemaining: number = 100-percentFromStart;
       let ngStyle: any = { "grid-template-rows": percentFromStart.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
@@ -104,21 +112,23 @@ export class TimelogBodyComponent implements OnInit {
     }
   }
 
-  private updateTimelogEntryItems() {
-    let containerStyle: any = {};
 
-    let times: moment.Moment[] = [];
-    let currentTime: moment.Moment = moment(this._startTime);
-    times.push(currentTime);
+  private _timelog: Timelog = null;
+  public get timelog(): Timelog{ return this._timelog; }
 
-    this._timelogEntryItemsNgStyle = containerStyle;
+  public get timelogEntryItemsNgStyle(): any { return this._timelog.entryItemsNgStyle; }
+  public get timelogEntryItems(): TimelogEntryItem[] { return this._timelog.entryItems; }
+
+  private updateTimelog() {
+    let timelog: Timelog = new Timelog(this._zoomControl, this.daybookService.clock, this._activeDay);
+    this._timelog = timelog;
   }
 
-  private _startTime: moment.Moment = moment();
-  private _endTime: moment.Moment = moment();
+  // private _startTime: moment.Moment = moment();
+  // private _endTime: moment.Moment = moment();
 
-  public get startTime(): moment.Moment { return this._startTime; }
-  public get endTime(): moment.Moment { return this._endTime; }
+  public get startTime(): moment.Moment { return this._zoomControl.startTime; }
+  public get endTime(): moment.Moment { return this._zoomControl.endTime; }
 
   private _itemState: ItemState = new ItemState(null);
   public get itemState(): ItemState { return this._itemState; }
@@ -135,16 +145,14 @@ export class TimelogBodyComponent implements OnInit {
     this._mousePosition = null;
   }
 
-
-
   private updateMousePosition() {
     let percentY: number = this.relativeMousePosition.percentY;
-    let totalDurationSeconds: number = this._endTime.diff(this._startTime, "seconds");
+    let totalDurationSeconds: number = this.endTime.diff(this.startTime, "seconds");
     let relativeSeconds: number = (percentY * totalDurationSeconds) / 100;
     let percentRemaining: number = 100 - percentY;
     let ngStyle: any = { "grid-template-rows": percentY.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
-    let time: moment.Moment = moment(this._startTime).add(relativeSeconds, "seconds");
-    time = RoundToNearestMinute.roundToNearestMinute(moment(this._startTime).add(relativeSeconds, "seconds"), 5);
+    let time: moment.Moment = moment(this.startTime).add(relativeSeconds, "seconds");
+    time = RoundToNearestMinute.roundToNearestMinute(moment(this.startTime).add(relativeSeconds, "seconds"), 5);
     this._mousePosition = { time: time, ngStyle: ngStyle };
   }
 
@@ -154,16 +162,13 @@ export class TimelogBodyComponent implements OnInit {
   private _nowLine: { time: moment.Moment, ngStyle: any } = null;
   public get nowLine(): { time: moment.Moment, ngStyle: any } { return this._nowLine; };
 
-  private _timelogBodyNgStyle: any = {};
-  public get timelogBodyNgStyle(): any { return this._timelogBodyNgStyle; }
+
+
 
   private _guideLineHours: any[] = [];
   public get guideLineHours(): any[] { return this._guideLineHours; }
 
-  private _timelogEntryItemsNgStyle: any = { "grid-template-rows": "100%" };
-  public get timelogEntryItemsNgStyle(): any { return this._timelogEntryItemsNgStyle; }
 
-  private _timelogEntryItems: TimelogEntryItem[] = [];
-  public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
+
 
 }

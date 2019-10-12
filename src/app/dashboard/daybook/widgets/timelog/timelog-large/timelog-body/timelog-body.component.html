@@ -34,7 +34,7 @@
 
         
 
-        <div class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
+        <div *ngIf="timelog" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
             <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems"></app-timelog-entry>
         </div>
 
