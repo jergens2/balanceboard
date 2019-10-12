@@ -5,6 +5,7 @@ import { DaybookService } from '../../../../daybook.service';
 import { faWrench, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
+import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
 
 @Component({
   selector: 'app-timelog-zoom-controller',
@@ -15,17 +16,21 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
   constructor(private daybookService: DaybookService) { }
 
+  private _currentZoomLevel: TimelogZoomButton;
   @Output() zoomLevel: EventEmitter<TimelogZoomButton> = new EventEmitter();
   @Output() zoomHover: EventEmitter<TimelogZoomButton> = new EventEmitter();
 
   ngOnInit() {
-    this.buildZoomButtons();
-    this.onClickButton(this.defaultZoom);
+    this._currentZoomLevel = this._defaultZoom;
     let currentTime: moment.Moment = moment();
+    this.buildZoomButtons(currentTime);
+
+    this.onClickButton(this._currentZoomLevel);
+
     this._clockSubscription = this.daybookService.clock$.subscribe((clockTime: moment.Moment)=>{
       if(clockTime.diff(currentTime, "minute") >= 1){
         currentTime = moment(clockTime);
-        this.buildZoomButtons();
+        this.buildZoomButtons(currentTime);
       } 
     });
 
@@ -33,7 +38,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       if(mouseIsOver === false){
         this._zoomButtons.forEach((zoomButton)=>{
           zoomButton.itemState.onMouseLeave();
-        })
+        });
       }
     });
   }
@@ -47,7 +52,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   private _itemState: ItemState = new ItemState(null);
   public get itemState(): ItemState { return this._itemState; }
 
-  private defaultZoom: TimelogZoomButton = {
+  private _defaultZoom: TimelogZoomButton = {
     icon: faMoon,
     name: "",
     isActive: true,
@@ -57,7 +62,9 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     itemState: new ItemState(null),
   };
 
-  private buildZoomButtons(){
+  private _eightHourZoom: TimelogZoomButton;
+
+  private buildZoomButtons(currentTime: moment.Moment){
     let zoomButtons: TimelogZoomButton[] = [];
 
     zoomButtons.push({
@@ -71,17 +78,20 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     });
 
 
-    zoomButtons.push(this.defaultZoom);
+    zoomButtons.push(this._defaultZoom);
 
-    zoomButtons.push({
+    this._eightHourZoom = {
       icon: null,
       name: "8",
       isActive: false,
-      startTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day"),
-      endTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day").add(24, "hours"),
+      startTime: RoundToNearestMinute.roundToNearestMinute(moment(currentTime).subtract(4, "hours"), 30, "DOWN"),
+      endTime: RoundToNearestMinute.roundToNearestMinute(moment(currentTime).add(4, "hours"), 30, "UP"),
       ngClass: [],
       itemState: new ItemState(null),
-    });
+    }
+
+    zoomButtons.push(this._eightHourZoom);
+
     zoomButtons.push({
       icon: faWrench,
       name: "",
@@ -94,6 +104,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
 
     this._zoomButtons = zoomButtons;
+    this.onClickButton(this._currentZoomLevel);
   }
 
   public onClickButton(button: TimelogZoomButton){
@@ -104,7 +115,8 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       }
     })
     button.ngClass.push('zoom-button-active');
-    this.zoomLevel.emit(button);
+    this._currentZoomLevel = button;
+    this.zoomLevel.emit(this._currentZoomLevel);
   }
   public onZoomHover(button: TimelogZoomButton){
     this.zoomHover.emit(button);
