@@ -25,8 +25,8 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
     let activeDay: DaybookDayItem = this.daybookService.activeDay;
 
-    let awakeStartTime: moment.Moment = moment(activeDay.wakeupTime);
-    let awakeEndTime: moment.Moment = moment(activeDay.bedtime);
+    let awakeStartTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.wakeupTime), 30, "DOWN");
+    let awakeEndTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.bedtime), 30, "UP");
 
     if (activeDay.sleepProfile.wakeupTimeISO != "" && activeDay.sleepProfile.bedtimeISO != "") {
       awakeStartTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTimeISO), 30, "DOWN");
@@ -48,30 +48,18 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
 
     this._clockSubscription = this.daybookService.clock$.subscribe((clockTime: moment.Moment) => {
-      if (clockTime.diff(currentTime, "minute") >= 1) {
+      if (clockTime.diff(currentTime, "minute") >= 1 && this.daybookService.activeDayIsToday) {
         currentTime = moment(clockTime);
         this.buildZoomButtons(currentTime);
       }
     });
 
     this.daybookService.activeDay$.subscribe((activeDayChanged) => {
-      if (activeDayChanged.sleepProfile.wakeupTimeISO != "" && activeDayChanged.sleepProfile.bedtimeISO != "") {
-        const wakeZoomActive: boolean = this._currentZoomLevel.name === "AWAKE";
-        this._wakeCycleZoom = {
-          icon: faMoon,
-          name: "AWAKE",
-          isActive: wakeZoomActive,
-          isFirst: false,
-          isLast: false,
-          startTime: RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTimeISO), 30, "DOWN"),
-          endTime: RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedtimeISO), 30, "UP"),
-          itemState: new ItemState(null),
-        }
-        if(wakeZoomActive){
-          this._currentZoomLevel = this._wakeCycleZoom;
-        }
-        this.buildZoomButtons(currentTime);
-      }
+
+      currentTime = moment(activeDayChanged.dateYYYYMMDD);
+
+      this.updateWakeCycleZoom(activeDayChanged);
+      this.buildZoomButtons(currentTime);
     });
 
     this._itemState.mouseIsOver$.subscribe((mouseIsOver: boolean) => {
@@ -83,7 +71,38 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     });
   }
 
+  private updateWakeCycleZoom(activeDayChanged: DaybookDayItem){
+    const wakeZoomActive: boolean = this._currentZoomLevel.name === "AWAKE";
 
+    let wakeupTime: moment.Moment;
+    let bedTime: moment.Moment;
+
+    if (activeDayChanged.sleepProfile.wakeupTimeISO != "" && activeDayChanged.sleepProfile.bedtimeISO != "") {
+      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTimeISO), 30, "DOWN");
+      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedtimeISO), 30, "UP");
+      if (wakeupTime.minute() == moment(activeDayChanged.sleepProfile.wakeupTimeISO).minute() &&
+        wakeupTime.hour() == moment(activeDayChanged.sleepProfile.wakeupTimeISO).hour()) {
+        wakeupTime = moment(wakeupTime).subtract(30, "minutes");
+      }
+    }else{
+      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.wakeupTime), 30, "DOWN");
+      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.bedtime), 30, "UP");
+    }
+
+    this._wakeCycleZoom = {
+      icon: faMoon,
+      name: "AWAKE",
+      isActive: wakeZoomActive,
+      isFirst: false,
+      isLast: false,
+      startTime: wakeupTime,
+      endTime: bedTime,
+      itemState: new ItemState(null),
+    }
+    if (wakeZoomActive) {
+      this._currentZoomLevel = this._wakeCycleZoom;
+    }
+  }
 
 
   private _clockSubscription: Subscription = new Subscription();
@@ -153,10 +172,10 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   }
 
   public onClickButton(clickedButton: TimelogZoomButton) {
-    this._zoomButtons.forEach((button)=>{
-      if(button.name === clickedButton.name){
+    this._zoomButtons.forEach((button) => {
+      if (button.name === clickedButton.name) {
         button.isActive = true;
-      }else{
+      } else {
         button.isActive = false;
       }
     });

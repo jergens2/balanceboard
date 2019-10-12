@@ -12,15 +12,27 @@
             </div>
         </div>
 
+        <div *ngIf="nowLine" class="now-line-time-container"  [ngStyle]="nowLine.ngStyle">
+            <div></div>
+            <div class="now-line-time-label-container">
+                <div class="now-line-time-label">
+                    {{ nowLine.time.format('h:mm a')}}
+                </div>
+                <div style="height:1px; border-top: 1px solid rgba(255, 0, 0, 0.3); flex-grow:2;"></div>
+            </div>
+        </div>
+
         <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
             <div></div>
             <div class="mouse-position-time-label-container">
                 <div class="mouse-position-time-label">
                     {{ mousePosition.time.format('h:mm a')}}
                 </div>
-                <div style="height:1px; border-top: 1px solid red; flex-grow:2;"></div>
+                <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
             </div>
         </div>
+
+        
 
         <div class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
             <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems"></app-timelog-entry>

@@ -43,7 +43,6 @@ export class CalendarSmallComponent implements OnInit {
 
       this.daybookService.activeDay$.subscribe((activeDayChanged) => {
         this.activeDay = activeDayChanged;
-        console.log("WE REBUILDING BOSS")
         this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD), "SMALL");
       });
     }

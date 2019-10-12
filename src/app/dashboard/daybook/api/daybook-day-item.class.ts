@@ -137,8 +137,11 @@ export class DaybookDayItem{
     public get sleepProfile(): DaybookDayItemSleepProfile { return this.httpShape.sleepProfile; }
     public set sleepProfile(sleepProfile: DaybookDayItemSleepProfile) {
         this._httpShape.sleepProfile = sleepProfile;
-        console.log("Sleep profile changed:", this._httpShape.sleepProfile)
+        // console.log("Sleep profile changed:", this._httpShape.sleepProfile)
         this.dataChanged();
+    }
+    public get sleepProfileIsSet(): boolean {
+        return this.sleepProfile.bedtimeISO != "" && this.sleepProfile.previousFallAsleepTimeISO != "" && this.sleepProfile.wakeupTimeISO != "";
     }
 
 
@@ -238,7 +241,7 @@ export class DaybookDayItem{
 
 
     private dataChanged() {
-        console.log(this.dateYYYYMMDD + " DaybookDayItem dataChanged().")
+        // console.log(this.dateYYYYMMDD + " DaybookDayItem dataChanged().")
         this._dataChanged$.next(true);
     }
     private _dataChanged$: Subject<boolean> = new Subject();

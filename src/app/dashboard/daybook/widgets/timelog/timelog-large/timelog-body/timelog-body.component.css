@@ -5,7 +5,6 @@
     grid-template-columns: 1fr;
     grid-template-rows: 8px 1fr 8px;
 
-    min-height: 550px;
 }
 .timelog-body-root{
     grid-column: 1 / -1;
@@ -51,14 +50,14 @@
     flex-grow: 2;
 }
 
-.mouse-position-time-container{
+.mouse-position-time-container, .now-line-time-container{
     grid-column: 2 / -1; 
     grid-row: 1 / -1;
 
     display:grid;
     grid-template-columns: 1fr;
 }
-.mouse-position-time-label-container{
+.mouse-position-time-label-container, .now-line-time-label-container{
     display:flex;
     flex-direction: row;
     align-items: center;
@@ -67,19 +66,24 @@
     padding-left:10px;
     padding-right:10px;
 }
-.mouse-position-time-label{
+.mouse-position-time-label, .now-line-time-label{
     width:80px;
     display:flex;
     flex-direction: row;
     justify-content: center;
     background-color: white;
     border-radius: 5px;
-    border: 1px solid rgb(231, 231, 231);
+    border: 1px solid rgba(0, 89, 255, 0.3);
+    color: rgb(0, 89, 255);
+}
+.now-line-time-label{
+    border: 1px solid rgba(255, 0, 0, 0.3);
     color: red;
 }
 
 .timelog-entry-items{
     grid-column: 3 / span 1;
+    grid-row: 1 / span 1;
 
     display:grid;
     grid-template-columns: 1fr;
