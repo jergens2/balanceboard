@@ -6,6 +6,7 @@ import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-ut
 import { DaybookService } from '../../../../daybook.service';
 import { TimelogZoomButton } from '../timelog-zoom-controller/timelog-zoom-button.interface';
 import { Subscription } from 'rxjs';
+import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 
 @Component({
   selector: 'app-timelog-body',
@@ -17,16 +18,11 @@ export class TimelogBodyComponent implements OnInit {
   constructor(private daybookService: DaybookService) { }
 
 
-  private _zoomMouseOverSubscription: Subscription = new Subscription();
 
   @Input() public set zoom(zoom: TimelogZoomButton){
     this._startTime = moment(zoom.startTime);
     this._endTime =  moment(zoom.endTime);
-    console.log("Start time, end time: ", this._startTime.format('hh:mm a'), this._endTime.format('hh:mm a'));
-    this._zoomMouseOverSubscription.unsubscribe();
-    this._zoomMouseOverSubscription = zoom.itemState.mouseIsOver$.subscribe((mouseIsOver)=>{
-      console.log("Zoom mouse over: ", mouseIsOver);
-    });
+    // console.log("Start time, end time: ", this._startTime.format('hh:mm a'), this._endTime.format('hh:mm a'));
     this.buildTimelog();
   }
 
@@ -36,11 +32,15 @@ export class TimelogBodyComponent implements OnInit {
 
 
   ngOnInit() {
-
+    this.daybookService.activeDay$.subscribe((activeDayChanged)=>{
+      this.buildTimelog();
+    });
   }
 
   private buildTimelog(){
+    console.log("Building timelog")
     this.buildGuideLineHours();
+    this.buildTimelogEntryItems();
   }
 
   private buildGuideLineHours(){
@@ -86,6 +86,10 @@ export class TimelogBodyComponent implements OnInit {
       currentTime = moment(currentTime).add(30, "minutes");
     }
     this._guideLineHours = guideLineHours;
+  }
+
+  private buildTimelogEntryItems(){
+
   }
 
   private _startTime: moment.Moment = moment();
@@ -140,5 +144,8 @@ export class TimelogBodyComponent implements OnInit {
 
   private _timelogEntryItemsNgStyle: any = { "grid-template-rows": "100%"};
   public get timelogEntryItemsNgStyle(): any { return this._timelogEntryItemsNgStyle; }
+
+  private _timelogEntryItems: TimelogEntryItem[] = [];
+  public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
 
 }

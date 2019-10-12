@@ -6,6 +6,7 @@ import { faWrench, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
 import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
+import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 
 @Component({
   selector: 'app-timelog-zoom-controller',
@@ -21,22 +22,61 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   @Output() zoomHover: EventEmitter<TimelogZoomButton> = new EventEmitter();
 
   ngOnInit() {
-    this._currentZoomLevel = this._defaultZoom;
+
+    let activeDay: DaybookDayItem = this.daybookService.activeDay;
+
+    let awakeStartTime: moment.Moment = moment(activeDay.wakeupTime);
+    let awakeEndTime: moment.Moment = moment(activeDay.bedtime);
+
+    if (activeDay.sleepProfile.wakeupTimeISO != "" && activeDay.sleepProfile.bedtimeISO != "") {
+      awakeStartTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTimeISO), 30, "DOWN");
+      awakeEndTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedtimeISO), 30, "UP");
+    }
+    this._wakeCycleZoom = {
+      icon: faMoon,
+      name: "AWAKE",
+      isActive: true,
+      isFirst: false,
+      isLast: false,
+      startTime: awakeStartTime,
+      endTime: awakeEndTime,
+      itemState: new ItemState(null),
+    };
+    this._currentZoomLevel = this._wakeCycleZoom;
     let currentTime: moment.Moment = moment();
     this.buildZoomButtons(currentTime);
 
-    this.onClickButton(this._currentZoomLevel);
 
-    this._clockSubscription = this.daybookService.clock$.subscribe((clockTime: moment.Moment)=>{
-      if(clockTime.diff(currentTime, "minute") >= 1){
+    this._clockSubscription = this.daybookService.clock$.subscribe((clockTime: moment.Moment) => {
+      if (clockTime.diff(currentTime, "minute") >= 1) {
         currentTime = moment(clockTime);
         this.buildZoomButtons(currentTime);
-      } 
+      }
     });
 
-    this._itemState.mouseIsOver$.subscribe((mouseIsOver: boolean)=>{
-      if(mouseIsOver === false){
-        this._zoomButtons.forEach((zoomButton)=>{
+    this.daybookService.activeDay$.subscribe((activeDayChanged) => {
+      if (activeDayChanged.sleepProfile.wakeupTimeISO != "" && activeDayChanged.sleepProfile.bedtimeISO != "") {
+        const wakeZoomActive: boolean = this._currentZoomLevel.name === "AWAKE";
+        this._wakeCycleZoom = {
+          icon: faMoon,
+          name: "AWAKE",
+          isActive: wakeZoomActive,
+          isFirst: false,
+          isLast: false,
+          startTime: RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTimeISO), 30, "DOWN"),
+          endTime: RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedtimeISO), 30, "UP"),
+          itemState: new ItemState(null),
+        }
+        if(wakeZoomActive){
+          this._currentZoomLevel = this._wakeCycleZoom;
+        }
+        this.buildZoomButtons(currentTime);
+      }
+    });
+
+    this._itemState.mouseIsOver$.subscribe((mouseIsOver: boolean) => {
+      if (mouseIsOver === false) {
+        this._zoomButtons.forEach((zoomButton) => {
           zoomButton.itemState.onMouseLeave();
         });
       }
@@ -44,86 +84,91 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   }
 
 
+
+
   private _clockSubscription: Subscription = new Subscription();
-  ngOnDestroy(){
+  ngOnDestroy() {
     this._clockSubscription.unsubscribe();
   }
 
   private _itemState: ItemState = new ItemState(null);
   public get itemState(): ItemState { return this._itemState; }
 
-  private _defaultZoom: TimelogZoomButton = {
-    icon: faMoon,
-    name: "",
-    isActive: true,
-    startTime: moment(this.daybookService.activeDay.wakeupTime),
-    endTime: moment(this.daybookService.activeDay.bedtime),
-    ngClass: [],
-    itemState: new ItemState(null),
-  };
-
+  private _wakeCycleZoom: TimelogZoomButton;
+  private _twentyFourHourZoom: TimelogZoomButton;
   private _eightHourZoom: TimelogZoomButton;
+  private _customZoom: TimelogZoomButton;
 
-  private buildZoomButtons(currentTime: moment.Moment){
+
+  private buildZoomButtons(currentTime: moment.Moment) {
     let zoomButtons: TimelogZoomButton[] = [];
 
-    zoomButtons.push({
+
+
+    const twentyFourHourZoomActive: boolean = this._currentZoomLevel.name === "24";
+    const eightHourZoomActive: boolean = this._currentZoomLevel.name === "8";
+    const customZoomActive: boolean = this._currentZoomLevel.name === "CUSTOM";
+
+
+    this._twentyFourHourZoom = {
       icon: null,
       name: "24",
-      isActive: false,
+      isActive: twentyFourHourZoomActive,
+      isFirst: true,
+      isLast: false,
       startTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day"),
       endTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day").add(24, "hours"),
-      ngClass: ['first-zoom-button'],
       itemState: new ItemState(null),
-    });
-
-
-    zoomButtons.push(this._defaultZoom);
+    };
 
     this._eightHourZoom = {
       icon: null,
       name: "8",
-      isActive: false,
+      isActive: eightHourZoomActive,
+      isFirst: false,
+      isLast: false,
       startTime: RoundToNearestMinute.roundToNearestMinute(moment(currentTime).subtract(4, "hours"), 30, "DOWN"),
       endTime: RoundToNearestMinute.roundToNearestMinute(moment(currentTime).add(4, "hours"), 30, "UP"),
-      ngClass: [],
       itemState: new ItemState(null),
     }
 
-    zoomButtons.push(this._eightHourZoom);
-
-    zoomButtons.push({
+    this._customZoom = {
       icon: faWrench,
-      name: "",
-      isActive: true,
+      name: "CUSTOM",
+      isActive: customZoomActive,
+      isFirst: false,
+      isLast: true,
       startTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day"),
       endTime: moment(this.daybookService.activeDayYYYYMMDD).startOf("day").add(24, "hours"),
-      ngClass: ['last-zoom-button'],
       itemState: new ItemState(null),
-    });
+    };
 
+    zoomButtons.push(this._twentyFourHourZoom);
+    zoomButtons.push(this._wakeCycleZoom);
+    zoomButtons.push(this._eightHourZoom);
+    zoomButtons.push(this._customZoom);
 
     this._zoomButtons = zoomButtons;
-    this.onClickButton(this._currentZoomLevel);
-  }
-
-  public onClickButton(button: TimelogZoomButton){
-    this.zoomButtons.forEach((button)=>{
-      let index: number = button.ngClass.indexOf("zoom-button-active");
-      if(index > -1){
-        button.ngClass.splice(index, 1);
-      }
-    })
-    button.ngClass.push('zoom-button-active');
-    this._currentZoomLevel = button;
     this.zoomLevel.emit(this._currentZoomLevel);
   }
-  public onZoomHover(button: TimelogZoomButton){
+
+  public onClickButton(clickedButton: TimelogZoomButton) {
+    this._zoomButtons.forEach((button)=>{
+      if(button.name === clickedButton.name){
+        button.isActive = true;
+      }else{
+        button.isActive = false;
+      }
+    });
+    this._currentZoomLevel = clickedButton;
+    this.zoomLevel.emit(this._currentZoomLevel);
+  }
+  public onZoomHover(button: TimelogZoomButton) {
     this.zoomHover.emit(button);
   }
 
 
-  private _zoomButtons: TimelogZoomButton [] = [];
+  private _zoomButtons: TimelogZoomButton[] = [];
   public get zoomButtons(): TimelogZoomButton[] { return this._zoomButtons; }
 
 

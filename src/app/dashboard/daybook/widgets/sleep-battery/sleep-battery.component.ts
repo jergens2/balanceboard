@@ -50,7 +50,7 @@ export class SleepBatteryComponent implements OnInit {
       this.shape = "SMALL";
     }
 
-    console.log("shape and confg: ", this.shape, this.batteryConfiguration)
+    // console.log("shape and confg: ", this.shape, this.batteryConfiguration)
 
     this.updateBattery();
     timer(0, 60000).subscribe((tick) => {
@@ -81,9 +81,9 @@ export class SleepBatteryComponent implements OnInit {
     let totalDayDurationMinutes: number = moment(this.bedtime).diff(this.wakeupTime, "minutes");
     this._percentage = (1 - (awakeForMinutes / totalDayDurationMinutes)) * 100;
 
-    console.log("Battery:  bedtime:    " , this.bedtime.format("YYYY-MM-DD hh:mm a"));
-    console.log("Battery:  wakeuptime: " , this.wakeupTime.format("YYYY-MM-DD hh:mm a"))
-    console.log("Battery:  awake for (min): " + awakeForMinutes, " total duration (min): ", totalDayDurationMinutes, " percentage: ", this._percentage )
+    // console.log("Battery:  bedtime:    " , this.bedtime.format("YYYY-MM-DD hh:mm a"));
+    // console.log("Battery:  wakeuptime: " , this.wakeupTime.format("YYYY-MM-DD hh:mm a"))
+    // console.log("Battery:  awake for (min): " + awakeForMinutes, " total duration (min): ", totalDayDurationMinutes, " percentage: ", this._percentage )
 
 
 

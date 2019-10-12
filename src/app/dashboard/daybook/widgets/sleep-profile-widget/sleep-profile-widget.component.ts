@@ -110,7 +110,7 @@ export class SleepProfileWidgetComponent implements OnInit {
 
     if (sleepProfile.bedtimeISO) {
       this._bedTime = moment(sleepProfile.bedtimeISO);
-      console.log("Reinitiate, bedtime: ", this._bedTime.format("YYYY-MM-DD hh:mm a"))
+      // console.log("Reinitiate, bedtime: ", this._bedTime.format("YYYY-MM-DD hh:mm a"))
     } else {
       this._bedTime = moment(this.daybookService.activeDay.dateYYYYMMDD).hour(22).minute(30);
       this.sleepProfileIsSet = false;
@@ -214,7 +214,7 @@ export class SleepProfileWidgetComponent implements OnInit {
 
   public onBedTimeChanged(time: moment.Moment) {
     this._bedTime = moment(time);
-    console.log("Bed time changed", this._bedTime.format("YYYY-MM-DD hh:mm a"))
+    // console.log("Bed time changed", this._bedTime.format("YYYY-MM-DD hh:mm a"))
     this.updateDurationString();
   }
 
@@ -223,7 +223,7 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
   public onClickSaveSleepTimes() {
-    console.log("Saving");
+    // console.log("Saving");
     let sleepProfile: DaybookDayItemSleepProfile = this.daybookService.activeDay.sleepProfile;
 
     sleepProfile.sleepQuality = this._sleepQuality;

@@ -246,8 +246,9 @@ export class DaybookService implements ServiceAuthenticates {
 
   private updateIsPastMidnight(){
     let isAfterMidnight: boolean = false;
-    
-
+    if(this.clock.hour() >= 0 && this.clock.hour() <= 6){
+      isAfterMidnight = true;
+    }
     this._isAfterMidnight = isAfterMidnight;
   }
 

@@ -5,9 +5,10 @@ import { ItemState } from "../../../../../../shared/utilities/item-state.class";
 export interface TimelogZoomButton{
     icon: IconDefinition;
     isActive: boolean;
-    name: string;
+    isFirst: boolean;
+    isLast: boolean;
+    name: "24" | "AWAKE" | "8" | "CUSTOM";
     startTime: moment.Moment;
     endTime: moment.Moment;
-    ngClass: string[];
     itemState: ItemState;
 }

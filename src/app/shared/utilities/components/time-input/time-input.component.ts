@@ -47,7 +47,6 @@ export class TimeInputComponent implements OnInit {
   }
   
   private emitNewValue(){
-    console.log(" outputting time input value");
     let formInputValue = this.parseFormTimeInput(this.timeInputForm.controls['timeValue'].value);
     this._timeValue = moment(this.timeValue).hour(formInputValue.hour).minute(formInputValue.minute).second(0).millisecond(0);
     this.timeChanged.emit(this.timeValue);
@@ -83,6 +82,10 @@ export class TimeInputComponent implements OnInit {
 
 
   public onClickTimeValueInput() {
+    /**
+     * To do:  implement a drop down function, so if you click on the time then you can select a dropdown of times.
+     * would just add a bit more functionality to this component.
+     */
     console.log("Ze clicker");
   }
 

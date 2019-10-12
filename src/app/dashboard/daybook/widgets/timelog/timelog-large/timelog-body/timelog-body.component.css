@@ -80,4 +80,7 @@
 
 .timelog-entry-items{
     grid-column: 3 / span 1;
+
+    display:grid;
+    grid-template-columns: 1fr;
 }

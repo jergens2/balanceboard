@@ -51,9 +51,10 @@ export class TimelogLargeComponent implements OnInit {
   public get zoomHover(): TimelogZoomButton{ return this._zoomHover; }
   private _zoom: TimelogZoomButton = { 
     icon: null,
-    name: "",
-    isActive: false,
-    ngClass: [],
+    name: "AWAKE",
+    isActive: true,
+    isFirst: false,
+    isLast: false,
     itemState: null,
     startTime: moment(this.daybookService.activeDay.wakeupTime), 
     endTime: moment(this.daybookService.activeDay.bedtime) 
