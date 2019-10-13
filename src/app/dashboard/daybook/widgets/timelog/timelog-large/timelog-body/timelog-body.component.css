@@ -50,14 +50,14 @@
     flex-grow: 2;
 }
 
-.mouse-position-time-container, .now-line-time-container{
+.mouse-position-time-container, .now-line-time-container, .time-delineators{
     grid-column: 2 / -1; 
     grid-row: 1 / -1;
 
     display:grid;
     grid-template-columns: 1fr;
 }
-.mouse-position-time-label-container, .now-line-time-label-container{
+.mouse-position-time-label-container, .now-line-time-label-container, .time-delineator-label-container{
     display:flex;
     flex-direction: row;
     align-items: center;
@@ -66,7 +66,7 @@
     padding-left:10px;
     padding-right:10px;
 }
-.mouse-position-time-label, .now-line-time-label{
+.mouse-position-time-label, .now-line-time-label, .time-delineator-time-label{
     width:80px;
     display:flex;
     flex-direction: row;
@@ -75,6 +75,17 @@
     border-radius: 5px;
     border: 1px solid rgba(0, 89, 255, 0.3);
     color: rgb(0, 89, 255);
+}
+.time-delineator-time-label{
+    position: relative;
+    z-index: 2;
+}
+.time-delineator-time-label:hover{
+    background-color:red;
+}
+.mouse-position-time-label:hover{
+    cursor: pointer;
+    background-color: rgba(0, 89, 255, 0.1);
 }
 .now-line-time-label{
     border: 1px solid rgba(255, 0, 0, 0.3);

@@ -99,10 +99,10 @@ export class DaybookDayItem{
         this._httpShape.timeDelineators = timeDelineators; 
         this.dataChanged();
     }
-    public addTimeDelineator(delineator: string){
+    public addTimeDelineator(delineatorTimeISO: string){
         let timeDelineators = this.timeDelineators;
-        if(timeDelineators.indexOf(delineator) == -1){
-            timeDelineators.push(delineator);
+        if(timeDelineators.indexOf(delineatorTimeISO) == -1){
+            timeDelineators.push(delineatorTimeISO);
             this.timeDelineators = timeDelineators;
         }
     }

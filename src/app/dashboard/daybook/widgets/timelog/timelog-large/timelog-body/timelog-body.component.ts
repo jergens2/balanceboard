@@ -20,9 +20,7 @@ export class TimelogBodyComponent implements OnInit {
 
   constructor(private daybookService: DaybookService) { }
 
-
   private _zoomControl: TimelogZoomControl;
-
   @Input() public set zoom(zoomControl: TimelogZoomControl) {
     /**
      * The zoom controller subscribes to the activeDay$ changes in daybookService, 
@@ -30,7 +28,6 @@ export class TimelogBodyComponent implements OnInit {
      */
     this._zoomControl = zoomControl;
     console.log("Zoom changed")
-    
     this.buildTimelog();
   }
 
@@ -38,18 +35,46 @@ export class TimelogBodyComponent implements OnInit {
     console.log("hovering over zoom: ", zoom);
   }
 
-
-  private _activeDay: DaybookDayItem;
-
   ngOnInit() {
 
   }
+
+  private _activeDay: DaybookDayItem;
+
+  public get startTime(): moment.Moment { return this._zoomControl.startTime; }
+  public get endTime(): moment.Moment { return this._zoomControl.endTime; }
+
+  private _itemState: ItemState = new ItemState(null);
+  public get itemState(): ItemState { return this._itemState; }
+
+  private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
+  public get relativeMousePosition(): RelativeMousePosition { return this._relativeMousePosition; }
+
+  private _timelog: Timelog = null;
+  public get timelog(): Timelog{ return this._timelog; }
+
+  public get timelogEntryItemsNgStyle(): any { return this._timelog.entryItemsNgStyle; }
+  public get timelogEntryItems(): TimelogEntryItem[] { return this._timelog.entryItems; }
+
+  private _mousePosition: { time: moment.Moment, ngStyle: any } = null;
+  public get mousePosition(): { time: moment.Moment, ngStyle: any } { return this._mousePosition; };
+
+  private _nowLine: { time: moment.Moment, ngStyle: any } = null;
+  public get nowLine(): { time: moment.Moment, ngStyle: any } { return this._nowLine; };
+
+  private _guideLineHours: any[] = [];
+  public get guideLineHours(): any[] { return this._guideLineHours; }
+
+
+  public get timeDelineators(): moment.Moment[] { return this._timelog.timeDelineators; }
+  public get timeDelineatorsNgStyle(): any { return this._timelog.timeDelineatorsNgStyle; };
 
   private buildTimelog() {
     this._activeDay = this.daybookService.activeDay;
     console.log("Timelog: Active day is: " , this._activeDay.dateYYYYMMDD);
     this.buildGuideLineHours();
     this.updateNowLine();
+
     this.updateTimelog();
   }
 
@@ -113,28 +138,14 @@ export class TimelogBodyComponent implements OnInit {
   }
 
 
-  private _timelog: Timelog = null;
-  public get timelog(): Timelog{ return this._timelog; }
 
-  public get timelogEntryItemsNgStyle(): any { return this._timelog.entryItemsNgStyle; }
-  public get timelogEntryItems(): TimelogEntryItem[] { return this._timelog.entryItems; }
 
   private updateTimelog() {
     let timelog: Timelog = new Timelog(this._zoomControl, this.daybookService.clock, this._activeDay);
     this._timelog = timelog;
   }
 
-  // private _startTime: moment.Moment = moment();
-  // private _endTime: moment.Moment = moment();
 
-  public get startTime(): moment.Moment { return this._zoomControl.startTime; }
-  public get endTime(): moment.Moment { return this._zoomControl.endTime; }
-
-  private _itemState: ItemState = new ItemState(null);
-  public get itemState(): ItemState { return this._itemState; }
-
-  private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
-  public get relativeMousePosition(): RelativeMousePosition { return this._relativeMousePosition; }
 
   public onMouseMove(event: MouseEvent) {
     this._relativeMousePosition.onMouseMove(event, "timelog-body-root");
@@ -155,20 +166,4 @@ export class TimelogBodyComponent implements OnInit {
     time = RoundToNearestMinute.roundToNearestMinute(moment(this.startTime).add(relativeSeconds, "seconds"), 5);
     this._mousePosition = { time: time, ngStyle: ngStyle };
   }
-
-  private _mousePosition: { time: moment.Moment, ngStyle: any } = null;
-  public get mousePosition(): { time: moment.Moment, ngStyle: any } { return this._mousePosition; };
-
-  private _nowLine: { time: moment.Moment, ngStyle: any } = null;
-  public get nowLine(): { time: moment.Moment, ngStyle: any } { return this._nowLine; };
-
-
-
-
-  private _guideLineHours: any[] = [];
-  public get guideLineHours(): any[] { return this._guideLineHours; }
-
-
-
-
 }

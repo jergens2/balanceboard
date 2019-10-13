@@ -22,10 +22,20 @@
             </div>
         </div>
 
+        <div *ngIf="timeDelineators.length > 0" class="time-delineators" [ngStyle]="timeDelineatorsNgStyle">
+            <div></div>
+            <div class="time-delineator-label-container" *ngFor="let timeDelineator of timeDelineators">
+                <div class="time-delineator-time-label" (click)="timelog.removeTimeDelineator(timeDelineator)">
+                    {{ timeDelineator.format('h:mm a')}}
+                </div>
+                <div style="height:1px; border-top: 1px solid gray; flex-grow:2;"></div>
+            </div>
+        </div>
+
         <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
             <div></div>
             <div class="mouse-position-time-label-container">
-                <div class="mouse-position-time-label">
+                <div class="mouse-position-time-label" (click)="timelog.addTimeDelineator(mousePosition.time)">
                     {{ mousePosition.time.format('h:mm a')}}
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
