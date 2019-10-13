@@ -16,6 +16,9 @@ export class TimelogEntryItem{
         return this._endTime.diff(this._startTime, "seconds");
     }
 
+    private _sleepState: "SLEEP" | "AWAKE" = "AWAKE";
+    public get sleepState(): "SLEEP" | "AWAKE" { return this._sleepState; }
+
           /*
           startTimeISO: string;
           endTimeISO: string;

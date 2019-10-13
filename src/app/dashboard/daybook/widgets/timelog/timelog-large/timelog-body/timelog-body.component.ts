@@ -10,6 +10,9 @@ import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
 import { Timelog } from '../../timelog.class';
+import { TimeDelineator } from '../../time-delineator.class';
+import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-timelog-body',
@@ -66,7 +69,7 @@ export class TimelogBodyComponent implements OnInit {
   public get guideLineHours(): any[] { return this._guideLineHours; }
 
 
-  public get timeDelineators(): moment.Moment[] { return this._timelog.timeDelineators; }
+  public get timeDelineators(): TimeDelineator[] { return this._timelog.timeDelineators; }
   public get timeDelineatorsNgStyle(): any { return this._timelog.timeDelineatorsNgStyle; };
 
   private buildTimelog() {
@@ -141,7 +144,7 @@ export class TimelogBodyComponent implements OnInit {
 
 
   private updateTimelog() {
-    let timelog: Timelog = new Timelog(this._zoomControl, this.daybookService.clock, this._activeDay);
+    let timelog: Timelog = new Timelog(this._zoomControl, this._activeDay);
     this._timelog = timelog;
   }
 
@@ -155,6 +158,9 @@ export class TimelogBodyComponent implements OnInit {
     this._itemState.onMouseLeave();
     this._mousePosition = null;
   }
+  public onKeyDown(event: any){
+    console.log("Keydown event: ", event)
+  }
 
   private updateMousePosition() {
     let percentY: number = this.relativeMousePosition.percentY;
@@ -163,7 +169,11 @@ export class TimelogBodyComponent implements OnInit {
     let percentRemaining: number = 100 - percentY;
     let ngStyle: any = { "grid-template-rows": percentY.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
     let time: moment.Moment = moment(this.startTime).add(relativeSeconds, "seconds");
-    time = RoundToNearestMinute.roundToNearestMinute(moment(this.startTime).add(relativeSeconds, "seconds"), 5);
+    // time = RoundToNearestMinute.roundToNearestMinute(moment(this.startTime).add(relativeSeconds, "seconds"), 5);
     this._mousePosition = { time: time, ngStyle: ngStyle };
   }
+
+  faTimes = faTimes;
+  faClock = faClock;
+  faPlus = faPlus;
 }

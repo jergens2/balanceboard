@@ -63,33 +63,52 @@
     align-items: center;
     height:20px;
     margin-top:-10px;
-    padding-left:10px;
-    padding-right:10px;
+    width:100%;
 }
-.mouse-position-time-label, .now-line-time-label, .time-delineator-time-label{
+.mouse-position-time-label, .now-line-time-label{
+    margin-left: 15px;
     width:80px;
     display:flex;
     flex-direction: row;
     justify-content: center;
-    background-color: white;
     border-radius: 5px;
-    border: 1px solid rgba(0, 89, 255, 0.3);
+    /* border: 1px solid rgba(0, 89, 255, 0.3); */
     color: rgb(0, 89, 255);
+    font-size: 0.9em;
 }
 .time-delineator-time-label{
     position: relative;
     z-index: 2;
+
+    width: 94px;
+    margin-left: 3px;
+    display:flex;
+    flex-direction: row;
+    padding-left: 2px;
+    padding-right: 2px;
+    
+    justify-content: flex-end;
+    
+    border-radius: 5px;
+    color: gray;
 }
+
 .time-delineator-time-label:hover{
-    background-color:red;
+    background-color:rgb(230, 230, 230);
+}
+.mouse-position-time-label > fa-icon{
+    display:none;
 }
 .mouse-position-time-label:hover{
     cursor: pointer;
     background-color: rgba(0, 89, 255, 0.1);
 }
+.mouse-position-time-label:hover > fa-icon{
+    display: inline;
+}
 .now-line-time-label{
-    border: 1px solid rgba(255, 0, 0, 0.3);
-    color: red;
+    /* border: 1px solid rgba(255, 0, 0, 0.3); */
+    color: rgba(255, 0, 0, 0.6);
 }
 
 .timelog-entry-items{
@@ -98,4 +117,9 @@
 
     display:grid;
     grid-template-columns: 1fr;
+}
+
+.timelog-entry-item{
+    display:flex;
+    flex-direction: column;
 }

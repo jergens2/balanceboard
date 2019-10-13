@@ -41,6 +41,7 @@ export class TimelogLargeComponent implements OnInit {
 
 
   public onZoomChanged(zoomButton: TimelogZoomControl){
+    console.log("timelog large onZoomChanged()", zoomButton)
     this._zoom = zoomButton;
   }
   public onZoomHover(zoomButton: TimelogZoomControl){

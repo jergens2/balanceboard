@@ -1,6 +1,7 @@
 <div class="timelog-body-grid-container no-select">
     <div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()"
-        (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)" [ngStyle]="timelogBodyNgStyle">
+        (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)" (keydown)="onKeyDown($event)"
+        [ngStyle]="timelogBodyNgStyle">
 
 
         <div class="guide-line-hours">
@@ -12,10 +13,12 @@
             </div>
         </div>
 
-        <div *ngIf="nowLine" class="now-line-time-container"  [ngStyle]="nowLine.ngStyle">
+        <div *ngIf="nowLine" class="now-line-time-container" [ngStyle]="nowLine.ngStyle">
             <div></div>
             <div class="now-line-time-label-container">
+
                 <div class="now-line-time-label">
+                    <fa-icon [icon]="faClock" style="margin-right:2px"></fa-icon>
                     {{ nowLine.time.format('h:mm a')}}
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(255, 0, 0, 0.3); flex-grow:2;"></div>
@@ -25,8 +28,15 @@
         <div *ngIf="timeDelineators.length > 0" class="time-delineators" [ngStyle]="timeDelineatorsNgStyle">
             <div></div>
             <div class="time-delineator-label-container" *ngFor="let timeDelineator of timeDelineators">
-                <div class="time-delineator-time-label" (click)="timelog.removeTimeDelineator(timeDelineator)">
-                    {{ timeDelineator.format('h:mm a')}}
+                <div class="time-delineator-time-label" (mouseenter)="timeDelineator.itemState.onMouseEnter()"
+                    (mouseleave)="timeDelineator.itemState.onMouseLeave()">
+                    <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon" [ngStyle]="timeDelineator.ngStyle"
+                        *ngIf="timeDelineator.icon"></fa-icon>
+
+                    {{ timeDelineator.time.format('h:mm a')}}
+                    <fa-icon *ngIf="timeDelineator.mouseIsOver && timeDelineator.delineatorType == 'DEFAULT'"
+                        (click)="timelog.removeTimeDelineator(timeDelineator)"
+                        style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faTimes"></fa-icon>
                 </div>
                 <div style="height:1px; border-top: 1px solid gray; flex-grow:2;"></div>
             </div>
@@ -37,15 +47,16 @@
             <div class="mouse-position-time-label-container">
                 <div class="mouse-position-time-label" (click)="timelog.addTimeDelineator(mousePosition.time)">
                     {{ mousePosition.time.format('h:mm a')}}
+                    <fa-icon style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faPlus"></fa-icon>
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
             </div>
         </div>
 
-        
+
 
         <div *ngIf="timelog" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
-            <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems"></app-timelog-entry>
+            <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item"></app-timelog-entry>
         </div>
 
     </div>

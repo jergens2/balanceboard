@@ -4,19 +4,21 @@ import { TimelogZoomControl } from "./timelog-large/timelog-zoom-controller/time
 import { TimelogEntryItem } from "./timelog-large/timelog-body/timelog-entry/timelog-entry-item.class";
 import * as moment from 'moment';
 import { DaybookDayItem } from "../../api/daybook-day-item.class";
+import { TimeDelineator } from "./time-delineator.class";
+import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 export class Timelog {
 
-  constructor(timelogZoomControl: TimelogZoomControl, currentTime: moment.Moment, activeDay: DaybookDayItem) {
+  constructor(timelogZoomControl: TimelogZoomControl, activeDay: DaybookDayItem) {
     console.log("Constructor is constructing")
     this._timelogZoomControl = timelogZoomControl;
-    this._currentTime = currentTime;
+
     this._activeDay = activeDay;
-    this.buildTimelog()
+    this.update();
   }
 
   private _timelogZoomControl: TimelogZoomControl;
-  private _currentTime: moment.Moment;
+
   private _activeDay: DaybookDayItem;
 
   private getTotalViewSeconds(): number {
@@ -32,29 +34,35 @@ export class Timelog {
   public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
   public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
 
-  private _timeDelineators: moment.Moment[] = [];
+  private _timeDelineators: TimeDelineator[] = [];
   private _timeDelineatorsNgStyle: any = { "grid-template-rows": "1fr" };
-  public get timeDelineators(): moment.Moment[] { return this._timeDelineators; }
+  public get timeDelineators(): TimeDelineator[] { return this._timeDelineators; }
   public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; };
 
-  public addTimeDelineator(newTimeDelineator: moment.Moment) {
-    this._activeDay.addTimeDelineator(newTimeDelineator.toISOString())
-    this.updateTimeDelineators();
+  public addTimeDelineator(time: moment.Moment) {
+    this._activeDay.addTimeDelineator(time.toISOString())
+    this.update();
   }
-  public removeTimeDelineator(removeTimeDelineator: moment.Moment) {
-    this._activeDay.removeTimeDelineator(removeTimeDelineator.toISOString());
-    this.updateTimeDelineators();
+  public removeTimeDelineator(delineator: TimeDelineator) {
+    this._activeDay.removeTimeDelineator(delineator.time.toISOString());
+    this.update();
   }
 
+  private update(){
+    this.updateTimeDelineators();
+    this.updateTimelogEntryItems();
+  }
 
   private updateTimeDelineators() {
     this._timeDelineators = this._activeDay.timeDelineators.map((timeISO: string) => { 
-      return moment(timeISO); 
-    }).filter((time) => {
-      return this.timeIsInView(time);
-    }).sort((time1, time2) => {
-      if (time1.isBefore(time2)) return -1;
-      else if (time1.isAfter(time2)) return 1;
+      return new TimeDelineator(moment(timeISO), "DEFAULT"); 
+    });
+    this.addSleepTimeDelineators();
+    this._timeDelineators = this._timeDelineators.filter((delineator) => {
+      return this.timeIsInView(delineator.time);
+    }).sort((delineator1, delineator2) => {
+      if (delineator1.time.isBefore(delineator2.time)) return -1;
+      else if (delineator1.time.isAfter(delineator2.time)) return 1;
       else return 0;
     });
     if(this._timeDelineators.length > 0){
@@ -62,9 +70,9 @@ export class Timelog {
       let percentages: number[] = [];
       let currentTime: moment.Moment = this._timelogZoomControl.startTime;
       for(let i=0; i<this._timeDelineators.length; i++){
-        let seconds: number = this._timeDelineators[i].diff(currentTime, "seconds");
+        let seconds: number = this._timeDelineators[i].time.diff(currentTime, "seconds");
         percentages.push((seconds / this.getTotalViewSeconds()) * 100);
-        currentTime = moment(this._timeDelineators[i]);
+        currentTime = moment(this._timeDelineators[i].time);
       }
       let finalSeconds: number = this._timelogZoomControl.endTime.diff(currentTime, "seconds");
       percentages.push((finalSeconds / this.getTotalViewSeconds()) * 100);
@@ -77,22 +85,24 @@ export class Timelog {
     }
   }
 
-  private buildTimelog() {
+  private addSleepTimeDelineators(){
+    if(this._activeDay.sleepProfileIsSet){
+      if(this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTimeISO))){
+        this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTimeISO), "SLEEP", faSun, "rgb(235, 201, 12)"));
+      }
+      if(this.timeIsInView(moment(this._activeDay.sleepProfile.bedtimeISO))){
+        this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.bedtimeISO), "SLEEP", faMoon, "rgb(68, 0, 255)"));
+      }
+    }
+  }
+
+  private updateTimelogEntryItems() {
     let calculatedEntryItems: { startTime: moment.Moment, totalSeconds: number, percentOfTotal: number, item: TimelogEntryItem }[] = [];
     let totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, "seconds");
     if (this._activeDay.sleepProfileIsSet) {
       if (this.viewStartsAfterWakeup()) {
         // 
         console.log("View starts after wakeup")
-
-        /*
-            startTimeISO: string;
-            endTimeISO: string;
-            utcOffsetMinutes: number;
-            timelogEntryActivities: TimelogEntryActivity[];
-            isConfirmed: boolean;
-            note: string;    
-        */
         let currentTime: moment.Moment = moment(this._timelogZoomControl.startTime);
         let wakeupTime: moment.Moment = moment(this._activeDay.sleepProfile.wakeupTimeISO);
         let bedTime: moment.Moment = moment(this._activeDay.sleepProfile.bedtimeISO);
@@ -161,7 +171,6 @@ export class Timelog {
     } else {
       console.log("sleep times not set.");
     }
-    this.updateTimeDelineators();
   }
 
   private viewStartsAfterWakeup(): boolean {
@@ -187,5 +196,6 @@ export class Timelog {
   }
 
 
-
+  faMoon = faMoon;
+  faSun = faSun;
 }
