@@ -18,8 +18,8 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   constructor(private daybookService: DaybookService) { }
 
   private _currentZoomLevel: TimelogZoomControl;
-  @Output() zoomLevel: EventEmitter<TimelogZoomControl> = new EventEmitter();
-  @Output() zoomHover: EventEmitter<TimelogZoomControl> = new EventEmitter();
+  @Output() public zoomControl: EventEmitter<TimelogZoomControl> = new EventEmitter();
+  @Output() public zoomHover: EventEmitter<TimelogZoomControl> = new EventEmitter();
 
 
   private _currentTime: moment.Moment = moment();
@@ -53,15 +53,15 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     let nextMinute: moment.Moment = moment().startOf("minute").add(1, "minute");
     let msUntilNextMinute: number = nextMinute.diff(moment(), "milliseconds");
     this._clockSubscription = timer(msUntilNextMinute, 60000).subscribe((tick) => {
-      console.log("Clock passed the minute")
+      // console.log("Clock passed the minute")
       this._currentTime = moment();
-      console.log("this._currentTime =  ", this._currentTime.format("hh:mm:ss a"))
+      // console.log("this._currentTime =  ", this._currentTime.format("hh:mm:ss a"))
       this.buildZoomButtons();
     });
 
 
     this.daybookService.activeDay$.subscribe((activeDayChanged) => {
-      console.log("Zoom day changed:")
+      // console.log("Zoom day changed:")
       let changedDate: moment.Moment = moment(activeDayChanged.dateYYYYMMDD);
       this._currentTime = moment(this._currentTime).year(changedDate.year()).month(changedDate.month()).date(changedDate.date());
 
@@ -129,7 +129,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   private buildZoomButtons() {
     let zoomButtons: TimelogZoomControl[] = [];
 
-
+    let changedValue: TimelogZoomControl;
 
     const twentyFourHourZoomActive: boolean = this._currentZoomLevel.name === "24";
     const eightHourZoomActive: boolean = this._currentZoomLevel.name === "8";
@@ -157,7 +157,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       endTime: RoundToNearestMinute.roundToNearestMinute(moment(this._currentTime).add(4, "hours"), 30, "UP"),
       itemState: new ItemState(null),
     }
-   
+
     this._customZoom = {
       icon: faWrench,
       name: "CUSTOM",
@@ -170,11 +170,13 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     };
 
     if (twentyFourHourZoomActive) {
-      this._currentZoomLevel = this._twentyFourHourZoom;
+      changedValue = this._twentyFourHourZoom;
     } else if (eightHourZoomActive) {
-      this._currentZoomLevel = this._eightHourZoom;
+      changedValue = this._eightHourZoom;
     } else if (customZoomActive) {
-      this._currentZoomLevel = this._customZoom;
+      changedValue = this._customZoom;
+    } else {
+      changedValue = this._wakeCycleZoom;
     }
 
     zoomButtons.push(this._twentyFourHourZoom);
@@ -186,13 +188,13 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       this._wakeCycleZoom.isLast = true;
       if (this._currentZoomLevel.name != this._twentyFourHourZoom.name && this._currentZoomLevel.name != this._wakeCycleZoom.name) {
         this._wakeCycleZoom.isActive = true;
-        this._currentZoomLevel = this._wakeCycleZoom;
+        changedValue = this._wakeCycleZoom;
       }
     }
 
     this._zoomButtons = zoomButtons;
-    console.log("Emitting this current zoom level: ", this._currentZoomLevel, this._currentZoomLevel.startTime.format("hh:mm a"), this._currentZoomLevel.endTime.format("hh:mm a"))
-    this.zoomLevel.emit(this._currentZoomLevel);
+    // console.log("Emitting from rebuild: ", this._currentZoomLevel, this._currentZoomLevel.startTime.format("hh:mm a"), this._currentZoomLevel.endTime.format("hh:mm a"))
+    this.emitChange(changedValue);
   }
 
   public onClickButton(clickedButton: TimelogZoomControl) {
@@ -203,11 +205,28 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
         button.isActive = false;
       }
     });
-    this._currentZoomLevel = clickedButton;
-    this.zoomLevel.emit(this._currentZoomLevel);
+    this.emitChange(clickedButton);
   }
   public onZoomHover(button: TimelogZoomControl) {
     this.zoomHover.emit(button);
+  }
+
+  private emitChange(newValue: TimelogZoomControl) {
+    /**
+     * Note:  we need to rebuild the object here because otherwise, we might be emitting the same identical object as the previous emit, and 
+     * apparently, in the timelog body component, if the @Input value receives the same object, it won't actually execute.
+     */
+    this._currentZoomLevel = {
+      icon: newValue.icon,
+      name: newValue.name,
+      isActive: newValue.isActive,
+      isFirst: newValue.isFirst,
+      isLast: newValue.isLast,
+      itemState: newValue.itemState,
+      startTime: moment(newValue.startTime),
+      endTime: moment(newValue.endTime),
+    }
+    this.zoomControl.emit(this._currentZoomLevel);
   }
 
 

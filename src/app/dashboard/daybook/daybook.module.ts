@@ -15,11 +15,7 @@ import { TimelogLargeComponent } from './widgets/timelog/timelog-large/timelog-l
 import { TimelogSmallComponent } from './widgets/timelog/timelog-small/timelog-small.component';
 import { CalendarLargeComponent } from './widgets/calendar/calendar-large/calendar-large.component';
 import { CalendarSmallComponent } from './widgets/calendar/calendar-small/calendar-small.component';
-import { DayStructureModeComponent } from './widgets/timelog/timelog-large/day-structure-mode/day-structure-mode.component';
-import { NewChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/new-chart-line-area/new-chart-line-area.component';
-import { MoveChartLineAreaComponent } from './widgets/timelog/timelog-large/day-structure-mode/move-chart-line-area/move-chart-line-area.component';
-import { TimelogChartComponent } from './widgets/timelog/timelog-large/timelog-chart/timelog-chart-large.component';
-import { TimelogChartItemComponent } from './widgets/timelog/timelog-large/timelog-chart/timelog-chart-large-row-item/timelog-chart-large-row-item.component';
+
 import { PointsWidgetSmallComponent } from './widgets/points/points-widget-small/points-widget-small.component';
 import { PointsWidgetLargeComponent } from './widgets/points/points-widget-large/points-widget-large.component';
 
@@ -57,11 +53,6 @@ import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-b
     TimelogSmallComponent,
     CalendarLargeComponent,
     CalendarSmallComponent,
-    DayStructureModeComponent,
-    NewChartLineAreaComponent,
-    MoveChartLineAreaComponent,
-    TimelogChartComponent,
-    TimelogChartItemComponent,
     PointsWidgetSmallComponent,
     PointsWidgetLargeComponent,
     DaybookEntryFormComponent,

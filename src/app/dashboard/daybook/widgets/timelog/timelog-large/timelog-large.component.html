@@ -15,10 +15,10 @@
         </div>
     </div>
 
-    <app-timelog-zoom-controller class="zoom-controller" (zoomLevel)="onZoomChanged($event)" (zoomHover)="onZoomHover($event)"></app-timelog-zoom-controller>
+    <app-timelog-zoom-controller class="zoom-controller" (zoomControl)="onZoomControlChanged($event)" (zoomHover)="onZoomHover($event)"></app-timelog-zoom-controller>
 
     <div class="display-flex-column">
-        <app-timelog-body class="display-flex-column" [zoom]="zoom" [zoomHover]="zoomHover"></app-timelog-body>
+        <app-timelog-body class="display-flex-column" [zoomControl]="zoomControl" [zoomHover]="zoomHover"></app-timelog-body>
 
     </div>
 

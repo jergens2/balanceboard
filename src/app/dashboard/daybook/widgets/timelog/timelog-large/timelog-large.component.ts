@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { DayStructureDataItem } from '../../../api/data-items/day-structure-data-item.interface';
 import { DaybookService } from '../../../daybook.service';
 import { TimelogZoomControl } from './timelog-zoom-controller/timelog-zoom-control.interface';
+import { Subject, BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-timelog-large',
@@ -40,9 +41,9 @@ export class TimelogLargeComponent implements OnInit {
   }
 
 
-  public onZoomChanged(zoomButton: TimelogZoomControl){
-    console.log("timelog large onZoomChanged()", zoomButton)
-    this._zoom = zoomButton;
+  public onZoomControlChanged(changedZoomControl: TimelogZoomControl){
+    console.log("timelog large onZoomChanged()", changedZoomControl)
+    this.zoomControl = changedZoomControl;
   }
   public onZoomHover(zoomButton: TimelogZoomControl){
     this._zoomHover = zoomButton;
@@ -50,7 +51,18 @@ export class TimelogLargeComponent implements OnInit {
 
   private _zoomHover: TimelogZoomControl = null;
   public get zoomHover(): TimelogZoomControl{ return this._zoomHover; }
-  private _zoom: TimelogZoomControl = { 
+  // private _defaultZoomValue: TimelogZoomControl = { 
+  //   icon: null,
+  //   name: "AWAKE",
+  //   isActive: true,
+  //   isFirst: false,
+  //   isLast: false,
+  //   itemState: null,
+  //   startTime: moment(this.daybookService.activeDay.wakeupTime), 
+  //   endTime: moment(this.daybookService.activeDay.bedtime) 
+  // };
+  // private _zoom$: BehaviorSubject<TimelogZoomControl> = new BehaviorSubject(this._defaultZoomValue);
+  public zoomControl: TimelogZoomControl = { 
     icon: null,
     name: "AWAKE",
     isActive: true,
@@ -60,7 +72,6 @@ export class TimelogLargeComponent implements OnInit {
     startTime: moment(this.daybookService.activeDay.wakeupTime), 
     endTime: moment(this.daybookService.activeDay.bedtime) 
   };
-  public get zoom(): TimelogZoomControl { return this._zoom; }
 
   faCog = faCog;
   faEye = faEye;

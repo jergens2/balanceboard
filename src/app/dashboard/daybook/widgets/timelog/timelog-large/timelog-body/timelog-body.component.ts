@@ -5,7 +5,7 @@ import * as moment from 'moment';
 import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
 import { DaybookService } from '../../../../daybook.service';
 import { TimelogZoomControl } from '../timelog-zoom-controller/timelog-zoom-control.interface';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
@@ -24,13 +24,10 @@ export class TimelogBodyComponent implements OnInit {
   constructor(private daybookService: DaybookService) { }
 
   private _zoomControl: TimelogZoomControl;
-  @Input() public set zoom(zoomControl: TimelogZoomControl) {
-    /**
-     * The zoom controller subscribes to the activeDay$ changes in daybookService, 
-     * therefore we don't need to do that here, we can just update the variable when this zoom input changes.
-     */
+  private _zoomControlSubscription: Subscription = new Subscription();
+  @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
+    console.log("Setting input");
     this._zoomControl = zoomControl;
-    console.log("Zoom changed")
     this.buildTimelog();
   }
 
@@ -54,7 +51,7 @@ export class TimelogBodyComponent implements OnInit {
   public get relativeMousePosition(): RelativeMousePosition { return this._relativeMousePosition; }
 
   private _timelog: Timelog = null;
-  public get timelog(): Timelog{ return this._timelog; }
+  public get timelog(): Timelog { return this._timelog; }
 
   public get timelogEntryItemsNgStyle(): any { return this._timelog.entryItemsNgStyle; }
   public get timelogEntryItems(): TimelogEntryItem[] { return this._timelog.entryItems; }
@@ -74,7 +71,7 @@ export class TimelogBodyComponent implements OnInit {
 
   private buildTimelog() {
     this._activeDay = this.daybookService.activeDay;
-    console.log("Timelog: Active day is: " , this._activeDay.dateYYYYMMDD);
+    console.log("Timelog: Active day is: ", this._activeDay.dateYYYYMMDD);
     this.buildGuideLineHours();
     this.updateNowLine();
 
@@ -132,9 +129,9 @@ export class TimelogBodyComponent implements OnInit {
       let totalDurationSeconds: number = this.endTime.diff(this.startTime, "seconds");
       let secondsFromStart: number = now.diff(this.startTime, "seconds");
       let percentFromStart: number = (secondsFromStart / totalDurationSeconds) * 100;
-      let percentRemaining: number = 100-percentFromStart;
+      let percentRemaining: number = 100 - percentFromStart;
       let ngStyle: any = { "grid-template-rows": percentFromStart.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
-      this._nowLine = {time: now, ngStyle: ngStyle};
+      this._nowLine = { time: now, ngStyle: ngStyle };
     } else {
       this._nowLine = null;
     }
@@ -158,7 +155,7 @@ export class TimelogBodyComponent implements OnInit {
     this._itemState.onMouseLeave();
     this._mousePosition = null;
   }
-  public onKeyDown(event: any){
+  public onKeyDown(event: any) {
     console.log("Keydown event: ", event)
   }
 

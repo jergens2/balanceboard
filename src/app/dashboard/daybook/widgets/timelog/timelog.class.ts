@@ -55,16 +55,10 @@ export class Timelog {
 
   private updateTimeDelineators() {
     this._timeDelineators = this._activeDay.timeDelineators.map((timeISO: string) => { 
-      return new TimeDelineator(moment(timeISO), "DEFAULT"); 
+      return new TimeDelineator(moment(timeISO), "DEFAULT", true); 
     });
     this.addSleepTimeDelineators();
-    this._timeDelineators = this._timeDelineators.filter((delineator) => {
-      return this.timeIsInView(delineator.time);
-    }).sort((delineator1, delineator2) => {
-      if (delineator1.time.isBefore(delineator2.time)) return -1;
-      else if (delineator1.time.isAfter(delineator2.time)) return 1;
-      else return 0;
-    });
+    this._timeDelineators = this.filterAndSortDelineators(this._timeDelineators);
     if(this._timeDelineators.length > 0){
       let gridTemplateRows: string = "";
       let percentages: number[] = [];
@@ -85,13 +79,30 @@ export class Timelog {
     }
   }
 
+  private filterAndSortDelineators(delineators: TimeDelineator[]): TimeDelineator[] {
+    return delineators.filter((delineator) => {
+      return this.timeIsInView(delineator.time);
+    }).sort((delineator1, delineator2) => {
+      if (delineator1.time.isBefore(delineator2.time)) return -1;
+      else if (delineator1.time.isAfter(delineator2.time)) return 1;
+      else return 0;
+    });
+  }
+
   private addSleepTimeDelineators(){
     if(this._activeDay.sleepProfileIsSet){
       if(this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTimeISO))){
-        this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTimeISO), "SLEEP", faSun, "rgb(235, 201, 12)"));
+        this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTimeISO), "SLEEP", true, faSun, "rgb(235, 201, 12)"));
       }
       if(this.timeIsInView(moment(this._activeDay.sleepProfile.bedtimeISO))){
-        this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.bedtimeISO), "SLEEP", faMoon, "rgb(68, 0, 255)"));
+        this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.bedtimeISO), "SLEEP", true, faMoon, "rgb(68, 0, 255)"));
+      }
+    }else{
+      if(this.timeIsInView(this._activeDay.wakeupTime)){
+        this._timeDelineators.push(new TimeDelineator(this._activeDay.wakeupTime, "SLEEP", false, faSun, "rgb(200, 200, 200)"));
+      }
+      if(this.timeIsInView(this._activeDay.bedtime)){
+        this._timeDelineators.push(new TimeDelineator(this._activeDay.bedtime, "SLEEP", false, faMoon, "rgb(200, 200, 200)"));
       }
     }
   }
@@ -99,78 +110,90 @@ export class Timelog {
   private updateTimelogEntryItems() {
     let calculatedEntryItems: { startTime: moment.Moment, totalSeconds: number, percentOfTotal: number, item: TimelogEntryItem }[] = [];
     let totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, "seconds");
-    if (this._activeDay.sleepProfileIsSet) {
-      if (this.viewStartsAfterWakeup()) {
-        // 
-        console.log("View starts after wakeup")
-        let currentTime: moment.Moment = moment(this._timelogZoomControl.startTime);
-        let wakeupTime: moment.Moment = moment(this._activeDay.sleepProfile.wakeupTimeISO);
-        let bedTime: moment.Moment = moment(this._activeDay.sleepProfile.bedtimeISO);
-
-        let startSleepItem = new TimelogEntryItem(currentTime, wakeupTime);
 
 
-        calculatedEntryItems.push({
-          startTime: currentTime,
-          totalSeconds: wakeupTime.diff(currentTime, "seconds"),
-          percentOfTotal: (startSleepItem.durationSeconds / totalViewSeconds) * 100,
-          item: startSleepItem,
-        });
-
-        currentTime = moment(wakeupTime);
-        let previousTimeMark: moment.Moment = moment(currentTime);
-
-        if (this._activeDay.daybookTimelogEntryDataItems.length > 0) {
-
-        } else {
-          currentTime = moment(bedTime);
-
-          let gapEntryItem: TimelogEntryItem = new TimelogEntryItem(previousTimeMark, currentTime);
-          let gapItem: any = {
-            startTime: currentTime,
-            totalSeconds: gapEntryItem.durationSeconds,
-            percentOfTotal: (gapEntryItem.durationSeconds / totalViewSeconds) * 100,
-            item: gapEntryItem,
-          };
-          calculatedEntryItems.push(gapItem);
-          previousTimeMark = moment(currentTime);
-          currentTime = moment(this._timelogZoomControl.endTime);
-        }
-
-        if (this.viewEndsAfterBedtime()) {
+    let delineators: TimeDelineator[] = Object.assign([], this._timeDelineators);
+    delineators.push(new TimeDelineator(moment(), "NOW", true));
+    delineators = this.filterAndSortDelineators(delineators);
+    console.log("Delineators")
+    delineators.forEach((d)=>{
+      console.log(d.time.format("hh:mm a"))
+    });
 
 
-          let endingSleepItem: TimelogEntryItem = new TimelogEntryItem(previousTimeMark, currentTime);
-          let endItem: any = {
-            startTime: currentTime,
-            totalSeconds: endingSleepItem.durationSeconds,
-            percentOfTotal: (endingSleepItem.durationSeconds / totalViewSeconds) * 100,
-            item: endingSleepItem,
-          };
-          calculatedEntryItems.push(endItem);
-          previousTimeMark = moment(currentTime);
-          currentTime = moment(this._timelogZoomControl.endTime);
+
+    // if (this._activeDay.sleepProfileIsSet) {
+    //   if (this.viewStartsAfterWakeup()) {
+    //     // 
+    //     console.log("View starts after wakeup")
+    //     let currentTime: moment.Moment = moment(this._timelogZoomControl.startTime);
+    //     let wakeupTime: moment.Moment = moment(this._activeDay.sleepProfile.wakeupTimeISO);
+    //     let bedTime: moment.Moment = moment(this._activeDay.sleepProfile.bedtimeISO);
+
+    //     let startSleepItem = new TimelogEntryItem(currentTime, wakeupTime);
 
 
-        } else {
-          console.log("view end does not end after bed time.  What do ?")
-        }
+    //     calculatedEntryItems.push({
+    //       startTime: currentTime,
+    //       totalSeconds: wakeupTime.diff(currentTime, "seconds"),
+    //       percentOfTotal: (startSleepItem.durationSeconds / totalViewSeconds) * 100,
+    //       item: startSleepItem,
+    //     });
 
-        let gridTemplateRows: string = "";
-        calculatedEntryItems.forEach(item => {
-          gridTemplateRows += "" + item.percentOfTotal.toFixed(2) + "% ";
-        });
-        console.log("Grid template rows:", gridTemplateRows)
-        console.log("Setting the STYLEY")
-        this._entryItemsNgStyle = { "grid-template-rows": gridTemplateRows };
-        this._entryItems = calculatedEntryItems.map((item) => { return item.item; });
+    //     currentTime = moment(wakeupTime);
+    //     let previousTimeMark: moment.Moment = moment(currentTime);
 
-      } else {
-        console.log("View does not start after wakeup")
-      }
-    } else {
-      console.log("sleep times not set.");
-    }
+    //     if (this._activeDay.daybookTimelogEntryDataItems.length > 0) {
+
+    //     } else {
+    //       currentTime = moment(bedTime);
+
+    //       let gapEntryItem: TimelogEntryItem = new TimelogEntryItem(previousTimeMark, currentTime);
+    //       let gapItem: any = {
+    //         startTime: currentTime,
+    //         totalSeconds: gapEntryItem.durationSeconds,
+    //         percentOfTotal: (gapEntryItem.durationSeconds / totalViewSeconds) * 100,
+    //         item: gapEntryItem,
+    //       };
+    //       calculatedEntryItems.push(gapItem);
+    //       previousTimeMark = moment(currentTime);
+    //       currentTime = moment(this._timelogZoomControl.endTime);
+    //     }
+
+    //     if (this.viewEndsAfterBedtime()) {
+
+
+    //       let endingSleepItem: TimelogEntryItem = new TimelogEntryItem(previousTimeMark, currentTime);
+    //       let endItem: any = {
+    //         startTime: currentTime,
+    //         totalSeconds: endingSleepItem.durationSeconds,
+    //         percentOfTotal: (endingSleepItem.durationSeconds / totalViewSeconds) * 100,
+    //         item: endingSleepItem,
+    //       };
+    //       calculatedEntryItems.push(endItem);
+    //       previousTimeMark = moment(currentTime);
+    //       currentTime = moment(this._timelogZoomControl.endTime);
+
+
+    //     } else {
+    //       console.log("view end does not end after bed time.  What do ?")
+    //     }
+
+    //     let gridTemplateRows: string = "";
+    //     calculatedEntryItems.forEach(item => {
+    //       gridTemplateRows += "" + item.percentOfTotal.toFixed(2) + "% ";
+    //     });
+    //     console.log("Grid template rows:", gridTemplateRows)
+    //     console.log("Setting the STYLEY")
+    //     this._entryItemsNgStyle = { "grid-template-rows": gridTemplateRows };
+    //     this._entryItems = calculatedEntryItems.map((item) => { return item.item; });
+
+    //   } else {
+    //     console.log("View does not start after wakeup")
+    //   }
+    // } else {
+    //   console.log("sleep times not set.");
+    // }
   }
 
   private viewStartsAfterWakeup(): boolean {
