@@ -33,7 +33,7 @@ export class DaybookTimeReferencer{
     }
 
 
-    static readonly defaultWakeupTime: moment.Moment = moment().hour(7).minute(0).second(0).millisecond(0);
+    static readonly defaultWakeupTime: moment.Moment = moment().hour(7).minute(30).second(0).millisecond(0);
     static readonly defaultBedtime: moment.Moment = moment().hour(22).minute(30).second(0).millisecond(0);
     static readonly defaultpreviousFallAsleepTime: moment.Moment = moment(DaybookTimeReferencer.defaultBedtime).subtract(1, "days");
 

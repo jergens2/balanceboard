@@ -93,7 +93,15 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       }
     } else {
       wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.wakeupTime), 30, "DOWN");
+      if(wakeupTime.isSame(activeDayChanged.wakeupTime)){
+        /* Due to the way that the round function works, it will round 30 down to 30 , 
+           but will round 30 up to 60, so for the case of rounding down, we need to add the 30 minute buffer here, 
+           but we do not need to add the 30 minute buffer for the bedtime.
+        */
+        wakeupTime = moment(wakeupTime).subtract(30, "minutes");
+      }
       bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.bedtime), 30, "UP");
+      console.log("Ze wakeup time is " + wakeupTime.format('hh:mm a'))
     }
 
     this._wakeCycleZoom = {

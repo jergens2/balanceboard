@@ -48,34 +48,34 @@ export class Timelog {
     this.update();
   }
 
-  private update(){
+  private update() {
     this.updateTimeDelineators();
     this.updateTimelogEntryItems();
   }
 
   private updateTimeDelineators() {
-    this._timeDelineators = this._activeDay.timeDelineators.map((timeISO: string) => { 
-      return new TimeDelineator(moment(timeISO), "DEFAULT", true); 
+    this._timeDelineators = this._activeDay.timeDelineators.map((timeISO: string) => {
+      return new TimeDelineator(moment(timeISO), "DEFAULT", true);
     });
     this.addSleepTimeDelineators();
     this._timeDelineators = this.filterAndSortDelineators(this._timeDelineators);
-    if(this._timeDelineators.length > 0){
+    if (this._timeDelineators.length > 0) {
       let gridTemplateRows: string = "";
       let percentages: number[] = [];
       let currentTime: moment.Moment = this._timelogZoomControl.startTime;
-      for(let i=0; i<this._timeDelineators.length; i++){
+      for (let i = 0; i < this._timeDelineators.length; i++) {
         let seconds: number = this._timeDelineators[i].time.diff(currentTime, "seconds");
         percentages.push((seconds / this.getTotalViewSeconds()) * 100);
         currentTime = moment(this._timeDelineators[i].time);
       }
       let finalSeconds: number = this._timelogZoomControl.endTime.diff(currentTime, "seconds");
       percentages.push((finalSeconds / this.getTotalViewSeconds()) * 100);
-      percentages.forEach((percentage: number)=>{
-        gridTemplateRows += ""+percentage.toFixed(2)+"% ";
+      percentages.forEach((percentage: number) => {
+        gridTemplateRows += "" + percentage.toFixed(2) + "% ";
       });
-      this._timeDelineatorsNgStyle = {"grid-template-rows": gridTemplateRows };
-    }else{
-      this._timeDelineatorsNgStyle = {"grid-template-rows":"1fr"};
+      this._timeDelineatorsNgStyle = { "grid-template-rows": gridTemplateRows };
+    } else {
+      this._timeDelineatorsNgStyle = { "grid-template-rows": "1fr" };
     }
   }
 
@@ -89,39 +89,57 @@ export class Timelog {
     });
   }
 
-  private addSleepTimeDelineators(){
-    if(this._activeDay.sleepProfileIsSet){
-      if(this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTimeISO))){
+  private addSleepTimeDelineators() {
+    if (this._activeDay.sleepProfileIsSet) {
+      if (this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTimeISO))) {
         this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTimeISO), "SLEEP", true, faSun, "rgb(235, 201, 12)"));
       }
-      if(this.timeIsInView(moment(this._activeDay.sleepProfile.bedtimeISO))){
+      if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedtimeISO))) {
         this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.bedtimeISO), "SLEEP", true, faMoon, "rgb(68, 0, 255)"));
       }
-    }else{
-      if(this.timeIsInView(this._activeDay.wakeupTime)){
+    } else {
+      if (this.timeIsInView(this._activeDay.wakeupTime)) {
         this._timeDelineators.push(new TimeDelineator(this._activeDay.wakeupTime, "SLEEP", false, faSun, "rgb(200, 200, 200)"));
       }
-      if(this.timeIsInView(this._activeDay.bedtime)){
+      if (this.timeIsInView(this._activeDay.bedtime)) {
         this._timeDelineators.push(new TimeDelineator(this._activeDay.bedtime, "SLEEP", false, faMoon, "rgb(200, 200, 200)"));
       }
     }
   }
 
   private updateTimelogEntryItems() {
-    let calculatedEntryItems: { startTime: moment.Moment, totalSeconds: number, percentOfTotal: number, item: TimelogEntryItem }[] = [];
+    // let calculatedEntryItems: { startTime: moment.Moment, totalSeconds: number, percentOfTotal: number, item: TimelogEntryItem }[] = [];
     let totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, "seconds");
 
 
     let delineators: TimeDelineator[] = Object.assign([], this._timeDelineators);
+    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.startTime), "FRAME", true));
     delineators.push(new TimeDelineator(moment(), "NOW", true));
+    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.endTime), "FRAME", true));
     delineators = this.filterAndSortDelineators(delineators);
-    console.log("Delineators")
-    delineators.forEach((d)=>{
-      console.log(d.time.format("hh:mm a"))
+    // console.log("Delineators")
+    // delineators.forEach((d) => {
+    //   console.log(d.time.format("hh:mm a"))
+    // });
+
+    const entriesCount: number = delineators.length - 1;
+    let entries: TimelogEntryItem[] = [];
+    for (let i = 0; i < entriesCount; i++) {
+      const wakeupTime: moment.Moment = this._activeDay.wakeupTime;
+      const bedtime: moment.Moment = this._activeDay.bedtime;
+      const entry: TimelogEntryItem = new TimelogEntryItem(delineators[i], delineators[i + 1].time, wakeupTime, bedtime);
+      entries.push(entry);
+    }
+
+
+    let gridTemplateRows: string = "";
+    entries.forEach(item => {
+      gridTemplateRows += "" + item.percentOfTotal(totalViewSeconds).toFixed(2) + "% ";
     });
-
-
-
+    console.log("Timelog Entry items grid-template-rows:", gridTemplateRows)
+    // console.log("Setting the STYLEY")
+    this._entryItemsNgStyle = { "grid-template-rows": gridTemplateRows };
+    this._entryItems = entries;
     // if (this._activeDay.sleepProfileIsSet) {
     //   if (this.viewStartsAfterWakeup()) {
     //     // 

@@ -75,6 +75,14 @@
   text-decoration: none;
 }
 
+.new-item-icon{
+  color: gray;
+}
+.new-item-icon:hover{
+  cursor: pointer;
+  color: rgb(0, 89, 255);
+}
+
 .medium-button{
   font-size: 0.9em;
   color:gray;

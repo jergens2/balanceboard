@@ -5,7 +5,14 @@
 
     border-radius: 3px;
 
-    border: 1px solid rgb(228, 228, 228);
-    margin-bottom:1px;
+    /* border: 1px solid rgb(228, 228, 228); */
+    /* margin-bottom:1px;
+    margin-top:1px; */
 
+    display:flex;
+    flex-direction: column;
+}
+.timelog-entry-root:hover{
+    border: 1px solid rgba(0, 89, 255, 0.2);
+    background-color: rgba(244, 248, 255, 0.8);
 }

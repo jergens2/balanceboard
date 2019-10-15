@@ -155,9 +155,7 @@ export class TimelogBodyComponent implements OnInit {
     this._itemState.onMouseLeave();
     this._mousePosition = null;
   }
-  public onKeyDown(event: any) {
-    console.log("Keydown event: ", event)
-  }
+
 
   private updateMousePosition() {
     let percentY: number = this.relativeMousePosition.percentY;

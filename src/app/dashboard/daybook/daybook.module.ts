@@ -33,6 +33,7 @@ import { TimelogBodyComponent } from './widgets/timelog/timelog-large/timelog-bo
 import { TimelogZoomControllerComponent } from './widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-controller.component';
 import { WeightLogEntryComponent } from './widgets/weight-log-entry/weight-log-entry.component';
 import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry.component';
+import { TimelogEntryDisplayComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-display/timelog-entry-display.component';
 
 
 @NgModule({
@@ -68,6 +69,7 @@ import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-b
     TimelogBodyComponent,
     TimelogZoomControllerComponent,
     WeightLogEntryComponent,
+    TimelogEntryDisplayComponent,
   ],
   exports: [
     DaybookEntryFormComponent,

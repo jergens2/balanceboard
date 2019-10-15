@@ -55,11 +55,16 @@ export class RelativeMousePosition{
         this._percentY = (relativeY / this._elementHeight) * 100;
     }
 
-    private _elementOffsetLeft: number;
-    private _elementOffsetTop: number;
-    private _elementHeight: number;
-    private _elementWidth: number;
+    private _elementOffsetLeft: number = -1; 
+    private _elementOffsetTop: number = -1;
+    private _elementHeight: number = -1;
+    private _elementWidth: number = -1;
 
+    public get elementOffsetLeft(): number{ return this._elementOffsetLeft; }
+    public get elementOffsetTop(): number{ return this._elementOffsetTop; }
+    public get elementHeight(): number { return this._elementHeight; }
+    public get elementWidth(): number { return this._elementWidth; }
+    
     private _percentX: number = 0;
     private _percentY: number = 0;
 
@@ -69,5 +74,6 @@ export class RelativeMousePosition{
     public get relativeY(): number{ return this._relativePosition.y; }
     public get percentX(): number{ return this._percentX; }
     public get percentY(): number{ return this._percentY; }
+
 
 }

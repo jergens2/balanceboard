@@ -6,7 +6,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 export class TimeDelineator{
 
-    constructor(time: moment.Moment, type: "DEFAULT" | "SLEEP" | "NOW", isConfirmed: boolean, icon?: IconDefinition, iconColor?: string){
+    constructor(time: moment.Moment, type: "DEFAULT" | "SLEEP" | "NOW" | "FRAME", isConfirmed: boolean, icon?: IconDefinition, iconColor?: string){
         this._time = moment(time);
         this._itemState = new ItemState(this._time);
         this._isConfirmed = isConfirmed;
@@ -28,7 +28,7 @@ export class TimeDelineator{
     private _itemState: ItemState;
     public get itemState(): ItemState{ return this._itemState; }
 
-    public delineatorType: "DEFAULT" | "SLEEP" | "NOW";
+    public delineatorType: "DEFAULT" | "SLEEP" | "NOW" | "FRAME";
 
     public get mouseIsOver(): boolean { return this._itemState.mouseIsOver; }
 
