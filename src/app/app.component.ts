@@ -68,7 +68,7 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
       }
     });
 
-    this.toolsService.currentTool$.subscribe((tool: ToolComponents) => {
+    this.toolsService.currentTool$.subscribe((tool: {component: ToolComponents, data: any}) => {
       if (tool != null) {
         this.ifTools = true;
       } else {

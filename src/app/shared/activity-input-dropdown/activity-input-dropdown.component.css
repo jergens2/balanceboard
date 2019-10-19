@@ -14,9 +14,9 @@
     border-radius: 5px;
     max-height: 34px;
 }
-/* .search-box-active{
-    
-} */
+.search-box-active{
+    border: 1px solid rgba(0, 89, 255, 0.2);
+}
 .search-box-expanded{
     max-height:350px;
     /* border: 1px solid rgba(0, 0, 0, 0.2); */

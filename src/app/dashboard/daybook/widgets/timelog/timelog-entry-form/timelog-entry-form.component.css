@@ -1,0 +1,4 @@
+.timelog-entry-form-root{
+    display:flex;
+    flex-direction: column;
+}

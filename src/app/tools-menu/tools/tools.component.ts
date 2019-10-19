@@ -5,6 +5,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { SizeService } from '../../shared/app-screen-size/size.service';
 import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.enum';
 import * as moment from 'moment';
+import { TimelogEntryItem } from '../../dashboard/daybook/widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 
 @Component({
   selector: 'app-tools',
@@ -25,6 +26,10 @@ export class ToolsComponent implements OnInit {
   toolName: string = "";
 
   screenSize: AppScreenSize;
+
+
+  private _timelogEntryItem: TimelogEntryItem;
+  public get timelogEntryItem(): TimelogEntryItem{ return this._timelogEntryItem; }
   
   ngOnInit() {
     // console.log("Tools component init");
@@ -33,8 +38,13 @@ export class ToolsComponent implements OnInit {
     })
     this.screenSize = this.sizeService.appScreenSize;
 
-    this.toolsService.currentTool$.subscribe((tool: ToolComponents)=>{
-      this.toolName = tool;
+    this.toolsService.currentTool$.subscribe((tool: {component: ToolComponents, data: any})=>{
+      if(tool.component === ToolComponents.TimelogEntry && tool.data){
+        this._timelogEntryItem = tool.data as TimelogEntryItem;
+      }
+      
+      this.toolName = tool.component;
+
     });  
     // console.log("Tools component init COMPLETE");
   }
@@ -44,7 +54,7 @@ export class ToolsComponent implements OnInit {
   }
 
   onClickClose(){
-    this.toolsService.closeTool(ToolComponents.Notepad);
+    this.toolsService.closeTool();
   }
 
 }

@@ -1,0 +1,8 @@
+<div class="timelog-entry-form-root">
+    <div>Start:  {{ entryItem.startTime.format('hh:mm a')}}</div>
+    <div>End:  {{ entryItem.endTime.format('hh:mm a')}}</div>
+    <div>Duration:  {{ entryItem.durationString }}</div>
+    <div>
+        <app-tlef-activities [timelogEntryStart]="entryItem.startTime" [timelogEntryEnd]="entryItem.endTime" [modifyTimelogEntry]="entryItem.dataEntryItem" (tlefActivitiesChanged)="onActivitiesChanged($event)"></app-tlef-activities>
+    </div>
+</div>

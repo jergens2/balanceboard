@@ -20,8 +20,8 @@ import { PointsWidgetSmallComponent } from './widgets/points/points-widget-small
 import { PointsWidgetLargeComponent } from './widgets/points/points-widget-large/points-widget-large.component';
 
 import { DaybookEntryFormComponent } from './daybook-entry-form-mobile/daybook-entry-form.component';
-import { TlefActivitiesComponent } from './daybook-entry-form-mobile/tlef-activities/tlef-activities.component';
-import { ActivitySliderBarComponent } from './daybook-entry-form-mobile/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
+import { TlefActivitiesComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activities.component';
+import { ActivitySliderBarComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
 import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.component';
 import { WakeupSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/wakeup-section.component';
 import { DaySectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/time-of-day-section/time-of-day-section.component';
@@ -34,6 +34,7 @@ import { TimelogZoomControllerComponent } from './widgets/timelog/timelog-large/
 import { WeightLogEntryComponent } from './widgets/weight-log-entry/weight-log-entry.component';
 import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry.component';
 import { TimelogEntryDisplayComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-display/timelog-entry-display.component';
+import { TimelogEntryFormComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form.component';
 
 
 @NgModule({
@@ -70,9 +71,11 @@ import { TimelogEntryDisplayComponent } from './widgets/timelog/timelog-large/ti
     TimelogZoomControllerComponent,
     WeightLogEntryComponent,
     TimelogEntryDisplayComponent,
+    TimelogEntryFormComponent,
   ],
   exports: [
     DaybookEntryFormComponent,
+    TimelogEntryFormComponent,
     TlefActivitiesComponent,
     ActivitySliderBarComponent,
   ]

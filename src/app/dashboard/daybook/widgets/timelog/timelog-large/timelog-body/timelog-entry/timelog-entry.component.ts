@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from './timelog-entry-item.class';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { RelativeMousePosition } from '../../../../../../../shared/utilities/relative-mouse-position.class';
+import { ToolsService } from '../../../../../../../tools-menu/tools/tools.service';
+import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-components.enum';
 
 @Component({
   selector: 'app-timelog-entry',
@@ -10,7 +12,7 @@ import { RelativeMousePosition } from '../../../../../../../shared/utilities/rel
 })
 export class TimelogEntryComponent implements OnInit {
 
-  constructor() { }
+  constructor(private toolsService: ToolsService) { }
 
   private _entry: TimelogEntryItem;
   @Input() public set entry(item: TimelogEntryItem){
@@ -32,6 +34,9 @@ export class TimelogEntryComponent implements OnInit {
     this._relativeMousePosition.onMouseMove(event, "timelog-entry-root");
     this._entry.itemState.onMouseEnter();
     console.log(this._entry.sleepState);
+  }
+  public onClickNewTimelogEntry(){
+    this.toolsService.openTool(ToolComponents.TimelogEntry, this._entry);
   }
 
 

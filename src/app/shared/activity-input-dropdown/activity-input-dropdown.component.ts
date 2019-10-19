@@ -8,6 +8,7 @@ import { ActivityCategoryDefinition } from '../../dashboard/activities/api/activ
 import { ActivityCategoryDefinitionService } from '../../dashboard/activities/api/activity-category-definition.service';
 import { ActivityInputSearch } from './activity-input-search.class';
 import { ActivityChainLink, SaveActivityChain } from './save-activity-chain.class';
+import { ItemState } from '../utilities/item-state.class';
 
 @Component({
   selector: 'app-activity-input-dropdown',
@@ -54,11 +55,21 @@ export class ActivityInputDropdownComponent implements OnInit {
   constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
   ngOnInit() {
+    this._itemState = new ItemState(null);
     this.activitiesTree = this.activityCategoryDefinitionService.activitiesTree;
     this.activityCategoryDefinitionService.activitiesTree$.subscribe((newTree) => {
       console.log("Updating tree");
       this.activitiesTree = newTree;
-    })
+    });
+
+
+    this._itemState.mouseIsOver$.subscribe((mouseIsOver: boolean)=>{
+      console.log("item mouse is over? ", mouseIsOver)
+      console.log("text value: ", this.activityTextInputValue)
+      if(mouseIsOver === false && this.activityTextInputValue === ""){
+        this._itemState.reset();
+      }
+    });
   }
 
 
@@ -78,6 +89,7 @@ export class ActivityInputDropdownComponent implements OnInit {
   private onInputValueChanged(event: KeyboardEvent) {
     let target: HTMLInputElement = (event.target as HTMLInputElement);
     if (target != null && target.value != null && target.value != ""){
+      this._itemState.startEditing();
       let targetValue: string = (event.target as HTMLInputElement).value;
       this.activityTextInputValue = targetValue;
       let initiateSearch: boolean = false;
@@ -112,6 +124,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     }else{
       this.searchResults = [];
       this.createNewActivities = [];
+      this.activityTextInputValue = "";
     }
   }
 
@@ -277,8 +290,19 @@ export class ActivityInputDropdownComponent implements OnInit {
   }
 
 
+  private _itemState: ItemState;
+  public get itemState(): ItemState{ return this._itemState; };
 
+  public get searchBoxActive(): boolean{ 
+    return this._itemState.isEditing;
+  }
 
+  public onMouseEnter(){
+    this._itemState.onMouseEnter();
+    if(this.activityTextInputValue !== ""){
+      this._itemState.startEditing();
+    }
+  }
 
 
   public get searchBoxExpanded(): boolean {

@@ -16,12 +16,15 @@ export class SaveActivityChain{
     public saveActivities$(): Observable<ActivityCategoryDefinition> {
         let isSaved$: Subject<ActivityCategoryDefinition> = new Subject();
         if(this.startLink){
+            // console.log("link: ", this.startLink)
             this.startLink.linkSaved$.subscribe((bottomActivity: ActivityCategoryDefinition)=>{
                 if(bottomActivity != null){
                     isSaved$.next(bottomActivity);
                 }
             });
             this.startLink.saveChainLink();
+        }else{
+            console.log("There is no startlink.  ")
         }
         return isSaved$.asObservable();
     }

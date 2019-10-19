@@ -1,10 +1,10 @@
-<div class="activity-input-dropdown-root font-family-open-sans">
+<div class="activity-input-dropdown-root font-family-open-sans" (mouseenter)="onMouseEnter()" (mouseleave)="itemState.onMouseLeave()">
 
 
-  <div class="search-box" [ngClass]="{'search-box-expanded': searchBoxExpanded}">
+  <div class="search-box" [ngClass]="{'search-box-expanded': searchBoxExpanded, 'search-box-active': searchBoxActive}">
     <div class="action-search">
       <fa-icon [icon]="faSearch" class="search-icon"></fa-icon>
-      <input type="text" class="search-input" placeholder="Search for activity" [value]="activityTextInputValue"
+      <input type="text" class="search-input" placeholder="Search for activity" [value]="activityTextInputValue" (focus)="itemState.startEditing()"
         (keyup)="onActivityInputKeyUp($event)" (keydown)="onActivityInputKeyDown($event)">
       <!-- [value]="activityTextInputValue" -->
     </div>

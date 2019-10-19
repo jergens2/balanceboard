@@ -1,10 +1,14 @@
 import * as moment from 'moment';
 import { ItemState } from '../../../../../../../shared/utilities/item-state.class';
 import { TimeDelineator } from '../../../time-delineator.class';
+import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybook-timelog-entry-data-item.interface';
+import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 
 export class TimelogEntryItem{
     constructor(delineator: TimeDelineator, endTime: moment.Moment, wakeupTime: moment.Moment, bedtime: moment.Moment){
         this._startTime = delineator.time;
+        this._utcOffsetMinutes = this._startTime.utcOffset();
         this._endTime = endTime;
         this._itemState = new ItemState({startTime: this._startTime, endTime: this._endTime});
 
@@ -15,6 +19,8 @@ export class TimelogEntryItem{
         }else{
             this._sleepState = "AWAKE";
         }
+
+
     }
 
     private _itemState: ItemState;
@@ -34,6 +40,10 @@ export class TimelogEntryItem{
     public get durationSeconds(): number{
         return this._endTime.diff(this._startTime, "seconds");
     }
+    public get durationString(): string{
+        return DurationString.calculateDurationString(this._startTime, this._endTime);
+    }
+
     public percentOfTotal(totalSeconds: number): number{
         return (this.durationSeconds / totalSeconds) * 100;
     }
@@ -44,13 +54,21 @@ export class TimelogEntryItem{
     private _isConfirmed: boolean = false;
     public get isConfirmed(): boolean { return this._isConfirmed; }
 
-          /*
-          startTimeISO: string;
-          endTimeISO: string;
-          utcOffsetMinutes: number;
-          timelogEntryActivities: TimelogEntryActivity[];
-          isConfirmed: boolean;
-          note: string;    
-      */
+    private _utcOffsetMinutes: number;
+    public get utcOffsetMinutes(): number { return this._utcOffsetMinutes; }
+
+    private _timelogEntryActivities: TimelogEntryActivity[] = [];
+    private _note: string = "";
+
+    public get dataEntryItem(): DaybookTimelogEntryDataItem{
+        return {
+            startTimeISO: this._startTime.toISOString(),
+            endTimeISO: this._endTime.toISOString(),
+            utcOffsetMinutes: this._utcOffsetMinutes,
+            timelogEntryActivities: this._timelogEntryActivities,
+            isConfirmed: false,
+            note: this._note,
+        }
+    }
     
 }

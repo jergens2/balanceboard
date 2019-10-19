@@ -21,7 +21,7 @@ export class DefaultActivityCategoryDefinitions {
             parentTreeId: userId + "_TOP_LEVEL",
             name: "name",
             description: "description",
-            color: "",
+            color: "#eeeeee",
             icon: "",
             durationSetting: ActivityDurationSetting.Duration,
             specifiedDurationMinutes: -1,
