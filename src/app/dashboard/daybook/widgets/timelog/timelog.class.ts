@@ -91,7 +91,7 @@ export class Timelog {
     allTimes = this.setFollowingTimesOfDelineators(allTimes);
     allTimes = this.setVisibilityOfTimelogDelineators(allTimes);
     allTimes.forEach((time) => {
-      console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible);
+      console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible , " type: ", time.delineatorType);
     });
 
 

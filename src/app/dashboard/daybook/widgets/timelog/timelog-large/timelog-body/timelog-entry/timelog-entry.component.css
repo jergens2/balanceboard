@@ -6,13 +6,13 @@
     border-radius: 3px;
 
     /* border: 1px solid rgb(228, 228, 228); */
-    /* margin-bottom:1px;
-    margin-top:1px; */
+    margin-bottom:1px;
+    margin-top:1px;
 
     display:flex;
     flex-direction: column;
 }
 .timelog-entry-root:hover{
-    border: 1px solid rgba(0, 89, 255, 0.2);
+    border: 1px solid black;
     background-color: rgba(0, 94, 255, 0.8);
 }

@@ -28,17 +28,17 @@
         <div *ngIf="timeDelineators.length > 0" class="time-delineators" [ngStyle]="timeDelineatorsNgStyle">
             <div></div>
             <div class="time-delineator-label-container" *ngFor="let timeDelineator of timeDelineators">
-                <div class="time-delineator-time-label" (mouseenter)="timeDelineator.itemState.onMouseEnter()"
+                <div class="time-delineator-time-label" *ngIf="timeDelineator.isVisible" (mouseenter)="timeDelineator.itemState.onMouseEnter()"
                     (mouseleave)="timeDelineator.itemState.onMouseLeave()">
                     <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon" [ngStyle]="timeDelineator.ngStyle"
                         *ngIf="timeDelineator.icon"></fa-icon>
 
-                    <span *ngIf="timeDelineator.isVisible">{{ timeDelineator.time.format('h:mm a')}}</span>
+                    <span>{{ timeDelineator.time.format('h:mm a')}}</span>
                     <fa-icon *ngIf="timeDelineator.mouseIsOver && timeDelineator.delineatorType == 'DELINEATOR'"
                         (click)="timelog.removeTimeDelineator(timeDelineator)"
                         style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faTimes"></fa-icon>
                 </div>
-                <div style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div>
+                <div *ngIf="timeDelineator.delineatorType === 'DELINEATOR' && timeDelineator.isVisible" style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div>
             </div>
         </div>
 
