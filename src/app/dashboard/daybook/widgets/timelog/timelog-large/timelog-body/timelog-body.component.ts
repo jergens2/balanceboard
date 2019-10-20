@@ -56,8 +56,8 @@ export class TimelogBodyComponent implements OnInit {
   public get timelogEntryItemsNgStyle(): any { return this._timelog.entryItemsNgStyle; }
   public get timelogEntryItems(): TimelogEntryItem[] { return this._timelog.entryItems; }
 
-  private _mousePosition: { time: moment.Moment, ngStyle: any } = null;
-  public get mousePosition(): { time: moment.Moment, ngStyle: any } { return this._mousePosition; };
+  private _mousePosition: { time: moment.Moment, ngStyle: any, crossesExistingTimelogEntry: boolean } = null;
+  public get mousePosition(): { time: moment.Moment, ngStyle: any, crossesExistingTimelogEntry: boolean } { return this._mousePosition; };
 
   private _nowLine: { time: moment.Moment, ngStyle: any } = null;
   public get nowLine(): { time: moment.Moment, ngStyle: any } { return this._nowLine; };
@@ -145,8 +145,6 @@ export class TimelogBodyComponent implements OnInit {
     this._timelog = timelog;
   }
 
-
-
   public onMouseMove(event: MouseEvent) {
     this._relativeMousePosition.onMouseMove(event, "timelog-body-root");
     this.updateMousePosition();
@@ -165,7 +163,8 @@ export class TimelogBodyComponent implements OnInit {
     let ngStyle: any = { "grid-template-rows": percentY.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
     let time: moment.Moment = moment(this.startTime).add(relativeSeconds, "seconds");
     // time = RoundToNearestMinute.roundToNearestMinute(moment(this.startTime).add(relativeSeconds, "seconds"), 5);
-    this._mousePosition = { time: time, ngStyle: ngStyle };
+    let crossesAnyTimelogEntry: boolean = this._timelog.crossesAnyTimelogEntry(time);
+    this._mousePosition = { time: time, ngStyle: ngStyle, crossesExistingTimelogEntry: crossesAnyTimelogEntry };
   }
 
   faTimes = faTimes;

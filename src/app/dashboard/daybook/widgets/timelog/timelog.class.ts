@@ -85,8 +85,10 @@ export class Timelog {
         allTimes.push(endDelineator);
       }
     }
-    allTimes[allTimes.length - 1].isVisible = true;
-
+    
+    
+    allTimes = this.addExistingDelineators(allTimes);
+    allTimes = this.setFollowingTimesOfDelineators(allTimes);
     allTimes = this.setVisibilityOfTimelogDelineators(allTimes);
     allTimes.forEach((time) => {
       console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible);
@@ -94,8 +96,7 @@ export class Timelog {
 
 
 
-
-    allTimes = this.filterAndSortDelineators(allTimes);
+    
 
     if (allTimes.length > 0) {
       let gridTemplateRows: string = "";
@@ -118,9 +119,6 @@ export class Timelog {
       this._timeDelineatorsNgStyle = { "grid-template-rows": "1fr" };
     }
 
-    // this._timeDelineators.forEach((time) => {
-    //   console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible);
-    // });
 
     /**
      * At the end of selecting, then check the very first and very last delineator if within 30 minutes, and make visible if not.
@@ -139,6 +137,29 @@ export class Timelog {
       if (!this.isWithin30MinutesOfAnother(entryDelineator, allTimes)) entryDelineator.isVisible = true;
       else entryDelineator.isVisible = false;
     });
+    allTimes.filter((time)=>{ return time.delineatorType === "NOW"}).forEach((nowTime)=>{ nowTime.isVisible = false; });
+    // allTimes[allTimes.length - 1].isVisible = true;
+    return allTimes;
+  }
+
+  private setFollowingTimesOfDelineators(allTimes: TimeDelineator[]): TimeDelineator[] {
+    allTimes = this.filterAndSortDelineators(allTimes);
+    for(let i=0; i< allTimes.length-1; i++){
+      if(allTimes[i].nextDelineatorTime === null){
+        allTimes[i].nextDelineatorTime = moment(allTimes[i+1].time);
+      }
+    }
+    return allTimes;
+  }
+
+  private addExistingDelineators(allTimes: TimeDelineator[]): TimeDelineator[] {
+    this._activeDay.timeDelineators.forEach((time: string)=>{
+      if(!this.crossesAnyTimelogEntry(moment(time))){
+        let delineator: TimeDelineator = new TimeDelineator(moment(time), "DELINEATOR");
+        delineator.isVisible = true;
+        allTimes.push(delineator);
+      }
+    });
     return allTimes;
   }
 
@@ -156,6 +177,18 @@ export class Timelog {
     return isWithin30Minutes;
   }
 
+  public crossesAnyTimelogEntry(time: moment.Moment): boolean {
+    let crossesExisting: boolean = false;
+    this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem) => {
+      const start: moment.Moment = moment(entryDataItem.startTimeISO);
+      const end: moment.Moment = moment(entryDataItem.endTimeISO);
+      if (time.isSameOrAfter(start) && time.isSameOrBefore(end)) {
+        crossesExisting = true;
+      }
+    });
+    return crossesExisting;
+  }
+
 
   private filterAndSortDelineators(delineators: TimeDelineator[]): TimeDelineator[] {
     return delineators.filter((delineator) => {
@@ -171,15 +204,7 @@ export class Timelog {
     const now: moment.Moment = moment();
     if (this.timeIsInView(now)) {
       let nowDelineator: TimeDelineator = new TimeDelineator(now, "NOW");
-      let crossesExisting: boolean = false;
-      this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem)=>{
-        const start: moment.Moment = moment(entryDataItem.startTimeISO);
-        const end: moment.Moment = moment(entryDataItem.endTimeISO);
-        if(now.isSameOrAfter(start) && now.isSameOrBefore(end)){
-          crossesExisting = true;
-        }
-      });
-      if(!crossesExisting){
+      if (!this.crossesAnyTimelogEntry(now)) {
         delineations.push(nowDelineator);
       }
     }
@@ -204,11 +229,11 @@ export class Timelog {
         bedtimeDelineator = new TimeDelineator(this._activeDay.bedtime, "SLEEP", faMoon, "rgb(200, 200, 200)");
       }
     }
-    if(wakeupDelineator){
+    if (wakeupDelineator) {
       wakeupDelineator.isVisible = true;
       delineations.push(wakeupDelineator);
     }
-    if(bedtimeDelineator){
+    if (bedtimeDelineator) {
       bedtimeDelineator.isVisible = true;
       delineations.push(bedtimeDelineator);
     }
@@ -244,11 +269,11 @@ export class Timelog {
       entries.push(entry);
     }
 
-    this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem)=>{
+    this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem) => {
       const entryDataStartTime: moment.Moment = moment(entryDataItem.startTimeISO);
       const entryDataEndTime: moment.Moment = moment(entryDataItem.endTimeISO);
-      entries.forEach((entry)=>{
-        if(entry.startTime.isSame(entryDataStartTime) && entry.endTime.isSame(entryDataEndTime)){
+      entries.forEach((entry) => {
+        if (entry.startTime.isSame(entryDataStartTime) && entry.endTime.isSame(entryDataEndTime)) {
           console.log("we got a live one")
           entry.isSavedEntry = true;
         }

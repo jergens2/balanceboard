@@ -4,8 +4,8 @@
     <div style="width:100%;display:flex;flex-direction: row-reverse; font-size: 1.2em;" *ngIf="showNewTimelogEntryButton">
         <fa-icon [icon]="faPlusCircle" class="new-item-icon" style="margin-right:10px;" (click)="onClickNewTimelogEntry()"></fa-icon>
     </div>
-    <div *ngIf="entry.isSavedEntry" style="background-color: rgba(255, 0, 0, 0.158);">
-        Saved la
+    <div *ngIf="entry.isSavedEntry" style="flex-grow:2; width:100%;background-color: rgba(255, 0, 0, 0.158); font-size: 0.5em;">
+
     </div>
     <!-- <app-timelog-entry-display [entry]="entry" style="flex-grow: 2;"></app-timelog-entry-display> -->
     <!-- <div *ngIf="mouseIsOver && (elementHeight > 0 && elementHeight < 50)" style="width:100%; height: 100%;display:flex;flex-direction: row; align-items: center;">

@@ -34,7 +34,7 @@
                         *ngIf="timeDelineator.icon"></fa-icon>
 
                     <span *ngIf="timeDelineator.isVisible">{{ timeDelineator.time.format('h:mm a')}}</span>
-                    <fa-icon *ngIf="timeDelineator.mouseIsOver && timeDelineator.delineatorType == 'DEFAULT'"
+                    <fa-icon *ngIf="timeDelineator.mouseIsOver && timeDelineator.delineatorType == 'DELINEATOR'"
                         (click)="timelog.removeTimeDelineator(timeDelineator)"
                         style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faTimes"></fa-icon>
                 </div>
@@ -47,7 +47,7 @@
             <div class="mouse-position-time-label-container">
                 <div class="mouse-position-time-label" (click)="timelog.addTimeDelineator(mousePosition.time)">
                     {{ mousePosition.time.format('h:mm a')}}
-                    <fa-icon style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faPlus"></fa-icon>
+                    <fa-icon *ngIf="!mousePosition.crossesExistingTimelogEntry" style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faPlus"></fa-icon>
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
             </div>
