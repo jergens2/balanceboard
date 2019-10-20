@@ -64,8 +64,6 @@ export class ActivityInputDropdownComponent implements OnInit {
 
 
     this._itemState.mouseIsOver$.subscribe((mouseIsOver: boolean)=>{
-      console.log("item mouse is over? ", mouseIsOver)
-      console.log("text value: ", this.activityTextInputValue)
       if(mouseIsOver === false && this.activityTextInputValue === ""){
         this._itemState.reset();
       }
@@ -84,7 +82,13 @@ export class ActivityInputDropdownComponent implements OnInit {
     this.onInputValueChanged(event);
   }
 
-
+  public onClickSearchButton(){
+    this._itemState.startEditing();
+    if(this.activityTextInputValue === ""){
+      this.activityTextInputValue = "/";
+      this.searchForActivities("/");
+    }
+  }
 
   private onInputValueChanged(event: KeyboardEvent) {
     let target: HTMLInputElement = (event.target as HTMLInputElement);
@@ -193,11 +197,19 @@ export class ActivityInputDropdownComponent implements OnInit {
   }[] = [];
 
   onClickSearchResult(searchResult: ActivityCategoryDefinition) {
-    this.valueChanged.emit(searchResult);
-    this.activityTextInputValue = "";
-    this.createNewActivities = [];
-    this.searchResults = [];
-    this.arrowCursorIndex = -1;
+    if(this.activitiesTree.findActivityByTreeId(searchResult.treeId)){
+      this.valueChanged.emit(searchResult);
+      this.activityTextInputValue = "";
+      this.createNewActivities = [];
+      this.searchResults = [];
+      this.arrowCursorIndex = -1; 
+      this._itemState.reset();
+    }else{
+      /*
+        In this case, a non-existent activity name was typed, e.g. "asdfasdf" and then the name in the list was clicked on
+      */
+     this.onClickSaveNewActivities();
+    }
   }
 
   createNewActivities: ActivityCategoryDefinition[] = [];
@@ -212,7 +224,7 @@ export class ActivityInputDropdownComponent implements OnInit {
         isCompleteSubscription.unsubscribe();
       }
       console.log("Back in the component now:  its complete.");
-    })
+    });
   }
 
 

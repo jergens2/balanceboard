@@ -39,12 +39,21 @@ export class ToolsComponent implements OnInit {
     this.screenSize = this.sizeService.appScreenSize;
 
     this.toolsService.currentTool$.subscribe((tool: {component: ToolComponents, data: any})=>{
-      if(tool.component === ToolComponents.TimelogEntry && tool.data){
-        this._timelogEntryItem = tool.data as TimelogEntryItem;
+      if(tool !== null){
+        if(tool.component !== null){
+          if(tool.component === ToolComponents.TimelogEntry && tool.data){
+            this._timelogEntryItem = tool.data as TimelogEntryItem;
+          }
+          
+          this.toolName = tool.component.toString();
+        }else{
+          console.log("Tool component is null.", tool);
+        }
+        
+      }else{
+        this.toolName = "";
+        this._timelogEntryItem = null;
       }
-      
-      this.toolName = tool.component;
-
     });  
     // console.log("Tools component init COMPLETE");
   }

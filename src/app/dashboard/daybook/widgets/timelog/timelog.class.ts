@@ -54,30 +54,108 @@ export class Timelog {
   }
 
   private updateTimeDelineators() {
-    this._timeDelineators = this._activeDay.timeDelineators.map((timeISO: string) => {
-      return new TimeDelineator(moment(timeISO), "DEFAULT", true);
+    let allTimes: TimeDelineator[] = [];
+    allTimes = this.addSleepTimeDelineators(allTimes);
+    allTimes = this.addNowTimeDelineator(allTimes);
+
+    for (let i = 0; i < this._activeDay.daybookTimelogEntryDataItems.length; i++) {
+      /**
+       * For each timelog entry: add 1 delineator for the start time and 1 delineator for the end time, 
+       * unless if the end of one entry is the same as the start of the next entry, 
+       * in which case it will be added for the start of the next entry.
+       */
+      const startTime: moment.Moment = moment(this._activeDay.daybookTimelogEntryDataItems[i].startTimeISO);
+      const endTime: moment.Moment = moment(this._activeDay.daybookTimelogEntryDataItems[i].endTimeISO);
+
+      let startDelineator: TimeDelineator = new TimeDelineator(startTime, "TIMELOG_ENTRY");
+      startDelineator.nextDelineatorTime = endTime;
+      let endDelineator: TimeDelineator;
+
+      if (i < this._activeDay.daybookTimelogEntryDataItems.length - 1) {
+        const nextStartTime: moment.Moment = moment(this._activeDay.daybookTimelogEntryDataItems[i + 1].startTimeISO);
+        if (!nextStartTime.isSame(endTime)) {
+          endDelineator = new TimeDelineator(endTime, "TIMELOG_ENTRY");
+        }
+      } else if (i === this._activeDay.daybookTimelogEntryDataItems.length - 1) {
+        endDelineator = new TimeDelineator(endTime, "TIMELOG_ENTRY");
+      }
+
+      allTimes.push(startDelineator);
+      if (endDelineator) {
+        allTimes.push(endDelineator);
+      }
+    }
+    allTimes[allTimes.length - 1].isVisible = true;
+
+    allTimes = this.setVisibilityOfTimelogDelineators(allTimes);
+    allTimes.forEach((time) => {
+      console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible);
     });
-    this.addSleepTimeDelineators();
-    this._timeDelineators = this.filterAndSortDelineators(this._timeDelineators);
-    if (this._timeDelineators.length > 0) {
+
+
+
+
+    allTimes = this.filterAndSortDelineators(allTimes);
+
+    if (allTimes.length > 0) {
       let gridTemplateRows: string = "";
       let percentages: number[] = [];
       let currentTime: moment.Moment = this._timelogZoomControl.startTime;
-      for (let i = 0; i < this._timeDelineators.length; i++) {
-        let seconds: number = this._timeDelineators[i].time.diff(currentTime, "seconds");
+      for (let i = 0; i < allTimes.length; i++) {
+        let seconds: number = allTimes[i].time.diff(currentTime, "seconds");
         percentages.push((seconds / this.getTotalViewSeconds()) * 100);
-        currentTime = moment(this._timeDelineators[i].time);
+        currentTime = moment(allTimes[i].time);
       }
       let finalSeconds: number = this._timelogZoomControl.endTime.diff(currentTime, "seconds");
       percentages.push((finalSeconds / this.getTotalViewSeconds()) * 100);
       percentages.forEach((percentage: number) => {
         gridTemplateRows += "" + percentage.toFixed(2) + "% ";
       });
+      this._timeDelineators = allTimes;
       this._timeDelineatorsNgStyle = { "grid-template-rows": gridTemplateRows };
     } else {
+      this._timeDelineators = [];
       this._timeDelineatorsNgStyle = { "grid-template-rows": "1fr" };
     }
+
+    // this._timeDelineators.forEach((time) => {
+    //   console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible);
+    // });
+
+    /**
+     * At the end of selecting, then check the very first and very last delineator if within 30 minutes, and make visible if not.
+     */
+
   }
+
+  private setVisibilityOfTimelogDelineators(allTimes: TimeDelineator[]): TimeDelineator[] {
+    let timelogEntryDelineators: TimeDelineator[] = allTimes.filter((time) => { return time.delineatorType === "TIMELOG_ENTRY"; })
+      .sort((delineator1, delineator2) => {
+        if (delineator1.durationSeconds > delineator2.durationSeconds) return -1;
+        else if (delineator1.durationSeconds < delineator2.durationSeconds) return 1;
+        else return 0;
+      });
+    timelogEntryDelineators.forEach((entryDelineator) => {
+      if (!this.isWithin30MinutesOfAnother(entryDelineator, allTimes)) entryDelineator.isVisible = true;
+      else entryDelineator.isVisible = false;
+    });
+    return allTimes;
+  }
+
+
+  private isWithin30MinutesOfAnother(checkDelineator: TimeDelineator, allDelineators: TimeDelineator[]): boolean {
+
+    let isWithin30Minutes: boolean = false;
+    allDelineators.forEach((delineator) => {
+      const isSameTime: boolean = moment(delineator.time).isSame(moment(checkDelineator.time));
+      const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), "minutes"));
+      if (differenceMinutes < 30 && !isSameTime && delineator.isVisible === true) {
+        isWithin30Minutes = true;
+      }
+    });
+    return isWithin30Minutes;
+  }
+
 
   private filterAndSortDelineators(delineators: TimeDelineator[]): TimeDelineator[] {
     return delineators.filter((delineator) => {
@@ -89,22 +167,52 @@ export class Timelog {
     });
   }
 
-  private addSleepTimeDelineators() {
+  private addNowTimeDelineator(delineations: TimeDelineator[]): TimeDelineator[] {
+    const now: moment.Moment = moment();
+    if (this.timeIsInView(now)) {
+      let nowDelineator: TimeDelineator = new TimeDelineator(now, "NOW");
+      let crossesExisting: boolean = false;
+      this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem)=>{
+        const start: moment.Moment = moment(entryDataItem.startTimeISO);
+        const end: moment.Moment = moment(entryDataItem.endTimeISO);
+        if(now.isSameOrAfter(start) && now.isSameOrBefore(end)){
+          crossesExisting = true;
+        }
+      });
+      if(!crossesExisting){
+        delineations.push(nowDelineator);
+      }
+    }
+    return delineations;
+  }
+
+  private addSleepTimeDelineators(delineations: TimeDelineator[]): TimeDelineator[] {
+    let wakeupDelineator: TimeDelineator;
+    let bedtimeDelineator: TimeDelineator;
     if (this._activeDay.sleepProfileIsSet) {
       if (this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTimeISO))) {
-        this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTimeISO), "SLEEP", true, faSun, "rgb(235, 201, 12)"));
+        wakeupDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTimeISO), "SLEEP", faSun, "rgb(235, 201, 12)");
       }
       if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedtimeISO))) {
-        this._timeDelineators.push(new TimeDelineator(moment(this._activeDay.sleepProfile.bedtimeISO), "SLEEP", true, faMoon, "rgb(68, 0, 255)"));
+        bedtimeDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.bedtimeISO), "SLEEP", faMoon, "rgb(68, 0, 255)");
       }
     } else {
       if (this.timeIsInView(this._activeDay.wakeupTime)) {
-        this._timeDelineators.push(new TimeDelineator(this._activeDay.wakeupTime, "SLEEP", false, faSun, "rgb(200, 200, 200)"));
+        wakeupDelineator = new TimeDelineator(this._activeDay.wakeupTime, "SLEEP", faSun, "rgb(200, 200, 200)");
       }
       if (this.timeIsInView(this._activeDay.bedtime)) {
-        this._timeDelineators.push(new TimeDelineator(this._activeDay.bedtime, "SLEEP", false, faMoon, "rgb(200, 200, 200)"));
+        bedtimeDelineator = new TimeDelineator(this._activeDay.bedtime, "SLEEP", faMoon, "rgb(200, 200, 200)");
       }
     }
+    if(wakeupDelineator){
+      wakeupDelineator.isVisible = true;
+      delineations.push(wakeupDelineator);
+    }
+    if(bedtimeDelineator){
+      bedtimeDelineator.isVisible = true;
+      delineations.push(bedtimeDelineator);
+    }
+    return delineations;
   }
 
   private updateTimelogEntryItems() {
@@ -113,128 +221,58 @@ export class Timelog {
 
 
     let delineators: TimeDelineator[] = Object.assign([], this._timeDelineators);
-    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.startTime), "FRAME", true));
-    delineators.push(new TimeDelineator(moment(), "NOW", true));
-    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.endTime), "FRAME", true));
+    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.startTime), "FRAME"));
+    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.endTime), "FRAME"));
     delineators = this.filterAndSortDelineators(delineators);
-    // console.log("Delineators")
-    // delineators.forEach((d) => {
-    //   console.log(d.time.format("hh:mm a"))
-    // });
+
+
+
+
 
     const entriesCount: number = delineators.length - 1;
     let entries: TimelogEntryItem[] = [];
+    const wakeupTime: moment.Moment = this._activeDay.wakeupTime;
+    const bedTime: moment.Moment = this._activeDay.bedtime;
     for (let i = 0; i < entriesCount; i++) {
-      const wakeupTime: moment.Moment = this._activeDay.wakeupTime;
-      const bedtime: moment.Moment = this._activeDay.bedtime;
-      const entry: TimelogEntryItem = new TimelogEntryItem(delineators[i], delineators[i + 1].time, wakeupTime, bedtime);
+      const startTime: moment.Moment = delineators[i].time;
+      const endTime: moment.Moment = delineators[i + 1].time;
+      let sleepState: "AWAKE" | "SLEEP" = "AWAKE";
+      if (endTime.isBefore(wakeupTime) || startTime.isAfter(bedTime)) {
+        sleepState = "SLEEP";
+      }
+      const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, sleepState);
       entries.push(entry);
     }
 
+    this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem)=>{
+      const entryDataStartTime: moment.Moment = moment(entryDataItem.startTimeISO);
+      const entryDataEndTime: moment.Moment = moment(entryDataItem.endTimeISO);
+      entries.forEach((entry)=>{
+        if(entry.startTime.isSame(entryDataStartTime) && entry.endTime.isSame(entryDataEndTime)){
+          console.log("we got a live one")
+          entry.isSavedEntry = true;
+        }
+      });
+    });
+
+
+    entries = entries.sort((entry1, entry2) => {
+      if (entry1.startTime.isBefore(entry2.startTime)) return -1
+      else if (entry2.startTime.isBefore(entry1.startTime)) return 1
+      else return 0;
+    })
 
     let gridTemplateRows: string = "";
     entries.forEach(item => {
+      // console.log("percent la: ", item.percentOfTotal(totalViewSeconds).toFixed(2))
       gridTemplateRows += "" + item.percentOfTotal(totalViewSeconds).toFixed(2) + "% ";
     });
     console.log("Timelog Entry items grid-template-rows:", gridTemplateRows)
     // console.log("Setting the STYLEY")
     this._entryItemsNgStyle = { "grid-template-rows": gridTemplateRows };
     this._entryItems = entries;
-    // if (this._activeDay.sleepProfileIsSet) {
-    //   if (this.viewStartsAfterWakeup()) {
-    //     // 
-    //     console.log("View starts after wakeup")
-    //     let currentTime: moment.Moment = moment(this._timelogZoomControl.startTime);
-    //     let wakeupTime: moment.Moment = moment(this._activeDay.sleepProfile.wakeupTimeISO);
-    //     let bedTime: moment.Moment = moment(this._activeDay.sleepProfile.bedtimeISO);
-
-    //     let startSleepItem = new TimelogEntryItem(currentTime, wakeupTime);
-
-
-    //     calculatedEntryItems.push({
-    //       startTime: currentTime,
-    //       totalSeconds: wakeupTime.diff(currentTime, "seconds"),
-    //       percentOfTotal: (startSleepItem.durationSeconds / totalViewSeconds) * 100,
-    //       item: startSleepItem,
-    //     });
-
-    //     currentTime = moment(wakeupTime);
-    //     let previousTimeMark: moment.Moment = moment(currentTime);
-
-    //     if (this._activeDay.daybookTimelogEntryDataItems.length > 0) {
-
-    //     } else {
-    //       currentTime = moment(bedTime);
-
-    //       let gapEntryItem: TimelogEntryItem = new TimelogEntryItem(previousTimeMark, currentTime);
-    //       let gapItem: any = {
-    //         startTime: currentTime,
-    //         totalSeconds: gapEntryItem.durationSeconds,
-    //         percentOfTotal: (gapEntryItem.durationSeconds / totalViewSeconds) * 100,
-    //         item: gapEntryItem,
-    //       };
-    //       calculatedEntryItems.push(gapItem);
-    //       previousTimeMark = moment(currentTime);
-    //       currentTime = moment(this._timelogZoomControl.endTime);
-    //     }
-
-    //     if (this.viewEndsAfterBedtime()) {
-
-
-    //       let endingSleepItem: TimelogEntryItem = new TimelogEntryItem(previousTimeMark, currentTime);
-    //       let endItem: any = {
-    //         startTime: currentTime,
-    //         totalSeconds: endingSleepItem.durationSeconds,
-    //         percentOfTotal: (endingSleepItem.durationSeconds / totalViewSeconds) * 100,
-    //         item: endingSleepItem,
-    //       };
-    //       calculatedEntryItems.push(endItem);
-    //       previousTimeMark = moment(currentTime);
-    //       currentTime = moment(this._timelogZoomControl.endTime);
-
-
-    //     } else {
-    //       console.log("view end does not end after bed time.  What do ?")
-    //     }
-
-    //     let gridTemplateRows: string = "";
-    //     calculatedEntryItems.forEach(item => {
-    //       gridTemplateRows += "" + item.percentOfTotal.toFixed(2) + "% ";
-    //     });
-    //     console.log("Grid template rows:", gridTemplateRows)
-    //     console.log("Setting the STYLEY")
-    //     this._entryItemsNgStyle = { "grid-template-rows": gridTemplateRows };
-    //     this._entryItems = calculatedEntryItems.map((item) => { return item.item; });
-
-    //   } else {
-    //     console.log("View does not start after wakeup")
-    //   }
-    // } else {
-    //   console.log("sleep times not set.");
-    // }
   }
 
-  private viewStartsAfterWakeup(): boolean {
-    let viewStartsAfterWakeup: boolean;
-    let sleepProfile: DaybookDayItemSleepProfile = this._activeDay.sleepProfile;
-    if (!this._activeDay.sleepProfileIsSet) {
-      viewStartsAfterWakeup = false;
-    } else {
-      viewStartsAfterWakeup = this._timelogZoomControl.startTime.isSameOrAfter(moment(sleepProfile.previousFallAsleepTimeISO))
-        && this._timelogZoomControl.startTime.isSameOrBefore(moment(sleepProfile.wakeupTimeISO));
-    }
-    return viewStartsAfterWakeup;
-  }
-  private viewEndsAfterBedtime(): boolean {
-    let viewEndsAfterBedtime: boolean;
-    let sleepProfile: DaybookDayItemSleepProfile = this._activeDay.sleepProfile;
-    if (!this._activeDay.sleepProfileIsSet) {
-      viewEndsAfterBedtime = false;
-    } else {
-      viewEndsAfterBedtime = this._timelogZoomControl.endTime.isSameOrAfter(moment(sleepProfile.bedtimeISO));
-    }
-    return viewEndsAfterBedtime;
-  }
 
 
   faMoon = faMoon;

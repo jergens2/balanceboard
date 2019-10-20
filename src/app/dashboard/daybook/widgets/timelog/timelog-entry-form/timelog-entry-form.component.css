@@ -1,4 +1,17 @@
 .timelog-entry-form-root{
     display:flex;
     flex-direction: column;
+    /* padding: 15px; */
+}
+
+.form-section{
+    margin-bottom:15px;
+    display:flex;
+    flex-direction: column;
+}
+.final-form-section{
+    display:flex; 
+    flex-direction: row; 
+    justify-content: flex-end;
+    margin-bottom:0px;
 }

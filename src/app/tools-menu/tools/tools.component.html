@@ -1,4 +1,4 @@
-<div class="tools-root">
+<div class="tools-root" *ngIf="toolName != ''">
   <div class="tool" *ngIf="toolName == 'ACTION_ITEM'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
     <div class="tool-header ">

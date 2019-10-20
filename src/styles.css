@@ -105,6 +105,12 @@
   text-decoration: none;
 }
 
+.discard-button:hover{
+  color: black;
+  background-color: rgb(223, 223, 223);
+  border: 1px solid gray;
+}
+
 .button-disabled{
   cursor: not-allowed;
   color: rgb(196, 196, 196);

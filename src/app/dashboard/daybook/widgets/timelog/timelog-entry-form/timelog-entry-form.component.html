@@ -1,8 +1,16 @@
 <div class="timelog-entry-form-root">
-    <div>Start:  {{ entryItem.startTime.format('hh:mm a')}}</div>
-    <div>End:  {{ entryItem.endTime.format('hh:mm a')}}</div>
-    <div>Duration:  {{ entryItem.durationString }}</div>
-    <div>
-        <app-tlef-activities [timelogEntryStart]="entryItem.startTime" [timelogEntryEnd]="entryItem.endTime" [modifyTimelogEntry]="entryItem.dataEntryItem" (tlefActivitiesChanged)="onActivitiesChanged($event)"></app-tlef-activities>
+    <div class="form-section">
+            <div>{{ entryItem.startTime.format('h:mm a')}} to {{ entryItem.endTime.format('h:mm a')}}</div>
+            <div style="font-weight:bold; font-size:0.9em; color: rgb(0, 57, 163);">{{ entryItem.durationString }}</div>
+    </div>
+
+    <div class="form-section" style="background-color: rgb(252, 252, 252);">
+        <app-tlef-activities [timelogEntryStart]="entryItem.startTime" [timelogEntryEnd]="entryItem.endTime"
+            [modifyTimelogEntry]="entryItem.dataEntryItem" (tlefActivitiesChanged)="onActivitiesChanged($event)">
+        </app-tlef-activities>
+    </div>
+    <div class="final-form-section">
+        <button class="medium-button" (click)="onClickSave()">Save timelog entry</button>
+        <button class="medium-button discard-button" style="margin-left: 5px;" (click)="onClickDiscard()">Discard</button>
     </div>
 </div>

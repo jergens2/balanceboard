@@ -5,23 +5,15 @@ import { DurationString } from '../../../../../../../shared/utilities/time-utili
 import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 
-export class TimelogEntryItem{
-    constructor(delineator: TimeDelineator, endTime: moment.Moment, wakeupTime: moment.Moment, bedtime: moment.Moment){
-        this._startTime = delineator.time;
+export class TimelogEntryItem {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, sleepState: "SLEEP" | "AWAKE") {
+        this._startTime = moment(startTime);
         this._utcOffsetMinutes = this._startTime.utcOffset();
-        this._endTime = endTime;
-        this._itemState = new ItemState({startTime: this._startTime, endTime: this._endTime});
-
-        const isBeforeWakeup: boolean = this._startTime.isSameOrBefore(wakeupTime) && this._endTime.isSameOrBefore(wakeupTime);
-        const isAfterBedtime: boolean = this._startTime.isSameOrAfter(bedtime) && this._endTime.isSameOrAfter(bedtime);
-        if(isBeforeWakeup || isAfterBedtime){
-            this._sleepState = "SLEEP";
-        }else{
-            this._sleepState = "AWAKE";
-        }
-
-
+        this._endTime = moment(endTime);
+        this._itemState = new ItemState({ startTime: this._startTime, endTime: this._endTime });
+        this._sleepState = sleepState;
     }
+
 
     private _itemState: ItemState;
     public get itemState(): ItemState { return this._itemState; }
@@ -30,21 +22,24 @@ export class TimelogEntryItem{
     public endsAfterFrameEnd: boolean = false;
 
 
+    public isSavedEntry: boolean = false;
 
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
 
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
+    public set startTime(startTime: moment.Moment) { this._startTime = moment(startTime); }
+    public set endTime(endTime: moment.Moment) { this._endTime = moment(endTime); }
 
-    public get durationSeconds(): number{
+    public get durationSeconds(): number {
         return this._endTime.diff(this._startTime, "seconds");
     }
-    public get durationString(): string{
+    public get durationString(): string {
         return DurationString.calculateDurationString(this._startTime, this._endTime);
     }
 
-    public percentOfTotal(totalSeconds: number): number{
+    public percentOfTotal(totalSeconds: number): number {
         return (this.durationSeconds / totalSeconds) * 100;
     }
 
@@ -58,9 +53,11 @@ export class TimelogEntryItem{
     public get utcOffsetMinutes(): number { return this._utcOffsetMinutes; }
 
     private _timelogEntryActivities: TimelogEntryActivity[] = [];
+    public set timelogEntryActivities(activities: TimelogEntryActivity[]) { this._timelogEntryActivities = activities; }
+    public get timelogEntryActivities(): TimelogEntryActivity[] { return this._timelogEntryActivities; }
     private _note: string = "";
 
-    public get dataEntryItem(): DaybookTimelogEntryDataItem{
+    public get dataEntryItem(): DaybookTimelogEntryDataItem {
         return {
             startTimeISO: this._startTime.toISOString(),
             endTimeISO: this._endTime.toISOString(),
@@ -70,5 +67,5 @@ export class TimelogEntryItem{
             note: this._note,
         }
     }
-    
+
 }

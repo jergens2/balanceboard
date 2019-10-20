@@ -33,7 +33,7 @@
                     <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon" [ngStyle]="timeDelineator.ngStyle"
                         *ngIf="timeDelineator.icon"></fa-icon>
 
-                    {{ timeDelineator.time.format('h:mm a')}}
+                    <span *ngIf="timeDelineator.isVisible">{{ timeDelineator.time.format('h:mm a')}}</span>
                     <fa-icon *ngIf="timeDelineator.mouseIsOver && timeDelineator.delineatorType == 'DEFAULT'"
                         (click)="timelog.removeTimeDelineator(timeDelineator)"
                         style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faTimes"></fa-icon>
@@ -55,7 +55,7 @@
 
 
 
-        <div *ngIf="timelog" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
+        <div *ngIf="timelogEntryItems.length > 0" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
             <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item" [entry]="timelogEntryItem"></app-timelog-entry>
         </div>
 

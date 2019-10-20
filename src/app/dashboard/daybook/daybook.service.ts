@@ -9,6 +9,7 @@ import { ServiceAuthenticates } from '../../authentication/service-authenticatio
 import { ScheduleRotationsService } from '../scheduling/schedule-rotations/schedule-rotations.service';
 import { RoutineDefinitionService } from '../activities/routines/api/routine-definition.service';
 import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
+import { TimelogEntryItem } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 
 
 @Injectable({
@@ -233,11 +234,32 @@ export class DaybookService implements ServiceAuthenticates {
 
   }
 
-  updateActivityItems(changedTree) {
+  public saveTimelogEntry(timelogEntry: TimelogEntryItem, afterMidnightEntry?: TimelogEntryItem){
+    let daybookDayItem: DaybookDayItem;
+    let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
+    if(dateYYYYMMDD == this.activeDayYYYYMMDD){
+      daybookDayItem = this.activeDay;
+    }else{
+      daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
+    }
+
+    console.log("Saving timelog entry: ", timelogEntry.startTime.format("hh:mm a") + " to " + timelogEntry.endTime.format("hh:mm a"))
+    daybookDayItem.addTimelogEntryItem(timelogEntry.dataEntryItem);
+
+    if(afterMidnightEntry){
+      daybookDayItem.followingDay.addTimelogEntryItem(afterMidnightEntry.dataEntryItem);
+    }
+  }
+
+  private updateActivityItems(changedTree) {
     console.log("Method not implemented: update activity tree");
     /**
      * This method runs any time the activity tree changes.
      * When this happens, we need to ensure that the active day and following days have proper scheduled activity items.
+     * 
+     * The reason being that the activity objects have the scheduleRoutine built in to them, 
+     * so if for example you change your work schedule from current schedule of Mon to Fri, to new schedule Mon to Thursday, 
+     * then we need to update any future scheduled items.
      */
   }
 
