@@ -21,7 +21,7 @@ export class TimelogEntryItem {
     public beginsBeforeFrameStart: boolean = false;
     public endsAfterFrameEnd: boolean = false;
 
-
+    public isSmallSize: boolean = false;
     public isSavedEntry: boolean = false;
 
     private _startTime: moment.Moment;

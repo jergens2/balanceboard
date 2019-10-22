@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, Observable } from 'rxjs';
-import { SizeService } from '../../shared/app-screen-size/size.service';
+import { ScreenSizeService } from '../../shared/app-screen-size/screen-size.service';
 import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.enum';
 import { DaybookService } from './daybook.service';
 import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
@@ -15,7 +15,7 @@ import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
 })
 export class DaybookComponent implements OnInit, OnDestroy {
 
-  constructor(private screenSizeService: SizeService, private daybookService: DaybookService){}
+  constructor(private screenScreenSizeService: ScreenSizeService, private daybookService: DaybookService){}
 
   public faSpinner = faSpinner;
   public faExpand = faExpand;
@@ -36,8 +36,8 @@ export class DaybookComponent implements OnInit, OnDestroy {
   public daybookIsLoading: boolean = true;
 
   ngOnInit() {
-    this._screenSize = this.screenSizeService.appScreenSize;
-    this.screenSizeService.appScreenSize$.subscribe((changedSize)=>{
+    this._screenSize = this.screenScreenSizeService.appScreenSize;
+    this.screenScreenSizeService.appScreenSize$.subscribe((changedSize)=>{
       this._screenSize = changedSize;
       // console.log("Screensize changed to: " , this._screenSize)
     });

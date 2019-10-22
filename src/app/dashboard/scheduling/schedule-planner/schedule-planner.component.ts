@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SizeService } from '../../../shared/app-screen-size/size.service';
+import { ScreenSizeService } from '../../../shared/app-screen-size/screen-size.service';
 import { AppScreenSize } from '../../../shared/app-screen-size/app-screen-size.enum';
 import * as moment from 'moment';
 import { ITimeBlock } from './time-block.interface';
@@ -16,7 +16,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 })
 export class SchedulePlannerComponent implements OnInit {
 
-  constructor(private sizeService: SizeService, private schedulingService: SchedulingService, private dayTemplateService: DayTemplatesService) { }
+  constructor(private sizeService: ScreenSizeService, private schedulingService: SchedulingService, private dayTemplateService: DayTemplatesService) { }
 
   faSpinner = faSpinner;
 

@@ -42,7 +42,6 @@ export class TimelogLargeComponent implements OnInit {
 
 
   public onZoomControlChanged(changedZoomControl: TimelogZoomControl){
-    console.log("timelog large onZoomChanged()", changedZoomControl)
     this.zoomControl = changedZoomControl;
   }
   public onZoomHover(zoomButton: TimelogZoomControl){
@@ -51,17 +50,6 @@ export class TimelogLargeComponent implements OnInit {
 
   private _zoomHover: TimelogZoomControl = null;
   public get zoomHover(): TimelogZoomControl{ return this._zoomHover; }
-  // private _defaultZoomValue: TimelogZoomControl = { 
-  //   icon: null,
-  //   name: "AWAKE",
-  //   isActive: true,
-  //   isFirst: false,
-  //   isLast: false,
-  //   itemState: null,
-  //   startTime: moment(this.daybookService.activeDay.wakeupTime), 
-  //   endTime: moment(this.daybookService.activeDay.bedtime) 
-  // };
-  // private _zoom$: BehaviorSubject<TimelogZoomControl> = new BehaviorSubject(this._defaultZoomValue);
   public zoomControl: TimelogZoomControl = { 
     icon: null,
     name: "AWAKE",

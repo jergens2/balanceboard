@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import { ActivityCategoryDefinitionService } from '../../../dashboard/activities/api/activity-category-definition.service';
 import { ActivityCategoryDefinition } from '../../../dashboard/activities/api/activity-category-definition.class';
 import { Router } from '@angular/router';
-import { SizeService } from '../../app-screen-size/size.service';
+import { ScreenSizeService } from '../../app-screen-size/screen-size.service';
 import { AppScreenSize } from '../../app-screen-size/app-screen-size.enum';
 import { OnScreenSizeChanged } from '../../app-screen-size/on-screen-size-changed.interface';
 import { YearViewData } from './year-view-data.interface';
@@ -24,7 +24,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
     private daybookService: DaybookService,
     private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
     private router: Router,
-    private sizeService: SizeService,
+    private sizeService: ScreenSizeService,
     private timeViewsService: TimeViewsService,
   ) { }
 

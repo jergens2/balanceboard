@@ -9,14 +9,14 @@ import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons
 
 export class Timelog {
 
-  constructor(timelogZoomControl: TimelogZoomControl, activeDay: DaybookDayItem) {
-    console.log("Constructor is constructing")
+  constructor(timelogZoomControl: TimelogZoomControl, activeDay: DaybookDayItem, minutesPerTwentyPixels: number) {
     this._timelogZoomControl = timelogZoomControl;
-
     this._activeDay = activeDay;
+    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
     this.update();
   }
 
+  private _minutesPerTwentyPixels: number;
   private _timelogZoomControl: TimelogZoomControl;
 
   private _activeDay: DaybookDayItem;
@@ -26,6 +26,18 @@ export class Timelog {
   }
   private timeIsInView(time: moment.Moment): boolean {
     return time.isSameOrAfter(this._timelogZoomControl.startTime) && time.isSameOrBefore(this._timelogZoomControl.endTime);
+  }
+
+  public updateEntrySizes(minutesPerTwentyPixels: number){
+    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
+    console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
+    this._entryItems.forEach((entryItem)=>{
+      if(entryItem.durationSeconds < (this._minutesPerTwentyPixels * 60)){
+        entryItem.isSmallSize = true;
+      }else{
+        entryItem.isSmallSize = false;
+      }
+    });
   }
 
   private _entryItemsNgStyle: any = { "grid-template-rows": "1fr" };
@@ -86,17 +98,12 @@ export class Timelog {
       }
     }
     
-    
     allTimes = this.addExistingDelineators(allTimes);
     allTimes = this.setFollowingTimesOfDelineators(allTimes);
     allTimes = this.setVisibilityOfTimelogDelineators(allTimes);
-    allTimes.forEach((time) => {
-      console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible , " type: ", time.delineatorType);
-    });
-
-
-
-    
+    // allTimes.forEach((time) => {
+    //   console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible , " type: ", time.delineatorType);
+    // });
 
     if (allTimes.length > 0) {
       let gridTemplateRows: string = "";
@@ -241,18 +248,11 @@ export class Timelog {
   }
 
   private updateTimelogEntryItems() {
-    // let calculatedEntryItems: { startTime: moment.Moment, totalSeconds: number, percentOfTotal: number, item: TimelogEntryItem }[] = [];
-    let totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, "seconds");
-
-
+    const totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, "seconds");
     let delineators: TimeDelineator[] = Object.assign([], this._timeDelineators);
     delineators.push(new TimeDelineator(moment(this._timelogZoomControl.startTime), "FRAME"));
     delineators.push(new TimeDelineator(moment(this._timelogZoomControl.endTime), "FRAME"));
     delineators = this.filterAndSortDelineators(delineators);
-
-
-
-
 
     const entriesCount: number = delineators.length - 1;
     let entries: TimelogEntryItem[] = [];
@@ -264,7 +264,7 @@ export class Timelog {
       let sleepState: "AWAKE" | "SLEEP" = "AWAKE";
       if (endTime.isBefore(wakeupTime) || startTime.isAfter(bedTime)) {
         sleepState = "SLEEP";
-      }
+      } 
       const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, sleepState);
       entries.push(entry);
     }
@@ -274,7 +274,6 @@ export class Timelog {
       const entryDataEndTime: moment.Moment = moment(entryDataItem.endTimeISO);
       entries.forEach((entry) => {
         if (entry.startTime.isSame(entryDataStartTime) && entry.endTime.isSame(entryDataEndTime)) {
-          console.log("we got a live one")
           entry.isSavedEntry = true;
         }
       });
@@ -291,13 +290,17 @@ export class Timelog {
     entries.forEach(item => {
       // console.log("percent la: ", item.percentOfTotal(totalViewSeconds).toFixed(2))
       gridTemplateRows += "" + item.percentOfTotal(totalViewSeconds).toFixed(2) + "% ";
+      if(item.durationSeconds < (this._minutesPerTwentyPixels * 60)){
+        item.isSmallSize = true;
+      }else{
+        item.isSmallSize = false;
+      }
     });
-    console.log("Timelog Entry items grid-template-rows:", gridTemplateRows)
-    // console.log("Setting the STYLEY")
+
+    // console.log("Timelog Entry items grid-template-rows:", gridTemplateRows)
     this._entryItemsNgStyle = { "grid-template-rows": gridTemplateRows };
     this._entryItems = entries;
   }
-
 
 
   faMoon = faMoon;

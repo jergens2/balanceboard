@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
 import { RelativeMousePosition } from '../../../../../../shared/utilities/relative-mouse-position.class';
 import * as moment from 'moment';
@@ -13,6 +13,7 @@ import { Timelog } from '../../timelog.class';
 import { TimeDelineator } from '../../time-delineator.class';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
+import { ScreenSizeService } from '../../../../../../shared/app-screen-size/screen-size.service';
 
 @Component({
   selector: 'app-timelog-body',
@@ -21,23 +22,28 @@ import { faClock } from '@fortawesome/free-regular-svg-icons';
 })
 export class TimelogBodyComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookService, private screenSizeService: ScreenSizeService) { }
 
   private _zoomControl: TimelogZoomControl;
   private _zoomControlSubscription: Subscription = new Subscription();
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
-    console.log("Setting input");
     this._zoomControl = zoomControl;
+    this.estimateInitialMinutesPerPixel(this.screenSizeService.dimensions.height);
     this.buildTimelog();
   }
 
   @Input() public set zoomHover(zoom: TimelogZoomControl) {
-    console.log("hovering over zoom: ", zoom);
   }
+
 
   ngOnInit() {
-
+    this.estimateInitialMinutesPerPixel(this.screenSizeService.dimensions.height);
+    this.screenSizeService.dimensions$.subscribe((dimensions: {width: number, height: number})=>{
+      this.estimateInitialMinutesPerPixel(dimensions.height);
+    });
   }
+
+
 
   private _activeDay: DaybookDayItem;
 
@@ -71,10 +77,8 @@ export class TimelogBodyComponent implements OnInit {
 
   private buildTimelog() {
     this._activeDay = this.daybookService.activeDay;
-    console.log("Timelog: Active day is: ", this._activeDay.dateYYYYMMDD);
     this.buildGuideLineHours();
     this.updateNowLine();
-
     this.updateTimelog();
   }
 
@@ -141,13 +145,14 @@ export class TimelogBodyComponent implements OnInit {
 
 
   private updateTimelog() {
-    let timelog: Timelog = new Timelog(this._zoomControl, this._activeDay);
+    let timelog: Timelog = new Timelog(this._zoomControl, this._activeDay, this._minutesPerTwentyPixels);
     this._timelog = timelog;
   }
 
   public onMouseMove(event: MouseEvent) {
     this._relativeMousePosition.onMouseMove(event, "timelog-body-root");
     this.updateMousePosition();
+    // this.updateMinutesPerPixel(this.relativeMousePosition.elementHeight);
   }
   public onMouseLeave() {
     this._itemState.onMouseLeave();
@@ -166,6 +171,32 @@ export class TimelogBodyComponent implements OnInit {
     let crossesAnyTimelogEntry: boolean = this._timelog.crossesAnyTimelogEntry(time);
     this._mousePosition = { time: time, ngStyle: ngStyle, crossesExistingTimelogEntry: crossesAnyTimelogEntry };
   }
+  private estimateInitialMinutesPerPixel(screenHeight: number){
+    /**
+     * This is not a highly reliable mechanism for determining how many minutes per pixel because it depends on making assumptions
+     * based on the current configuration of css and elements which may change.
+     
+     * In the case of a full sized screen, the screen is 966 pixels and the timelog-body is 841 pixels, therefore the difference = 125. 
+     * In the case of the smallest screen (anything less than 622 px), the timelog body is 500px at minimum, 
+     * 
+     * We can therefore estimate that the height of the timelog-body is:  screenHeight - 125px.
+     */
+    let elementHeight: number = screenHeight - 125;
+    if(elementHeight < 500){
+      elementHeight = 500;
+    }
+    this.updateMinutesPerPixel(elementHeight);
+  }
+  private _minutesPerTwentyPixels: number = 30;
+  private updateMinutesPerPixel(elementHeight: number){
+    const totalMinutes = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "minutes");
+    const minutesPerTwentyPixels = (totalMinutes / elementHeight)*20;
+    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
+    if(this._timelog){
+      this._timelog.updateEntrySizes(minutesPerTwentyPixels);
+    }
+  }
+
 
   faTimes = faTimes;
   faClock = faClock;

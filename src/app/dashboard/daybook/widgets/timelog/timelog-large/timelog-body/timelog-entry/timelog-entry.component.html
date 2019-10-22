@@ -4,7 +4,7 @@
     <div style="width:100%;display:flex;flex-direction: row-reverse; font-size: 1.2em;" *ngIf="showNewTimelogEntryButton">
         <fa-icon [icon]="faPlusCircle" class="new-item-icon" style="margin-right:10px;" (click)="onClickNewTimelogEntry()"></fa-icon>
     </div>
-    <div *ngIf="entry.isSavedEntry" style="flex-grow:2; width:100%;background-color: rgba(255, 0, 0, 0.158); font-size: 0.5em;">
+    <div *ngIf="entry.isSavedEntry" style="flex-grow:2; width:100%;" class="lime" [ngClass]="{'red': entry.isSmallSize}">
 
     </div>
     <!-- <app-timelog-entry-display [entry]="entry" style="flex-grow: 2;"></app-timelog-entry-display> -->

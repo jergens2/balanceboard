@@ -8,7 +8,7 @@ import { ModalService } from './modal/modal.service';
 import { Modal } from './modal/modal.class';
 import { ToolsService } from './tools-menu/tools/tools.service';
 import { ToolComponents } from './tools-menu/tools/tool-components.enum';
-import { SizeService } from './shared/app-screen-size/size.service';
+import { ScreenSizeService } from './shared/app-screen-size/screen-size.service';
 import { AppScreenSize } from './shared/app-screen-size/app-screen-size.enum';
 import { OnScreenSizeChanged } from './shared/app-screen-size/on-screen-size-changed.interface';
 import { Subscription } from 'rxjs';
@@ -35,7 +35,7 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
 
   constructor(
     private authService: AuthenticationService,
-    private sizeService: SizeService,
+    private sizeService: ScreenSizeService,
     private userSettingsService: UserSettingsService,
     private modalService: ModalService,
     private toolsService: ToolsService,

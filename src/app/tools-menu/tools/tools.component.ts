@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ToolsService } from './tools.service';
 import { ToolComponents } from './tool-components.enum';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { SizeService } from '../../shared/app-screen-size/size.service';
+import { ScreenSizeService } from '../../shared/app-screen-size/screen-size.service';
 import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.enum';
 import * as moment from 'moment';
 import { TimelogEntryItem } from '../../dashboard/daybook/widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
@@ -16,7 +16,7 @@ export class ToolsComponent implements OnInit {
 
   faTimes = faTimes;
 
-  constructor(private toolsService: ToolsService, private sizeService: SizeService) { }
+  constructor(private toolsService: ToolsService, private sizeService: ScreenSizeService) { }
 
   ifNotepad: boolean = false;
   ifActionItem: boolean = false;
