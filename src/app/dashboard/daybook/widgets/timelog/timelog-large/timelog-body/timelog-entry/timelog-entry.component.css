@@ -11,16 +11,44 @@
 
     display:flex;
     flex-direction: column;
+
+
 }
-.timelog-entry-root:hover{
+/* .timelog-entry-root:hover{
     border: 1px solid black;
     background-color: rgba(0, 94, 255, 0.8);
+} */
+
+.tle{
+    width:100%;
+    height:100%;
+    flex-grow:2;
+    border-radius:3px;
+}
+.tle:hover{
+    border: 1px solid black;
+}
+.small-tle{
+
+}
+.small-tle:hover{
+    
+}
+.large-tle{
+
 }
 
 
-.lime{
-    background-color: lime;
+.not-saved{
+    font-size: 0.5em;
 }
-.red{
-    background-color: red;
+.not-saved:hover{
+
+}
+
+.saved{
+    border: 1px solid rgb(248, 248, 248);
+}
+.saved:hover{
+    border: 1px solid rgb(0, 89, 255);
 }

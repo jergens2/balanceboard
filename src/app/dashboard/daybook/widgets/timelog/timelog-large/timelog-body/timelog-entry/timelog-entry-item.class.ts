@@ -27,6 +27,8 @@ export class TimelogEntryItem {
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
 
+    public note: string = "";
+
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
     public set startTime(startTime: moment.Moment) { this._startTime = moment(startTime); }

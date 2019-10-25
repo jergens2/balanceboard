@@ -20,7 +20,7 @@ export class TimelogEntryComponent implements OnInit {
   }
   public get entry(): TimelogEntryItem{ return this._entry;}
   public get mouseIsOver(): boolean { return this._entry.itemState.mouseIsOver; }
-  public get elementHeight(): number { return this._relativeMousePosition.elementHeight; }
+  // public get elementHeight(): number { return this._relativeMousePosition.elementHeight; }
   public get showNewTimelogEntryButton(): boolean { 
     return this.mouseIsOver && this.entry.sleepState === 'AWAKE' && !this._entry.isSavedEntry;
   }
@@ -29,13 +29,20 @@ export class TimelogEntryComponent implements OnInit {
     
   }
 
-  private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
+  // private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
 
   public onMouseEnter(event: MouseEvent) {
-    this._relativeMousePosition.onMouseMove(event, "timelog-entry-root");
+    // this._relativeMousePosition.onMouseMove(event, "timelog-entry-root");
     this._entry.itemState.onMouseEnter();
     // console.log(this._entry.sleepState);
   }
+
+  public onClickTimelogEntry(){
+    console.log("opening tool for entry: ", this._entry)
+    this.toolsService.openTool(ToolComponents.TimelogEntry, this._entry);
+  }
+
+
   public onClickNewTimelogEntry(){
     this.toolsService.openTool(ToolComponents.TimelogEntry, this._entry);
   }

@@ -1,3 +1,9 @@
 <div class="timelog-entry-display-root">
-    le root
+    <div style="display:flex;flex-direction: column;">
+        <div *ngFor="let entry of activityDisplayEntries" style="display:flex;flex-direction: row;">
+            <app-tle-duration-display [durationMinutes]="entry.durationMinutes" [color]="entry.color"></app-tle-duration-display> 
+            <div>{{ entry.name }}</div>
+        </div>
+        
+    </div>
 </div>

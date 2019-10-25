@@ -111,6 +111,17 @@
   border: 1px solid gray;
 }
 
+.confirm-delete-button{
+  border: 1px solid red;
+  background-color: rgba(151, 0, 0, 0.5);
+  color: white;
+}
+.confirm-delete-button:hover{
+  border: 1px solid red;
+  background-color: rgb(219, 0, 0);
+  color: white;
+}
+
 .button-disabled{
   cursor: not-allowed;
   color: rgb(196, 196, 196);

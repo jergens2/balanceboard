@@ -317,7 +317,8 @@ export class ActivityRepititionDisplay {
     }
     private closeNewOccurrence(){
         this.newOccurrence = null;
-        this._itemState.updateIsChanged(this.exportRepititionItem);
+        // this._itemState.updateIsChanged(this.exportRepititionItem);
+        this._itemState.setIsChanged();
         this.updateValidity();
         this.updateOccurrenceChangeSubscriptions();
     }

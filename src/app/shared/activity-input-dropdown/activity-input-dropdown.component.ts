@@ -58,7 +58,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     this._itemState = new ItemState(null);
     this.activitiesTree = this.activityCategoryDefinitionService.activitiesTree;
     this.activityCategoryDefinitionService.activitiesTree$.subscribe((newTree) => {
-      console.log("Updating tree");
+      // console.log("Updating tree");
       this.activitiesTree = newTree;
     });
 

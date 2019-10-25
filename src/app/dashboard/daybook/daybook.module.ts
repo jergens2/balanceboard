@@ -35,6 +35,7 @@ import { WeightLogEntryComponent } from './widgets/weight-log-entry/weight-log-e
 import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry.component';
 import { TimelogEntryDisplayComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-display/timelog-entry-display.component';
 import { TimelogEntryFormComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form.component';
+import { TleDurationDisplayComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-display/tle-duration-display/tle-duration-display.component';
 
 
 @NgModule({
@@ -72,6 +73,7 @@ import { TimelogEntryFormComponent } from './widgets/timelog/timelog-entry-form/
     WeightLogEntryComponent,
     TimelogEntryDisplayComponent,
     TimelogEntryFormComponent,
+    TleDurationDisplayComponent,
   ],
   exports: [
     DaybookEntryFormComponent,

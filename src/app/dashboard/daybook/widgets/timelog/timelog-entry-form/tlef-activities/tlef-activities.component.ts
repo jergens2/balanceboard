@@ -20,51 +20,48 @@ export class TlefActivitiesComponent implements OnInit {
   faTimes = faTimes;
   constructor(private activitiesService: ActivityCategoryDefinitionService) { }
 
-  @Input() timelogEntryStart: moment.Moment;
-  @Input() timelogEntryEnd: moment.Moment;
-  @Input() modifyTimelogEntry: DaybookTimelogEntryDataItem;
+  private _timelogEntryDataItem: DaybookTimelogEntryDataItem;
+  @Input() public set timelogEntryDataItem(dataItem: DaybookTimelogEntryDataItem) {
+    console.log("Setting data item: ", dataItem)
+    this._timelogEntryDataItem = dataItem;
+    this.reload();
+  }
   @Output() tlefActivitiesChanged: EventEmitter<TLEFActivityListItem[]> = new EventEmitter();
 
   activityItems: TLEFActivityListItem[] = [];
 
   get timelogEntryMinutes(): number {
-    return this.timelogEntryEnd.diff(this.timelogEntryStart, "minutes");
+    return moment(this._timelogEntryDataItem.endTimeISO).diff(moment(this._timelogEntryDataItem.startTimeISO), "minutes");
   }
 
   public get currentTimelogEntryDuration(): string {
-    return DurationString.calculateDurationString(this.timelogEntryStart, this.timelogEntryEnd);
+    return DurationString.calculateDurationString(moment(this._timelogEntryDataItem.startTimeISO), moment(this._timelogEntryDataItem.endTimeISO));
   }
 
   ngOnInit() {
-    let start: moment.Moment = moment();
-    console.log("TLEF Activities component opened");
-    if (this.modifyTimelogEntry) {
-      this.timelogEntryStart = moment(this.modifyTimelogEntry.startTimeISO);
-      this.timelogEntryEnd = moment(this.modifyTimelogEntry.endTimeISO);
+    this.tlefActivitiesChanged.emit(this.activityItems);
+  }
 
-      let maxPercent: number = 100;
-      if (this.modifyTimelogEntry.timelogEntryActivities.length > 1) {
-        maxPercent = 100 - ((this.modifyTimelogEntry.timelogEntryActivities.length - 1) * 2);
-      }
-      let activityItems: TLEFActivityListItem[] = [];
-      this.modifyTimelogEntry.timelogEntryActivities.forEach((tleActivity: TimelogEntryActivity) => {
-        // let durationPercent = tleActivity.durationMinutes / this.modifyTimelogEntry.durationMinutes * 100;
-        let totalDuration: number = moment(this.modifyTimelogEntry.endTimeISO).diff(this.modifyTimelogEntry.startTimeISO, "minutes");
-        let durationMinutes = ((tleActivity.percentage/100) * totalDuration);
-        let durationPercent = tleActivity.percentage;
-        let activity = this.activitiesService.findActivityByTreeId(tleActivity.activityTreeId);
-        activityItems.push(new TLEFActivityListItem(activity, durationMinutes, durationPercent, totalDuration, maxPercent))
-      })
-
-      this.activityItems = activityItems;
-      this.updateChangeSubscriptions();
-      this.activityItems.forEach((activityItem)=>{
-        activityItem.updatePercentage(activityItem.durationPercent, maxPercent, true);
-      });
-      this.tlefActivitiesChanged.emit(this.activityItems);
+  private reload(){
+    console.log("tlef-activities.reload()")
+    let maxPercent: number = 100;
+    if (this._timelogEntryDataItem.timelogEntryActivities.length > 1) {
+      maxPercent = 100 - ((this._timelogEntryDataItem.timelogEntryActivities.length - 1) * 2);
     }
-    let end: moment.Moment = moment();
-    console.log("TLEF Activities component opened is complete: " + end.diff(start, "milliseconds") + " ms")
+    let activityItems: TLEFActivityListItem[] = [];
+    this._timelogEntryDataItem.timelogEntryActivities.forEach((tleActivity: TimelogEntryActivity) => {
+      let totalDuration: number = moment(this._timelogEntryDataItem.endTimeISO).diff(this._timelogEntryDataItem.startTimeISO, "minutes");
+      let durationMinutes = ((tleActivity.percentage / 100) * totalDuration);
+      let durationPercent = tleActivity.percentage;
+      let activity = this.activitiesService.findActivityByTreeId(tleActivity.activityTreeId);
+      activityItems.push(new TLEFActivityListItem(activity, durationMinutes, durationPercent, totalDuration, maxPercent))
+    });
+    this.activityItems = activityItems;
+    this.updateChangeSubscriptions();
+    this.activityItems.forEach((activityItem) => {
+      activityItem.updatePercentage(activityItem.durationPercent, maxPercent, true);
+    });
+    
   }
 
   onMouseEnterActivity(activityItem: TLEFActivityListItem) {
@@ -114,12 +111,12 @@ export class TlefActivitiesComponent implements OnInit {
   private addNewActivityItem(activityItem: TLEFActivityListItem): TLEFActivityListItem[] {
     let currentItems = this.activityItems;
     let alreadyIn: boolean = false;
-    for(let item of currentItems){
-      if(item.activity.treeId == activityItem.activity.treeId){
+    for (let item of currentItems) {
+      if (item.activity.treeId == activityItem.activity.treeId) {
         alreadyIn = true;
       }
     }
-    if(!alreadyIn){
+    if (!alreadyIn) {
       currentItems.push(activityItem);
     }
     return currentItems;

@@ -242,13 +242,32 @@ export class DaybookService implements ServiceAuthenticates {
     }else{
       daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
     }
-
-    console.log("Saving timelog entry: ", timelogEntry.startTime.format("hh:mm a") + " to " + timelogEntry.endTime.format("hh:mm a"))
     daybookDayItem.addTimelogEntryItem(timelogEntry.dataEntryItem);
-
     if(afterMidnightEntry){
       daybookDayItem.followingDay.addTimelogEntryItem(afterMidnightEntry.dataEntryItem);
     }
+  }
+
+  public updateTimelogEntry(timelogEntry: TimelogEntryItem){
+    let daybookDayItem: DaybookDayItem;
+    let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
+    if(dateYYYYMMDD == this.activeDayYYYYMMDD){
+      daybookDayItem = this.activeDay;
+    }else{
+      daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
+    }
+    daybookDayItem.updateTimelogEntry(timelogEntry.dataEntryItem);
+  }
+
+  public deleteTimelogEntry(timelogEntry: TimelogEntryItem){
+    let daybookDayItem: DaybookDayItem;
+    let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
+    if(dateYYYYMMDD == this.activeDayYYYYMMDD){
+      daybookDayItem = this.activeDay;
+    }else{
+      daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
+    }
+    daybookDayItem.deleteTimelogEntry(timelogEntry.dataEntryItem);
   }
 
   private updateActivityItems(changedTree) {

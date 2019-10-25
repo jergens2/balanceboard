@@ -150,8 +150,10 @@ export class TimelogBodyComponent implements OnInit {
   }
 
   public onMouseMove(event: MouseEvent) {
+    // let start = moment();
     this._relativeMousePosition.onMouseMove(event, "timelog-body-root");
     this.updateMousePosition();
+    // console.log("Mouse position update: " + moment().diff(start, "milliseconds") + " ms")
     // this.updateMinutesPerPixel(this.relativeMousePosition.elementHeight);
   }
   public onMouseLeave() {

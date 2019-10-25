@@ -10,6 +10,7 @@ import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons
 export class Timelog {
 
   constructor(timelogZoomControl: TimelogZoomControl, activeDay: DaybookDayItem, minutesPerTwentyPixels: number) {
+    console.log("timelog.class constructor()")
     this._timelogZoomControl = timelogZoomControl;
     this._activeDay = activeDay;
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
@@ -52,8 +53,10 @@ export class Timelog {
   public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; };
 
   public addTimeDelineator(time: moment.Moment) {
-    this._activeDay.addTimeDelineator(time.toISOString())
-    this.update();
+    if(!this.crossesAnyTimelogEntry(time)){
+      this._activeDay.addTimeDelineator(time.toISOString())
+      this.update();
+    }
   }
   public removeTimeDelineator(delineator: TimeDelineator) {
     this._activeDay.removeTimeDelineator(delineator.time.toISOString());
@@ -258,6 +261,7 @@ export class Timelog {
     let entries: TimelogEntryItem[] = [];
     const wakeupTime: moment.Moment = this._activeDay.wakeupTime;
     const bedTime: moment.Moment = this._activeDay.bedtime;
+    
     for (let i = 0; i < entriesCount; i++) {
       const startTime: moment.Moment = delineators[i].time;
       const endTime: moment.Moment = delineators[i + 1].time;
@@ -274,6 +278,8 @@ export class Timelog {
       const entryDataEndTime: moment.Moment = moment(entryDataItem.endTimeISO);
       entries.forEach((entry) => {
         if (entry.startTime.isSame(entryDataStartTime) && entry.endTime.isSame(entryDataEndTime)) {
+          entry.note = entryDataItem.note;
+          entry.timelogEntryActivities = entryDataItem.timelogEntryActivities;
           entry.isSavedEntry = true;
         }
       });
@@ -284,7 +290,7 @@ export class Timelog {
       if (entry1.startTime.isBefore(entry2.startTime)) return -1
       else if (entry2.startTime.isBefore(entry1.startTime)) return 1
       else return 0;
-    })
+    });
 
     let gridTemplateRows: string = "";
     entries.forEach(item => {
@@ -301,6 +307,7 @@ export class Timelog {
     this._entryItemsNgStyle = { "grid-template-rows": gridTemplateRows };
     this._entryItems = entries;
   }
+
 
 
   faMoon = faMoon;

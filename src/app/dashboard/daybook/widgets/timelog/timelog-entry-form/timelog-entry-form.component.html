@@ -1,16 +1,36 @@
 <div class="timelog-entry-form-root">
     <div class="form-section">
-            <div>{{ entryItem.startTime.format('h:mm a')}} to {{ entryItem.endTime.format('h:mm a')}}</div>
-            <div style="font-weight:bold; font-size:0.9em; color: rgb(0, 57, 163);">{{ entryItem.durationString }}</div>
+        <div>{{ entryItem.startTime.format('h:mm a')}} to {{ entryItem.endTime.format('h:mm a')}}</div>
+        <div style="font-weight:bold; font-size:0.9em; color: rgb(0, 57, 163);">{{ entryItem.durationString }}</div>
     </div>
 
     <div class="form-section" style="background-color: rgb(252, 252, 252);">
-        <app-tlef-activities [timelogEntryStart]="entryItem.startTime" [timelogEntryEnd]="entryItem.endTime"
-            [modifyTimelogEntry]="entryItem.dataEntryItem" (tlefActivitiesChanged)="onActivitiesChanged($event)">
+        <app-tlef-activities [timelogEntryDataItem]="dataEntryItem" (tlefActivitiesChanged)="onActivitiesChanged($event)">
         </app-tlef-activities>
     </div>
-    <div class="final-form-section">
-        <button class="medium-button" (click)="onClickSave()">Save timelog entry</button>
-        <button class="medium-button discard-button" style="margin-left: 5px;" (click)="onClickDiscard()">Discard</button>
+    <div class="final-form-section" *ngIf="mode === 'NEW'">
+        <button class="medium-button" *ngIf="isChanged" (click)="onClickSave()">
+            Save timelog entry
+        </button>
+        <button class="medium-button delete-button" [ngClass]="{'confirm-delete-button':confirmDiscard}"
+            style="margin-left: 5px;" (click)="onClickDiscard()">
+            <span *ngIf="confirmDiscard">Confirm</span>
+            <span *ngIf="!confirmDiscard">Discard</span>
+        </button>
+    </div>
+    <div class="final-form-section" *ngIf="mode === 'EDIT'">
+        <button class="medium-button" *ngIf="isChanged" (click)="onClickSave()">
+            Save changes
+        </button>
+        <button class="medium-button delete-button"
+            [ngClass]="{'confirm-delete-button':confirmDelete}" style="margin-left: 5px;" (click)="onClickDelete()">
+            <span *ngIf="!confirmDelete">Delete</span>
+            <span *ngIf="confirmDelete">Confirm</span>
+        </button>
+        <button class="medium-button delete-button" [ngClass]="{'confirm-delete-button':confirmDiscard}"
+            style="margin-left: 5px;" (click)="onClickDiscard()">
+            <span *ngIf="confirmDiscard">Confirm</span>
+            <span *ngIf="!confirmDiscard">Cancel</span>
+        </button>
     </div>
 </div>

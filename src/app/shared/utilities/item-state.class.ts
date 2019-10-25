@@ -10,7 +10,7 @@ export class ItemState {
      */
 
     constructor(originalValue: any) {
-        this._originalValue = originalValue;
+        this._originalValue = Object.assign({}, originalValue);
     }
     private _originalValue: any;
     public get originalValue(): any {
@@ -51,14 +51,19 @@ export class ItemState {
         this._isChanged$.next(isChanged);
     }
 
-    public updateIsChanged(currentValue: any) {
+    public checkIfChanged(currentValue: any) {
+        console.log("original value, current value: ", this._originalValue, currentValue)
         if (this._originalValue === currentValue) {
             console.log("it is the same as the original")
-            this.isChanged = false;
+            this._isChanged$.next(false);
         } else {
             console.log("It was not the same as the origin")
-            this.isChanged = true;
+            this._isChanged$.next(true);
         }
+    }
+
+    public setIsChanged(){
+        this._isChanged$.next(true);
     }
 
     public cancelAndReturnOriginalValue(): any {

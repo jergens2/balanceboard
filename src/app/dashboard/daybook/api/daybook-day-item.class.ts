@@ -90,7 +90,7 @@ export class DaybookDayItem{
     public get daybookTimelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this.httpShape.daybookTimelogEntryDataItems; }
     public set daybookTimelogEntryDataItems(timelogEntries: DaybookTimelogEntryDataItem[]) {
         this._httpShape.daybookTimelogEntryDataItems = timelogEntries;
-        this.updateActivityDataItems();
+        // this.updateActivityDataItems();
         this.dataChanged();
     }
     public get timeDelineators(): string[] {return this.httpShape.timeDelineators; }
@@ -114,11 +114,11 @@ export class DaybookDayItem{
         }
     }
     public get daybookActivityDataItems(): DaybookActivityDataItem[] { return this.httpShape.daybookActivityDataItems; }
-    private updateActivityDataItems() {
-        console.log("Not implemented: Updating Activity Data Items");
-        let activityDataItems: DaybookActivityDataItem[] = [];
-        this._httpShape.daybookActivityDataItems = activityDataItems;
-    }
+    // private updateActivityDataItems() {
+    //     console.log("Not implemented: Updating Activity Data Items");
+    //     let activityDataItems: DaybookActivityDataItem[] = [];
+    //     this._httpShape.daybookActivityDataItems = activityDataItems;
+    // }
 
     public get dayStructureDataItems(): DayStructureDataItem[] { return this.httpShape.dayStructureDataItems; }
     public set dayStructureDataItems(dayStructureDataItems: DayStructureDataItem[]) {
@@ -279,13 +279,32 @@ export class DaybookDayItem{
         this.dataChanged();
     }
     public updateTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem) {
-        console.log("Warning: updateTimelogEntry(): this method is not implemented in daybook-day-item.class.ts")
+        let foundIndex: number = -1;
+        this.daybookTimelogEntryDataItems.forEach((item)=>{
+            if(moment(item.startTimeISO).isSame(moment(timelogEntry.startTimeISO)) && moment(item.endTimeISO).isSame(moment(timelogEntry.endTimeISO))){
+                foundIndex = this.daybookTimelogEntryDataItems.indexOf(item);
+            }
+        });
+        if(foundIndex >= 0){
+            console.log("Successfully updated timelog entry at index: " + foundIndex);
+            this.daybookTimelogEntryDataItems.splice(foundIndex, 1, timelogEntry);
+            this.dataChanged();
+        }else{
+            console.log("Error: can't modify timelogEntry", timelogEntry)
+        }
     }
     public deleteTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem) {
-        if (this.daybookTimelogEntryDataItems.indexOf(timelogEntry) > -1) {
-            this.daybookTimelogEntryDataItems.splice(this.daybookTimelogEntryDataItems.indexOf(timelogEntry), 1);
+        let foundIndex: number = -1;
+        this.daybookTimelogEntryDataItems.forEach((item)=>{
+            if(moment(item.startTimeISO).isSame(moment(timelogEntry.startTimeISO)) && moment(item.endTimeISO).isSame(moment(timelogEntry.endTimeISO))){
+                foundIndex = this.daybookTimelogEntryDataItems.indexOf(item);
+            }
+        });
+        if(foundIndex >= 0){
+            console.log("Successfully deleting timelog entry at index: " + foundIndex);
+            this.daybookTimelogEntryDataItems.splice(foundIndex, 1);
             this.dataChanged();
-        } else {
+        }else{
             console.log("Error: can't delete timelogEntry", timelogEntry)
         }
     }
