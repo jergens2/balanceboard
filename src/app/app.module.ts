@@ -29,6 +29,7 @@ import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notep
 import { SharedModule } from './shared/shared.module';
 import { SearchBarComponent } from './nav/search-bar/search-bar.component';
 import { ToolsMenuModule } from './tools-menu/tools-menu.module';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 
 
@@ -56,7 +57,8 @@ import { ToolsMenuModule } from './tools-menu/tools-menu.module';
     SharedModule,
     ToolsMenuModule,
     AppRoutingModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    ColorPickerModule,
   ],
   providers: [
     AuthenticationService,

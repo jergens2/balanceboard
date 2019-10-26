@@ -15,7 +15,7 @@ export class TleDurationDisplayComponent implements OnInit {
   public units: number[] = [];
 
   ngOnInit() {
-    console.log("Colorm is " , this.color)
+    // console.log("Color is " , this.color)
     const unitCount: number = Math.ceil(this.durationMinutes/15);
     let units: number[] = [];
     for(let i=0; i< unitCount; i++){

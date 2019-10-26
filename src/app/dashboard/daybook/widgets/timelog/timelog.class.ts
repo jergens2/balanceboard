@@ -29,13 +29,13 @@ export class Timelog {
     return time.isSameOrAfter(this._timelogZoomControl.startTime) && time.isSameOrBefore(this._timelogZoomControl.endTime);
   }
 
-  public updateEntrySizes(minutesPerTwentyPixels: number){
+  public updateEntrySizes(minutesPerTwentyPixels: number) {
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
     console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
-    this._entryItems.forEach((entryItem)=>{
-      if(entryItem.durationSeconds < (this._minutesPerTwentyPixels * 60)){
+    this._entryItems.forEach((entryItem) => {
+      if (entryItem.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
         entryItem.isSmallSize = true;
-      }else{
+      } else {
         entryItem.isSmallSize = false;
       }
     });
@@ -53,7 +53,7 @@ export class Timelog {
   public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; };
 
   public addTimeDelineator(time: moment.Moment) {
-    if(!this.crossesAnyTimelogEntry(time)){
+    if (!this.crossesAnyTimelogEntry(time)) {
       this._activeDay.addTimeDelineator(time.toISOString())
       this.update();
     }
@@ -100,7 +100,7 @@ export class Timelog {
         allTimes.push(endDelineator);
       }
     }
-    
+
     allTimes = this.addExistingDelineators(allTimes);
     allTimes = this.setFollowingTimesOfDelineators(allTimes);
     allTimes = this.setVisibilityOfTimelogDelineators(allTimes);
@@ -143,28 +143,35 @@ export class Timelog {
         else if (delineator1.durationSeconds < delineator2.durationSeconds) return 1;
         else return 0;
       });
+    let sleepTimes: moment.Moment[] = allTimes.filter((time) => { return time.delineatorType === "SLEEP"; }).map((delineator) => { return delineator.time });
     timelogEntryDelineators.forEach((entryDelineator) => {
       if (!this.isWithin30MinutesOfAnother(entryDelineator, allTimes)) entryDelineator.isVisible = true;
       else entryDelineator.isVisible = false;
+      sleepTimes.forEach((sleepTime) => {
+        if (entryDelineator.time.isSame(sleepTime)) {
+          entryDelineator.isVisible = false;
+        }
+      })
     });
-    allTimes.filter((time)=>{ return time.delineatorType === "NOW"}).forEach((nowTime)=>{ nowTime.isVisible = false; });
+
+    allTimes.filter((time) => { return time.delineatorType === "NOW" }).forEach((nowTime) => { nowTime.isVisible = false; });
     // allTimes[allTimes.length - 1].isVisible = true;
     return allTimes;
   }
 
   private setFollowingTimesOfDelineators(allTimes: TimeDelineator[]): TimeDelineator[] {
     allTimes = this.filterAndSortDelineators(allTimes);
-    for(let i=0; i< allTimes.length-1; i++){
-      if(allTimes[i].nextDelineatorTime === null){
-        allTimes[i].nextDelineatorTime = moment(allTimes[i+1].time);
+    for (let i = 0; i < allTimes.length - 1; i++) {
+      if (allTimes[i].nextDelineatorTime === null) {
+        allTimes[i].nextDelineatorTime = moment(allTimes[i + 1].time);
       }
     }
     return allTimes;
   }
 
   private addExistingDelineators(allTimes: TimeDelineator[]): TimeDelineator[] {
-    this._activeDay.timeDelineators.forEach((time: string)=>{
-      if(!this.crossesAnyTimelogEntry(moment(time))){
+    this._activeDay.timeDelineators.forEach((time: string) => {
+      if (!this.crossesAnyTimelogEntry(moment(time))) {
         let delineator: TimeDelineator = new TimeDelineator(moment(time), "DELINEATOR");
         delineator.isVisible = true;
         allTimes.push(delineator);
@@ -174,16 +181,35 @@ export class Timelog {
   }
 
 
-  private isWithin30MinutesOfAnother(checkDelineator: TimeDelineator, allDelineators: TimeDelineator[]): boolean {
+  public showNowTime(): boolean {
+    let nowDelineator: TimeDelineator = this._timeDelineators.filter((delineator) => { return delineator.delineatorType === "NOW"; })[0];
+    return !this.isWithin30MinutesOfAnother(nowDelineator);
+  }
+
+  private isWithin30MinutesOfAnother(checkDelineator: TimeDelineator, currentDelineators?: TimeDelineator[]): boolean {
+    let delineators: TimeDelineator[] = []
+    if (!currentDelineators) delineators = this._timeDelineators;
+    else delineators = currentDelineators;
+
+    delineators = delineators.filter((delineator) => { return delineator.isVisible; });
 
     let isWithin30Minutes: boolean = false;
-    allDelineators.forEach((delineator) => {
-      const isSameTime: boolean = moment(delineator.time).isSame(moment(checkDelineator.time));
-      const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), "minutes"));
-      if (differenceMinutes < 30 && !isSameTime && delineator.isVisible === true) {
-        isWithin30Minutes = true;
-      }
-    });
+    if (checkDelineator.delineatorType === "NOW") {
+      delineators.forEach((delineator) => {
+        const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), "minutes"));
+        if (differenceMinutes < 30) {
+          isWithin30Minutes = true;
+        }
+      });
+    } else {
+      delineators.forEach((delineator) => {
+        const isSameTime: boolean = moment(delineator.time).isSame(moment(checkDelineator.time));
+        const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), "minutes"));
+        if (differenceMinutes < 30 && !isSameTime) {
+          isWithin30Minutes = true;
+        }
+      });
+    }
     return isWithin30Minutes;
   }
 
@@ -261,14 +287,14 @@ export class Timelog {
     let entries: TimelogEntryItem[] = [];
     const wakeupTime: moment.Moment = this._activeDay.wakeupTime;
     const bedTime: moment.Moment = this._activeDay.bedtime;
-    
+
     for (let i = 0; i < entriesCount; i++) {
       const startTime: moment.Moment = delineators[i].time;
       const endTime: moment.Moment = delineators[i + 1].time;
       let sleepState: "AWAKE" | "SLEEP" = "AWAKE";
       if (endTime.isBefore(wakeupTime) || startTime.isAfter(bedTime)) {
         sleepState = "SLEEP";
-      } 
+      }
       const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, sleepState);
       entries.push(entry);
     }
@@ -296,9 +322,9 @@ export class Timelog {
     entries.forEach(item => {
       // console.log("percent la: ", item.percentOfTotal(totalViewSeconds).toFixed(2))
       gridTemplateRows += "" + item.percentOfTotal(totalViewSeconds).toFixed(2) + "% ";
-      if(item.durationSeconds < (this._minutesPerTwentyPixels * 60)){
+      if (item.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
         item.isSmallSize = true;
-      }else{
+      } else {
         item.isSmallSize = false;
       }
     });

@@ -6,7 +6,21 @@
   <div *ngFor="let activityItem of activityItems" class="new-activity no-select"
     (mouseenter)="onMouseEnterActivity(activityItem)" (mouseleave)="onMouseLeaveActivity(activityItem)">
     <div style="flex-grow:2;display:flex;flex-direction: column;">
-      <div style="display:flex;flex-direction: row;">
+      <div style="display:flex;flex-direction: row; align-items: center;">
+
+        <div *ngIf="activityItem.colorPickerIsOpen" class="activity-color-circle" style="border: 1px solid black; font-size: 0.1em;" 
+          [(colorPicker)]="activityItem.color"
+          [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'"
+          [style.background]="activityItem.color" [cpPosition]="'left'" [cpOKButton]="true" [cpOKButtonText]="'Save'"
+          [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
+          [cpCancelButtonClass]="'small-button discard-button'"
+          (colorPickerClose)="activityItem.onClickCancelColorPicker()"
+          (colorPickerCancel)="activityItem.onClickCancelColorPicker()"
+          (colorPickerSelect)="activityItem.onClickSaveColorPicker($event)"
+          (colorPickerChange)="activityItem.onColorChanged($event)" ></div>
+
+        <div class="activity-color-circle" [style.background-color]="activityItem.color"
+          *ngIf="!activityItem.colorPickerIsOpen" (click)="activityItem.onClickOpenColorPicker()"></div>
         <div class="new-activity-name">
           {{ activityItem.activity.name }}
         </div>

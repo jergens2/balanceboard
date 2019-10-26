@@ -22,6 +22,16 @@ export class TimelogEntryDisplayComponent implements OnInit {
   public get activityDisplayEntries(): { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] { return this._activityDisplayEntries; }
 
   ngOnInit() {
+
+    
+    this.activitiesService.activitiesTree$.subscribe((treeChanged)=>{
+      this.rebuild();
+    });
+    // console.log("Activity display entries:", this._activityDisplayEntries);
+  }
+
+  private rebuild(){
+    this._activityDisplayEntries = [];
     const durationMinutes: number = this._entry.durationSeconds/60;
     this._entry.timelogEntryActivities.forEach((activityEntry)=>{
       let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
@@ -43,8 +53,6 @@ export class TimelogEntryDisplayComponent implements OnInit {
       }
       this._activityDisplayEntries.push(displayEntry);
     });
-
-    console.log("Activity display entries:", this._activityDisplayEntries);
   }
 
 }

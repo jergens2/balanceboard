@@ -10,7 +10,13 @@ import { Subscription } from 'rxjs';
 })
 export class ActivitySliderBarComponent implements OnInit {
 
-  @Input() activityItem: TLEFActivityListItem;
+
+  private _activityItem: TLEFActivityListItem;
+  public get activityItem(): TLEFActivityListItem { return this._activityItem; }; 
+
+  @Input() public set activityItem(item: TLEFActivityListItem){
+    this._activityItem = item;
+  }
   @Output() percentChanged: EventEmitter<number> = new EventEmitter();
 
   constructor() { }

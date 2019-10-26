@@ -18,8 +18,12 @@
             <div class="now-line-time-label-container">
 
                 <div class="now-line-time-label">
-                    <fa-icon [icon]="faClock" style="margin-right:2px"></fa-icon>
-                    {{ nowLine.time.format('h:mm a')}}
+                    <fa-icon [icon]="faClock" style="margin-right:5px"></fa-icon>
+                    <div *ngIf="nowLine.showTime">
+                        {{ nowLine.time.format('h:mm a')}}
+                    </div>
+                    <div *ngIf="!nowLine.showTime" style="height:1px; border-top: 1px solid rgba(255, 0, 0, 0.3); flex-grow:2;">
+                    </div>
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(255, 0, 0, 0.3); flex-grow:2;"></div>
             </div>
@@ -32,7 +36,7 @@
                     (mouseleave)="timeDelineator.itemState.onMouseLeave()">
                     <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon" [ngStyle]="timeDelineator.ngStyle"
                         *ngIf="timeDelineator.icon"></fa-icon>
-
+                    <div style="margin-right: 5px;" *ngIf="!timeDelineator.icon"></div>
                     <span>{{ timeDelineator.time.format('h:mm a')}}</span>
                     <fa-icon *ngIf="timeDelineator.mouseIsOver && timeDelineator.delineatorType == 'DELINEATOR'"
                         (click)="timelog.removeTimeDelineator(timeDelineator)"
@@ -47,7 +51,7 @@
             <div class="mouse-position-time-label-container">
                 <div class="mouse-position-time-label" (click)="timelog.addTimeDelineator(mousePosition.time)">
                     {{ mousePosition.time.format('h:mm a')}}
-                    <fa-icon *ngIf="!mousePosition.crossesExistingTimelogEntry" style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faPlus"></fa-icon>
+                    <fa-icon *ngIf="!mousePosition.crossesExistingTimelogEntry" style="margin-left: 5px;margin-right:2px; cursor: pointer; font-size: 0.9em;" [icon]="faPlus"></fa-icon>
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
             </div>

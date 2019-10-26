@@ -40,6 +40,7 @@ export class TlefActivitiesComponent implements OnInit {
 
   ngOnInit() {
     this.tlefActivitiesChanged.emit(this.activityItems);
+    
   }
 
   private reload(){
@@ -61,7 +62,18 @@ export class TlefActivitiesComponent implements OnInit {
     this.activityItems.forEach((activityItem) => {
       activityItem.updatePercentage(activityItem.durationPercent, maxPercent, true);
     });
-    
+    this.updateActivityChangedSubscriptions();
+  }
+
+  private _activityChangedSubscriptions: Subscription[] = [];
+  private updateActivityChangedSubscriptions(){
+    this._activityChangedSubscriptions.forEach((sub)=>{ sub.unsubscribe();});
+    this._activityChangedSubscriptions = [];
+    this.activityItems.forEach((item)=>{
+      this._activityChangedSubscriptions.push(item.activityModified$.subscribe((activity)=>{
+        this.activitiesService.updateActivity(activity);
+      }));
+    });
   }
 
   onMouseEnterActivity(activityItem: TLEFActivityListItem) {

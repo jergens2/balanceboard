@@ -24,6 +24,7 @@
     height:100%;
     flex-grow:2;
     border-radius:3px;
+    
 }
 .tle:hover{
     border: 1px solid black;
@@ -47,7 +48,7 @@
 }
 
 .saved{
-    border: 1px solid rgb(248, 248, 248);
+    border: 1px solid rgb(163, 163, 163);
 }
 .saved:hover{
     border: 1px solid rgb(0, 89, 255);

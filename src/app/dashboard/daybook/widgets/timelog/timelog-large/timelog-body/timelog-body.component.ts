@@ -65,8 +65,8 @@ export class TimelogBodyComponent implements OnInit {
   private _mousePosition: { time: moment.Moment, ngStyle: any, crossesExistingTimelogEntry: boolean } = null;
   public get mousePosition(): { time: moment.Moment, ngStyle: any, crossesExistingTimelogEntry: boolean } { return this._mousePosition; };
 
-  private _nowLine: { time: moment.Moment, ngStyle: any } = null;
-  public get nowLine(): { time: moment.Moment, ngStyle: any } { return this._nowLine; };
+  private _nowLine: { time: moment.Moment, ngStyle: any, showTime: boolean } = null;
+  public get nowLine(): { time: moment.Moment, ngStyle: any, showTime: boolean } { return this._nowLine; };
 
   private _guideLineHours: any[] = [];
   public get guideLineHours(): any[] { return this._guideLineHours; }
@@ -78,8 +78,9 @@ export class TimelogBodyComponent implements OnInit {
   private buildTimelog() {
     this._activeDay = this.daybookService.activeDay;
     this.buildGuideLineHours();
-    this.updateNowLine();
+    
     this.updateTimelog();
+    this.updateNowLine();
   }
 
   private buildGuideLineHours() {
@@ -135,7 +136,8 @@ export class TimelogBodyComponent implements OnInit {
       let percentFromStart: number = (secondsFromStart / totalDurationSeconds) * 100;
       let percentRemaining: number = 100 - percentFromStart;
       let ngStyle: any = { "grid-template-rows": percentFromStart.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
-      this._nowLine = { time: now, ngStyle: ngStyle };
+      let showTime: boolean = this.timelog.showNowTime();
+      this._nowLine = { time: now, ngStyle: ngStyle, showTime: showTime };
     } else {
       this._nowLine = null;
     }

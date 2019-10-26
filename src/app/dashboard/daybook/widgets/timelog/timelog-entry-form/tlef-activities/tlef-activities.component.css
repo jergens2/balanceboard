@@ -3,6 +3,7 @@
     display:flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     margin-left:15px;
     margin-right:15px;
 }
@@ -20,3 +21,23 @@
 
 }
 
+
+.activity-color-circle{
+    width:15px;
+    height: 15px;
+    border-radius: 15px;
+    margin-right: 5px;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+.activity-color-circle:hover{
+    cursor: pointer;
+    border: 1px solid black;
+}
+
+.open-color-picker{
+    width:0px;
+    height:0px;
+    border: none;
+    position: absolute;
+    margin-left: -10px;
+}
