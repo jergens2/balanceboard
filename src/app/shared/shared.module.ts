@@ -33,6 +33,7 @@ import { RuleConditionEntryInputComponent } from './data-entry-item-input/data-e
 import { HealthSymptomEntryInputComponent } from './data-entry-item-input/data-entry-input-components/health-symptom-entry-input/health-symptom-entry-input.component';
 import { DropdownListComponent } from './utilities/components/dropdown-list/dropdown-list.component';
 import { TimeInputComponent } from './utilities/components/time-input/time-input.component';
+import { ColorPickerModule } from "ngx-color-picker";
 
 
 
@@ -42,6 +43,7 @@ import { TimeInputComponent } from './utilities/components/time-input/time-input
         ReactiveFormsModule,
         FontAwesomeModule,
         BrowserAnimationsModule,
+        ColorPickerModule,
     ],
     declarations: [
         YearViewComponent,

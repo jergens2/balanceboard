@@ -1,9 +1,9 @@
 <div class="timelog-entry-root" id="timelog-entry-root" (mouseenter)="onMouseEnter($event)"
     (mouseleave)="entry.itemState.onMouseLeave()" (click)="onClickTimelogEntry()">
 
-    <app-timelog-entry-display [entry]="entry" *ngIf="!entry.isSmallSize && entry.isSavedEntry" class="tle large-tle saved"></app-timelog-entry-display>
+    <app-timelog-entry-display [entry]="entry" [minutesPerTwentyPixels]="minutesPerTwentyPixels" *ngIf="!entry.isSmallSize && entry.isSavedEntry" class="tle large-tle saved"></app-timelog-entry-display>
     <div *ngIf="!entry.isSmallSize && !entry.isSavedEntry" class="tle large-tle not-saved">
-        it's big but not saved
+        <!-- it's big but not saved -->
     </div>
 
     <div *ngIf="entry.isSmallSize && entry.isSavedEntry" class="tle small-tle saved">

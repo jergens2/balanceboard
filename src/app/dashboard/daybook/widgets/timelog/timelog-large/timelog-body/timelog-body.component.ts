@@ -68,8 +68,8 @@ export class TimelogBodyComponent implements OnInit {
   private _nowLine: { time: moment.Moment, ngStyle: any, showTime: boolean } = null;
   public get nowLine(): { time: moment.Moment, ngStyle: any, showTime: boolean } { return this._nowLine; };
 
-  private _guideLineHours: any[] = [];
-  public get guideLineHours(): any[] { return this._guideLineHours; }
+  private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
+  public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
 
 
   public get timeDelineators(): TimeDelineator[] { return this._timelog.timeDelineators; }
@@ -84,7 +84,7 @@ export class TimelogBodyComponent implements OnInit {
   }
 
   private buildGuideLineHours() {
-    let guideLineHours: { label: string, ngStyle: any, lineNgStyle: any }[] = [];
+    let guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
     let startTime: moment.Moment = moment(this.startTime);
     if (!(startTime.minute() == 0 || startTime.minute() == 30)) {
       if (startTime.minute() >= 0 && startTime.minute() < 30) {
@@ -107,7 +107,7 @@ export class TimelogBodyComponent implements OnInit {
     while (currentTime.isSameOrBefore(endTime)) {
       let amPm: "a" | "p" = currentTime.hour() >= 12 ? "p" : "a";
       let ngStyle: any = {};
-      let lineNgStyle: any = {};
+      let lineNgClass: any = "";
       if (currentTime.isSame(endTime)) {
         ngStyle = {
           "height": "1px",
@@ -117,12 +117,13 @@ export class TimelogBodyComponent implements OnInit {
       let label: string = "";
       if (currentTime.minute() == 0) {
         label = currentTime.format("h") + amPm;
-        lineNgStyle = { "border-bottom": "1px solid rgb(220, 220, 220)", }
+        lineNgClass = ['label-line-hour'];
       } else if (currentTime.minute() == 30) {
-        lineNgStyle = { "border-bottom": "1px solid rgb(240, 240, 240)", }
+        lineNgClass = ['label-line-half-hour'];
       }
+      
 
-      guideLineHours.push({ label: label, ngStyle: ngStyle, lineNgStyle: lineNgStyle });
+      guideLineHours.push({ label: label, ngStyle: ngStyle, lineNgClass: lineNgClass });
       currentTime = moment(currentTime).add(30, "minutes");
     }
     this._guideLineHours = guideLineHours;
@@ -192,6 +193,7 @@ export class TimelogBodyComponent implements OnInit {
     this.updateMinutesPerPixel(elementHeight);
   }
   private _minutesPerTwentyPixels: number = 30;
+  public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
   private updateMinutesPerPixel(elementHeight: number){
     const totalMinutes = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "minutes");
     const minutesPerTwentyPixels = (totalMinutes / elementHeight)*20;

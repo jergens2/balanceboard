@@ -183,6 +183,9 @@ export class Timelog {
 
   public showNowTime(): boolean {
     let nowDelineator: TimeDelineator = this._timeDelineators.filter((delineator) => { return delineator.delineatorType === "NOW"; })[0];
+    if(!nowDelineator){
+      nowDelineator = new TimeDelineator(moment(), "NOW");
+    }
     return !this.isWithin30MinutesOfAnother(nowDelineator);
   }
 

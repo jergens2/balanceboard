@@ -9,7 +9,7 @@
                 <div class="guide-line-hour-label">
                     {{ hour.label }}
                 </div>
-                <div class="guide-line-hour-line" [ngStyle]="hour.lineNgStyle"></div>
+                <div class="guide-line-hour-line" [ngClass]="hour.lineNgClass"></div>
             </div>
         </div>
 
@@ -60,7 +60,7 @@
 
 
         <div *ngIf="timelogEntryItems.length > 0" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
-            <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item" [entry]="timelogEntryItem"></app-timelog-entry>
+            <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item" [entry]="timelogEntryItem" [minutesPerTwentyPixels]="minutesPerTwentyPixels"></app-timelog-entry>
         </div>
 
     </div>

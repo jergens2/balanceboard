@@ -24,14 +24,27 @@
         <span *ngIf="createNewActivities.length > 1">Create {{ createNewActivities.length }} new activities</span>
       </div>
       <div class="create-new-activities">
-        <div *ngFor="let activity of createNewActivities" class="new-activity">
-          <div class="new-activity-color-bar" [style.background-color]="activity.color"></div>
+        <div *ngFor="let newActivity of createNewActivities" class="new-activity">
+          <div style="width:0px;">
+              <div *ngIf="newActivity.colorPickerIsOpen" 
+              [(colorPicker)]="newActivity.color"
+              [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'"
+              [style.background]="newActivity.color" [cpPosition]="'left'" [cpOKButton]="true" [cpOKButtonText]="'Save'"
+              [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
+              [cpCancelButtonClass]="'small-button discard-button'"
+              (colorPickerClose)="newActivity.onClickCancelColorPicker()"
+              (colorPickerCancel)="newActivity.onClickCancelColorPicker()"
+              (colorPickerSelect)="newActivity.onClickSaveColorPicker($event)"
+              (colorPickerChange)="newActivity.onColorChanged($event)" >
+            </div>
+          </div>
+          <div class="new-activity-color-bar" [style.background-color]="newActivity.color" (click)="newActivity.onClickOpenColorPicker()"></div>
           <div class="new-activity-content">
             <div style="font-size:1.1em;font-weight:bold;">
-              {{ activity.name }}
+              {{ newActivity.name }}
             </div>
             <div style="color:gray;">
-              {{ activity.description }}
+              {{ newActivity.description }}
             </div>
           </div>
 

@@ -71,6 +71,7 @@ export class TlefActivitiesComponent implements OnInit {
     this._activityChangedSubscriptions = [];
     this.activityItems.forEach((item)=>{
       this._activityChangedSubscriptions.push(item.activityModified$.subscribe((activity)=>{
+        console.log("Activity modified (color) , ", activity)
         this.activitiesService.updateActivity(activity);
       }));
     });

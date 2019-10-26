@@ -50,6 +50,13 @@
     flex-grow: 2;
 }
 
+.label-line-half-hour{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+.label-line-hour{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 .mouse-position-time-container, .now-line-time-container, .time-delineators{
     grid-column: 2 / -1; 
     grid-row: 1 / -1;
@@ -110,6 +117,9 @@
 }
 .now-line-time-label{
     /* border: 1px solid rgba(255, 0, 0, 0.3); */
+    width: 94px;
+    font-size: 1.0em;
+    padding-right:2px;
     color: rgba(255, 0, 0, 0.6);
 }
 

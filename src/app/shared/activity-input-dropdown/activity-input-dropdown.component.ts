@@ -9,6 +9,7 @@ import { ActivityCategoryDefinitionService } from '../../dashboard/activities/ap
 import { ActivityInputSearch } from './activity-input-search.class';
 import { ActivityChainLink, SaveActivityChain } from './save-activity-chain.class';
 import { ItemState } from '../utilities/item-state.class';
+import { CreateNewActivityItem } from './create-new-activity-item.class';
 
 @Component({
   selector: 'app-activity-input-dropdown',
@@ -164,8 +165,8 @@ export class ActivityInputDropdownComponent implements OnInit {
 
     activitySearch.createNewActivity$.subscribe((createNewActivities: ActivityCategoryDefinition[]) => {
       if (createNewActivities && createNewActivities.length > 0) {
-        this.createNewActivities = createNewActivities;
-        this.saveActivityChain = new SaveActivityChain(createNewActivities, this.activityCategoryDefinitionService);
+        this.createNewActivities = createNewActivities.map((newActivity)=>{ return new CreateNewActivityItem(newActivity)});
+        this.updateActivityChangeSubscriptions();
       } else {
         this.createNewActivities = [];
         this.saveActivityChain = null;
@@ -212,7 +213,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     }
   }
 
-  createNewActivities: ActivityCategoryDefinition[] = [];
+  createNewActivities: CreateNewActivityItem[] = [];
   savingActivity: boolean = false;
   onClickSaveNewActivities() {
     this.savingActivity = true;
@@ -223,10 +224,30 @@ export class ActivityInputDropdownComponent implements OnInit {
         this.onClickSearchResult(bottomActivity);
         isCompleteSubscription.unsubscribe();
       }
-      console.log("Back in the component now:  its complete.");
+      // console.log("Back in the component now:  its complete.");
     });
   }
 
+
+  private _newActivityChangedSubscriptions: Subscription[] = [];
+  private updateActivityChangeSubscriptions(){
+    this._newActivityChangedSubscriptions.forEach((sub)=>{ sub.unsubscribe(); });
+    this._newActivityChangedSubscriptions = [];
+    this.createNewActivities.forEach((item)=>{
+      this._newActivityChangedSubscriptions.push(item.activityChanged$.subscribe((activityTreeId: string)=>{
+        let foundIndex: number = this.createNewActivities.findIndex((newActivityItem)=>{ return newActivityItem.activity.treeId === activityTreeId;});
+        if(foundIndex > -1){
+          if(foundIndex < this.createNewActivities.length-1){
+            for(let i=foundIndex+1; i< this.createNewActivities.length; i++){
+              this.createNewActivities[i].updateColor(this.createNewActivities[foundIndex].color);
+              this.saveActivityChain = new SaveActivityChain(this.createNewActivities.map((newActivityItem)=>{ return newActivityItem.activity; }), this.activityCategoryDefinitionService);
+            }
+          }
+        }
+      }));
+    });
+    this.saveActivityChain = new SaveActivityChain(this.createNewActivities.map((newActivityItem)=>{ return newActivityItem.activity; }), this.activityCategoryDefinitionService);
+  }
 
 
 

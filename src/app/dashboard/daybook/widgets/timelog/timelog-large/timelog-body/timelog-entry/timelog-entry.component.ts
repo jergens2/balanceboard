@@ -15,9 +15,14 @@ export class TimelogEntryComponent implements OnInit {
   constructor(private toolsService: ToolsService) { }
 
   private _entry: TimelogEntryItem;
+  private _minutesPerTwentyPixels: number;
   @Input() public set entry(item: TimelogEntryItem){
     this._entry = item;
   }
+  @Input() public set minutesPerTwentyPixels(minutesPerTwentyPixels: number){
+    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
+  }
+  public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
   public get entry(): TimelogEntryItem{ return this._entry;}
   public get mouseIsOver(): boolean { return this._entry.itemState.mouseIsOver; }
   // public get elementHeight(): number { return this._relativeMousePosition.elementHeight; }

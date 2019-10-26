@@ -18,6 +18,14 @@ export class TimelogEntryDisplayComponent implements OnInit {
   }
   public get entry(): TimelogEntryItem{ return this._entry;}
 
+  private _minutesPerTwentyPixels: number;
+  @Input() public set minutesPerTwentyPixels(minutesPerTwentyPixels: number){
+    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
+    console.log("timelog entry is " + this.entry.durationSeconds/60 + " minutes, and we know minutes per 20 px = " + this.minutesPerTwentyPixels )
+  }
+  public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
+
+
   private _activityDisplayEntries: { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] = [];
   public get activityDisplayEntries(): { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] { return this._activityDisplayEntries; }
 
