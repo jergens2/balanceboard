@@ -270,10 +270,12 @@ export class Timelog {
     }
     if (wakeupDelineator) {
       wakeupDelineator.isVisible = true;
+      wakeupDelineator.label = "wake up"
       delineations.push(wakeupDelineator);
     }
     if (bedtimeDelineator) {
       bedtimeDelineator.isVisible = true;
+      bedtimeDelineator.label = "bed time";
       delineations.push(bedtimeDelineator);
     }
     return delineations;
@@ -297,6 +299,7 @@ export class Timelog {
       let sleepState: "AWAKE" | "SLEEP" = "AWAKE";
       if (endTime.isBefore(wakeupTime) || startTime.isAfter(bedTime)) {
         sleepState = "SLEEP";
+        console.log("Sleep state is EL SLEEPO")
       }
       const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, sleepState);
       entries.push(entry);

@@ -1,5 +1,6 @@
 <div class="timelog-body-grid-container no-select">
-    <div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()"
+    <div class="timelog-body-root" id="timelog-body-root" 
+    (mouseenter)="itemState.onMouseEnter()"
         (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)" 
         [ngStyle]="timelogBodyNgStyle">
 
@@ -42,7 +43,9 @@
                         (click)="timelog.removeTimeDelineator(timeDelineator)"
                         style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faTimes"></fa-icon>
                 </div>
-                <div *ngIf="timeDelineator.delineatorType === 'DELINEATOR' && timeDelineator.isVisible" style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div>
+                <!-- <div *ngIf="timeDelineator.delineatorType === 'DELINEATOR' && timeDelineator.isVisible" style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div> -->
+                <div *ngIf="timeDelineator.delineatorType === 'SLEEP'  " style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div>
+                <div *ngIf="timeDelineator.delineatorType === 'SLEEP' && timeDelineator.label != ''" class="delineator-label">{{ timeDelineator.label }}</div>
             </div>
         </div>
 

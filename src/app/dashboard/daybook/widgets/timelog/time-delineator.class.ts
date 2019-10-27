@@ -20,6 +20,8 @@ export class TimeDelineator{
     }
 
 
+    public label: string = "";
+
     public get isTimelogEntry(): boolean{
         return this.delineatorType === "TIMELOG_ENTRY";
     }

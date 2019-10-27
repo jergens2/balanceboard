@@ -1,9 +1,12 @@
 <div class="timelog-entry-display-root">
-    <div style="display:flex;flex-direction: column;">
-        <div *ngFor="let entry of activityDisplayEntries" style="display:flex;flex-direction: row;">
-            <app-tle-duration-display [durationMinutes]="entry.durationMinutes" [color]="entry.color"></app-tle-duration-display> 
-            <div>{{ entry.name }}</div>
+    <div style="display:flex; flex-direction: row;">
+        <div style="display:flex;flex-direction: row; flex-wrap: wrap; max-width: 150px; margin-right :10px;">
+            <div *ngFor="let unit of units" class="unit" [style.background-color]="unit.color"></div>
+
         </div>
-        
+        <div [ngClass]="{'small-text': screenSize === 0}">
+            {{ displayString }}
+        </div>
     </div>
+
 </div>

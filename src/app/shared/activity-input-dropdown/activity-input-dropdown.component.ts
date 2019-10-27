@@ -171,7 +171,7 @@ export class ActivityInputDropdownComponent implements OnInit {
         this.createNewActivities = [];
         this.saveActivityChain = null;
       }
-    })
+    });
 
     this.searchResults = activitySearch.searchForActivities(searchValue).map((searchResult) => {
       let result = {

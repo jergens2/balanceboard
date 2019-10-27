@@ -5,14 +5,13 @@
 
     border-radius: 3px;
 
-    /* border: 1px solid rgb(228, 228, 228); */
+    
     margin-bottom:1px;
     margin-top:1px;
 
     display:flex;
     flex-direction: column;
 
-    padding-left: 15px;
 }
 /* .timelog-entry-root:hover{
     border: 1px solid black;
@@ -24,7 +23,7 @@
     height:100%;
     flex-grow:2;
     border-radius:3px;
-    
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 .tle:hover{
     border: 1px solid black;
