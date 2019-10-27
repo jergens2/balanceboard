@@ -1,4 +1,4 @@
-<div class="timelog-entry-display-root">
+<div class="timelog-entry-display-root" [style.background-color]="backgroundColor">
     <div style="display:flex; flex-direction: row;">
         <div style="display:flex;flex-direction: row; flex-wrap: wrap; max-width: 150px; margin-right :10px;">
             <div *ngFor="let unit of units" class="unit" [style.background-color]="unit.color"></div>
