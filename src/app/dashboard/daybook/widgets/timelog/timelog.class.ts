@@ -253,21 +253,27 @@ export class Timelog {
   private addSleepTimeDelineators(delineations: TimeDelineator[]): TimeDelineator[] {
     let wakeupDelineator: TimeDelineator;
     let bedtimeDelineator: TimeDelineator;
-    if (this._activeDay.sleepProfileIsSet) {
+
+    if(this._activeDay.wakeupTimeIsSet){
       if (this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTimeISO))) {
         wakeupDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTimeISO), "SLEEP", faSun, "rgb(235, 201, 12)");
       }
-      if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedtimeISO))) {
-        bedtimeDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.bedtimeISO), "SLEEP", faMoon, "rgb(68, 0, 255)");
-      }
-    } else {
+    }else{
       if (this.timeIsInView(this._activeDay.wakeupTime)) {
         wakeupDelineator = new TimeDelineator(this._activeDay.wakeupTime, "SLEEP", faSun, "rgb(200, 200, 200)");
       }
+    }
+
+    if(this._activeDay.bedTimeIsSet){
+      if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedtimeISO))) {
+        bedtimeDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.bedtimeISO), "SLEEP", faMoon, "rgb(68, 0, 255)");
+      }
+    }else{
       if (this.timeIsInView(this._activeDay.bedtime)) {
         bedtimeDelineator = new TimeDelineator(this._activeDay.bedtime, "SLEEP", faMoon, "rgb(200, 200, 200)");
       }
     }
+
     if (wakeupDelineator) {
       wakeupDelineator.isVisible = true;
       wakeupDelineator.label = "wake up"
@@ -296,14 +302,22 @@ export class Timelog {
     for (let i = 0; i < entriesCount; i++) {
       const startTime: moment.Moment = delineators[i].time;
       const endTime: moment.Moment = delineators[i + 1].time;
-      let sleepState: "AWAKE" | "SLEEP" = "AWAKE";
-      if (endTime.isBefore(wakeupTime) || startTime.isAfter(bedTime)) {
-        sleepState = "SLEEP";
-        console.log("Sleep state is EL SLEEPO")
+      if(!moment(startTime).isSame(moment(endTime))){
+        /* 
+          there was a problem where there would be a duplicate delineator at the wakeup time, e.g. 8:30am,
+          a delineator for the wakeup and a delineator for the start of a timelog entry for that day.
+          so this if statement catches the case where the start and end time are the same 
+          (sorted array would have i and i+1 have same value );
+        */
+        let sleepState: "AWAKE" | "SLEEP" = "AWAKE";
+        if (endTime.isSameOrBefore(wakeupTime) || startTime.isSameOrAfter(bedTime)) {
+          sleepState = "SLEEP";
+        }
+        const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, sleepState);
+        entries.push(entry);
       }
-      const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, sleepState);
-      entries.push(entry);
     }
+
 
     this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem) => {
       const entryDataStartTime: moment.Moment = moment(entryDataItem.startTimeISO);

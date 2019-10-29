@@ -1,7 +1,14 @@
 <div class="timelog-entry-display-root" [style.background-color]="backgroundColor">
-    <div style="display:flex; flex-direction: row;">
+    <div style="display:flex; flex-direction: row; align-items: center;">
         <div style="display:flex;flex-direction: row; flex-wrap: wrap; max-width: 150px; margin-right :10px;">
-            <div *ngFor="let unit of units" class="unit" [style.background-color]="unit.color"></div>
+            <div *ngFor="let unit of units">
+                <div *ngIf="unit.unitType === 'HOUR'" class="hour-unit" [ngClass]="{'slim-hour-unit': unit.fill.length == 1}">
+                    <div *ngFor="let square of unit.fill" class="unit" [style.background-color]="unit.color"></div>
+                </div>
+                <div *ngIf="unit.unitType === 'FIFTEEN'" class="unit" [style.background-color]="unit.color" >
+
+                </div>
+            </div>
 
         </div>
         <div [ngClass]="{'small-text': screenSize === 0}">

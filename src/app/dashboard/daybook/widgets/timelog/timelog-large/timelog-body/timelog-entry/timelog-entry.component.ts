@@ -43,7 +43,6 @@ export class TimelogEntryComponent implements OnInit {
   }
 
   public onClickTimelogEntry(){
-    console.log("opening tool for entry: ", this._entry)
     this.toolsService.openTool(ToolComponents.TimelogEntry, this._entry);
   }
 

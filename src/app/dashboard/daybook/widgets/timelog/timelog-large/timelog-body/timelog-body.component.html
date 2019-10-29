@@ -1,8 +1,6 @@
 <div class="timelog-body-grid-container no-select">
-    <div class="timelog-body-root" id="timelog-body-root" 
-    (mouseenter)="itemState.onMouseEnter()"
-        (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)" 
-        [ngStyle]="timelogBodyNgStyle">
+    <div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()"
+        (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)" [ngStyle]="timelogBodyNgStyle">
 
 
         <div class="guide-line-hours">
@@ -20,32 +18,44 @@
 
                 <div class="now-line-time-label">
                     <fa-icon [icon]="faClock" style="margin-right:5px"></fa-icon>
-                    <div *ngIf="nowLine.showTime">
+                    <div *ngIf="nowLine.showTime" style="margin-right:5px;">
                         {{ nowLine.time.format('h:mm a')}}
                     </div>
-                    <div *ngIf="!nowLine.showTime" style="height:1px; border-top: 1px solid rgba(255, 0, 0, 0.3); flex-grow:2;">
+                    <div *ngIf="!nowLine.showTime"
+                        style="height:1px; border-top: 1px solid rgba(255, 0, 0, 0.3); flex-grow:2;">
                     </div>
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(255, 0, 0, 0.3); flex-grow:2;"></div>
             </div>
         </div>
 
+        <div class="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle">
+            <div class="tick-margin-line"></div>
+        </div>
+
         <div *ngIf="timeDelineators.length > 0" class="time-delineators" [ngStyle]="timeDelineatorsNgStyle">
             <div></div>
             <div class="time-delineator-label-container" *ngFor="let timeDelineator of timeDelineators">
-                <div class="time-delineator-time-label" *ngIf="timeDelineator.isVisible" (mouseenter)="timeDelineator.itemState.onMouseEnter()"
-                    (mouseleave)="timeDelineator.itemState.onMouseLeave()">
-                    <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon" [ngStyle]="timeDelineator.ngStyle"
-                        *ngIf="timeDelineator.icon"></fa-icon>
-                    <div style="margin-right: 5px;" *ngIf="!timeDelineator.icon"></div>
-                    <span>{{ timeDelineator.time.format('h:mm a')}}</span>
-                    <fa-icon *ngIf="timeDelineator.mouseIsOver && timeDelineator.delineatorType == 'DELINEATOR'"
-                        (click)="timelog.removeTimeDelineator(timeDelineator)"
-                        style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faTimes"></fa-icon>
+                <div style="display:flex; flex-direction: row; align-items: center; width: 100px" *ngIf="timeDelineator.isVisible">
+                    <div class="time-delineator-time-label" 
+                        (mouseenter)="timeDelineator.itemState.onMouseEnter()"
+                        (mouseleave)="timeDelineator.itemState.onMouseLeave()">
+                        <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon"
+                            [ngStyle]="timeDelineator.ngStyle" *ngIf="timeDelineator.icon"></fa-icon>
+                        <div style="margin-right: 5px;" *ngIf="!timeDelineator.icon"></div>
+                        <span>{{ timeDelineator.time.format('h:mm a')}}</span>
+                        <fa-icon *ngIf="timeDelineator.mouseIsOver && timeDelineator.delineatorType == 'DELINEATOR'"
+                            (click)="timelog.removeTimeDelineator(timeDelineator)"
+                            style="margin-left: 5px;margin-right:2px; cursor: pointer;" [icon]="faTimes"></fa-icon>
+                    </div>
+                    <div style="height:1px; width: 5px;border-top: 1px solid gray;"></div>
                 </div>
+
                 <!-- <div *ngIf="timeDelineator.delineatorType === 'DELINEATOR' && timeDelineator.isVisible" style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div> -->
-                <div *ngIf="timeDelineator.delineatorType === 'SLEEP'  " style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div>
-                <div *ngIf="timeDelineator.delineatorType === 'SLEEP' && timeDelineator.label != ''" class="delineator-label">{{ timeDelineator.label }}</div>
+                <div *ngIf="timeDelineator.delineatorType === 'SLEEP'  "
+                    style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div>
+                <div *ngIf="timeDelineator.delineatorType === 'SLEEP' && timeDelineator.label != ''"
+                    class="delineator-label">{{ timeDelineator.label }}</div>
             </div>
         </div>
 
@@ -54,7 +64,9 @@
             <div class="mouse-position-time-label-container">
                 <div class="mouse-position-time-label" (click)="timelog.addTimeDelineator(mousePosition.time)">
                     {{ mousePosition.time.format('h:mm a')}}
-                    <fa-icon *ngIf="!mousePosition.crossesExistingTimelogEntry" style="margin-left: 5px;margin-right:2px; cursor: pointer; font-size: 0.9em;" [icon]="faPlus"></fa-icon>
+                    <fa-icon *ngIf="!mousePosition.crossesExistingTimelogEntry"
+                        style="margin-left: 5px;margin-right:2px; cursor: pointer; font-size: 0.9em;" [icon]="faPlus">
+                    </fa-icon>
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
             </div>
@@ -63,7 +75,8 @@
 
 
         <div *ngIf="timelogEntryItems.length > 0" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
-            <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item" [entry]="timelogEntryItem" [minutesPerTwentyPixels]="minutesPerTwentyPixels"></app-timelog-entry>
+            <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item"
+                [entry]="timelogEntryItem" [minutesPerTwentyPixels]="minutesPerTwentyPixels"></app-timelog-entry>
         </div>
 
     </div>

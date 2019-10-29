@@ -1,0 +1,15 @@
+<div class="set-wakeup-time-root">
+    <div style="display:flex;flex-direction: column;">
+        <div>What time did you wake up this morning?</div>
+        <div style="display:flex;flex-direction: row;">
+            <app-time-input [timeValue]="time" (timeChanged)="onTimeChanged($event)" [minValue]="minVal"
+                [maxValue]="maxVal">
+            </app-time-input>
+        </div>
+
+    </div>
+
+    <div style="display:flex;flex-direction: row-reverse;">
+        <button class="medium-button" (click)="onClickSave()">Save</button>
+    </div>
+</div>

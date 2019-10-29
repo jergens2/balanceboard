@@ -28,7 +28,7 @@ export class ToolsComponent implements OnInit {
   screenSize: AppScreenSize;
 
 
-  private _timelogEntryItem: TimelogEntryItem;
+  private _timelogEntryItem: TimelogEntryItem = null;
   public get timelogEntryItem(): TimelogEntryItem{ return this._timelogEntryItem; }
   
   ngOnInit() {

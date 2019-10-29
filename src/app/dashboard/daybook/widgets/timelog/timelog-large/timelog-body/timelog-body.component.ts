@@ -72,6 +72,7 @@ export class TimelogBodyComponent implements OnInit {
   public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
 
 
+
   public get timeDelineators(): TimeDelineator[] { return this._timelog.timeDelineators; }
   public get timeDelineatorsNgStyle(): any { return this._timelog.timeDelineatorsNgStyle; };
 
@@ -81,6 +82,7 @@ export class TimelogBodyComponent implements OnInit {
     
     this.updateTimelog();
     this.updateNowLine();
+    this.updateTickMarginLine();
   }
 
   private buildGuideLineHours() {
@@ -144,6 +146,46 @@ export class TimelogBodyComponent implements OnInit {
     }
   }
 
+  private _tickMarginLineNgStyle: any = {};
+  private _tickMarginLines: any[] = [];
+  public get tickMarginLineNgStyle(): any { return this._tickMarginLineNgStyle; };
+  public get tickMarginLines(): any[] { return this._tickMarginLines; };
+
+  private updateTickMarginLine(){
+    if(this.timelog.entryItems.length > 0){
+      const totalDurationSeconds: number = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "seconds");
+      let percentages: number[] = [];
+      let tickMarginLines: boolean[] = [];
+
+      let sleepStates: {durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number}[] = this.timelog.entryItems.map((entryItem)=>{
+        return { durationSeconds: entryItem.durationSeconds, sleepState: entryItem.sleepState, percentage: 0 };
+      });
+
+      let reducedSleepStates: {durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number}[] = [sleepStates[0]];
+      reducedSleepStates[0].percentage = (reducedSleepStates[0].durationSeconds/totalDurationSeconds) * 100;
+      for(let i=1; i< sleepStates.length; i++){
+        if(sleepStates[i].sleepState === sleepStates[i-1].sleepState){
+          // if it is the same as the previous one, add to the existing sum or seconds
+          reducedSleepStates[reducedSleepStates.length-1].durationSeconds += sleepStates[i].durationSeconds;
+          reducedSleepStates[reducedSleepStates.length-1].percentage = ((reducedSleepStates[reducedSleepStates.length-1].durationSeconds)/totalDurationSeconds)*100;
+        }else{
+          // if it is not the same, create a new item in the array.
+          sleepStates[i].percentage = (sleepStates[i].durationSeconds/totalDurationSeconds)*100;
+          reducedSleepStates.push(sleepStates[i]);
+        }
+      }
+
+      let gridTemplateRows: string = "";
+      reducedSleepStates.forEach((state)=>{
+        gridTemplateRows += "" + state.percentage.toFixed(2) + "%";
+      });
+      
+      this._tickMarginLines = reducedSleepStates;
+      this._tickMarginLineNgStyle = {"grid-template-rows":gridTemplateRows};
+
+    }
+    
+  }
 
 
 

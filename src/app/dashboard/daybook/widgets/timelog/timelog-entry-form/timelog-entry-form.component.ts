@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { ItemState } from '../../../../../shared/utilities/item-state.class';
 import { TimelogEntryActivity } from '../../../api/data-items/timelog-entry-activity.interface';
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookDayItemSleepProfile } from '../../../api/data-items/daybook-day-item-sleep-profile.interface';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -22,16 +23,17 @@ export class TimelogEntryFormComponent implements OnInit {
   private _activityItems: TimelogEntryActivity[] = [];
 
   @Input() public set entryItem(entryItem: TimelogEntryItem){
-    console.log("TimelogEntryFOrm set entryItem()")
-    this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime, entryItem.sleepState);
-    this._entryItem.isSavedEntry = entryItem.isSavedEntry;
-    this._entryItem.timelogEntryActivities = entryItem.timelogEntryActivities;
-    this._activityItems = [];
-    this._dataEntryItem = this._entryItem.dataEntryItem;
-    this._entryItem.timelogEntryActivities.forEach((item)=>{
-      this._activityItems.push(item);
-    });
-    this.reload();
+    if(entryItem){
+      this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime, entryItem.sleepState);
+      this._entryItem.isSavedEntry = entryItem.isSavedEntry;
+      this._entryItem.timelogEntryActivities = entryItem.timelogEntryActivities;
+      this._activityItems = [];
+      this._dataEntryItem = this._entryItem.dataEntryItem;
+      this._entryItem.timelogEntryActivities.forEach((item)=>{
+        this._activityItems.push(item);
+      });
+      this.reload();
+    }
   }
 
   private _dataEntryItem: DaybookTimelogEntryDataItem;
@@ -42,11 +44,31 @@ export class TimelogEntryFormComponent implements OnInit {
 
   ngOnInit() {
     // console.log("Entry item: ", this.entryItem.startTime.format("hh:mm a") + " -- - -- " + this.entryItem.endTime.format("hh:mm a"));
-
+    if(!this._entryItem){
+      const wakeupTimeIsSet: boolean = this.daybookService.today.sleepProfile.wakeupTimeISO != "" && this.daybookService.today.sleepProfile.wakeupTimeISO != null;
+      if(!wakeupTimeIsSet && !this.daybookService.isAwakeAfterMidnight){
+        console.log("no wakeup time;")
+        this._wakeupTimeIsSet = false;
+      }
+      this.entryItem = this.daybookService.getNewTimelogEntry();
+    }
   }
-z
+
+  private _wakeupTimeIsSet: boolean = true;
+  public get wakeupTimeIsSet(): boolean { return this._wakeupTimeIsSet; }; 
+
+  public onWakeupTimeChanged(wakeupTime: moment.Moment){
+    console.log("wakeup time changed: ", wakeupTime.format("hh:mm a"));
+    let sleepProfile: DaybookDayItemSleepProfile = this.daybookService.activeDay.sleepProfile;
+    sleepProfile.wakeupTimeISO = wakeupTime.toISOString();
+    sleepProfile.wakeupTimeUtcOffsetMinutes = wakeupTime.utcOffset();
+    this.daybookService.activeDay.sleepProfile = sleepProfile;
+    this._wakeupTimeIsSet = true;
+  }
+
   private reload(){
     this._mode = this.entryItem.isSavedEntry ? "EDIT" : "NEW";
+
     this._itemState = new ItemState(this.entryItem.timelogEntryActivities);
   }
 
@@ -68,7 +90,7 @@ z
     // this._entryItem.timelogEntryActivities.forEach((item) => {
     //   checkEntries.push(item);
     // })
-    console.log("onactivitieschanged");
+    console.log("onactivitieschanged", this._activityItems);
     // this._itemState.checkIfChanged(checkEntries);
   }
 

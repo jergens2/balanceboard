@@ -1,24 +1,38 @@
 <div class="activity-display-item-root font-family-open-sans" *ngIf="activity">
     <div class="title-container">
-        <div [ngStyle]="titleBorderBottom" class="title">
-            <div class="title-color" [style.background-color]="activity.color">
-
-            </div>
-            <div class="title-text">
-                {{ activity.name }}
+        <div style="width:0px;">
+            <div *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color" [cpSaveClickOutside]="false"
+                [cpToggle]="true" [cpOutputFormat]="'rgba'" [style.background]="activity.color" [cpPosition]="'left'"
+                [cpOKButton]="true" [cpOKButtonText]="'Save'" [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
+                [cpCancelButtonClass]="'small-button discard-button'" (colorPickerClose)="onClickCancelColorPicker()"
+                (colorPickerCancel)="onClickCancelColorPicker()" (colorPickerSelect)="onClickSaveColorPicker($event)"
+                (colorPickerChange)="onColorChanged($event)">
             </div>
         </div>
+        <div class="title-color" [style.background-color]="activity.color" (click)="onClickOpenColorPicker()">
+
+        </div>
+        <div class="title-text">
+            {{ activity.name }}
+        </div>
+
     </div>
     <div class="body">
         <div class="body-property">
-            is occurrence activity or duration activity? {{ activity.durationSetting }}
+
+        </div>
+        <div class="body-property">
+            Occurrence or duration: {{ activity.durationSetting }}
         </div>
 
         <div class="scheduling-configuration" *ngIf="configuringSchedule">
-            <app-activity-schedule-configuration [activity]="activity" (configurationSaved)="onConfigurationSaved($event)" ></app-activity-schedule-configuration>
+            <app-activity-schedule-configuration [activity]="activity"
+                (configurationSaved)="onConfigurationSaved($event)"></app-activity-schedule-configuration>
         </div>
         <div class="scheduling-configuration" *ngIf="!configuringSchedule">
-            <app-activity-schedule-display [activity]="activity" (configure)="configuringSchedule = !configuringSchedule" (delete)="onConfigurationDeleted()"></app-activity-schedule-display>
+            <app-activity-schedule-display [activity]="activity"
+                (configure)="configuringSchedule = !configuringSchedule" (delete)="onConfigurationDeleted()">
+            </app-activity-schedule-display>
         </div>
     </div>
 </div>

@@ -15,6 +15,8 @@ export class ActivityDisplayItemComponent implements OnInit {
   private _activity: ActivityCategoryDefinition;
   @Input() public set activity(activity: ActivityCategoryDefinition) {
     this._activity = activity;
+    this.color = this._activity.color;
+    this._originalColor = this._activity.color;
     this.updateDisplay();
   };
   public get activity(): ActivityCategoryDefinition {
@@ -60,5 +62,41 @@ export class ActivityDisplayItemComponent implements OnInit {
   }
 
   public configuringSchedule: boolean = false;
+
+
+  private _colorPickerIsOpen: boolean = false;
+  public get colorPickerIsOpen(): boolean { return this._colorPickerIsOpen; };
+  public onClickOpenColorPicker() {
+    this._colorPickerIsOpen = true;
+  }
+
+
+
+  color: string;
+
+  private _originalColor: string;
+
+
+  public onClickSaveColorPicker(color: string) {
+    // console.log("Saving color: ", color);
+    this._originalColor = color;
+    this.color = color;
+    this.activity.color = color;
+    this._colorPickerIsOpen = false;
+
+    this.activitiesService.updateActivity(this.activity);
+  }
+
+
+  public onClickCancelColorPicker() {
+    // console.log("Color picker cancelled")
+    this.color = this._originalColor;
+    this._colorPickerIsOpen = false;
+  }
+  public onColorChanged(color: string) {
+    // console.log("Color changed (RGBA): ", color);
+    this.color = color;
+  }
+
 
 }

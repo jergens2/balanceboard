@@ -100,8 +100,8 @@ export class SleepProfileWidgetComponent implements OnInit {
       this._previousFallAsleepTime = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(22).minute(30);
       this.sleepProfileIsSet = false;
     }
-    if (this.daybookService.activeDay.previousDay.timeReferencer.lastActionTime) {
-      this._previousFallAsleepTimeMin = moment(this.daybookService.activeDay.previousDay.timeReferencer.lastActionTime);
+    if (this.daybookService.activeDay.previousDay.getMostRecentActionTime()) {
+      this._previousFallAsleepTimeMin = moment(this.daybookService.activeDay.previousDay.getMostRecentActionTime());
       if (this._previousFallAsleepTimeMin.isSameOrAfter(moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).endOf("day"))) {
         // in this case, it would be after midnight, into this day
       }

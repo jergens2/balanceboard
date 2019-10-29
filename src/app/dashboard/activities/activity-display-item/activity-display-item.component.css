@@ -15,20 +15,27 @@
 
     display:flex;
     flex-direction: row;
+    align-items: center;
     margin-bottom:15px;
 }
 .title{
     flex-shrink: 2;
     display:flex;
     flex-direction: row;
-    border-bottom-left-radius: 10px;
+    align-items: center;
+
     padding-right:15px;
 }
 .title-color{
     width: 20px;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+    height:20px;
+    border-radius: 5px;
     margin-right: 5px;
+    border: 1px solid rgba(0,0,0,0);
+}
+.title-color:hover{
+    border: 1px solid black;
+    cursor: pointer;
 }
 
 .body{
@@ -38,7 +45,9 @@
     
 }
 .body-property{
-
+    display:flex;
+    flex-direction: row;
+    align-items: center;
 }
 .scheduling-configuration{
 

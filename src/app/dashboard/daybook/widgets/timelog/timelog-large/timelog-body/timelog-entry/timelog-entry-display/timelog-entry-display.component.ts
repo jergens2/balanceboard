@@ -29,8 +29,11 @@ export class TimelogEntryDisplayComponent implements OnInit {
     const minutes: number = this.entry.durationSeconds / 60;
     const safeBuffer: number = 5; // subtract a few px just so as to not go over
     let height: number = ((minutes * 20) / minutesPerTwentyPixels) - safeBuffer;
-    // console.log("Height estimate px: " + height);
+    const rowHeight: number = 20;
+    this._rows = Math.floor(height / rowHeight);  
   }
+
+  private _rows: number = 1;
 
   public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
 
@@ -41,7 +44,6 @@ export class TimelogEntryDisplayComponent implements OnInit {
   public screenSize: AppScreenSize;
 
   ngOnInit() {
-
     // console.log("Entry sleep type: ", this._entry.sleepState);
     this.screenSize = this.screenSizeService.appScreenSize;
     this.screenSizeService.appScreenSize$.subscribe((size)=>{
@@ -57,8 +59,8 @@ export class TimelogEntryDisplayComponent implements OnInit {
   private _backgroundColor: string = "rgba(255, 255, 255, 0.5)";
   public get backgroundColor(): string { return this._backgroundColor; };
 
-  private _units: { color: string }[] = [];
-  public get units(): { color: string }[] { return this._units; };
+  private _units: { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] = [];
+  public get units(): { color: string, unitType: "HOUR" | "FIFTEEN",  fill: any[] }[] { return this._units; };
 
   private _displayString: string = "";
   public get displayString(): string { return this._displayString; };
@@ -66,91 +68,82 @@ export class TimelogEntryDisplayComponent implements OnInit {
 
   private rebuild() {
     const entryDuration: number = this._entry.durationSeconds/60;
-    let displayStrings: string[] = [];
-    let units: { color: string }[] = [];
-    this._entry.timelogEntryActivities.forEach((activityEntry) => {
-      let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
-      let durationMinutes: number =(activityEntry.percentage * entryDuration) / 100;
-      const minutesPerUnit: number = 15;
-      let unitCount: number = Math.ceil(durationMinutes / minutesPerUnit);
 
-      
-      if (foundActivity) {
-        for(let i=0; i< unitCount; i++){
-          units.push({color: foundActivity.color});
-        }
-        displayStrings.push(foundActivity.name);
-      } else {
-        // console.log("Unknown activity: " + activityEntry.activityTreeId);
-        for(let i=0; i< unitCount; i++){
-          units.push({color: "#fefefe"});
-        }
-        displayStrings.push("unknown activity");
-      }
-    });
+    let displayString: string = "";
 
-    const topActivity: TimelogEntryActivity = this._entry.timelogEntryActivities.sort((a1, a2)=>{
+    let units: { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] = [];
+    let topActivitySet: boolean = false;
+    this._entry.timelogEntryActivities.sort((a1, a2)=>{
       if(a1.percentage > a2.percentage) return -1;
       else if(a1.percentage < a2.percentage) return 1;
       else return 0;
-    })[0];
-    if(topActivity){
-      const foundActivity = this.activitiesService.findActivityByTreeId(topActivity.activityTreeId);
-      if(foundActivity){
-        const alpha = 0.05;
-        this._backgroundColor = ColorConverter.convert(foundActivity.color, ColorType.RGBA, alpha);
-      }
-    }
+    }).forEach((activityEntry) => {
+      let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
+      let durationMinutes: number =(activityEntry.percentage * entryDuration) / 100;
 
-    let displayString: string = "";
-    if(displayStrings.length > 0){
-      displayString = displayStrings[0];
-      if(displayStrings.length == 2){
-        displayString += ", " + displayStrings[1];
-      }else if(displayStrings.length > 2){
-        const remaining: number = displayStrings.length -2;
-        displayString += ", " + displayStrings[1] + " and " + remaining + " more";
+      if(!topActivitySet){
+        topActivitySet = true;
+        const alpha = 0.06;
+        this._backgroundColor = ColorConverter.convert(foundActivity.color, ColorType.RGBA, alpha);
+        if(foundActivity){
+          displayString = foundActivity.name;
+        }else{
+          displayString = "Unknown activity";
+        }
+      } 
+    
+      let color: string = "";
+      if (foundActivity) {
+        color = foundActivity.color;
+      } else {
+        color = "rgba(0,0,0,0.1)";
       }
+
+      let unitCount: number = Math.ceil(durationMinutes/15);
+      if(this._rows === 1){
+        for(let i=0; i< unitCount; i++){
+          units.push({
+            color: color,
+            unitType: "FIFTEEN",
+            fill: [1],
+          });
+        }
+      }else if(this._rows > 1){
+        let remainingUnitCount: number = unitCount;
+        while(remainingUnitCount > 0){
+          if(remainingUnitCount >= 4){
+            let fill: any[] = [1, 2, 3, 4];
+            units.push({
+              color: color,
+              unitType: "HOUR",
+              fill: fill,
+            });
+            remainingUnitCount-= 4;
+          }else{
+            let fill: any[] = [];
+            for(let i=1; i<=remainingUnitCount; i++){
+              fill.push(i);
+            }
+            units.push({
+              color: color,
+              unitType: "HOUR",
+              fill: fill,
+            });
+            remainingUnitCount = 0;
+          }
+        }
+      }
+    });
+
+    if(this._entry.timelogEntryActivities.length > 1){
+      displayString += " +" + (this._entry.timelogEntryActivities.length-1) + " more";
     }
     
+    
+    console.log("units: ", units);
+
     this._displayString = displayString;
     this._units = units;
   }
-
-  // private rebuild(){
-  // this._activityDisplayEntries = [];
-  // const durationMinutes: number = this._entry.durationSeconds/60;
-  // this._entry.timelogEntryActivities.forEach((activityEntry)=>{
-  //   let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
-  //   let displayEntry:  { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number };
-  //   if(foundActivity){
-  //     displayEntry = {
-  //       activity: foundActivity,
-  //       name: foundActivity.name,
-  //       color: foundActivity.color,
-  //       durationMinutes: (activityEntry.percentage * durationMinutes) / 100,
-  //     }
-  //   }else{
-  //     displayEntry = {
-  //       activity: null,
-  //       name: "Unknown activity: " + activityEntry.activityTreeId,
-  //       color: "white",
-  //       durationMinutes: (activityEntry.percentage * durationMinutes) / 100,
-  //     }
-  //   }
-  //   this._activityDisplayEntries.push(displayEntry);
-  // });
-  // this.buildUnits();
-  // }
-
-
-  // private buildUnits(){
-
-  //   this._entry.timelogEntryActivities.forEach((activity)=>{
-  //     activity.
-  //   })
-
-
-  // }
 
 }

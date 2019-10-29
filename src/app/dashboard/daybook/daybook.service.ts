@@ -48,7 +48,7 @@ export class DaybookService implements ServiceAuthenticates {
       }
     }));
     this._allSubscriptions.push(this.activitiesService.activitiesTree$.subscribe((changedTree) => {
-      this.updateActivityItems(changedTree);
+      // this.updateActivityItems(changedTree);
     }));
 
     return this._loginComplete$.asObservable();
@@ -166,7 +166,7 @@ export class DaybookService implements ServiceAuthenticates {
           this._activeDay$.next(activeItem);
         }
       } else {
-        console.log("daybook ****Warning: Starting a new Active day - Method disabled.");
+        // console.log("daybook ****Warning: Starting a new Active day - Method disabled.");
         this.startANewDay(this._activeDayYYYYMMDD);
       }
     }
@@ -234,44 +234,65 @@ export class DaybookService implements ServiceAuthenticates {
 
   }
 
-  public saveTimelogEntry(timelogEntry: TimelogEntryItem, afterMidnightEntry?: TimelogEntryItem){
+
+  /**
+   * This method is for the tool menu item for entering in a new timelog Entry.
+   * Implicitly, this tool is for active current use, as in: enter a new timelog entry for the period of time 
+   * of the previous relevant start time (e.g. wake up) to now.   
+   */
+  public getNewTimelogEntry(): TimelogEntryItem {
+    let startTime: moment.Moment = moment(this.today.getMostRecentActionTime(moment()));
+    let endTime: moment.Moment = moment();
+
+    if (this.isAwakeAfterMidnight) {
+      let yesterdaysLastAction: moment.Moment = this.today.previousDay.getMostRecentActionTime();
+      if(startTime.isSame(moment(this.today.dateYYYYMMDD).startOf("day"))){
+        startTime = moment(yesterdaysLastAction);
+      }
+    }
+    
+    let newTimelogEntry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, "AWAKE");
+    return newTimelogEntry;
+  }
+
+  public saveTimelogEntry(timelogEntry: TimelogEntryItem, afterMidnightEntry?: TimelogEntryItem) {
     let daybookDayItem: DaybookDayItem;
     let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
-    if(dateYYYYMMDD == this.activeDayYYYYMMDD){
+    if (dateYYYYMMDD == this.activeDayYYYYMMDD) {
       daybookDayItem = this.activeDay;
-    }else{
+    } else {
       daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
     }
     daybookDayItem.addTimelogEntryItem(timelogEntry.dataEntryItem);
-    if(afterMidnightEntry){
+    if (afterMidnightEntry) {
       daybookDayItem.followingDay.addTimelogEntryItem(afterMidnightEntry.dataEntryItem);
     }
   }
 
-  public updateTimelogEntry(timelogEntry: TimelogEntryItem){
+  public updateTimelogEntry(timelogEntry: TimelogEntryItem) {
     let daybookDayItem: DaybookDayItem;
     let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
-    if(dateYYYYMMDD == this.activeDayYYYYMMDD){
+    if (dateYYYYMMDD == this.activeDayYYYYMMDD) {
       daybookDayItem = this.activeDay;
-    }else{
+    } else {
       daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
     }
     daybookDayItem.updateTimelogEntry(timelogEntry.dataEntryItem);
   }
 
-  public deleteTimelogEntry(timelogEntry: TimelogEntryItem){
+  public deleteTimelogEntry(timelogEntry: TimelogEntryItem) {
     let daybookDayItem: DaybookDayItem;
     let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
-    if(dateYYYYMMDD == this.activeDayYYYYMMDD){
+    if (dateYYYYMMDD == this.activeDayYYYYMMDD) {
       daybookDayItem = this.activeDay;
-    }else{
+    } else {
       daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
     }
     daybookDayItem.deleteTimelogEntry(timelogEntry.dataEntryItem);
   }
 
-  private updateActivityItems(changedTree) {
-    console.log("Method not implemented: update activity tree");
+  // private updateActivityItems(changedTree) {
+    // console.log("Method not implemented: update activity tree");
     /**
      * This method runs any time the activity tree changes.
      * When this happens, we need to ensure that the active day and following days have proper scheduled activity items.
@@ -280,7 +301,7 @@ export class DaybookService implements ServiceAuthenticates {
      * so if for example you change your work schedule from current schedule of Mon to Fri, to new schedule Mon to Thursday, 
      * then we need to update any future scheduled items.
      */
-  }
+  // }
 
   private updateIsPastMidnight() {
     /**
@@ -289,20 +310,24 @@ export class DaybookService implements ServiceAuthenticates {
      * what happens if it's 7:30 am and they have yet to go to bed?  In that case, we need to account for this circumstance
      */
 
-    if(this.activeDayIsToday){
+    if (this.activeDayIsToday) {
       let isAfterMidnight: boolean = false;
       if (this._clock.hour() >= 0 && this._clock.hour() <= 6) {
         isAfterMidnight = true;
       }
       this._isAwakeAfterMidnight = isAfterMidnight;
-    }else{
+    } else {
       this._isAwakeAfterMidnight = false;
     }
-    
+
   }
 
-  private _isAwakeAfterMidnight: boolean = false;
-  public get isAwakeAfterMidnight(): boolean { return this._isAwakeAfterMidnight; }
 
+  /**
+ * As of now, this method basically checks if the current time is before 6:00am.  
+ * Needs improvement.
+ */
+  public get isAwakeAfterMidnight(): boolean { return this._isAwakeAfterMidnight; }
+  private _isAwakeAfterMidnight: boolean = false;
 
 }

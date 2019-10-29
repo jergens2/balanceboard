@@ -56,7 +56,9 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       // console.log("Clock passed the minute")
       this._currentTime = moment();
       // console.log("this._currentTime =  ", this._currentTime.format("hh:mm:ss a"))
-      this.buildZoomButtons();
+      if(this.daybookService.activeDayIsToday){
+        this.buildZoomButtons();
+      }
     });
 
 

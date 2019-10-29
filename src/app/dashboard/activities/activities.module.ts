@@ -21,6 +21,7 @@ import { DayOccurrenceComponent } from './activity-display-item/activity-schedul
 import { WeekOccurrenceComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/week-occurrence/week-occurrence.component';
 import { MonthOccurrenceComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/month-occurrence/month-occurrence.component';
 import { YearOccurrenceComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/year-occurrence/year-occurrence.component';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { YearOccurrenceComponent } from './activity-display-item/activity-schedu
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,
-    SharedModule
+    SharedModule,
+    ColorPickerModule
   ],
   exports: [
     ActivityCategoryDefinitionFormComponent

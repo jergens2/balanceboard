@@ -12,6 +12,17 @@
     padding-right: 10px;
 }
 
+.hour-unit{
+    display:grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    margin-right: 3px;
+    margin-bottom: 3px;
+}
+.slim-hour-unit{
+    grid-template-columns: 1fr;
+}
+
 
 .unit{
     /* background-color: rgba(0, 89, 255, 0.219); */
@@ -19,9 +30,9 @@
     width:18px;
     height:18px;
     border-radius: 3px;
+
     margin-right: 1px;
-    margin-top: 1px;
-    /* margin-bottom: 1px; */
+    margin-bottom: 1px;
     display:grid;
     grid-template-rows: 1fr;
 
