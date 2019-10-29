@@ -15,3 +15,20 @@
     justify-content: flex-end;
     margin-bottom:0px;
 }
+.times-section{
+    border-radius: 3px;
+}
+.times-section:hover{
+    background-color: rgb(245, 245, 245);
+    cursor: pointer;
+}
+.icon-button{
+    display:none;
+    padding:5px;
+}
+.icon-button:hover{
+    color: gray;
+}
+.times-section:hover > .icon-button{
+    display: inline;
+}

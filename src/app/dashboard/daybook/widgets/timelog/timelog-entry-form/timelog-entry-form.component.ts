@@ -8,6 +8,7 @@ import { ItemState } from '../../../../../shared/utilities/item-state.class';
 import { TimelogEntryActivity } from '../../../api/data-items/timelog-entry-activity.interface';
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import { DaybookDayItemSleepProfile } from '../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -18,29 +19,25 @@ export class TimelogEntryFormComponent implements OnInit {
 
   constructor(private toolsService: ToolsService, private daybookService: DaybookService) { }
 
-
-  private _entryItem: TimelogEntryItem;
-  private _activityItems: TimelogEntryActivity[] = [];
-
   @Input() public set entryItem(entryItem: TimelogEntryItem){
     if(entryItem){
       this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime, entryItem.sleepState);
       this._entryItem.isSavedEntry = entryItem.isSavedEntry;
       this._entryItem.timelogEntryActivities = entryItem.timelogEntryActivities;
-      this._activityItems = [];
+
+      
       this._dataEntryItem = this._entryItem.dataEntryItem;
+      this._activityItems = [];
       this._entryItem.timelogEntryActivities.forEach((item)=>{
         this._activityItems.push(item);
       });
+
+      this._startTimeBoundary = this.daybookService.getStartTimeBoundary(entryItem);
+      this._endTimeBoundary = this.daybookService.getEndTimeBoundary(entryItem);
+
       this.reload();
     }
   }
-
-  private _dataEntryItem: DaybookTimelogEntryDataItem;
-  public get entryItem(): TimelogEntryItem{ return this._entryItem; };
-  public get dataEntryItem(): DaybookTimelogEntryDataItem { return this._dataEntryItem; };
-
-  // private _saveTimelogEntry: 
 
   ngOnInit() {
     // console.log("Entry item: ", this.entryItem.startTime.format("hh:mm a") + " -- - -- " + this.entryItem.endTime.format("hh:mm a"));
@@ -53,6 +50,20 @@ export class TimelogEntryFormComponent implements OnInit {
       this.entryItem = this.daybookService.getNewTimelogEntry();
     }
   }
+  
+  private _entryItem: TimelogEntryItem;
+  private _activityItems: TimelogEntryActivity[] = [];
+
+  private _dataEntryItem: DaybookTimelogEntryDataItem;
+  public get entryItem(): TimelogEntryItem{ return this._entryItem; };
+  public get dataEntryItem(): DaybookTimelogEntryDataItem { return this._dataEntryItem; }
+
+
+  private _startTimeBoundary: moment.Moment;
+  private _endTimeBoundary: moment.Moment;
+
+  public get startTimeBoundary(): moment.Moment { return this._startTimeBoundary; }
+  public get endTimeBoundary(): moment.Moment { return this._endTimeBoundary; }
 
   private _wakeupTimeIsSet: boolean = true;
   public get wakeupTimeIsSet(): boolean { return this._wakeupTimeIsSet; }; 
@@ -68,7 +79,6 @@ export class TimelogEntryFormComponent implements OnInit {
 
   private reload(){
     this._mode = this.entryItem.isSavedEntry ? "EDIT" : "NEW";
-
     this._itemState = new ItemState(this.entryItem.timelogEntryActivities);
   }
 
@@ -78,6 +88,15 @@ export class TimelogEntryFormComponent implements OnInit {
 
   private _mode: "EDIT" | "NEW" = "NEW";
   public get mode(): "EDIT" | "NEW" { return this._mode; };
+
+  private _modifyingTimes: boolean = false;
+  public get modifyingTimes(): boolean { return this._modifyingTimes; };
+  public onClickModifyTimes(){ this._modifyingTimes = true; };
+
+  public onTimesModified(times: {startTime: moment.Moment, endTime:moment.Moment}){
+    console.log("times: ", times);
+    this._modifyingTimes = false;
+  }
 
   onActivitiesChanged(items: TLEFActivityListItem[]) {
     this._activityItems = items.map((item) => {
@@ -173,4 +192,6 @@ export class TimelogEntryFormComponent implements OnInit {
     }
     
   }
+
+  faEdit = faEdit;
 }

@@ -291,6 +291,17 @@ export class DaybookService implements ServiceAuthenticates {
     daybookDayItem.deleteTimelogEntry(timelogEntry.dataEntryItem);
   }
 
+  public getStartTimeBoundary(entryItem: TimelogEntryItem): moment.Moment{
+    let activeDay: DaybookDayItem = this.getDaybookDayItemByDate(entryItem.startTime.format("YYYY-MM-DD"));
+    console.log("***** To do: implement this method getStartTimeBoundary() ")
+    return 
+  }
+  public getEndTimeBoundary(entryItem: TimelogEntryItem): moment.Moment{
+    let activeDay: DaybookDayItem = this.getDaybookDayItemByDate(entryItem.startTime.format("YYYY-MM-DD"));
+    console.log("***** To do: implement this method getEndTimeBoundary()")
+    return 
+  }
+
   // private updateActivityItems(changedTree) {
     // console.log("Method not implemented: update activity tree");
     /**
