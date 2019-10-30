@@ -22,7 +22,7 @@ export class TlefActivitiesComponent implements OnInit {
 
   private _timelogEntryDataItem: DaybookTimelogEntryDataItem;
   @Input() public set timelogEntryDataItem(dataItem: DaybookTimelogEntryDataItem) {
-    console.log("Setting data item: ", dataItem)
+    // console.log("Setting data item: ", dataItem)
     this._timelogEntryDataItem = dataItem;
     this.reload();
   }
@@ -44,7 +44,7 @@ export class TlefActivitiesComponent implements OnInit {
   }
 
   private reload(){
-    console.log("tlef-activities.reload()")
+    // console.log("tlef-activities.reload()")
     let maxPercent: number = 100;
     if (this._timelogEntryDataItem.timelogEntryActivities.length > 1) {
       maxPercent = 100 - ((this._timelogEntryDataItem.timelogEntryActivities.length - 1) * 2);
@@ -71,7 +71,7 @@ export class TlefActivitiesComponent implements OnInit {
     this._activityChangedSubscriptions = [];
     this.activityItems.forEach((item)=>{
       this._activityChangedSubscriptions.push(item.activityModified$.subscribe((activity)=>{
-        console.log("Activity modified (color) , ", activity)
+        // console.log("Activity modified (color) , ", activity)
         this.activitiesService.updateActivity(activity);
       }));
     });

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ToolComponents } from './tool-components.enum';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { TimelogEntryItem } from '../../dashboard/daybook/widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +23,6 @@ export class ToolsService {
       this._currentTool$.next(null);
     }else{
       this._currentTool$.next(null);
-      console.log("IT was not the same component, or is missing value.")
-      console.log("Not fully implemented");
     }
   }
 

@@ -57,7 +57,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
 
 
   public updateDaybookDayItem(daybookDayItem: DaybookDayItem) {
-    console.log("Sending HTTP update request for daybook day item");
+    // console.log("Sending HTTP update request for daybook day item");
     const postUrl = serverUrl + "/api/daybook-day-item/update";
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
@@ -107,7 +107,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     // return daybookDayItem;
   }
   public saveMultipleDayItems(daybookDayItems: DaybookDayItem[]) {
-    console.log("Saving multiplo: ", daybookDayItems.length)
+    // console.log("Saving multiplo: ", daybookDayItems.length)
     // console.log(daybookDayItems);
     daybookDayItems.forEach((item) => { item.userId = this._authStatus.user.id; });
     forkJoin(daybookDayItems.map<Observable<DaybookDayItem>>((item: DaybookDayItem) => { return this.saveDaybookDayItem$(item) })).subscribe((savedItems: DaybookDayItem[]) => {

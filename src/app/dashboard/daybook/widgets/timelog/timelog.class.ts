@@ -10,7 +10,7 @@ import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons
 export class Timelog {
 
   constructor(timelogZoomControl: TimelogZoomControl, activeDay: DaybookDayItem, minutesPerTwentyPixels: number) {
-    console.log("timelog.class constructor()")
+    // console.log("timelog.class constructor()")
     this._timelogZoomControl = timelogZoomControl;
     this._activeDay = activeDay;
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
@@ -31,7 +31,7 @@ export class Timelog {
 
   public updateEntrySizes(minutesPerTwentyPixels: number) {
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
-    console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
+    // console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
     this._entryItems.forEach((entryItem) => {
       if (entryItem.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
         entryItem.isSmallSize = true;

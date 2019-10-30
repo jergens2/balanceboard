@@ -13,6 +13,7 @@
       <div class="search-result no-select" *ngFor="let searchResult of searchResults"
         (click)="onClickSearchResult(searchResult.activity)"
         [ngClass]="{'search-result-cursor':isArrowSelected(searchResult)}">
+        <div class="small-circle" [style.background-color]="searchResult.activity.color"></div>
         <span *ngFor="let section of searchResult.sections"
           [ngClass]="{'section-is-bold': section.isBold}">{{section.value}}</span>
       </div>

@@ -100,7 +100,7 @@ export class DaybookDayItem {
     }
     public get timeDelineators(): string[] { return this.httpShape.timeDelineators; }
     public set timeDelineators(timeDelineators: string[]) {
-        console.log("setting Time delineators ")
+        // console.log("setting Time delineators ")
         this._httpShape.timeDelineators = timeDelineators;
         this.dataChanged();
     }
@@ -200,7 +200,7 @@ export class DaybookDayItem {
         // return this._scheduledActivities.filter((scheduledActivity)=>{
         //     return scheduledActivity.isRoutine;
         // });
-        console.log("Warning: method disabled.");
+        // console.log("Warning: method disabled.");
         return [];
     }
 
@@ -372,11 +372,11 @@ export class DaybookDayItem {
             }
         });
         if (foundIndex >= 0) {
-            console.log("Successfully updated timelog entry at index: " + foundIndex);
+            // console.log("Successfully updated timelog entry at index: " + foundIndex);
             this.daybookTimelogEntryDataItems.splice(foundIndex, 1, timelogEntry);
             this.dataChanged();
         } else {
-            console.log("Error: can't modify timelogEntry", timelogEntry)
+            // console.log("Error: can't modify timelogEntry", timelogEntry)
         }
     }
     public deleteTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem) {
@@ -387,11 +387,11 @@ export class DaybookDayItem {
             }
         });
         if (foundIndex >= 0) {
-            console.log("Successfully deleting timelog entry at index: " + foundIndex);
+            // console.log("Successfully deleting timelog entry at index: " + foundIndex);
             this.daybookTimelogEntryDataItems.splice(foundIndex, 1);
             this.dataChanged();
         } else {
-            console.log("Error: can't delete timelogEntry", timelogEntry)
+            // console.log("Error: can't delete timelogEntry", timelogEntry)
         }
     }
 

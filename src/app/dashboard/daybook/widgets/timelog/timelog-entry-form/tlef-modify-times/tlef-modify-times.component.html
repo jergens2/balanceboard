@@ -1,17 +1,19 @@
 <div class="modify-times-root">
+    <div style="color:red; font-weight: bold; font-size: 0.9em;">Warning:  There are currently no safeguards protecting the setting of these times.
+    It is therefore possible to set times which conflict or overlap other times during the day.  This may cause issues.</div>
     <div style="display:flex;flex-direction: row; justify-content: space-evenly;">
         <div style="display:flex;flex-direction: column;align-items: center;">
             <div>Start time</div>
             <div style="display:flex;flex-direction: row;">
-                <app-time-input [timeValue]="startTime" (timeChanged)="onStartTimeChanged($event)" [minValue]="minValStart"
-                    [maxValue]="maxValStart" [buttons]="false"></app-time-input>
+                <app-time-input [timeValue]="startTime" (timeChanged)="onStartTimeChanged($event)" [buttons]="false">
+                </app-time-input>
             </div>
         </div>
         <div style="display:flex;flex-direction: column;align-items: center;">
             <div>End time</div>
             <div style="display:flex;flex-direction: row;">
-                <app-time-input [timeValue]="endTime" (timeChanged)="onEndTimeChanged($event)" [minValue]="minValEnd"
-                    [maxValue]="maxValEnd" [buttons]="false"></app-time-input>
+                <app-time-input [timeValue]="endTime" (timeChanged)="onEndTimeChanged($event)" [buttons]="false">
+                </app-time-input>
             </div>
         </div>
     </div>
@@ -20,7 +22,7 @@
         {{ durationString }}
     </div>
 
-    <div style="display:flex;flex-direction: row-reverse; margin-top:10px;">
+    <div style="display:flex;flex-direction: row-reverse; margin-top:10px; width: 100%;">
         <button class="medium-button" (click)="onClickSaveTimes()">Save times</button>
     </div>
 </div>

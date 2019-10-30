@@ -57,7 +57,7 @@ export class ActivityCategoryDefinition {
 
     public isScheduledOnDate(dateYYYYMMDD: string): boolean {
 
-        console.log("This method is disabled.");
+        // console.log("This method is disabled.");
         return false;
     }
 

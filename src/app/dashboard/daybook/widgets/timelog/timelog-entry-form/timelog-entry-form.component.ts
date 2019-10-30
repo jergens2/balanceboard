@@ -32,8 +32,8 @@ export class TimelogEntryFormComponent implements OnInit {
         this._activityItems.push(item);
       });
 
-      this._startTimeBoundary = this.daybookService.getStartTimeBoundary(entryItem);
-      this._endTimeBoundary = this.daybookService.getEndTimeBoundary(entryItem);
+      // this._startTimeBoundary = this.daybookService.getStartTimeBoundary(entryItem);
+      // this._endTimeBoundary = this.daybookService.getEndTimeBoundary(entryItem);
 
       this.reload();
     }
@@ -69,7 +69,7 @@ export class TimelogEntryFormComponent implements OnInit {
   public get wakeupTimeIsSet(): boolean { return this._wakeupTimeIsSet; }; 
 
   public onWakeupTimeChanged(wakeupTime: moment.Moment){
-    console.log("wakeup time changed: ", wakeupTime.format("hh:mm a"));
+    // console.log("wakeup time changed: ", wakeupTime.format("hh:mm a"));
     let sleepProfile: DaybookDayItemSleepProfile = this.daybookService.activeDay.sleepProfile;
     sleepProfile.wakeupTimeISO = wakeupTime.toISOString();
     sleepProfile.wakeupTimeUtcOffsetMinutes = wakeupTime.utcOffset();
@@ -94,7 +94,7 @@ export class TimelogEntryFormComponent implements OnInit {
   public onClickModifyTimes(){ this._modifyingTimes = true; };
 
   public onTimesModified(times: {startTime: moment.Moment, endTime:moment.Moment}){
-    console.log("times: ", times);
+    // console.log("times: ", times);
     this._modifyingTimes = false;
   }
 
@@ -109,7 +109,7 @@ export class TimelogEntryFormComponent implements OnInit {
     // this._entryItem.timelogEntryActivities.forEach((item) => {
     //   checkEntries.push(item);
     // })
-    console.log("onactivitieschanged", this._activityItems);
+    // console.log("onactivitieschanged", this._activityItems);
     // this._itemState.checkIfChanged(checkEntries);
   }
 

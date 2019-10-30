@@ -28,6 +28,14 @@
     /* border: 1px solid rgba(0, 0, 0, 0.2); */
 }
 
+.small-circle{
+    height: 10px;
+    width: 10px;
+    border-radius: 10px;
+    border: none;
+    margin-right: 3px;
+    margin-top: 5px;
+}
 .search-results{
     min-height: 25px;
     font-size:0.8em;
@@ -38,7 +46,9 @@
     flex-direction: column;
 }
 .search-result{
-
+    display:flex;
+    flex-direction: row;
+    align-items: flex-start;
 }
 .section-is-bold{
     font-weight: bold;

@@ -139,8 +139,7 @@ export class TimelogEntryDisplayComponent implements OnInit {
       displayString += " +" + (this._entry.timelogEntryActivities.length-1) + " more";
     }
     
-    
-    console.log("units: ", units);
+
 
     this._displayString = displayString;
     this._units = units;

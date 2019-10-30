@@ -291,16 +291,69 @@ export class DaybookService implements ServiceAuthenticates {
     daybookDayItem.deleteTimelogEntry(timelogEntry.dataEntryItem);
   }
 
-  public getStartTimeBoundary(entryItem: TimelogEntryItem): moment.Moment{
-    let activeDay: DaybookDayItem = this.getDaybookDayItemByDate(entryItem.startTime.format("YYYY-MM-DD"));
-    console.log("***** To do: implement this method getStartTimeBoundary() ")
-    return 
-  }
-  public getEndTimeBoundary(entryItem: TimelogEntryItem): moment.Moment{
-    let activeDay: DaybookDayItem = this.getDaybookDayItemByDate(entryItem.startTime.format("YYYY-MM-DD"));
-    console.log("***** To do: implement this method getEndTimeBoundary()")
-    return 
-  }
+  // public getStartTimeBoundary(entryItem: TimelogEntryItem): moment.Moment{
+  //   // This method is not completely robust but adequate for the time being
+  //   let activeDay: DaybookDayItem = this.getDaybookDayItemByDate(entryItem.startTime.format("YYYY-MM-DD"));
+  //   let boundary: moment.Moment;
+  //   let foundIndex: number = -1;
+  //   if(activeDay.daybookTimelogEntryDataItems.length > 0){
+  //     activeDay.daybookTimelogEntryDataItems.forEach((dataItem)=>{
+  //       if(moment(dataItem.startTimeISO).isSame(entryItem.startTime) && moment(dataItem.endTimeISO).isSame(entryItem.endTime)){
+  //         foundIndex = activeDay.daybookTimelogEntryDataItems.indexOf(dataItem);
+  //       }
+  //     });
+  //   }
+
+  //   if(foundIndex >= 0){
+  //     if(foundIndex === 0){
+  //       // if it's the first one: 
+  //       if(activeDay.wakeupTimeIsSet){
+  //         boundary = activeDay.wakeupTime;
+  //       }else{
+  //         boundary = moment(activeDay.dateYYYYMMDD).startOf("day");
+  //       }
+  //     }else{
+  //       boundary = moment(activeDay.daybookTimelogEntryDataItems[foundIndex-1].endTimeISO);
+  //     }
+  //   }else{
+  //     // it is not an existing entry
+
+  //     if(activeDay.daybookTimelogEntryDataItems.length > 0){
+  //       let foundTime: moment.Moment = moment(activeDay.daybookTimelogEntryDataItems[0].endTimeISO);
+  //       if(foundTime.isAfter(entryItem.startTime)){
+
+  //         if(activeDay.wakeupTimeIsSet){
+  //           boundary = activeDay.wakeupTime;
+  //         }else{
+  //           boundary = boundary = moment(activeDay.dateYYYYMMDD).startOf("day");
+  //         }
+  //       }else{
+  //         let index: number = 0;
+  //         while(foundTime.isBefore(entryItem.startTime) && index < activeDay.daybookTimelogEntryDataItems.length){
+  //           let entryEndTime: moment.Moment = moment(activeDay.daybookTimelogEntryDataItems[index].endTimeISO);
+  //           if(entryEndTime.isBefore((entryItem.startTime))){
+  //             foundTime = moment(entryEndTime);
+  //           }
+  //           index++;
+  //         }
+  //       }
+  //     }else{
+  //       if(activeDay.wakeupTimeIsSet){
+  //         boundary = activeDay.wakeupTime;
+  //       }else{
+  //         boundary = boundary = moment(activeDay.dateYYYYMMDD).startOf("day");
+  //       }
+  //     }
+  //   }
+  //   console.log("TLE start time boundary is " + boundary.format("YYYY-MM-DD hh:mm a"))
+  //   return boundary;
+  // }
+  // public getEndTimeBoundary(entryItem: TimelogEntryItem): moment.Moment{
+  //   // This method is not completely robust but adequate for the time being
+  //   let activeDay: DaybookDayItem = this.getDaybookDayItemByDate(entryItem.startTime.format("YYYY-MM-DD"));
+  //   console.log("***** To do: implement this method getEndTimeBoundary()")
+  //   return 
+  // }
 
   // private updateActivityItems(changedTree) {
     // console.log("Method not implemented: update activity tree");

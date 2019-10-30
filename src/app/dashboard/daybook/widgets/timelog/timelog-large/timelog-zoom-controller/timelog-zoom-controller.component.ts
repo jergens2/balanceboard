@@ -103,7 +103,6 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
         wakeupTime = moment(wakeupTime).subtract(30, "minutes");
       }
       bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.bedtime), 30, "UP");
-      console.log("Ze wakeup time is " + wakeupTime.format('hh:mm a'))
     }
 
     this._wakeCycleZoom = {
