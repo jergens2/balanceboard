@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 export class RelativeMousePosition{
 
     constructor(){
@@ -6,10 +7,12 @@ export class RelativeMousePosition{
 
 
     public onMouseMove(event: MouseEvent, elementId: string){
+        // let startTime = moment();
         let containingElement: HTMLElement = this.findContainingElement(event, elementId);
         if(containingElement){
             this.updatePosition(event, containingElement);
         }
+        // console.log("Mouse position: " + moment().diff(startTime, "ms") + " millisconds")
     }
 
     private findContainingElement(event: MouseEvent, elementId: string): HTMLElement{

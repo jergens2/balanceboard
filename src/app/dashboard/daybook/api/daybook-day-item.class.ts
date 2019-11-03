@@ -31,7 +31,7 @@ export class DaybookDayItem {
         return this._httpShape;
     }
 
-    constructor(dateYYYYMMDD) {
+    constructor(dateYYYYMMDD: string) {
         // console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
         // console.log("CONSTRUCTING DAYBOOK ITEM: " + dateYYYYMMDD)
         let shape: DaybookDayItemHttpShape = {
@@ -54,6 +54,7 @@ export class DaybookDayItem {
                 bedtimeUtcOffsetMinutes: -1,
                 fallAsleepTimeISO: "",
                 fallAsleepTimeUtcOffsetMinutes: -1,
+                estimatedSleepDurationMinutes: -1,
             },
             dailyWeightLogEntryKg: -1,
             scheduledActivityItems: [],  // this includes activities and routines.: [],

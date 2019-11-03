@@ -29,7 +29,8 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
      * generating a new one implements method saveScheduleRotationHTTP() which will complete the login.
      * if there is already at least 1 in the DB, then login complete will also next true.
      */
-    this.getScheduleRotationsHTTP();
+    // this.getScheduleRotationsHTTP();
+    this._loginComplete$.next(true);
     return this._loginComplete$.asObservable();
   }
 

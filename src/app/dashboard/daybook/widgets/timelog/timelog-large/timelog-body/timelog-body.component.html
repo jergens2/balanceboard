@@ -1,5 +1,6 @@
 <div class="timelog-body-grid-container no-select">
-    <div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()"
+    <!-- <div class="timelog-body-root" id="timelog-body-root"  [ngStyle]="timelogBodyNgStyle"> -->
+        <div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()"
         (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)" [ngStyle]="timelogBodyNgStyle">
 
 
@@ -40,6 +41,7 @@
                     <div class="time-delineator-time-label" 
                         (mouseenter)="timeDelineator.itemState.onMouseEnter()"
                         (mouseleave)="timeDelineator.itemState.onMouseLeave()">
+                        <!-- <div class="time-delineator-time-label"> -->
                         <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon"
                             [ngStyle]="timeDelineator.ngStyle" *ngIf="timeDelineator.icon"></fa-icon>
                         <div style="margin-right: 5px;" *ngIf="!timeDelineator.icon"></div>
@@ -59,7 +61,7 @@
             </div>
         </div>
 
-        <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
+        <!-- <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
             <div></div>
             <div class="mouse-position-time-label-container">
                 <div class="mouse-position-time-label" (click)="timelog.addTimeDelineator(mousePosition.time)">
@@ -70,7 +72,7 @@
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
             </div>
-        </div>
+        </div> -->
 
 
 

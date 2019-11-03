@@ -15,6 +15,10 @@ export interface ActivityCategoryDefinitionHttpShape{
     description: string;
     color: string;
     icon: string; 
+
+    isRootLevel: boolean;
+    isSleepActivity: boolean;
+    canDelete: boolean;
     
     durationSetting: ActivityDurationSetting;
     specifiedDurationMinutes: number;

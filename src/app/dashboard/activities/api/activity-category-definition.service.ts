@@ -47,29 +47,6 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
 
 
   findActivityByTreeId(treeId: string): ActivityCategoryDefinition {
-    /*
-      2019-01-28
-      Warning: 
-
-      there is currently no error handling for a certain case / context
-
-      when I renamed categorizedActivity to userDefinedActivity in the server, then requests were being sent to a newly created table, which did not contain
-      all of the already defined activities in the previous table, which was called categorizedActivity.
-
-      When that happened, then when this method tried to find, it was unable to find them in the new table because they did not exist in the new table, 
-      and it yielded some hard-to-debug errors.
-
-      This leads me to believe that there may come a time when I come back to this method when I am exieriencing app issues where activities cannot be found by ID.
-
-      Example case:  User creates a new definedActivity, then creates timelogEntrys with that activity, then later deletes this defineActivity.  but the timelog Entry still exists,
-      and will try to do a search for this activity even though it doesn't exist.  currently I don't think there is any handling of that case.
-
-      I think the app will need to handle the management of definedActivities so that if you delete one, all of the timelogEntrys know its a deleted activity ?
-
-      this might become a bit of a mess if not managed properly
-
-    */
-    // console.log("finding activity by treeId", treeId);
     return this._activitiesTree.findActivityByTreeId(treeId);
   }
 
@@ -232,6 +209,9 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
         "description", 
         "color", 
         "icon", 
+        "isRootLevel",
+        "isSleepActivity",
+        "canDelete",
         "durationSetting", 
         "specifiedDurationMinutes", 
         "scheduleRepititions",
@@ -250,6 +230,8 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
         dataErrors = true;
       }
     });
+    // console.log("Warning: manual overriding")
+    // dataErrors = false;
     if(!dataErrors){
       let buildActivityHttpShape: ActivityCategoryDefinitionHttpShape = {
         _id: data._id,
@@ -260,6 +242,9 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
         description: data.description,
         color: data.color,
         icon: data.icon,
+        isRootLevel: data.isRootLevel,
+        isSleepActivity: data.isSleepActivity,
+        canDelete: data.canDelete,
         durationSetting: data.durationSetting,
         specifiedDurationMinutes: data.specifiedDurationMinutes,
         scheduleRepititions: data.scheduleRepititions,

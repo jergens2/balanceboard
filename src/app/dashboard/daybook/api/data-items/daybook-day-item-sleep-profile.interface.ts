@@ -16,4 +16,6 @@ export interface DaybookDayItemSleepProfile{
     fallAsleepTimeISO: string,
     fallAsleepTimeUtcOffsetMinutes: number,
 
+    estimatedSleepDurationMinutes: number,
+
 }

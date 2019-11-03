@@ -6,12 +6,17 @@ import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybo
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 
 export class TimelogEntryItem {
-    constructor(startTime: moment.Moment, endTime: moment.Moment, sleepState: "SLEEP" | "AWAKE") {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, sleepState?: "SLEEP" | "AWAKE") {
         this._startTime = moment(startTime);
         this._utcOffsetMinutes = this._startTime.utcOffset();
         this._endTime = moment(endTime);
         this._itemState = new ItemState({ startTime: this._startTime, endTime: this._endTime });
-        this._sleepState = sleepState;
+        if(sleepState){
+            this._sleepState = sleepState;
+        }else{
+            this._sleepState = "AWAKE";
+        }
+        
     }
 
 
@@ -35,7 +40,7 @@ export class TimelogEntryItem {
     public set endTime(endTime: moment.Moment) { this._endTime = moment(endTime); }
 
     public get durationSeconds(): number {
-        return this._endTime.diff(this._startTime, "seconds");
+        return moment(this.endTime).diff(moment(this.startTime), "seconds");
     }
     public get durationString(): string {
         return DurationString.calculateDurationString(this._startTime, this._endTime);
@@ -64,7 +69,7 @@ export class TimelogEntryItem {
             startTimeISO: this._startTime.toISOString(),
             endTimeISO: this._endTime.toISOString(),
             utcOffsetMinutes: this._utcOffsetMinutes,
-            timelogEntryActivities: this._timelogEntryActivities,
+            timelogEntryActivities: this.timelogEntryActivities,
             isConfirmed: false,
             note: this._note,
         }

@@ -14,6 +14,10 @@ export class ActivityTree {
         return this._rootActivities;
     }
 
+    get sleepActivity(): ActivityCategoryDefinition{
+        return this._allActivitiesAndRoutines.find((activity)=>{ return activity.isSleepActivity; });
+    }
+
     private _allActivitiesAndRoutines: ActivityCategoryDefinition[];
 
     get allActivities(): ActivityCategoryDefinition[] {

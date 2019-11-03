@@ -74,7 +74,7 @@ export class AuthenticationService {
   } 
 
   loginAttempt(authData: AuthData) {
-    console.log("Login attempt:", authData);
+    // console.log("Login attempt:", authData);
     this.http.post<{ message: string, data: any }>(this.serverUrl + "/api/authentication/authenticate", authData)
       .pipe<AuthStatus>(map((response) => {
         let settings: any[] = Object.assign([], response.data.userAccount.userSettings);

@@ -16,44 +16,38 @@ export class ActivityCategoryDefinition {
     }
 
     public get id(): string { return this._httpShape._id; }
-    public set id(id: string) { this._httpShape._id = id; }
-
     public get treeId(): string { return this._httpShape.treeId; }
-    public set treeId(treeId: string) { this._httpShape.treeId = treeId; }
-
     public get name(): string { return this._httpShape.name; }
-    public set name(name: string) { this._httpShape.name = name; }
-
     public get description(): string { return this._httpShape.description; }
-    public set description(description: string) { this._httpShape.description = description; }
-
     public get userId(): string { return this._httpShape.userId; }
-    public set userId(userId: string) { this._httpShape.userId = userId; }
-
     public get parentTreeId(): string { return this._httpShape.parentTreeId; }
-    public set parentTreeId(parentTreeId: string) { this._httpShape.parentTreeId = parentTreeId; }
-
     public get durationSetting(): ActivityDurationSetting { return this._httpShape.durationSetting; }
-    public set durationSetting(durationSetting: ActivityDurationSetting) { this._httpShape.durationSetting = durationSetting; }
-
     public get specifiedDurationMinutes(): number { return this._httpShape.specifiedDurationMinutes; }
-    public set specifiedDurationMinutes(minutes: number) { this._httpShape.specifiedDurationMinutes = minutes; }
-
     public get scheduleRepititions(): ActivityScheduleRepitition[] { return this._httpShape.scheduleRepititions; }
-    public set scheduleRepititions(scheduleRepititions: ActivityScheduleRepitition[]) { this._httpShape.scheduleRepititions = scheduleRepititions; }
-
     public get currentPointsConfiguration(): ActivityPointsConfiguration { return this._httpShape.currentPointsConfiguration; }
-    public set currentPointsConfiguration(pointsConfiguration: ActivityPointsConfiguration) { this._httpShape.currentPointsConfiguration = pointsConfiguration; }
-
     public get pointsConfigurationHistory(): ActivityPointsConfiguration[] { return this._httpShape.pointsConfigurationHistory; }
-    public set pointsConfigurationHistory(pointsConfigurations: ActivityPointsConfiguration[]) { this._httpShape.pointsConfigurationHistory = pointsConfigurations; }
-
-
     public get color(): string { return this._httpShape.color; }
-    public set color(color: string) { this._httpShape.color = color; }
-
     public get icon(): string { return this._httpShape.icon; }
+    public get isSleepActivity(): boolean { return this._httpShape.isSleepActivity; }
+    public get canDelete(): boolean { return this._httpShape.canDelete; }
+    public get isRootLevel(): boolean { return this._httpShape.isRootLevel; }
+
+    public set id(id: string) { this._httpShape._id = id; }
+    public set treeId(treeId: string) { this._httpShape.treeId = treeId; }
+    public set name(name: string) { this._httpShape.name = name; }
+    public set description(description: string) { this._httpShape.description = description; }
+    public set userId(userId: string) { this._httpShape.userId = userId; }
+    public set parentTreeId(parentTreeId: string) { this._httpShape.parentTreeId = parentTreeId; }
+    public set durationSetting(durationSetting: ActivityDurationSetting) { this._httpShape.durationSetting = durationSetting; }
+    public set specifiedDurationMinutes(minutes: number) { this._httpShape.specifiedDurationMinutes = minutes; }
+    public set scheduleRepititions(scheduleRepititions: ActivityScheduleRepitition[]) { this._httpShape.scheduleRepititions = scheduleRepititions; }
+    public set currentPointsConfiguration(pointsConfiguration: ActivityPointsConfiguration) { this._httpShape.currentPointsConfiguration = pointsConfiguration; }
+    public set pointsConfigurationHistory(pointsConfigurations: ActivityPointsConfiguration[]) { this._httpShape.pointsConfigurationHistory = pointsConfigurations; }
+    public set color(color: string) { this._httpShape.color = color; }
     public set icon(icon: string) { this._httpShape.icon = icon; }
+    public set isSleepActivity(isSleep:boolean ) { this._httpShape.isSleepActivity = isSleep; }
+    public set canDelete(canDelete: boolean) { this._httpShape.canDelete = canDelete; }
+    public set isRootLevel(isRoot: boolean) { this._httpShape.isRootLevel = isRoot; }
 
     public isScheduledOnDate(dateYYYYMMDD: string): boolean {
 

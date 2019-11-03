@@ -205,6 +205,8 @@ export class WakeupSectionComponent implements OnInit {
 
       fallAsleepTimeISO: this._fallAsleepTime.toISOString(),
       fallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
+
+      estimatedSleepDurationMinutes: moment(this._wakeupTime).diff(this._fallAsleepTime, "minutes"),
     }
 
 

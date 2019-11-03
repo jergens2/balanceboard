@@ -121,6 +121,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
 
   }
   private saveDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
+    console.log("Saving daybook day item: ", daybookDayItem.dateYYYYMMDD)
     const postUrl = serverUrl + "/api/daybook-day-item/create";
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
@@ -186,8 +187,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
     this._daybookDayItems$.getValue().forEach((daybookDayItem: DaybookDayItem) => {
       this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent) => {
-        // console.log("we received an update foolio");
-        this.updateDaybookDayItem(daybookDayItem);
+        console.log("Method is disabled:  not updating the DaybookDayItem.");
+        // this.updateDaybookDayItem(daybookDayItem);
       }));
     });
   }
