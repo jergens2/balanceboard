@@ -42,6 +42,7 @@ export class DaybookService implements ServiceAuthenticates {
       this.startANewDay(moment().format("YYYY-MM-DD"));
     }
     this._allSubscriptions.push(this.daybookHttpRequestService.daybookDayItems$.subscribe((daybookDayItems: DaybookDayItem[]) => {
+      // console.log("Daybook day items updated")
       if (daybookDayItems.length > 0) {
         this._daybookDayItems$.next(daybookDayItems);
         this.initiateClock();
@@ -84,7 +85,12 @@ export class DaybookService implements ServiceAuthenticates {
   }
 
   public get activeDayIsToday(): boolean {
-    return this.activeDayYYYYMMDD == moment().format("YYYY-MM-DD");
+    if(this.activeDay){
+      return this.activeDay.dateYYYYMMDD == moment().format("YYYY-MM-DD");
+    }else{
+      return true;
+    }
+    
   }
 
   // private _activeDayYYYYMMDD: string = moment().format("YYYY-MM-DD");
@@ -97,7 +103,7 @@ export class DaybookService implements ServiceAuthenticates {
   }
 
 
-  public set activeDayYYYYMMDD(changedDayYYYYMMDD: string) {
+  public setActiveDayYYYYMMDD(changedDayYYYYMMDD: string) {
     console.log("Daybook service: changing the active date to: " + changedDayYYYYMMDD);
     this.updateActiveDay(changedDayYYYYMMDD);
   }
@@ -133,12 +139,14 @@ export class DaybookService implements ServiceAuthenticates {
     const activeDayIsToday = this.activeDayIsToday;
     let daybookDayItem: DaybookDayItem = this.getDaybookDayItemByDate(todayYYYYMMDD);
     if (!daybookDayItem) {
+      // console.log("Updating today: no daybook day item")
       let newDay: DaybookDayItem = this.startANewDay(todayYYYYMMDD);
       this._today$.next(newDay);
       if (!this.activeDay) {
         this._activeDay$.next(newDay)
       }
     } else {
+      // console.log("Updating today: yes daybook day item")
       this._today$.next(daybookDayItem);
       if (activeDayIsToday || !this.activeDay) {
         this._activeDay$.next(daybookDayItem);
@@ -250,7 +258,7 @@ export class DaybookService implements ServiceAuthenticates {
   public saveTimelogEntry(timelogEntry: TimelogEntryItem, afterMidnightEntry?: TimelogEntryItem) {
     let daybookDayItem: DaybookDayItem;
     let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
-    if (dateYYYYMMDD == this.activeDayYYYYMMDD) {
+    if (dateYYYYMMDD == this.activeDay.dateYYYYMMDD) {
       daybookDayItem = this.activeDay;
     } else {
       daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
@@ -270,7 +278,7 @@ export class DaybookService implements ServiceAuthenticates {
   public updateTimelogEntry(timelogEntry: TimelogEntryItem) {
     let daybookDayItem: DaybookDayItem;
     let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
-    if (dateYYYYMMDD == this.activeDayYYYYMMDD) {
+    if (dateYYYYMMDD == this.activeDay.dateYYYYMMDD) {
       daybookDayItem = this.activeDay;
     } else {
       daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
@@ -287,7 +295,7 @@ export class DaybookService implements ServiceAuthenticates {
   public deleteTimelogEntry(timelogEntry: TimelogEntryItem) {
     let daybookDayItem: DaybookDayItem;
     let dateYYYYMMDD: string = timelogEntry.startTime.format("YYYY-MM-DD");
-    if (dateYYYYMMDD == this.activeDayYYYYMMDD) {
+    if (dateYYYYMMDD == this.activeDay.dateYYYYMMDD) {
       daybookDayItem = this.activeDay;
     } else {
       daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);

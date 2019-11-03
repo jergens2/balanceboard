@@ -1,7 +1,7 @@
 <div class="timelog-body-grid-container no-select">
     <!-- <div class="timelog-body-root" id="timelog-body-root"  [ngStyle]="timelogBodyNgStyle"> -->
         <div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()"
-        (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)" [ngStyle]="timelogBodyNgStyle">
+        (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)">
 
 
         <div class="guide-line-hours">
@@ -61,7 +61,9 @@
             </div>
         </div>
 
-        <!-- <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
+        <!-- This section causes performance degradation. -->
+        <!-- need to isolate it just to the column -->
+        <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
             <div></div>
             <div class="mouse-position-time-label-container">
                 <div class="mouse-position-time-label" (click)="timelog.addTimeDelineator(mousePosition.time)">
@@ -72,7 +74,7 @@
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
             </div>
-        </div> -->
+        </div>
 
 
 

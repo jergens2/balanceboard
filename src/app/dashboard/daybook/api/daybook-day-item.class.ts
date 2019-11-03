@@ -362,7 +362,7 @@ export class DaybookDayItem {
     public addTimelogEntryItem(timelogEntry: DaybookTimelogEntryDataItem) {
         let timelogEntries = this.daybookTimelogEntryDataItems;
         timelogEntries.push(timelogEntry);
-        this.daybookTimelogEntryDataItems = timelogEntries;
+        this.daybookTimelogEntryDataItems = this.sortTimelogEntries(this.daybookTimelogEntryDataItems);
         this.dataChanged();
     }
     public updateTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem) {
@@ -375,6 +375,7 @@ export class DaybookDayItem {
         if (foundIndex >= 0) {
             // console.log("Successfully updated timelog entry at index: " + foundIndex);
             this.daybookTimelogEntryDataItems.splice(foundIndex, 1, timelogEntry);
+            this.daybookTimelogEntryDataItems = this.sortTimelogEntries(this.daybookTimelogEntryDataItems);
             this.dataChanged();
         } else {
             // console.log("Error: can't modify timelogEntry", timelogEntry)
@@ -390,10 +391,25 @@ export class DaybookDayItem {
         if (foundIndex >= 0) {
             // console.log("Successfully deleting timelog entry at index: " + foundIndex);
             this.daybookTimelogEntryDataItems.splice(foundIndex, 1);
+            this.daybookTimelogEntryDataItems = this.sortTimelogEntries(this.daybookTimelogEntryDataItems);
             this.dataChanged();
         } else {
             // console.log("Error: can't delete timelogEntry", timelogEntry)
         }
+    }
+
+    private sortTimelogEntries(items: DaybookTimelogEntryDataItem[]): DaybookTimelogEntryDataItem[] {
+
+        return items.sort((item1, item2)=>{
+            if(item1.startTimeISO < item2.startTimeISO){
+                return -1
+            }else if(item1.startTimeISO > item2.startTimeISO){
+                return 1;
+            }else{
+                return 0;
+            }
+        })
+
     }
 
 

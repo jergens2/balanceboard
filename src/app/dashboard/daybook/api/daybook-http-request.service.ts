@@ -187,8 +187,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
     this._daybookDayItems$.getValue().forEach((daybookDayItem: DaybookDayItem) => {
       this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent) => {
-        console.log("Method is disabled:  not updating the DaybookDayItem.");
-        // this.updateDaybookDayItem(daybookDayItem);
+        // console.log("Method is disabled:  not updating the DaybookDayItem.");
+        this.updateDaybookDayItem(daybookDayItem);
       }));
     });
   }

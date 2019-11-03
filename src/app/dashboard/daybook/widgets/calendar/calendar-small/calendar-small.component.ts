@@ -53,7 +53,7 @@ export class CalendarSmallComponent implements OnInit {
   }
 
   public onClickCalendarDay(dayOfCalendar: CalendarDay) {
-    this.daybookService.activeDayYYYYMMDD = dayOfCalendar.date.format("YYYY-MM-DD");
+    this.daybookService.setActiveDayYYYYMMDD(dayOfCalendar.date.format("YYYY-MM-DD"));
   }
 
   private buildDaysOfCalendar(date: moment.Moment, size: "SMALL" | "LARGE") {

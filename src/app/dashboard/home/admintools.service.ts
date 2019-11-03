@@ -13,18 +13,18 @@ export class AdmintoolsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public doTheThing$() {
-    console.log("Doing the thing")
-    const getUrl = serverUrl + "/api/timelogEntry/" + "5b9c362dd71b00180a7cf701" + "/" + moment().startOf("year").subtract(1, "month").toISOString() + "/" + moment().endOf("year").toISOString();
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'  
-      })
-    };
-    return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+  // public doTheThing$() {
+  //   console.log("Doing the thing")
+  //   const getUrl = serverUrl + "/api/timelogEntry/" + "5b9c362dd71b00180a7cf701" + "/" + moment().startOf("year").subtract(1, "month").toISOString() + "/" + moment().endOf("year").toISOString();
+  //   const httpOptions = {
+  //     headers: new HttpHeaders({
+  //       'Content-Type': 'application/json'
+  //       // 'Authorization': 'my-auth-token'  
+  //     })
+  //   };
+  //   return this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       
-  }
+  // }
 
 
 

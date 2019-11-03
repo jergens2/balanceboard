@@ -127,7 +127,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
 
   public get daybookHeader(): string{
-    return moment(this.daybookService.activeDayYYYYMMDD).format("dddd, MMM DD, YYYY");
+    return moment(this.daybookService.activeDay.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
   }
 
   ngOnDestroy(){
@@ -142,9 +142,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
   }
 
 
-  public onClickKillKillKill(){
-    console.log("This method is for destroying all daybookdayitems.")
-    this.daybookService.killKillKill()
-  }
+  // public onClickKillKillKill(){
+  //   console.log("This method is for destroying all daybookdayitems.")
+  //   this.daybookService.killKillKill()
+  // }
 
 }
