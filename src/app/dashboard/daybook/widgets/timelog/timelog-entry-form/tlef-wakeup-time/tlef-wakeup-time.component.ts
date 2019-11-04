@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { DaybookService } from '../../../../../daybook/daybook.service';
-import { DaybookDayItem } from '../../../../../daybook/api/daybook-day-item.class';
+import { DaybookSleepProfile } from '../../../../../daybook/api/controllers/daybook-sleep-profile.class';
 
 @Component({
   selector: 'app-tlef-wakeup-time',
@@ -13,7 +13,7 @@ export class TlefWakeupTimeComponent implements OnInit {
   constructor(private daybookService: DaybookService) { }
 
   ngOnInit() {
-    let initialTime: moment.Moment = DaybookDayItem.defaultWakeupTime;
+    let initialTime: moment.Moment = DaybookSleepProfile.defaultWakeupTime;
     this._time = moment(initialTime);
   }
 

@@ -76,25 +76,7 @@ export class DaybookDayItem {
     public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
 
 
-    public set timeDelineators(timeDelineators: string[]) {
-        // console.log("setting Time delineators ")
-        this._httpShape.timeDelineators = timeDelineators;
-        this.dataChanged();
-    }
-    public addTimeDelineator(delineatorTimeISO: string) {
-        let timeDelineators = this.timeDelineators;
-        if (timeDelineators.indexOf(delineatorTimeISO) == -1) {
-            timeDelineators.push(delineatorTimeISO);
-            this.timeDelineators = timeDelineators;
-        }
-    }
-    public removeTimeDelineator(delineator: string) {
-        let timeDelineators = this.timeDelineators;
-        if (timeDelineators.indexOf(delineator) > -1) {
-            timeDelineators.splice(timeDelineators.indexOf(delineator), 1);
-            this.timeDelineators = timeDelineators;
-        }
-    }
+
     // public get daybookActivityDataItems(): DaybookActivityDataItem[] { return this.httpShape.daybookActivityDataItems; }
     // // private updateActivityDataItems() {
     // //     console.log("Not implemented: Updating Activity Data Items");
@@ -102,20 +84,17 @@ export class DaybookDayItem {
     // //     this._httpShape.daybookActivityDataItems = activityDataItems;
     // // }
 
-    public get dayStructureDataItems(): DayStructureDataItem[] { return this.httpShape.dayStructureDataItems; }
-    public set dayStructureDataItems(dayStructureDataItems: DayStructureDataItem[]) {
-        this._httpShape.dayStructureDataItems = dayStructureDataItems;
-        this.dataChanged();
-    }
+    // public get dayStructureDataItems(): DayStructureDataItem[] { return this.httpShape.dayStructureDataItems; }
+    // public set dayStructureDataItems(dayStructureDataItems: DayStructureDataItem[]) {
+    //     this._httpShape.dayStructureDataItems = dayStructureDataItems;
+    //     this.dataChanged();
+    // }
 
-    public get sleepStructureDataItems(): DayStructureSleepCycleDataItem[] { return this.httpShape.sleepCycleDataItems; }
-    public set sleepStructureDataItems(sleepCycleItems: DayStructureSleepCycleDataItem[]) {
-        this._httpShape.sleepCycleDataItems = sleepCycleItems;
-        this.dataChanged();
-    }
-
-
-
+    // public get sleepStructureDataItems(): DayStructureSleepCycleDataItem[] { return this.httpShape.sleepCycleDataItems; }
+    // public set sleepStructureDataItems(sleepCycleItems: DayStructureSleepCycleDataItem[]) {
+    //     this._httpShape.sleepCycleDataItems = sleepCycleItems;
+    //     this.dataChanged();
+    // }
 
 
     public get dailyWeightLogEntryKg(): number { return this.httpShape.dailyWeightLogEntryKg; }
@@ -126,89 +105,20 @@ export class DaybookDayItem {
 
     public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this.httpShape.dailyTaskListDataItems; }
 
+    // public set taskItemIds(taskItemIds: string[]) {this._httpShape.taskItemIds = taskItemIds;this.dataChanged();}
+    // public set dailyTaskListDataItems(dailyTaskListDataItems: DailyTaskListDataItem[]) { this._httpShape.dailyTaskListDataItems = dailyTaskListDataItems; this.dataChanged(); }
+    // public set dayTemplateId(dayTemplateId: string) { this._httpShape.dayTemplateId = dayTemplateId; this.dataChanged(); }
+    // public set scheduledEventIds(scheduledEventIds: string[]) { this._httpShape.scheduledEventIds = scheduledEventIds; this.dataChanged(); }
+    // public set notebookEntryIds(notebookEntryIds: string[]) { this._httpShape.notebookEntryIds = notebookEntryIds; this.dataChanged(); }
 
 
-
-
-
-    public set taskItemIds(taskItemIds: string[]) {
-        this._httpShape.taskItemIds = taskItemIds;
-        this.dataChanged();
-    }
-    public set dailyTaskListDataItems(dailyTaskListDataItems: DailyTaskListDataItem[]) {
-        this._httpShape.dailyTaskListDataItems = dailyTaskListDataItems;
-        this.dataChanged();
-    }
-    public set dayTemplateId(dayTemplateId: string) {
-        this._httpShape.dayTemplateId = dayTemplateId;
-        this.dataChanged();
-    }
-    public set scheduledEventIds(scheduledEventIds: string[]) {
-        this._httpShape.scheduledEventIds = scheduledEventIds;
-        this.dataChanged();
-    }
-    public set notebookEntryIds(notebookEntryIds: string[]) {
-        this._httpShape.notebookEntryIds = notebookEntryIds
-        this.dataChanged();
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    private dataChanged() {
-        // console.log(this.dateYYYYMMDD + " DaybookDayItem dataChanged().")
-        this._dataChanged$.next(true);
-    }
+    
     private _dataChanged$: Subject<boolean> = new Subject();
-    public get dataChanged$(): Observable<boolean> {
-        return this._dataChanged$.asObservable();
-    }
-
+    public get dataChanged$(): Observable<boolean> { return this._dataChanged$.asObservable(); }
+    private dataChanged() { this._dataChanged$.next(true); }
 
     public getMostRecentActionTime(currentTime?: moment.Moment): moment.Moment {
         let lastActionTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");
-        // const endOfDay: moment.Moment = moment(lastActionTime).add(1, "day");
-
-        // if (this.timelog.timelogEntryItems.length > 0) {
-        //     let lastEndTime: moment.Moment = this.timelog.lastTimelogEntryItemTime;
-        //     if (moment(lastEndTime).isAfter(lastActionTime)) {
-        //         lastActionTime = moment(lastEndTime);
-        //     }
-        // }
-
-        // let previousFallAsleepTimeIsBeforeCurrentTime: boolean = true;
-        // let wakeupTimeIsBeforeCurrentTime: boolean = true;
-        // let bedTimeIsBeforeCurrentTime: boolean = true;
-        // let fallAsleepTimeIsBeforeCurrentTime: boolean = true;
-        // if(currentTime){
-        //     previousFallAsleepTimeIsBeforeCurrentTime = this.previousFallAsleepTime.isBefore(currentTime);
-        //     wakeupTimeIsBeforeCurrentTime = this.wakeupTime.isBefore(currentTime);
-        //     bedTimeIsBeforeCurrentTime = this.bedtime.isBefore(currentTime);
-        //     fallAsleepTimeIsBeforeCurrentTime = this.fallAsleepTime.isBefore(currentTime);
-        // }
-
-        // if (this.previousFallAsleepTime.isAfter(lastActionTime) && previousFallAsleepTimeIsBeforeCurrentTime)
-        //     lastActionTime = moment(this.previousFallAsleepTime);
-        // if (this.wakeupTime.isAfter(lastActionTime) && wakeupTimeIsBeforeCurrentTime)
-        //     lastActionTime = moment(this.wakeupTime);
-        // if (this.bedtime.isAfter(lastActionTime) && bedTimeIsBeforeCurrentTime)
-        //     lastActionTime = moment(this.bedtime);
-        // if (this.fallAsleepTime.isAfter(lastActionTime) && fallAsleepTimeIsBeforeCurrentTime)
-        //     lastActionTime = moment(this.fallAsleepTime);
-
-
-        // if(lastActionTime.isAfter(endOfDay)){
-        //     lastActionTime = moment(endOfDay);
-        // }
-        // console.log("last action time is : " + lastActionTime.format("hh:mm a"))
         console.log("Method disabled.  returning START OF DAY.  may cause issues.")
         return lastActionTime;
     }

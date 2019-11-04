@@ -19,6 +19,7 @@ export class DaybookDayItemTimelog {
 
         
         this._timelogEntryItems = this.sortTimelogEntries(timelogEntries);
+        this._timeDelineators = httpShape.timeDelineators;
     }
 
 
@@ -26,17 +27,23 @@ export class DaybookDayItemTimelog {
         return moment(this._timelogEntryItems[this._timelogEntryItems.length-1].endTime);
     }
 
+    private _timeDelineators: string[] = [];
+    private _timelogEntryItems: TimelogEntryItem[] = [];
 
-    private _timelogEntryItems: TimelogEntryItem[];
     public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; };
+    public get timeDelineators(): string[] { return this._timeDelineators; }
 
-    private _timelogUpdated$: Subject<DaybookTimelogEntryDataItem[]> = new Subject();
+    private _timelogUpdated$: Subject<{timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[]}> = new Subject();
     public get timelogUpdated$(): Observable<any> { return this._timelogUpdated$.asObservable(); };
     private sendUpdate(){
         this._timelogUpdated$.next(this.exportDataItems());
     }
-    private exportDataItems(): DaybookTimelogEntryDataItem[] { 
-        return this.sortTimelogEntries(this.timelogEntryItems).map((entry)=>{ return entry.dataEntryItem; });
+    private exportDataItems(): {timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[]} { 
+        let exportObject: {timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[]} = {
+            timelogDataItems: this.sortTimelogEntries(this.timelogEntryItems).map((entry)=>{ return entry.dataEntryItem; }),
+            delineators: this.timeDelineators,
+        }
+        return exportObject;
     }
 
     public addTimelogEntryItem(timelogEntry: TimelogEntryItem) {
@@ -90,5 +97,27 @@ export class DaybookDayItemTimelog {
 
     }
 
+
+
+
+    public set timeDelineators(timeDelineators: string[]) {
+        // console.log("setting Time delineators ")
+        this._timeDelineators = timeDelineators;
+        this.sendUpdate();
+    }
+    public addTimeDelineator(delineatorTimeISO: string) {
+        let timeDelineators = this.timeDelineators;
+        if (timeDelineators.indexOf(delineatorTimeISO) == -1) {
+            timeDelineators.push(delineatorTimeISO);
+            this._timeDelineators = timeDelineators;
+        }
+    }
+    public removeTimeDelineator(delineator: string) {
+        let timeDelineators = this.timeDelineators;
+        if (timeDelineators.indexOf(delineator) > -1) {
+            timeDelineators.splice(timeDelineators.indexOf(delineator), 1);
+            this._timeDelineators = timeDelineators;
+        }
+    }
 
 }

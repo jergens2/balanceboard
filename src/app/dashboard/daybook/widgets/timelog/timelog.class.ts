@@ -54,12 +54,12 @@ export class Timelog {
 
   public addTimeDelineator(time: moment.Moment) {
     if (!this.crossesAnyTimelogEntry(time)) {
-      this._activeDay.addTimeDelineator(time.toISOString())
+      this._activeDay.timelog.addTimeDelineator(time.toISOString())
       this.update();
     }
   }
   public removeTimeDelineator(delineator: TimeDelineator) {
-    this._activeDay.removeTimeDelineator(delineator.time.toISOString());
+    this._activeDay.timelog.removeTimeDelineator(delineator.time.toISOString());
     this.update();
   }
 
