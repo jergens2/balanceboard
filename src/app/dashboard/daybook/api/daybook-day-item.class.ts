@@ -7,31 +7,17 @@ import { Subject, Observable, scheduled, timer, Subscription } from "rxjs";
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import * as moment from 'moment';
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
-import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
+import { DaybookDayItemSleepProfileData } from "./data-items/daybook-day-item-sleep-profile-data.interface";
 import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
 import { ActivityTree } from "../../activities/api/activity-tree.class";
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
-import { DaybookDayItemTimelog } from "./sub-classes/daybook-day-item-timelog.class";
+import { DaybookDayItemTimelog } from "./controllers/daybook-day-item-timelog.class";
 import blankDaybookItemHttpShape from "./data-items/blank-http-shape";
+import { DaybookSleepProfile } from "./controllers/daybook-sleep-profile.class";
 // import { DaybookTimeReferencer } from "./daybook-time-referencer.class";
 
 
 export class DaybookDayItem {
-
-    static readonly defaultWakeupTime: moment.Moment = moment().hour(7).minute(30).second(0).millisecond(0);
-    static readonly defaultBedtime: moment.Moment = moment().hour(22).minute(30).second(0).millisecond(0);
-    static readonly defaultPreviousFallAsleepTime: moment.Moment = moment(DaybookDayItem.defaultBedtime).subtract(1, "days");
-    static readonly defaultFallAsleepTime: moment.Moment = moment(DaybookDayItem.defaultBedtime);
-
-
-    private _httpShape: DaybookDayItemHttpShape;
-    public setHttpShape(shape: DaybookDayItemHttpShape) {
-        this._httpShape = shape;
-        this._rebuild();
-    }
-    public get httpShape(): DaybookDayItemHttpShape {
-        return this._httpShape;
-    }
 
     constructor(dateYYYYMMDD: string) {
         // console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
@@ -40,48 +26,56 @@ export class DaybookDayItem {
         shape.dateYYYYMMDD = dateYYYYMMDD;
         this.setHttpShape(shape);
     }
-
-    private _rebuild(){
+    public setHttpShape(shape: DaybookDayItemHttpShape) {
+        this._httpShape = shape;
+        this._rebuild();
+    }
+    private _rebuild() {
         this._timelog = new DaybookDayItemTimelog(this.httpShape);
+        this._sleepProfile = new DaybookSleepProfile(this.httpShape.sleepProfile, this.dateYYYYMMDD);
         this._updateDataChangedSubscriptions();
     }
     private _dataChangedSubscriptions: Subscription[] = [];
-    private _updateDataChangedSubscriptions(){
-        this._dataChangedSubscriptions.forEach((sub)=>{ sub.unsubscribe(); });
+    private _updateDataChangedSubscriptions() {
+        this._dataChangedSubscriptions.forEach((sub) => { sub.unsubscribe(); });
         this._dataChangedSubscriptions = [];
-        this._dataChangedSubscriptions.push(this._timelog.timelogUpdated$.subscribe((timelogDataEntries: DaybookTimelogEntryDataItem[])=>{
+        this._dataChangedSubscriptions.push(this._timelog.timelogUpdated$.subscribe((timelogDataEntries: DaybookTimelogEntryDataItem[]) => {
             this._httpShape.daybookTimelogEntryDataItems = timelogDataEntries;
+            this.dataChanged();
+        }));
+        this._dataChangedSubscriptions.push(this._sleepProfile.sleepProfileUpdated$.subscribe((sleepProfileData: DaybookDayItemSleepProfileData) => {
+            this._httpShape.sleepProfile = sleepProfileData;
             this.dataChanged();
         }));
     }
 
+    private _httpShape: DaybookDayItemHttpShape;
     private _timelog: DaybookDayItemTimelog;
+    private _sleepProfile: DaybookSleepProfile;
     private _previousDay: DaybookDayItem;
     private _followingDay: DaybookDayItem;
 
     public set previousDay(previousDay: DaybookDayItem) { this._previousDay = previousDay; }
-    public set followingDay(followingDay: DaybookDayItem) {this._followingDay = followingDay;}
-    public set id(id: string) {this._httpShape._id = id;}
-    public set userId(userId: string) {this._httpShape.userId = userId;}
+    public set followingDay(followingDay: DaybookDayItem) { this._followingDay = followingDay; }
+    public set id(id: string) { this._httpShape._id = id; }
+    public set userId(userId: string) { this._httpShape.userId = userId; }
 
+    public get httpShape(): DaybookDayItemHttpShape { return this._httpShape; }
+    public get timelog(): DaybookDayItemTimelog { return this._timelog; };
+    public get sleepProfile(): DaybookSleepProfile { return this._sleepProfile; }
     public get previousDay(): DaybookDayItem { return this._previousDay; }
-    public get followingDay(): DaybookDayItem {return this._followingDay;}
-    public get timelog(): DaybookDayItemTimelog{ return this._timelog; };
+    public get followingDay(): DaybookDayItem { return this._followingDay; }
+    
     public get id(): string { return this.httpShape._id; }
     public get userId(): string { return this.httpShape.userId; }
     public get dateYYYYMMDD(): string { return this.httpShape.dateYYYYMMDD; }
     public get timeDelineators(): string[] { return this.httpShape.timeDelineators; }
-    
+    public get dayTemplateId(): string { return this.httpShape.dayTemplateId; }
+    public get scheduledEventIds(): string[] { return this.httpShape.scheduledEventIds; }
+    public get notebookEntryIds(): string[] { return this.httpShape.notebookEntryIds; }
+    public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
 
-    
 
-    // public get daybookTimelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this.httpShape.daybookTimelogEntryDataItems; }
-    // public set daybookTimelogEntryDataItems(timelogEntries: DaybookTimelogEntryDataItem[]) {
-    //     this._httpShape.daybookTimelogEntryDataItems = timelogEntries;
-    //     // this.updateActivityDataItems();
-    //     this.dataChanged();
-    // }
-    
     public set timeDelineators(timeDelineators: string[]) {
         // console.log("setting Time delineators ")
         this._httpShape.timeDelineators = timeDelineators;
@@ -101,12 +95,12 @@ export class DaybookDayItem {
             this.timeDelineators = timeDelineators;
         }
     }
-    public get daybookActivityDataItems(): DaybookActivityDataItem[] { return this.httpShape.daybookActivityDataItems; }
-    // private updateActivityDataItems() {
-    //     console.log("Not implemented: Updating Activity Data Items");
-    //     let activityDataItems: DaybookActivityDataItem[] = [];
-    //     this._httpShape.daybookActivityDataItems = activityDataItems;
-    // }
+    // public get daybookActivityDataItems(): DaybookActivityDataItem[] { return this.httpShape.daybookActivityDataItems; }
+    // // private updateActivityDataItems() {
+    // //     console.log("Not implemented: Updating Activity Data Items");
+    // //     let activityDataItems: DaybookActivityDataItem[] = [];
+    // //     this._httpShape.daybookActivityDataItems = activityDataItems;
+    // // }
 
     public get dayStructureDataItems(): DayStructureDataItem[] { return this.httpShape.dayStructureDataItems; }
     public set dayStructureDataItems(dayStructureDataItems: DayStructureDataItem[]) {
@@ -120,21 +114,8 @@ export class DaybookDayItem {
         this.dataChanged();
     }
 
-    public get sleepProfile(): DaybookDayItemSleepProfile { return this.httpShape.sleepProfile; }
-    public set sleepProfile(sleepProfile: DaybookDayItemSleepProfile) {
-        this._httpShape.sleepProfile = sleepProfile;
-        // console.log("Sleep profile changed:", this._httpShape.sleepProfile)
-        this.dataChanged();
-    }
-    public get sleepProfileIsSet(): boolean {
-        return this.sleepProfile.bedtimeISO != "" && this.sleepProfile.previousFallAsleepTimeISO != "" && this.sleepProfile.wakeupTimeISO != "";
-    }
-    public get wakeupTimeIsSet(): boolean { 
-        return this.sleepProfile.wakeupTimeISO != "" && this.sleepProfile.wakeupTimeISO != null;
-    }
-    public get bedTimeIsSet(): boolean { 
-        return this.sleepProfile.bedtimeISO != "" && this.sleepProfile.bedtimeISO != null;
-    }
+
+
 
 
     public get dailyWeightLogEntryKg(): number { return this.httpShape.dailyWeightLogEntryKg; }
@@ -145,10 +126,7 @@ export class DaybookDayItem {
 
     public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this.httpShape.dailyTaskListDataItems; }
 
-    public get dayTemplateId(): string { return this.httpShape.dayTemplateId; }
-    public get scheduledEventIds(): string[] { return this.httpShape.scheduledEventIds; }
-    public get notebookEntryIds(): string[] { return this.httpShape.notebookEntryIds; }
-    public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
+
 
 
 
@@ -179,13 +157,75 @@ export class DaybookDayItem {
 
 
 
-    public get scheduledRoutines(): ActivityCategoryDefinition[] {
-        // return this._scheduledActivities.filter((scheduledActivity)=>{
-        //     return scheduledActivity.isRoutine;
-        // });
-        // console.log("Warning: method disabled.");
-        return [];
+
+
+
+
+
+
+    private dataChanged() {
+        // console.log(this.dateYYYYMMDD + " DaybookDayItem dataChanged().")
+        this._dataChanged$.next(true);
     }
+    private _dataChanged$: Subject<boolean> = new Subject();
+    public get dataChanged$(): Observable<boolean> {
+        return this._dataChanged$.asObservable();
+    }
+
+
+    public getMostRecentActionTime(currentTime?: moment.Moment): moment.Moment {
+        let lastActionTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");
+        // const endOfDay: moment.Moment = moment(lastActionTime).add(1, "day");
+
+        // if (this.timelog.timelogEntryItems.length > 0) {
+        //     let lastEndTime: moment.Moment = this.timelog.lastTimelogEntryItemTime;
+        //     if (moment(lastEndTime).isAfter(lastActionTime)) {
+        //         lastActionTime = moment(lastEndTime);
+        //     }
+        // }
+
+        // let previousFallAsleepTimeIsBeforeCurrentTime: boolean = true;
+        // let wakeupTimeIsBeforeCurrentTime: boolean = true;
+        // let bedTimeIsBeforeCurrentTime: boolean = true;
+        // let fallAsleepTimeIsBeforeCurrentTime: boolean = true;
+        // if(currentTime){
+        //     previousFallAsleepTimeIsBeforeCurrentTime = this.previousFallAsleepTime.isBefore(currentTime);
+        //     wakeupTimeIsBeforeCurrentTime = this.wakeupTime.isBefore(currentTime);
+        //     bedTimeIsBeforeCurrentTime = this.bedtime.isBefore(currentTime);
+        //     fallAsleepTimeIsBeforeCurrentTime = this.fallAsleepTime.isBefore(currentTime);
+        // }
+
+        // if (this.previousFallAsleepTime.isAfter(lastActionTime) && previousFallAsleepTimeIsBeforeCurrentTime)
+        //     lastActionTime = moment(this.previousFallAsleepTime);
+        // if (this.wakeupTime.isAfter(lastActionTime) && wakeupTimeIsBeforeCurrentTime)
+        //     lastActionTime = moment(this.wakeupTime);
+        // if (this.bedtime.isAfter(lastActionTime) && bedTimeIsBeforeCurrentTime)
+        //     lastActionTime = moment(this.bedtime);
+        // if (this.fallAsleepTime.isAfter(lastActionTime) && fallAsleepTimeIsBeforeCurrentTime)
+        //     lastActionTime = moment(this.fallAsleepTime);
+
+
+        // if(lastActionTime.isAfter(endOfDay)){
+        //     lastActionTime = moment(endOfDay);
+        // }
+        // console.log("last action time is : " + lastActionTime.format("hh:mm a"))
+        console.log("Method disabled.  returning START OF DAY.  may cause issues.")
+        return lastActionTime;
+    }
+
+
+
+
+
+
+
+    // public get scheduledRoutines(): ActivityCategoryDefinition[] {
+    //     // return this._scheduledActivities.filter((scheduledActivity)=>{
+    //     //     return scheduledActivity.isRoutine;
+    //     // });
+    //     // console.log("Warning: method disabled.");
+    //     return [];
+    // }
 
 
     private _scheduledActivities: DaybookDayItemScheduledActivity[] = [];
@@ -228,117 +268,5 @@ export class DaybookDayItem {
         });
         this.dataChanged();
     }
-
-
-
-
-
-    private dataChanged() {
-        // console.log(this.dateYYYYMMDD + " DaybookDayItem dataChanged().")
-        this._dataChanged$.next(true);
-    }
-    private _dataChanged$: Subject<boolean> = new Subject();
-    public get dataChanged$(): Observable<boolean> {
-        return this._dataChanged$.asObservable();
-    }
-
-
-
-    // private _timeReferencer: DaybookTimeReferencer = null;
-    // public get timeReferencer(): DaybookTimeReferencer{
-    //     return this._timeReferencer;
-    // }
-    // private buildTimeReferencer(){
-    //     // let timeReferencer: DaybookTimeReferencer = new DaybookTimeReferencer(this.dateYYYYMMDD, this.dayStructureDataItems, this.sleepProfile, this.daybookTimelogEntryDataItems);
-    //     // this._timeReferencer = timeReferencer;
-    // }
-
-    public getMostRecentActionTime(currentTime?: moment.Moment): moment.Moment {
-        let lastActionTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");
-        const endOfDay: moment.Moment = moment(lastActionTime).add(1, "day");
-
-        if (this.timelog.timelogEntryItems.length > 0) {
-            let lastEndTime: moment.Moment = this.timelog.lastTimelogEntryItemTime;
-            if (moment(lastEndTime).isAfter(lastActionTime)) {
-                lastActionTime = moment(lastEndTime);
-            }
-        }
-
-        let previousFallAsleepTimeIsBeforeCurrentTime: boolean = true;
-        let wakeupTimeIsBeforeCurrentTime: boolean = true;
-        let bedTimeIsBeforeCurrentTime: boolean = true;
-        let fallAsleepTimeIsBeforeCurrentTime: boolean = true;
-        if(currentTime){
-            previousFallAsleepTimeIsBeforeCurrentTime = this.previousFallAsleepTime.isBefore(currentTime);
-            wakeupTimeIsBeforeCurrentTime = this.wakeupTime.isBefore(currentTime);
-            bedTimeIsBeforeCurrentTime = this.bedtime.isBefore(currentTime);
-            fallAsleepTimeIsBeforeCurrentTime = this.fallAsleepTime.isBefore(currentTime);
-        }
-
-        if (this.previousFallAsleepTime.isAfter(lastActionTime) && previousFallAsleepTimeIsBeforeCurrentTime)
-            lastActionTime = moment(this.previousFallAsleepTime);
-        if (this.wakeupTime.isAfter(lastActionTime) && wakeupTimeIsBeforeCurrentTime)
-            lastActionTime = moment(this.wakeupTime);
-        if (this.bedtime.isAfter(lastActionTime) && bedTimeIsBeforeCurrentTime)
-            lastActionTime = moment(this.bedtime);
-        if (this.fallAsleepTime.isAfter(lastActionTime) && fallAsleepTimeIsBeforeCurrentTime)
-            lastActionTime = moment(this.fallAsleepTime);
-
-
-        if(lastActionTime.isAfter(endOfDay)){
-            lastActionTime = moment(endOfDay);
-        }
-        // console.log("last action time is : " + lastActionTime.format("hh:mm a"))
-        return lastActionTime;
-    }
-    
-
-    public get wakeupTime(): moment.Moment {
-        if (this.sleepProfile != null) {
-            if (!(this.sleepProfile.wakeupTimeISO == null || this.sleepProfile.wakeupTimeISO == "")) {
-                return moment(this.sleepProfile.wakeupTimeISO);
-            }
-        }
-        // console.log("Returning default wakeupTime value");
-        return moment(this.dateYYYYMMDD).hour(DaybookDayItem.defaultWakeupTime.hour()).minute(DaybookDayItem.defaultWakeupTime.minute()).second(0).millisecond(0);
-    }
-    public get bedtime(): moment.Moment {
-        if (this.sleepProfile != null) {
-            if (!(this.sleepProfile.bedtimeISO == null || this.sleepProfile.bedtimeISO == "")) {
-                return moment(this.sleepProfile.bedtimeISO);
-            }
-        }
-        // console.log("Returning default wakeupTime value");
-        return moment(this.dateYYYYMMDD).hour(DaybookDayItem.defaultBedtime.hour()).minute(DaybookDayItem.defaultBedtime.minute()).second(0).millisecond(0);
-
-    }
-    public get fallAsleepTime(): moment.Moment {
-        if (this.sleepProfile != null) {
-            if (!(this.sleepProfile.fallAsleepTimeISO == null || this.sleepProfile.fallAsleepTimeISO == "")) {
-                return moment(this.sleepProfile.fallAsleepTimeISO);
-            }
-        }
-        // console.log("Returning default wakeupTime value");
-        // as of now, the fall asleep time and bed time will be the same value, even though ultimately i would like to distinguish between the 2 variables to get a more accurate sleep profile.
-        return moment(this.dateYYYYMMDD).hour(DaybookDayItem.defaultFallAsleepTime.hour()).minute(DaybookDayItem.defaultFallAsleepTime.minute()).second(0).millisecond(0);
-    }
-    public get previousFallAsleepTime(): moment.Moment {
-        if (this.sleepProfile != null) {
-            if (!(this.sleepProfile.previousFallAsleepTimeISO == null || this.sleepProfile.previousFallAsleepTimeISO == "")) {
-                return moment(this.sleepProfile.previousFallAsleepTimeISO);
-            }
-        }
-        // console.log("Returning default wakeupTime value");
-        // as of now, the fall asleep time and bed time will be the same value, even though ultimately i would like to distinguish between the 2 variables to get a more accurate sleep profile.
-        return moment(this.dateYYYYMMDD).hour(DaybookDayItem.defaultPreviousFallAsleepTime.hour()).minute(DaybookDayItem.defaultPreviousFallAsleepTime.minute()).second(0).millisecond(0);
-
-    }
-
-
-
-
-
-
-
 
 }

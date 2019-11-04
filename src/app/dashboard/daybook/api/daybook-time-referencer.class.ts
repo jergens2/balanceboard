@@ -2,7 +2,7 @@ import { TimeOfDay } from "../../../shared/utilities/time-utilities/time-of-day-
 import * as moment from 'moment';
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
-import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-profile.interface";
+import { DaybookDayItemSleepProfileData } from "./data-items/daybook-day-item-sleep-profile-data.interface";
 
 export interface TimeOfDayQuarter{
     timeOfDay: TimeOfDay;
@@ -27,7 +27,7 @@ export interface TimeOfDayQuarter{
 export class DaybookTimeReferencer{
     
     private dateYYYYMMDD: string = "";
-    constructor(dateYYYYMMDD: string, dayStructureItems: DayStructureDataItem[], sleepProfile: DaybookDayItemSleepProfile, timelogEntries: DaybookTimelogEntryDataItem[]){
+    constructor(dateYYYYMMDD: string, dayStructureItems: DayStructureDataItem[], sleepProfile: DaybookDayItemSleepProfileData, timelogEntries: DaybookTimelogEntryDataItem[]){
         this.dateYYYYMMDD = dateYYYYMMDD;
         // this.defaultWakeupTime = moment(this.dateYYYYMMDD).hour(7).minute(30).second(0).millisecond(0);
         // this.defaultFallAsleepTime = moment(this.dateYYYYMMDD).hour(22).minute(30).second(0).millisecond(0);
@@ -43,7 +43,7 @@ export class DaybookTimeReferencer{
 
     private dayQuarters: TimeOfDayQuarter[];
     private dayStructureItems: DayStructureDataItem[];
-    private sleepProfile: DaybookDayItemSleepProfile;
+    private sleepProfile: DaybookDayItemSleepProfileData;
     private timelogEntries: DaybookTimelogEntryDataItem[];
 
 

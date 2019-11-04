@@ -8,7 +8,7 @@ import { TimelogZoomControl } from '../timelog-zoom-controller/timelog-zoom-cont
 import { Subscription, Observable } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
-import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { DaybookDayItemSleepProfileData } from '../../../../api/data-items/daybook-day-item-sleep-profile-data.interface';
 import { Timelog } from '../../timelog.class';
 import { TimeDelineator } from '../../time-delineator.class';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';

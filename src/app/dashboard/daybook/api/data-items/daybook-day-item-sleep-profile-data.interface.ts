@@ -1,6 +1,6 @@
 import { SleepQuality } from "../../daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum";
 
-export interface DaybookDayItemSleepProfile{
+export interface DaybookDayItemSleepProfileData{
 
     sleepQuality: SleepQuality,
 

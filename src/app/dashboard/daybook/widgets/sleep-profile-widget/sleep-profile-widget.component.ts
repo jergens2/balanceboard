@@ -9,7 +9,7 @@ import { SleepQuality } from '../../daybook-entry-form-mobile/daybook-entry-form
 import { DurationString } from '../../../../shared/utilities/time-utilities/duration-string.class';
 import { ItemState } from '../../../../shared/utilities/item-state.class';
 import { DaybookDayItem } from '../../api/daybook-day-item.class';
-import { DaybookDayItemSleepProfile } from '../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { DaybookDayItemSleepProfileData } from '../../api/data-items/daybook-day-item-sleep-profile-data.interface';
 import { Subscription, timer } from 'rxjs';
 
 @Component({
@@ -76,7 +76,7 @@ export class SleepProfileWidgetComponent implements OnInit {
     this.sleepProfileIsSet = true;
     this._itemState = new ItemState(null);
 
-    let sleepProfile: DaybookDayItemSleepProfile = this.daybookService.activeDay.sleepProfile;
+    let sleepProfile: DaybookDayItemSleepProfileData = this.daybookService.activeDay.sleepProfile.sleepProfileData;
 
     if(sleepProfile.sleepQuality){
       this._sleepQuality = sleepProfile.sleepQuality;
@@ -172,8 +172,8 @@ export class SleepProfileWidgetComponent implements OnInit {
   private updateIsPastMidnight(){ 
     let isPastMidnight: boolean = false;
     if(this.daybookService.activeDayIsToday){
-      let yesterdayWakeup: string = this.daybookService.activeDay.previousDay.sleepProfile.wakeupTimeISO;
-      let activeDayWakeup: string = this.daybookService.activeDay.sleepProfile.wakeupTimeISO;
+      let yesterdayWakeup: string = this.daybookService.activeDay.previousDay.sleepProfile.wakeupTime.toISOString();
+      let activeDayWakeup: string = this.daybookService.activeDay.sleepProfile.wakeupTime.toISOString();
       // if(!this.daybookService.activeDay.sleepProfile.wakeupTimeISO)
     }
     return isPastMidnight;
@@ -224,7 +224,7 @@ export class SleepProfileWidgetComponent implements OnInit {
 
   public onClickSaveSleepTimes() {
     // console.log("Saving");
-    let sleepProfile: DaybookDayItemSleepProfile = this.daybookService.activeDay.sleepProfile;
+    let sleepProfile: DaybookDayItemSleepProfileData = this.daybookService.activeDay.sleepProfile.sleepProfileData;
 
     sleepProfile.sleepQuality = this._sleepQuality;
 
@@ -237,7 +237,7 @@ export class SleepProfileWidgetComponent implements OnInit {
     sleepProfile.bedtimeISO = this._bedTime.toISOString();
     sleepProfile.bedtimeUtcOffsetMinutes = this._bedTime.utcOffset();
 
-    this.daybookService.activeDay.sleepProfile = sleepProfile;
+    this.daybookService.activeDay.sleepProfile.updateSleepProfile(sleepProfile);
     this.reInitiate();
   }
 

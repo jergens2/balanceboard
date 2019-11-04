@@ -3,7 +3,7 @@ import { DaybookEntryForm } from '../../../daybook-entry-form.class';
 import { DaybookEntryFormSection } from '../../daybook-entry-form-section.class';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { DaybookDayItemSleepProfileData } from '../../../../api/data-items/daybook-day-item-sleep-profile-data.interface';
 import * as moment from 'moment';
 
 @Component({
@@ -46,7 +46,7 @@ export class BedtimeSectionComponent implements OnInit {
   public onClickSave(){
     let bedTimeInput = this.parseFormTimeInput(this.bedtimeForm.controls["bedtime"].value);
     let bedtime: moment.Moment = moment(this.daybookEntryForm.bedtime).hour(bedTimeInput.hour).minute(bedTimeInput.minute).second(0).millisecond(0);
-    let sleepProfile: DaybookDayItemSleepProfile = this.daybookEntryForm.sleepProfile;
+    let sleepProfile: DaybookDayItemSleepProfileData = this.daybookEntryForm.sleepProfile;
     sleepProfile["bedtimeISO"] = bedtime.toISOString(),
     sleepProfile["bedtimeUtcOffsetMinutes"] = bedtime.utcOffset(),
     this.daybookEntryForm.onClickSaveSleepProfile(sleepProfile);

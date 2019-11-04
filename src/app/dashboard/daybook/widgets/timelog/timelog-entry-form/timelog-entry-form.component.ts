@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { ItemState } from '../../../../../shared/utilities/item-state.class';
 import { TimelogEntryActivity } from '../../../api/data-items/timelog-entry-activity.interface';
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
-import { DaybookDayItemSleepProfile } from '../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { DaybookDayItemSleepProfileData } from '../../../api/data-items/daybook-day-item-sleep-profile-data.interface';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -42,7 +42,7 @@ export class TimelogEntryFormComponent implements OnInit {
   ngOnInit() {
     // console.log("Entry item: ", this.entryItem.startTime.format("hh:mm a") + " -- - -- " + this.entryItem.endTime.format("hh:mm a"));
     if(!this._entryItem){
-      const wakeupTimeIsSet: boolean = this.daybookService.today.sleepProfile.wakeupTimeISO != "" && this.daybookService.today.sleepProfile.wakeupTimeISO != null;
+      const wakeupTimeIsSet: boolean = this.daybookService.today.sleepProfile.wakeupTimeIsSet;
       if(!wakeupTimeIsSet && !this.daybookService.isAwakeAfterMidnight){
         console.log("no wakeup time;")
         this._wakeupTimeIsSet = false;
@@ -70,10 +70,10 @@ export class TimelogEntryFormComponent implements OnInit {
 
   public onWakeupTimeChanged(wakeupTime: moment.Moment){
     // console.log("wakeup time changed: ", wakeupTime.format("hh:mm a"));
-    let sleepProfile: DaybookDayItemSleepProfile = this.daybookService.activeDay.sleepProfile;
+    let sleepProfile: DaybookDayItemSleepProfileData = this.daybookService.activeDay.sleepProfile.sleepProfileData;
     sleepProfile.wakeupTimeISO = wakeupTime.toISOString();
     sleepProfile.wakeupTimeUtcOffsetMinutes = wakeupTime.utcOffset();
-    this.daybookService.activeDay.sleepProfile = sleepProfile;
+    this.daybookService.activeDay.sleepProfile.updateSleepProfile(sleepProfile);
     this._wakeupTimeIsSet = true;
   }
 

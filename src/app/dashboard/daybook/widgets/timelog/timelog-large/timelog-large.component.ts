@@ -66,8 +66,8 @@ export class TimelogLargeComponent implements OnInit {
     isFirst: false,
     isLast: false,
     itemState: null,
-    startTime: moment(this.daybookService.activeDay.wakeupTime), 
-    endTime: moment(this.daybookService.activeDay.bedtime) 
+    startTime: moment(this.daybookService.activeDay.sleepProfile.wakeupTime), 
+    endTime: moment(this.daybookService.activeDay.sleepProfile.bedtime) 
   };
 
   faCog = faCog;

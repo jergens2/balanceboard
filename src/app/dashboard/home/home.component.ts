@@ -14,7 +14,7 @@ import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.s
 import { ActivityCategoryDefinition } from '../activities/api/activity-category-definition.class';
 import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
 import { UpdateActivityDatabaseItemsService } from '../activities/api/update-activity-database-items.service';
-import { DaybookDayItemSleepProfile } from '../daybook/api/data-items/daybook-day-item-sleep-profile.interface';
+
 
 
 @Component({

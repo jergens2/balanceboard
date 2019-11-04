@@ -5,7 +5,7 @@ import { faPlusCircle, faMinusCircle, faBed, faCheck } from '@fortawesome/free-s
 import * as moment from 'moment';
 import { SleepQuality } from './sleep-quality.enum';
 import { DurationString } from '../../../../../../shared/utilities/time-utilities/duration-string.class';
-import { DaybookDayItemSleepProfile } from '../../../../api/data-items/daybook-day-item-sleep-profile.interface';
+import { DaybookDayItemSleepProfileData } from '../../../../api/data-items/daybook-day-item-sleep-profile-data.interface';
 import { faCircle, faCheckCircle } from '@fortawesome/free-regular-svg-icons';
 import { DaybookEntryFormSection } from '../../daybook-entry-form-section.class';
 
@@ -193,7 +193,7 @@ export class WakeupSectionComponent implements OnInit {
      */
 
     console.log("Warning:  the following object is not configured properly, the previous and current fall asleep times are using the same value.")
-    let sleepProfile: DaybookDayItemSleepProfile = {
+    let sleepProfile: DaybookDayItemSleepProfileData = {
       previousFallAsleepTimeISO: this._fallAsleepTime.toISOString(),
       previousFallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
 

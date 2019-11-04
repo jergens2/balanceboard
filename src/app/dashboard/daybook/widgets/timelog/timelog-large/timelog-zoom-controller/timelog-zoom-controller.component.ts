@@ -28,12 +28,12 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
     let activeDay: DaybookDayItem = this.daybookService.activeDay;
 
-    let awakeStartTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.wakeupTime), 30, "DOWN");
-    let awakeEndTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.bedtime), 30, "UP");
+    let awakeStartTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTime), 30, "DOWN");
+    let awakeEndTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedtime), 30, "UP");
 
-    if (activeDay.sleepProfile.wakeupTimeISO != "" && activeDay.sleepProfile.bedtimeISO != "") {
-      awakeStartTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTimeISO), 30, "DOWN");
-      awakeEndTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedtimeISO), 30, "UP");
+    if (activeDay.sleepProfile.wakeupTimeIsSet && activeDay.sleepProfile.bedTimeIsSet ) {
+      awakeStartTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTime), 30, "DOWN");
+      awakeEndTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedtime), 30, "UP");
     }
     this._wakeCycleZoom = {
       icon: faSun,
@@ -86,23 +86,23 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     let wakeupTime: moment.Moment;
     let bedTime: moment.Moment;
 
-    if (activeDayChanged.sleepProfile.wakeupTimeISO != "" && activeDayChanged.sleepProfile.bedtimeISO != "") {
-      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTimeISO), 30, "DOWN");
-      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedtimeISO), 30, "UP");
-      if (wakeupTime.minute() == moment(activeDayChanged.sleepProfile.wakeupTimeISO).minute() &&
-        wakeupTime.hour() == moment(activeDayChanged.sleepProfile.wakeupTimeISO).hour()) {
+    if (activeDayChanged.sleepProfile.wakeupTimeIsSet && activeDayChanged.sleepProfile.bedTimeIsSet) {
+      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTime), 30, "DOWN");
+      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedtime), 30, "UP");
+      if (wakeupTime.minute() == moment(activeDayChanged.sleepProfile.wakeupTime).minute() &&
+        wakeupTime.hour() == moment(activeDayChanged.sleepProfile.wakeupTime).hour()) {
         wakeupTime = moment(wakeupTime).subtract(30, "minutes");
       }
     } else {
-      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.wakeupTime), 30, "DOWN");
-      if(wakeupTime.isSame(activeDayChanged.wakeupTime)){
+      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTime), 30, "DOWN");
+      if(wakeupTime.isSame(activeDayChanged.sleepProfile.wakeupTime)){
         /* Due to the way that the round function works, it will round 30 down to 30 , 
            but will round 30 up to 60, so for the case of rounding down, we need to add the 30 minute buffer here, 
            but we do not need to add the 30 minute buffer for the bedtime.
         */
         wakeupTime = moment(wakeupTime).subtract(30, "minutes");
       }
-      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.bedtime), 30, "UP");
+      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedtime), 30, "UP");
     }
 
     this._wakeCycleZoom = {
