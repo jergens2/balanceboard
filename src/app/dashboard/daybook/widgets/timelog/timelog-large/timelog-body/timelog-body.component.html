@@ -1,7 +1,6 @@
 <div class="timelog-body-grid-container no-select">
     <!-- <div class="timelog-body-root" id="timelog-body-root"  [ngStyle]="timelogBodyNgStyle"> -->
-        <div class="timelog-body-root" id="timelog-body-root" (mouseenter)="itemState.onMouseEnter()"
-        (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)">
+    <div class="timelog-body-root" id="timelog-body-root">
 
 
         <div class="guide-line-hours">
@@ -30,16 +29,14 @@
             </div>
         </div>
 
-        <div class="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle">
-            <div class="tick-margin-line"></div>
-        </div>
+
 
         <div *ngIf="timeDelineators.length > 0" class="time-delineators" [ngStyle]="timeDelineatorsNgStyle">
             <div></div>
             <div class="time-delineator-label-container" *ngFor="let timeDelineator of timeDelineators">
-                <div style="display:flex; flex-direction: row; align-items: center; width: 100px" *ngIf="timeDelineator.isVisible">
-                    <div class="time-delineator-time-label" 
-                        (mouseenter)="timeDelineator.itemState.onMouseEnter()"
+                <div style="display:flex; flex-direction: row; align-items: center; width: 100px"
+                    *ngIf="timeDelineator.isVisible">
+                    <div class="time-delineator-time-label" (mouseenter)="timeDelineator.itemState.onMouseEnter()"
                         (mouseleave)="timeDelineator.itemState.onMouseLeave()">
                         <!-- <div class="time-delineator-time-label"> -->
                         <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon"
@@ -81,6 +78,15 @@
         <div *ngIf="timelogEntryItems.length > 0" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
             <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item"
                 [entry]="timelogEntryItem" [minutesPerTwentyPixels]="minutesPerTwentyPixels"></app-timelog-entry>
+        </div>
+
+        <!-- <div class="tick-margin-line-container" id="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle"
+            (mouseenter)="itemState.onMouseEnter()" (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)">
+            <div class="tick-margin-line"></div>
+        </div> -->
+
+        <div class="tick-margin-line-container" id="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle">
+            <div class="tick-margin-line"></div>
         </div>
 
     </div>

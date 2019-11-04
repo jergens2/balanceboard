@@ -264,9 +264,9 @@ export class DaybookService implements ServiceAuthenticates {
       daybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
     }
     if (daybookDayItem) {
-      daybookDayItem.addTimelogEntryItem(timelogEntry.dataEntryItem);
+      daybookDayItem.timelog.addTimelogEntryItem(timelogEntry);
       if (afterMidnightEntry) {
-        daybookDayItem.followingDay.addTimelogEntryItem(afterMidnightEntry.dataEntryItem);
+        daybookDayItem.followingDay.timelog.addTimelogEntryItem(afterMidnightEntry);
       }
     } else {
       console.log("Error, TLE not saved: no daybook day item")
@@ -285,7 +285,7 @@ export class DaybookService implements ServiceAuthenticates {
     }
 
     if (daybookDayItem) {
-      daybookDayItem.updateTimelogEntry(timelogEntry.dataEntryItem);
+      daybookDayItem.timelog.updateTimelogEntry(timelogEntry);
     } else {
       console.log("Error, can't update timelog entry:  No daybook day item")
     }
@@ -303,7 +303,7 @@ export class DaybookService implements ServiceAuthenticates {
 
 
     if (daybookDayItem) {
-      daybookDayItem.deleteTimelogEntry(timelogEntry.dataEntryItem);
+      daybookDayItem.timelog.deleteTimelogEntry(timelogEntry);
     } else {
       console.log("Error, can't Delete timelog entry:  No daybook day item")
     }

@@ -1,0 +1,5 @@
+<div class="timelog-entry-list">
+    <div class="timelog-entry-item" *ngFor="let entry of timelogEntryItems">
+        {{ entry.startTime.format('hh:mm a') }} to {{ entry.endTime.format('hh:mm a') }}
+    </div>
+</div>

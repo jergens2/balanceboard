@@ -17,9 +17,11 @@
 
     <app-timelog-zoom-controller class="zoom-controller" (zoomControl)="onZoomControlChanged($event)" (zoomHover)="onZoomHover($event)"></app-timelog-zoom-controller>
 
-    <div class="display-flex-column">
+    <div class="display-flex-column" *ngIf="showTimelogBody">
         <app-timelog-body class="display-flex-column" [zoomControl]="zoomControl" [zoomHover]="zoomHover"></app-timelog-body>
-
+    </div>
+    <div class="display-flex-column" *ngIf="showTimelogList">
+        <app-timelog-entry-list class="display-flex-column"></app-timelog-entry-list>
     </div>
 
 </div>

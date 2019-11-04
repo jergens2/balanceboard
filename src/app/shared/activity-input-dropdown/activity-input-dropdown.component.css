@@ -190,15 +190,20 @@
 }
 .search-result{
     padding-left:2px;
+    display:flex;
+    flex-direction: row;
+
 }
 .search-result:hover, .search-result-cursor{
     background-color: rgba(0, 0, 0, 0.1);
     color: rgb(4, 23, 63);
     cursor: pointer;
 }
+
 .search-result-match{
     font-weight: bold;
 }
+
 
 
 .message-container{

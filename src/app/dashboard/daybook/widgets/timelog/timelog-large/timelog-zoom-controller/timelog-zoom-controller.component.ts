@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/cor
 import * as moment from 'moment';
 import { TimelogZoomControl } from './timelog-zoom-control.interface';
 import { DaybookService } from '../../../../daybook.service';
-import { faWrench, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faWrench, faSun, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { Subscription, timer } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
 import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
@@ -132,7 +132,9 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   private _wakeCycleZoom: TimelogZoomControl;
   private _twentyFourHourZoom: TimelogZoomControl;
   private _eightHourZoom: TimelogZoomControl;
+  private _listZoom: TimelogZoomControl;
   private _customZoom: TimelogZoomControl;
+  
 
 
   private buildZoomButtons() {
@@ -143,6 +145,8 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     const twentyFourHourZoomActive: boolean = this._currentZoomLevel.name === "24";
     const eightHourZoomActive: boolean = this._currentZoomLevel.name === "8";
     const customZoomActive: boolean = this._currentZoomLevel.name === "CUSTOM";
+    const listZoomActive: boolean = this._currentZoomLevel.name === "LIST";
+    const wakeZoomActive: boolean = this._currentZoomLevel.name === "AWAKE";
 
 
     this._twentyFourHourZoom = {
@@ -167,6 +171,17 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       itemState: new ItemState(null),
     }
 
+    this._listZoom = {
+      icon: faListUl,
+      name: "LIST",
+      isActive: listZoomActive,
+      isFirst: false,
+      isLast: false,
+      startTime: moment(this._currentTime).startOf("day"),
+      endTime: moment(this._currentTime).startOf("day").add(24, "hours"),
+      itemState: new ItemState(null),
+    }
+
     this._customZoom = {
       icon: faWrench,
       name: "CUSTOM",
@@ -184,18 +199,23 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       changedValue = this._eightHourZoom;
     } else if (customZoomActive) {
       changedValue = this._customZoom;
-    } else {
+    } else if (listZoomActive) {
+      changedValue = this._listZoom;
+    }else if(wakeZoomActive){
       changedValue = this._wakeCycleZoom;
+    }else{
+      console.log("Error with zoom")
     }
 
     zoomButtons.push(this._twentyFourHourZoom);
     zoomButtons.push(this._wakeCycleZoom);
+    zoomButtons.push(this._listZoom);
     if (this.daybookService.activeDayIsToday) {
       zoomButtons.push(this._eightHourZoom);
       zoomButtons.push(this._customZoom);
     } else {
-      this._wakeCycleZoom.isLast = true;
-      if (this._currentZoomLevel.name != this._twentyFourHourZoom.name && this._currentZoomLevel.name != this._wakeCycleZoom.name) {
+      this._listZoom.isLast = true;
+      if (this._currentZoomLevel.name == "AWAKE") {
         this._wakeCycleZoom.isActive = true;
         changedValue = this._wakeCycleZoom;
       }

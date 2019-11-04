@@ -7,7 +7,7 @@ export interface TimelogZoomControl{
     isActive: boolean;
     isFirst: boolean;
     isLast: boolean;
-    name: "24" | "AWAKE" | "8" | "CUSTOM";
+    name: "24" | "AWAKE" | "8" | "LIST" | "CUSTOM";
     startTime: moment.Moment;
     endTime: moment.Moment;
     itemState: ItemState;

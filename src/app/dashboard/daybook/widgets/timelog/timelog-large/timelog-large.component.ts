@@ -40,9 +40,18 @@ export class TimelogLargeComponent implements OnInit {
     console.log("header item clicked: ", item);
   }
 
+  public showTimelogBody: boolean = true;
+  public showTimelogList: boolean = false;
 
   public onZoomControlChanged(changedZoomControl: TimelogZoomControl){
     this.zoomControl = changedZoomControl;
+    if(this.zoomControl.name === "LIST"){
+      this.showTimelogBody = false;
+      this.showTimelogList = true; 
+    }else{
+      this.showTimelogList = false;
+      this.showTimelogBody = true;
+    }
   }
   public onZoomHover(zoomButton: TimelogZoomControl){
     this._zoomHover = zoomButton;

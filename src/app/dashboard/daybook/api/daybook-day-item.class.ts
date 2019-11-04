@@ -3,7 +3,7 @@ import { DaybookDayItemHttpShape } from "./daybook-day-item-http-shape.interface
 import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
 import { DaybookActivityDataItem } from "./data-items/daybook-activity-data-item.interface";
 import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
-import { Subject, Observable, scheduled, timer } from "rxjs";
+import { Subject, Observable, scheduled, timer, Subscription } from "rxjs";
 import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
 import * as moment from 'moment';
 import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
@@ -11,6 +11,8 @@ import { DaybookDayItemSleepProfile } from "./data-items/daybook-day-item-sleep-
 import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
 import { ActivityTree } from "../../activities/api/activity-tree.class";
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
+import { DaybookDayItemTimelog } from "./sub-classes/daybook-day-item-timelog.class";
+import blankDaybookItemHttpShape from "./data-items/blank-http-shape";
 // import { DaybookTimeReferencer } from "./daybook-time-referencer.class";
 
 
@@ -25,7 +27,7 @@ export class DaybookDayItem {
     private _httpShape: DaybookDayItemHttpShape;
     public setHttpShape(shape: DaybookDayItemHttpShape) {
         this._httpShape = shape;
-        // this.buildTimeReferencer();
+        this._rebuild();
     }
     public get httpShape(): DaybookDayItemHttpShape {
         return this._httpShape;
@@ -34,72 +36,52 @@ export class DaybookDayItem {
     constructor(dateYYYYMMDD: string) {
         // console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
         // console.log("CONSTRUCTING DAYBOOK ITEM: " + dateYYYYMMDD)
-        let shape: DaybookDayItemHttpShape = {
-            _id: "",
-            userId: "",
-            dateYYYYMMDD: dateYYYYMMDD,
-            daybookTimelogEntryDataItems: [],
-            timeDelineators: [],
-            daybookActivityDataItems: [],
-            dailyTaskListDataItems: [],
-            dayStructureDataItems: [],
-            sleepCycleDataItems: [],
-            sleepProfile: {
-                sleepQuality: null,
-                previousFallAsleepTimeISO: "",
-                previousFallAsleepTimeUtcOffsetMinutes: -1,
-                wakeupTimeISO: "",
-                wakeupTimeUtcOffsetMinutes: -1,
-                bedtimeISO: "",
-                bedtimeUtcOffsetMinutes: -1,
-                fallAsleepTimeISO: "",
-                fallAsleepTimeUtcOffsetMinutes: -1,
-                estimatedSleepDurationMinutes: -1,
-            },
-            dailyWeightLogEntryKg: -1,
-            scheduledActivityItems: [],  // this includes activities and routines.: [],
-            dayTemplateId: "",
-            scheduledEventIds: [],
-            notebookEntryIds: [],
-            taskItemIds: [],
-        }
+        let shape: DaybookDayItemHttpShape = blankDaybookItemHttpShape;
+        shape.dateYYYYMMDD = dateYYYYMMDD;
         this.setHttpShape(shape);
     }
 
+    private _rebuild(){
+        this._timelog = new DaybookDayItemTimelog(this.httpShape);
+        this._updateDataChangedSubscriptions();
+    }
+    private _dataChangedSubscriptions: Subscription[] = [];
+    private _updateDataChangedSubscriptions(){
+        this._dataChangedSubscriptions.forEach((sub)=>{ sub.unsubscribe(); });
+        this._dataChangedSubscriptions = [];
+        this._dataChangedSubscriptions.push(this._timelog.timelogUpdated$.subscribe((timelogDataEntries: DaybookTimelogEntryDataItem[])=>{
+            this._httpShape.daybookTimelogEntryDataItems = timelogDataEntries;
+            this.dataChanged();
+        }));
+    }
+
+    private _timelog: DaybookDayItemTimelog;
     private _previousDay: DaybookDayItem;
-    public set previousDay(previousDay: DaybookDayItem) {
-        this._previousDay = previousDay;
-    }
-    public get previousDay(): DaybookDayItem {
-        return this._previousDay;
-    }
     private _followingDay: DaybookDayItem;
-    public set followingDay(followingDay: DaybookDayItem) {
-        this._followingDay = followingDay;
-    }
-    public get followingDay(): DaybookDayItem {
-        return this._followingDay;
-    }
 
+    public set previousDay(previousDay: DaybookDayItem) { this._previousDay = previousDay; }
+    public set followingDay(followingDay: DaybookDayItem) {this._followingDay = followingDay;}
+    public set id(id: string) {this._httpShape._id = id;}
+    public set userId(userId: string) {this._httpShape.userId = userId;}
 
+    public get previousDay(): DaybookDayItem { return this._previousDay; }
+    public get followingDay(): DaybookDayItem {return this._followingDay;}
+    public get timelog(): DaybookDayItemTimelog{ return this._timelog; };
     public get id(): string { return this.httpShape._id; }
-    public set id(id: string) {
-        this._httpShape._id = id;
-    }
     public get userId(): string { return this.httpShape.userId; }
-    public set userId(userId: string) {
-        this._httpShape.userId = userId;
-    }
-
     public get dateYYYYMMDD(): string { return this.httpShape.dateYYYYMMDD; }
-
-    public get daybookTimelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this.httpShape.daybookTimelogEntryDataItems; }
-    public set daybookTimelogEntryDataItems(timelogEntries: DaybookTimelogEntryDataItem[]) {
-        this._httpShape.daybookTimelogEntryDataItems = timelogEntries;
-        // this.updateActivityDataItems();
-        this.dataChanged();
-    }
     public get timeDelineators(): string[] { return this.httpShape.timeDelineators; }
+    
+
+    
+
+    // public get daybookTimelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this.httpShape.daybookTimelogEntryDataItems; }
+    // public set daybookTimelogEntryDataItems(timelogEntries: DaybookTimelogEntryDataItem[]) {
+    //     this._httpShape.daybookTimelogEntryDataItems = timelogEntries;
+    //     // this.updateActivityDataItems();
+    //     this.dataChanged();
+    // }
+    
     public set timeDelineators(timeDelineators: string[]) {
         // console.log("setting Time delineators ")
         this._httpShape.timeDelineators = timeDelineators;
@@ -275,15 +257,10 @@ export class DaybookDayItem {
         let lastActionTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");
         const endOfDay: moment.Moment = moment(lastActionTime).add(1, "day");
 
-        if (this.daybookTimelogEntryDataItems.length > 0) {
-            let lastEndTime: moment.Moment = moment(this.daybookTimelogEntryDataItems.sort((entry1, entry2) => {
-                if (moment(entry1.endTimeISO).isAfter(moment(entry2.endTimeISO))) return -1;
-                else if (moment(entry1.endTimeISO).isBefore(moment(entry2.endTimeISO))) return 1;
-                else return 0;
-            })[0].endTimeISO);
+        if (this.timelog.timelogEntryItems.length > 0) {
+            let lastEndTime: moment.Moment = this.timelog.lastTimelogEntryItemTime;
             if (moment(lastEndTime).isAfter(lastActionTime)) {
                 lastActionTime = moment(lastEndTime);
-
             }
         }
 
@@ -359,58 +336,7 @@ export class DaybookDayItem {
 
 
 
-    public addTimelogEntryItem(timelogEntry: DaybookTimelogEntryDataItem) {
-        let timelogEntries = this.daybookTimelogEntryDataItems;
-        timelogEntries.push(timelogEntry);
-        this.daybookTimelogEntryDataItems = this.sortTimelogEntries(this.daybookTimelogEntryDataItems);
-        this.dataChanged();
-    }
-    public updateTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem) {
-        let foundIndex: number = -1;
-        this.daybookTimelogEntryDataItems.forEach((item) => {
-            if (moment(item.startTimeISO).isSame(moment(timelogEntry.startTimeISO)) && moment(item.endTimeISO).isSame(moment(timelogEntry.endTimeISO))) {
-                foundIndex = this.daybookTimelogEntryDataItems.indexOf(item);
-            }
-        });
-        if (foundIndex >= 0) {
-            // console.log("Successfully updated timelog entry at index: " + foundIndex);
-            this.daybookTimelogEntryDataItems.splice(foundIndex, 1, timelogEntry);
-            this.daybookTimelogEntryDataItems = this.sortTimelogEntries(this.daybookTimelogEntryDataItems);
-            this.dataChanged();
-        } else {
-            // console.log("Error: can't modify timelogEntry", timelogEntry)
-        }
-    }
-    public deleteTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem) {
-        let foundIndex: number = -1;
-        this.daybookTimelogEntryDataItems.forEach((item) => {
-            if (moment(item.startTimeISO).isSame(moment(timelogEntry.startTimeISO)) && moment(item.endTimeISO).isSame(moment(timelogEntry.endTimeISO))) {
-                foundIndex = this.daybookTimelogEntryDataItems.indexOf(item);
-            }
-        });
-        if (foundIndex >= 0) {
-            // console.log("Successfully deleting timelog entry at index: " + foundIndex);
-            this.daybookTimelogEntryDataItems.splice(foundIndex, 1);
-            this.daybookTimelogEntryDataItems = this.sortTimelogEntries(this.daybookTimelogEntryDataItems);
-            this.dataChanged();
-        } else {
-            // console.log("Error: can't delete timelogEntry", timelogEntry)
-        }
-    }
 
-    private sortTimelogEntries(items: DaybookTimelogEntryDataItem[]): DaybookTimelogEntryDataItem[] {
-
-        return items.sort((item1, item2)=>{
-            if(item1.startTimeISO < item2.startTimeISO){
-                return -1
-            }else if(item1.startTimeISO > item2.startTimeISO){
-                return 1;
-            }else{
-                return 0;
-            }
-        })
-
-    }
 
 
 

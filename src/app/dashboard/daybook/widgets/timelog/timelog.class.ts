@@ -73,25 +73,25 @@ export class Timelog {
     allTimes = this.addSleepTimeDelineators(allTimes);
     allTimes = this.addNowTimeDelineator(allTimes);
 
-    for (let i = 0; i < this._activeDay.daybookTimelogEntryDataItems.length; i++) {
+    for (let i = 0; i < this._activeDay.timelog.timelogEntryItems.length; i++) {
       /**
        * For each timelog entry: add 1 delineator for the start time and 1 delineator for the end time, 
        * unless if the end of one entry is the same as the start of the next entry, 
        * in which case it will be added for the start of the next entry.
        */
-      const startTime: moment.Moment = moment(this._activeDay.daybookTimelogEntryDataItems[i].startTimeISO);
-      const endTime: moment.Moment = moment(this._activeDay.daybookTimelogEntryDataItems[i].endTimeISO);
+      const startTime: moment.Moment = moment(this._activeDay.timelog.timelogEntryItems[i].startTime);
+      const endTime: moment.Moment = moment(this._activeDay.timelog.timelogEntryItems[i].endTime);
 
       let startDelineator: TimeDelineator = new TimeDelineator(startTime, "TIMELOG_ENTRY");
       startDelineator.nextDelineatorTime = endTime;
       let endDelineator: TimeDelineator;
 
-      if (i < this._activeDay.daybookTimelogEntryDataItems.length - 1) {
-        const nextStartTime: moment.Moment = moment(this._activeDay.daybookTimelogEntryDataItems[i + 1].startTimeISO);
+      if (i < this._activeDay.timelog.timelogEntryItems.length - 1) {
+        const nextStartTime: moment.Moment = moment(this._activeDay.timelog.timelogEntryItems[i + 1].startTime);
         if (!nextStartTime.isSame(endTime)) {
           endDelineator = new TimeDelineator(endTime, "TIMELOG_ENTRY");
         }
-      } else if (i === this._activeDay.daybookTimelogEntryDataItems.length - 1) {
+      } else if (i === this._activeDay.timelog.timelogEntryItems.length - 1) {
         endDelineator = new TimeDelineator(endTime, "TIMELOG_ENTRY");
       }
 
@@ -218,9 +218,9 @@ export class Timelog {
 
   public crossesAnyTimelogEntry(time: moment.Moment): boolean {
     let crossesExisting: boolean = false;
-    this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem) => {
-      const start: moment.Moment = moment(entryDataItem.startTimeISO);
-      const end: moment.Moment = moment(entryDataItem.endTimeISO);
+    this._activeDay.timelog.timelogEntryItems.forEach((entryDataItem) => {
+      const start: moment.Moment = moment(entryDataItem.startTime);
+      const end: moment.Moment = moment(entryDataItem.endTime);
       if (time.isSameOrAfter(start) && time.isSameOrBefore(end)) {
         crossesExisting = true;
       }
@@ -319,9 +319,9 @@ export class Timelog {
     }
 
 
-    this._activeDay.daybookTimelogEntryDataItems.forEach((entryDataItem) => {
-      const entryDataStartTime: moment.Moment = moment(entryDataItem.startTimeISO);
-      const entryDataEndTime: moment.Moment = moment(entryDataItem.endTimeISO);
+    this._activeDay.timelog.timelogEntryItems.forEach((entryDataItem) => {
+      const entryDataStartTime: moment.Moment = moment(entryDataItem.startTime);
+      const entryDataEndTime: moment.Moment = moment(entryDataItem.endTime);
       entries.forEach((entry) => {
         if (entry.startTime.isSame(entryDataStartTime) && entry.endTime.isSame(entryDataEndTime)) {
           entry.note = entryDataItem.note;

@@ -1,0 +1,19 @@
+.timelog-entry-list{
+    height:100%;
+    overflow-y: auto;
+    display:flex;
+    flex-direction: column;
+    padding-top: 5px;
+}
+.timelog-entry-item{
+    margin: 5px;
+    margin-top: 0px;
+    padding: 5px;
+    border-radius: 5px;
+
+    display: flex;
+    flex-direction: row;
+}
+.timelog-entry-item:hover{
+    background-color: rgb(247, 247, 247);
+}

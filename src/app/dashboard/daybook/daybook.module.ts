@@ -37,6 +37,7 @@ import { TimelogEntryDisplayComponent } from './widgets/timelog/timelog-large/ti
 import { TimelogEntryFormComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form.component';
 import { TlefWakeupTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-wakeup-time/tlef-wakeup-time.component';
 import { TlefModifyTimesComponent } from './widgets/timelog/timelog-entry-form/tlef-modify-times/tlef-modify-times.component';
+import { TimelogEntryListComponent } from './widgets/timelog/timelog-large/timelog-entry-list/timelog-entry-list.component';
 
 
 @NgModule({
@@ -76,6 +77,7 @@ import { TlefModifyTimesComponent } from './widgets/timelog/timelog-entry-form/t
     TimelogEntryFormComponent,
     TlefWakeupTimeComponent,
     TlefModifyTimesComponent,
+    TimelogEntryListComponent,
   ],
   exports: [
     DaybookEntryFormComponent,

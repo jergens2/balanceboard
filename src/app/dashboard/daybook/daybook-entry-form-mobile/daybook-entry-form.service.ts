@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DaybookService } from '../daybook.service';
 import * as moment from 'moment';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
+import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,16 @@ export class DaybookEntryFormService {
 
   public saveTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem){
     console.log("Saving timelog entry in timelog entry service")
-    this.daybookService.today.addTimelogEntryItem(timelogEntry);
+    let saveTimelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(timelogEntry.startTimeISO), moment(timelogEntry.endTimeISO));
+    saveTimelogEntry.note = timelogEntry.note;
+    saveTimelogEntry.timelogEntryActivities = timelogEntry.timelogEntryActivities;
+    this.daybookService.today.timelog.addTimelogEntryItem(saveTimelogEntry);
   }
   public updateTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem){
-    this.daybookService.today.updateTimelogEntry(timelogEntry);
+    let updateTimelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(timelogEntry.startTimeISO), moment(timelogEntry.endTimeISO));
+    updateTimelogEntry.note = timelogEntry.note;
+    updateTimelogEntry.timelogEntryActivities = timelogEntry.timelogEntryActivities;
+    this.daybookService.today.timelog.updateTimelogEntry(updateTimelogEntry);
   }
 
 
