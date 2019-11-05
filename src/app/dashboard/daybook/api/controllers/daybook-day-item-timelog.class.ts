@@ -8,22 +8,23 @@ export class DaybookDayItemTimelog {
 
     constructor(httpShape: DaybookDayItemHttpShape) {
         let timelogEntries: TimelogEntryItem[] = [];
-        console.log("Constructing timelog: " , httpShape)
         if (httpShape.daybookTimelogEntryDataItems.length > 0) {
             httpShape.daybookTimelogEntryDataItems.forEach((item) => {
-                console.log("Daybook item: ", item);
                 let timelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(item.startTimeISO), moment(item.endTimeISO));
                 timelogEntry.note = item.note;
-                item.timelogEntryActivities.forEach((activity) => {
-                    timelogEntry.timelogEntryActivities.push(activity);
-                });
+                if(item.timelogEntryActivities){
+                    item.timelogEntryActivities.forEach((activity) => {
+                        timelogEntry.timelogEntryActivities.push(activity);
+                    });
+                }else{
+                    console.log("No TLEs ?", item);
+                }
+
 
 
                 timelogEntries.push(timelogEntry);
             });
         }
-
-
 
         this._timelogEntryItems = this.sortTimelogEntries(timelogEntries);
         this._timeDelineators = httpShape.timeDelineators;
@@ -109,21 +110,33 @@ export class DaybookDayItemTimelog {
 
     public set timeDelineators(timeDelineators: string[]) {
         // console.log("setting Time delineators ")
-        this._timeDelineators = timeDelineators;
+        this._timeDelineators = timeDelineators.sort((time1, time2) => {
+            if (time1 < time2) return -1
+            if (time1 > time2) return 1
+            return 0;
+        });
         this.sendUpdate();
     }
     public addTimeDelineator(delineatorTimeISO: string) {
         let timeDelineators = this.timeDelineators;
         if (timeDelineators.indexOf(delineatorTimeISO) == -1) {
             timeDelineators.push(delineatorTimeISO);
-            this._timeDelineators = timeDelineators;
+            this._timeDelineators = timeDelineators.sort((time1, time2) => {
+                if (time1 < time2) return -1
+                if (time1 > time2) return 1
+                return 0;
+            });;
         }
     }
     public removeTimeDelineator(delineator: string) {
         let timeDelineators = this.timeDelineators;
         if (timeDelineators.indexOf(delineator) > -1) {
             timeDelineators.splice(timeDelineators.indexOf(delineator), 1);
-            this._timeDelineators = timeDelineators;
+            this._timeDelineators = timeDelineators.sort((time1, time2)=>{
+                if(time1 < time2) return -1
+                if(time1 > time2) return 1
+                return 0;
+            });;
         }
     }
 

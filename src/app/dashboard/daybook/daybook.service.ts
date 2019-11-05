@@ -38,11 +38,7 @@ export class DaybookService implements ServiceAuthenticates {
       this.startANewDay(moment().format("YYYY-MM-DD"));
     }
     this._allSubscriptions.push(this.daybookHttpRequestService.daybookDayItems$.subscribe((daybookDayItems: DaybookDayItem[]) => {
-      console.log("Daybook day items updated: ")
       if (daybookDayItems.length > 0) {
-        daybookDayItems.forEach((item)=>{
-          console.log("   " + item.dateYYYYMMDD);
-        })
         this._daybookDayItems$.next(daybookDayItems);
         this.initiateClock();
       }
@@ -295,107 +291,15 @@ export class DaybookService implements ServiceAuthenticates {
     }
   }
 
-  // public getStartTimeBoundary(entryItem: TimelogEntryItem): moment.Moment{
-  //   // This method is not completely robust but adequate for the time being
-  //   let activeDay: DaybookDayItem = this.getDaybookDayItemByDate(entryItem.startTime.format("YYYY-MM-DD"));
-  //   let boundary: moment.Moment;
-  //   let foundIndex: number = -1;
-  //   if(activeDay.daybookTimelogEntryDataItems.length > 0){
-  //     activeDay.daybookTimelogEntryDataItems.forEach((dataItem)=>{
-  //       if(moment(dataItem.startTimeISO).isSame(entryItem.startTime) && moment(dataItem.endTimeISO).isSame(entryItem.endTime)){
-  //         foundIndex = activeDay.daybookTimelogEntryDataItems.indexOf(dataItem);
-  //       }
-  //     });
-  //   }
+  
+  public get isAwakeAfterMidnight(): boolean { return this._isAwakeAfterMidnight; }
+  private _isAwakeAfterMidnight: boolean = false;
+  private _updateIsPastMidnight() {
+    let isAwakeAfterMidnight: boolean = false;
+    let now = moment(this._clock);
 
-  //   if(foundIndex >= 0){
-  //     if(foundIndex === 0){
-  //       // if it's the first one: 
-  //       if(activeDay.wakeupTimeIsSet){
-  //         boundary = activeDay.wakeupTime;
-  //       }else{
-  //         boundary = moment(activeDay.dateYYYYMMDD).startOf("day");
-  //       }
-  //     }else{
-  //       boundary = moment(activeDay.daybookTimelogEntryDataItems[foundIndex-1].endTimeISO);
-  //     }
-  //   }else{
-  //     // it is not an existing entry
-
-  //     if(activeDay.daybookTimelogEntryDataItems.length > 0){
-  //       let foundTime: moment.Moment = moment(activeDay.daybookTimelogEntryDataItems[0].endTimeISO);
-  //       if(foundTime.isAfter(entryItem.startTime)){
-
-  //         if(activeDay.wakeupTimeIsSet){
-  //           boundary = activeDay.wakeupTime;
-  //         }else{
-  //           boundary = boundary = moment(activeDay.dateYYYYMMDD).startOf("day");
-  //         }
-  //       }else{
-  //         let index: number = 0;
-  //         while(foundTime.isBefore(entryItem.startTime) && index < activeDay.daybookTimelogEntryDataItems.length){
-  //           let entryEndTime: moment.Moment = moment(activeDay.daybookTimelogEntryDataItems[index].endTimeISO);
-  //           if(entryEndTime.isBefore((entryItem.startTime))){
-  //             foundTime = moment(entryEndTime);
-  //           }
-  //           index++;
-  //         }
-  //       }
-  //     }else{
-  //       if(activeDay.wakeupTimeIsSet){
-  //         boundary = activeDay.wakeupTime;
-  //       }else{
-  //         boundary = boundary = moment(activeDay.dateYYYYMMDD).startOf("day");
-  //       }
-  //     }
-  //   }
-  //   console.log("TLE start time boundary is " + boundary.format("YYYY-MM-DD hh:mm a"))
-  //   return boundary;
-  // }
-  // public getEndTimeBoundary(entryItem: TimelogEntryItem): moment.Moment{
-  //   // This method is not completely robust but adequate for the time being
-  //   let activeDay: DaybookDayItem = this.getDaybookDayItemByDate(entryItem.startTime.format("YYYY-MM-DD"));
-  //   console.log("***** To do: implement this method getEndTimeBoundary()")
-  //   return 
-  // }
-
-  // private updateActivityItems(changedTree) {
-  // console.log("Method not implemented: update activity tree");
-  /**
-   * This method runs any time the activity tree changes.
-   * When this happens, we need to ensure that the active day and following days have proper scheduled activity items.
-   * 
-   * The reason being that the activity objects have the scheduleRoutine built in to them, 
-   * so if for example you change your work schedule from current schedule of Mon to Fri, to new schedule Mon to Thursday, 
-   * then we need to update any future scheduled items.
-   */
-  // }
-
-  private updateIsPastMidnight() {
-    /**
-     * This method needs to be improved, right now it works adequately for functional purposes but needs to account for other variables eventually.
-     * For example, maybe a person's day is defined as 3pm to 8am, for night-shift related reasons or whatever reason, and so in that case
-     * what happens if it's 7:30 am and they have yet to go to bed?  In that case, we need to account for this circumstance
-     */
-
-    if (this.activeDayIsToday) {
-      let isAfterMidnight: boolean = false;
-      if (this._clock.hour() >= 0 && this._clock.hour() <= 6) {
-        isAfterMidnight = true;
-      }
-      this._isAwakeAfterMidnight = isAfterMidnight;
-    } else {
-      this._isAwakeAfterMidnight = false;
-    }
 
   }
 
-
-  /**
- * As of now, this method basically checks if the current time is before 6:00am.  
- * Needs improvement.
- */
-  public get isAwakeAfterMidnight(): boolean { return this._isAwakeAfterMidnight; }
-  private _isAwakeAfterMidnight: boolean = false;
 
 }

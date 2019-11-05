@@ -44,6 +44,9 @@ export class DaybookDayItem {
             this.dataChanged();
         }));
     }
+    private _dataChanged$: Subject<boolean> = new Subject();
+    public get dataChanged$(): Observable<boolean> { return this._dataChanged$.asObservable(); }
+    private dataChanged() { this._dataChanged$.next(true); }
 
     private _httpShape: DaybookDayItemHttpShape;
     private _timelog: DaybookDayItemTimelog;
@@ -109,9 +112,7 @@ export class DaybookDayItem {
 
 
     
-    private _dataChanged$: Subject<boolean> = new Subject();
-    public get dataChanged$(): Observable<boolean> { return this._dataChanged$.asObservable(); }
-    private dataChanged() { this._dataChanged$.next(true); }
+
 
     public getMostRecentActionTime(currentTime?: moment.Moment): moment.Moment {
         let lastActionTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");

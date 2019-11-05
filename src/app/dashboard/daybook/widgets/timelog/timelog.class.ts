@@ -265,12 +265,12 @@ export class Timelog {
     }
 
     if(this._activeDay.sleepProfile.bedTimeIsSet){
-      if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedtime))) {
-        bedtimeDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.bedtime), "SLEEP", faMoon, "rgb(68, 0, 255)");
+      if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedTime))) {
+        bedtimeDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.bedTime), "SLEEP", faMoon, "rgb(68, 0, 255)");
       }
     }else{
-      if (this.timeIsInView(this._activeDay.sleepProfile.bedtime)) {
-        bedtimeDelineator = new TimeDelineator(this._activeDay.sleepProfile.bedtime, "SLEEP", faMoon, "rgb(200, 200, 200)");
+      if (this.timeIsInView(this._activeDay.sleepProfile.bedTime)) {
+        bedtimeDelineator = new TimeDelineator(this._activeDay.sleepProfile.bedTime, "SLEEP", faMoon, "rgb(200, 200, 200)");
       }
     }
 
@@ -297,7 +297,7 @@ export class Timelog {
     const entriesCount: number = delineators.length - 1;
     let entries: TimelogEntryItem[] = [];
     const wakeupTime: moment.Moment = this._activeDay.sleepProfile.wakeupTime;
-    const bedTime: moment.Moment = this._activeDay.sleepProfile.bedtime;
+    const bedTime: moment.Moment = this._activeDay.sleepProfile.bedTime;
 
     for (let i = 0; i < entriesCount; i++) {
       const startTime: moment.Moment = delineators[i].time;

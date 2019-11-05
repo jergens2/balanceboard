@@ -38,7 +38,6 @@
                     *ngIf="timeDelineator.isVisible">
                     <div class="time-delineator-time-label" (mouseenter)="timeDelineator.itemState.onMouseEnter()"
                         (mouseleave)="timeDelineator.itemState.onMouseLeave()">
-                        <!-- <div class="time-delineator-time-label"> -->
                         <fa-icon style="margin-right: 5px;" [icon]="timeDelineator.icon"
                             [ngStyle]="timeDelineator.ngStyle" *ngIf="timeDelineator.icon"></fa-icon>
                         <div style="margin-right: 5px;" *ngIf="!timeDelineator.icon"></div>
@@ -50,7 +49,6 @@
                     <div style="height:1px; width: 5px;border-top: 1px solid gray;"></div>
                 </div>
 
-                <!-- <div *ngIf="timeDelineator.delineatorType === 'DELINEATOR' && timeDelineator.isVisible" style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div> -->
                 <div *ngIf="timeDelineator.delineatorType === 'SLEEP'  "
                     style="height:1px; border-top: 1px solid rgb(176, 195, 230); flex-grow:2;"></div>
                 <div *ngIf="timeDelineator.delineatorType === 'SLEEP' && timeDelineator.label != ''"
@@ -60,7 +58,7 @@
 
         <!-- This section causes performance degradation. -->
         <!-- need to isolate it just to the column -->
-        <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
+        <!-- <div *ngIf="mousePosition" class="mouse-position-time-container" [ngStyle]="mousePosition.ngStyle">
             <div></div>
             <div class="mouse-position-time-label-container">
                 <div class="mouse-position-time-label" (click)="timelog.addTimeDelineator(mousePosition.time)">
@@ -71,7 +69,7 @@
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(0, 89, 255, 0.3); flex-grow:2;"></div>
             </div>
-        </div>
+        </div> -->
 
 
 
@@ -80,10 +78,10 @@
                 [entry]="timelogEntryItem" [minutesPerTwentyPixels]="minutesPerTwentyPixels"></app-timelog-entry>
         </div>
 
-        <!-- <div class="tick-margin-line-container" id="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle"
+        <div class="tick-margin-line-container" id="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle"
             (mouseenter)="itemState.onMouseEnter()" (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)">
             <div class="tick-margin-line"></div>
-        </div> -->
+        </div>
 
         <div class="tick-margin-line-container" id="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle">
             <div class="tick-margin-line"></div>

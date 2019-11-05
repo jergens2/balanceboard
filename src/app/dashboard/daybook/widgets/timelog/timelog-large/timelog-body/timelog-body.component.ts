@@ -28,6 +28,7 @@ export class TimelogBodyComponent implements OnInit {
   private _zoomControlSubscription: Subscription = new Subscription();
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
+    console.log("Zoom:  " + this._zoomControl.startTime.format("YYYY-MM-DD hh:mm a") + " - " + this._zoomControl.endTime.format("YYYY-MM-DD hh:mm a"))
     this.estimateInitialMinutesPerPixel(this.screenSizeService.dimensions.height);
     this.buildTimelog();
   }
@@ -154,8 +155,7 @@ export class TimelogBodyComponent implements OnInit {
   private updateTickMarginLine(){
     if(this.timelog.entryItems.length > 0){
       const totalDurationSeconds: number = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "seconds");
-      let percentages: number[] = [];
-      let tickMarginLines: boolean[] = [];
+
 
       let sleepStates: {durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number}[] = this.timelog.entryItems.map((entryItem)=>{
         return { durationSeconds: entryItem.durationSeconds, sleepState: entryItem.sleepState, percentage: 0 };
@@ -182,6 +182,8 @@ export class TimelogBodyComponent implements OnInit {
       
       this._tickMarginLines = reducedSleepStates;
       this._tickMarginLineNgStyle = {"grid-template-rows":gridTemplateRows};
+
+      // console.log("Tick margin line: ", this._tickMarginLines, this._tickMarginLineNgStyle)
 
     }
     

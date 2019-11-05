@@ -73,7 +73,7 @@ export class TimelogEntryFormComponent implements OnInit {
     let sleepProfile: DaybookDayItemSleepProfileData = this.daybookService.activeDay.sleepProfile.sleepProfileData;
     sleepProfile.wakeupTimeISO = wakeupTime.toISOString();
     sleepProfile.wakeupTimeUtcOffsetMinutes = wakeupTime.utcOffset();
-    this.daybookService.activeDay.sleepProfile.updateSleepProfile(sleepProfile);
+    this.daybookService.activeDay.sleepProfile.updateFullSleepProfile(sleepProfile);
     this._wakeupTimeIsSet = true;
   }
 

@@ -29,11 +29,11 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     let activeDay: DaybookDayItem = this.daybookService.activeDay;
 
     let awakeStartTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTime), 30, "DOWN");
-    let awakeEndTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedtime), 30, "UP");
+    let awakeEndTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedTime), 30, "UP");
 
-    if (activeDay.sleepProfile.wakeupTimeIsSet && activeDay.sleepProfile.bedTimeIsSet ) {
+    if (activeDay.sleepProfile.wakeupTimeIsSet && activeDay.sleepProfile.bedTimeIsSet) {
       awakeStartTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTime), 30, "DOWN");
-      awakeEndTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedtime), 30, "UP");
+      awakeEndTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedTime), 30, "UP");
     }
     this._wakeCycleZoom = {
       icon: faSun,
@@ -56,7 +56,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       // console.log("Clock passed the minute")
       this._currentTime = moment();
       // console.log("this._currentTime =  ", this._currentTime.format("hh:mm:ss a"))
-      if(this.daybookService.activeDayIsToday){
+      if (this.daybookService.activeDayIsToday) {
         this.buildZoomButtons();
       }
     });
@@ -86,24 +86,17 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     let wakeupTime: moment.Moment;
     let bedTime: moment.Moment;
 
-    if (activeDayChanged.sleepProfile.wakeupTimeIsSet && activeDayChanged.sleepProfile.bedTimeIsSet) {
+    if (activeDayChanged.sleepProfile.wakeupTimeIsSet) {
       wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTime), 30, "DOWN");
-      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedtime), 30, "UP");
-      if (wakeupTime.minute() == moment(activeDayChanged.sleepProfile.wakeupTime).minute() &&
-        wakeupTime.hour() == moment(activeDayChanged.sleepProfile.wakeupTime).hour()) {
-        wakeupTime = moment(wakeupTime).subtract(30, "minutes");
-      }
-    } else {
-      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTime), 30, "DOWN");
-      if(wakeupTime.isSame(activeDayChanged.sleepProfile.wakeupTime)){
-        /* Due to the way that the round function works, it will round 30 down to 30 , 
-           but will round 30 up to 60, so for the case of rounding down, we need to add the 30 minute buffer here, 
-           but we do not need to add the 30 minute buffer for the bedtime.
-        */
-        wakeupTime = moment(wakeupTime).subtract(30, "minutes");
-      }
-      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedtime), 30, "UP");
+    }else{
+      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.defaultWakeupTime), 30, "DOWN");
     }
+    if(activeDayChanged.sleepProfile.bedTimeIsSet){
+      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedTime), 30, "UP");
+    }else{
+      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.defaultBedTime), 30, "UP");
+    }
+    wakeupTime = moment(wakeupTime).subtract(30, "minutes");
 
     this._wakeCycleZoom = {
       icon: faSun,
@@ -134,7 +127,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   private _eightHourZoom: TimelogZoomControl;
   private _listZoom: TimelogZoomControl;
   private _customZoom: TimelogZoomControl;
-  
+
 
 
   private buildZoomButtons() {
@@ -201,9 +194,9 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       changedValue = this._customZoom;
     } else if (listZoomActive) {
       changedValue = this._listZoom;
-    }else if(wakeZoomActive){
+    } else if (wakeZoomActive) {
       changedValue = this._wakeCycleZoom;
-    }else{
+    } else {
       console.log("Error with zoom")
     }
 

@@ -237,7 +237,7 @@ export class SleepProfileWidgetComponent implements OnInit {
     sleepProfile.bedtimeISO = this._bedTime.toISOString();
     sleepProfile.bedtimeUtcOffsetMinutes = this._bedTime.utcOffset();
 
-    this.daybookService.activeDay.sleepProfile.updateSleepProfile(sleepProfile);
+    this.daybookService.activeDay.sleepProfile.updateFullSleepProfile(sleepProfile);
     this.reInitiate();
   }
 
