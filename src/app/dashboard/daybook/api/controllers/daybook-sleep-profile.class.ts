@@ -2,6 +2,7 @@ import { DaybookDayItemSleepProfileData } from "../data-items/daybook-day-item-s
 import * as moment from 'moment';
 import { Observable, Subject } from "rxjs";
 import { SleepQuality } from "../../daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum";
+import { DaybookDayItemHttpShape } from "../daybook-day-item-http-shape.interface";
 
 export class DaybookSleepProfile{
 
@@ -12,9 +13,9 @@ export class DaybookSleepProfile{
     static readonly defaultFallAsleepTime: moment.Moment = moment(DaybookSleepProfile.defaultBedtime);
 
 
-    constructor(sleepProfile: DaybookDayItemSleepProfileData, dateYYYYMMDD: string){
-        this._sleepProfileData = sleepProfile;
-        this._dateYYYYMMDD = dateYYYYMMDD;
+    constructor(httpShape: DaybookDayItemHttpShape){
+        this._sleepProfileData = httpShape.sleepProfile;
+        this._dateYYYYMMDD = httpShape.dateYYYYMMDD;
     }
 
     public updateSleepProfile(profileData: DaybookDayItemSleepProfileData){

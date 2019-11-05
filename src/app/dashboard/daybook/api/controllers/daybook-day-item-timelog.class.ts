@@ -8,23 +8,30 @@ export class DaybookDayItemTimelog {
 
     constructor(httpShape: DaybookDayItemHttpShape) {
         let timelogEntries: TimelogEntryItem[] = [];
-        httpShape.daybookTimelogEntryDataItems.forEach((item)=>{
-            let timelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(item.startTimeISO), moment(item.endTimeISO));
-            timelogEntry.note = item.note;
-            item.timelogEntryActivities.forEach((activity)=>{
-                timelogEntry.timelogEntryActivities.push(activity);
-            });
-            timelogEntries.push(timelogEntry);
-        });
+        console.log("Constructing timelog: " , httpShape)
+        if (httpShape.daybookTimelogEntryDataItems.length > 0) {
+            httpShape.daybookTimelogEntryDataItems.forEach((item) => {
+                console.log("Daybook item: ", item);
+                let timelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(item.startTimeISO), moment(item.endTimeISO));
+                timelogEntry.note = item.note;
+                item.timelogEntryActivities.forEach((activity) => {
+                    timelogEntry.timelogEntryActivities.push(activity);
+                });
 
-        
+
+                timelogEntries.push(timelogEntry);
+            });
+        }
+
+
+
         this._timelogEntryItems = this.sortTimelogEntries(timelogEntries);
         this._timeDelineators = httpShape.timeDelineators;
     }
 
 
-    public get lastTimelogEntryItemTime(): moment.Moment { 
-        return moment(this._timelogEntryItems[this._timelogEntryItems.length-1].endTime);
+    public get lastTimelogEntryItemTime(): moment.Moment {
+        return moment(this._timelogEntryItems[this._timelogEntryItems.length - 1].endTime);
     }
 
     private _timeDelineators: string[] = [];
@@ -33,14 +40,14 @@ export class DaybookDayItemTimelog {
     public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; };
     public get timeDelineators(): string[] { return this._timeDelineators; }
 
-    private _timelogUpdated$: Subject<{timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[]}> = new Subject();
-    public get timelogUpdated$(): Observable<any> { return this._timelogUpdated$.asObservable(); };
-    private sendUpdate(){
+    private _timelogUpdated$: Subject<{ timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] }> = new Subject();
+    public get timelogUpdated$(): Observable<{ timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] }> { return this._timelogUpdated$.asObservable(); };
+    private sendUpdate() {
         this._timelogUpdated$.next(this.exportDataItems());
     }
-    private exportDataItems(): {timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[]} { 
-        let exportObject: {timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[]} = {
-            timelogDataItems: this.sortTimelogEntries(this.timelogEntryItems).map((entry)=>{ return entry.dataEntryItem; }),
+    private exportDataItems(): { timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] } {
+        let exportObject: { timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] } = {
+            timelogDataItems: this.sortTimelogEntries(this.timelogEntryItems).map((entry) => { return entry.dataEntryItem; }),
             delineators: this.timeDelineators,
         }
         return exportObject;

@@ -1,12 +1,9 @@
 
 import { DaybookDayItemHttpShape } from "./daybook-day-item-http-shape.interface";
 import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
-import { DaybookActivityDataItem } from "./data-items/daybook-activity-data-item.interface";
 import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
-import { Subject, Observable, scheduled, timer, Subscription } from "rxjs";
-import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
+import { Subject, Observable, Subscription } from "rxjs";
 import * as moment from 'moment';
-import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
 import { DaybookDayItemSleepProfileData } from "./data-items/daybook-day-item-sleep-profile-data.interface";
 import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
 import { ActivityTree } from "../../activities/api/activity-tree.class";
@@ -14,33 +11,32 @@ import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } 
 import { DaybookDayItemTimelog } from "./controllers/daybook-day-item-timelog.class";
 import blankDaybookItemHttpShape from "./data-items/blank-http-shape";
 import { DaybookSleepProfile } from "./controllers/daybook-sleep-profile.class";
-// import { DaybookTimeReferencer } from "./daybook-time-referencer.class";
 
 
 export class DaybookDayItem {
 
     constructor(dateYYYYMMDD: string) {
-        // console.log("Do we even need sleep Cycle data items, or do we just use the sleep profile, or... ? What is the difference?")
         // console.log("CONSTRUCTING DAYBOOK ITEM: " + dateYYYYMMDD)
-        let shape: DaybookDayItemHttpShape = blankDaybookItemHttpShape;
+        let shape: DaybookDayItemHttpShape = Object.assign({}, blankDaybookItemHttpShape);
         shape.dateYYYYMMDD = dateYYYYMMDD;
-        this.setHttpShape(shape);
+        this._httpShape = shape;
     }
     public setHttpShape(shape: DaybookDayItemHttpShape) {
-        this._httpShape = shape;
+        this._httpShape = Object.assign({}, shape);
         this._rebuild();
     }
     private _rebuild() {
         this._timelog = new DaybookDayItemTimelog(this.httpShape);
-        this._sleepProfile = new DaybookSleepProfile(this.httpShape.sleepProfile, this.dateYYYYMMDD);
+        this._sleepProfile = new DaybookSleepProfile(this.httpShape);
         this._updateDataChangedSubscriptions();
     }
     private _dataChangedSubscriptions: Subscription[] = [];
     private _updateDataChangedSubscriptions() {
         this._dataChangedSubscriptions.forEach((sub) => { sub.unsubscribe(); });
         this._dataChangedSubscriptions = [];
-        this._dataChangedSubscriptions.push(this._timelog.timelogUpdated$.subscribe((timelogDataEntries: DaybookTimelogEntryDataItem[]) => {
-            this._httpShape.daybookTimelogEntryDataItems = timelogDataEntries;
+        this._dataChangedSubscriptions.push(this._timelog.timelogUpdated$.subscribe((data: { timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] }) => {
+            this._httpShape.daybookTimelogEntryDataItems = data.timelogDataItems;
+            this._httpShape.timeDelineators = data.delineators
             this.dataChanged();
         }));
         this._dataChangedSubscriptions.push(this._sleepProfile.sleepProfileUpdated$.subscribe((sleepProfileData: DaybookDayItemSleepProfileData) => {

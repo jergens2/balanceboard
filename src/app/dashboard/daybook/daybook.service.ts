@@ -25,10 +25,6 @@ export class DaybookService implements ServiceAuthenticates {
     private dayTemplatesService: DayTemplatesService,
   ) { }
 
-  public killKillKill() {
-    console.log(" Kill kill kill ")
-    this.daybookHttpRequestService.killKillKill();
-  }
 
   private _authStatus: AuthStatus;
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
@@ -42,8 +38,11 @@ export class DaybookService implements ServiceAuthenticates {
       this.startANewDay(moment().format("YYYY-MM-DD"));
     }
     this._allSubscriptions.push(this.daybookHttpRequestService.daybookDayItems$.subscribe((daybookDayItems: DaybookDayItem[]) => {
-      // console.log("Daybook day items updated")
+      console.log("Daybook day items updated: ")
       if (daybookDayItems.length > 0) {
+        daybookDayItems.forEach((item)=>{
+          console.log("   " + item.dateYYYYMMDD);
+        })
         this._daybookDayItems$.next(daybookDayItems);
         this.initiateClock();
       }
@@ -163,6 +162,7 @@ export class DaybookService implements ServiceAuthenticates {
     if (foundDaybookDayItem) {
       return foundDaybookDayItem;
     } else {
+      console.log("Could not find daybook day item: " + dateYYYYMMDD)
       return null;
     }
   }
@@ -170,33 +170,40 @@ export class DaybookService implements ServiceAuthenticates {
   private startANewDay(newDateYYYYMMDD: string): DaybookDayItem {
     console.log("***** Daybook:  Starting a new day: ", newDateYYYYMMDD);
     let newDay: DaybookDayItem = this.buildNewDaybookDayItem(newDateYYYYMMDD);
-    let saveDays: DaybookDayItem[] = [newDay];
-    let previousDaybookDayItem: DaybookDayItem = this.getDaybookDayItemByDate(moment(newDateYYYYMMDD).subtract(1, "day").format("YYYY-MM-DD"));
-    let followingDaybookDayItem: DaybookDayItem = this.getDaybookDayItemByDate(moment(newDateYYYYMMDD).add(1, "day").format("YYYY-MM-DD"));
+    let saveDays: DaybookDayItem[] = [];
+
+    const previousDateYYYYMMDD: string = moment(newDateYYYYMMDD).subtract(1, "day").format("YYYY-MM-DD");
+    const followingDateYYYYMMDD: string = moment(newDateYYYYMMDD).add(1, "day").format("YYYY-MM-DD");
+
+    // console.log("Saving new days: ")
+    // console.log("   " + previousDateYYYYMMDD)
+    // console.log("   " + newDateYYYYMMDD)
+    // console.log("   " + followingDateYYYYMMDD)
+
+    let previousDaybookDayItem: DaybookDayItem = this.getDaybookDayItemByDate(previousDateYYYYMMDD);
+    let followingDaybookDayItem: DaybookDayItem = this.getDaybookDayItemByDate(followingDateYYYYMMDD);
+
     if (!previousDaybookDayItem) {
-      previousDaybookDayItem = this.buildNewDaybookDayItem(moment(newDateYYYYMMDD).subtract(1, "day").format("YYYY-MM-DD"));
+      previousDaybookDayItem = this.buildNewDaybookDayItem(previousDateYYYYMMDD);
+      // console.log("pushing", previousDaybookDayItem)
       saveDays.push(previousDaybookDayItem);
+      // newDay.previousDay = previousDaybookDayItem;
     }
-    newDay.previousDay = previousDaybookDayItem;
-
+    
+    saveDays.push(newDay);
     if (!followingDaybookDayItem) {
-      followingDaybookDayItem = this.buildNewDaybookDayItem(moment(newDateYYYYMMDD).add(1, "day").format("YYYY-MM-DD"));
+      followingDaybookDayItem = this.buildNewDaybookDayItem(followingDateYYYYMMDD);
+      // console.log("pushing", followingDaybookDayItem)
       saveDays.push(followingDaybookDayItem);
+      // console.log("savedays: ", saveDays);
     }
-    newDay.followingDay = followingDaybookDayItem;
+    
 
-    // let saveDays: DaybookDayItem[] = [];
-    // let newDay: DaybookDayItem = this.buildNewDaybookDayItem(moment(newDateYYYYMMDD).startOf("year").format("YYYY-MM-DD"));
+    // console.log("Saving multiple days: " )
+    // saveDays.forEach((day)=>{
+    //   console.log("   " + day.dateYYYYMMDD + "(((" + day.httpShape.dateYYYYMMDD );
+    // })
 
-    // let currentDate = moment(newDateYYYYMMDD).startOf("year");
-
-
-    // let endOfYear = moment(newDateYYYYMMDD).endOf("year");
-    // while(currentDate.isBefore(endOfYear)){
-    //   saveDays.push(this.buildNewDaybookDayItem(currentDate.format("YYYY-MM-DD")));
-    //   currentDate = moment(currentDate.add(1, "day"));
-    // }
-    // console.log("Saving multiple days:, ", saveDays.length);
 
     this.daybookHttpRequestService.saveMultipleDayItems(saveDays);
     // this.daybookHttpRequestService.saveDaybookDayItem(newDay);
@@ -204,34 +211,13 @@ export class DaybookService implements ServiceAuthenticates {
   }
 
   private buildNewDaybookDayItem(dateYYYYMMDD: string): DaybookDayItem {
-    // console.log("Building a new Daybook item: " , dateYYYYMMDD);
+    console.log("Building a new Daybook item: " , dateYYYYMMDD);
     let daybookDayItem: DaybookDayItem = new DaybookDayItem(dateYYYYMMDD);
     // daybookDayItem.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";
     // daybookDayItem.dayStructureDataItems = []; //this.scheduleRotationService.getDayStructureItemsForDate(dateYYYYMMDD);
     // daybookDayItem.sleepStructureDataItems = []; //this.scheduleRotationService.getSleepCycleItemsForDate(dateYYYYMMDD);
     daybookDayItem.setScheduledActivityItems(this.activitiesService.activitiesTree.buildScheduledActivityItemsOnDate(dateYYYYMMDD), this.activitiesService.activitiesTree);
-
-
-    // console.log("Structure items: ", daybookDayItem.dayStructureDataItems)
-
-
-    // daybookDayItem.dayTemplateId = this.scheduleRotationService.dayTemplateForD1ate(newDateYYYYMMDD).id;
-    // console.log("daybookDayItem templateId", daybookDayItem.dayTemplateId);
-
-    // let dailyTaskListItems: DailyTaskListDataItem[] = this.recurringTaskService.generateDailyTaskListItemsForDate(newDateYYYYMMDD);
-    // if(dailyTaskListItems.length == 0){
-    //   console.log("Setting and saving default task items");
-    //   this.recurringTaskService.setAndSaveDefaultTaskItems$().subscribe((taskItems)=>{
-    //     console.log("Forkjoin subscribed: new task items saved", taskItems);
-    //     daybookDayItem.dailyTaskListDataItems = taskItems;
-    //   })
-
-    // }else if(dailyTaskListItems.length > 1){
-    //   daybookDayItem.dailyTaskListDataItems = dailyTaskListItems;
-    // }
-    // console.log("daybook item built: " , daybookDayItem.dateYYYYMMDD)
     return daybookDayItem;
-
   }
 
 

@@ -16,18 +16,6 @@ import { ActivityCategoryDefinitionService } from '../../activities/api/activity
 })
 export class DaybookHttpRequestService implements ServiceAuthenticates {
 
-  public killKillKill(){
-    const getUrl = serverUrl + "/api/daybook-day-item/kill-kill-kill";
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'  
-      })
-    };
-    this.httpClient.delete<{ message: string, data: any }>(getUrl, httpOptions).subscribe((response)=>{
-      console.log("Kill Kill Kill is complete");
-    })
-  }
 
   constructor(private httpClient: HttpClient, private activitiesService: ActivityCategoryDefinitionService) { }
   private _authStatus: AuthStatus = null;
@@ -78,8 +66,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
           }
         }
         daybookDayItems = this.linkDaybookItems(daybookDayItems);
+        this.updateChangeSubscription(daybookDayItems);
         this._daybookDayItems$.next(daybookDayItems);
-        this.updateChangeSubscription();
       });
   }
 
@@ -101,8 +89,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
         daybookDayItems.push(daybookDayItem);
         daybookDayItems = this.linkDaybookItems(daybookDayItems);
+        this.updateChangeSubscription(daybookDayItems);
         this._daybookDayItems$.next(daybookDayItems);
-        this.updateChangeSubscription();
       });
     // return daybookDayItem;
   }
@@ -111,11 +99,13 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     // console.log(daybookDayItems);
     daybookDayItems.forEach((item) => { item.userId = this._authStatus.user.id; });
     forkJoin(daybookDayItems.map<Observable<DaybookDayItem>>((item: DaybookDayItem) => { return this.saveDaybookDayItem$(item) })).subscribe((savedItems: DaybookDayItem[]) => {
+      console.log("Forkjoin complete" + savedItems.length, savedItems)
       let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
       daybookDayItems = daybookDayItems.concat(savedItems);
       daybookDayItems = this.linkDaybookItems(daybookDayItems);
+      this.updateChangeSubscription(daybookDayItems);
       this._daybookDayItems$.next(daybookDayItems);
-      this.updateChangeSubscription();
+      
     })
 
 
@@ -150,8 +140,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
         let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
         daybookDayItems.splice(daybookDayItems.indexOf(daybookDayItem), 1);
         daybookDayItems = this.linkDaybookItems(daybookDayItems);
+        this.updateChangeSubscription(daybookDayItems);
         this._daybookDayItems$.next(daybookDayItems);
-        this.updateChangeSubscription();
       });
   }
 
@@ -174,18 +164,18 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
       }))
       .subscribe((daybookDayItems: DaybookDayItem[]) => {
         daybookDayItems = this.linkDaybookItems(daybookDayItems);
+        this.updateChangeSubscription(daybookDayItems);
         this._daybookDayItems$.next(daybookDayItems);
-        this.updateChangeSubscription();
         this._loginComplete$.next(true);
       });
   }
 
 
   private _changeSubscriptions: Subscription[] = [];
-  private updateChangeSubscription() {
+  private updateChangeSubscription(daybookDayItems: DaybookDayItem[]) {
     // console.log("Updating subscriptiuo")
     this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
-    this._daybookDayItems$.getValue().forEach((daybookDayItem: DaybookDayItem) => {
+    daybookDayItems.forEach((daybookDayItem: DaybookDayItem) => {
       this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent) => {
         // console.log("Method is disabled:  not updating the DaybookDayItem.");
         this.updateDaybookDayItem(daybookDayItem);
