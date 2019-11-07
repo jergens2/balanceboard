@@ -45,6 +45,27 @@ export class DaybookTimeReferencer {
 
     public get sleepStatusTimes(): { start: moment.Moment, end: moment.Moment, status: "AWAKE" | "SLEEP" }[] { return this._sleepStatusTimes; }
 
+    public getNewTimelogEntryStartTime() {
+        let lastActivityTime = this._getLastActivityTime();
+        let now: moment.Moment = moment();
+        let wakeupTime: moment.Moment = this.determineWakeupTime();
+
+        if (now.isBefore(wakeupTime)) {
+            return lastActivityTime;
+        }else{
+            if(!this._sleepProfile.wakeupTimeIsSet){
+                return wakeupTime;
+            }else{
+                if(lastActivityTime.isSameOrAfter(wakeupTime)){
+                    return lastActivityTime;
+                }else{
+                    return wakeupTime;
+                }
+            }
+        }
+    }
+
+
     public addPreviousDateInfo(prevTimelog: DaybookDayItemTimelog, prevSleepProfile: DaybookSleepProfile) {
         this._previousTimelog = prevTimelog;
         this._previousSleepProfile = prevSleepProfile;
@@ -59,10 +80,10 @@ export class DaybookTimeReferencer {
     private _dataChanged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     public get dataChanged$(): Observable<boolean> { return this._dataChanged$.asObservable(); }
 
-    public childDataChanged() {
-        console.log("Child data changed.  NExting --> ")
-        this._dataChanged$.next(true);
-    }
+    // public childDataChanged() {
+    //     console.log("Child data changed.  NExting --> ")
+    //     this._dataChanged$.next(true);
+    // }
 
     public sleepStateAtTime(timeToCheck: moment.Moment): "AWAKE" | "SLEEP" {
         let foundStatus = this._sleepStatusTimes.find((section) => {
@@ -77,57 +98,81 @@ export class DaybookTimeReferencer {
     }
 
 
+    private _thisDayWakeupTime: moment.Moment;
+    private _thisDaySleepStartTime: moment.Moment;
+    private _thisDayBedTime: moment.Moment;
+    private _previousDayWakeupTime: moment.Moment;
+    private _previousDayStartSleepTime: moment.Moment;
+    private _followingDayWakeupTime: moment.Moment;
+    private _followingDayBedTime: moment.Moment;
+
+    public get thisDayWakeupTime(): moment.Moment { return this._thisDayWakeupTime; }
+    public get thisDaySleepStartTime(): moment.Moment { return this._thisDaySleepStartTime; }
+    public get thisDayBedTime(): moment.Moment { return this._thisDayBedTime; }
+    public get previousDayWakeupTime(): moment.Moment { return this._previousDayWakeupTime; }
+    public get previousDayStartSleepTime(): moment.Moment { return this._previousDayStartSleepTime; }
+    public get followingDayWakeupTime(): moment.Moment { return this._followingDayWakeupTime; }
+    public get followingDayBedTime(): moment.Moment { return this._followingDayBedTime; }
+
+    public get startOfPreviousDay(): moment.Moment { return moment(this._dateYYYYMMDD).startOf("day").subtract(24, "hours"); }
+    public get startOfThisDay(): moment.Moment { return moment(this._dateYYYYMMDD).startOf("day"); }
+    public get startOfNextDay(): moment.Moment { return moment(this._dateYYYYMMDD).startOf("day").add(24, "hours"); }
+    public get endOfNextDay(): moment.Moment { return moment(this._dateYYYYMMDD).startOf("day").add(48, "hours"); }
 
     private _recalculate() {
-        console.log(this._dateYYYYMMDD + "  Time referencer.recalculating()")
+        // console.log(this._dateYYYYMMDD + "  Time referencer.recalculating()")
         let sleepStatusTimes: { start: moment.Moment, end: moment.Moment, status: "AWAKE" | "SLEEP" }[] = [];
 
-        const startOfPreviousDay: moment.Moment = moment(this._dateYYYYMMDD).startOf("day").subtract(24, "hours");
-        const startOfDay: moment.Moment = moment(this._dateYYYYMMDD).startOf("day");
-        const startOfNextDay: moment.Moment = moment(this._dateYYYYMMDD).startOf("day").add(24, "hours");
-        const endOfNextDay: moment.Moment = moment(this._dateYYYYMMDD).startOf("day").add(48, "hours");
+        this._thisDayWakeupTime = this.determineWakeupTime();
+        this._thisDaySleepStartTime = this._determineThisDaySleepStartTime(this.thisDayWakeupTime);
+        this._thisDayBedTime = this._determineThisDayBedTime(this.thisDayWakeupTime);
+        this._previousDayWakeupTime = this._determinePreviousWakeupTime(this.thisDayWakeupTime);
+        this._previousDayStartSleepTime = this._determinePreviousStartSleepTime(this.thisDaySleepStartTime);
+        this._followingDayWakeupTime = this._determineNextWakeupTime(this.thisDayWakeupTime);
+        this._followingDayBedTime = this._determineNextBedTime(this.thisDayBedTime);
 
-        const thisDayWakeupTime: moment.Moment = this._determineWakeupTime();
-        const thisDaySleepStartTime: moment.Moment = this._determineThisDaySleepStartTime(thisDayWakeupTime);
-        const thisDayBedTime: moment.Moment = this._determineThisDayBedTime(thisDayWakeupTime);
-        const previousWakeupTime: moment.Moment = this._determinePreviousWakeupTime(thisDayWakeupTime);
-        const previousStartSleepTime: moment.Moment = this._determinePreviousStartSleepTime(thisDaySleepStartTime);
-        const nextWakeupTime: moment.Moment = this._determineNextWakeupTime(thisDayWakeupTime);
-        const nextBedTime: moment.Moment = this._determineNextBedTime(thisDayBedTime);
-
-        if(previousStartSleepTime.isSameOrBefore(startOfPreviousDay)){
-            sleepStatusTimes.push({ start: startOfPreviousDay, end: previousWakeupTime, status: "SLEEP" });
-        }else{
-            sleepStatusTimes.push({ start: startOfPreviousDay, end: previousStartSleepTime, status: "AWAKE" });
-            sleepStatusTimes.push({ start: previousStartSleepTime, end: previousWakeupTime, status: "SLEEP" });
+        if (this.previousDayStartSleepTime.isSameOrBefore(this.startOfPreviousDay)) {
+            sleepStatusTimes.push({ start: this.startOfPreviousDay, end: this.previousDayWakeupTime, status: "SLEEP" });
+        } else {
+            sleepStatusTimes.push({ start: this.startOfPreviousDay, end: this.previousDayStartSleepTime, status: "AWAKE" });
+            sleepStatusTimes.push({ start: this.previousDayStartSleepTime, end: this.previousDayWakeupTime, status: "SLEEP" });
         }
-        sleepStatusTimes.push({ start: previousWakeupTime, end: thisDaySleepStartTime, status: "AWAKE" });
-        sleepStatusTimes.push({ start: thisDaySleepStartTime, end: thisDayWakeupTime, status: "SLEEP" });
-        sleepStatusTimes.push({ start: thisDayWakeupTime, end: thisDayBedTime, status: "AWAKE" });
-        sleepStatusTimes.push({ start: thisDayBedTime, end: nextWakeupTime, status: "SLEEP" });
-        if(nextBedTime.isBefore(endOfNextDay)){
-            sleepStatusTimes.push({ start: nextWakeupTime, end: nextBedTime, status: "AWAKE" });
-            sleepStatusTimes.push({ start: nextBedTime, end: endOfNextDay, status: "SLEEP" });
-        }else{
-            sleepStatusTimes.push({ start: nextWakeupTime, end: nextBedTime, status: "AWAKE" });
+        sleepStatusTimes.push({ start: this.previousDayWakeupTime, end: this.thisDaySleepStartTime, status: "AWAKE" });
+        sleepStatusTimes.push({ start: this.thisDaySleepStartTime, end: this.thisDayWakeupTime, status: "SLEEP" });
+        sleepStatusTimes.push({ start: this.thisDayWakeupTime, end: this.thisDayBedTime, status: "AWAKE" });
+        sleepStatusTimes.push({ start: this.thisDayBedTime, end: this.followingDayWakeupTime, status: "SLEEP" });
+        if (this.followingDayBedTime.isBefore(this.endOfNextDay)) {
+            sleepStatusTimes.push({ start: this.followingDayWakeupTime, end: this.followingDayBedTime, status: "AWAKE" });
+            sleepStatusTimes.push({ start: this.followingDayBedTime, end: this.endOfNextDay, status: "SLEEP" });
+        } else {
+            sleepStatusTimes.push({ start: this.followingDayWakeupTime, end: this.endOfNextDay, status: "AWAKE" });
         }
 
 
-        console.log("Sleep status times: ")
-        sleepStatusTimes.forEach((t) => {
-            console.log("   " + t.start.format("YYYY-MM-DD hh:mm a") + " - " + t.end.format("YYYY-MM-DD hh:mm a") + "  " + t.status);
-        })
+        // console.log("Sleep status times: ")
+        // sleepStatusTimes.forEach((t) => {
+        //     console.log("   " + t.start.format("YYYY-MM-DD hh:mm a") + " - " + t.end.format("YYYY-MM-DD hh:mm a") + "  " + t.status);
+        // })
 
 
         this._sleepStatusTimes = sleepStatusTimes;
+        this._updateChangeSubscriptions();
     }
 
+    private _getLastActivityTime(): moment.Moment {
+        if (this._timelog.lastTimelogEntryItemTime.isSame(this.startOfThisDay)) {
+            if (!this._previousTimelog.lastTimelogEntryItemTime.isAfter(this.startOfPreviousDay)) {
+                return this._previousTimelog.lastTimelogEntryItemTime;
+            }
+        }
+        return this._timelog.lastTimelogEntryItemTime;
+    }
 
 
     /**
      * Get the wakeup time.  This time acts as the seed for calculating the 72-hour window
      */
-    private _determineWakeupTime(): moment.Moment {
+    public determineWakeupTime(): moment.Moment {
         const startOfDay: moment.Moment = moment(this._dateYYYYMMDD).startOf("day");
         let previousTime: moment.Moment;
         let wakeupTime: moment.Moment;
@@ -170,6 +215,7 @@ export class DaybookTimeReferencer {
 
         return wakeupTime;
     }
+
     private _determineThisDaySleepStartTime(thisDayWakeupTime: moment.Moment): moment.Moment {
         if (this._sleepProfile.previousFallAsleepTimeIsSet) {
             return this._sleepProfile.previousFallAsleepTime;
@@ -234,16 +280,39 @@ export class DaybookTimeReferencer {
 
 
         this._changeSubscriptions.push(this._timelog.timelogUpdated$.subscribe((data: { timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] }) => {
-
+            this._dataChanged$.next(true);
         }));
         this._changeSubscriptions.push(this._sleepProfile.sleepProfileUpdated$.subscribe((sleepProfileData: DaybookDayItemSleepProfileData) => {
-            this._updateSleepProfileChanges(sleepProfileData)
+            this._updateThisSleepProfileChanges()
         }));
 
     }
 
-    private _updateSleepProfileChanges(sleepProfileData: DaybookDayItemSleepProfileData) {
+    private _updateThisSleepProfileChanges() {
+        console.log("Updating this sleep profile changes, then Nexting ->")
+        if (this._sleepProfile.previousFallAsleepTimeIsSet) {
+            if (!this._previousSleepProfile.fallAsleepTimeIsSet) {
+                this._previousSleepProfile.setFallAsleepTime(moment(this._sleepProfile.previousFallAsleepTime));
+                this._previousDataChanged = true;
+            } else if (!this._previousSleepProfile.fallAsleepTime.isSame(this._sleepProfile.previousFallAsleepTime)) {
+                this._previousSleepProfile.setFallAsleepTime(moment(this._sleepProfile.previousFallAsleepTime));
+                this._previousDataChanged = true;
+            } else {
 
+            }
+        }
+        if (this._sleepProfile.fallAsleepTimeIsSet) {
+            if (!this._followingSleepProfile.previousFallAsleepTimeIsSet) {
+                this._followingSleepProfile.setPreviousFallAsleepTime(moment(this._sleepProfile.fallAsleepTime));
+                this._followingDataChanged = true;
+            } else if (!this._followingSleepProfile.previousFallAsleepTime.isSame(this._sleepProfile.fallAsleepTime)) {
+                this._followingSleepProfile.setPreviousFallAsleepTime(moment(this._sleepProfile.fallAsleepTime));
+                this._followingDataChanged = true;
+            } else {
+
+            }
+        }
+        this._dataChanged$.next(true);
     }
 
 

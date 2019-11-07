@@ -18,7 +18,7 @@ export class DaybookSleepProfile {
 
 
     private _sleepProfileUpdated$: Subject<DaybookDayItemSleepProfileData> = new Subject();
-    private _saveChanges() { this._sleepProfileUpdated$.next(this.sleepProfileData); }
+    public saveChanges() { this._sleepProfileUpdated$.next(this.sleepProfileData); }
     public get sleepProfileUpdated$(): Observable<DaybookDayItemSleepProfileData> { return this._sleepProfileUpdated$.asObservable(); };
 
 
@@ -176,7 +176,6 @@ export class DaybookSleepProfile {
         this._sleepProfileData.wakeupTimeISO = this._wakeupTime.toISOString();
         this._sleepProfileData.wakeupTimeUtcOffsetMinutes = this._wakeupTime.utcOffset();
         this._recalculate();
-        this._saveChanges();
     }
 
     public setBedTime(bedTime: moment.Moment) {
@@ -185,7 +184,6 @@ export class DaybookSleepProfile {
         this._sleepProfileData.bedtimeISO = this._bedTime.toISOString();
         this._sleepProfileData.bedtimeUtcOffsetMinutes = this._bedTime.utcOffset();
         this._recalculate();
-        this._saveChanges();
     }
     public setFallAsleepTime(fallAsleep: moment.Moment) {
         this._fallAsleepTime = moment(fallAsleep);
@@ -193,16 +191,14 @@ export class DaybookSleepProfile {
         this._sleepProfileData.fallAsleepTimeISO = this._fallAsleepTime.toISOString();
         this._sleepProfileData.fallAsleepTimeUtcOffsetMinutes = this._fallAsleepTime.utcOffset();
         this._recalculate();
-        this._saveChanges();
     }
     public setSleepQuality(quality: SleepQuality) {
         this._sleepProfileData.sleepQuality = quality;
-        this._saveChanges();
+
     }
     public updateFullSleepProfile(profileData: DaybookDayItemSleepProfileData) {
         this._sleepProfileData = profileData;
         this._setProfile();
-        this._saveChanges();
     }
 
     private _setProfile() {

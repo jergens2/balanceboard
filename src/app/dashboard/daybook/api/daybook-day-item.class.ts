@@ -75,7 +75,6 @@ export class DaybookDayItem {
     public set previousDay(previousDay: DaybookDayItem) { 
         if(previousDay){
             this._previousDay = previousDay; 
-            console.log("previous day set")
             this._timeReferencer.addPreviousDateInfo(this.previousDay.timelog, this.previousDay.sleepProfile);
         }
         
@@ -83,7 +82,6 @@ export class DaybookDayItem {
     public set followingDay(followingDay: DaybookDayItem) { 
         if(followingDay){
             this._followingDay = followingDay;
-            console.log("following day set") 
             this._timeReferencer.addFollowingDateInfo(this.followingDay.timelog, this.followingDay.sleepProfile);
         }
         
@@ -152,29 +150,6 @@ export class DaybookDayItem {
 
 
 
-
-
-    public getMostRecentActionTime(currentTime?: moment.Moment): moment.Moment {
-        let lastActionTime: moment.Moment = moment(this.dateYYYYMMDD).startOf("day");
-
-        // for (let i = 0; i < 24; i ++){
-        //     console.log("Time: " +moment(lastActionTime).hour(i).format("YYYY-MM-DD hh:mm a"))
-        //     let thning = this.sleepProfile.isSleepOrAwakeAtTime(moment(lastActionTime).hour(i));
-        //     console.log("thing: ",thning)
-        // }
-
-
-        // if(this.previousDay){
-        //     this.previousDay.sleepProfile
-
-        // }else if(!this.previousDay){
-
-
-        // }
-
-
-        return lastActionTime;
-    }
 
 
 

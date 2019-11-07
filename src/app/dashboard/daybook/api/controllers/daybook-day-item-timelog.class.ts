@@ -172,7 +172,7 @@ export class DaybookDayItemTimelog {
             }
         }
 
-        console.log(" Merged activity times : ", mergedActivityTimes) 
+        // console.log(" Merged activity times : ", mergedActivityTimes) 
         // mergedActivityTimes.forEach((m)=>{
         //     console.log("  Merged:  " + m.start.format("YYYY-MM-DD hh:mm a") + " - " + m.end.format("YYYY-MM-DD hh:mm a") + " isActive: " + m.isActive  );
         // })

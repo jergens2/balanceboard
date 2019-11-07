@@ -19,16 +19,16 @@ export class TimelogEntryFormComponent implements OnInit {
 
   constructor(private toolsService: ToolsService, private daybookService: DaybookService) { }
 
-  @Input() public set entryItem(entryItem: TimelogEntryItem){
-    if(entryItem){
+  @Input() public set entryItem(entryItem: TimelogEntryItem) {
+    if (entryItem) {
       this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime, entryItem.sleepState);
       this._entryItem.isSavedEntry = entryItem.isSavedEntry;
       this._entryItem.timelogEntryActivities = entryItem.timelogEntryActivities;
 
-      
+
       this._dataEntryItem = this._entryItem.dataEntryItem;
       this._activityItems = [];
-      this._entryItem.timelogEntryActivities.forEach((item)=>{
+      this._entryItem.timelogEntryActivities.forEach((item) => {
         this._activityItems.push(item);
       });
 
@@ -41,21 +41,17 @@ export class TimelogEntryFormComponent implements OnInit {
 
   ngOnInit() {
     // console.log("Entry item: ", this.entryItem.startTime.format("hh:mm a") + " -- - -- " + this.entryItem.endTime.format("hh:mm a"));
-    if(!this._entryItem){
-      const wakeupTimeIsSet: boolean = this.daybookService.today.sleepProfile.wakeupTimeIsSet;
-      if(!wakeupTimeIsSet && !this.daybookService.isAwakeAfterMidnight){
-        console.log("no wakeup time;")
-        this._wakeupTimeIsSet = false;
-      }
+    if (!this._entryItem) {
+      this._wakeupTimeIsSet = this.daybookService.today.sleepProfile.wakeupTimeIsSet;
       this.entryItem = this.daybookService.getNewTimelogEntry();
     }
   }
-  
+
   private _entryItem: TimelogEntryItem;
   private _activityItems: TimelogEntryActivity[] = [];
 
   private _dataEntryItem: DaybookTimelogEntryDataItem;
-  public get entryItem(): TimelogEntryItem{ return this._entryItem; };
+  public get entryItem(): TimelogEntryItem { return this._entryItem; };
   public get dataEntryItem(): DaybookTimelogEntryDataItem { return this._dataEntryItem; }
 
 
@@ -66,18 +62,15 @@ export class TimelogEntryFormComponent implements OnInit {
   public get endTimeBoundary(): moment.Moment { return this._endTimeBoundary; }
 
   private _wakeupTimeIsSet: boolean = true;
-  public get wakeupTimeIsSet(): boolean { return this._wakeupTimeIsSet; }; 
+  public get wakeupTimeIsSet(): boolean { return this._wakeupTimeIsSet; };
 
-  public onWakeupTimeChanged(wakeupTime: moment.Moment){
+  public onWakeupTimeChanged(wakeupTime: moment.Moment) {
     // console.log("wakeup time changed: ", wakeupTime.format("hh:mm a"));
-    let sleepProfile: DaybookDayItemSleepProfileData = this.daybookService.activeDay.sleepProfile.sleepProfileData;
-    sleepProfile.wakeupTimeISO = wakeupTime.toISOString();
-    sleepProfile.wakeupTimeUtcOffsetMinutes = wakeupTime.utcOffset();
-    this.daybookService.activeDay.sleepProfile.updateFullSleepProfile(sleepProfile);
-    this._wakeupTimeIsSet = true;
+    this.daybookService.activeDay.sleepProfile.setWakeupTime(wakeupTime);
+    this._wakeupTimeIsSet = this.daybookService.activeDay.sleepProfile.wakeupTimeIsSet;
   }
 
-  private reload(){
+  private reload() {
     this._mode = this.entryItem.isSavedEntry ? "EDIT" : "NEW";
     this._itemState = new ItemState(this.entryItem.timelogEntryActivities);
   }
@@ -91,9 +84,9 @@ export class TimelogEntryFormComponent implements OnInit {
 
   private _modifyingTimes: boolean = false;
   public get modifyingTimes(): boolean { return this._modifyingTimes; };
-  public onClickModifyTimes(){ this._modifyingTimes = true; };
+  public onClickModifyTimes() { this._modifyingTimes = true; };
 
-  public onTimesModified(times: {startTime: moment.Moment, endTime:moment.Moment}){
+  public onTimesModified(times: { startTime: moment.Moment, endTime: moment.Moment }) {
     // console.log("times: ", times);
     this._modifyingTimes = false;
   }
@@ -169,9 +162,9 @@ export class TimelogEntryFormComponent implements OnInit {
   public get confirmDiscard(): boolean { return this._confirmDiscard; };
 
   onClickDelete() {
-    if(this.confirmDelete === false){
+    if (this.confirmDelete === false) {
       this._confirmDelete = true;
-    }else{
+    } else {
       this.daybookService.deleteTimelogEntry(this.entryItem);
       this.toolsService.closeTool();
     }
@@ -190,7 +183,7 @@ export class TimelogEntryFormComponent implements OnInit {
         this.toolsService.closeTool();
       }
     }
-    
+
   }
 
   faEdit = faEdit;

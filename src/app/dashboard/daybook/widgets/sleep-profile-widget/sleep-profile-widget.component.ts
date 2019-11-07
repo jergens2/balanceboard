@@ -11,6 +11,7 @@ import { ItemState } from '../../../../shared/utilities/item-state.class';
 import { DaybookDayItem } from '../../api/daybook-day-item.class';
 import { DaybookDayItemSleepProfileData } from '../../api/data-items/daybook-day-item-sleep-profile-data.interface';
 import { Subscription, timer } from 'rxjs';
+import { DaybookSleepProfile } from '../../api/controllers/daybook-sleep-profile.class';
 
 @Component({
   selector: 'app-sleep-profile-widget',
@@ -76,42 +77,35 @@ export class SleepProfileWidgetComponent implements OnInit {
     this.sleepProfileIsSet = true;
     this._itemState = new ItemState(null);
 
-    let sleepProfile: DaybookDayItemSleepProfileData = this.daybookService.activeDay.sleepProfile.sleepProfileData;
 
-    if(sleepProfile.sleepQuality){
+    let sleepProfile: DaybookSleepProfile = this.daybookService.activeDay.sleepProfile;
+
+    if (sleepProfile.sleepQuality) {
       this._sleepQuality = sleepProfile.sleepQuality;
     }
 
-    if (sleepProfile.wakeupTimeISO) {
-      this._wakeupTime = moment(sleepProfile.wakeupTimeISO);
+    if (sleepProfile.wakeupTimeIsSet) {
+      this._wakeupTime = moment(sleepProfile.wakeupTime);
     } else {
-      this._wakeupTime = moment(this.daybookService.activeDay.dateYYYYMMDD).hour(7).minute(30);
+      this._wakeupTime = this.daybookService.activeDay.timeReferencer.determineWakeupTime();
       this.sleepProfileIsSet = false;
     }
-    this._wakeupTimeMin = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(18).minute(0).second(0).millisecond(0);
-    if (this._wakeupTimeMin.isBefore(this.previousFallAsleepTime)) {
-      this._wakeupTimeMin = moment(this.previousFallAsleepTime);
-    }
+
+    this._wakeupTimeMin = this.daybookService.activeDay.timeReferencer.previousDayStartSleepTime;
 
 
+    this._previousFallAsleepTime = this.daybookService.activeDay.timeReferencer.thisDaySleepStartTime;
+    this._previousFallAsleepTimeMin = this.daybookService.activeDay.timeReferencer.previousDayWakeupTime;
 
-      console.log("Warning:  following line needs correcting");
-      this._previousFallAsleepTime = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(22).minute(30);
-      this.sleepProfileIsSet = false;
+    console.log("Previous fall asleep time: " + this._previousFallAsleepTime.format("YYYY-MM-DD hh:mm a"))
+    console.log("Previous fall asleep time MIN: " + this._previousFallAsleepTimeMin.format("YYYY-MM-DD hh:mm a"))
+    
 
-    if (this.daybookService.activeDay.previousDay.getMostRecentActionTime()) {
-      this._previousFallAsleepTimeMin = moment(this.daybookService.activeDay.previousDay.getMostRecentActionTime());
-      if (this._previousFallAsleepTimeMin.isSameOrAfter(moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).endOf("day"))) {
-        // in this case, it would be after midnight, into this day
-      }
-    }
-
-
-    if (sleepProfile.bedtimeISO) {
-      this._bedTime = moment(sleepProfile.bedtimeISO);
+    if (sleepProfile.bedTimeIsSet) {
+      this._bedTime = moment(sleepProfile.bedTime);
       // console.log("Reinitiate, bedtime: ", this._bedTime.format("YYYY-MM-DD hh:mm a"))
     } else {
-      this._bedTime = moment(this.daybookService.activeDay.dateYYYYMMDD).hour(22).minute(30);
+      this._bedTime = this.daybookService.activeDay.timeReferencer.thisDayBedTime;
       this.sleepProfileIsSet = false;
     }
 
@@ -137,40 +131,40 @@ export class SleepProfileWidgetComponent implements OnInit {
     this.updateTimeUntilBedtime();
     this.updateAwakeForString();
     this.updateIsPastMidnight();
-    
-    if(this.activeDayIsToday){
+
+    if (this.activeDayIsToday) {
       this._timeUntilBedtimeSubscription.unsubscribe();
-      this._timeUntilBedtimeSubscription = timer(0, 60000).subscribe((tick)=>{
+      this._timeUntilBedtimeSubscription = timer(0, 60000).subscribe((tick) => {
         this.updateTimeUntilBedtime();
         this.updateAwakeForString();
         this.updateIsPastMidnight();
       });
-      
+
     }
-    
+
   }
 
-  private updateTimeUntilBedtime(){
+  private updateTimeUntilBedtime() {
     let hoursUntilBedtime: number = moment(this._bedTime).diff(moment(), "hours");
-    if(hoursUntilBedtime > 2){
+    if (hoursUntilBedtime > 2) {
       this._timeUntilBedTime = DurationString.calculateDurationString(moment(), this._bedTime, false, true) + " until bedtime";
-    }else{
+    } else {
       this._timeUntilBedTime = DurationString.calculateDurationString(moment(), this._bedTime, false, false) + " until bedtime";
     }
   }
 
-  private updateAwakeForString(){
+  private updateAwakeForString() {
     let awakeForHours: number = moment().diff(this._wakeupTime, "hours");
-    if(awakeForHours < 2){
+    if (awakeForHours < 2) {
       this._awakeForString = DurationString.calculateDurationString(this._wakeupTime, moment(), false, false);
-    }else{
+    } else {
       this._awakeForString = DurationString.calculateDurationString(this._wakeupTime, moment(), false, true);
     }
   }
 
-  private updateIsPastMidnight(){ 
+  private updateIsPastMidnight() {
     let isPastMidnight: boolean = false;
-    if(this.daybookService.activeDayIsToday){
+    if (this.daybookService.activeDayIsToday) {
       let yesterdayWakeup: string = this.daybookService.activeDay.previousDay.sleepProfile.wakeupTime.toISOString();
       let activeDayWakeup: string = this.daybookService.activeDay.sleepProfile.wakeupTime.toISOString();
       // if(!this.daybookService.activeDay.sleepProfile.wakeupTimeISO)
@@ -269,10 +263,10 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
   private _timeUntilBedTime: string = "";
-  public get timeUntilBedTime(): string{ return this._timeUntilBedTime; }
+  public get timeUntilBedTime(): string { return this._timeUntilBedTime; }
 
   private _awakeForString: string = "";
-  public get awakeForString(): string{ return this._awakeForString; }
+  public get awakeForString(): string { return this._awakeForString; }
 
   public sleepQualityClass(sleepQuality: SleepQuality): string[] {
     let index = this.sleepQualityBeds.indexOf(sleepQuality);
@@ -306,7 +300,7 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
   private _isPastMidnight: boolean = false;
-  public get isPastMidnight(): boolean{ return this._isPastMidnight;  }
+  public get isPastMidnight(): boolean { return this._isPastMidnight; }
 
   public get saveButtonDisabled(): boolean {
     return (this._sleepQuality == null);

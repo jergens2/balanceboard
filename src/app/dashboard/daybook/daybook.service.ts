@@ -262,17 +262,9 @@ export class DaybookService implements ServiceAuthenticates {
    * of the previous relevant start time (e.g. wake up) to now.   
    */
   public getNewTimelogEntry(): TimelogEntryItem {
-    let startTime: moment.Moment = moment(this.today.getMostRecentActionTime(moment()));
+    let startTime: moment.Moment = moment(this.today.timeReferencer.getNewTimelogEntryStartTime());
     let endTime: moment.Moment = moment();
-
-    if (this.isAwakeAfterMidnight) {
-      let yesterdaysLastAction: moment.Moment = this.today.previousDay.getMostRecentActionTime();
-      if (startTime.isSame(moment(this.today.dateYYYYMMDD).startOf("day"))) {
-        startTime = moment(yesterdaysLastAction);
-      }
-    }
-
-    let newTimelogEntry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, "AWAKE");
+    let newTimelogEntry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime);
     return newTimelogEntry;
   }
 
@@ -331,14 +323,7 @@ export class DaybookService implements ServiceAuthenticates {
   }
 
   
-  public get isAwakeAfterMidnight(): boolean { return this._isAwakeAfterMidnight; }
-  private _isAwakeAfterMidnight: boolean = false;
-  private _updateIsPastMidnight() {
-    let isAwakeAfterMidnight: boolean = false;
-    let now = moment(this._clock);
 
-
-  }
 
 
 }
