@@ -94,12 +94,11 @@ export class SleepProfileWidgetComponent implements OnInit {
     }
 
 
-    if (sleepProfile.previousFallAsleepTimeISO) {
-      this._previousFallAsleepTime = moment(sleepProfile.previousFallAsleepTimeISO);
-    } else {
+
+      console.log("Warning:  following line needs correcting");
       this._previousFallAsleepTime = moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).hour(22).minute(30);
       this.sleepProfileIsSet = false;
-    }
+
     if (this.daybookService.activeDay.previousDay.getMostRecentActionTime()) {
       this._previousFallAsleepTimeMin = moment(this.daybookService.activeDay.previousDay.getMostRecentActionTime());
       if (this._previousFallAsleepTimeMin.isSameOrAfter(moment(this.daybookService.activeDay.previousDay.dateYYYYMMDD).endOf("day"))) {
@@ -228,8 +227,8 @@ export class SleepProfileWidgetComponent implements OnInit {
 
     sleepProfile.sleepQuality = this._sleepQuality;
 
-    sleepProfile.previousFallAsleepTimeISO = this._previousFallAsleepTime.toISOString();
-    sleepProfile.previousFallAsleepTimeUtcOffsetMinutes = this._previousFallAsleepTime.utcOffset();
+    // sleepProfile.previousFallAsleepTimeISO = this._previousFallAsleepTime.toISOString();
+    // sleepProfile.previousFallAsleepTimeUtcOffsetMinutes = this._previousFallAsleepTime.utcOffset();
 
     sleepProfile.wakeupTimeISO = this._wakeupTime.toISOString();
     sleepProfile.wakeupTimeUtcOffsetMinutes = this._wakeupTime.utcOffset();

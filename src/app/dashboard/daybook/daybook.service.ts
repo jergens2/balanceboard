@@ -104,9 +104,13 @@ export class DaybookService implements ServiceAuthenticates {
   }
   private updateActiveDay(dateYYYYMMDD: string) {
     let daybookDayItem: DaybookDayItem = this.getDaybookDayItemByDate(dateYYYYMMDD);
+
     if (!daybookDayItem) {
       this._activeDay$.next(this.startANewDay(dateYYYYMMDD));
     } else {
+      if(!daybookDayItem.previousDay || !daybookDayItem.followingDay){
+        daybookDayItem = this.addNewDaybookItems(daybookDayItem);
+      }
       this._activeDay$.next(daybookDayItem);
     }
   }
@@ -122,12 +126,15 @@ export class DaybookService implements ServiceAuthenticates {
     this.clockSubscription = timer(0, 1000).subscribe((second) => {
       this._clock = moment();
       if (this._clock.format("YYYY-MM-DD") != this.today.dateYYYYMMDD) {
-        console.log("Its not the same day.  we passed midnight")
+        console.log("Crossed midnight.");
         this.updateToday(this._clock);
       }
     });
     this.updateToday(this._clock);
   }
+
+
+
 
   private updateToday(time: moment.Moment) {
     let todayYYYYMMDD = moment(time).format("YYYY-MM-DD");
@@ -137,11 +144,13 @@ export class DaybookService implements ServiceAuthenticates {
       // console.log("Updating today: no daybook day item")
       let newDay: DaybookDayItem = this.startANewDay(todayYYYYMMDD);
       this._today$.next(newDay);
-      if (!this.activeDay) {
+      if (activeDayIsToday || !this.activeDay) {
         this._activeDay$.next(newDay)
       }
     } else {
-      // console.log("Updating today: yes daybook day item")
+      if(!daybookDayItem.previousDay || !daybookDayItem.followingDay){
+        daybookDayItem = this.addNewDaybookItems(daybookDayItem);
+      }
       this._today$.next(daybookDayItem);
       if (activeDayIsToday || !this.activeDay) {
         this._activeDay$.next(daybookDayItem);
@@ -163,6 +172,35 @@ export class DaybookService implements ServiceAuthenticates {
     }
   }
 
+  private addNewDaybookItems(daybookDayItem: DaybookDayItem): DaybookDayItem{
+
+    const previousDateYYYYMMDD: string = moment(daybookDayItem.dateYYYYMMDD).subtract(1, "day").format("YYYY-MM-DD");
+    const followingDateYYYYMMDD: string = moment(daybookDayItem.dateYYYYMMDD).add(1, "day").format("YYYY-MM-DD");
+
+    let previousDaybookDayItem: DaybookDayItem;
+    let followingDaybookDayItem: DaybookDayItem;
+
+    let saveDays: DaybookDayItem[] = [];
+
+
+    if(!daybookDayItem.followingDay){
+      followingDaybookDayItem = this.buildNewDaybookDayItem(followingDateYYYYMMDD);
+      daybookDayItem.followingDay = followingDaybookDayItem;
+      saveDays.push(followingDaybookDayItem);
+    }
+
+    if (!daybookDayItem.previousDay) {
+      previousDaybookDayItem = this.buildNewDaybookDayItem(previousDateYYYYMMDD);
+      // console.log("pushing", previousDaybookDayItem)
+      saveDays.push(previousDaybookDayItem);
+      daybookDayItem.previousDay = previousDaybookDayItem;
+    }
+    
+    console.log("Saving new multiple day items");
+    this.daybookHttpRequestService.saveMultipleDayItems(saveDays);
+    return daybookDayItem;
+   }
+
   private startANewDay(newDateYYYYMMDD: string): DaybookDayItem {
     console.log("***** Daybook:  Starting a new day: ", newDateYYYYMMDD);
     let newDay: DaybookDayItem = this.buildNewDaybookDayItem(newDateYYYYMMDD);
@@ -183,7 +221,7 @@ export class DaybookService implements ServiceAuthenticates {
       previousDaybookDayItem = this.buildNewDaybookDayItem(previousDateYYYYMMDD);
       // console.log("pushing", previousDaybookDayItem)
       saveDays.push(previousDaybookDayItem);
-      // newDay.previousDay = previousDaybookDayItem;
+      newDay.previousDay = previousDaybookDayItem;
     }
     
     saveDays.push(newDay);
@@ -192,6 +230,7 @@ export class DaybookService implements ServiceAuthenticates {
       // console.log("pushing", followingDaybookDayItem)
       saveDays.push(followingDaybookDayItem);
       // console.log("savedays: ", saveDays);
+      newDay.followingDay = followingDaybookDayItem;
     }
     
 

@@ -194,9 +194,6 @@ export class WakeupSectionComponent implements OnInit {
 
     console.log("Warning:  the following object is not configured properly, the previous and current fall asleep times are using the same value.")
     let sleepProfile: DaybookDayItemSleepProfileData = {
-      previousFallAsleepTimeISO: this._fallAsleepTime.toISOString(),
-      previousFallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
-
       wakeupTimeISO: this._wakeupTime.toISOString(),
       wakeupTimeUtcOffsetMinutes: this._wakeupTime.utcOffset(),
       sleepQuality: this._sleepQuality,

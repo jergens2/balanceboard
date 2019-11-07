@@ -105,13 +105,32 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
       daybookDayItems = this.linkDaybookItems(daybookDayItems);
       this.updateChangeSubscription(daybookDayItems);
       this._daybookDayItems$.next(daybookDayItems);
-      
+
     })
-
-
   }
+
+  public updateMultipleDayItems(daybookDayItems: DaybookDayItem[]) {
+    forkJoin(daybookDayItems.map<Observable<DaybookDayItem>>((item: DaybookDayItem) => { return this.updateDaybookDayItem$(item) })).subscribe((updatedItems: DaybookDayItem[]) => {
+      console.log("Forkjoin complete" + updatedItems.length, updatedItems)
+      let daybookDayItems: DaybookDayItem[] = this.daybookDayItems;
+
+      updatedItems.forEach((updatedItem)=>{
+        let foundItem: DaybookDayItem = daybookDayItems.find((item)=>{ return item.id === updatedItem.id; });
+        if(foundItem){
+          daybookDayItems.splice(daybookDayItems.indexOf(foundItem), 1, updatedItem);
+        }else{
+          console.log("error after sending update request:  couldn't find item id in original array")
+        }
+      });
+      daybookDayItems = this.linkDaybookItems(daybookDayItems);
+      this.updateChangeSubscription(daybookDayItems);
+      this._daybookDayItems$.next(daybookDayItems);
+
+    })
+  }
+
   private saveDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
-    console.log("Saving daybook day item: ", daybookDayItem.dateYYYYMMDD)
+    console.log(" $ Saving daybook day item: ", daybookDayItem.dateYYYYMMDD)
     const postUrl = serverUrl + "/api/daybook-day-item/create";
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
@@ -121,6 +140,21 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
       })
     };
     // console.log("Notice:  saveDaybookItem() method is disabled (no HTTP request)")
+    return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
+      .pipe<DaybookDayItem>(map((response) => {
+        return this.buildDaybookDayItemFromResponse(response.data as any);
+      }));
+  }
+  public updateDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
+    console.log(" $ updating daybook day item: ", daybookDayItem.dateYYYYMMDD)
+    const postUrl = serverUrl + "/api/daybook-day-item/update";
+    daybookDayItem.userId = this._authStatus.user.id;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+        // 'Authorization': 'my-auth-token'
+      })
+    };
     return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
         return this.buildDaybookDayItemFromResponse(response.data as any);
@@ -176,9 +210,22 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     // console.log("Updating subscriptiuo")
     this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
     daybookDayItems.forEach((daybookDayItem: DaybookDayItem) => {
-      this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent) => {
-        // console.log("Method is disabled:  not updating the DaybookDayItem.");
-        this.updateDaybookDayItem(daybookDayItem);
+      this._changeSubscriptions.push(daybookDayItem.dataChanged$.subscribe((dataChangedEvent: {prev: boolean, current: boolean, next: boolean}) => {
+        if(dataChangedEvent.prev === true || dataChangedEvent.next === true){
+          let multipleItems: DaybookDayItem[] = []
+          if(dataChangedEvent.prev === true){
+            multipleItems.push(daybookDayItem.previousDay);
+          }
+          multipleItems.push(daybookDayItem);
+          if(dataChangedEvent.next === true){
+            multipleItems.push(daybookDayItem.followingDay);
+          }
+          this.updateMultipleDayItems(multipleItems);
+        }else if(dataChangedEvent.current === true){
+          this.updateDaybookDayItem(daybookDayItem);
+        }else{
+          console.log("Error:  bad data changed event in daybookHttpService");
+        }
       }));
     });
   }
@@ -195,21 +242,21 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
   private buildDaybookDayItemFromResponse(dayItemHttpData: any): DaybookDayItem {
 
     const properties: string[] = [
-      "_id", 
-      "userId", 
-      "dateYYYYMMDD", 
+      "_id",
+      "userId",
+      "dateYYYYMMDD",
       "daybookTimelogEntryDataItems",
       "timeDelineators",
-      "daybookActivityDataItems", 
-      "dailyTaskListDataItems", 
-      "dayStructureDataItems", 
+      "daybookActivityDataItems",
+      "dailyTaskListDataItems",
+      "dayStructureDataItems",
       "sleepCycleDataItems",
-      "sleepProfile", 
-      "dailyWeightLogEntryKg", 
-      "scheduledActivityItems", 
+      "sleepProfile",
+      "dailyWeightLogEntryKg",
+      "scheduledActivityItems",
       "dayTemplateId",
-      "scheduledEventIds", 
-      "notebookEntryIds", 
+      "scheduledEventIds",
+      "notebookEntryIds",
       "taskItemIds"];
     let dataErrors: boolean = false;
     properties.forEach(property => {
@@ -226,22 +273,22 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     }
   }
 
-  private buildDaybookDayItem(data: DaybookDayItemHttpShape): DaybookDayItem{
-    
+  private buildDaybookDayItem(data: DaybookDayItemHttpShape): DaybookDayItem {
+
     /**
      * This method is where we populate pieces of the DaybookDayItem class object with data from other sources. 
      */
 
     let daybookDayItem: DaybookDayItem = new DaybookDayItem(data.dateYYYYMMDD);
     daybookDayItem.setHttpShape(data);
-    
-    if(daybookDayItem.scheduledActivityItems.length > 0){
+
+    if (daybookDayItem.scheduledActivityItems.length > 0) {
       // TO DO:  probably just change this to run a method that gives the activity tree to the object,
       // and then inside of the object for any activity that exists in any variable, (scheduled activities, timelog entries, other, etc.),
       // then build those activity items from inside.
       daybookDayItem.buildScheduledActivities(this.activitiesService.activitiesTree);
     }
-    
+
     return daybookDayItem;
   }
 

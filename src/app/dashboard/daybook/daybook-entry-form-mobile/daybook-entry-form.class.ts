@@ -9,7 +9,6 @@ import { TimeOfDay } from '../../../shared/utilities/time-utilities/time-of-day-
 import { ActivityCategoryDefinition } from '../../activities/api/activity-category-definition.class';
 import { DaybookDayItemScheduledActivity } from '../api/data-items/daybook-day-item-scheduled-activity.class';
 import { DaybookEntryFormSection, DaybookEntryFormSectionType } from './daybook-entry-form-section/daybook-entry-form-section.class';
-import { DaybookTimeReferencer } from '../api/daybook-time-referencer.class';
 
 
 
@@ -210,7 +209,7 @@ export class DaybookEntryForm {
         return moment(this._currentTime);
     }
 
-    private _bedTime: moment.Moment = moment(DaybookTimeReferencer.defaultBedtime);
+    private _bedTime: moment.Moment = moment(this.activeDay.sleepProfile.defaultBedTime);
     
     private _timeUntilBedtime: string = "";
     public get timeUntilBedtime(): string {
@@ -232,7 +231,7 @@ export class DaybookEntryForm {
         return this.activeDay.sleepProfile.sleepProfileData;
     }
 
-    private _wakeupTime: moment.Moment = moment(DaybookTimeReferencer.defaultWakeupTime);
+    private _wakeupTime: moment.Moment = moment(this.activeDay.sleepProfile.defaultWakeupTime);
     private _timeSinceWakeup: string = "";
     public get timeSinceWakeup(): string {
         return this._timeSinceWakeup;
@@ -241,7 +240,7 @@ export class DaybookEntryForm {
         return this._wakeupTime.format("HH:mm");
     }
 
-    private _lastNightFallAsleepTime: moment.Moment = moment(DaybookTimeReferencer.defaultpreviousFallAsleepTime);
+    private _lastNightFallAsleepTime: moment.Moment = moment(this.activeDay.sleepProfile.previousFallAsleepTimeOrDefault);
     public get lastNightFallAsleepTimeHHmm(): string {
         return this._lastNightFallAsleepTime.format("HH:mm");
     }

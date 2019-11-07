@@ -12,8 +12,6 @@ let blankDaybookItemHttpShape: DaybookDayItemHttpShape = {
     sleepCycleDataItems: [],
     sleepProfile: {
         sleepQuality: null,
-        previousFallAsleepTimeISO: "",
-        previousFallAsleepTimeUtcOffsetMinutes: -1,
         wakeupTimeISO: "",
         wakeupTimeUtcOffsetMinutes: -1,
         bedtimeISO: "",
