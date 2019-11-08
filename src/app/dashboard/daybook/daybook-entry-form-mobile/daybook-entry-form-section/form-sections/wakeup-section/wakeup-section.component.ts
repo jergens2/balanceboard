@@ -200,9 +200,6 @@ export class WakeupSectionComponent implements OnInit {
       bedtimeISO: this.daybookEntryForm.sleepProfile.bedtimeISO,
       bedtimeUtcOffsetMinutes: this.daybookEntryForm.sleepProfile.bedtimeUtcOffsetMinutes,
 
-      fallAsleepTimeISO: this._fallAsleepTime.toISOString(),
-      fallAsleepTimeUtcOffsetMinutes: this._fallAsleepTime.utcOffset(),
-
       estimatedSleepDurationMinutes: moment(this._wakeupTime).diff(this._fallAsleepTime, "minutes"),
     }
 

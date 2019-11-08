@@ -16,8 +16,6 @@ let blankDaybookItemHttpShape: DaybookDayItemHttpShape = {
         wakeupTimeUtcOffsetMinutes: -1,
         bedtimeISO: "",
         bedtimeUtcOffsetMinutes: -1,
-        fallAsleepTimeISO: "",
-        fallAsleepTimeUtcOffsetMinutes: -1,
         estimatedSleepDurationMinutes: -1,
     },
     dailyWeightLogEntryKg: -1,

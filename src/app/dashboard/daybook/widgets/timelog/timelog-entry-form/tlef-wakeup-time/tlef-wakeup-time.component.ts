@@ -13,7 +13,7 @@ export class TlefWakeupTimeComponent implements OnInit {
   constructor(private daybookService: DaybookService) { }
 
   ngOnInit() {
-    let initialTime: moment.Moment = DaybookSleepProfile.defaultWakeupTime;
+    let initialTime: moment.Moment = this.daybookService.activeDay.timeReferencer.thisDayWakeupTime;
     this._time = moment(initialTime);
   }
 

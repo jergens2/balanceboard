@@ -94,7 +94,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     if(activeDayChanged.sleepProfile.bedTimeIsSet){
       bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedTime), 30, "UP");
     }else{
-      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.defaultBedTime), 30, "UP");
+      bedTime = activeDayChanged.timeReferencer.thisDayBedTime;
     }
     wakeupTime = moment(wakeupTime).subtract(30, "minutes");
 

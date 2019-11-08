@@ -96,6 +96,9 @@ export class DaybookDayItemTimelog {
     }
 
     private _activityTimes: { start: moment.Moment, end: moment.Moment, isActive: boolean }[] = [];
+    public get activityTimes(): { start: moment.Moment, end: moment.Moment, isActive: boolean }[] { 
+        return this._activityTimes;
+    }
 
     public isActiveAtTime(timeToCheck: moment.Moment): boolean { 
         this._activityTimes.forEach((timeSection)=>{

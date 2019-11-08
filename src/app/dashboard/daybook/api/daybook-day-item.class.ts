@@ -44,12 +44,12 @@ export class DaybookDayItem {
                 this._httpShape.timeDelineators = this._timeReferencer.timeDelineators;
                 this._httpShape.sleepProfile = this._timeReferencer.sleepProfileData;
 
-                if(this._timeReferencer.previousDataChanged){
-                    this.previousDay.setSleepChangesFromTimeReferencer(this._timeReferencer.previousSleep);
-                }
-                if(this._timeReferencer.followingDataChanged){
-                    this.followingDay.setSleepChangesFromTimeReferencer(this._timeReferencer.followingSleep);
-                }
+                // if(this._timeReferencer.previousDataChanged){
+                //     this.previousDay.setSleepChangesFromTimeReferencer(this._timeReferencer.previousSleep);
+                // }
+                // if(this._timeReferencer.followingDataChanged){
+                //     this.followingDay.setSleepChangesFromTimeReferencer(this._timeReferencer.followingSleep);
+                // }
     
                 let saveItems: {prev: boolean, current: boolean, next: boolean} = {
                     prev: this._timeReferencer.previousDataChanged,

@@ -1,0 +1,17 @@
+.sleep-profile-form-root{
+    display:flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 5px;
+}
+.profile-item{
+    padding:5px;
+    border-radius: 5px;
+    display:flex;
+    flex-direction: column;
+    background-color: white;
+    margin-bottom: 10px;
+}
+.profile-item-complete{
+    color: rgb(0, 89, 255);
+}

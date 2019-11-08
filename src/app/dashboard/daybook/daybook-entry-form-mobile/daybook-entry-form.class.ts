@@ -14,7 +14,7 @@ import { DaybookEntryFormSection, DaybookEntryFormSectionType } from './daybook-
 
 export class DaybookEntryForm {
 
-    private userName: string = "Jeremy";
+    private userName: string = 'Jeremy';
 
     // static readonly defaultWakeupTime: moment.Moment = moment().hour(7).minute(0).second(0).millisecond(0);
     // static readonly defaultBedtime: moment.Moment = moment().hour(22).minute(30).second(0).millisecond(0);
@@ -31,11 +31,11 @@ export class DaybookEntryForm {
         timer(0, 1000).subscribe((tick) => {
             this._currentTime = moment();
             if (this.currentTime.hour() < 12) {
-                this._message = "Good morning " + this.userName;
+                this._message = 'Good morning ' + this.userName;
             } else if (this.currentTime.hour() >= 12 && this.currentTime.hour() < 18) {
-                this._message = "Good afternoon " + this.userName;
+                this._message = 'Good afternoon ' + this.userName;
             } else if (this.currentTime.hour() >= 18) {
-                this._message = "Good evening " + this.userName;
+                this._message = 'Good evening ' + this.userName;
             }
         });
         timer(0, 60000).subscribe((tick) => {
@@ -51,15 +51,15 @@ export class DaybookEntryForm {
     private buildFormSections() {
         let formSections: DaybookEntryFormSection[] = [];
 
-        let wakeupSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.WakeupSection, "Wakeup");
-        if(this.activeDay.previousDay.sleepProfile.fallAsleepTime && this.activeDay.sleepProfile.wakeupTime){
-            wakeupSection.isComplete = true;
-            wakeupSection.title = this.wakeupTime.format("h:mm a") + " wakeup";
-        }
-        console.log("disabling the wakeup section")
+        // let wakeupSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.WakeupSection, 'Wakeup');
+        // if(this.activeDay.previousDay.sleepProfile.fallAsleepTime && this.activeDay.sleepProfile.wakeupTime){
+        //     wakeupSection.isComplete = true;
+        //     wakeupSection.title = this.wakeupTime.format('h:mm a') + ' wakeup';
+        // }
+        console.log('disabling the wakeup section')
         // formSections.push(wakeupSection);
 
-        let earlyMorningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, "Early morning");
+        let earlyMorningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, 'Early morning');
         earlyMorningSection.timeOfDay = TimeOfDay.EarlyMorning;
         // earlyMorningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
         //     return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.EarlyMorning;
@@ -76,7 +76,7 @@ export class DaybookEntryForm {
         }
         
 
-        let morningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, "Morning");
+        let morningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, 'Morning');
         morningSection.timeOfDay = TimeOfDay.Morning;
         // morningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
         //     return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Morning;
@@ -92,7 +92,7 @@ export class DaybookEntryForm {
         }
         formSections.push(morningSection);
 
-        let afternoonSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, "Afternoon");
+        let afternoonSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, 'Afternoon');
         afternoonSection.timeOfDay = TimeOfDay.Afternoon;
         // afternoonSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
         //     return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Afternoon;
@@ -109,7 +109,7 @@ export class DaybookEntryForm {
         }
         formSections.push(afternoonSection);
 
-        let eveningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, "Evening");
+        let eveningSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.TimeOfDaySection, 'Evening');
         eveningSection.timeOfDay = TimeOfDay.Evening;
         // eveningSection.scheduledActivities = this.activeDay.scheduledActivities.filter((scheduledActivity: DaybookDayItemScheduledActivity) => {
         //     return scheduledActivity.activityDefinition.scheduleConfiguration.timeOfDay == TimeOfDay.Evening;
@@ -132,12 +132,12 @@ export class DaybookEntryForm {
          *  TimeOfDay.Variates
          */
 
-        let bedtimeSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.BedtimeSection, "Bedtime");
+        let bedtimeSection: DaybookEntryFormSection = new DaybookEntryFormSection(DaybookEntryFormSectionType.BedtimeSection, 'Bedtime');
         if(this.activeDay.sleepProfile.bedTimeIsSet){
             bedtimeSection.isComplete = true;
-            bedtimeSection.title = this.bedtime.format("h:mm a") + " bedtime";
+            bedtimeSection.title = this.bedtime.format('h:mm a') + ' bedtime';
         }
-        console.log("disabling the bedtime section")
+        console.log('disabling the bedtime section')
         // formSections.push(bedtimeSection);
 
         this._formSections = formSections;
@@ -157,7 +157,7 @@ export class DaybookEntryForm {
     }
 
     private updateScheduledActivities(formSection: DaybookEntryFormSection){
-        console.log("Updating form section data,", formSection.scheduledActivities);
+        console.log('Updating form section data,', formSection.scheduledActivities);
         let formSectionIsComplete: boolean = true;
         formSection.scheduledActivities.forEach((scheduledActivity: DaybookDayItemScheduledActivity)=>{
             if(scheduledActivity.isRoutine){
@@ -184,10 +184,10 @@ export class DaybookEntryForm {
             this._bedTime = moment(this.activeDay.sleepProfile.bedTime);
     
         }
-        if (this.activeDay.previousDay.sleepProfile.fallAsleepTime) {
-            // console.log("setting fall asleep time to: ", this.activeDay.sleepProfile.previousFallAsleepTimeISO)
-            this._lastNightFallAsleepTime = moment(this.activeDay.previousDay.sleepProfile.fallAsleepTime);
-        }
+        // if (this.activeDay.previousDay.sleepProfile.fallAsleepTime) {
+        //     // console.log("setting fall asleep time to: ", this.activeDay.sleepProfile.previousFallAsleepTimeISO)
+        //     this._lastNightFallAsleepTime = moment(this.activeDay.previousDay.sleepProfile.fallAsleepTime);
+        // }
         if (this.activeDay.sleepProfile.wakeupTime) {
             // console.log("setting wakeup time: ", this.activeDay.sleepProfile.wakeupTimeISO);
             this._wakeupTime = moment(this.activeDay.sleepProfile.wakeupTime);
@@ -199,7 +199,7 @@ export class DaybookEntryForm {
         this.activeDay = activeDay;
     }
 
-    private _message: string = "";
+    private _message: string = '';
     public get message(): string {
         return this._message;
     }
@@ -209,9 +209,9 @@ export class DaybookEntryForm {
         return moment(this._currentTime);
     }
 
-    private _bedTime: moment.Moment = moment(this.activeDay.sleepProfile.defaultBedTime);
+    private _bedTime: moment.Moment = moment();
     
-    private _timeUntilBedtime: string = "";
+    private _timeUntilBedtime: string = '';
     public get timeUntilBedtime(): string {
         return this._timeUntilBedtime;
     }
@@ -231,18 +231,18 @@ export class DaybookEntryForm {
         return this.activeDay.sleepProfile.sleepProfileData;
     }
 
-    private _wakeupTime: moment.Moment = moment(this.activeDay.sleepProfile.defaultWakeupTime);
-    private _timeSinceWakeup: string = "";
+    private _wakeupTime: moment.Moment = moment();
+    private _timeSinceWakeup: string = '';
     public get timeSinceWakeup(): string {
         return this._timeSinceWakeup;
     }
     public get wakeupTimeHHmm(): string {
-        return this._wakeupTime.format("HH:mm");
+        return this._wakeupTime.format('HH:mm');
     }
 
-    private _lastNightFallAsleepTime: moment.Moment = moment(this.activeDay.sleepProfile.previousFallAsleepTimeOrDefault);
+    private _lastNightFallAsleepTime: moment.Moment = moment();
     public get lastNightFallAsleepTimeHHmm(): string {
-        return this._lastNightFallAsleepTime.format("HH:mm");
+        return this._lastNightFallAsleepTime.format('HH:mm');
     }
     public get lastNightFallAsleepTime(): moment.Moment {
         return moment(this._lastNightFallAsleepTime);
@@ -251,15 +251,15 @@ export class DaybookEntryForm {
     public get wakeupTimeIsSet(): boolean {
         return this.activeDay.sleepProfile.wakeupTimeIsSet
     }
-    public get previousFallAsleepTimeIsSet(): boolean {
-        return this.activeDay.previousDay.sleepProfile.fallAsleepTime != null;
-    }
+    // public get previousFallAsleepTimeIsSet(): boolean {
+    //     return this.activeDay.previousDay.sleepProfile.fallAsleepTime != null;
+    // }
     public get bedtimeIsSet(): boolean {
         return this.activeDay.sleepProfile.bedTimeIsSet
     }
-    public get wakeupSectionIsComplete(): boolean {
-        return this.activeDay.sleepProfile.wakeupTimeIsSet  && this.activeDay.previousDay.sleepProfile.fallAsleepTime != null;
-    }
+    // public get wakeupSectionIsComplete(): boolean {
+    //     return this.activeDay.sleepProfile.wakeupTimeIsSet  && this.activeDay.previousDay.sleepProfile.fallAsleepTime != null;
+    // }
     public get sleepQualityIsComplete(): boolean{
         return this.activeDay.sleepProfile.sleepQuality != null;
     }
@@ -268,17 +268,18 @@ export class DaybookEntryForm {
         if(sleepProfile.wakeupTimeISO){
             this._wakeupTime = moment(sleepProfile.wakeupTimeISO);
         }
-        if(sleepProfile.fallAsleepTimeISO){
-            this._lastNightFallAsleepTime = moment(sleepProfile.fallAsleepTimeISO);
-            console.log("boola wooloa");
-            this.activeDay.previousDay.sleepProfile["fallAsleepTimeISO"] = this._lastNightFallAsleepTime.toISOString();
-            this.activeDay.previousDay.sleepProfile["fallAsleepTimeUtcOffsetMinutes"] = this._lastNightFallAsleepTime.utcOffset();
-        }
+        // if(sleepProfile.fallAsleepTimeISO){
+        //     this._lastNightFallAsleepTime = moment(sleepProfile.fallAsleepTimeISO);
+        //     console.log('boola wooloa');
+        //     this.activeDay.previousDay.sleepProfile['fallAsleepTimeISO'] = this._lastNightFallAsleepTime.toISOString();
+        //     this.activeDay.previousDay.sleepProfile['fallAsleepTimeUtcOffsetMinutes'] = this._lastNightFallAsleepTime.utcOffset();
+        // }
         if(sleepProfile.bedtimeISO){
             this._bedTime = moment(sleepProfile.bedtimeISO);
         }
         this.updateTimes();
-        this.activeDay.sleepProfile.updateFullSleepProfile(sleepProfile);
+        console.log('error:  disabled method');
+        // this.activeDay.sleepProfile.updateFullSleepProfile(sleepProfile);
     }
 
 
@@ -304,25 +305,25 @@ export class DaybookEntryForm {
     private updateTimes() {
 
         if (this.currentTime.hour() < 12) {
-            this._message = "Good morning " + this.userName;
+            this._message = 'Good morning ' + this.userName;
         } else if (this.currentTime.hour() >= 12 && this.currentTime.hour() < 18) {
-            this._message = "Good afternoon " + this.userName;
+            this._message = 'Good afternoon ' + this.userName;
         } else if (this.currentTime.hour() >= 18) {
-            this._message = "Good evening " + this.userName;
+            this._message = 'Good evening ' + this.userName;
         }
 
 
-        let timeUntilBedtime = "";
+        let timeUntilBedtime = '';
         if (this.currentTime.isBefore(this._bedTime)) {
-            timeUntilBedtime = DurationString.calculateDurationString(this.currentTime, this._bedTime, true) + " remaining";
+            timeUntilBedtime = DurationString.calculateDurationString(this.currentTime, this._bedTime, true) + ' remaining';
         } else {
-            timeUntilBedtime = DurationString.calculateDurationString(this._bedTime, this.currentTime, true) + " past pedtime";
+            timeUntilBedtime = DurationString.calculateDurationString(this._bedTime, this.currentTime, true) + ' past pedtime';
         }
         this._timeUntilBedtime = timeUntilBedtime;
 
-        let timeSinceWakeup = "";
+        let timeSinceWakeup = '';
         if (this.currentTime.isBefore(this._wakeupTime)) {
-            timeSinceWakeup = "";
+            timeSinceWakeup = '';
         } else if (this.currentTime.isAfter(this._wakeupTime)) {
             timeSinceWakeup = DurationString.calculateDurationString(this._wakeupTime, this.currentTime, true);
         }
@@ -336,7 +337,7 @@ export class DaybookEntryForm {
 
     private updateBatteryConfiguration() {
         let batteryConfiguration: SleepBatteryConfiguration = {
-            previousFallAsleepTime: this.bedtime.subtract(1, "days"),
+            previousFallAsleepTime: this.bedtime.subtract(1, 'days'),
             wakeupTime: this.wakeupTime,
             bedtime: this.bedtime,
         }

@@ -1,17 +1,13 @@
-import { SleepQuality } from "../../daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum";
+import { SleepQuality } from '../../daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/sleep-quality.enum';
 
-export interface DaybookDayItemSleepProfileData{
+export interface DaybookDayItemSleepProfileData {
+    sleepQuality: SleepQuality;
 
-    sleepQuality: SleepQuality,
+    wakeupTimeISO: string;
+    wakeupTimeUtcOffsetMinutes: number;
 
-    wakeupTimeISO: string,
-    wakeupTimeUtcOffsetMinutes: number,
+    bedtimeISO: string;
+    bedtimeUtcOffsetMinutes: number;
 
-    bedtimeISO: string,
-    bedtimeUtcOffsetMinutes: number,
-
-    fallAsleepTimeISO: string,
-    fallAsleepTimeUtcOffsetMinutes: number,
-
-    estimatedSleepDurationMinutes: number,
+    estimatedSleepDurationMinutes: number;
 }
