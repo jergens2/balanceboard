@@ -22,6 +22,19 @@ export class DaybookDayItem {
         shape.dateYYYYMMDD = dateYYYYMMDD;
         this.setHttpShape(shape);
     }
+
+
+    private _httpShape: DaybookDayItemHttpShape;
+    private _timelog: DaybookDayItemTimelog;
+    private _sleepProfile: DaybookSleepProfile;
+    private _timeReferencer: DaybookTimeReferencer;
+    private _previousDay: DaybookDayItem;
+    private _followingDay: DaybookDayItem;
+
+    private _dataChangedSubscriptions: Subscription[] = [];
+    private _dataChanged$: Subject<{ prev: boolean, current: boolean, next: boolean }> = new Subject();
+
+
     public setHttpShape(shape: DaybookDayItemHttpShape) {
         this._httpShape = Object.assign({}, shape);
         this._rebuild();
@@ -33,13 +46,13 @@ export class DaybookDayItem {
         console.log("Time referencer constructed")
         this._updateDataChangedSubscriptions();
     }
-    private _dataChangedSubscriptions: Subscription[] = [];
+
     private _updateDataChangedSubscriptions() {
         this._dataChangedSubscriptions.forEach((sub) => { sub.unsubscribe(); });
         this._dataChangedSubscriptions = [];
 
         this._dataChangedSubscriptions.push(this._timeReferencer.dataChanged$.subscribe((dataChanged: boolean) => {
-            if(dataChanged === true){
+            if (dataChanged === true) {
                 this._httpShape.daybookTimelogEntryDataItems = this._timeReferencer.daybookTimelogEntryDataItems;
                 this._httpShape.timeDelineators = this._timeReferencer.timeDelineators;
                 this._httpShape.sleepProfile = this._timeReferencer.sleepProfileData;
@@ -50,41 +63,36 @@ export class DaybookDayItem {
                 // if(this._timeReferencer.followingDataChanged){
                 //     this.followingDay.setSleepChangesFromTimeReferencer(this._timeReferencer.followingSleep);
                 // }
-    
-                let saveItems: {prev: boolean, current: boolean, next: boolean} = {
+
+                let saveItems: { prev: boolean, current: boolean, next: boolean } = {
                     prev: this._timeReferencer.previousDataChanged,
                     current: true,
                     next: this._timeReferencer.followingDataChanged,
                 }
-                console.log("Daybook day item: " + this.dateYYYYMMDD + " Saving changes:", saveItems); 
+                console.log("Daybook day item: " + this.dateYYYYMMDD + " Saving changes:", saveItems);
                 this.dataChanged(saveItems);
             }
         }));
     }
-    private _dataChanged$: Subject<{prev: boolean, current: boolean, next: boolean}> = new Subject();
-    public get dataChanged$(): Observable<{prev: boolean, current: boolean, next: boolean}> { return this._dataChanged$.asObservable(); }
-    private dataChanged(saveItems: {prev: boolean, current: boolean, next: boolean}) { this._dataChanged$.next(saveItems); }
 
-    private _httpShape: DaybookDayItemHttpShape;
-    private _timelog: DaybookDayItemTimelog;
-    private _sleepProfile: DaybookSleepProfile;
-    private _timeReferencer: DaybookTimeReferencer;
-    private _previousDay: DaybookDayItem;
-    private _followingDay: DaybookDayItem;
+    public get dataChanged$(): Observable<{ prev: boolean, current: boolean, next: boolean }> { return this._dataChanged$.asObservable(); }
+    private dataChanged(saveItems: { prev: boolean, current: boolean, next: boolean }) { this._dataChanged$.next(saveItems); }
 
-    public set previousDay(previousDay: DaybookDayItem) { 
-        if(previousDay){
-            this._previousDay = previousDay; 
+
+
+    public set previousDay(previousDay: DaybookDayItem) {
+        if (previousDay) {
+            this._previousDay = previousDay;
             this._timeReferencer.addPreviousDateInfo(this.previousDay.timelog, this.previousDay.sleepProfile);
         }
-        
+
     }
-    public set followingDay(followingDay: DaybookDayItem) { 
-        if(followingDay){
+    public set followingDay(followingDay: DaybookDayItem) {
+        if (followingDay) {
             this._followingDay = followingDay;
             this._timeReferencer.addFollowingDateInfo(this.followingDay.timelog, this.followingDay.sleepProfile);
         }
-        
+
     }
 
 
@@ -108,8 +116,10 @@ export class DaybookDayItem {
     public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
 
 
+    public get activeDayIsToday(): boolean { return this.timeReferencer.activeDayIsToday; }
 
-    public setSleepChangesFromTimeReferencer(sleepProfile: DaybookSleepProfile){
+
+    public setSleepChangesFromTimeReferencer(sleepProfile: DaybookSleepProfile) {
         this._httpShape.sleepProfile = sleepProfile.sleepProfileData;
     }
 
@@ -137,7 +147,7 @@ export class DaybookDayItem {
     public get dailyWeightLogEntryKg(): number { return this.httpShape.dailyWeightLogEntryKg; }
     public set dailyWeightLogEntryKg(kg: number) {
         this._httpShape.dailyWeightLogEntryKg = kg;
-        this.dataChanged({prev: false, current: true, next: false});
+        this.dataChanged({ prev: false, current: true, next: false });
     }
 
     public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this.httpShape.dailyTaskListDataItems; }
@@ -194,7 +204,7 @@ export class DaybookDayItem {
     public setScheduledActivityItems(items: DaybookDayItemScheduledActivityItem[], activityTree: ActivityTree) {
         this._httpShape.scheduledActivityItems = items;
         this.buildScheduledActivities(activityTree);
-        this.dataChanged({prev: false, current: true, next: false});
+        this.dataChanged({ prev: false, current: true, next: false });
     }
     public updateScheduledActivityItems(updateScheduledActivityItems: DaybookDayItemScheduledActivityItem[]) {
         this._httpShape.scheduledActivityItems.forEach((storedItem) => {
@@ -204,7 +214,7 @@ export class DaybookDayItem {
                 }
             });
         });
-        this.dataChanged({prev: false, current: true, next: false});
+        this.dataChanged({ prev: false, current: true, next: false });
     }
 
 }

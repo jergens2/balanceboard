@@ -1,41 +1,53 @@
 <div class="sleep-profile-form-root">
-    <div class="profile-item" *ngIf="!previousFallAsleepTimeIsSet || isEditingPreviousSleepTime">
-        <div>What time did you fall asleep last night</div>
-        <div class="profile-item-row">
-            <app-time-input [timeValue]="previousFallAsleepTime" [minValue]="previousFallAsleepTimeMin"
-                [maxValue]="previousFallAsleepTimeMax" (timeChanged)="onPreviousFallAsleepTimeChanged($event)">
-            </app-time-input>
+
+    <!-- <div class="profile-item" *ngIf="previousBedTimeIsSet">
+        <div style="font-size: 0.7em; color:gray;">Previous Bedtime</div>
+        <div style="color:rgb(0, 89, 255); font-size:0.8em; font-weight: bold;">{{ previousBedTime.format('YYYY-MM-DD hh:mm a') }}</div>
+    </div> -->
+
+
+    <div class="profile-item" *ngIf="isEditingWakeupTime">
+        <div class="row-buffer">
+            <fa-icon *ngIf="!wakeupTimeIsSet" [icon]="faExclamationTriangle" style="color: rgb(206, 206, 206);">
+            </fa-icon>
         </div>
+        <div style="display:flex;flex-direction: column;">
+            <div style="margin-bottom:5px;">What time did you wake up this morning?</div>
 
-    </div>
-    <div class="profile-item profile-item-complete" *ngIf="previousFallAsleepTimeIsSet && !isEditingPreviousSleepTime" (click)="isEditingPreviousSleepTime = true">
-        <div>Previous fall asleep time:</div>
-        <div>{{ previousFallAsleepTime.format('hh:mm a') }} </div>
-    </div>
+            <div style="display:flex;flex-direction: row;">
+                <app-time-input [timeValue]="wakeupTime" [minValue]="wakeupTimeMin" [maxValue]="wakeupTimeMax"
+                    (timeChanged)="onWakeupTimeChanged($event)"></app-time-input>
+            </div>
 
-
-
-    <div class="profile-item" *ngIf="!wakeupTimeIsSet || isEditingWakeupTime">
-        <div>What time did you wake up this morning?</div>
-        <div class="profile-item-row">
-            <app-time-input [timeValue]="wakeupTime" [minValue]="wakeupTimeMin" [maxValue]="wakeupTimeMax"
-                (timeChanged)="onWakeupTimeChanged($event)"></app-time-input>
         </div>
+        <div class="row-buffer"></div>
     </div>
-    <div class="profile-item profile-item-complete" *ngIf="wakeUpTimeIsSet && !isEditingWakeupTime" (click)="isEditingWakeupTime = true">
+
+
+    <div class="profile-item profile-item-complete" *ngIf="!isEditingWakeupTime && wakeupTimeIsSet"
+        (click)="isEditingWakeupTime = true">
         <div>Wake up time:</div>
         <div>{{ wakeupTime.format('hh:mm a') }} </div>
     </div>
 
-    <div class="profile-item" *ngIf="!bedTimeIsSet || isEsditingBedTime">
-        <div>What time is bed time?</div>
-        <div class="profile-item-row">
-            <app-time-input [timeValue]="bedTime" [minValue]="bedTimeMin" [maxValue]="bedTimeMax"
-                (timeChanged)="onBedTimeChanged($event)"></app-time-input>
+    <div class="profile-item" *ngIf="isEditingBedTime">
+        <div class="row-buffer">
+            <fa-icon *ngIf="!bedTimeIsSet" [icon]="faExclamationTriangle" style="color: rgb(206, 206, 206);">
+            </fa-icon>
+        </div>
+        <div style="display:flex;flex-direction: column;">
+            <div style="margin-bottom:5px;">What time is bed time?</div>
+            <div style="display:flex;flex-direction: row;">
+                <app-time-input [timeValue]="bedTime" [minValue]="bedTimeMin" [maxValue]="bedTimeMax"
+                    (timeChanged)="onBedTimeChanged($event)"></app-time-input>
+            </div>
+
         </div>
 
+        <div class="row-buffer"></div>
     </div>
-    <div class="profile-item profile-item-complete" *ngIf="bedTimeIsSet && !isEditingBedTime" (click)="isEditingBedTime = true">
+    <div class="profile-item profile-item-complete" *ngIf="!isEditingBedTime && bedTimeIsSet"
+        (click)="isEditingBedTime = true">
         <div>Bed Time:</div>
         <div>{{ bedTime.format('hh:mm a') }} </div>
     </div>

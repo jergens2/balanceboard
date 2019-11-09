@@ -31,9 +31,9 @@ export class DaybookDayItemTimelog {
 
 
     public get lastTimelogEntryItemTime(): moment.Moment {
-        if(this._timelogEntryItems.length > 0){
+        if (this._timelogEntryItems.length > 0) {
             return moment(this._timelogEntryItems[this._timelogEntryItems.length - 1].endTime);
-        }else{
+        } else {
             return moment(this._dateYYYYMMDD).startOf("day");
         }
     }
@@ -96,13 +96,13 @@ export class DaybookDayItemTimelog {
     }
 
     private _activityTimes: { start: moment.Moment, end: moment.Moment, isActive: boolean }[] = [];
-    public get activityTimes(): { start: moment.Moment, end: moment.Moment, isActive: boolean }[] { 
+    public get activityTimes(): { start: moment.Moment, end: moment.Moment, isActive: boolean }[] {
         return this._activityTimes;
     }
 
-    public isActiveAtTime(timeToCheck: moment.Moment): boolean { 
-        this._activityTimes.forEach((timeSection)=>{
-            if(timeToCheck.isSameOrAfter(timeSection.start) && timeToCheck.isSameOrBefore(timeSection.end)){
+    public isActiveAtTime(timeToCheck: moment.Moment): boolean {
+        this._activityTimes.forEach((timeSection) => {
+            if (timeToCheck.isSameOrAfter(timeSection.start) && timeToCheck.isSameOrBefore(timeSection.end)) {
                 return timeSection.isActive;
             }
         });
@@ -158,17 +158,17 @@ export class DaybookDayItemTimelog {
         }
 
         let mergedActivityTimes: { start: moment.Moment, end: moment.Moment, isActive: boolean }[] = [];
-        for(let i=0; i<activityTimes.length; i++){
-            if(i == 0){
+        for (let i = 0; i < activityTimes.length; i++) {
+            if (i == 0) {
                 mergedActivityTimes.push(activityTimes[i]);
-            }else{
-                let previousEndTime: moment.Moment = mergedActivityTimes[mergedActivityTimes.length-1].end;
-                if(!activityTimes[i].start.isSame(previousEndTime)){
+            } else {
+                let previousEndTime: moment.Moment = mergedActivityTimes[mergedActivityTimes.length - 1].end;
+                if (!activityTimes[i].start.isSame(previousEndTime)) {
                     console.log("Error ? this shouldn't happen")
-                }else{
-                    if(activityTimes[i].isActive === mergedActivityTimes[mergedActivityTimes.length-1].isActive){
-                        mergedActivityTimes[mergedActivityTimes.length-1].end = activityTimes[i].end;
-                    }else{
+                } else {
+                    if (activityTimes[i].isActive === mergedActivityTimes[mergedActivityTimes.length - 1].isActive) {
+                        mergedActivityTimes[mergedActivityTimes.length - 1].end = activityTimes[i].end;
+                    } else {
                         mergedActivityTimes.push(activityTimes[i]);
                     }
                 }

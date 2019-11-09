@@ -79,14 +79,8 @@ export class DaybookService implements ServiceAuthenticates {
     return this._today$.getValue();
   }
 
-  public get activeDayIsToday(): boolean {
-    if(this.activeDay){
-      return this.activeDay.dateYYYYMMDD == moment().format("YYYY-MM-DD");
-    }else{
-      return true;
-    }
-    
-  }
+  private _activeDayIsToday: boolean = false;
+  public get activeDayIsToday(): boolean { return this._activeDayIsToday; }
 
   // private _activeDayYYYYMMDD: string = moment().format("YYYY-MM-DD");
   private _activeDay$: BehaviorSubject<DaybookDayItem> = new BehaviorSubject(null);
@@ -108,7 +102,7 @@ export class DaybookService implements ServiceAuthenticates {
     if (!daybookDayItem) {
       this._activeDay$.next(this.startANewDay(dateYYYYMMDD));
     } else {
-      if(!daybookDayItem.previousDay || !daybookDayItem.followingDay){
+      if (!daybookDayItem.previousDay || !daybookDayItem.followingDay) {
         daybookDayItem = this.addNewDaybookItems(daybookDayItem);
       }
       this._activeDay$.next(daybookDayItem);
@@ -127,36 +121,48 @@ export class DaybookService implements ServiceAuthenticates {
       this._clock = moment();
       if (this._clock.format("YYYY-MM-DD") != this.today.dateYYYYMMDD) {
         console.log("Crossed midnight.");
-        this.updateToday(this._clock);
+        this.updateTodayAndActiveDay(this._clock);
       }
     });
-    this.updateToday(this._clock);
+    this.updateTodayAndActiveDay(this._clock);
   }
 
 
 
 
-  private updateToday(time: moment.Moment) {
+
+  private updateTodayAndActiveDay(time: moment.Moment) {
+
+    let activeDayIsCurrentlyToday: boolean = false;
+    if (this.activeDay) {
+      if (this.activeDay.dateYYYYMMDD == this.today.dateYYYYMMDD) {
+        activeDayIsCurrentlyToday = true;
+      }
+    }else{
+      activeDayIsCurrentlyToday = true;
+    }
+
     let todayYYYYMMDD = moment(time).format("YYYY-MM-DD");
-    const activeDayIsToday = this.activeDayIsToday;
+
     let daybookDayItem: DaybookDayItem = this.getDaybookDayItemByDate(todayYYYYMMDD);
     if (!daybookDayItem) {
       // console.log("Updating today: no daybook day item")
       let newDay: DaybookDayItem = this.startANewDay(todayYYYYMMDD);
       this._today$.next(newDay);
-      if (activeDayIsToday || !this.activeDay) {
+      if (activeDayIsCurrentlyToday || !this.activeDay) {
         this._activeDay$.next(newDay)
       }
     } else {
-      if(!daybookDayItem.previousDay || !daybookDayItem.followingDay){
+      if (!daybookDayItem.previousDay || !daybookDayItem.followingDay) {
         daybookDayItem = this.addNewDaybookItems(daybookDayItem);
       }
       this._today$.next(daybookDayItem);
-      if (activeDayIsToday || !this.activeDay) {
+      if (activeDayIsCurrentlyToday || !this.activeDay) {
         this._activeDay$.next(daybookDayItem);
       }
     }
     this._loginComplete$.next(true);
+    this._activeDayIsToday = activeDayIsCurrentlyToday;
     // this.updateIsPastMidnight();
   }
 
@@ -172,7 +178,7 @@ export class DaybookService implements ServiceAuthenticates {
     }
   }
 
-  private addNewDaybookItems(daybookDayItem: DaybookDayItem): DaybookDayItem{
+  private addNewDaybookItems(daybookDayItem: DaybookDayItem): DaybookDayItem {
 
     const previousDateYYYYMMDD: string = moment(daybookDayItem.dateYYYYMMDD).subtract(1, "day").format("YYYY-MM-DD");
     const followingDateYYYYMMDD: string = moment(daybookDayItem.dateYYYYMMDD).add(1, "day").format("YYYY-MM-DD");
@@ -183,7 +189,7 @@ export class DaybookService implements ServiceAuthenticates {
     let saveDays: DaybookDayItem[] = [];
 
 
-    if(!daybookDayItem.followingDay){
+    if (!daybookDayItem.followingDay) {
       followingDaybookDayItem = this.buildNewDaybookDayItem(followingDateYYYYMMDD);
       daybookDayItem.followingDay = followingDaybookDayItem;
       saveDays.push(followingDaybookDayItem);
@@ -195,11 +201,11 @@ export class DaybookService implements ServiceAuthenticates {
       saveDays.push(previousDaybookDayItem);
       daybookDayItem.previousDay = previousDaybookDayItem;
     }
-    
+
     console.log("Saving new multiple day items");
     this.daybookHttpRequestService.saveMultipleDayItems(saveDays);
     return daybookDayItem;
-   }
+  }
 
   private startANewDay(newDateYYYYMMDD: string): DaybookDayItem {
     console.log("***** Daybook:  Starting a new day: ", newDateYYYYMMDD);
@@ -223,7 +229,7 @@ export class DaybookService implements ServiceAuthenticates {
       saveDays.push(previousDaybookDayItem);
       newDay.previousDay = previousDaybookDayItem;
     }
-    
+
     saveDays.push(newDay);
     if (!followingDaybookDayItem) {
       followingDaybookDayItem = this.buildNewDaybookDayItem(followingDateYYYYMMDD);
@@ -232,7 +238,7 @@ export class DaybookService implements ServiceAuthenticates {
       // console.log("savedays: ", saveDays);
       newDay.followingDay = followingDaybookDayItem;
     }
-    
+
 
     // console.log("Saving multiple days: " )
     // saveDays.forEach((day)=>{
@@ -246,7 +252,7 @@ export class DaybookService implements ServiceAuthenticates {
   }
 
   private buildNewDaybookDayItem(dateYYYYMMDD: string): DaybookDayItem {
-    console.log("Building a new Daybook item: " , dateYYYYMMDD);
+    console.log("Building a new Daybook item: ", dateYYYYMMDD);
     let daybookDayItem: DaybookDayItem = new DaybookDayItem(dateYYYYMMDD);
     // daybookDayItem.dayTemplateId = "placeholder:NO_DAY_TEMPLATE";
     // daybookDayItem.dayStructureDataItems = []; //this.scheduleRotationService.getDayStructureItemsForDate(dateYYYYMMDD);
@@ -261,12 +267,6 @@ export class DaybookService implements ServiceAuthenticates {
    * Implicitly, this tool is for active current use, as in: enter a new timelog entry for the period of time 
    * of the previous relevant start time (e.g. wake up) to now.   
    */
-  public getNewTimelogEntry(): TimelogEntryItem {
-    let startTime: moment.Moment = moment(this.today.timeReferencer.getNewTimelogEntryStartTime());
-    let endTime: moment.Moment = moment();
-    let newTimelogEntry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime);
-    return newTimelogEntry;
-  }
 
   public saveTimelogEntry(timelogEntry: TimelogEntryItem, afterMidnightEntry?: TimelogEntryItem) {
     let daybookDayItem: DaybookDayItem;
@@ -322,7 +322,7 @@ export class DaybookService implements ServiceAuthenticates {
     }
   }
 
-  
+
 
 
 

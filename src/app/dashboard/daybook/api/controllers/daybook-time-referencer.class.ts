@@ -51,6 +51,7 @@ export class DaybookTimeReferencer {
     }
 
     public get now(): moment.Moment { return moment(this._now); }
+    public get activeDayIsToday(): boolean { return this._statusTimes.activeDayIsToday; }
 
     public get previousSleepProfile(): DaybookSleepProfile { return this._previousSleepProfile; }
     public get followingSleepProfile(): DaybookSleepProfile { return this._followingSleepProfile; }
@@ -68,24 +69,110 @@ export class DaybookTimeReferencer {
         return this._statusTimes;
     }
 
-    public getNewTimelogEntryStartTime() {
-        const lastActivityTime = this._getLastActivityTime();
+
+    /**
+     * This method is only for use by the Today daybook day item.
+     */
+    public getNewTimelogEntryTemplate(): {
+        startTime: moment.Moment,
+        startTimeStartBoundary: moment.Moment,
+        startTimeEndBoundary: moment.Moment,
+        setSleepProfileRequired: boolean,
+        crossesMidnight: boolean,
+        isAmbiguous: boolean,
+    } {
+        // console.log("Finish this method")
         const now: moment.Moment = moment();
-        const wakeupTime: moment.Moment = this.determineWakeupTime();
-        if (now.isBefore(wakeupTime)) {
-            return lastActivityTime;
+        if (this.activeDayIsToday) {
+            const isAfterWakeup = now.isSameOrAfter(this.thisDayWakeupTime.startTime);
+            const isBeforeBedTime = now.isSameOrBefore(this.thisDayBedTime.startTime);
+            if (isAfterWakeup && isBeforeBedTime) {
+                return this._standardTimelogEntry();
+            } else if (now.isBefore(this.thisDayWakeupTime.startTime)) {
+                return this._beforeWakeupTimelogEntry();
+            } else if (now.isAfter(this.thisDayBedTime.startTime)) {
+                return this._standardTimelogEntry();
+            }
         } else {
-            if (!this._sleepProfile.wakeupTimeIsSet) {
-                return wakeupTime;
-            } else {
-                if (lastActivityTime.isSameOrAfter(wakeupTime)) {
-                    return lastActivityTime;
+            console.log("Error:  this method is only for the Today daybook day.");
+        }
+        return null;
+    }
+
+    private _standardTimelogEntry(): {
+        startTime: moment.Moment,
+        startTimeStartBoundary: moment.Moment,
+        startTimeEndBoundary: moment.Moment,
+        setSleepProfileRequired: boolean,
+        crossesMidnight: boolean,
+        isAmbiguous: boolean,
+    } {
+        let startTimeStartBoundary: moment.Moment = this.getThisDayLastActivityTime();
+        if (this.thisDayWakeupTime.startTime.isAfter(startTimeStartBoundary)) {
+            startTimeStartBoundary = this.thisDayWakeupTime.startTime;
+        }
+        return {
+            startTime: startTimeStartBoundary,
+            startTimeStartBoundary: startTimeStartBoundary,
+            startTimeEndBoundary: moment(),
+            setSleepProfileRequired: !this.thisDayWakeupTime.isSet,
+            crossesMidnight: false,
+            isAmbiguous: false,
+        };
+    }
+    private _beforeWakeupTimelogEntry(): {
+        startTime: moment.Moment,
+        startTimeStartBoundary: moment.Moment,
+        startTimeEndBoundary: moment.Moment,
+        setSleepProfileRequired: boolean,
+        crossesMidnight: boolean,
+        isAmbiguous: boolean,
+    } {
+
+        let isAmbiguous: boolean = false;
+        let crossesMidnight: boolean = false;
+        let setSleepProfileRequired = false;
+        let startTimeEndBoundary: moment.Moment = moment();
+        let startTimeStartBoundary = this.previousDayBedTime.startTime;
+        if (this.getPreviousDayLastActivityTime().isAfter(startTimeStartBoundary)) {
+            startTimeStartBoundary = this.getPreviousDayLastActivityTime();
+        }
+        if (startTimeStartBoundary.isBefore(this.startOfThisDay)) {
+            crossesMidnight = true;
+        } else {
+            const now = moment();
+
+            const totalMs: number = this.thisDayWakeupTime.startTime.diff(startTimeStartBoundary, 'milliseconds');
+
+            const isCloseToStartBoundary: boolean =
+                now.isSameOrAfter(startTimeStartBoundary) &&
+                now.isSameOrBefore(moment(startTimeStartBoundary).add((0.25 * totalMs), 'milliseconds'));
+            const isCloseToWakeup: boolean =
+                now.isSameOrBefore(this.thisDayWakeupTime.startTime) &&
+                now.isSameOrAfter(moment(this.thisDayWakeupTime.startTime).subtract((0.25 * totalMs), 'milliseconds'));
+
+            if (now.isSameOrAfter(startTimeStartBoundary) && now.isSameOrBefore(this.thisDayWakeupTime.startTime)) {
+                if (isCloseToStartBoundary) {
+                    setSleepProfileRequired = false;
+                } else if (isCloseToWakeup) {
+                    setSleepProfileRequired = true;
                 } else {
-                    return wakeupTime;
+                    isAmbiguous = true;
                 }
+            } else {
+                console.log("error with now time");
             }
         }
+        return {
+            startTime: startTimeStartBoundary,
+            startTimeStartBoundary: startTimeStartBoundary,
+            startTimeEndBoundary: startTimeEndBoundary,
+            setSleepProfileRequired: setSleepProfileRequired,
+            crossesMidnight: crossesMidnight,
+            isAmbiguous: isAmbiguous,
+        };
     }
+
 
 
     public addPreviousDateInfo(prevTimelog: DaybookDayItemTimelog, prevSleepProfile: DaybookSleepProfile) {
@@ -102,34 +189,42 @@ export class DaybookTimeReferencer {
 
     public get dataChanged$(): Observable<boolean> { return this._dataChanged$.asObservable(); }
 
+    public get previousDayWakeupTime(): StatusAtTime { return this._statusTimes.previousDayWakeupTime; }
+    public get previousDayBedTime(): StatusAtTime { return this._statusTimes.previousDayBedTime; }
 
-    public sleepStateAtTime(timeToCheck: moment.Moment): StatusAtTime {
+    public get thisDayWakeupTime(): StatusAtTime { return this._statusTimes.thisDayWakeupTime; }
+    public get thisDayBedTime(): StatusAtTime { return this._statusTimes.thisDayBedTime; }
 
-        return null;
-    }
+    public get followingDayWakeupTime(): StatusAtTime { return this._statusTimes.followingDayWakeupTime; }
+    public get followingDayBedTime(): StatusAtTime { return this._statusTimes.followingDayBedTime; }
 
-    public get previousBedTimeMin(): moment.Moment { return this._statusTimes.previousBedTimeMin(); }
-    public get previousBedTimeMax(): moment.Moment { return this._statusTimes.previousBedTimeMax(); }
+    public get wakeupTimeMin(): moment.Moment { return this._statusTimes.wakeupTimeMin; }
+    public get wakeupTimeMax(): moment.Moment { return this._statusTimes.wakeupTimeMax; }
 
-    public get wakeupTimeMin(): moment.Moment { return this._statusTimes.wakeupTimeMin(); }
-    public get wakeupTimeMax(): moment.Moment { return this._statusTimes.wakeupTimeMax(); }
-
-    public get bedTimeMin(): moment.Moment { return this._statusTimes.bedTimeMin(); }
-    public get bedTimeMax(): moment.Moment { return this._statusTimes.bedTimeMax(); }
-
-    public get previousDayWakeupTime(): moment.Moment { return this._statusTimes.previousDayWakeupTime.startTime; }
-    public get previousDayBedTime(): moment.Moment { return this._statusTimes.previousDayBedTime.startTime; }
-
-    public get thisDayWakeupTime(): moment.Moment { return this._statusTimes.thisDayWakeupTime.startTime; }
-    public get thisDayBedTime(): moment.Moment { return this._statusTimes.thisDayBedTime.startTime; }
-
-    public get followingDayWakeupTime(): moment.Moment { return this._statusTimes.followingDayWakeupTime.startTime; }
-    public get followingDayBedTime(): moment.Moment { return this._statusTimes.followingDayBedTime.startTime; }
+    public get bedTimeMin(): moment.Moment { return this._statusTimes.bedTimeMin; }
+    public get bedTimeMax(): moment.Moment { return this._statusTimes.bedTimeMax; }
 
     public get startOfPreviousDay(): moment.Moment { return moment(this._dateYYYYMMDD).startOf('day').subtract(24, 'hours'); }
     public get startOfThisDay(): moment.Moment { return moment(this._dateYYYYMMDD).startOf('day'); }
     public get startOfNextDay(): moment.Moment { return moment(this._dateYYYYMMDD).startOf('day').add(24, 'hours'); }
     public get endOfNextDay(): moment.Moment { return moment(this._dateYYYYMMDD).startOf('day').add(48, 'hours'); }
+
+    public getThisDayLastActivityTime(): moment.Moment { return this._timelog.lastTimelogEntryItemTime; }
+    public getPreviousDayLastActivityTime(): moment.Moment {
+        if (this._previousTimelog) {
+            return this._previousTimelog.lastTimelogEntryItemTime;
+        } else {
+            return this.startOfPreviousDay;
+        }
+    }
+    public getFollowingDayLastActivityTime(): moment.Moment {
+        if (this._followingTimelog) {
+            return this._followingTimelog.lastTimelogEntryItemTime;
+        } else {
+            return this.startOfNextDay;
+        }
+    }
+
 
 
     private _recalculate() {
@@ -168,62 +263,38 @@ export class DaybookTimeReferencer {
             name: ReferencerTimeEventName.EndOfNextDay
         });
 
-        sleepStatusTimes = sleepStatusTimes.concat(this._timelog.activityTimes.filter(i => i.isActive === true).map((item) => {
-            return {
-                startTime: item.start,
-                endTime: item.end,
-                isAWake: false,
-                isActive: true,
-                isSet: false,
-                name: ReferencerTimeEventName.BeginActivity,
-            };
-        }));
+
+        let activityTimes = this._timelog.activityTimes;
         if (this._followingTimelog) {
-            sleepStatusTimes = sleepStatusTimes.concat(this._followingTimelog.activityTimes.filter(i => i.isActive === true).map((item) => {
-                return {
-                    startTime: item.start,
-                    endTime: item.end,
-                    isAWake: false,
-                    isActive: true,
-                    isSet: false,
-                    name: ReferencerTimeEventName.BeginActivity,
-                };
-            }));
+            activityTimes = activityTimes.concat(this._followingTimelog.activityTimes);
         }
-        if(this._previousTimelog){
-            sleepStatusTimes = sleepStatusTimes.concat(this._previousTimelog.activityTimes.filter(i => i.isActive === true).map((item) => {
-                return {
-                    startTime: item.start,
-                    endTime: item.end,
-                    isAWake: false,
-                    isActive: true,
-                    isSet: false,
-                    name: ReferencerTimeEventName.BeginActivity,
-                };
-            }));
+        if (this._previousTimelog) {
+            activityTimes = activityTimes.concat(this._previousTimelog.activityTimes);
         }
+
 
 
         let wakeupTimeStatus = {
-            startTime: this.determineWakeupTime(),
+            startTime: this._determineWakeupTime(),
             endTime: null,
             isAWake: true,
             isActive: false,
-            isSet: true,
+            isSet: this._sleepProfile.wakeupTimeIsSet,
             name: ReferencerTimeEventName.ThisDayWakeupTime,
-        }
+        };
         sleepStatusTimes.push(wakeupTimeStatus);
         console.log("This day wakeup time determined to be: " + wakeupTimeStatus.startTime.format("YYYY-MM-DD hh:mm a"))
         let bedTimeStatus = {
             startTime: null,
             endTime: null,
-            isAWake: true,
+            isAWake: false,
             isActive: false,
             isSet: false,
             name: ReferencerTimeEventName.ThisDayBedTime,
-        }
+        };
         if (this._sleepProfile.bedTimeIsSet) {
             bedTimeStatus.startTime = this._sleepProfile.bedTime;
+            bedTimeStatus.isSet = true;
         }
         sleepStatusTimes.push(bedTimeStatus);
 
@@ -234,7 +305,7 @@ export class DaybookTimeReferencer {
             isActive: false,
             isSet: false,
             name: ReferencerTimeEventName.PreviousDayWakeupTime,
-        }
+        };
         let previousBedTime = {
             startTime: null,
             endTime: null,
@@ -242,7 +313,7 @@ export class DaybookTimeReferencer {
             isActive: false,
             isSet: false,
             name: ReferencerTimeEventName.PreviousDayBedTime,
-        }
+        };
         let followingDayWakeupTime = {
             startTime: null,
             endTime: null,
@@ -250,7 +321,7 @@ export class DaybookTimeReferencer {
             isActive: false,
             isSet: false,
             name: ReferencerTimeEventName.FollowingDayWakeupTime,
-        }
+        };
         let followingDayBedTime = {
             startTime: null,
             endTime: null,
@@ -258,23 +329,27 @@ export class DaybookTimeReferencer {
             isActive: false,
             isSet: false,
             name: ReferencerTimeEventName.FollowingDayBedTime,
-        }
+        };
 
 
         if (this._previousSleepProfile) {
             if (this._previousSleepProfile.wakeupTimeIsSet) {
                 previousWakeupTime.startTime = this._previousSleepProfile.wakeupTime;
+                previousWakeupTime.isSet = true;
             }
             if (this._previousSleepProfile.bedTimeIsSet) {
                 previousBedTime.startTime = this._previousSleepProfile.bedTime;
+                previousBedTime.isSet = true;
             }
         }
         if (this._followingSleepProfile) {
             if (this._followingSleepProfile.wakeupTimeIsSet) {
                 followingDayWakeupTime.startTime = this._followingSleepProfile.wakeupTime;
+                followingDayWakeupTime.isSet = true;
             }
             if (this._followingSleepProfile.bedTimeIsSet) {
                 followingDayBedTime.startTime = this._followingSleepProfile.bedTime;
+                followingDayBedTime.isSet = true;
             }
         }
         sleepStatusTimes.push(previousBedTime);
@@ -282,28 +357,20 @@ export class DaybookTimeReferencer {
         sleepStatusTimes.push(followingDayBedTime);
         sleepStatusTimes.push(followingDayWakeupTime);
 
-        console.log("CONSTRUCTING STATUS TIMES:  " + this._dateYYYYMMDD);
-        this._statusTimes = new StatusTimes(sleepStatusTimes);
+        // console.log("CONSTRUCTING STATUS TIMES:  " + this._dateYYYYMMDD);
+        this._statusTimes = new StatusTimes(sleepStatusTimes, this._dateYYYYMMDD);
         this._updateChangeSubscriptions();
-    }
-
-    private _getLastActivityTime(): moment.Moment {
-        if (this._timelog.lastTimelogEntryItemTime.isSame(this.startOfThisDay)) {
-            if (!this._previousTimelog.lastTimelogEntryItemTime.isAfter(this.startOfPreviousDay)) {
-                return this._previousTimelog.lastTimelogEntryItemTime;
-            }
-        }
-        return this._timelog.lastTimelogEntryItemTime;
     }
 
 
     /**
      * Get the wakeup time.  This time acts as the seed for calculating the 72-hour window
      */
-    public determineWakeupTime(): moment.Moment {
+    private _determineWakeupTime(): moment.Moment {
         let previousTime: moment.Moment;
         let wakeupTime: moment.Moment;
         if (this._sleepProfile.wakeupTimeIsSet) {
+            console.log("ya ya wakeup time set boyo")
             wakeupTime = this._sleepProfile.wakeupTime;
         } else {
             if (this._previousSleepProfile) {
@@ -323,7 +390,7 @@ export class DaybookTimeReferencer {
                 console.log('Error');
             }
         }
-        console.log("Returning value: " + wakeupTime.format("YYYY-MM-DD hh:mm a"))
+        // console.log("Returning value: " + wakeupTime.format("YYYY-MM-DD hh:mm a"))
         return wakeupTime;
     }
 
@@ -335,18 +402,18 @@ export class DaybookTimeReferencer {
         this._changeSubscriptions = [];
 
 
-        this._changeSubscriptions.push(this._timelog.timelogUpdated$.subscribe((data: { timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] }) => {
-            this._dataChanged$.next(true);
-        }));
-        this._changeSubscriptions.push(this._sleepProfile.sleepProfileUpdated$.subscribe((sleepProfileData: DaybookDayItemSleepProfileData) => {
-            this._updateThisSleepProfileChanges();
-        }));
+        this._changeSubscriptions.push(this._timelog.timelogUpdated$
+            .subscribe((data: { timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] }) => {
+                this._recalculate();
+                this._dataChanged$.next(true);
+            }));
+        this._changeSubscriptions.push(this._sleepProfile.sleepProfileUpdated$
+            .subscribe((sleepProfileData: DaybookDayItemSleepProfileData) => {
+                // this._sleepProfile.setFullProfile(sleepProfileData);
+                this._recalculate();
+                this._dataChanged$.next(true);
+            }));
 
     }
-
-    private _updateThisSleepProfileChanges() {
-
-    }
-
 
 }

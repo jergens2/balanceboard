@@ -8,10 +8,20 @@
     padding:5px;
     border-radius: 5px;
     display:flex;
-    flex-direction: column;
+    flex-direction: row;
     background-color: white;
     margin-bottom: 10px;
 }
+
+.row-buffer{
+    width:20px;
+    margin-right: 10px;
+}
 .profile-item-complete{
     color: rgb(0, 89, 255);
+    border-radius: 3px;
+}
+.profile-item-complete:hover{
+    background-color: rgb(240, 240, 240);
+    cursor: pointer;
 }

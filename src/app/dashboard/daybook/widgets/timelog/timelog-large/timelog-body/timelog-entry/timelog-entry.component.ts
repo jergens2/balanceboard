@@ -43,11 +43,13 @@ export class TimelogEntryComponent implements OnInit {
   }
 
   public onClickTimelogEntry(){
+    console.log("WARNING:  to do: implement mandatory sleep profile input ")
     this.toolsService.openTool(ToolComponents.TimelogEntry, this._entry);
   }
 
 
   public onClickNewTimelogEntry(){
+    console.log("WARNING:  to do: implement mandatory sleep profile input ")
     this.toolsService.openTool(ToolComponents.TimelogEntry, this._entry);
   }
 

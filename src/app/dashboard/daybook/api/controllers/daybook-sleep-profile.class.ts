@@ -47,6 +47,12 @@ export class DaybookSleepProfile {
 
     public get sleepQuality(): SleepQuality { return this.sleepProfileData.sleepQuality; }
 
+    // public setFullProfile(sleepProfileData: DaybookDayItemSleepProfileData) {
+    //     this._sleepProfileData = sleepProfileData;
+    //     this._setProfile();
+    // }
+
+
     public setWakeupTime(wakeupTime: moment.Moment) {
         this._wakeupTime = moment(wakeupTime);
         this._wakeupTimeIsSet = true;
