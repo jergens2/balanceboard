@@ -43,7 +43,7 @@ export class DaybookDayItem {
         this._timelog = new DaybookDayItemTimelog(this.httpShape);
         this._sleepProfile = new DaybookSleepProfile(this.httpShape);
         this._timeReferencer = new DaybookTimeReferencer(this.timelog, this.sleepProfile, this.dateYYYYMMDD);
-        console.log("Time referencer constructed")
+        // console.log("Time referencer constructed")
         this._updateDataChangedSubscriptions();
     }
 
@@ -116,7 +116,10 @@ export class DaybookDayItem {
     public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
 
 
-    public get activeDayIsToday(): boolean { return this.timeReferencer.activeDayIsToday; }
+    public get isToday(): boolean {
+        const today = moment().format('YYYY-MM-DD');
+        return this.dateYYYYMMDD === today;
+    }
 
 
     public setSleepChangesFromTimeReferencer(sleepProfile: DaybookSleepProfile) {

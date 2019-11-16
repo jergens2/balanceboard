@@ -283,7 +283,7 @@ export class DaybookTimeReferencer {
             name: ReferencerTimeEventName.ThisDayWakeupTime,
         };
         sleepStatusTimes.push(wakeupTimeStatus);
-        console.log("This day wakeup time determined to be: " + wakeupTimeStatus.startTime.format("YYYY-MM-DD hh:mm a"))
+        // console.log("This day wakeup time determined to be: " + wakeupTimeStatus.startTime.format("YYYY-MM-DD hh:mm a"))
         let bedTimeStatus = {
             startTime: null,
             endTime: null,
@@ -370,7 +370,7 @@ export class DaybookTimeReferencer {
         let previousTime: moment.Moment;
         let wakeupTime: moment.Moment;
         if (this._sleepProfile.wakeupTimeIsSet) {
-            console.log("ya ya wakeup time set boyo")
+            // console.log("ya ya wakeup time set boyo")
             wakeupTime = this._sleepProfile.wakeupTime;
         } else {
             if (this._previousSleepProfile) {

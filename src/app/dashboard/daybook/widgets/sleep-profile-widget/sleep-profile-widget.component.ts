@@ -35,7 +35,7 @@ export class SleepProfileWidgetComponent implements OnInit {
 
   ngOnInit() {
     this.daybookService.activeDay$.subscribe((dayChanged) => { 
-      console.log("SLEEP PROFILE WIDGET: REINITIATING  - " + dayChanged.dateYYYYMMDD);
+      // console.log("SLEEP PROFILE WIDGET: REINITIATING  - " + dayChanged.dateYYYYMMDD);
       this.reInitiate();
     });
   }

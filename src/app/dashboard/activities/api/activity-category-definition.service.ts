@@ -195,7 +195,7 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
           this._activitiesTree.pruneActivityFromTree(activity);
           this._activitiesTree$.next(this._activitiesTree);
         }
-      })
+      });
   }
 
 

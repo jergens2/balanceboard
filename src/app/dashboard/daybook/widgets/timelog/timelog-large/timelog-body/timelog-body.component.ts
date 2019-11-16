@@ -28,7 +28,7 @@ export class TimelogBodyComponent implements OnInit {
   private _zoomControlSubscription: Subscription = new Subscription();
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
-    console.log("Zoom:  " + this._zoomControl.startTime.format("YYYY-MM-DD hh:mm a") + " - " + this._zoomControl.endTime.format("YYYY-MM-DD hh:mm a"))
+    // console.log("Zoom:  " + this._zoomControl.startTime.format("YYYY-MM-DD hh:mm a") + " - " + this._zoomControl.endTime.format("YYYY-MM-DD hh:mm a"))
     this.estimateInitialMinutesPerPixel(this.screenSizeService.dimensions.height);
     this.buildTimelog();
   }

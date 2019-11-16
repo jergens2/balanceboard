@@ -56,7 +56,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       // console.log("Clock passed the minute")
       this._currentTime = moment();
       // console.log("this._currentTime =  ", this._currentTime.format("hh:mm:ss a"))
-      if (this.daybookService.activeDayIsToday) {
+      if (this.daybookService.activeDay.isToday) {
         this.buildZoomButtons();
       }
     });
@@ -203,7 +203,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     zoomButtons.push(this._twentyFourHourZoom);
     zoomButtons.push(this._wakeCycleZoom);
     zoomButtons.push(this._listZoom);
-    if (this.daybookService.activeDayIsToday) {
+    if (this.daybookService.activeDay.isToday) {
       zoomButtons.push(this._eightHourZoom);
       zoomButtons.push(this._customZoom);
     } else {

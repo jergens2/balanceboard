@@ -38,15 +38,15 @@ export class ServiceAuthenticationService {
     private daybookHttpRequestService: DaybookHttpRequestService,
     private daybookService: DaybookService,
     private scheduleRotationService: ScheduleRotationsService,
-    
-    ) {
+
+  ) {
 
 
 
   }
 
   public logout() {
-    this.serviceAuthentications.forEach((serviceAuthentication)=>{
+    this.serviceAuthentications.forEach((serviceAuthentication) => {
       console.log("Logging out of " + serviceAuthentication.name);
       serviceAuthentication.logout();
     });
@@ -60,18 +60,18 @@ export class ServiceAuthenticationService {
     let serviceAuthentications: ServiceAuthentication[] = [];
     let activityCategoryDefinitionSA: ServiceAuthentication = new ServiceAuthentication("ActivityCategoryDefinition", this.activityCategoryDefinitionService);
     let routineDefinitionSA: ServiceAuthentication = new ServiceAuthentication("RoutineDefinition", this.routineDefinitionService);
-        
+
     let dayTemplatesSA: ServiceAuthentication = new ServiceAuthentication("DayTemplates", this.dayTemplatesService);
     let scheduleRotationSA: ServiceAuthentication = new ServiceAuthentication("ScheduleRotation", this.scheduleRotationService);
     let daybookHttpSA: ServiceAuthentication = new ServiceAuthentication("DaybookHttp", this.daybookHttpRequestService);
-    
+
 
     daybookHttpSA.setChild(new ServiceAuthentication("Daybook", this.daybookService));
     scheduleRotationSA.setChild(daybookHttpSA);
     dayTemplatesSA.setChild(scheduleRotationSA);
     routineDefinitionSA.setChild(dayTemplatesSA)
     activityCategoryDefinitionSA.setChild(routineDefinitionSA);
-    
+
     serviceAuthentications.push(activityCategoryDefinitionSA);
 
 
@@ -80,30 +80,35 @@ export class ServiceAuthenticationService {
     serviceAuthentications.push(new ServiceAuthentication("Social", this.socialService));
 
     serviceAuthentications.push(new ServiceAuthentication("UserSettings", this.userSettingsService));
-    
-    
+
+
     let loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-    serviceAuthentications.forEach((sa)=>{
+    serviceAuthentications.forEach((sa) => {
       sa.login$(authStatus);
-    })
+    });
 
-    
+
 
     let timerSubscription: Subscription = new Subscription();
-    timerSubscription = timer(0,300).subscribe((val)=>{
-      let loginComplete :boolean = true;
-      serviceAuthentications.map((sa)=>{ return sa.loginComplete}).forEach((val)=>{
-        if(val === false){
+    timerSubscription = timer(0, 300).subscribe((val) => {
+      let loginComplete: boolean = true;
+      serviceAuthentications.map((sa) => { return sa.loginComplete }).forEach((val) => {
+        if (val === false) {
           loginComplete = false;
         }
       });
+      // serviceAuthentications.forEach((item)=>{
+      //   console.log("SA: " + item.name + " logged in? " + item.loginComplete)
+      // });
       this.serviceAuthentications = serviceAuthentications;
-      if(loginComplete){
+      if (loginComplete) {
         loginComplete$.next(loginComplete);
         timerSubscription.unsubscribe();
       }
     });
+
+
 
     return loginComplete$.asObservable();
   }

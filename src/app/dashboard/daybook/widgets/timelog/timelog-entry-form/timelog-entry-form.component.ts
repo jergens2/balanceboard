@@ -32,8 +32,7 @@ export class TimelogEntryFormComponent implements OnInit {
         this._activityItems.push(item);
       });
 
-      // this._startTimeBoundary = this.daybookService.getStartTimeBoundary(entryItem);
-      // this._endTimeBoundary = this.daybookService.getEndTimeBoundary(entryItem);
+      this.getTemplate();
 
       this.reload();
     }
@@ -42,26 +41,40 @@ export class TimelogEntryFormComponent implements OnInit {
   ngOnInit() {
     // console.log("Entry item: ", this.entryItem.startTime.format("hh:mm a") + " -- - -- " + this.entryItem.endTime.format("hh:mm a"));
     if (!this._entryItem) {
-      
+      /**
+       * If no entry item is provided, then it is implied therefore that the opening of this component is to open a New one,
+       * meaning New relative to the time of creating it.
+       */
       this.buildNewEntryItem();
     }
   }
 
-  private buildNewEntryItem() {
+  private _template: {
+    startTime: moment.Moment,
+    startTimeStartBoundary: moment.Moment,
+    startTimeEndBoundary: moment.Moment,
+    setSleepProfileRequired: boolean,
+    crossesMidnight: boolean,
+    isAmbiguous: boolean,
+  }
+
+  private getTemplate() {
     let template = this.daybookService.activeDay.timeReferencer.getNewTimelogEntryTemplate();
+    this._template = template;
+    this._wakeupTimeIsSet = this.daybookService.activeDay.timeReferencer.thisDayWakeupTime.isSet;
+    this._startTimeBoundary = this._template.startTimeStartBoundary;
+    this._endTimeBoundary = this._endTimeBoundary;
+  }
 
-    console.log("Building new TLE from template: ")
-    console.log(template);
+  private buildNewEntryItem() {
+    this.getTemplate();
 
-    let startTime = template.startTime;
+    console.log("template info for new TLE: " ,  this._template);
+    let startTime = this._template.startTime;
     let endTime = moment();
 
     let timelogEntry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime);
     this.entryItem = timelogEntry;
-
-    this._wakeupTimeIsSet = this.daybookService.today.sleepProfile.wakeupTimeIsSet;
-
-
   }
 
   private _entryItem: TimelogEntryItem;
@@ -88,7 +101,7 @@ export class TimelogEntryFormComponent implements OnInit {
 
 
 
-    
+
     this.buildNewEntryItem();
   }
 
