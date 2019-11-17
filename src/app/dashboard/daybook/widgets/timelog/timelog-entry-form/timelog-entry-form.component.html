@@ -1,16 +1,20 @@
-<div class="timelog-entry-form-root">
-    <app-tlef-wakeup-time *ngIf="!wakeupTimeIsSet" (timeChanged)="onWakeupTimeChanged($event)"></app-tlef-wakeup-time>
-    <div *ngIf="wakeupTimeIsSet" style="display:flex;flex-direction: column;">
-        <div class="form-section times-section" style="flex-direction: row;" *ngIf="!modifyingTimes" (click)="onClickModifyTimes()" >
+<div class="timelog-entry-form-root" *ngIf="entryItem">
+    <app-tlef-wakeup-time *ngIf="promptForWakeupTime" (timeChanged)="onWakeupTimeChanged($event)">
+    </app-tlef-wakeup-time>
+    <div *ngIf="!promptForWakeupTime" style="display:flex;flex-direction: column;">
+        <div class="form-section times-section" style="flex-direction: row;" *ngIf="!modifyingTimes"
+            (click)="onClickModifyTimes()">
             <div style="display:flex;flex-direction: column; flex-grow:2;">
-                    <div>{{ entryItem.startTime.format('h:mm a')}} to {{ entryItem.endTime.format('h:mm a')}}</div>
-                    <div style="font-weight:bold; font-size:0.9em; color: rgb(0, 57, 163);">{{ entryItem.durationString }}</div>
+                <div>{{ entryItem.startTime.format('h:mm a')}} to {{ entryItem.endTime.format('h:mm a')}}</div>
+                <div style="font-weight:bold; font-size:0.9em; color: rgb(0, 57, 163);">{{ entryItem.durationString }}
+                </div>
             </div>
             <fa-icon class="icon-button" [icon]="faEdit"></fa-icon>
         </div>
 
         <div class="form-section" *ngIf="modifyingTimes">
-            <app-tlef-modify-times [entryItem]="entryItem" [startTimeBoundary]="startTimeBoundary" [endTimeBoundary]="endTimeBoundary" (timesModified)="onTimesModified($event)"></app-tlef-modify-times>
+            <app-tlef-modify-times [entryItem]="entryItem" [startTimeBoundary]="startTimeBoundary"
+                [endTimeBoundary]="endTimeBoundary" (timesModified)="onTimesModified($event)"></app-tlef-modify-times>
         </div>
 
         <div class="form-section" style="background-color: rgb(252, 252, 252);">
@@ -22,10 +26,8 @@
             <button class="medium-button" *ngIf="isChanged" (click)="onClickSave()">
                 Save timelog entry
             </button>
-            <button class="medium-button delete-button" [ngClass]="{'confirm-delete-button':confirmDiscard}"
-                style="margin-left: 5px;" (click)="onClickDiscard()">
-                <span *ngIf="confirmDiscard">Confirm</span>
-                <span *ngIf="!confirmDiscard">Discard</span>
+            <button class="medium-button delete-button" style="margin-left: 5px;" (click)="onClickDiscard()">
+                Discard
             </button>
         </div>
         <div class="final-form-section" *ngIf="mode === 'EDIT'">
@@ -37,12 +39,13 @@
                 <span *ngIf="!confirmDelete">Delete</span>
                 <span *ngIf="confirmDelete">Confirm</span>
             </button>
-            <button class="medium-button delete-button" [ngClass]="{'confirm-delete-button':confirmDiscard}"
-                style="margin-left: 5px;" (click)="onClickDiscard()">
-                <span *ngIf="confirmDiscard">Confirm</span>
-                <span *ngIf="!confirmDiscard">Cancel</span>
+            <button class="medium-button delete-button" style="margin-left: 5px;" (click)="onClickDiscard()">
+                Cancel
             </button>
         </div>
     </div>
 
+</div>
+<div *ngIf="!entryItem">
+    <div style="color: red; font-weight: bold;">Error: no entryItem</div>
 </div>

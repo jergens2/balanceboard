@@ -289,28 +289,29 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
   }
 
   private updateChangeSubscription(daybookDayItems: DaybookDayItem[]) {
+    console.log("method disabled:  updateChangeSubscriptions()")
     // console.log("Updating subscriptiuo")
-    this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
-    daybookDayItems.forEach((daybookDayItem: DaybookDayItem) => {
-      this._changeSubscriptions.push(daybookDayItem.dataChanged$
-        .subscribe((dataChangedEvent: { prev: boolean, current: boolean, next: boolean }) => {
-          if (dataChangedEvent.prev === true || dataChangedEvent.next === true) {
-            const multipleItems: DaybookDayItem[] = []
-            if (dataChangedEvent.prev === true) {
-              multipleItems.push(daybookDayItem.previousDay);
-            }
-            multipleItems.push(daybookDayItem);
-            if (dataChangedEvent.next === true) {
-              multipleItems.push(daybookDayItem.followingDay);
-            }
-            this.updateMultipleDayItems(multipleItems);
-          } else if (dataChangedEvent.current === true) {
-            this.updateDaybookDayItem(daybookDayItem);
-          } else {
-            console.log('Error:  bad data changed event in daybookHttpService');
-          }
-        }));
-    });
+    // this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
+    // daybookDayItems.forEach((daybookDayItem: DaybookDayItem) => {
+    //   this._changeSubscriptions.push(daybookDayItem.dataChanged$
+    //     .subscribe((dataChangedEvent: { prev: boolean, current: boolean, next: boolean }) => {
+    //       if (dataChangedEvent.prev === true || dataChangedEvent.next === true) {
+    //         const multipleItems: DaybookDayItem[] = []
+    //         if (dataChangedEvent.prev === true) {
+    //           multipleItems.push(daybookDayItem.previousDay);
+    //         }
+    //         multipleItems.push(daybookDayItem);
+    //         if (dataChangedEvent.next === true) {
+    //           multipleItems.push(daybookDayItem.followingDay);
+    //         }
+    //         this.updateMultipleDayItems(multipleItems);
+    //       } else if (dataChangedEvent.current === true) {
+    //         this.updateDaybookDayItem(daybookDayItem);
+    //       } else {
+    //         console.log('Error:  bad data changed event in daybookHttpService');
+    //       }
+    //     }));
+    // });
   }
 
   private buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[] {

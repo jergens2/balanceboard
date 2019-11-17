@@ -13,25 +13,25 @@ import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-compo
 export class TimelogEntryComponent implements OnInit {
 
   constructor(private toolsService: ToolsService) { }
-
+  faPlusCircle = faPlusCircle;
   private _entry: TimelogEntryItem;
   private _minutesPerTwentyPixels: number;
-  @Input() public set entry(item: TimelogEntryItem){
+  @Input() public set entry(item: TimelogEntryItem) {
     this._entry = item;
   }
-  @Input() public set minutesPerTwentyPixels(minutesPerTwentyPixels: number){
+  @Input() public set minutesPerTwentyPixels(minutesPerTwentyPixels: number) {
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
   }
   public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
-  public get entry(): TimelogEntryItem{ return this._entry;}
+  public get entry(): TimelogEntryItem { return this._entry; }
   public get mouseIsOver(): boolean { return this._entry.itemState.mouseIsOver; }
   // public get elementHeight(): number { return this._relativeMousePosition.elementHeight; }
-  public get showNewTimelogEntryButton(): boolean { 
+  public get showNewTimelogEntryButton(): boolean {
     return this.mouseIsOver && this.entry.sleepState === 'AWAKE' && !this._entry.isSavedEntry;
   }
 
   ngOnInit() {
-    
+
   }
 
   // private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
@@ -41,20 +41,9 @@ export class TimelogEntryComponent implements OnInit {
     this._entry.itemState.onMouseEnter();
     // console.log(this._entry.sleepState);
   }
-
-  public onClickTimelogEntry(){
-    console.log("WARNING:  to do: implement mandatory sleep profile input ")
-    this.toolsService.openTool(ToolComponents.TimelogEntry, this._entry);
+  public onClickTimelogEntry() {
+    this.toolsService.setTimelogEntry(this._entry);
+    this.toolsService.openTool(ToolComponents.TimelogEntry);
   }
-
-
-  public onClickNewTimelogEntry(){
-    console.log("WARNING:  to do: implement mandatory sleep profile input ")
-    this.toolsService.openTool(ToolComponents.TimelogEntry, this._entry);
-  }
-
-
-
-  faPlusCircle = faPlusCircle;
 
 }

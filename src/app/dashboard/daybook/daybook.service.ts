@@ -28,10 +28,8 @@ export class DaybookService implements ServiceAuthenticates {
   private _todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
   private _activeDay$: BehaviorSubject<DaybookDayItem> = new BehaviorSubject(null);
 
-  private _clockSubscription: Subscription = new Subscription();
-  private _todaySubscription: Subscription = new Subscription();
-  private _todayChangedSub: Subscription = new Subscription();
-  private _activeDayChangedSub: Subscription = new Subscription();
+  private _clockSubscriptions: Subscription[] = [];
+  private _daybookItemSubs: Subscription[] = [];
 
   public login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;
@@ -49,73 +47,105 @@ export class DaybookService implements ServiceAuthenticates {
     this._todayYYYYMMDD = moment().format('YYYY-MM-DD');
     this._daybookDayItems$.next([]);
     this._clock = null;
-    this._clockSubscription.unsubscribe();
-    this._todaySubscription.unsubscribe();
+    this._clockSubscriptions.forEach(s => s.unsubscribe());
+    this._clockSubscriptions = [];
+    this._daybookItemSubs.forEach(s => s.unsubscribe());
+    this._daybookItemSubs = [];
   }
 
   private _initiate() {
     this._startClock();
-    this._initiateToday();
+    this._updateTodayFromDatabase();
   }
 
   private _startClock() {
-    this._clockSubscription.unsubscribe();
+    this._clockSubscriptions.forEach(s => s.unsubscribe());
+    this._clockSubscriptions = [];
     this._clock = moment();
     this._todayYYYYMMDD = this.clock.format('YYYY-MM-DD');
-    this._clockSubscription = timer(0, 1000).subscribe((second) => {
+    const clockSub = timer(0, 1000).subscribe((second) => {
       this._clock = moment();
       if (this._clock.format('YYYY-MM-DD') !== this.todayYYYYMMDD) {
         this._crossMidnight();
       }
     });
+    const msToNextMinute = moment(this._clock).startOf('minute').add(1, 'minute').add(30, 'seconds')
+      .diff(moment(this._clock), 'milliseconds');
+    const minuteSub = timer(msToNextMinute, 60000).subscribe((minute) => {
+      // console.log(moment().format('YYYY-MM-DD hh:mm ss a') + " : every minute updating");
+      this._updateTodayFromDatabase();
+    });
+    this._clockSubscriptions = [clockSub, minuteSub];
   }
 
-  private _initiateToday() {
-    this._todaySubscription.unsubscribe();
-    this._todaySubscription = this.daybookHttpRequestService.getDaybookDayItemByDate$(this.clock.format('YYYY-MM-DD'))
+  private _updateTodayFromDatabase(crossedMidnight?: boolean) {
+    // console.log(this.clock.format('YYYY-MM-DD') + " :getting daybook item for date");
+    this.daybookHttpRequestService.getDaybookDayItemByDate$(this.clock.format('YYYY-MM-DD'))
       .subscribe((todayItem: DaybookDayItem) => {
-        this._today$.next(todayItem);
-        this._updateActiveDay(todayItem);
+        this._setTodayItem(todayItem, crossedMidnight);
         this._loginComplete$.next(true);
       });
   }
 
-  private _crossMidnight() {
-    let updateActiveDay = false;
-    if (this.activeDay.dateYYYYMMDD === this.todayYYYYMMDD) {
-      updateActiveDay = true;
-    }
-    this._todayYYYYMMDD = this.clock.format('YYYY-MM-DD');
-    this._initiateToday();
-    if (updateActiveDay) {
-      this._updateActiveDay(this.today);
-    }
+  private _setTodayItem(todayItem: DaybookDayItem, crossedMidnight?: boolean) {
+    todayItem.setIsToday();
+    this._today$.next(todayItem);
+    if (!this.activeDay) { this._updateActiveDay(this.today); } else
+      if (this.activeDay.dateYYYYMMDD === todayItem.dateYYYYMMDD) { this._updateActiveDay(todayItem); } else
+        if (crossedMidnight === true) {
+          if (this.activeDay.dateYYYYMMDD === moment(todayItem.dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD')) {
+            console.log("Crossed midnight, active day was "
+              + this.activeDay.dateYYYYMMDD + " , updating to today: " + todayItem.dateYYYYMMDD);
+            this._updateActiveDay(todayItem);
+          }
+        }
+    this._updateChangeSubscriptions();
   }
 
+  private _crossMidnight() {
+    this._todayYYYYMMDD = this.clock.format('YYYY-MM-DD');
+    this._updateTodayFromDatabase(true);
+  }
+
+
   private _updateActiveDay(newActiveDay: DaybookDayItem) {
+    // console.log("Updating active day : " + newActiveDay);
     this._activeDay$.next(newActiveDay);
     this._updateChangeSubscriptions();
   }
 
   private _updateChangeSubscriptions() {
-    this._todayChangedSub.unsubscribe();
-    this._activeDayChangedSub.unsubscribe();
-    if (this.today.dateYYYYMMDD === this.activeDay.dateYYYYMMDD) {
-      this._activeDayChangedSub = this.activeDay.dataChanged$
+    // console.log("Updating change subscriptions");
+    this._daybookItemSubs.forEach(s => s.unsubscribe());
+    this._daybookItemSubs = [];
+    const items: DaybookDayItem[] = [this.today];
+    if (this.today.dateYYYYMMDD !== this.activeDay.dateYYYYMMDD) {
+      // console.log("  Active day is not today")
+      items.push(this.activeDay);
+    }
+    items.forEach((daybookDayItem: DaybookDayItem) => {
+      // console.log("Subscribing to daybookDayItem: " + daybookDayItem.dateYYYYMMDD);
+      const sub = daybookDayItem.dataChanged$
         .subscribe((dataChangedEvent: { prev: boolean, current: boolean, next: boolean }) => {
-          this.daybookHttpRequestService.updateDaybookDayItem$(this.activeDay)
+          // console.log(daybookDayItem.dateYYYYMMDD + " : Data changed event:")
+          this.daybookHttpRequestService.updateDaybookDayItem$(daybookDayItem)
             .subscribe((updated) => {
-              const prev = this.activeDay.previousDay;
-              const next = this.activeDay.followingDay;
+              const prev = daybookDayItem.previousDay;
+              const next = daybookDayItem.followingDay;
               const newActiveDay = updated;
               newActiveDay.previousDay = prev;
               newActiveDay.followingDay = next;
-              this._updateActiveDay(newActiveDay);
+              if (newActiveDay.dateYYYYMMDD === this.today.dateYYYYMMDD) {
+                // console.log("    setting today item after change")
+                this._setTodayItem(newActiveDay);
+              } else if (newActiveDay.dateYYYYMMDD === this.activeDay.dateYYYYMMDD) {
+                // console.log("   setting active day item after change");
+                this._updateActiveDay(newActiveDay);
+              }
             });
         });
-    } else {
-
-    }
+      this._daybookItemSubs.push(sub);
+    });
   }
 
   public get clock(): moment.Moment { return moment(this._clock); }
@@ -127,62 +157,24 @@ export class DaybookService implements ServiceAuthenticates {
 
 
   public setActiveDayYYYYMMDD(changedDayYYYYMMDD: string) {
-    console.log('Daybook service: changing the active date to: ' + changedDayYYYYMMDD);
-    this.updateActiveDay(changedDayYYYYMMDD);
+    // console.log('Daybook service: changing the active date to: ' + changedDayYYYYMMDD);
+    if (changedDayYYYYMMDD === this.todayYYYYMMDD) {
+      // console.log("   active day was today, so updating TODAY item")
+      this._updateTodayFromDatabase();
+      // console.log("  today item was updated, now setting active day item");
+      this._updateActiveDay(this.today);
+    } else {
+      // console.log("   active day was NOT today so updating active day only")
+      this.getActiveDateFromDatabase(changedDayYYYYMMDD);
+
+    }
   }
-  private updateActiveDay(dateYYYYMMDD: string) {
+  private getActiveDateFromDatabase(dateYYYYMMDD: string) {
     this.daybookHttpRequestService.getDaybookDayItemByDate$(dateYYYYMMDD)
       .subscribe((activeDayItem: DaybookDayItem) => {
         this._updateActiveDay(activeDayItem);
       });
   }
 
-  /**
-   * This method is for the tool menu item for entering in a new timelog Entry.
-   * Implicitly, this tool is for active current use, as in: enter a new timelog entry for the period of time
-   * of the previous relevant start time (e.g. wake up) to now.
-   */
-  public saveTimelogEntry(timelogEntry: TimelogEntryItem, afterMidnightEntry?: TimelogEntryItem) {
-    let daybookDayItem: DaybookDayItem;
-    const dateYYYYMMDD: string = timelogEntry.startTime.format('YYYY-MM-DD');
-    if (dateYYYYMMDD === this.activeDay.dateYYYYMMDD) {
-      daybookDayItem = this.activeDay;
-    }
-    if (daybookDayItem) {
-      daybookDayItem.timelog.addTimelogEntryItem(timelogEntry);
-      if (afterMidnightEntry) {
-        daybookDayItem.followingDay.timelog.addTimelogEntryItem(afterMidnightEntry);
-      }
-    } else {
-      console.log('Error, TLE not saved: no daybook day item');
-    }
-  }
-
-  public updateTimelogEntry(timelogEntry: TimelogEntryItem) {
-    let daybookDayItem: DaybookDayItem;
-    const dateYYYYMMDD: string = timelogEntry.startTime.format('YYYY-MM-DD');
-    if (dateYYYYMMDD === this.activeDay.dateYYYYMMDD) {
-      daybookDayItem = this.activeDay;
-    }
-    if (daybookDayItem) {
-      daybookDayItem.timelog.updateTimelogEntry(timelogEntry);
-    } else {
-      console.log('Error, cant update timelog entry:  No daybook day item');
-    }
-
-  }
-
-  public deleteTimelogEntry(timelogEntry: TimelogEntryItem) {
-    let daybookDayItem: DaybookDayItem;
-    const dateYYYYMMDD: string = timelogEntry.startTime.format('YYYY-MM-DD');
-    if (dateYYYYMMDD === this.activeDay.dateYYYYMMDD) {
-      daybookDayItem = this.activeDay;
-    }
-    if (daybookDayItem) {
-      daybookDayItem.timelog.deleteTimelogEntry(timelogEntry);
-    } else {
-      console.log('Error, can\'t Delete timelog entry:  No daybook day item');
-    }
-  }
 
 }

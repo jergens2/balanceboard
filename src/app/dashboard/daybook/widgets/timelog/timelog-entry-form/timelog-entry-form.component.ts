@@ -19,35 +19,19 @@ export class TimelogEntryFormComponent implements OnInit {
 
   constructor(private toolsService: ToolsService, private daybookService: DaybookService) { }
 
-  @Input() public set entryItem(entryItem: TimelogEntryItem) {
-    if (entryItem) {
-      this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime, entryItem.sleepState);
-      this._entryItem.isSavedEntry = entryItem.isSavedEntry;
-      this._entryItem.timelogEntryActivities = entryItem.timelogEntryActivities;
+  private _itemState: ItemState;
+  private _modifyingTimes = false;
+  private _mode: 'EDIT' | 'NEW' = 'NEW';
 
+  private _entryItem: TimelogEntryItem = null;
+  private _activityItems: TimelogEntryActivity[] = [];
 
-      this._dataEntryItem = this._entryItem.dataEntryItem;
-      this._activityItems = [];
-      this._entryItem.timelogEntryActivities.forEach((item) => {
-        this._activityItems.push(item);
-      });
-
-      this.getTemplate();
-
-      this.reload();
-    }
-  }
-
-  ngOnInit() {
-    // console.log("Entry item: ", this.entryItem.startTime.format("hh:mm a") + " -- - -- " + this.entryItem.endTime.format("hh:mm a"));
-    if (!this._entryItem) {
-      /**
-       * If no entry item is provided, then it is implied therefore that the opening of this component is to open a New one,
-       * meaning New relative to the time of creating it.
-       */
-      this.buildNewEntryItem();
-    }
-  }
+  private _dataEntryItem: DaybookTimelogEntryDataItem;
+  private _startTimeBoundary: moment.Moment;
+  private _endTimeBoundary: moment.Moment;
+  private _wakeupTimeIsSet = false;
+  private _activeDayIsToday = false;
+  private _promptForWakeupTime = false;
 
   private _template: {
     startTime: moment.Moment,
@@ -56,70 +40,88 @@ export class TimelogEntryFormComponent implements OnInit {
     setSleepProfileRequired: boolean,
     crossesMidnight: boolean,
     isAmbiguous: boolean,
+  };
+
+  private _confirmDelete = false;
+  private _confirmDiscard = false;
+  faEdit = faEdit;
+
+
+  private setEntryItem(entryItem: TimelogEntryItem) {
+    console.log('Setting entry item: ', entryItem);
+    this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime, entryItem.sleepState);
+    this._entryItem.isSavedEntry = entryItem.isSavedEntry;
+    this._entryItem.timelogEntryActivities = entryItem.timelogEntryActivities;
+    this._dataEntryItem = this._entryItem.dataEntryItem;
+    this._activityItems = [];
+    this._entryItem.timelogEntryActivities.forEach((item) => {
+      this._activityItems.push(item);
+    });
   }
 
-  private getTemplate() {
-    let template = this.daybookService.activeDay.timeReferencer.getNewTimelogEntryTemplate();
-    this._template = template;
-    this._wakeupTimeIsSet = this.daybookService.activeDay.timeReferencer.thisDayWakeupTime.isSet;
-    this._startTimeBoundary = this._template.startTimeStartBoundary;
-    this._endTimeBoundary = this._endTimeBoundary;
+  ngOnInit() {
+    this._activeDayIsToday = this.daybookService.activeDay.isToday;
+    this._wakeupTimeIsSet = this.daybookService.activeDay.sleepProfile.wakeupTimeIsSet;
+    if (!this._wakeupTimeIsSet && this._activeDayIsToday) { this._promptForWakeupTime = true; }
+    const receivedEntry = this.toolsService.receiveTimelogEntry();
+    if (!receivedEntry) {
+      console.log('new')
+      this._mode = 'NEW';
+      this.buildNewEntryItem();
+    } else {
+      if (receivedEntry.isSavedEntry) {
+        this._mode = 'EDIT';
+        this.setEntryItem(receivedEntry);
+      } else {
+        this._mode = 'NEW';
+        this.buildNewEntryItem(receivedEntry);
+      }
+    }
+
+
+    // console.log("Entry item: ", this.entryItem.startTime.format("hh:mm a") + " -- - -- " + this.entryItem.endTime.format("hh:mm a"));
   }
 
-  private buildNewEntryItem() {
-    this.getTemplate();
 
-    console.log("template info for new TLE: " ,  this._template);
-    let startTime = this._template.startTime;
-    let endTime = moment();
-
-    let timelogEntry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime);
-    this.entryItem = timelogEntry;
+  private buildNewEntryItem(receivedEntry?: TimelogEntryItem) {
+    let startTime: moment.Moment;
+    let endTime: moment.Moment;
+    if (receivedEntry) {
+      startTime = receivedEntry.startTime;
+      endTime = receivedEntry.endTime;
+    } else {
+      this._template = this.daybookService.activeDay.timeReferencer.getNewTimelogEntryTemplate();
+      if (this._template) {
+        startTime = this._template.startTime;
+        endTime = moment();
+      } else {
+        console.log('Error:  no template');
+      }
+    }
+    const timelogEntry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime);
+    this.setEntryItem(timelogEntry);
   }
 
-  private _entryItem: TimelogEntryItem;
-  private _activityItems: TimelogEntryActivity[] = [];
 
-  private _dataEntryItem: DaybookTimelogEntryDataItem;
-  public get entryItem(): TimelogEntryItem { return this._entryItem; };
+  public get entryItem(): TimelogEntryItem { return this._entryItem; }
   public get dataEntryItem(): DaybookTimelogEntryDataItem { return this._dataEntryItem; }
-
-
-  private _startTimeBoundary: moment.Moment;
-  private _endTimeBoundary: moment.Moment;
-
   public get startTimeBoundary(): moment.Moment { return this._startTimeBoundary; }
   public get endTimeBoundary(): moment.Moment { return this._endTimeBoundary; }
-
-  private _wakeupTimeIsSet: boolean = true;
-  public get wakeupTimeIsSet(): boolean { return this._wakeupTimeIsSet; };
+  public get wakeupTimeIsSet(): boolean { return this._wakeupTimeIsSet; }
+  public get isChanged(): boolean { return true; }
+  public get mode(): 'EDIT' | 'NEW' { return this._mode; }
+  public get modifyingTimes(): boolean { return this._modifyingTimes; }
+  public get promptForWakeupTime(): boolean { return this._promptForWakeupTime; }
 
   public onWakeupTimeChanged(wakeupTime: moment.Moment) {
-    console.log("wakeup time changed: ", wakeupTime.format("hh:mm a"));
+    console.log('wakeup time changed: ', wakeupTime.format('hh:mm a'));
     this.daybookService.activeDay.sleepProfile.setWakeupTime(wakeupTime);
     this.daybookService.activeDay.sleepProfile.saveChanges();
-
-
-
-
     this.buildNewEntryItem();
   }
 
-  private reload() {
-    this._mode = this.entryItem.isSavedEntry ? "EDIT" : "NEW";
-    this._itemState = new ItemState(this.entryItem.timelogEntryActivities);
-  }
 
-
-  private _itemState: ItemState;
-  public get isChanged(): boolean { return true; }
-
-  private _mode: "EDIT" | "NEW" = "NEW";
-  public get mode(): "EDIT" | "NEW" { return this._mode; };
-
-  private _modifyingTimes: boolean = false;
-  public get modifyingTimes(): boolean { return this._modifyingTimes; };
-  public onClickModifyTimes() { this._modifyingTimes = true; };
+  public onClickModifyTimes() { this._modifyingTimes = true; }
 
   public onTimesModified(times: { startTime: moment.Moment, endTime: moment.Moment }) {
     // console.log("times: ", times);
@@ -131,7 +133,7 @@ export class TimelogEntryFormComponent implements OnInit {
       return {
         percentage: item.durationPercent,
         activityTreeId: item.activity.treeId,
-      }
+      };
     });
     // let checkEntries: TimelogEntryActivity[] = []
     // this._entryItem.timelogEntryActivities.forEach((item) => {
@@ -143,30 +145,35 @@ export class TimelogEntryFormComponent implements OnInit {
 
   onClickSave() {
     // console.log("Saving timelog entry: ", this.entryItem);
-
     this._entryItem.timelogEntryActivities = this._activityItems;
+    if (this.mode === 'NEW') {
+      this.daybookService.activeDay.saveTimelogEntry(this.entryItem);
+      // console.log("Saving new on the TODAY item")
 
-    if (this.mode === "NEW") {
-      if (this.entryCrossesMidnight(this.entryItem)) {
-        let splitEntry: { first: TimelogEntryItem, second: TimelogEntryItem } = this.splitTimelogEntryOverMidnight(this.entryItem);
-        this.daybookService.saveTimelogEntry(splitEntry.first, splitEntry.second);
-      } else {
-        // console.log("Saving timelog entry item", this.entryItem.startTime.format('hh:mm a') + " to " + this.entryItem.endTime.format('hh:mm a'))
-        this.daybookService.saveTimelogEntry(this.entryItem);
-      }
+      // if (this._activeDayIsToday) {
+        
 
-    } else if (this.mode === "EDIT") {
-      this.daybookService.updateTimelogEntry(this.entryItem);
+      //   if (this.entryCrossesMidnight(this.entryItem)) {
+      //     const splitEntry: { first: TimelogEntryItem, second: TimelogEntryItem } = this.splitTimelogEntryOverMidnight(this.entryItem);
+      //     this.daybookService.activeDay.saveTimelogEntry(splitEntry.first, splitEntry.second);
+      //   } else {
+      //     // console.log("Saving timelog entry item", this.entryItem.startTime.format('hh:mm a')
+      //     // + " to " + this.entryItem.endTime.format('hh:mm a'))
+      //     this.daybookService.activeDay.saveTimelogEntry(this.entryItem);
+      //   }
+      // } else {
+      //   this.daybookService.activeDay.saveTimelogEntry(this.entryItem);
+      // }
+    } else if (this.mode === 'EDIT') {
+      console.log(" UPDATING OLD on the ACTIVEDAY item")
+      this.daybookService.activeDay.updateTimelogEntry(this.entryItem);
     }
-
-
-
     this.toolsService.closeTool();
   }
 
   private entryCrossesMidnight(entryItem: TimelogEntryItem): boolean {
-    let isAfterMidnight: boolean = false;
-    if (entryItem.endTime.isAfter(moment(entryItem.startTime).endOf("day"))) {
+    let isAfterMidnight = false;
+    if (entryItem.endTime.isAfter(moment(entryItem.startTime).endOf('day'))) {
       isAfterMidnight = true;
     }
     // console.log("crosses midngiht: ? " , isAfterMidnight)
@@ -179,9 +186,9 @@ export class TimelogEntryFormComponent implements OnInit {
     let second: TimelogEntryItem;
     // if(entry.timelogEntryActivities.length <= 1){
     first = Object.assign({}, entry);
-    first.endTime = first.startTime.endOf("day");
+    first.endTime = first.startTime.endOf('day');
     second = Object.assign({}, entry);
-    second.startTime = second.endTime.startOf("day");
+    second.startTime = second.endTime.startOf('day');
     // }else{
 
     // }
@@ -190,36 +197,21 @@ export class TimelogEntryFormComponent implements OnInit {
     return splitEntry;
   }
 
-
-  private _confirmDelete: boolean = false;
-  private _confirmDiscard: boolean = false;
-  public get confirmDelete(): boolean { return this._confirmDelete; };
-  public get confirmDiscard(): boolean { return this._confirmDiscard; };
+  public get confirmDelete(): boolean { return this._confirmDelete; }
+  public get confirmDiscard(): boolean { return this._confirmDiscard; }
 
   onClickDelete() {
     if (this.confirmDelete === false) {
       this._confirmDelete = true;
     } else {
-      this.daybookService.deleteTimelogEntry(this.entryItem);
+      this.daybookService.activeDay.deleteTimelogEntry(this.entryItem);
       this.toolsService.closeTool();
     }
   }
-
 
   onClickDiscard() {
-    if (!this.isChanged) {
-      this._entryItem = this._itemState.cancelAndReturnOriginalValue();
-      this.toolsService.closeTool();
-    } else {
-      if (this.confirmDiscard === false) {
-        this._confirmDiscard = true;
-      } else {
-        this._entryItem = this._itemState.cancelAndReturnOriginalValue();
-        this.toolsService.closeTool();
-      }
-    }
-
+    this.toolsService.closeTool();
   }
 
-  faEdit = faEdit;
+
 }

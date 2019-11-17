@@ -1,17 +1,18 @@
 
-import { DaybookDayItemHttpShape } from "./daybook-day-item-http-shape.interface";
-import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
-import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
-import { Subject, Observable, Subscription } from "rxjs";
+import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
+import { DaybookTimelogEntryDataItem } from './data-items/daybook-timelog-entry-data-item.interface';
+import { DailyTaskListDataItem } from './data-items/daily-task-list-data-item.interface';
+import { Subject, Observable, Subscription } from 'rxjs';
 import * as moment from 'moment';
-import { DaybookDayItemSleepProfileData } from "./data-items/daybook-day-item-sleep-profile-data.interface";
-import { ActivityCategoryDefinition } from "../../activities/api/activity-category-definition.class";
-import { ActivityTree } from "../../activities/api/activity-tree.class";
-import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
-import { DaybookDayItemTimelog } from "./controllers/daybook-day-item-timelog.class";
-import blankDaybookItemHttpShape from "./data-items/blank-http-shape";
-import { DaybookSleepProfile } from "./controllers/daybook-sleep-profile.class";
-import { DaybookTimeReferencer } from "./controllers/daybook-time-referencer.class";
+import { DaybookDayItemSleepProfileData } from './data-items/daybook-day-item-sleep-profile-data.interface';
+import { ActivityCategoryDefinition } from '../../activities/api/activity-category-definition.class';
+import { ActivityTree } from '../../activities/api/activity-tree.class';
+import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from './data-items/daybook-day-item-scheduled-activity.class';
+import { DaybookDayItemTimelog } from './controllers/daybook-day-item-timelog.class';
+import blankDaybookItemHttpShape from './data-items/blank-http-shape';
+import { DaybookSleepProfile } from './controllers/daybook-sleep-profile.class';
+import { DaybookTimeReferencer } from './controllers/daybook-time-referencer.class';
+import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 
 
 export class DaybookDayItem {
@@ -30,6 +31,7 @@ export class DaybookDayItem {
     private _timeReferencer: DaybookTimeReferencer;
     private _previousDay: DaybookDayItem;
     private _followingDay: DaybookDayItem;
+    private _isToday: boolean;
 
     private _dataChangedSubscriptions: Subscription[] = [];
     private _dataChanged$: Subject<{ prev: boolean, current: boolean, next: boolean }> = new Subject();
@@ -69,7 +71,7 @@ export class DaybookDayItem {
                     current: true,
                     next: this._timeReferencer.followingDataChanged,
                 }
-                console.log("Daybook day item: " + this.dateYYYYMMDD + " Saving changes:", saveItems);
+                console.log('Daybook day item: ' + this.dateYYYYMMDD + ' Saving changes:', saveItems);
                 this.dataChanged(saveItems);
             }
         }));
@@ -116,11 +118,8 @@ export class DaybookDayItem {
     public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
 
 
-    public get isToday(): boolean {
-        const today = moment().format('YYYY-MM-DD');
-        return this.dateYYYYMMDD === today;
-    }
-
+    public get isToday(): boolean { return this._isToday; }
+    public setIsToday() { this._isToday = true; }
 
     public setSleepChangesFromTimeReferencer(sleepProfile: DaybookSleepProfile) {
         this._httpShape.sleepProfile = sleepProfile.sleepProfileData;
@@ -163,7 +162,22 @@ export class DaybookDayItem {
 
 
 
+    public saveTimelogEntry(timelogEntry: TimelogEntryItem, afterMidnightEntry?: TimelogEntryItem) {
+        this.timelog.addTimelogEntryItem(timelogEntry);
+        if (afterMidnightEntry) {
+            console.log('Warning: this shit probably won\'t work');
+            this.followingDay.timelog.addTimelogEntryItem(afterMidnightEntry);
+        }
+    }
 
+    public updateTimelogEntry(timelogEntry: TimelogEntryItem) {
+        this.timelog.updateTimelogEntry(timelogEntry);
+    }
+
+    public deleteTimelogEntry(timelogEntry: TimelogEntryItem) {
+        console.log("DEleting" , timelogEntry)
+        this.timelog.deleteTimelogEntry(timelogEntry);
+    }
 
 
 
