@@ -1,10 +1,10 @@
-import { DaybookTimelogEntryDataItem } from "../../api/data-items/daybook-timelog-entry-data-item.interface";
-import { DaybookDayItemSleepProfileData } from "../../api/data-items/daybook-day-item-sleep-profile-data.interface";
-import { TimelogZoomControl } from "./timelog-large/timelog-zoom-controller/timelog-zoom-control.interface";
-import { TimelogEntryItem } from "./timelog-large/timelog-body/timelog-entry/timelog-entry-item.class";
+import { DaybookTimelogEntryDataItem } from '../../api/data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookDayItemSleepProfileData } from '../../api/data-items/daybook-day-item-sleep-profile-data.interface';
+import { TimelogZoomControl } from './timelog-large/timelog-zoom-controller/timelog-zoom-control.interface';
+import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
-import { DaybookDayItem } from "../../api/daybook-day-item.class";
-import { TimeDelineator } from "./time-delineator.class";
+import { DaybookDayItem } from '../../api/daybook-day-item.class';
+import { TimeDelineator } from './time-delineator.class';
 import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 export class Timelog {
@@ -17,13 +17,20 @@ export class Timelog {
     this.update();
   }
 
+  faMoon = faMoon;
+  faSun = faSun;
+
   private _minutesPerTwentyPixels: number;
   private _timelogZoomControl: TimelogZoomControl;
 
   private _activeDay: DaybookDayItem;
+  private _entryItemsNgStyle: any = { 'grid-template-rows': '1fr' };
+  private _entryItems: TimelogEntryItem[] = [];
+  private _timeDelineators: TimeDelineator[] = [];
+  private _timeDelineatorsNgStyle: any = { 'grid-template-rows': '1fr' };
 
   private getTotalViewSeconds(): number {
-    return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, "seconds");
+    return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'seconds');
   }
   private timeIsInView(time: moment.Moment): boolean {
     return time.isSameOrAfter(this._timelogZoomControl.startTime) && time.isSameOrBefore(this._timelogZoomControl.endTime);
@@ -41,20 +48,18 @@ export class Timelog {
     });
   }
 
-  private _entryItemsNgStyle: any = { "grid-template-rows": "1fr" };
-  private _entryItems: TimelogEntryItem[] = [];
+
 
   public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
   public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
 
-  private _timeDelineators: TimeDelineator[] = [];
-  private _timeDelineatorsNgStyle: any = { "grid-template-rows": "1fr" };
+
   public get timeDelineators(): TimeDelineator[] { return this._timeDelineators; }
-  public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; };
+  public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; }
 
   public addTimeDelineator(time: moment.Moment) {
     if (!this.crossesAnyTimelogEntry(time)) {
-      this._activeDay.timelog.addTimeDelineator(time.toISOString())
+      this._activeDay.timelog.addTimeDelineator(time.toISOString());
       this.update();
     }
   }
@@ -82,17 +87,17 @@ export class Timelog {
       const startTime: moment.Moment = moment(this._activeDay.timelog.timelogEntryItems[i].startTime);
       const endTime: moment.Moment = moment(this._activeDay.timelog.timelogEntryItems[i].endTime);
 
-      let startDelineator: TimeDelineator = new TimeDelineator(startTime, "TIMELOG_ENTRY");
+      const startDelineator: TimeDelineator = new TimeDelineator(startTime, 'TIMELOG_ENTRY');
       startDelineator.nextDelineatorTime = endTime;
       let endDelineator: TimeDelineator;
 
       if (i < this._activeDay.timelog.timelogEntryItems.length - 1) {
         const nextStartTime: moment.Moment = moment(this._activeDay.timelog.timelogEntryItems[i + 1].startTime);
         if (!nextStartTime.isSame(endTime)) {
-          endDelineator = new TimeDelineator(endTime, "TIMELOG_ENTRY");
+          endDelineator = new TimeDelineator(endTime, 'TIMELOG_ENTRY');
         }
       } else if (i === this._activeDay.timelog.timelogEntryItems.length - 1) {
-        endDelineator = new TimeDelineator(endTime, "TIMELOG_ENTRY");
+        endDelineator = new TimeDelineator(endTime, 'TIMELOG_ENTRY');
       }
 
       allTimes.push(startDelineator);
@@ -109,24 +114,24 @@ export class Timelog {
     // });
 
     if (allTimes.length > 0) {
-      let gridTemplateRows: string = "";
-      let percentages: number[] = [];
+      let gridTemplateRows = '';
+      const percentages: number[] = [];
       let currentTime: moment.Moment = this._timelogZoomControl.startTime;
       for (let i = 0; i < allTimes.length; i++) {
-        let seconds: number = allTimes[i].time.diff(currentTime, "seconds");
+        const seconds: number = allTimes[i].time.diff(currentTime, 'seconds');
         percentages.push((seconds / this.getTotalViewSeconds()) * 100);
         currentTime = moment(allTimes[i].time);
       }
-      let finalSeconds: number = this._timelogZoomControl.endTime.diff(currentTime, "seconds");
+      const finalSeconds: number = this._timelogZoomControl.endTime.diff(currentTime, 'seconds');
       percentages.push((finalSeconds / this.getTotalViewSeconds()) * 100);
       percentages.forEach((percentage: number) => {
-        gridTemplateRows += "" + percentage.toFixed(2) + "% ";
+        gridTemplateRows += '' + percentage.toFixed(2) + '% ';
       });
       this._timeDelineators = allTimes;
-      this._timeDelineatorsNgStyle = { "grid-template-rows": gridTemplateRows };
+      this._timeDelineatorsNgStyle = { 'grid-template-rows': gridTemplateRows };
     } else {
       this._timeDelineators = [];
-      this._timeDelineatorsNgStyle = { "grid-template-rows": "1fr" };
+      this._timeDelineatorsNgStyle = { 'grid-template-rows': '1fr' };
     }
 
 
@@ -137,24 +142,26 @@ export class Timelog {
   }
 
   private setVisibilityOfTimelogDelineators(allTimes: TimeDelineator[]): TimeDelineator[] {
-    let timelogEntryDelineators: TimeDelineator[] = allTimes.filter((time) => { return time.delineatorType === "TIMELOG_ENTRY"; })
+    const timelogEntryDelineators: TimeDelineator[] = allTimes.filter((time) => time.delineatorType === 'TIMELOG_ENTRY')
       .sort((delineator1, delineator2) => {
-        if (delineator1.durationSeconds > delineator2.durationSeconds) return -1;
-        else if (delineator1.durationSeconds < delineator2.durationSeconds) return 1;
-        else return 0;
+        if (delineator1.durationSeconds > delineator2.durationSeconds) { return -1; }
+        if (delineator1.durationSeconds < delineator2.durationSeconds) { return 1; }
+        return 0;
       });
-    let sleepTimes: moment.Moment[] = allTimes.filter((time) => { return time.delineatorType === "SLEEP"; }).map((delineator) => { return delineator.time });
+    const sleepTimes: moment.Moment[] = allTimes.filter((time) => time.delineatorType === 'SLEEP')
+      .map((delineator) => delineator.time);
     timelogEntryDelineators.forEach((entryDelineator) => {
-      if (!this.isWithin30MinutesOfAnother(entryDelineator, allTimes)) entryDelineator.isVisible = true;
-      else entryDelineator.isVisible = false;
+      if (!this.isWithin30MinutesOfAnother(entryDelineator, allTimes)) {
+        entryDelineator.isVisible = true;
+      } else { entryDelineator.isVisible = false; }
       sleepTimes.forEach((sleepTime) => {
         if (entryDelineator.time.isSame(sleepTime)) {
           entryDelineator.isVisible = false;
         }
-      })
+      });
     });
 
-    allTimes.filter((time) => { return time.delineatorType === "NOW" }).forEach((nowTime) => { nowTime.isVisible = false; });
+    allTimes.filter((time) => time.delineatorType === 'NOW').forEach((nowTime) => { nowTime.isVisible = false; });
     // allTimes[allTimes.length - 1].isVisible = true;
     return allTimes;
   }
@@ -172,7 +179,7 @@ export class Timelog {
   private addExistingDelineators(allTimes: TimeDelineator[]): TimeDelineator[] {
     this._activeDay.timeDelineators.forEach((time: string) => {
       if (!this.crossesAnyTimelogEntry(moment(time))) {
-        let delineator: TimeDelineator = new TimeDelineator(moment(time), "DELINEATOR");
+        const delineator: TimeDelineator = new TimeDelineator(moment(time), 'DELINEATOR');
         delineator.isVisible = true;
         allTimes.push(delineator);
       }
@@ -182,24 +189,27 @@ export class Timelog {
 
 
   public showNowTime(): boolean {
-    let nowDelineator: TimeDelineator = this._timeDelineators.filter((delineator) => { return delineator.delineatorType === "NOW"; })[0];
-    if(!nowDelineator){
-      nowDelineator = new TimeDelineator(moment(), "NOW");
+    let nowDelineator: TimeDelineator = this._timeDelineators.filter((delineator) => delineator.delineatorType === 'NOW')[0];
+    if (!nowDelineator) {
+      nowDelineator = new TimeDelineator(moment(), 'NOW');
     }
     return !this.isWithin30MinutesOfAnother(nowDelineator);
   }
 
   private isWithin30MinutesOfAnother(checkDelineator: TimeDelineator, currentDelineators?: TimeDelineator[]): boolean {
-    let delineators: TimeDelineator[] = []
-    if (!currentDelineators) delineators = this._timeDelineators;
-    else delineators = currentDelineators;
+    let delineators: TimeDelineator[] = [];
+    if (!currentDelineators) {
+      delineators = this._timeDelineators;
+    } else {
+      delineators = currentDelineators;
+    }
 
-    delineators = delineators.filter((delineator) => { return delineator.isVisible; });
+    delineators = delineators.filter((delineator) => delineator.isVisible);
 
-    let isWithin30Minutes: boolean = false;
-    if (checkDelineator.delineatorType === "NOW") {
+    let isWithin30Minutes = false;
+    if (checkDelineator.delineatorType === 'NOW') {
       delineators.forEach((delineator) => {
-        const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), "minutes"));
+        const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), 'minutes'));
         if (differenceMinutes < 30) {
           isWithin30Minutes = true;
         }
@@ -207,7 +217,7 @@ export class Timelog {
     } else {
       delineators.forEach((delineator) => {
         const isSameTime: boolean = moment(delineator.time).isSame(moment(checkDelineator.time));
-        const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), "minutes"));
+        const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), 'minutes'));
         if (differenceMinutes < 30 && !isSameTime) {
           isWithin30Minutes = true;
         }
@@ -217,7 +227,7 @@ export class Timelog {
   }
 
   public crossesAnyTimelogEntry(time: moment.Moment): boolean {
-    let crossesExisting: boolean = false;
+    let crossesExisting = false;
     this._activeDay.timelog.timelogEntryItems.forEach((entryDataItem) => {
       const start: moment.Moment = moment(entryDataItem.startTime);
       const end: moment.Moment = moment(entryDataItem.endTime);
@@ -233,16 +243,16 @@ export class Timelog {
     return delineators.filter((delineator) => {
       return this.timeIsInView(delineator.time);
     }).sort((delineator1, delineator2) => {
-      if (delineator1.time.isBefore(delineator2.time)) return -1;
-      else if (delineator1.time.isAfter(delineator2.time)) return 1;
-      else return 0;
+      if (delineator1.time.isBefore(delineator2.time)) { return -1; }
+      if (delineator1.time.isAfter(delineator2.time)) { return 1; }
+      return 0;
     });
   }
 
   private addNowTimeDelineator(delineations: TimeDelineator[]): TimeDelineator[] {
     const now: moment.Moment = moment();
     if (this.timeIsInView(now)) {
-      let nowDelineator: TimeDelineator = new TimeDelineator(now, "NOW");
+      const nowDelineator: TimeDelineator = new TimeDelineator(now, 'NOW');
       if (!this.crossesAnyTimelogEntry(now)) {
         delineations.push(nowDelineator);
       }
@@ -254,44 +264,44 @@ export class Timelog {
     let wakeupDelineator: TimeDelineator;
     let bedtimeDelineator: TimeDelineator;
 
-    if(this._activeDay.sleepProfile.wakeupTimeIsSet){
+    if (this._activeDay.sleepProfile.wakeupTimeIsSet) {
       if (this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTime))) {
-        wakeupDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTime), "SLEEP", faSun, "rgb(235, 201, 12)");
+        wakeupDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.wakeupTime), 'SLEEP', faSun, 'rgb(235, 201, 12)');
       }
-    }else{
+    } else {
       if (this.timeIsInView(this._activeDay.sleepProfile.wakeupTime)) {
-        wakeupDelineator = new TimeDelineator(this._activeDay.sleepProfile.wakeupTime, "SLEEP", faSun, "rgb(200, 200, 200)");
+        wakeupDelineator = new TimeDelineator(this._activeDay.sleepProfile.wakeupTime, 'SLEEP', faSun, 'rgb(200, 200, 200)');
       }
     }
 
-    if(this._activeDay.sleepProfile.bedTimeIsSet){
+    if (this._activeDay.sleepProfile.bedTimeIsSet) {
       if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedTime))) {
-        bedtimeDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.bedTime), "SLEEP", faMoon, "rgb(68, 0, 255)");
+        bedtimeDelineator = new TimeDelineator(moment(this._activeDay.sleepProfile.bedTime), 'SLEEP', faMoon, 'rgb(68, 0, 255)');
       }
-    }else{
+    } else {
       if (this.timeIsInView(this._activeDay.sleepProfile.bedTime)) {
-        bedtimeDelineator = new TimeDelineator(this._activeDay.sleepProfile.bedTime, "SLEEP", faMoon, "rgb(200, 200, 200)");
+        bedtimeDelineator = new TimeDelineator(this._activeDay.sleepProfile.bedTime, 'SLEEP', faMoon, 'rgb(200, 200, 200)');
       }
     }
 
     if (wakeupDelineator) {
       wakeupDelineator.isVisible = true;
-      wakeupDelineator.label = "wake up"
+      wakeupDelineator.label = 'wake up';
       delineations.push(wakeupDelineator);
     }
     if (bedtimeDelineator) {
       bedtimeDelineator.isVisible = true;
-      bedtimeDelineator.label = "bed time";
+      bedtimeDelineator.label = 'bed time';
       delineations.push(bedtimeDelineator);
     }
     return delineations;
   }
 
   private updateTimelogEntryItems() {
-    const totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, "seconds");
+    const totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'seconds');
     let delineators: TimeDelineator[] = Object.assign([], this._timeDelineators);
-    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.startTime), "FRAME"));
-    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.endTime), "FRAME"));
+    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.startTime), 'FRAME'));
+    delineators.push(new TimeDelineator(moment(this._timelogZoomControl.endTime), 'FRAME'));
     delineators = this.filterAndSortDelineators(delineators);
 
     const entriesCount: number = delineators.length - 1;
@@ -302,20 +312,24 @@ export class Timelog {
     for (let i = 0; i < entriesCount; i++) {
       const startTime: moment.Moment = delineators[i].time;
       const endTime: moment.Moment = delineators[i + 1].time;
-      if(!moment(startTime).isSame(moment(endTime))){
+      if (!moment(startTime).isSame(moment(endTime))) {
         /* 
           there was a problem where there would be a duplicate delineator at the wakeup time, e.g. 8:30am,
           a delineator for the wakeup and a delineator for the start of a timelog entry for that day.
           so this if statement catches the case where the start and end time are the same 
           (sorted array would have i and i+1 have same value );
         */
-        let sleepState: "AWAKE" | "SLEEP" = "AWAKE";
+        let sleepState: 'AWAKE' | 'SLEEP' = 'AWAKE';
         if (endTime.isSameOrBefore(wakeupTime) || startTime.isSameOrAfter(bedTime)) {
-          sleepState = "SLEEP";
+          sleepState = 'SLEEP';
         }
         const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime, sleepState);
+        if (delineators[i + 1].delineatorType === 'NOW') {
+          entry.isCurrentEntry = true;
+        }
         entries.push(entry);
       }
+
     }
 
 
@@ -333,15 +347,15 @@ export class Timelog {
 
 
     entries = entries.sort((entry1, entry2) => {
-      if (entry1.startTime.isBefore(entry2.startTime)) return -1
-      else if (entry2.startTime.isBefore(entry1.startTime)) return 1
-      else return 0;
+      if (entry1.startTime.isBefore(entry2.startTime)) { return -1; }
+      else if (entry2.startTime.isBefore(entry1.startTime)) { return 1; }
+      else { return 0; }
     });
 
-    let gridTemplateRows: string = "";
+    let gridTemplateRows = '';
     entries.forEach(item => {
       // console.log("percent la: ", item.percentOfTotal(totalViewSeconds).toFixed(2))
-      gridTemplateRows += "" + item.percentOfTotal(totalViewSeconds).toFixed(2) + "% ";
+      gridTemplateRows += '' + item.percentOfTotal(totalViewSeconds).toFixed(2) + '% ';
       if (item.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
         item.isSmallSize = true;
       } else {
@@ -350,12 +364,11 @@ export class Timelog {
     });
 
     // console.log("Timelog Entry items grid-template-rows:", gridTemplateRows)
-    this._entryItemsNgStyle = { "grid-template-rows": gridTemplateRows };
+    this._entryItemsNgStyle = { 'grid-template-rows': gridTemplateRows };
     this._entryItems = entries;
   }
 
 
 
-  faMoon = faMoon;
-  faSun = faSun;
+
 }

@@ -6,33 +6,45 @@ import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybo
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 
 export class TimelogEntryItem {
-    constructor(startTime: moment.Moment, endTime: moment.Moment, sleepState?: "SLEEP" | "AWAKE") {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, sleepState?: 'SLEEP' | 'AWAKE') {
         this._startTime = moment(startTime);
         this._utcOffsetMinutes = this._startTime.utcOffset();
         this._endTime = moment(endTime);
         this._itemState = new ItemState({ startTime: this._startTime, endTime: this._endTime });
-        if(sleepState){
+        if (sleepState) {
             this._sleepState = sleepState;
-        }else{
-            this._sleepState = "AWAKE";
+        } else {
+            this._sleepState = 'AWAKE';
         }
-        
+
     }
 
+
+    private _sleepState: 'SLEEP' | 'AWAKE' = 'AWAKE';
+    private _isConfirmed = false;
+    private _utcOffsetMinutes: number;
+    private _timelogEntryActivities: TimelogEntryActivity[] = [];
+    private _note = '';
 
     private _itemState: ItemState;
     public get itemState(): ItemState { return this._itemState; }
 
-    public beginsBeforeFrameStart: boolean = false;
-    public endsAfterFrameEnd: boolean = false;
+    public beginsBeforeFrameStart = false;
+    public endsAfterFrameEnd = false;
 
-    public isSmallSize: boolean = false;
-    public isSavedEntry: boolean = false;
+    public isSmallSize = false;
+    public isSavedEntry = false;
 
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
 
-    public note: string = "";
+    public note = '';
+
+    /**
+     * This property is a flag used to indicate to the TimelogEntryForm that the item clicked on is the current item,
+     * the item which is from previous time to now
+     */
+    public isCurrentEntry = false;
 
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
@@ -40,7 +52,7 @@ export class TimelogEntryItem {
     public set endTime(endTime: moment.Moment) { this._endTime = moment(endTime); }
 
     public get durationSeconds(): number {
-        return moment(this.endTime).diff(moment(this.startTime), "seconds");
+        return moment(this.endTime).diff(moment(this.startTime), 'seconds');
     }
     public get durationString(): string {
         return DurationString.calculateDurationString(this._startTime, this._endTime);
@@ -50,19 +62,21 @@ export class TimelogEntryItem {
         return (this.durationSeconds / totalSeconds) * 100;
     }
 
-    private _sleepState: "SLEEP" | "AWAKE" = "AWAKE";
-    public get sleepState(): "SLEEP" | "AWAKE" { return this._sleepState; }
 
-    private _isConfirmed: boolean = false;
+    /**
+     * This property probably ultimately is not required, but it might be
+     */
+    public get sleepState(): 'SLEEP' | 'AWAKE' { return this._sleepState; }
+
+
     public get isConfirmed(): boolean { return this._isConfirmed; }
 
-    private _utcOffsetMinutes: number;
+
     public get utcOffsetMinutes(): number { return this._utcOffsetMinutes; }
 
-    private _timelogEntryActivities: TimelogEntryActivity[] = [];
     public set timelogEntryActivities(activities: TimelogEntryActivity[]) { this._timelogEntryActivities = activities; }
     public get timelogEntryActivities(): TimelogEntryActivity[] { return this._timelogEntryActivities; }
-    private _note: string = "";
+
 
     public get dataEntryItem(): DaybookTimelogEntryDataItem {
         return {

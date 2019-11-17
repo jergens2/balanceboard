@@ -1,4 +1,9 @@
 <div class="timelog-entry-form-root" *ngIf="entryItem">
+
+    <!-- New TLEF :   past, current, or future -->
+    <!-- view old TLEF, then button to modify -->
+    <!--  -->
+
     <app-tlef-wakeup-time *ngIf="promptForWakeupTime" (timeChanged)="onWakeupTimeChanged($event)">
     </app-tlef-wakeup-time>
     <div *ngIf="!promptForWakeupTime" style="display:flex;flex-direction: column;">
@@ -22,27 +27,42 @@
                 (tlefActivitiesChanged)="onActivitiesChanged($event)">
             </app-tlef-activities>
         </div>
-        <div class="final-form-section" *ngIf="mode === 'NEW'">
-            <button class="medium-button" *ngIf="isChanged" (click)="onClickSave()">
-                Save timelog entry
-            </button>
-            <button class="medium-button delete-button" style="margin-left: 5px;" (click)="onClickDiscard()">
-                Discard
-            </button>
+
+
+        <div class="final-form-section">
+
+            <div *ngIf="formCase === 'NEW_CURRENT' || formCase === 'NEW_PREVIOUS' || formCase === 'NEW_FUTURE'"
+                class="button-group">
+                <button class="medium-button" (click)="onClickSave()">
+                    Save timelog entry
+                </button>
+                <button class="medium-button discard-button" style="margin-left: 5px;" (click)="onClickDiscard()">
+                    Discard
+                </button>
+            </div>
+            <div *ngIf="formCase === 'EXISTING_PREVIOUS' || formCase === 'EXISTING_FUTURE'" class="button-group">
+                <button class="medium-button" (click)="onClickSave()">
+                    Save
+                </button>
+                <button class="medium-button delete-button" [ngClass]="{'confirm-delete-button':confirmDelete}"
+                    style="margin-left: 5px;" (click)="onClickDelete()">
+                    <span *ngIf="!confirmDelete">Delete</span>
+                    <span *ngIf="confirmDelete">Confirm</span>
+                </button>
+                <button class="medium-button discard-button" style="margin-left: 5px;" (click)="onClickDiscard()">
+                    Cancel
+                </button>
+
+            </div>
+
+
+
+
+
+
+
         </div>
-        <div class="final-form-section" *ngIf="mode === 'EDIT'">
-            <button class="medium-button" *ngIf="isChanged" (click)="onClickSave()">
-                Save changes
-            </button>
-            <button class="medium-button delete-button" [ngClass]="{'confirm-delete-button':confirmDelete}"
-                style="margin-left: 5px;" (click)="onClickDelete()">
-                <span *ngIf="!confirmDelete">Delete</span>
-                <span *ngIf="confirmDelete">Confirm</span>
-            </button>
-            <button class="medium-button delete-button" style="margin-left: 5px;" (click)="onClickDiscard()">
-                Cancel
-            </button>
-        </div>
+
     </div>
 
 </div>

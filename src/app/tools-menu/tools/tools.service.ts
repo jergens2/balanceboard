@@ -12,7 +12,7 @@ export class ToolsService {
 
   constructor() { }
 
-  private _timelogEntryStorage: TimelogEntryItem = null;
+  private _timelogEntryStorage$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
   private _currentTool$: BehaviorSubject<{ component: ToolComponents, data: any }> = new BehaviorSubject(null);
 
 
@@ -39,11 +39,13 @@ export class ToolsService {
 
 
   public setTimelogEntry(timelogEntry: TimelogEntryItem) {
-    this._timelogEntryStorage = timelogEntry;
+    this._timelogEntryStorage$.next(timelogEntry);
   }
-  public receiveTimelogEntry(): TimelogEntryItem {
-    const returnItem = this._timelogEntryStorage;
-    this._timelogEntryStorage = null;
-    return returnItem;
+
+  public get timelogEntryStorage$(): Observable<TimelogEntryItem> { return this._timelogEntryStorage$.asObservable(); }
+  public get timelogEntryStorage(): TimelogEntryItem {
+    const value = this._timelogEntryStorage$.getValue();
+    this._timelogEntryStorage$.next(null);
+    return value;
   }
 }
