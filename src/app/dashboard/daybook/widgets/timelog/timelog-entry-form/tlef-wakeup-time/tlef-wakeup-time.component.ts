@@ -15,7 +15,14 @@ export class TlefWakeupTimeComponent implements OnInit {
 
     let initialTime: moment.Moment = this.daybookService.activeDayController.sleepController.firstWakeupTime;
     this._time = moment(initialTime);
-    console.log("getting initial time: " + this._time.format('YYYY-MM-DD hh:mm a'))
+    console.log("getting initial time: " + this._time.format('YYYY-MM-DD hh:mm a'));
+
+
+    /**
+     * This form will only ever be used for NEW_CURRENT timelog entries, so at this point there is no need to consider dealing with other cases.
+     */
+    this.maxVal = moment();
+    this.minVal = this.daybookService.todayController.sleepController.prevDayFallAsleepTime;
   }
 
   @Output() timeChanged: EventEmitter<moment.Moment> = new EventEmitter();
@@ -24,11 +31,12 @@ export class TlefWakeupTimeComponent implements OnInit {
   public get time(): moment.Moment { return this._time; };
 
   public minVal: moment.Moment = moment().startOf("day");
-  public maxVal: moment.Moment = moment().endOf("day");
+  public maxVal: moment.Moment = moment();
 
   onTimeChanged(time: moment.Moment){
     console.log("wakeup time changed " + time.format("YYYY-MM-DD hh:mm a"))
     this._time = moment(time);
+    this.maxVal = moment();
   }
   public onClickSave(){
     console.log("Saving time to sleepcontroller: " + this.time.format('YYYY-MM-DD hh:mm a'))

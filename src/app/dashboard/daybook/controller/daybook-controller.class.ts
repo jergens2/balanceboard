@@ -87,6 +87,7 @@ export class DaybookController {
         };
     }
 
+
     private _reload(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
         this._previousDay = dayItem.prevDay;
         this._thisDay = dayItem.thisDay;
@@ -101,6 +102,9 @@ export class DaybookController {
 
     private _buildController() {
 
+        console.log("PRev day: " , this._previousDay)
+        console.log(" cur day"  ,this._thisDay)
+        console.log("next day: " , this._followingDay)
         const timelogDataItems = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
             .concat(this._followingDay.timelogEntryDataItems);
         const allTimeSpanItems = this._previousDay.sleepTimes.concat(this._thisDay.sleepTimes).concat(this._followingDay.sleepTimes);
@@ -180,15 +184,15 @@ export class DaybookController {
     private _updateTimelog(update) {
         console.log("Updating timelog: ", update);
         let prevDayChanged = false, thisDayChanged = false, nextDayChanged = false;
-        if (update.prevDayItems !== null) {
+        if (update.prevDayItems) {
             this._previousDay.timelogEntryDataItems = update.prevDayItems;
             prevDayChanged = true;
         }
-        if (update.thisDayItems !== null) {
+        if (update.thisDayItems) {
             this._thisDay.timelogEntryDataItems = update.thisDayItems;
             thisDayChanged = true;
         }
-        if (update.nextDayItems !== null) {
+        if (update.nextDayItems) {
             this._followingDay.timelogEntryDataItems = update.nextDayItems;
             nextDayChanged = true;
         }

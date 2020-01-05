@@ -17,7 +17,6 @@ export class TimeInputComponent implements OnInit {
   @Input() public set timeValue(value: moment.Moment) {
     this._timeValue = moment(value);
     if (this.timeInputForm) {
-      this._changeIsTextInput = false;
       this.timeInputForm.patchValue({ "timeValue": this._timeValue.format("HH:mm") });
     }
   }
@@ -33,30 +32,30 @@ export class TimeInputComponent implements OnInit {
 
   public timeInputForm: FormGroup;
 
-  private _changeIsTextInput: boolean = true;
+  public get date(): string{ 
+    return this.timeValue.format('YYYY-MM-DD');
+  }
+
 
   ngOnInit() {
     this.timeInputForm = new FormGroup({
       timeValue: new FormControl(this._timeValue.format('HH:mm')),
     });
-    this.timeInputForm.valueChanges.subscribe((valueChange) => {
-      if (this.timeInputForm.controls['timeValue'].value && this._changeIsTextInput) {
-        this.emitNewValue();
-      }
-      this._changeIsTextInput = true;
-    });
+    // this.timeInputForm.valueChanges.subscribe((valueChange) => {
+    //   if (this.timeInputForm.controls['timeValue'].value && this._changeIsTextInput) {
+    //     this.emitNewValue();
+    //   }
+    // });
   }
   
-  private emitNewValue(){
-    let formInputValue = this.parseFormTimeInput(this.timeInputForm.controls['timeValue'].value);
-    this._timeValue = moment(this.timeValue).hour(formInputValue.hour).minute(formInputValue.minute).second(0).millisecond(0);
-    this.timeChanged.emit(this.timeValue);
-    this._changeIsTextInput = true;
-  }
+  // private emitNewValue(){
+  //   let formInputValue = this.parseFormTimeInput(this.timeInputForm.controls['timeValue'].value);
+  //   this._timeValue = moment(this.timeValue).hour(formInputValue.hour).minute(formInputValue.minute).second(0).millisecond(0);
+  //   this.timeChanged.emit(this.timeValue);
+  // }
 
 
   public onClickChangeTime(action: "ADD" | "SUBTRACT", time: string) {
-    this._changeIsTextInput = false;
     let newValue: moment.Moment;
     if (action == "ADD") {
       newValue = moment(this.timeValue).add(30, "minutes");
@@ -75,19 +74,32 @@ export class TimeInputComponent implements OnInit {
       }
     }
 
-    this.timeValue = moment(newValue);
+    this._timeValue = moment(newValue);
     this.timeInputForm.patchValue({ "timeValue": this.timeValue.format("HH:mm") });
-    this.emitNewValue();
+    this.timeChanged.emit(this.timeValue);
+    // this.emitNewValue();
   }
 
 
 
-  public onClickTimeValueInput() {
-    /**
-     * To do:  implement a drop down function, so if you click on the time then you can select a dropdown of times.
-     * would just add a bit more functionality to this component.
-     */
-    console.log("Ze clicker");
+  public onChangeTimeValueInput() {
+    console.log("on change")
+    let formInputValue = this.parseFormTimeInput(this.timeInputForm.controls['timeValue'].value);
+    this._timeValue = moment(this.timeValue).hour(formInputValue.hour).minute(formInputValue.minute).second(0).millisecond(0);
+
+    if (this.maxValue) {
+      if (this._timeValue.isAfter(this.maxValue)) {
+        this._timeValue = moment(this.maxValue);
+      }
+    }
+    if (this.minValue) {
+      if (this._timeValue.isBefore(this.minValue)) {
+        this._timeValue = moment(this.minValue);
+      }
+    } 
+    console.log("Emitting new value: " + this._timeValue.format('YYYY-MM-DD hh:mm a'))
+    this.timeInputForm.patchValue({ "timeValue": this.timeValue.format("HH:mm") });
+    this.timeChanged.emit(this.timeValue);
   }
 
 

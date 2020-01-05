@@ -51,6 +51,7 @@ export class DaybookSleepController {
     public get prevDayFallAsleepTime(): moment.Moment {
         let foundItem: { startTime: moment.Moment, endTime: moment.Moment, isAsleep: boolean };
         if (this.isAsleepAtTime(this.endOfPrevDay)) {
+            // when fell asleep before or at midnight
             foundItem = this._sleepSchedule
                 .filter(item => item.startTime.isSameOrAfter(this.startOfPrevDay) && item.endTime.isSameOrBefore(this.endOfPrevDay))
                 .sort((item1, item2) => {
@@ -61,6 +62,7 @@ export class DaybookSleepController {
                 .find(item => item.isAsleep === false);
             return foundItem.endTime;
         } else {
+            // when fall asleep after midnight.
             foundItem = this._sleepSchedule.filter(item => item.startTime.isSameOrAfter(this.endOfPrevDay))
                 .find(item => item.isAsleep === true);
             return foundItem.startTime;
@@ -78,10 +80,8 @@ export class DaybookSleepController {
         return foundItem.startTime;
     }
     public get bedTime(): moment.Moment {
-        const startOfThisDay: moment.Moment = moment(this.thisDateYYYYMMDD).startOf('day');
-        const endOfThisDay: moment.Moment = moment(this.thisDateYYYYMMDD).startOf('day').add(24, 'hours');
         const foundItem = this._sleepSchedule
-            .filter(item => item.startTime.isSameOrAfter(this.firstWakeupTime) && item.endTime.isSameOrBefore(endOfThisDay))
+            .filter(item => item.startTime.isSameOrAfter(this.firstWakeupTime) && item.endTime.isSameOrBefore(this.endOfNextDay))
             .find(item => item.isAsleep === true);
         return foundItem.startTime;
     }
