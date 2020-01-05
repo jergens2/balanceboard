@@ -1,25 +1,30 @@
-import { DaybookTimelogEntryDataItem } from "./data-items/daybook-timelog-entry-data-item.interface";
-import { DaybookActivityDataItem } from "./data-items/daybook-activity-data-item.interface";
-import { DailyTaskListDataItem } from "./data-items/daily-task-list-data-item.interface";
-import { DayStructureDataItem } from "./data-items/day-structure-data-item.interface";
-import { DayStructureSleepCycleDataItem } from "./data-items/day-structure-sleep-cycle-data-item.interface";
-import { DaybookDayItemSleepProfileData } from "./data-items/daybook-day-item-sleep-profile-data.interface";
-import { DaybookDayItemScheduledActivityItem } from "./data-items/daybook-day-item-scheduled-activity.class";
+import { DaybookTimelogEntryDataItem } from './data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookActivityDataItem } from './data-items/daybook-activity-data-item.interface';
+import { DailyTaskListDataItem } from './data-items/daily-task-list-data-item.interface';
+import { DayStructureDataItem } from './data-items/day-structure-data-item.interface';
 
 
-export interface DaybookDayItemHttpShape{
+import { DaybookDayItemScheduledActivityItem } from './data-items/daybook-day-item-scheduled-activity.class';
+import { TimeSpanItem } from './data-items/time-span-item.interface';
+import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
+
+
+export interface DaybookDayItemHttpShape {
     _id: string;
     userId: string;
     dateYYYYMMDD: string;
 
-    // -DataItem suffix types are data which represent the actual record in the database, not a reference. 
+    // -DataItem suffix types are data which represent the actual record in the database, not a reference.
     daybookTimelogEntryDataItems: DaybookTimelogEntryDataItem[];
     timeDelineators: string[];
+
+    sleepTimes: TimeSpanItem[];
+    sleepEnergyLevelInputs: SleepEnergyLevelInput[];
+    
+
     daybookActivityDataItems: DaybookActivityDataItem[];
     dailyTaskListDataItems: DailyTaskListDataItem[];
     dayStructureDataItems: DayStructureDataItem[];
-    sleepCycleDataItems: DayStructureSleepCycleDataItem[];
-    sleepProfile: DaybookDayItemSleepProfileData;
 
     scheduledActivityItems: DaybookDayItemScheduledActivityItem[];  // this includes activities and routines.
 
@@ -27,15 +32,15 @@ export interface DaybookDayItemHttpShape{
 
     // These represent references to data stored in other tables in the database.
 
-    
-    
+
+
 
     dayTemplateId: string;
     scheduledEventIds: string[];
     notebookEntryIds: string[];
     taskItemIds: string[];
 
-    
+
 
 
 
@@ -51,9 +56,9 @@ export interface DaybookDayItemHttpShape{
     // or is it better as a separate CRUD API object type?  THC for example:  whats more important to measure?  how often it occurrs or for how many minutes per day: "i did THC for 20 minutes" doesn't really provide alot of useful information
     // whereas if you had data which said "you did THC 7 times today, starting at 10:00am, then at 11:30am, etc. etc.", "in an average day you take THC every hour and a half after starting"
     // how do we measure data to answer those questions?
-    // to be continued... 
-    // 
-    
+    // to be continued...
+    //
+
     //Other things to add into the day item:
     //
     // Daily gratitude journal.  Could simply be a note?  then add the ID as a separate property.  Gratitude Note ID

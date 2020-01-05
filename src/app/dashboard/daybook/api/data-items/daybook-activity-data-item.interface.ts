@@ -1,5 +1,5 @@
 
-export interface DaybookActivityDataItem{
-    activityTreeId: string,
-    durationSeconds: number,
+export interface DaybookActivityDataItem {
+    activityTreeId: string;
+    durationSeconds: number;
 }

@@ -1,71 +1,79 @@
 <div class="timelog-entry-form-root" *ngIf="entryItem">
 
-    <!-- New TLEF :   past, current, or future -->
-    <!-- view old TLEF, then button to modify -->
-    <!--  -->
+    <app-tlef-view-only *ngIf="isExistingTLEF" (clickEdit)="onClickEditTLEF()">
+    </app-tlef-view-only>
 
-    <app-tlef-wakeup-time *ngIf="promptForWakeupTime" (timeChanged)="onWakeupTimeChanged($event)">
-    </app-tlef-wakeup-time>
-    <div *ngIf="!promptForWakeupTime" style="display:flex;flex-direction: column;">
-        <div class="form-section times-section" style="flex-direction: row;" *ngIf="!modifyingTimes"
-            (click)="onClickModifyTimes()">
-            <div style="display:flex;flex-direction: column; flex-grow:2;">
-                <div>{{ entryItem.startTime.format('h:mm a')}} to {{ entryItem.endTime.format('h:mm a')}}</div>
-                <div style="font-weight:bold; font-size:0.9em; color: rgb(0, 57, 163);">{{ entryItem.durationString }}
+
+    <div *ngIf="isNewTLEF || editingExistingTLEF" style="display:flex;flex-direction: column;">
+
+        <app-tlef-wakeup-time *ngIf="isStartOfCurrentDay"></app-tlef-wakeup-time>
+        
+        <div *ngIf="!isStartOfCurrentDay" style="display:flex;flex-direction: column;">
+            <span style="background-color: orange;">This is the default case.</span>
+            <div class="form-section times-section" style="flex-direction: row;" *ngIf="!modifyingTimes"
+                (click)="onClickModifyTimes()">
+                <div style="display:flex;flex-direction: column; flex-grow:2;">
+                    <div>{{ entryItem.startTime.format('h:mm a')}} to {{ entryItem.endTime.format('h:mm a')}}</div>
+                    <div style="font-weight:bold; font-size:0.9em; color: rgb(0, 57, 163);">
+                        {{ entryItem.durationString }}
+                    </div>
                 </div>
+                <fa-icon class="icon-button" [icon]="faEdit"></fa-icon>
             </div>
-            <fa-icon class="icon-button" [icon]="faEdit"></fa-icon>
-        </div>
 
-        <div class="form-section" *ngIf="modifyingTimes">
-            <app-tlef-modify-times [entryItem]="entryItem" [startTimeBoundary]="startTimeBoundary"
-                [endTimeBoundary]="endTimeBoundary" (timesModified)="onTimesModified($event)"></app-tlef-modify-times>
-        </div>
-
-        <div class="form-section" style="background-color: rgb(252, 252, 252);">
-            <app-tlef-activities [timelogEntryDataItem]="dataEntryItem"
-                (tlefActivitiesChanged)="onActivitiesChanged($event)">
-            </app-tlef-activities>
-        </div>
-
-
-        <div class="final-form-section">
-
-            <div *ngIf="formCase === 'NEW_CURRENT' || formCase === 'NEW_PREVIOUS' || formCase === 'NEW_FUTURE'"
-                class="button-group">
-                <button class="medium-button" (click)="onClickSave()">
-                    Save timelog entry
-                </button>
-                <button class="medium-button discard-button" style="margin-left: 5px;" (click)="onClickDiscard()">
-                    Discard
-                </button>
+            <div class="form-section" *ngIf="modifyingTimes">
+                <app-tlef-modify-times [entryItem]="entryItem" [startTimeBoundary]="startTimeBoundary"
+                    [endTimeBoundary]="endTimeBoundary" (timesModified)="onTimesModified($event)">
+                </app-tlef-modify-times>
             </div>
-            <div *ngIf="formCase === 'EXISTING_PREVIOUS' || formCase === 'EXISTING_FUTURE'" class="button-group">
-                <button class="medium-button" (click)="onClickSave()">
-                    Save
-                </button>
-                <button class="medium-button delete-button" [ngClass]="{'confirm-delete-button':confirmDelete}"
-                    style="margin-left: 5px;" (click)="onClickDelete()">
-                    <span *ngIf="!confirmDelete">Delete</span>
-                    <span *ngIf="confirmDelete">Confirm</span>
-                </button>
-                <button class="medium-button discard-button" style="margin-left: 5px;" (click)="onClickDiscard()">
-                    Cancel
-                </button>
 
+            <div class="form-section" style="background-color: rgb(252, 252, 252);">
+                <app-tlef-activities [timelogEntryDataItem]="dataEntryItem"
+                    (tlefActivitiesChanged)="onActivitiesChanged($event)">
+                </app-tlef-activities>
+            </div>
+
+            <div class="form-section" *ngIf="isEndOfCurrentDay && !isStartOfCurrentDay">
+                <app-tlef-bed-time ></app-tlef-bed-time>
             </div>
 
 
+            <div class="final-form-section">
 
+                <div *ngIf="formCase === 'NEW_CURRENT' || formCase === 'NEW_PREVIOUS' || formCase === 'NEW_FUTURE'"
+                    class="button-group">
+                    <button class="medium-button" (click)="onClickSave()">
+                        Save timelog entry
+                    </button>
+                    <button class="medium-button discard-button" style="margin-left: 5px;" (click)="onClickDiscard()">
+                        Discard
+                    </button>
+                </div>
+                <div *ngIf="formCase === 'EXISTING_PREVIOUS' || formCase === 'EXISTING_FUTURE'" class="button-group">
+                    <button class="medium-button" (click)="onClickSave()">
+                        Save
+                    </button>
+                    <button class="medium-button delete-button" [ngClass]="{'confirm-delete-button':confirmDelete}"
+                        style="margin-left: 5px;" (click)="onClickDelete()">
+                        <span *ngIf="!confirmDelete">Delete</span>
+                        <span *ngIf="confirmDelete">Confirm</span>
+                    </button>
+                    <button class="medium-button discard-button" style="margin-left: 5px;" (click)="onClickDiscard()">
+                        Cancel
+                    </button>
 
+                </div>
 
-
+            </div>
 
         </div>
+
+
 
     </div>
 
 </div>
+
 <div *ngIf="!entryItem">
     <div style="color: red; font-weight: bold;">Error: no entryItem</div>
 </div>

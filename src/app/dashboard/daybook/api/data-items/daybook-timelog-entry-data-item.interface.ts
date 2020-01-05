@@ -1,10 +1,11 @@
-import { TimelogEntryActivity } from "./timelog-entry-activity.interface";
+import { TimelogEntryActivity } from './timelog-entry-activity.interface';
 
-export interface DaybookTimelogEntryDataItem{
+export interface DaybookTimelogEntryDataItem {
     startTimeISO: string;
+    startTimeUtcOffsetMinutes: number;
     endTimeISO: string;
-    utcOffsetMinutes: number;
+    endTimeUtcOffsetMinutes: number;
     timelogEntryActivities: TimelogEntryActivity[];
     isConfirmed: boolean;
-    note: string;    
+    note: string;
 }

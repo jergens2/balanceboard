@@ -7,6 +7,7 @@ import { Subscription, timer } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
 import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
+import { DaybookController } from '../../../../controller/daybook-controller.class';
 
 @Component({
   selector: 'app-timelog-zoom-controller',
@@ -26,15 +27,15 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    let activeDay: DaybookDayItem = this.daybookService.activeDay;
+    let activeDay: DaybookController = this.daybookService.activeDayController;
 
-    let awakeStartTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTime), 30, "DOWN");
-    let awakeEndTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedTime), 30, "UP");
+    let awakeStartTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepController.firstWakeupTime), 30, "DOWN");
+    let awakeEndTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepController.bedTime), 30, "UP");
 
-    if (activeDay.sleepProfile.wakeupTimeIsSet && activeDay.sleepProfile.bedTimeIsSet) {
-      awakeStartTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTime), 30, "DOWN");
-      awakeEndTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedTime), 30, "UP");
-    }
+    // if (activeDay.sleepProfile.wakeupTimeIsSet && activeDay.sleepProfile.bedTimeIsSet) {
+    //   awakeStartTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTime), 30, "DOWN");
+    //   awakeEndTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedTime), 30, "UP");
+    // }
     this._wakeCycleZoom = {
       icon: faSun,
       name: "AWAKE",
@@ -56,13 +57,13 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       // console.log("Clock passed the minute")
       this._currentTime = moment();
       // console.log("this._currentTime =  ", this._currentTime.format("hh:mm:ss a"))
-      if (this.daybookService.activeDay.isToday) {
+      if (this.daybookService.activeDayController.isToday) {
         this.buildZoomButtons();
       }
     });
 
 
-    this.daybookService.activeDay$.subscribe((activeDayChanged) => {
+    this.daybookService.activeDayController$.subscribe((activeDayChanged) => {
       // console.log("Zoom day changed:")
       let changedDate: moment.Moment = moment(activeDayChanged.dateYYYYMMDD);
       this._currentTime = moment(this._currentTime).year(changedDate.year()).month(changedDate.month()).date(changedDate.date());
@@ -80,22 +81,13 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     });
   }
 
-  private updateWakeCycleZoom(activeDayChanged: DaybookDayItem) {
+  private updateWakeCycleZoom(activeDayChanged: DaybookController) {
     const wakeZoomActive: boolean = this._currentZoomLevel.name === "AWAKE";
 
-    let wakeupTime: moment.Moment;
-    let bedTime: moment.Moment;
-
-    if (activeDayChanged.sleepProfile.wakeupTimeIsSet) {
-      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.wakeupTime), 30, "DOWN");
-    }else{
-      wakeupTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.defaultWakeupTime), 30, "DOWN");
-    }
-    if(activeDayChanged.sleepProfile.bedTimeIsSet){
-      bedTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDayChanged.sleepProfile.bedTime), 30, "UP");
-    }else{
-      bedTime = activeDayChanged.timeReferencer.thisDayBedTime.startTime;
-    }
+    let wakeupTime: moment.Moment = activeDayChanged.sleepController.firstWakeupTime;
+    let bedTime: moment.Moment = activeDayChanged.sleepController.bedTime;
+    wakeupTime = RoundToNearestMinute.roundToNearestMinute(wakeupTime, 30, "DOWN");
+    bedTime = RoundToNearestMinute.roundToNearestMinute(bedTime, 30, "UP");
     wakeupTime = moment(wakeupTime).subtract(30, "minutes");
 
     this._wakeCycleZoom = {
@@ -203,7 +195,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     zoomButtons.push(this._twentyFourHourZoom);
     zoomButtons.push(this._wakeCycleZoom);
     zoomButtons.push(this._listZoom);
-    if (this.daybookService.activeDay.isToday) {
+    if (this.daybookService.activeDayController.isToday) {
       zoomButtons.push(this._eightHourZoom);
       zoomButtons.push(this._customZoom);
     } else {

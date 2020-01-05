@@ -25,11 +25,6 @@
     </div>
   </div>
 
-  <div class="tool" *ngIf="toolName == 'DAYBOOK_ENTRY'"
-    [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <app-daybook-entry-form></app-daybook-entry-form>
-  </div>
-
   <div class="tool" *ngIf="toolName == 'TIMELOG_ENTRY'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
     <div class="tool-header">

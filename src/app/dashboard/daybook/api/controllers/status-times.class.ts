@@ -50,10 +50,25 @@ export class StatusTimes {
         }
     }
 
+    public getStatesInRange(startTime: moment.Moment, endTime: moment.Moment): StatusAtTime[] {
+        return this._sleepStatusTimes.filter((item) => {
+            if (item.startTime !== null && item.endTime !== null) {
+                if (item.startTime.isAfter(item.endTime)) {
+                    //duration is greater than 0;
+                    const crossesStart = item.startTime.isSameOrBefore(startTime) && item.startTime.isAfter(startTime);
+                    const isIn = item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(endTime);
+                    const crossesEnd = item.startTime.isBefore(endTime) && item.endTime.isSameOrAfter(endTime);
+                    const encompasses = item.startTime.isSameOrBefore(startTime) && item.endTime.isSameOrAfter(endTime);
+                    return (crossesStart || isIn || crossesEnd || encompasses);
+                }
+            }
+        });
+    }
+
     public getStateAtTime(timeToCheck): StatusAtTime {
         console.log("Method incomplete: FINISH")
         console.log("Getting sleep state at time: " + timeToCheck.format("YYYY-MM-DD hh:mm a"));
-        let statusesToCheck = this._sleepStatusTimes.filter((item) => {
+        const statusesToCheck = this._sleepStatusTimes.filter((item) => {
             if (item.startTime !== null && item.endTime !== null) {
                 if (item.startTime.isAfter(item.endTime)) {
                     //duration is greater than 0;
@@ -72,7 +87,7 @@ export class StatusTimes {
 
     private _recalculate() {
 
-        this._sleepStatusTimes = this._populateMissingSleepTimes(this.sleepStatusTimes);
+        this._sleepStatusTimes = this._populateMissingTimeSpanItems(this.sleepStatusTimes);
         this._sleepStatusTimes = this._sortByStartTime(this.sleepStatusTimes);
         this._sleepStatusTimes = this._checkForConflicts(this.sleepStatusTimes);
 
@@ -149,7 +164,7 @@ export class StatusTimes {
 
     private _checkForConflicts(sleepStatusTimes: StatusAtTime[]): StatusAtTime[] {
 
-        let wakeTimes = [
+        const wakeTimes = [
             this._previousDayWakeupTime,
             this._previousDayBedTime,
             this._thisDayWakeupTime,
@@ -158,7 +173,7 @@ export class StatusTimes {
             this._followingDayWakeupTime,
         ]
 
-        let activityTimes = sleepStatusTimes.filter(i => i.isActive === true && i.name === ReferencerTimeEventName.BeginActivity);
+        const activityTimes = sleepStatusTimes.filter(i => i.isActive === true && i.name === ReferencerTimeEventName.BeginActivity);
         wakeTimes.forEach((wakeTime) => {
             // console.log("wake time: " + item.startTime.format("YYYY-MM-DD hh:mm a") + " - " + item.endTime.format("YYYY-MM-DD hh:mm a") + "  " + item.name)
             activityTimes.forEach((activityTime) => {
@@ -233,32 +248,32 @@ export class StatusTimes {
 
     // }
 
-    private _populateMissingSleepTimes(sleepStatusTimes: StatusAtTime[]): StatusAtTime[] {
-        let thisDayWakeupTime = this._sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.ThisDayWakeupTime);
+    private _populateMissingTimeSpanItems(sleepStatusTimes: StatusAtTime[]): StatusAtTime[] {
+        const thisDayWakeupTime = this._sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.ThisDayWakeupTime);
         if (!thisDayWakeupTime) {
             console.log("Error");
         } else {
-            let defaultBedTime: moment.Moment = moment(thisDayWakeupTime.startTime).add(16, 'hours');
-            let thisDayBedTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.ThisDayBedTime);
+            const defaultBedTime: moment.Moment = moment(thisDayWakeupTime.startTime).add(16, 'hours');
+            const thisDayBedTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.ThisDayBedTime);
             if (thisDayBedTime.isSet === false) {
                 thisDayBedTime.startTime = defaultBedTime;
             }
-            let previousDayBedTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.PreviousDayBedTime);
+            const previousDayBedTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.PreviousDayBedTime);
             if (previousDayBedTime.isSet === false) {
                 previousDayBedTime.startTime = moment(defaultBedTime).subtract(24, 'hours');
             }
-            let previousDayWakeupTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.PreviousDayWakeupTime);
+            const previousDayWakeupTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.PreviousDayWakeupTime);
             if (previousDayWakeupTime.isSet === false) {
                 // console.log("  ThisDayWakeupTime: " + thisDayWakeupTime.startTime.format("YYYY-MM-DD hh:mm a"))
                 previousDayWakeupTime.startTime = moment(thisDayWakeupTime.startTime).subtract(24, 'hours');;
                 // console.log("  Zinger:  " + zinger.format("YYYY-MM-DD hh:mm a"))
                 // console.log("  Previous wakeup time set to: " + this.previousDayWakeupTime.startTime.format("YYYY-MM-DD hh:mm a"))
             }
-            let followingDayBedTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.FollowingDayBedTime);
+            const followingDayBedTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.FollowingDayBedTime);
             if (followingDayBedTime.isSet === false) {
                 followingDayBedTime.startTime = moment(defaultBedTime).add(24, 'hours');
             }
-            let followingDayWakeupTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.FollowingDayWakeupTime);
+            const followingDayWakeupTime = sleepStatusTimes.find(i => i.name === ReferencerTimeEventName.FollowingDayWakeupTime);
             if (followingDayWakeupTime.isSet === false) {
                 followingDayWakeupTime.startTime = moment(thisDayWakeupTime.startTime).add(24, 'hours');
             }

@@ -19,26 +19,27 @@ export class WeightlogEntryInputComponent implements OnInit, OnDestroy {
 
   private saveSubscription: Subscription = new Subscription();
   ngOnInit() {
-    if(this.daybookService.activeDay.dailyWeightLogEntryKg > 0){
-      this.currentWeight = this.daybookService.activeDay.dailyWeightLogEntryKg;
-    }
-    this.saveSubscription = this.onClickSave$.subscribe((onSave)=>{
-      this.saveForm()
-    });
-    this.weightInputForm = new FormGroup({
-      "weightInput": new FormControl(this.currentWeight)
-    });
+    console.log("Component disabled.");
+    // if(this.daybookService.activeDay.dailyWeightLogEntryKg > 0){
+    //   this.currentWeight = this.daybookService.activeDay.dailyWeightLogEntryKg;
+    // }
+    // this.saveSubscription = this.onClickSave$.subscribe((onSave)=>{
+    //   this.saveForm()
+    // });
+    // this.weightInputForm = new FormGroup({
+    //   "weightInput": new FormControl(this.currentWeight)
+    // });
   }
   ngOnDestroy(){
     this.saveSubscription.unsubscribe();
   }
 
   private saveForm(){
-    let weightInputKg: number = this.weightInputForm.controls["weightInput"].value;
-    if(this._unit == "lbs"){
-      weightInputKg = Number(this.convertToKg(weightInputKg).toFixed(0));
-    }
-    this.daybookService.activeDay.dailyWeightLogEntryKg = weightInputKg;
+    // let weightInputKg: number = this.weightInputForm.controls["weightInput"].value;
+    // if(this._unit == "lbs"){
+    //   weightInputKg = Number(this.convertToKg(weightInputKg).toFixed(0));
+    // }
+    // this.daybookService.activeDay.dailyWeightLogEntryKg = weightInputKg;
   }
 
   private _unit: string = "kg";

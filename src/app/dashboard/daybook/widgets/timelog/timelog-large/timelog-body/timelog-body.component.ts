@@ -8,12 +8,12 @@ import { TimelogZoomControl } from '../timelog-zoom-controller/timelog-zoom-cont
 import { Subscription, Observable } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
-import { DaybookDayItemSleepProfileData } from '../../../../api/data-items/daybook-day-item-sleep-profile-data.interface';
 import { Timelog } from '../../timelog.class';
 import { TimeDelineator } from '../../time-delineator.class';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { ScreenSizeService } from '../../../../../../shared/app-screen-size/screen-size.service';
+import { DaybookController } from '../../../../controller/daybook-controller.class';
 
 @Component({
   selector: 'app-timelog-body',
@@ -32,6 +32,9 @@ export class TimelogBodyComponent implements OnInit {
     this.estimateInitialMinutesPerPixel(this.screenSizeService.dimensions.height);
     this.buildTimelog();
   }
+  public get zoomControl(): TimelogZoomControl {
+    return this._zoomControl;
+  }
 
   @Input() public set zoomHover(zoom: TimelogZoomControl) {
   }
@@ -39,14 +42,14 @@ export class TimelogBodyComponent implements OnInit {
 
   ngOnInit() {
     this.estimateInitialMinutesPerPixel(this.screenSizeService.dimensions.height);
-    this.screenSizeService.dimensions$.subscribe((dimensions: {width: number, height: number})=>{
+    this.screenSizeService.dimensions$.subscribe((dimensions: { width: number, height: number }) => {
       this.estimateInitialMinutesPerPixel(dimensions.height);
     });
   }
 
 
 
-  private _activeDay: DaybookDayItem;
+  private _activeDayController: DaybookController;
 
   public get startTime(): moment.Moment { return this._zoomControl.startTime; }
   public get endTime(): moment.Moment { return this._zoomControl.endTime; }
@@ -78,9 +81,9 @@ export class TimelogBodyComponent implements OnInit {
   public get timeDelineatorsNgStyle(): any { return this._timelog.timeDelineatorsNgStyle; };
 
   private buildTimelog() {
-    this._activeDay = this.daybookService.activeDay;
+    this._activeDayController = this.daybookService.activeDayController;
     this.buildGuideLineHours();
-    
+
     this.updateTimelog();
     this.updateNowLine();
     this.updateTickMarginLine();
@@ -124,7 +127,7 @@ export class TimelogBodyComponent implements OnInit {
       } else if (currentTime.minute() == 30) {
         lineNgClass = ['label-line-half-hour'];
       }
-      
+
 
       guideLineHours.push({ label: label, ngStyle: ngStyle, lineNgClass: lineNgClass });
       currentTime = moment(currentTime).add(30, "minutes");
@@ -152,47 +155,47 @@ export class TimelogBodyComponent implements OnInit {
   public get tickMarginLineNgStyle(): any { return this._tickMarginLineNgStyle; };
   public get tickMarginLines(): any[] { return this._tickMarginLines; };
 
-  private updateTickMarginLine(){
-    if(this.timelog.entryItems.length > 0){
+  private updateTickMarginLine() {
+    if (this.timelog.entryItems.length > 0) {
       const totalDurationSeconds: number = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "seconds");
 
 
-      let sleepStates: {durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number}[] = this.timelog.entryItems.map((entryItem)=>{
+      let sleepStates: { durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number }[] = this.timelog.entryItems.map((entryItem) => {
         return { durationSeconds: entryItem.durationSeconds, sleepState: entryItem.sleepState, percentage: 0 };
       });
 
-      let reducedSleepStates: {durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number}[] = [sleepStates[0]];
-      reducedSleepStates[0].percentage = (reducedSleepStates[0].durationSeconds/totalDurationSeconds) * 100;
-      for(let i=1; i< sleepStates.length; i++){
-        if(sleepStates[i].sleepState === sleepStates[i-1].sleepState){
+      let reducedSleepStates: { durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number }[] = [sleepStates[0]];
+      reducedSleepStates[0].percentage = (reducedSleepStates[0].durationSeconds / totalDurationSeconds) * 100;
+      for (let i = 1; i < sleepStates.length; i++) {
+        if (sleepStates[i].sleepState === sleepStates[i - 1].sleepState) {
           // if it is the same as the previous one, add to the existing sum or seconds
-          reducedSleepStates[reducedSleepStates.length-1].durationSeconds += sleepStates[i].durationSeconds;
-          reducedSleepStates[reducedSleepStates.length-1].percentage = ((reducedSleepStates[reducedSleepStates.length-1].durationSeconds)/totalDurationSeconds)*100;
-        }else{
+          reducedSleepStates[reducedSleepStates.length - 1].durationSeconds += sleepStates[i].durationSeconds;
+          reducedSleepStates[reducedSleepStates.length - 1].percentage = ((reducedSleepStates[reducedSleepStates.length - 1].durationSeconds) / totalDurationSeconds) * 100;
+        } else {
           // if it is not the same, create a new item in the array.
-          sleepStates[i].percentage = (sleepStates[i].durationSeconds/totalDurationSeconds)*100;
+          sleepStates[i].percentage = (sleepStates[i].durationSeconds / totalDurationSeconds) * 100;
           reducedSleepStates.push(sleepStates[i]);
         }
       }
 
       let gridTemplateRows: string = "";
-      reducedSleepStates.forEach((state)=>{
+      reducedSleepStates.forEach((state) => {
         gridTemplateRows += "" + state.percentage.toFixed(2) + "%";
       });
-      
+
       this._tickMarginLines = reducedSleepStates;
-      this._tickMarginLineNgStyle = {"grid-template-rows":gridTemplateRows};
+      this._tickMarginLineNgStyle = { "grid-template-rows": gridTemplateRows };
 
       // console.log("Tick margin line: ", this._tickMarginLines, this._tickMarginLineNgStyle)
 
     }
-    
+
   }
 
 
 
   private updateTimelog() {
-    let timelog: Timelog = new Timelog(this._zoomControl, this._activeDay, this._minutesPerTwentyPixels);
+    let timelog: Timelog = new Timelog(this._zoomControl, this._activeDayController, this._minutesPerTwentyPixels);
     this._timelog = timelog;
   }
 
@@ -220,7 +223,7 @@ export class TimelogBodyComponent implements OnInit {
     let crossesAnyTimelogEntry: boolean = this._timelog.crossesAnyTimelogEntry(time);
     this._mousePosition = { time: time, ngStyle: ngStyle, crossesExistingTimelogEntry: crossesAnyTimelogEntry };
   }
-  private estimateInitialMinutesPerPixel(screenHeight: number){
+  private estimateInitialMinutesPerPixel(screenHeight: number) {
     /**
      * This is not a highly reliable mechanism for determining how many minutes per pixel because it depends on making assumptions
      * based on the current configuration of css and elements which may change.
@@ -231,18 +234,18 @@ export class TimelogBodyComponent implements OnInit {
      * We can therefore estimate that the height of the timelog-body is:  screenHeight - 125px.
      */
     let elementHeight: number = screenHeight - 125;
-    if(elementHeight < 500){
+    if (elementHeight < 500) {
       elementHeight = 500;
     }
     this.updateMinutesPerPixel(elementHeight);
   }
   private _minutesPerTwentyPixels: number = 30;
   public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
-  private updateMinutesPerPixel(elementHeight: number){
+  private updateMinutesPerPixel(elementHeight: number) {
     const totalMinutes = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "minutes");
-    const minutesPerTwentyPixels = (totalMinutes / elementHeight)*20;
+    const minutesPerTwentyPixels = (totalMinutes / elementHeight) * 20;
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
-    if(this._timelog){
+    if (this._timelog) {
       this._timelog.updateEntrySizes(minutesPerTwentyPixels);
     }
   }

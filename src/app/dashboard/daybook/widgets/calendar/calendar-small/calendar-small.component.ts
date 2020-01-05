@@ -1,11 +1,9 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
-import { faArrowRight, faArrowLeft, faExpand } from '@fortawesome/free-solid-svg-icons';
-import { Router } from '@angular/router';
-import { DaybookDayItem } from '../../../api/daybook-day-item.class';
-import { DaybookSmallWidget } from '../../daybook-small-widget.interface';
+import { faExpand } from '@fortawesome/free-solid-svg-icons';
 import { DaybookService } from '../../../daybook.service';
+import { DaybookController } from '../../../controller/daybook-controller.class';
 
 @Component({
   selector: 'app-calendar-small',
@@ -25,13 +23,13 @@ export class CalendarSmallComponent implements OnInit {
     this.expand.emit(true);
   }
 
-  private activeDay: DaybookDayItem;
+  private activeDayController: DaybookController;
   public daysOfCalendar: CalendarDay[] = [];
 
   public isLarge: boolean = false;
 
   ngOnInit() {
-    this.activeDay = this.daybookService.activeDay;
+    this.activeDayController = this.daybookService.activeDayController;
 
     if (this.date) {
       // Large calendar
@@ -39,11 +37,11 @@ export class CalendarSmallComponent implements OnInit {
       this.buildDaysOfCalendar(this.date, "LARGE");
     } else {
       // Small calendar
-      this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD), "SMALL");
+      this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
 
-      this.daybookService.activeDay$.subscribe((activeDayChanged) => {
-        this.activeDay = activeDayChanged;
-        this.buildDaysOfCalendar(moment(this.activeDay.dateYYYYMMDD), "SMALL");
+      this.daybookService.activeDayController$.subscribe((activeDayChanged) => {
+        this.activeDayController = activeDayChanged;
+        this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
       });
     }
 
@@ -75,7 +73,7 @@ export class CalendarSmallComponent implements OnInit {
     while (currentDate.isSameOrBefore(lastDate)) {
       let isThisMonth: boolean = moment(date).month() == moment(currentDate).month();
       let isToday: boolean = moment(currentDate).format("YYYY-MM-DD") == moment().format("YYYY-MM-DD");
-      let isActiveDay: boolean = moment(this.activeDay.dateYYYYMMDD).format("YYYY-MM-DD") == moment(currentDate).format("YYYY-MM-DD");
+      let isActiveDay: boolean = moment(this.activeDayController.dateYYYYMMDD).format("YYYY-MM-DD") == moment(currentDate).format("YYYY-MM-DD");
 
 
       let season: "WINTER" | "SPRING" | "SUMMER" | "AUTUMN" = "WINTER";

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DaybookDayItem } from '../../api/daybook-day-item.class';
 import { DaybookService } from '../../daybook.service';
+import { DaybookController } from '../../controller/daybook-controller.class';
 
 @Component({
   selector: 'app-weight-log-entry',
@@ -11,13 +12,13 @@ export class WeightLogEntryComponent implements OnInit {
 
   constructor(private daybookService: DaybookService) { }
 
-  private activeDay: DaybookDayItem;
+  private activeDayController: DaybookController;
 
   ngOnInit() {
-    this.activeDay = this.daybookService.activeDay;
+    this.activeDayController = this.daybookService.activeDayController;
     this.updateWeightInfo()
-    this.daybookService.activeDay$.subscribe((activeDayChanged)=>{
-      this.activeDay = activeDayChanged;
+    this.daybookService.activeDayController$.subscribe((activeDayChanged)=>{
+      this.activeDayController = activeDayChanged;
       this.updateWeightInfo();
     });
   }
@@ -26,8 +27,8 @@ export class WeightLogEntryComponent implements OnInit {
   public get dailyWeightRecord(): number { return this._dailyWeightRecord; }
 
   private updateWeightInfo(){
-    if(this.activeDay.dailyWeightLogEntryKg > 0){
-      this._dailyWeightRecord = this.activeDay.dailyWeightLogEntryKg;
+    if(this.activeDayController.dailyWeightLogEntryKg > 0){
+      this._dailyWeightRecord = this.activeDayController.dailyWeightLogEntryKg;
     }else{
       this._dailyWeightRecord = null;
     }

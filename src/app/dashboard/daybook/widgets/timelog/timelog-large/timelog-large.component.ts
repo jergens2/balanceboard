@@ -7,6 +7,7 @@ import { DayStructureDataItem } from '../../../api/data-items/day-structure-data
 import { DaybookService } from '../../../daybook.service';
 import { TimelogZoomControl } from './timelog-zoom-controller/timelog-zoom-control.interface';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { DaybookController } from '../../../controller/daybook-controller.class';
 
 @Component({
   selector: 'app-timelog-large',
@@ -26,13 +27,24 @@ export class TimelogLargeComponent implements OnInit {
   // public set activeDay(activeDay: DaybookDayItem){
   //   this._activeDay = activeDay;
   // }
-  public activeDay: DaybookDayItem;
+  // public activeDayController: DaybookController;
 
   ngOnInit() {
-    this.activeDay = this.daybookService.activeDay;
-    this.daybookService.activeDay$.subscribe((dayChanged)=>{
-      this.activeDay = dayChanged;
-    });
+    console.log("This component gets the firstTLEF time from controller")
+    this.zoomControl = { 
+      icon: null,
+      name: "AWAKE",
+      isActive: true,
+      isFirst: false,
+      isLast: false,
+      itemState: null,
+      startTime: moment(this.daybookService.activeDayController.sleepController.firstWakeupTime), 
+      endTime: moment(this.daybookService.activeDayController.sleepController.bedTime) 
+    };
+    // this.activeDayController = this.daybookService.activeDayController;
+    // this.daybookService.activeDayController$.subscribe((dayChanged)=>{
+    //   this.activeDayController = dayChanged;
+    // });
   }
 
 
@@ -59,16 +71,7 @@ export class TimelogLargeComponent implements OnInit {
 
   private _zoomHover: TimelogZoomControl = null;
   public get zoomHover(): TimelogZoomControl{ return this._zoomHover; }
-  public zoomControl: TimelogZoomControl = { 
-    icon: null,
-    name: "AWAKE",
-    isActive: true,
-    isFirst: false,
-    isLast: false,
-    itemState: null,
-    startTime: moment(this.daybookService.activeDay.sleepProfile.wakeupTime), 
-    endTime: moment(this.daybookService.activeDay.sleepProfile.bedTime) 
-  };
+  public zoomControl: TimelogZoomControl;
 
   faCog = faCog;
   faEye = faEye;

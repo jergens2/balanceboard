@@ -19,14 +19,15 @@ import { CalendarSmallComponent } from './widgets/calendar/calendar-small/calend
 import { PointsWidgetSmallComponent } from './widgets/points/points-widget-small/points-widget-small.component';
 import { PointsWidgetLargeComponent } from './widgets/points/points-widget-large/points-widget-large.component';
 
-import { DaybookEntryFormComponent } from './daybook-entry-form-mobile/daybook-entry-form.component';
+
 import { TlefActivitiesComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activities.component';
 import { ActivitySliderBarComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
 import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.component';
-import { WakeupSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/wakeup-section.component';
-import { DaySectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/time-of-day-section/time-of-day-section.component';
-import { BedtimeSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/bedtime-section/bedtime-section.component';
-import { DaybookEntryFormSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/daybook-entry-form-section.component';
+// import { WakeupSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/wakeup-section.component';
+// import { DaySectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/time-of-day-section/time-of-day-section.component';
+// import { BedtimeSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/bedtime-section/bedtime-section.component';
+// import { DaybookEntryFormSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/daybook-entry-form-section.component';
+// import { DaybookEntryFormComponent } from './daybook-entry-form-mobile/daybook-entry-form.component';
 
 import { SleepProfileWidgetComponent } from './widgets/sleep-profile-widget/sleep-profile-widget.component';
 import { TimelogBodyComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-body.component';
@@ -40,6 +41,9 @@ import { TlefModifyTimesComponent } from './widgets/timelog/timelog-entry-form/t
 import { TimelogEntryListComponent } from './widgets/timelog/timelog-large/timelog-entry-list/timelog-entry-list.component';
 import { SleepProfileFormComponent } from './widgets/sleep-profile-widget/sleep-profile-form/sleep-profile-form.component';
 import { SleepProfileDisplayComponent } from './widgets/sleep-profile-widget/sleep-profile-display/sleep-profile-display.component';
+import { TimeSelectionColumnComponent } from './widgets/timelog/timelog-large/timelog-body/time-selection-column/time-selection-column.component';
+import { TlefViewOnlyComponent } from './widgets/timelog/timelog-entry-form/tlef-view-only/tlef-view-only.component';
+import { TlefBedTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-bed-time/tlef-bed-time.component';
 
 
 @NgModule({
@@ -62,14 +66,15 @@ import { SleepProfileDisplayComponent } from './widgets/sleep-profile-widget/sle
     CalendarSmallComponent,
     PointsWidgetSmallComponent,
     PointsWidgetLargeComponent,
-    DaybookEntryFormComponent,
+
     TlefActivitiesComponent,
     ActivitySliderBarComponent,
     SleepBatteryComponent,
-    WakeupSectionComponent,
-    DaySectionComponent,
-    BedtimeSectionComponent,
-    DaybookEntryFormSectionComponent,
+    // DaybookEntryFormComponent,
+    // WakeupSectionComponent,
+    // DaySectionComponent,
+    // BedtimeSectionComponent,
+    // DaybookEntryFormSectionComponent,
     TimelogEntryComponent,
     SleepProfileWidgetComponent,
     TimelogBodyComponent,
@@ -82,9 +87,12 @@ import { SleepProfileDisplayComponent } from './widgets/sleep-profile-widget/sle
     TimelogEntryListComponent,
     SleepProfileFormComponent,
     SleepProfileDisplayComponent,
+    TimeSelectionColumnComponent,
+    TlefViewOnlyComponent,
+    TlefBedTimeComponent,
   ],
   exports: [
-    DaybookEntryFormComponent,
+    // DaybookEntryFormComponent,
     TimelogEntryFormComponent,
     TlefActivitiesComponent,
     ActivitySliderBarComponent,

@@ -1,0 +1,16 @@
+.selection-column-root{
+    width:100%;
+    height:100%;
+    background-color: rgba(255, 0, 0, 0.007);
+    display:flex;
+    flex-direction: column;
+}
+
+.selection-row{
+    background-color: rgba(0, 0, 255, 0.021);
+    flex-grow: 2;
+}
+.selection-row:hover{
+    border-top: 1px solid black;
+    background-color: rgba(255, 0, 0, 0.438);
+}

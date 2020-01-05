@@ -81,8 +81,9 @@ export class TimelogEntryItem {
     public get dataEntryItem(): DaybookTimelogEntryDataItem {
         return {
             startTimeISO: this._startTime.toISOString(),
+            startTimeUtcOffsetMinutes: this._startTime.utcOffset(),
             endTimeISO: this._endTime.toISOString(),
-            utcOffsetMinutes: this._utcOffsetMinutes,
+            endTimeUtcOffsetMinutes: this._endTime.utcOffset(),
             timelogEntryActivities: this.timelogEntryActivities,
             isConfirmed: false,
             note: this._note,

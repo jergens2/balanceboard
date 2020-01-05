@@ -7,6 +7,7 @@ import { DaybookService } from './daybook.service';
 import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
 import { DaybookDayItem } from './api/daybook-day-item.class';
 import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
+import { DaybookController } from './controller/daybook-controller.class';
 
 @Component({
   selector: 'app-daybook',
@@ -24,11 +25,11 @@ export class DaybookComponent implements OnInit, OnDestroy {
   public get appScreenSize(): AppScreenSize{
     return this._screenSize;
   }
-  private _activeDay: DaybookDayItem;
-  public get activeDay(): DaybookDayItem{
+  private _activeDay: DaybookController;
+  public get activeDay(): DaybookController{
     return this._activeDay;
   }
-  public set activeDay(activeDay: DaybookDayItem){
+  public set activeDay(activeDay: DaybookController){
     this._activeDay = activeDay;
   }
 
@@ -41,9 +42,9 @@ export class DaybookComponent implements OnInit, OnDestroy {
       this._screenSize = changedSize;
       // console.log("Screensize changed to: " , this._screenSize)
     });
-    this._activeDay = this.daybookService.activeDay;
+    this._activeDay = this.daybookService.activeDayController;
     // console.log("This active day is", this._activeDay)
-    this.daybookService.activeDay$.subscribe((activeDayChanged)=>{
+    this.daybookService.activeDayController$.subscribe((activeDayChanged)=>{
       if(activeDayChanged){
         this._activeDay = activeDayChanged;
       }     
@@ -127,7 +128,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
 
   public get daybookHeader(): string{
-    return moment(this.daybookService.activeDay.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
+    return moment(this.daybookService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
   }
 
   ngOnDestroy(){

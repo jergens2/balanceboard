@@ -9,15 +9,9 @@ let blankDaybookItemHttpShape: DaybookDayItemHttpShape = {
     daybookActivityDataItems: [],
     dailyTaskListDataItems: [],
     dayStructureDataItems: [],
-    sleepCycleDataItems: [],
-    sleepProfile: {
-        sleepQuality: null,
-        wakeupTimeISO: "",
-        wakeupTimeUtcOffsetMinutes: -1,
-        bedtimeISO: "",
-        bedtimeUtcOffsetMinutes: -1,
-        estimatedSleepDurationMinutes: -1,
-    },
+    sleepTimes: [],
+    sleepEnergyLevelInputs: [],
+
     dailyWeightLogEntryKg: -1,
     scheduledActivityItems: [],  // this includes activities and routines.: [],
     dayTemplateId: "",

@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        <div *ngIf="nowLine" class="now-line-time-container" [ngStyle]="nowLine.ngStyle">
+        <!-- <div *ngIf="nowLine" class="now-line-time-container" [ngStyle]="nowLine.ngStyle">
             <div></div>
             <div class="now-line-time-label-container">
 
@@ -27,11 +27,11 @@
                 </div>
                 <div style="height:1px; border-top: 1px solid rgba(255, 0, 0, 0.3); flex-grow:2;"></div>
             </div>
-        </div>
+        </div> -->
 
 
 
-        <div *ngIf="timeDelineators.length > 0" class="time-delineators" [ngStyle]="timeDelineatorsNgStyle">
+        <!-- <div *ngIf="timeDelineators.length > 0" class="time-delineators" [ngStyle]="timeDelineatorsNgStyle">
             <div></div>
             <div class="time-delineator-label-container" *ngFor="let timeDelineator of timeDelineators">
                 <div style="display:flex; flex-direction: row; align-items: center; width: 100px"
@@ -54,7 +54,7 @@
                 <div *ngIf="timeDelineator.delineatorType === 'SLEEP' && timeDelineator.label != ''"
                     class="delineator-label">{{ timeDelineator.label }}</div>
             </div>
-        </div>
+        </div> -->
 
         <!-- This section causes performance degradation. -->
         <!-- need to isolate it just to the column -->
@@ -72,20 +72,22 @@
         </div> -->
 
 
-
+<!-- 
         <div *ngIf="timelogEntryItems.length > 0" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
             <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item"
                 [entry]="timelogEntryItem" [minutesPerTwentyPixels]="minutesPerTwentyPixels"></app-timelog-entry>
-        </div>
+        </div> -->
 
-        <div class="tick-margin-line-container" id="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle"
+        <!-- <div class="tick-margin-line-container" id="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle"
             (mouseenter)="itemState.onMouseEnter()" (mouseleave)="onMouseLeave()" (mousemove)="onMouseMove($event)">
             <div class="tick-margin-line"></div>
         </div>
 
         <div class="tick-margin-line-container" id="tick-margin-line-container" [ngStyle]="tickMarginLineNgStyle">
             <div class="tick-margin-line"></div>
-        </div>
+        </div> -->
+
+        <app-time-selection-column style="grid-row: 1 / -1; grid-column: 2 / span 1;" [zoomControl]="zoomControl"></app-time-selection-column>
 
     </div>
 </div>
