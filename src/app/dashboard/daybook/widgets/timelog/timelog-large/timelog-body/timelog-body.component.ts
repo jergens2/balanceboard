@@ -30,7 +30,7 @@ export class TimelogBodyComponent implements OnInit {
     this._zoomControl = zoomControl;
     // console.log("Zoom:  " + this._zoomControl.startTime.format("YYYY-MM-DD hh:mm a") + " - " + this._zoomControl.endTime.format("YYYY-MM-DD hh:mm a"))
     this.estimateInitialMinutesPerPixel(this.screenSizeService.dimensions.height);
-    this.buildTimelog();
+    
   }
   public get zoomControl(): TimelogZoomControl {
     return this._zoomControl;
@@ -45,9 +45,24 @@ export class TimelogBodyComponent implements OnInit {
     this.screenSizeService.dimensions$.subscribe((dimensions: { width: number, height: number }) => {
       this.estimateInitialMinutesPerPixel(dimensions.height);
     });
+    this.buildTimelog();
+  }
+
+  private _drawNewTLE: TimelogEntryItem;
+  public get drawNewTLE(): TimelogEntryItem { return this._drawNewTLE; }
+  public onDrawNewTLE(timelogEntry: TimelogEntryItem){
+    // console.log("Draw timelogEntry in timelog class:")
+    // console.log("  from: " + timelogEntry.startTime.format('YYYY-MM-DD hh:mm a'))
+    // console.log("    to: " + timelogEntry.endTime.format('YYYY-MM-DD hh:mm a'))
+    console.log("  * Drawing TLE from: " + timelogEntry.startTime.format('YYYY-MM-DD hh:mm a') + " to: " + timelogEntry.endTime.format('YYYY-MM-DD hh:mm a'))
+    // this.timelog.drawNewTLE(timelogEntry);
+    // let drawNewTLE: TimelogEntryItem = timelogEntry;
+
+    this._drawNewTLE = timelogEntry;
   }
 
 
+  public columnAvailability: {startTime: moment.Moment, endTime: moment.Moment, isActive: boolean}[] = [];
 
   private _activeDayController: DaybookController;
 
@@ -87,7 +102,12 @@ export class TimelogBodyComponent implements OnInit {
     this.updateTimelog();
     this.updateNowLine();
     this.updateTickMarginLine();
+
+    this.columnAvailability = this.daybookService.activeDayController.timelogController.getColumnAvailability(this.zoomControl);
+
   }
+
+
 
   private buildGuideLineHours() {
     let guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
@@ -156,6 +176,7 @@ export class TimelogBodyComponent implements OnInit {
   public get tickMarginLines(): any[] { return this._tickMarginLines; };
 
   private updateTickMarginLine() {
+    console.log("as of:  2020-01-05:  I don't know if I need this method")
     if (this.timelog.entryItems.length > 0) {
       const totalDurationSeconds: number = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "seconds");
 

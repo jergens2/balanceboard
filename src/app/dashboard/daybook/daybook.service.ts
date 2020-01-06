@@ -114,10 +114,10 @@ export class DaybookService implements ServiceAuthenticates {
   private _setTodayItem(todayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem },
     crossedMidnight?: boolean) {
 
-    console.log("today controller: ");
-    console.log("  prevDay: " + todayItem.prevDay.dateYYYYMMDD);
-    console.log(" *thisDay: " + todayItem.thisDay.dateYYYYMMDD + " *");
-    console.log("  nextDay: " + todayItem.nextDay.dateYYYYMMDD);
+    // console.log("today controller: ");
+    // console.log("  prevDay: " + todayItem.prevDay.dateYYYYMMDD);
+    // console.log(" *thisDay: " + todayItem.thisDay.dateYYYYMMDD + " *");
+    // console.log("  nextDay: " + todayItem.nextDay.dateYYYYMMDD);
     const todayController: DaybookController = new DaybookController(todayItem);
 
 
@@ -218,7 +218,7 @@ export class DaybookService implements ServiceAuthenticates {
    * @param daysChanged 
    */
   private _updateController(controller: DaybookController, daysChanged) {
-    console.log("Updating the controller in the request service: ", controller)
+    // console.log("Updating the controller in the request service: ", controller)
     let prevDay: DaybookDayItem;
     let thisDay: DaybookDayItem;
     let nextDay: DaybookDayItem;
@@ -240,14 +240,14 @@ export class DaybookService implements ServiceAuthenticates {
     forkJoin(daysToUpdate.map<Observable<DaybookDayItem>>((item: DaybookDayItem) =>
       this.daybookHttpRequestService.updateDaybookDayItem$(item)))
       .subscribe((updatedItems: DaybookDayItem[]) => {
-        console.log("Received updated items from forkJoin: ", updatedItems);
+        // console.log("Received updated items from forkJoin: ", updatedItems);
         if (!prevDay) { prevDay = controller.previousDay; }
         if (!thisDay) { thisDay = controller.thisDay; }
         if (!nextDay) { nextDay = controller.followingDay; }
         const reloadItem = { prevDay: prevDay, thisDay: thisDay, nextDay: nextDay };
 
 
-        console.log("Reloading with reload item: ", reloadItem)
+        // console.log("Reloading with reload item: ", reloadItem)
         controller.reload(reloadItem);
         if (controller.isToday) {
           this._updateTodayItem(controller);

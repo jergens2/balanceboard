@@ -64,14 +64,23 @@ export class TimelogEntryFormComponent implements OnInit {
 
   public get modifyingTimes(): boolean { return this._modifyingTimes; }
 
-  // public get activeDayIsToday(): boolean { return this.daybookService.activeDayController.isToday; }
+  public get entryItemDate(): string {
+    if(this.entryItem.startTime.format('YYYY-MM-DD') === this.entryItem.endTime.format('YYYY-MM-DD')){
+      return this.entryItem.startTime.format('YYYY-MM-DD');
+    }else if (this.entryItem.endTime.diff(this.entryItem.startTime, 'days') === 1){
+      return this.entryItem.startTime.format('YYYY-MM-DD') + " & " + this.entryItem.endTime.format('YYYY-MM-DD');
+    }else{
+      // ?
+      return this.entryItem.endTime.format('YYYY-MM-DD')
+    }
+  }
 
   ngOnInit() {
     const receivedEntry = this.toolsService.timelogEntryStorage;
     this._determineCase(receivedEntry);
     this.toolsService.timelogEntryStorage$.subscribe((newValue: TimelogEntryItem) => {
       if (newValue !== null) {
-        console.log('WE dun got ourselves a new value: ' + newValue.startTime.format('YYYY-MM-DD hh:mm a'));
+        console.log('New value from toolsService: ' + newValue.startTime.format('YYYY-MM-DD hh:mm a'));
         this._determineCase(newValue);
       }
     });
@@ -85,7 +94,6 @@ export class TimelogEntryFormComponent implements OnInit {
 
 
   private _determineCase(receivedEntry?: TimelogEntryItem) {
-    console.log("Determining case")
     if (!receivedEntry) {
       /*  In this case, the user opened the form from the Tool menu */
       this._setFormCase(TLEFFormCase.NEW_CURRENT);
@@ -112,7 +120,6 @@ export class TimelogEntryFormComponent implements OnInit {
   }
 
   private _setFormCase(tlefCase: TLEFFormCase, receivedEntry?: TimelogEntryItem) {
-    console.log('Form case is : ' + tlefCase);
     let entryItem: TimelogEntryItem;
     if (tlefCase === 'NEW_CURRENT') {
       if (receivedEntry) {
@@ -122,27 +129,23 @@ export class TimelogEntryFormComponent implements OnInit {
         entryItem = template.timelogEntry;
         this._isStartOfCurrentDay = template.isFirstOfDay;
         this._isEndOfCurrentDay = template.isLastOfDay;
-
-        console.log("Is it the start of current day? " + this._isStartOfCurrentDay);
-        console.log("Is it the end of current day? " + this._isEndOfCurrentDay);
       }
     } else if (tlefCase === 'NEW_PREVIOUS' || tlefCase === 'NEW_FUTURE') {
       if (!receivedEntry) {
-        console.log('No receivedEntry in method');
+        console.log('Error?: No receivedEntry in method');
         this.loggingService.logNewError('No receivedEntry in method')
       } else {
         entryItem = receivedEntry;
       }
     } else if (tlefCase === 'EXISTING_PREVIOUS' || tlefCase === 'EXISTING_FUTURE') {
       if (!receivedEntry) {
-        console.log('No receivedEntry in method');
+        console.log('Error?: No receivedEntry in method');
         this.loggingService.logNewError('No receivedEntry in method')
       } else {
         entryItem = receivedEntry;
       }
     }
     this._formCase = tlefCase;
-    console.log("Form case is " + this._formCase);
     this.setEntryItem(entryItem);
   }
 
@@ -150,7 +153,6 @@ export class TimelogEntryFormComponent implements OnInit {
 
 
   private setEntryItem(entryItem: TimelogEntryItem) {
-    console.log('Setting entry item: ', entryItem);
     this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime, entryItem.sleepState);
     this._entryItem.isSavedEntry = entryItem.isSavedEntry;
     this._entryItem.timelogEntryActivities = entryItem.timelogEntryActivities;
@@ -196,13 +198,13 @@ export class TimelogEntryFormComponent implements OnInit {
     // console.log("Saving timelog entry: ", this.entryItem);
     this._entryItem.timelogEntryActivities = this._activityItems;
     if (this.formCase === 'NEW_CURRENT') {
-      console.log('Saving current TLEF to Today item');
+      console.log(' $$$ Saving current TLEF to Today item');
       this.daybookService.todayController.timelogController.saveTimelogEntryItem$(this.entryItem);
     } else if (this.formCase === 'NEW_FUTURE' || this.formCase === 'NEW_PREVIOUS') {
-      console.log('Saving new TLEF to Active Day Item');
+      console.log(' $$$ Saving new TLEF to Active Day Item');
       this.daybookService.activeDayController.timelogController.saveTimelogEntryItem$(this.entryItem);
     } else if (this.formCase === 'EXISTING_PREVIOUS' || this.formCase === 'EXISTING_FUTURE') {
-      console.log('Updating existing entry to Active Day item');
+      console.log(' $$$ Updating existing entry to Active Day item');
       this.daybookService.activeDayController.timelogController.updateTimelogEntry$(this.entryItem);
     }
     this.toolsService.closeTool();

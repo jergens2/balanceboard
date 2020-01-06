@@ -1,5 +1,5 @@
 <div class="selection-column-root" (mouseleave)="onMouseLeave()" (mouseenter)="onMouseEnter()">
-    <div *ngFor="let row of rows" class="selection-row" (mousedown)="onMouseDownRow(row)"
+    <div *ngFor="let row of rows" class="selection-row" [ngClass]="{'available':row.isAvailable}" (mousedown)="onMouseDownRow(row)"
         (mouseenter)="onMouseEnterRow(row)" (mouseleave)="onMouseLeaveRow(row)" (mouseup)="onMouseUpRow(row)">
 
     </div>

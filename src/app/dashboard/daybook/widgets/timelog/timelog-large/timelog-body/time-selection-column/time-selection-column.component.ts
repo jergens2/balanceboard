@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { TimelogZoomControl } from '../../timelog-zoom-controller/timelog-zoom-control.interface';
 import * as moment from 'moment';
 import { TimeSelectionRow } from './time-selection-row.class';
 import { Subscription } from 'rxjs';
 import { DaybookService } from '../../../../../daybook.service';
+import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -20,12 +21,30 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _mouseUpRow: TimeSelectionRow;
   private _mouseOverRow: TimeSelectionRow;
 
+
+  private _availability: {startTime: moment.Moment, endTime: moment.Moment, isActive: boolean }[];
+
+  @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
+
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
-    this._buildRows(this._calculateDivisor());
+    
+  }
+  @Input() public set availability(availability: {startTime: moment.Moment, endTime: moment.Moment, isActive: boolean }[]){
+    this._availability = availability;
+    this._availability.forEach((item) => {
+      console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a') + " : isActive? " + item.isActive);
+    })
+  }
+
+  public get availability(): {startTime: moment.Moment, endTime: moment.Moment, isActive: boolean }[] { 
+    return this._availability;
   }
 
   ngOnInit() {
+    this._buildRows(this._calculateDivisor());
+    console.log("Column availability: ", this.availability)
+    
     // if (this._zoomControl) {
     //   console.log("zoom control:", this._zoomControl);
     //   const divisor: number = this._calculateDivisor();
@@ -38,7 +57,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   public get rows(): TimeSelectionRow[] { return this._rows; }
 
   public onMouseLeave() {
-    // this._mouseDownRow = null;
+
   }
   public onMouseEnter() {
 
@@ -53,48 +72,87 @@ export class TimeSelectionColumnComponent implements OnInit {
     let currentTime: moment.Moment = moment(this._zoomControl.startTime);
     for (let i = 0; i < rowCount; i++) {
       let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(divisorMinutes, 'minutes'), i);
-      newRow = this._checkAvailability(newRow);
+      newRow.isAvailable = this._checkAvailability(newRow);
+      newRow.nextAvailabilityChange = this._findNextAvailabilityChange(newRow);
       rows.push(newRow);
       currentTime = moment(currentTime).add(divisorMinutes, 'minutes');
     }
 
     this._rows = rows;
     // this._updateMouseEventSubscriptions();
-    console.log("This._rows is " + this._rows.length + " , ", this._rows);
+    // console.log("This._rows is " + this._rows.length + " , ", this._rows);
   }
-
 
 
   public onMouseDownRow(row: TimeSelectionRow) {
     // console.log("Row mouse down" + row.startTime.format("hh:mm a"))
-
-    // this._mouseDownRow = row;
+    if(row.isAvailable){
+      this._mouseDownRow = row;
+    }else{
+      this._mouseDownRow = null;
+      this._mouseUpRow = null;
+      this._mouseOverRow = null;
+    }
   }
-  public onMouseUpRow(row: TimeSelectionRow) {
-    // console.log("Row mouse up " + row.startTime.format("hh:mm a"))
 
-    // this._mouseUpRow = row;
-    // if (this._mouseDownRow != null) {
-    //   this._createNewTimeMarks();
-    // } else {
-    //   this._mouseUpRow = null;
-    //   this._mouseOverRow = null;
-    // }
+  public onMouseUpRow(row: TimeSelectionRow) {
+    console.log("Row mouse up " + row.startTime.format("hh:mm a") + " - is Available?  " + row.isAvailable);
+    if (this._mouseDownRow) {
+      if(row.isAvailable){
+        this._mouseUpRow = row;
+      }else{
+        if(!this._mouseUpRow){
+          if(this._mouseOverRow){
+            console.log("Setting mouseUp row to mouseOver row");
+            this._mouseUpRow = this._mouseOverRow;
+          }else{
+            console.log("Setting mouseUp row to mouseDown row");
+            this._mouseUpRow = this._mouseDownRow;
+          }
+        }
+      }
+      this._createNewTimeMarks();
+    } else {
+      console.log("  No mouseDownRow")
+      this._mouseDownRow = null;
+      this._mouseUpRow = null;
+      this._mouseOverRow = null;
+    }
   }
 
   public onMouseEnterRow(row: TimeSelectionRow) {
-    // if (this._mouseDownRow) {
-    //   this._mouseOverRow = row;
-    // }
+    if (this._mouseDownRow) {
+      this._mouseOverRow = row;
+      if(this._mouseOverRow.isAvailable){
+        this._drawNewTimelogEntry();
+      }
+      
+    }
   }
 
   public onMouseLeaveRow(row: TimeSelectionRow) {
 
   }
 
+  private _findNextAvailabilityChange(newRow): moment.Moment{ 
+    console.log("To do:  start here.")
+    const currentRowIndex = this.rows.indexOf(newRow);
+    // const 
+    return null;
+  }
+
+
+  private _drawNewTimelogEntry() {
+    // console.log("Drawing New Timelog Entry?!?!? !? ?! ?!")
+    // console.log("  From:  " + this._mouseDownRow.startTime.format('hh:mm a'))
+    // console.log("  To:    " + this._mouseOverRow.startTime.format('hh:mm a'))
+    this.drawNewTLE.emit(new TimelogEntryItem(this._mouseDownRow.startTime, this._mouseOverRow.startTime))
+  }
 
 
   private _createNewTimeMarks() {
+    console.log("Creating a new Timelog Entry from a drag event: ")
+    console.log("    from " + this._mouseDownRow.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._mouseUpRow.startTime.format('YYYY-MM-DD hh:mm a'))
     if (this._mouseDownRow.startTime.isSame(this._mouseUpRow.startTime) && this._mouseDownRow.endTime.isSame(this._mouseUpRow.endTime)) {
       console.log("single click : " + this._mouseDownRow.startTime.format('hh:mm a'))
     } else {
@@ -104,15 +162,50 @@ export class TimeSelectionColumnComponent implements OnInit {
     this._mouseDownRow = null;
     this._mouseUpRow = null;
     this._mouseOverRow = null;
+
   }
 
-  private _checkAvailability(newRow: TimeSelectionRow): TimeSelectionRow {
-    // console.log("Ranges: ", this.daybookService.activeDay.timeReferencer.statusTimes.getStatesInRange(newRow.startTime, newRow.endTime));
+  private _checkAvailability(newRow: TimeSelectionRow): boolean {
+    /*  
+      Reminder:  isAvailable === !isActive  
+    */
+    let isActive: boolean = false;
+    // console.log("this.availability: , " , this.availability)
+    let foundWholeRowSpan = this.availability.find(item => {
+      return newRow.startTime.isSameOrAfter(item.startTime) && newRow.endTime.isSameOrBefore(item.endTime);
+    });
+    if (foundWholeRowSpan) {
+      isActive = foundWholeRowSpan.isActive;
+    } else {
+      let foundStart = this.availability.find(item => {
+        return newRow.startTime.isSameOrAfter(item.startTime) && newRow.startTime.isSameOrBefore(item.endTime);
+      });
+      let foundEnd = this.availability.find(item => {
+        return newRow.endTime.isSameOrAfter(item.startTime) && newRow.endTime.isSameOrBefore(item.endTime);
+      })
+      if (foundStart && foundEnd) {
+        const rowStart: moment.Moment = newRow.startTime;
+        const breakPoint: moment.Moment = foundStart.endTime;
+        const rowEnd: moment.Moment = newRow.endTime;
+        if (!foundStart.endTime.isSame(foundEnd.startTime)) { console.log(" Error: mismatch in time.") }
 
-    // Warning: this method isn't complete
+        const firstPeriodDurationMS = breakPoint.diff(rowStart, 'milliseconds');
+        const secondPeriodDurationMS = rowEnd.diff(breakPoint, 'milliseconds');
 
+        if (firstPeriodDurationMS > secondPeriodDurationMS) {
+          isActive = foundStart.isActive;
+        } else {
+          isActive = foundEnd.isActive;
+        }
 
-    return newRow;
+      } else {
+        console.log("Error:  couldn't find an availability item.");
+        console.log("  Found start: ", foundStart);
+        console.log("  Found end  : ", foundEnd);
+      }
+    }
+    console.log("New Row: " + newRow.startTime.format('hh:mm a') + " isAvailable? " + !isActive);
+    return !isActive;
   }
 
   private _calculateDivisor(): number {

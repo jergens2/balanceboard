@@ -72,7 +72,7 @@
         </div> -->
 
 
-<!-- 
+        <!-- 
         <div *ngIf="timelogEntryItems.length > 0" class="timelog-entry-items" [ngStyle]="timelogEntryItemsNgStyle">
             <app-timelog-entry *ngFor="let timelogEntryItem of timelogEntryItems" class="timelog-entry-item"
                 [entry]="timelogEntryItem" [minutesPerTwentyPixels]="minutesPerTwentyPixels"></app-timelog-entry>
@@ -87,7 +87,14 @@
             <div class="tick-margin-line"></div>
         </div> -->
 
-        <app-time-selection-column style="grid-row: 1 / -1; grid-column: 2 / span 1;" [zoomControl]="zoomControl"></app-time-selection-column>
+        <div>
+            
+        </div>
+
+        <app-time-selection-column style="grid-row: 1 / -1; grid-column: 2 / span 1;" 
+            [zoomControl]="zoomControl"
+            [availability]="columnAvailability"
+            (drawNewTLE)="onDrawNewTLE($event)"></app-time-selection-column>
 
     </div>
 </div>

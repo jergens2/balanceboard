@@ -21,6 +21,7 @@ export class TimeSelectionRow {
     public endTime: moment.Moment;
     public rowIndex: number;
     public isAvailable = true;
+    public nextAvailabilityChange: moment.Moment;
 
     public get mouseIsDown(): boolean { return this._mouseIsDown; }
     public get mouseDown$(): Observable<boolean> { return this._mouseDown$.asObservable(); }

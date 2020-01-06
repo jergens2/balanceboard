@@ -10,6 +10,7 @@ import { DaybookSleepController } from './daybook-sleep-controller.class';
 import { Subject, Observable, Subscription } from 'rxjs';
 import { DaybookEnergyLevel } from './daybook-energy-level.enum';
 import { DaybookTimelogEntryTemplate } from './interfaces/daybook-timelog-entry-template.interface';
+import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 
 
 export class DaybookController {
@@ -29,17 +30,17 @@ export class DaybookController {
     private _subscriptions: Subscription[] = [];
 
     constructor(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
-        console.log("Constructing the controller: ", dayItem);
+        // console.log("Constructing the controller: ", dayItem);
         this._reload(dayItem);
     }
 
     public reload(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
-        console.log("Reloading the controller: ", dayItem)
+        // console.log("Reloading the controller: ", dayItem)
         this._reload(dayItem);
     }
 
     public setAwakeToAsleepRatio(ratio: number) {
-        console.log('Ratio was changed from default of 2 to ' + ratio);
+        // console.log('Ratio was changed from default of 2 to ' + ratio);
         this._awakeToAsleepRatio = ratio;
     }
 
@@ -93,18 +94,18 @@ export class DaybookController {
         this._thisDay = dayItem.thisDay;
         this._followingDay = dayItem.nextDay;
 
-        console.log("Building controller.  dayItem received:", dayItem)
-        console.log("  prevDay: " + dayItem.prevDay.dateYYYYMMDD, this._previousDay)
-        console.log("  thisDay: " + dayItem.thisDay.dateYYYYMMDD, this._thisDay)
-        console.log("  nextDay: " + dayItem.nextDay.dateYYYYMMDD, this._followingDay)
+        // console.log("Building controller.  dayItem received:", dayItem)
+        // console.log("  prevDay: " + dayItem.prevDay.dateYYYYMMDD, this._previousDay)
+        // console.log("  thisDay: " + dayItem.thisDay.dateYYYYMMDD, this._thisDay)
+        // console.log("  nextDay: " + dayItem.nextDay.dateYYYYMMDD, this._followingDay)
         this._buildController();
     }
 
     private _buildController() {
 
-        console.log("PRev day: " , this._previousDay)
-        console.log(" cur day"  ,this._thisDay)
-        console.log("next day: " , this._followingDay)
+        // console.log("PRev day: " , this._previousDay)
+        // console.log(" cur day"  ,this._thisDay)
+        // console.log("next day: " , this._followingDay)
         const timelogDataItems = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
             .concat(this._followingDay.timelogEntryDataItems);
         const allTimeSpanItems = this._previousDay.sleepTimes.concat(this._thisDay.sleepTimes).concat(this._followingDay.sleepTimes);
@@ -120,11 +121,11 @@ export class DaybookController {
     }
 
 
-    private _isNewTLEFirstOfDay(currentTime: moment.Moment): boolean{
+    private _isNewTLEFirstOfDay(currentTime: moment.Moment): boolean {
         let newTLEisStartOfDay: boolean = true;
         if (this.sleepController.wakeupTimeIsSet) {
             newTLEisStartOfDay = false;
-        }else if(this.timelogController.lastTimelogEntryItemTime){
+        } else if (this.timelogController.lastTimelogEntryItemTime) {
             /**
              * if there is a previous time in the timelog, then that means that the user was active in the previous day, 
              * but now it's a new day and the wakeuptime is not set. 
@@ -137,16 +138,16 @@ export class DaybookController {
     }
 
 
-    private _isNewTLELastOfDay(currentTime: moment.Moment): boolean{
+    private _isNewTLELastOfDay(currentTime: moment.Moment): boolean {
         let isLast: boolean = false;
-        if(this.sleepController.wakeupTimeIsSet){
+        if (this.sleepController.wakeupTimeIsSet) {
             const checkWithinHours: number = 2;
             const askTimeDelineation: moment.Moment = moment(this.sleepController.bedTime).subtract(checkWithinHours, 'hours')
-            if(currentTime.isSameOrAfter(askTimeDelineation)){
+            if (currentTime.isSameOrAfter(askTimeDelineation)) {
                 isLast = true;
             }
-        }else{
-            if(this.energyController.getEnergyLevelAtTime(currentTime) === DaybookEnergyLevel.Low){
+        } else {
+            if (this.energyController.getEnergyLevelAtTime(currentTime) === DaybookEnergyLevel.Low) {
                 isLast = true;
             }
         }
@@ -157,7 +158,7 @@ export class DaybookController {
         this._subscriptions.forEach(s => s.unsubscribe());
         this._subscriptions = [];
         const timelogSub = this._timelogController.timelogUpdated$.subscribe((update) => {
-            console.log("Received an update from timelog.  Updating.")
+            // console.log("Received an update from timelog.  Updating.")
             this._updateTimelog(update);
         });
         const sleepSub = this._sleepController.sleepTimesUpdated$.subscribe((sleepTimes) => {
@@ -167,21 +168,34 @@ export class DaybookController {
     }
 
     private _updateThisDaySleepTimes(sleepTimes: TimeSpanItem[]) {
-        console.log("Warning:  this method for some reason is only updating sleep times for the CURRENT DAY. (" + this.dateYYYYMMDD + ")");
+        let prevDayChanged = false, thisDayChanged = false, nextDayChanged = false;
         let thisDayTimes = sleepTimes
             .filter(time => moment(time.startTimeISO).isSameOrAfter(this.startOfThisDay) && moment(time.endTimeISO).isSameOrBefore(this.endOfThisDay));
-
-        this._thisDay.sleepTimes = thisDayTimes;
-
+        let prevDayTimes = sleepTimes
+            .filter(time => moment(time.startTimeISO).isSameOrAfter(this.startOfPrevDay) && moment(time.endTimeISO).isSameOrBefore(this.endOfPrevDay));
+        let nextDayTimes = sleepTimes
+            .filter(time => moment(time.startTimeISO).isSameOrAfter(this.startOfNextDay) && moment(time.endTimeISO).isSameOrBefore(this.endOfNextDay));
+        if (thisDayTimes.length > 0) {
+            thisDayChanged = true;
+            this._thisDay.sleepTimes = thisDayTimes;
+        }
+        if (prevDayTimes.length > 0) {
+            prevDayChanged = true;
+            this._previousDay.sleepTimes = prevDayTimes;
+        }
+        if (nextDayTimes.length > 0) {
+            nextDayChanged = true;
+            this._followingDay.sleepTimes = nextDayTimes;
+        }
         const daysChanged = {
-            prevDayChanged: false,
-            thisDayChanged: true,
-            nextDayChanged: false,
+            prevDayChanged: prevDayChanged,
+            thisDayChanged: thisDayChanged,
+            nextDayChanged: nextDayChanged,
         };
         this._dataChanged$.next(daysChanged);
     }
 
-    private _updateTimelog(update) {
+    private _updateTimelog(update: { prevDayItems: DaybookTimelogEntryDataItem[], thisDayItems: DaybookTimelogEntryDataItem[], nextDayItems: DaybookTimelogEntryDataItem[] }) {
         console.log("Updating timelog: ", update);
         let prevDayChanged = false, thisDayChanged = false, nextDayChanged = false;
         if (update.prevDayItems) {
@@ -201,7 +215,7 @@ export class DaybookController {
             thisDayChanged: thisDayChanged,
             nextDayChanged: nextDayChanged,
         };
-        console.log("Next: ", daysChanged);
+        // console.log("Next: ", daysChanged);
         this._dataChanged$.next(daysChanged);
     }
 
