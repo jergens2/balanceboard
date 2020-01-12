@@ -86,8 +86,6 @@ export class TimelogDisplayController {
   }
 
 
-
-
   /**  private methods**/
   private _update() {
     this._setDefaultDayStructureTimes();
@@ -107,9 +105,7 @@ export class TimelogDisplayController {
   private get totalViewMilliseconds(): number {
     return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'milliseconds');
   }
-  // private timeIsInView(time: moment.Moment): boolean {
-  //   return time.isSameOrAfter(this._timelogZoomControl.startTime) && time.isSameOrBefore(this._timelogZoomControl.endTime);
-  // }
+
   private _buildGrid() {
     const checkValues = this.totalViewMilliseconds - (this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'));
     if (checkValues !== 0) {
@@ -122,13 +118,12 @@ export class TimelogDisplayController {
           "display": "grid"
         };
         let currentTime: moment.Moment = this.timeDelineators[0].time;
-        let gridItems: TimelogDisplayGridItemType[] = [];
-
+        let gridItemTypes: TimelogDisplayGridItemType[] = [];
         let percentages: { gridItem: TimelogDisplayGridItemType, percent: number }[] = [];
         for (let i = 1; i < this.timeDelineators.length; i++) {
           const diff: number = this.timeDelineators[i].time.diff(currentTime, 'milliseconds');
           const gridItem: TimelogDisplayGridItemType = this._getGridItem(this.timeDelineators[i - 1].delineatorType, this.timeDelineators[i].delineatorType);
-          gridItems.push(gridItem);
+          console.log("Grid item produced from: Start: " + this.timeDelineators[i - 1].delineatorType + ", End: " + this.timeDelineators[i].delineatorType + "  produces: " + gridItem)
           const percent = (diff / this.totalViewMilliseconds) * 100;
           percentages.push({
             gridItem: gridItem,
@@ -136,34 +131,30 @@ export class TimelogDisplayController {
           });
           currentTime = moment(this.timeDelineators[i].time);
         }
-        /*
-          To DO: finish this.
-          what we need to do is merge available ones so that they are continuous, i.e. a single item.
-        */
-        console.log("to do: incomplete thing : merge sequential/consecutive available times.")
-        for (let i = 1; i < percentages.length; i++) {
-
+        let percentagesLength = percentages.length;
+        for (let i = 1; i < percentagesLength; i++) {
+          if(percentages[i-1].gridItem === percentages[i].gridItem){
+            percentages[i-1].percent = percentages[i-1].percent + percentages[i].percent;
+            percentages.splice(i, 1);
+            percentagesLength = percentages.length;
+            i--;
+          }
         }
-
+        percentages.forEach(percentage => gridItemTypes.push(percentage.gridItem));
         let gridTemplateRows: string = "";
-
         percentages.forEach((percentage) => {
           console.log("PERCENTAGE:  " + percentage.percent + " item: " + percentage.gridItem)
           gridTemplateRows += "" + percentage.percent.toFixed(3) + "% ";
         });
         displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
-
         console.log("Display grid style: ", displayGridNgStyle);
-        console.log("grid items:  ", gridItems);
-
+        console.log("grid items:  ", gridItemTypes);
         this._displayGridNgStyle = displayGridNgStyle;
-        this._gridItems = gridItems;
+        this._gridItems = gridItemTypes;
       } else {
         console.log("No Time Delineators.  ")
       }
-
     }
-
   }
 
 

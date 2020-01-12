@@ -32,19 +32,40 @@ export class TimelogBodyComponent implements OnInit {
   private _activeDayController: DaybookController;
   private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
   private _timelogDisplayController: TimelogDisplayController = null;
-
+  private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
 
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
     // console.log("Zoom:  " + this._zoomControl.startTime.format("YYYY-MM-DD hh:mm a") + " - " + this._zoomControl.endTime.format("YYYY-MM-DD hh:mm a"))
     this._estimateInitialMinutesPerPixel(this.screenSizeService.dimensions.height);
-    
-  }
-  public get zoomControl(): TimelogZoomControl {
-    return this._zoomControl;
   }
 
-  @Input() public set zoomHover(zoom: TimelogZoomControl) {
+  @Input() public set zoomHover(zoom: TimelogZoomControl) { }
+
+  public columnAvailability: TimeScheduleItem[] = [];
+  public faTimes = faTimes;
+  public faClock = faClock;
+  public faPlus = faPlus;
+  public get startTime(): moment.Moment { return this._zoomControl.startTime; }
+  public get endTime(): moment.Moment { return this._zoomControl.endTime; }
+  // public get relativeMousePosition(): RelativeMousePosition { return this._relativeMousePosition; }
+  public get timelogDisplayController(): TimelogDisplayController { return this._timelogDisplayController; }
+  public get zoomControl(): TimelogZoomControl { return this._zoomControl; }
+  public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
+  public get gridItems(): TimelogDisplayGridItemType[] { return this._timelogDisplayController.gridItems; }
+  public get gridItemsNgStyle(): any { return this._timelogDisplayController.displayGridNgStyle; }
+  public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
+  // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
+  // public get drawNewTLE(): TimelogEntryItem { return this._drawNewTLE; }
+  public onDrawNewTLE(timelogEntry: TimelogEntryItem) {
+    console.log("  * Drawing TLE from: " + timelogEntry.startTime.format('YYYY-MM-DD hh:mm a') + " to: " + timelogEntry.endTime.format('YYYY-MM-DD hh:mm a'))
+
+  }
+
+  public onMouseMove(event: MouseEvent) { }
+  public onMouseLeave() { }
+  public onClickGridItem(gridItem: TimelogDisplayGridItemType){
+    console.log("Grid item clicked: " + gridItem)
   }
 
 
@@ -54,52 +75,11 @@ export class TimelogBodyComponent implements OnInit {
       this._estimateInitialMinutesPerPixel(dimensions.height);
     });
     this._buildTimelog();
-    this.daybookService.activeDayController$.subscribe((dayChanged)=>{
+    this.daybookService.activeDayController$.subscribe((dayChanged) => {
       this._buildTimelog();
     });
-    
-  }
-
-  
-
-
-
-  public columnAvailability: TimeScheduleItem[] = [];
-
-  
-
-  public get startTime(): moment.Moment { return this._zoomControl.startTime; }
-  public get endTime(): moment.Moment { return this._zoomControl.endTime; }
-
-
-  
-  public get relativeMousePosition(): RelativeMousePosition { return this._relativeMousePosition; }
-
-  
-  public get timelogDisplayController(): TimelogDisplayController { return this._timelogDisplayController; }
-
-  private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
-  public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
-
-  public get gridItems(): TimelogDisplayGridItemType[] { return this._timelogDisplayController.gridItems; }
-  public get gridItemsNgStyle(): any { return this._timelogDisplayController.displayGridNgStyle; }
-
-
-
-  public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
-  // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
-
-
-  // public get drawNewTLE(): TimelogEntryItem { return this._drawNewTLE; }
-  public onDrawNewTLE(timelogEntry: TimelogEntryItem){
-    console.log("  * Drawing TLE from: " + timelogEntry.startTime.format('YYYY-MM-DD hh:mm a') + " to: " + timelogEntry.endTime.format('YYYY-MM-DD hh:mm a'))
-
-
-
 
   }
-
-
 
   private _buildTimelog() {
     this._activeDayController = this.daybookService.activeDayController;
@@ -107,14 +87,12 @@ export class TimelogBodyComponent implements OnInit {
 
     this._updateTimelog();
     // this.updateNowLine();
-    this._updateTickMarginLine();
+    // this._updateTickMarginLine();
 
     const availabilitySchedule = this.daybookService.activeDayController.getColumnAvailability(this.zoomControl);
     this.columnAvailability = availabilitySchedule.fullSchedule;
-    console.log("Column availability is: " , this.columnAvailability)
+    console.log("Column availability is: ", this.columnAvailability)
   }
-
-
 
   private _buildGuideLineHours() {
     let guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
@@ -162,96 +140,11 @@ export class TimelogBodyComponent implements OnInit {
     this._guideLineHours = guideLineHours;
   }
 
-  // private updateNowLine() {
-  //   let now: moment.Moment = moment();
-  //   if (now.isSameOrAfter(this.startTime) && now.isSameOrBefore(this.endTime)) {
-  //     let totalDurationSeconds: number = this.endTime.diff(this.startTime, "seconds");
-  //     let secondsFromStart: number = now.diff(this.startTime, "seconds");
-  //     let percentFromStart: number = (secondsFromStart / totalDurationSeconds) * 100;
-  //     let percentRemaining: number = 100 - percentFromStart;
-  //     let ngStyle: any = { "grid-template-rows": percentFromStart.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
-  //     // let showTime: boolean = this.timelogDisplayController.showNowTime();
-  //     let showTime = false;
-  //     this._nowLine = { time: now, ngStyle: ngStyle, showTime: showTime };
-  //   } else {
-  //     this._nowLine = null;
-  //   }
-  // }
-
-  private _tickMarginLineNgStyle: any = {};
-  private _tickMarginLines: any[] = [];
-  public get tickMarginLineNgStyle(): any { return this._tickMarginLineNgStyle; };
-  public get tickMarginLines(): any[] { return this._tickMarginLines; };
-
-  private _updateTickMarginLine() {
-    console.log("as of:  2020-01-05:  I don't know if I need this method")
-    if (this.timelogDisplayController.entryItems.length > 0) {
-      const totalDurationSeconds: number = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "seconds");
-
-
-      let sleepStates: { durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number }[] = this.timelogDisplayController.entryItems.map((entryItem) => {
-        return { durationSeconds: entryItem.durationSeconds, sleepState: entryItem.sleepState, percentage: 0 };
-      });
-
-      let reducedSleepStates: { durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number }[] = [sleepStates[0]];
-      reducedSleepStates[0].percentage = (reducedSleepStates[0].durationSeconds / totalDurationSeconds) * 100;
-      for (let i = 1; i < sleepStates.length; i++) {
-        if (sleepStates[i].sleepState === sleepStates[i - 1].sleepState) {
-          // if it is the same as the previous one, add to the existing sum or seconds
-          reducedSleepStates[reducedSleepStates.length - 1].durationSeconds += sleepStates[i].durationSeconds;
-          reducedSleepStates[reducedSleepStates.length - 1].percentage = ((reducedSleepStates[reducedSleepStates.length - 1].durationSeconds) / totalDurationSeconds) * 100;
-        } else {
-          // if it is not the same, create a new item in the array.
-          sleepStates[i].percentage = (sleepStates[i].durationSeconds / totalDurationSeconds) * 100;
-          reducedSleepStates.push(sleepStates[i]);
-        }
-      }
-
-      let gridTemplateRows: string = "";
-      reducedSleepStates.forEach((state) => {
-        gridTemplateRows += "" + state.percentage.toFixed(2) + "%";
-      });
-
-      this._tickMarginLines = reducedSleepStates;
-      this._tickMarginLineNgStyle = { "grid-template-rows": gridTemplateRows };
-
-      // console.log("Tick margin line: ", this._tickMarginLines, this._tickMarginLineNgStyle)
-
-    }
-
-  }
-
-
-
   private _updateTimelog() {
     let timelog: TimelogDisplayController = new TimelogDisplayController(this._zoomControl, this._activeDayController, this._minutesPerTwentyPixels);
     this._timelogDisplayController = timelog;
   }
 
-  public onMouseMove(event: MouseEvent) {
-    // let start = moment();
-    // this._relativeMousePosition.onMouseMove(event, "tick-margin-line-container");
-    // this.updateMousePosition();
-    // console.log("Mouse position update: " + moment().diff(start, "milliseconds") + " ms")
-    // this.updateMinutesPerPixel(this.relativeMousePosition.elementHeight);
-  }
-  public onMouseLeave() {
-    // this._itemState.onMouseLeave();
-    // this._mousePosition = null;
-  }
-
-
-  // private updateMousePosition() {
-  //   let percentY: number = this.relativeMousePosition.percentY;
-  //   let totalDurationSeconds: number = this.endTime.diff(this.startTime, "seconds");
-  //   let relativeSeconds: number = (percentY * totalDurationSeconds) / 100;
-  //   let percentRemaining: number = 100 - percentY;
-  //   let ngStyle: any = { "grid-template-rows": percentY.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
-  //   let time: moment.Moment = moment(this.startTime).add(relativeSeconds, "seconds");
-  //   // time = RoundToNearestMinute.roundToNearestMinute(moment(this.startTime).add(relativeSeconds, "seconds"), 5);
-  //   let crossesAnyTimelogEntry: boolean = this._timelogDisplayController.crossesAnyTimelogEntry(time);
-  //   this._mousePosition = { time: time, ngStyle: ngStyle, crossesExistingTimelogEntry: crossesAnyTimelogEntry };
-  // }
   private _estimateInitialMinutesPerPixel(screenHeight: number) {
     /**
      * This is not a highly reliable mechanism for determining how many minutes per pixel because it depends on making assumptions
@@ -279,8 +172,47 @@ export class TimelogBodyComponent implements OnInit {
     }
   }
 
+  // private _tickMarginLineNgStyle: any = {};
+  // private _tickMarginLines: any[] = [];
+  // public get tickMarginLineNgStyle(): any { return this._tickMarginLineNgStyle; };
+  // public get tickMarginLines(): any[] { return this._tickMarginLines; };
 
-  faTimes = faTimes;
-  faClock = faClock;
-  faPlus = faPlus;
+  // private _updateTickMarginLine() {
+  //   console.log("as of:  2020-01-05:  I don't know if I need this method")
+  //   if (this.timelogDisplayController.entryItems.length > 0) {
+  //     const totalDurationSeconds: number = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "seconds");
+
+
+  //     let sleepStates: { durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number }[] = this.timelogDisplayController.entryItems.map((entryItem) => {
+  //       return { durationSeconds: entryItem.durationSeconds, sleepState: entryItem.sleepState, percentage: 0 };
+  //     });
+
+  //     let reducedSleepStates: { durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number }[] = [sleepStates[0]];
+  //     reducedSleepStates[0].percentage = (reducedSleepStates[0].durationSeconds / totalDurationSeconds) * 100;
+  //     for (let i = 1; i < sleepStates.length; i++) {
+  //       if (sleepStates[i].sleepState === sleepStates[i - 1].sleepState) {
+  //         // if it is the same as the previous one, add to the existing sum or seconds
+  //         reducedSleepStates[reducedSleepStates.length - 1].durationSeconds += sleepStates[i].durationSeconds;
+  //         reducedSleepStates[reducedSleepStates.length - 1].percentage = ((reducedSleepStates[reducedSleepStates.length - 1].durationSeconds) / totalDurationSeconds) * 100;
+  //       } else {
+  //         // if it is not the same, create a new item in the array.
+  //         sleepStates[i].percentage = (sleepStates[i].durationSeconds / totalDurationSeconds) * 100;
+  //         reducedSleepStates.push(sleepStates[i]);
+  //       }
+  //     }
+
+  //     let gridTemplateRows: string = "";
+  //     reducedSleepStates.forEach((state) => {
+  //       gridTemplateRows += "" + state.percentage.toFixed(2) + "%";
+  //     });
+
+  //     this._tickMarginLines = reducedSleepStates;
+  //     this._tickMarginLineNgStyle = { "grid-template-rows": gridTemplateRows };
+
+  //     // console.log("Tick margin line: ", this._tickMarginLines, this._tickMarginLineNgStyle)
+
+  //   }
+
+  // }
+
 }

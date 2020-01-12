@@ -12,9 +12,8 @@
         </div>
 
         <div *ngIf="gridItems.length > 0" [ngStyle]="gridItemsNgStyle" class="grid-items">
-            <div *ngFor="let gridItem of gridItems" class="grid-item">
+            <div *ngFor="let gridItem of gridItems" class="grid-item" (click)="onClickGridItem(gridItem)">
                 <app-available-timelog-item *ngIf="gridItem === 'AVAILABLE'"></app-available-timelog-item>
-                <span style="font-size: 0.8em; color: red; font-weight: bold;">{{ gridItem }}</span>
             </div>
         </div>
 
