@@ -21,27 +21,15 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _mouseDownRow: TimeSelectionRow;
   private _mouseUpRow: TimeSelectionRow;
   private _mouseOverRow: TimeSelectionRow;
-
-
   private _availability: TimeScheduleItem[];
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
+  @Input() public set zoomControl(zoomControl: TimelogZoomControl) { this._zoomControl = zoomControl; }
+  @Input() public set availability(availability: TimeScheduleItem[]){ this._availability = availability; }
 
-  @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
-    this._zoomControl = zoomControl;
-    
-  }
-  @Input() public set availability(availability: TimeScheduleItem[]){
-    this._availability = availability;
-    this._availability.forEach((item) => {
-      console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a') + " : isActive? " + item.hasValue);
-    })
-  }
-
-  public get availability(): TimeScheduleItem[] { 
-    return this._availability;
-  }
-
+  public get availability(): TimeScheduleItem[] { return this._availability; }
+  public get rows(): TimeSelectionRow[] { return this._rows; }
+  
   ngOnInit() {
     this._buildRows(this._calculateDivisor());
 
@@ -57,7 +45,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     // }
   }
 
-  public get rows(): TimeSelectionRow[] { return this._rows; }
+  
 
   public onMouseLeave() {
 

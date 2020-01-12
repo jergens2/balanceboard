@@ -95,14 +95,13 @@ export class DaybookController {
 
     public getColumnAvailability(zoomController: TimelogZoomControl): TimeSchedule {
         let availabilitySchedule: TimeSchedule = this.sleepController.sleepSchedule;
-        console.log("Availability Schedule from sleep controller: ", availabilitySchedule.fullSchedule);
+        // console.log("Availability Schedule from sleep controller: ", availabilitySchedule.fullSchedule);
         availabilitySchedule.mergeValues(this.timelogEntryController.timelogSchedule);
-        console.log("Availability Schedule after merge with timelog: ", availabilitySchedule.fullSchedule);
-
+        // console.log("Availability Schedule after merge with timelog: ", availabilitySchedule.fullSchedule);
         availabilitySchedule.getScheduleSlice(zoomController.startTime, zoomController.endTime);
-        console.log("Availability Schedule after sliced by zoomController range", availabilitySchedule.fullSchedule);
+        // console.log("Availability Schedule after sliced by zoomController range", availabilitySchedule.fullSchedule);
         availabilitySchedule.splitScheduleAtTimes([this.startOfThisDay, this.endOfThisDay]);
-        console.log("Availability Schedule after split over midnight times", availabilitySchedule.fullSchedule);
+        // console.log("Availability Schedule after split over midnight times", availabilitySchedule.fullSchedule);
         return availabilitySchedule;
 
     }

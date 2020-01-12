@@ -10,16 +10,6 @@ export class TimelogDisplayController {
 
   /**
    * The TimelogDisplayController is the primary class for the production of the Timelog widget in the daybook, used by timelog-body.component
-   * 
-   * 
-   * 
-   * 
-   * @param timelogZoomControl 
-   * @param activeDay 
-   * @param minutesPerTwentyPixels 
-   * 
-   * 
-   * 
    */
   constructor(timelogZoomControl: TimelogZoomControl, activeDayController: DaybookController, minutesPerTwentyPixels: number) {
     this._timelogZoomControl = timelogZoomControl;
@@ -29,7 +19,70 @@ export class TimelogDisplayController {
   }
 
   private _log: string[] = [];
+  private _minutesPerTwentyPixels: number;
+  private _timelogZoomControl: TimelogZoomControl;
 
+  private _activeDayController: DaybookController;
+  private _entryItemsNgStyle: any = { 'grid-template-rows': '1fr' };
+  private _entryItems: TimelogEntryItem[] = [];
+  private _timeDelineators: TimelogDelineator[] = [];
+  private _timeDelineatorsNgStyle: any = { 'grid-template-rows': '1fr' };
+
+  private _defaultDayStructureTimes: moment.Moment[] = [];
+
+
+  public faMoon = faMoon;
+  public faSun = faSun;
+
+  public get frameStart(): moment.Moment { return this._timelogZoomControl.startTime; }
+  public get wakeupTime(): moment.Moment { return this._activeDayController.sleepController.firstWakeupTime; }
+  public get fallAsleepTime(): moment.Moment { return this._activeDayController.sleepController.fallAsleepTime; }
+  public get frameEnd(): moment.Moment { return this._timelogZoomControl.endTime; }
+
+  public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
+  public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
+
+  public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
+  public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; }
+
+  public get defaultDayStructureTimes(): moment.Moment[] { return this._defaultDayStructureTimes; }
+
+  public addTimeDelineator(time: moment.Moment) {
+    // if (!this.crossesAnyTimelogEntry(time)) {
+    //   console.log("method disabled")
+    //   // this._activeDay.timelog.addTimeDelineator(time.toISOString());
+    //   // this.update();
+    // }
+  }
+  public drawNewTLE(timelogEntry: TimelogEntryItem) {
+    console.log("Timelog.Class: Drawing new TLE: ", timelogEntry)
+
+  }
+  public addTemporaryDelineator(time: moment.Moment) {
+
+  }
+  public removeTimeDelineator(delineator: TimelogDelineator) {
+    console.log("method disabled")
+    // this._activeDay.timelog.removeTimeDelineator(delineator.time.toISOString());
+    // this.update();
+  }
+
+  public updateEntrySizes(minutesPerTwentyPixels: number) {
+    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
+    // console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
+    this._entryItems.forEach((entryItem) => {
+      if (entryItem.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
+        entryItem.isSmallSize = true;
+      } else {
+        entryItem.isSmallSize = false;
+      }
+    });
+  }
+
+
+
+
+  /**  private methods**/
   private _update() {
     this._setDefaultDayStructureTimes();
     this._loadTimelogDelineators();
@@ -38,19 +91,18 @@ export class TimelogDisplayController {
 
     this._logToConsole();
   }
-
   private _logToConsole() {
     console.log("Constructing TimelogDisplayController - logToConsole is ON")
     this._log.forEach((logEntry) => {
       console.log("   " + logEntry);
     });
   }
-
-  public get frameStart(): moment.Moment { return this._timelogZoomControl.startTime; }
-  public get wakeupTime(): moment.Moment { return this._activeDayController.sleepController.firstWakeupTime; }
-  public get fallAsleepTime(): moment.Moment { return this._activeDayController.sleepController.fallAsleepTime; }
-  public get frameEnd(): moment.Moment { return this._timelogZoomControl.endTime; }
-
+  // private getTotalViewSeconds(): number {
+  //   return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'seconds');
+  // }
+  // private timeIsInView(time: moment.Moment): boolean {
+  //   return time.isSameOrAfter(this._timelogZoomControl.startTime) && time.isSameOrBefore(this._timelogZoomControl.endTime);
+  // }
   private _loadTimelogDelineators() {
     const nowTime = moment();
 
@@ -72,6 +124,8 @@ export class TimelogDisplayController {
     });
 
     const sortedDelineators = this._sortDelineators(timelogDelineators);
+
+    
     let logItems: string[] = [];
     sortedDelineators.forEach(sd => logItems.push("  Sorted Delineator: " + sd.time.format('YYYY-MM-DD hh:mm a') + " : " + sd.delineatorType))
     this._log = this._log.concat(logItems);
@@ -128,75 +182,20 @@ export class TimelogDisplayController {
 
 
 
-
-
-  faMoon = faMoon;
-  faSun = faSun;
-
-  private _minutesPerTwentyPixels: number;
-  private _timelogZoomControl: TimelogZoomControl;
-
-  private _activeDayController: DaybookController;
-  private _entryItemsNgStyle: any = { 'grid-template-rows': '1fr' };
-  private _entryItems: TimelogEntryItem[] = [];
-  private _timeDelineators: TimelogDelineator[] = [];
-  private _timeDelineatorsNgStyle: any = { 'grid-template-rows': '1fr' };
-
-  private _defaultDayStructureTimes: moment.Moment[] = [];
-
-  // private getTotalViewSeconds(): number {
-  //   return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'seconds');
-  // }
-  // private timeIsInView(time: moment.Moment): boolean {
-  //   return time.isSameOrAfter(this._timelogZoomControl.startTime) && time.isSameOrBefore(this._timelogZoomControl.endTime);
-  // }
-
-  public updateEntrySizes(minutesPerTwentyPixels: number) {
-    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
-    // console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
-    this._entryItems.forEach((entryItem) => {
-      if (entryItem.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
-        entryItem.isSmallSize = true;
-      } else {
-        entryItem.isSmallSize = false;
-      }
-    });
-  }
+ 
 
 
 
-  public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
-  public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
 
 
-  public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
-  public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; }
 
-  public get defaultDayStructureTimes(): moment.Moment[] { return this._defaultDayStructureTimes; }
 
-  public addTimeDelineator(time: moment.Moment) {
-    // if (!this.crossesAnyTimelogEntry(time)) {
-    //   console.log("method disabled")
-    //   // this._activeDay.timelog.addTimeDelineator(time.toISOString());
-    //   // this.update();
-    // }
-  }
 
-  // public drawNewTLE(timelogEntry: TimelogEntryItem){
-  //   console.log("Timelog.Class: Drawing new TLE: " , timelogEntry)
 
-  // }
 
-  public addTemporaryDelineator(time: moment.Moment) {
 
-  }
 
-  public removeTimeDelineator(delineator: TimelogDelineator) {
-    console.log("method disabled")
-    // this._activeDay.timelog.removeTimeDelineator(delineator.time.toISOString());
-    // this.update();
-  }
-
+  
 
 
 

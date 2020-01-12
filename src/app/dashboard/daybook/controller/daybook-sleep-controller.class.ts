@@ -29,7 +29,7 @@ export class DaybookSleepController {
         this._nextDayDBval = nextDayTimeSpanItems;
         this._buildSleepController(prevDayTimeSpanItems, thisDayTimeSpanItems, nextDayTimeSpanItems);
 
-        this._logToConsole();
+        // this._logToConsole();
     }
 
     private get prevDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
