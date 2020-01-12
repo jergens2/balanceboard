@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { TimelogDelineator, TimelogDelineatorType } from './timelog-delineator.class';
 import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { DaybookController } from '../../controller/daybook-controller.class';
+import { TimelogDisplayGridItemType } from './timelog-display-grid-item.enum';
 
 export class TimelogDisplayController {
 
@@ -21,12 +22,14 @@ export class TimelogDisplayController {
   private _log: string[] = [];
   private _minutesPerTwentyPixels: number;
   private _timelogZoomControl: TimelogZoomControl;
-
-  private _activeDayController: DaybookController;
-  private _entryItemsNgStyle: any = { 'grid-template-rows': '1fr' };
-  private _entryItems: TimelogEntryItem[] = [];
   private _timeDelineators: TimelogDelineator[] = [];
-  private _timeDelineatorsNgStyle: any = { 'grid-template-rows': '1fr' };
+  private _entryItems: TimelogEntryItem[] = [];
+  private _activeDayController: DaybookController;
+
+  private _displayGridNgStyle: any = {};
+  private _gridItems: TimelogDisplayGridItemType[] = [];
+  // private _entryItemsNgStyle: any = { 'grid-template-rows': '1fr' };
+  // private _timeDelineatorsNgStyle: any = { 'grid-template-rows': '1fr' };
 
   private _defaultDayStructureTimes: moment.Moment[] = [];
 
@@ -39,11 +42,14 @@ export class TimelogDisplayController {
   public get fallAsleepTime(): moment.Moment { return this._activeDayController.sleepController.fallAsleepTime; }
   public get frameEnd(): moment.Moment { return this._timelogZoomControl.endTime; }
 
-  public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
+  public get gridItems(): TimelogDisplayGridItemType[] { return this._gridItems; }
+  public get displayGridNgStyle(): any { return this._displayGridNgStyle; }
+
+  // public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
   public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
 
   public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
-  public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; }
+  // public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; }
 
   public get defaultDayStructureTimes(): moment.Moment[] { return this._defaultDayStructureTimes; }
 
@@ -86,6 +92,7 @@ export class TimelogDisplayController {
   private _update() {
     this._setDefaultDayStructureTimes();
     this._loadTimelogDelineators();
+    this._buildGrid();
     // this._updateTimeDelineators();
     // this._updateTimelogEntryItems();
 
@@ -97,12 +104,115 @@ export class TimelogDisplayController {
       console.log("   " + logEntry);
     });
   }
-  // private getTotalViewSeconds(): number {
-  //   return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'seconds');
-  // }
+  private get totalViewMilliseconds(): number {
+    return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'milliseconds');
+  }
   // private timeIsInView(time: moment.Moment): boolean {
   //   return time.isSameOrAfter(this._timelogZoomControl.startTime) && time.isSameOrBefore(this._timelogZoomControl.endTime);
   // }
+  private _buildGrid() {
+    const checkValues = this.totalViewMilliseconds - (this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'));
+    if (checkValues !== 0) {
+      console.log("Error:  mismatching times:")
+      console.log("  ZoomControl ms: " + this.totalViewMilliseconds);
+      console.log("   Calculated ms: " + this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'))
+    } else {
+      if (this.timeDelineators.length >= 2) {
+        let displayGridNgStyle: any = {
+          "display": "grid"
+        };
+        let currentTime: moment.Moment = this.timeDelineators[0].time;
+        let gridItems: TimelogDisplayGridItemType[] = [];
+
+        let percentages: { gridItem: TimelogDisplayGridItemType, percent: number }[] = [];
+        for (let i = 1; i < this.timeDelineators.length; i++) {
+          const diff: number = this.timeDelineators[i].time.diff(currentTime, 'milliseconds');
+          const gridItem: TimelogDisplayGridItemType = this._getGridItem(this.timeDelineators[i - 1].delineatorType, this.timeDelineators[i].delineatorType);
+          gridItems.push(gridItem);
+          const percent = (diff / this.totalViewMilliseconds) * 100;
+          percentages.push({
+            gridItem: gridItem,
+            percent: percent,
+          });
+          currentTime = moment(this.timeDelineators[i].time);
+        }
+        /*
+          To DO: finish this.
+          what we need to do is merge available ones so that they are continuous, i.e. a single item.
+        */
+        console.log("to do: incomplete thing : merge sequential/consecutive available times.")
+        for (let i = 1; i < percentages.length; i++) {
+
+        }
+
+        let gridTemplateRows: string = "";
+
+        percentages.forEach((percentage) => {
+          console.log("PERCENTAGE:  " + percentage.percent + " item: " + percentage.gridItem)
+          gridTemplateRows += "" + percentage.percent.toFixed(3) + "% ";
+        });
+        displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
+
+        console.log("Display grid style: ", displayGridNgStyle);
+        console.log("grid items:  ", gridItems);
+
+        this._displayGridNgStyle = displayGridNgStyle;
+        this._gridItems = gridItems;
+      } else {
+        console.log("No Time Delineators.  ")
+      }
+
+    }
+
+  }
+
+
+
+
+  private _getGridItem(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
+    let startsWith: TimelogDisplayGridItemType = this._gridItemStartsWith(startDelineator, endDelineator);
+    let endsWith: TimelogDisplayGridItemType = this._gridItemEndsWith(startDelineator, endDelineator);
+    if (startsWith) {
+      return startsWith;
+    } else {
+      if (endsWith) {
+        return endsWith;
+      } else {
+        console.log('Error:  could not find a grid item type from the provided delineators (start, end): ', startDelineator, endDelineator)
+        return null;
+      }
+    }
+  }
+
+
+  private _gridItemStartsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
+    if (startDelineator === TimelogDelineatorType.FALLASLEEP_TIME) {
+      return TimelogDisplayGridItemType.SLEEP_END;
+    } else if (startDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
+      return TimelogDisplayGridItemType.TIMELOG_ENTRY;
+    } else if (startDelineator === TimelogDelineatorType.NOW) {
+      if (endDelineator === TimelogDelineatorType.FALLASLEEP_TIME ||
+        endDelineator === TimelogDelineatorType.FRAME_END ||
+        endDelineator === TimelogDelineatorType.DAY_STRUCTURE ||
+        endDelineator === TimelogDelineatorType.SAVED_DELINEATOR ||
+        endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
+        return TimelogDisplayGridItemType.AVAILABLE;
+      }
+    }
+    return null;
+  }
+  private _gridItemEndsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
+    if (endDelineator === TimelogDelineatorType.WAKEUP_TIME) {
+      return TimelogDisplayGridItemType.SLEEP_START;
+    } else if (endDelineator === TimelogDelineatorType.NOW) {
+      return TimelogDisplayGridItemType.AVAILABLE;
+    } else if (endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_END) {
+      return TimelogDisplayGridItemType.TIMELOG_ENTRY;
+    }
+    return null;
+  }
+
+
   private _loadTimelogDelineators() {
     const nowTime = moment();
 
@@ -124,8 +234,7 @@ export class TimelogDisplayController {
     });
 
     const sortedDelineators = this._sortDelineators(timelogDelineators);
-
-    
+    this._timeDelineators = sortedDelineators;
     let logItems: string[] = [];
     sortedDelineators.forEach(sd => logItems.push("  Sorted Delineator: " + sd.time.format('YYYY-MM-DD hh:mm a') + " : " + sd.delineatorType))
     this._log = this._log.concat(logItems);
@@ -151,7 +260,8 @@ export class TimelogDisplayController {
         TimelogDelineatorType.NOW,
         TimelogDelineatorType.TIMELOG_ENTRY_START,
         TimelogDelineatorType.TIMELOG_ENTRY_END,
-        TimelogDelineatorType.SAVED_DELINEATOR
+        TimelogDelineatorType.SAVED_DELINEATOR,
+        TimelogDelineatorType.DAY_STRUCTURE,
         ];
         const sortIndexOfExisting: number = orderedTypes.findIndex(type => {
           return type === lastFilteredDelineator.delineatorType;
@@ -178,329 +288,5 @@ export class TimelogDisplayController {
       moment(this._activeDayController.dateYYYYMMDD).hour(24).startOf('hour'),
     ];
   }
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-  // private _updateTimeDelineators() {
-  //   let allTimes: TimelogDelineator[] = [];
-  //   allTimes = this.addTimeSpanItemDelineators(allTimes);
-  //   allTimes = this.addNowTimeDelineator(allTimes);
-
-  //   for (let i = 0; i < this._activeDayController.timelogEntryController.timelogEntryItems.length; i++) {
-  //     /**
-  //      * For each timelog entry: add 1 delineator for the start time and 1 delineator for the end time, 
-  //      * unless if the end of one entry is the same as the start of the next entry, 
-  //      * in which case it will be added for the start of the next entry.
-  //      */
-  //     const startTime: moment.Moment = moment(this._activeDayController.timelogEntryController.timelogEntryItems[i].startTime);
-  //     const endTime: moment.Moment = moment(this._activeDayController.timelogEntryController.timelogEntryItems[i].endTime);
-
-  //     const startDelineator: TimelogDelineator = new TimelogDelineator(startTime, 'TIMELOG_ENTRY');
-  //     startDelineator.nextDelineatorTime = endTime;
-  //     let endDelineator: TimelogDelineator;
-
-  //     if (i < this._activeDayController.timelogEntryController.timelogEntryItems.length - 1) {
-  //       const nextStartTime: moment.Moment = moment(this._activeDayController.timelogEntryController.timelogEntryItems[i + 1].startTime);
-  //       if (!nextStartTime.isSame(endTime)) {
-  //         endDelineator = new TimelogDelineator(endTime, 'TIMELOG_ENTRY');
-  //       }
-  //     } else if (i === this._activeDayController.timelogEntryController.timelogEntryItems.length - 1) {
-  //       endDelineator = new TimelogDelineator(endTime, 'TIMELOG_ENTRY');
-  //     }
-
-  //     allTimes.push(startDelineator);
-  //     if (endDelineator) {
-  //       allTimes.push(endDelineator);
-  //     }
-  //   }
-
-  //   allTimes = this.addExistingDelineators(allTimes);
-  //   allTimes = this.setFollowingTimesOfDelineators(allTimes);
-  //   allTimes = this.setVisibilityOfTimelogDelineators(allTimes);
-  //   // allTimes.forEach((time) => {
-  //   //   console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible , " type: ", time.delineatorType);
-  //   // });
-
-  //   if (allTimes.length > 0) {
-  //     let gridTemplateRows = '';
-  //     const percentages: number[] = [];
-  //     let currentTime: moment.Moment = this._timelogZoomControl.startTime;
-  //     for (let i = 0; i < allTimes.length; i++) {
-  //       const seconds: number = allTimes[i].time.diff(currentTime, 'seconds');
-  //       percentages.push((seconds / this.getTotalViewSeconds()) * 100);
-  //       currentTime = moment(allTimes[i].time);
-  //     }
-  //     const finalSeconds: number = this._timelogZoomControl.endTime.diff(currentTime, 'seconds');
-  //     percentages.push((finalSeconds / this.getTotalViewSeconds()) * 100);
-  //     percentages.forEach((percentage: number) => {
-  //       gridTemplateRows += '' + percentage.toFixed(2) + '% ';
-  //     });
-  //     this._timeDelineators = allTimes;
-  //     this._timeDelineatorsNgStyle = { 'grid-template-rows': gridTemplateRows };
-  //   } else {
-  //     this._timeDelineators = [];
-  //     this._timeDelineatorsNgStyle = { 'grid-template-rows': '1fr' };
-  //   }
-
-
-  //   /**
-  //    * At the end of selecting, then check the very first and very last delineator if within 30 minutes, and make visible if not.
-  //    */
-
-  // }
-
-  // private setVisibilityOfTimelogDelineators(allTimes: TimelogDelineator[]): TimelogDelineator[] {
-  //   const timelogEntryDelineators: TimelogDelineator[] = allTimes.filter((time) => time.delineatorType === 'TIMELOG_ENTRY')
-  //     .sort((delineator1, delineator2) => {
-  //       if (delineator1.durationSeconds > delineator2.durationSeconds) { return -1; }
-  //       if (delineator1.durationSeconds < delineator2.durationSeconds) { return 1; }
-  //       return 0;
-  //     });
-  //   const sleepTimes: moment.Moment[] = allTimes.filter((time) => time.delineatorType === 'SLEEP')
-  //     .map((delineator) => delineator.time);
-  //   timelogEntryDelineators.forEach((entryDelineator) => {
-  //     if (!this.isWithin30MinutesOfAnother(entryDelineator, allTimes)) {
-  //       entryDelineator.isVisible = true;
-  //     } else { entryDelineator.isVisible = false; }
-  //     sleepTimes.forEach((sleepTime) => {
-  //       if (entryDelineator.time.isSame(sleepTime)) {
-  //         entryDelineator.isVisible = false;
-  //       }
-  //     });
-  //   });
-
-  //   allTimes.filter((time) => time.delineatorType === 'NOW').forEach((nowTime) => { nowTime.isVisible = false; });
-  //   // allTimes[allTimes.length - 1].isVisible = true;
-  //   return allTimes;
-  // }
-
-  // private setFollowingTimesOfDelineators(allTimes: TimelogDelineator[]): TimelogDelineator[] {
-  //   allTimes = this.filterAndSortDelineators(allTimes);
-  //   for (let i = 0; i < allTimes.length - 1; i++) {
-  //     if (allTimes[i].nextDelineatorTime === null) {
-  //       allTimes[i].nextDelineatorTime = moment(allTimes[i + 1].time);
-  //     }
-  //   }
-  //   return allTimes;
-  // }
-
-  // private addExistingDelineators(allTimes: TimelogDelineator[]): TimelogDelineator[] {
-  //   console.log('Method disabled');
-  //   // this._activeDay.timeDelineators.forEach((time: string) => {
-  //   //   if (!this.crossesAnyTimelogEntry(moment(time))) {
-  //   //     const delineator: TimelogDelineator = new TimelogDelineator(moment(time), 'DELINEATOR');
-  //   //     delineator.isVisible = true;
-  //   //     allTimes.push(delineator);
-  //   //   }
-  //   // });
-  //   return allTimes;
-  // }
-
-
-  // public showNowTime(): boolean {
-  //   let nowDelineator: TimelogDelineator = this._timeDelineators.filter((delineator) => delineator.delineatorType === 'NOW')[0];
-  //   if (!nowDelineator) {
-  //     nowDelineator = new TimelogDelineator(moment(), 'NOW');
-  //   }
-  //   return !this.isWithin30MinutesOfAnother(nowDelineator);
-  // }
-
-  // private isWithin30MinutesOfAnother(checkDelineator: TimelogDelineator, currentDelineators?: TimelogDelineator[]): boolean {
-  //   let delineators: TimelogDelineator[] = [];
-  //   if (!currentDelineators) {
-  //     delineators = this._timeDelineators;
-  //   } else {
-  //     delineators = currentDelineators;
-  //   }
-
-  //   delineators = delineators.filter((delineator) => delineator.isVisible);
-
-  //   let isWithin30Minutes = false;
-  //   if (checkDelineator.delineatorType === 'NOW') {
-  //     delineators.forEach((delineator) => {
-  //       const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), 'minutes'));
-  //       if (differenceMinutes < 30) {
-  //         isWithin30Minutes = true;
-  //       }
-  //     });
-  //   } else {
-  //     delineators.forEach((delineator) => {
-  //       const isSameTime: boolean = moment(delineator.time).isSame(moment(checkDelineator.time));
-  //       const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), 'minutes'));
-  //       if (differenceMinutes < 30 && !isSameTime) {
-  //         isWithin30Minutes = true;
-  //       }
-  //     });
-  //   }
-  //   return isWithin30Minutes;
-  // }
-
-  // public crossesAnyTimelogEntry(time: moment.Moment): boolean {
-  //   let crossesExisting = false;
-  //   this._activeDayController.timelogEntryController.timelogEntryItems.forEach((entryDataItem) => {
-  //     const start: moment.Moment = moment(entryDataItem.startTime);
-  //     const end: moment.Moment = moment(entryDataItem.endTime);
-  //     if (time.isSameOrAfter(start) && time.isSameOrBefore(end)) {
-  //       crossesExisting = true;
-  //     }
-  //   });
-  //   return crossesExisting;
-  // }
-
-
-  // private filterAndSortDelineators(delineators: TimelogDelineator[]): TimelogDelineator[] {
-  //   return delineators.filter((delineator) => {
-  //     return this.timeIsInView(delineator.time);
-  //   }).sort((delineator1, delineator2) => {
-  //     if (delineator1.time.isBefore(delineator2.time)) { return -1; }
-  //     if (delineator1.time.isAfter(delineator2.time)) { return 1; }
-  //     return 0;
-  //   });
-  // }
-
-  // private addNowTimeDelineator(delineations: TimelogDelineator[]): TimelogDelineator[] {
-  //   const now: moment.Moment = moment();
-  //   if (this.timeIsInView(now)) {
-  //     const nowDelineator: TimelogDelineator = new TimelogDelineator(now, 'NOW');
-  //     if (!this.crossesAnyTimelogEntry(now)) {
-  //       delineations.push(nowDelineator);
-  //     }
-  //   }
-  //   return delineations;
-  // }
-
-  // private addTimeSpanItemDelineators(delineations: TimelogDelineator[]): TimelogDelineator[] {
-  //   console.log('Method disabled');
-  //   // let wakeupDelineator: TimelogDelineator;
-  //   // let bedtimeDelineator: TimelogDelineator;
-
-  //   // if (this._activeDay.sleepProfile.wakeupTimeIsSet) {
-  //   //   if (this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTime))) {
-  //   //     wakeupDelineator = new TimelogDelineator(moment(this._activeDay.sleepProfile.wakeupTime), 'SLEEP', faSun, 'rgb(235, 201, 12)');
-  //   //   }
-  //   // } else {
-  //   //   if (this.timeIsInView(this._activeDay.sleepProfile.wakeupTime)) {
-  //   //     wakeupDelineator = new TimelogDelineator(this._activeDay.sleepProfile.wakeupTime, 'SLEEP', faSun, 'rgb(200, 200, 200)');
-  //   //   }
-  //   // }
-
-  //   // if (this._activeDay.sleepProfile.bedTimeIsSet) {
-  //   //   if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedTime))) {
-  //   //     bedtimeDelineator = new TimelogDelineator(moment(this._activeDay.sleepProfile.bedTime), 'SLEEP', faMoon, 'rgb(68, 0, 255)');
-  //   //   }
-  //   // } else {
-  //   //   if (this.timeIsInView(this._activeDay.sleepProfile.bedTime)) {
-  //   //     bedtimeDelineator = new TimelogDelineator(this._activeDay.sleepProfile.bedTime, 'SLEEP', faMoon, 'rgb(200, 200, 200)');
-  //   //   }
-  //   // }
-
-  //   // if (wakeupDelineator) {
-  //   //   wakeupDelineator.isVisible = true;
-  //   //   wakeupDelineator.label = 'wake up';
-  //   //   delineations.push(wakeupDelineator);
-  //   // }
-  //   // if (bedtimeDelineator) {
-  //   //   bedtimeDelineator.isVisible = true;
-  //   //   bedtimeDelineator.label = 'bed time';
-  //   //   delineations.push(bedtimeDelineator);
-  //   // }
-  //   return delineations;
-  // }
-
-  // private _updateTimelogEntryItems() {
-  //   console.log('method misabled');
-  //   const totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'seconds');
-  //   let delineators: TimelogDelineator[] = Object.assign([], this._timeDelineators);
-  //   delineators.push(new TimelogDelineator(moment(this._timelogZoomControl.startTime), 'FRAME'));
-  //   delineators.push(new TimelogDelineator(moment(this._timelogZoomControl.endTime), 'FRAME'));
-  //   delineators = this.filterAndSortDelineators(delineators);
-
-  //   const entriesCount: number = delineators.length - 1;
-  //   let entries: TimelogEntryItem[] = [];
-  //   // const wakeupTime: moment.Moment = this._activeDay.sleepProfile.wakeupTime;
-  //   // const bedTime: moment.Moment = this._activeDay.sleepProfile.bedTime;
-
-  //   for (let i = 0; i < entriesCount; i++) {
-  //     const startTime: moment.Moment = delineators[i].time;
-  //     const endTime: moment.Moment = delineators[i + 1].time;
-  //     if (!moment(startTime).isSame(moment(endTime))) {
-  //       /* 
-  //         there was a problem where there would be a duplicate delineator at the wakeup time, e.g. 8:30am,
-  //         a delineator for the wakeup and a delineator for the start of a timelog entry for that day.
-  //         so this if statement catches the case where the start and end time are the same 
-  //         (sorted array would have i and i+1 have same value );
-  //       */
-  //       // let sleepState: 'AWAKE' | 'SLEEP' = 'AWAKE';
-  //       // if (endTime.isSameOrBefore(wakeupTime) || startTime.isSameOrAfter(bedTime)) {
-  //       //   sleepState = 'SLEEP';
-  //       // }
-  //       const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime);
-  //       if (delineators[i + 1].delineatorType === 'NOW') {
-  //         entry.isCurrentEntry = true;
-  //       }
-  //       entries.push(entry);
-  //     }
-
-  //   }
-
-
-  //   this._activeDayController.timelogEntryController.timelogEntryItems.forEach((entryDataItem) => {
-  //     const entryDataStartTime: moment.Moment = moment(entryDataItem.startTime);
-  //     const entryDataEndTime: moment.Moment = moment(entryDataItem.endTime);
-  //     entries.forEach((entry) => {
-  //       if (entry.startTime.isSame(entryDataStartTime) && entry.endTime.isSame(entryDataEndTime)) {
-  //         entry.note = entryDataItem.note;
-  //         entry.timelogEntryActivities = entryDataItem.timelogEntryActivities;
-  //         entry.isSavedEntry = true;
-  //       }
-  //     });
-  //   });
-
-
-  //   entries = entries.sort((entry1, entry2) => {
-  //     if (entry1.startTime.isBefore(entry2.startTime)) { return -1; }
-  //     else if (entry2.startTime.isBefore(entry1.startTime)) { return 1; }
-  //     else { return 0; }
-  //   });
-
-  //   let gridTemplateRows = '';
-  //   entries.forEach(item => {
-  //     // console.log("percent la: ", item.percentOfTotal(totalViewSeconds).toFixed(2))
-  //     gridTemplateRows += '' + item.percentOfTotal(totalViewSeconds).toFixed(2) + '% ';
-  //     if (item.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
-  //       item.isSmallSize = true;
-  //     } else {
-  //       item.isSmallSize = false;
-  //     }
-  //   });
-
-  //   // console.log("Timelog Entry items grid-template-rows:", gridTemplateRows)
-  //   this._entryItemsNgStyle = { 'grid-template-rows': gridTemplateRows };
-  //   this._entryItems = entries;
-  // }
-
-
-
 
 }

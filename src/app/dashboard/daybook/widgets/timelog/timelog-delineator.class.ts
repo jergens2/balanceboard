@@ -5,13 +5,15 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 export enum TimelogDelineatorType {
     FRAME_START = 'FRAME_START',
+    FRAME_END = 'FRAME_END',
     WAKEUP_TIME = 'WAKEUP_TIME',
-    SAVED_DELINEATOR = 'SAVED_DELINEATOR',
+    FALLASLEEP_TIME = 'FALLASLEEP_TIME',
     NOW = 'NOW',
     TIMELOG_ENTRY_START = 'TIMELOG_ENTRY_START',
     TIMELOG_ENTRY_END = 'TIMELOG_ENTRY_END',
-    FALLASLEEP_TIME = 'FALLASLEEP_TIME',
-    FRAME_END = 'FRAME_END',
+    SAVED_DELINEATOR = 'SAVED_DELINEATOR',
+    DAY_STRUCTURE = 'DAY_STRUCTURE',
+
 }
 
 export class TimelogDelineator {

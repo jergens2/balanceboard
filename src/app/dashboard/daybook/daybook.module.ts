@@ -44,6 +44,7 @@ import { SleepProfileDisplayComponent } from './widgets/sleep-profile-widget/sle
 import { TimeSelectionColumnComponent } from './widgets/timelog/timelog-large/timelog-body/time-selection-column/time-selection-column.component';
 import { TlefViewOnlyComponent } from './widgets/timelog/timelog-entry-form/tlef-view-only/tlef-view-only.component';
 import { TlefBedTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-bed-time/tlef-bed-time.component';
+import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large/timelog-item-types/available-timelog-item/available-timelog-item.component';
 
 
 @NgModule({
@@ -90,6 +91,7 @@ import { TlefBedTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-
     TimeSelectionColumnComponent,
     TlefViewOnlyComponent,
     TlefBedTimeComponent,
+    AvailableTimelogItemComponent,
   ],
   exports: [
     // DaybookEntryFormComponent,

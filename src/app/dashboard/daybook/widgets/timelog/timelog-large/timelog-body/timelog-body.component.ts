@@ -15,6 +15,7 @@ import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { ScreenSizeService } from '../../../../../../shared/app-screen-size/screen-size.service';
 import { DaybookController } from '../../../../controller/daybook-controller.class';
 import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { TimelogDisplayGridItemType } from '../../timelog-display-grid-item.enum';
 
 @Component({
   selector: 'app-timelog-body',
@@ -27,7 +28,7 @@ export class TimelogBodyComponent implements OnInit {
 
   private _zoomControl: TimelogZoomControl;
   private _zoomControlSubscription: Subscription = new Subscription();
-  private _drawNewTLE: TimelogEntryItem;
+  // private _drawNewTLE: TimelogEntryItem;
   private _activeDayController: DaybookController;
   private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
   private _timelogDisplayController: TimelogDisplayController = null;
@@ -77,34 +78,25 @@ export class TimelogBodyComponent implements OnInit {
   
   public get timelogDisplayController(): TimelogDisplayController { return this._timelogDisplayController; }
 
-  public get timelogEntryItemsNgStyle(): any { return this._timelogDisplayController.entryItemsNgStyle; }
-  public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogDisplayController.entryItems; }
-
-  // private _mousePosition: { time: moment.Moment, ngStyle: any, crossesExistingTimelogEntry: boolean } = null;
-  // public get mousePosition(): { time: moment.Moment, ngStyle: any, crossesExistingTimelogEntry: boolean } { return this._mousePosition; };
-
-  // private _nowLine: { time: moment.Moment, ngStyle: any, showTime: boolean } = null;
-  // public get nowLine(): { time: moment.Moment, ngStyle: any, showTime: boolean } { return this._nowLine; };
-
   private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
   public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
+
+  public get gridItems(): TimelogDisplayGridItemType[] { return this._timelogDisplayController.gridItems; }
+  public get gridItemsNgStyle(): any { return this._timelogDisplayController.displayGridNgStyle; }
 
 
 
   public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
-  public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
+  // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
 
 
-  public get drawNewTLE(): TimelogEntryItem { return this._drawNewTLE; }
+  // public get drawNewTLE(): TimelogEntryItem { return this._drawNewTLE; }
   public onDrawNewTLE(timelogEntry: TimelogEntryItem){
-    // console.log("Draw timelogEntry in timelog class:")
-    // console.log("  from: " + timelogEntry.startTime.format('YYYY-MM-DD hh:mm a'))
-    // console.log("    to: " + timelogEntry.endTime.format('YYYY-MM-DD hh:mm a'))
     console.log("  * Drawing TLE from: " + timelogEntry.startTime.format('YYYY-MM-DD hh:mm a') + " to: " + timelogEntry.endTime.format('YYYY-MM-DD hh:mm a'))
-    // this.timelog.drawNewTLE(timelogEntry);
-    // let drawNewTLE: TimelogEntryItem = timelogEntry;
 
-    this._drawNewTLE = timelogEntry;
+
+
+
   }
 
 

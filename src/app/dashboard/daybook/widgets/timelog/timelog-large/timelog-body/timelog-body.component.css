@@ -14,6 +14,7 @@
     grid-template-columns: 20px 70px 1fr;
     grid-template-rows: 1fr;
 }
+
 .tick-margin-line-container{
     grid-column: 2 / span 1;
     grid-row: 1 / -1;
@@ -26,6 +27,22 @@
     grid-row: 2 / span 1;
     grid-column: 1 / -1;
     border-right: 1px solid gray;
+}
+
+.grid-items{ 
+    grid-column: 3 / span 1;
+    grid-row: 1 / -1;
+
+    display:grid;
+    grid-template-columns: 1fr;
+}
+
+.grid-item{
+    border: 1px solid rgb(238, 238, 238);
+    border-radius: 5px;;
+}
+.grid-item:hover{
+    border: 1px solid black;
 }
 
 .guide-line-hours{
@@ -76,82 +93,4 @@
     position:relative; 
     z-index: 10; 
     padding-left: 3px;
-}
-
-.mouse-position-time-container, .now-line-time-container, .time-delineators{
-    grid-column: 1 / -1; 
-    grid-row: 1 / -1;
-
-    display:grid;
-    grid-template-columns: 1fr;
-}
-.mouse-position-time-label-container, .now-line-time-label-container, .time-delineator-label-container{
-    display:flex;
-    flex-direction: row;
-    align-items: center;
-    height:20px;
-    margin-top:-10px;
-    width:100%;
-}
-.mouse-position-time-label, .now-line-time-label{
-    margin-left: 5px;
-    padding-left:2px;
-    width:70px;
-    display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 5px;
-    /* border: 1px solid rgba(0, 89, 255, 0.3); */
-    color: rgb(0, 89, 255);
-    font-size: 0.9em;
-}
-.time-delineator-time-label{
-    position: relative;
-    z-index: 2;
-
-    /* width: 94px; */
-    flex-grow: 2;
-    margin-left: 5px;
-    display:flex;
-    flex-direction: row;
-
-    
-    justify-content: space-between;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 5px;
-    color: gray;
-}
-
-.time-delineator-time-label:hover{
-    background-color:rgb(230, 230, 230);
-}
-.mouse-position-time-label > fa-icon{
-    display:none;
-}
-.mouse-position-time-label:hover{
-    cursor: pointer;
-    background-color: rgba(0, 89, 255, 0.1);
-}
-.mouse-position-time-label:hover > fa-icon{
-    display: inline;
-}
-.now-line-time-label{
-    /* border: 1px solid rgba(255, 0, 0, 0.3); */
-    width: 94px;
-    font-size: 1.0em;
-    color: rgba(255, 0, 0, 0.6);
-}
-
-.timelog-entry-items{
-    grid-column: 3 / span 1;
-    grid-row: 1 / span 1;
-
-    display:grid;
-    grid-template-columns: 1fr;
-}
-
-.timelog-entry-item{
-    display:flex;
-    flex-direction: column;
 }
