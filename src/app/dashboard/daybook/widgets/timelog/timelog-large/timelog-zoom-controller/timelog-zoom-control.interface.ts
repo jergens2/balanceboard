@@ -10,5 +10,4 @@ export interface TimelogZoomControl{
     name: "24" | "AWAKE" | "8" | "LIST" | "CUSTOM";
     startTime: moment.Moment;
     endTime: moment.Moment;
-    itemState: ItemState;
 }

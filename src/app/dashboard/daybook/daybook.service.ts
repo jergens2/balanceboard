@@ -25,6 +25,7 @@ export class DaybookService implements ServiceAuthenticates {
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   private _clock: moment.Moment = moment();
+  private _clockMinuteTicker$: Subject<moment.Moment>;
   private _todayController$: BehaviorSubject<DaybookController>;
   private _todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
   private _activeDayController$: BehaviorSubject<DaybookController>;
@@ -33,6 +34,7 @@ export class DaybookService implements ServiceAuthenticates {
   private _daybookItemSubs: Subscription[] = [];
 
   public get clock(): moment.Moment { return moment(this._clock); }
+  public get clockMinuteTicker$(): Observable<moment.Moment> { return this._clockMinuteTicker$.asObservable(); } 
   public get todayYYYYMMDD(): string { return this._todayYYYYMMDD; }
   public get todayController$(): Observable<DaybookController> { return this._todayController$.asObservable(); }
   public get todayController(): DaybookController { return this._todayController$.getValue(); }

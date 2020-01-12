@@ -5,6 +5,7 @@ import { TimeSelectionRow } from './time-selection-row.class';
 import { Subscription } from 'rxjs';
 import { DaybookService } from '../../../../../daybook.service';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
+import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -22,7 +23,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _mouseOverRow: TimeSelectionRow;
 
 
-  private _availability: {startTime: moment.Moment, endTime: moment.Moment, isActive: boolean }[];
+  private _availability: TimeScheduleItem[];
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
 
@@ -30,20 +31,22 @@ export class TimeSelectionColumnComponent implements OnInit {
     this._zoomControl = zoomControl;
     
   }
-  @Input() public set availability(availability: {startTime: moment.Moment, endTime: moment.Moment, isActive: boolean }[]){
+  @Input() public set availability(availability: TimeScheduleItem[]){
     this._availability = availability;
     this._availability.forEach((item) => {
-      console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a') + " : isActive? " + item.isActive);
+      console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a') + " : isActive? " + item.hasValue);
     })
   }
 
-  public get availability(): {startTime: moment.Moment, endTime: moment.Moment, isActive: boolean }[] { 
+  public get availability(): TimeScheduleItem[] { 
     return this._availability;
   }
 
   ngOnInit() {
     this._buildRows(this._calculateDivisor());
-    console.log("Column availability: ", this.availability)
+
+    console.log(" TO DO : start in this component ")
+    // console.log("Column availability: ", this.availability)
     
     // if (this._zoomControl) {
     //   console.log("zoom control:", this._zoomControl);
@@ -134,9 +137,15 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   }
 
-  private _findNextAvailabilityChange(newRow): moment.Moment{ 
-    console.log("To do:  start here.")
-    const currentRowIndex = this.rows.indexOf(newRow);
+  /**
+   * Find the next time that the availability changes value.
+   * For example, if currentNewRow.isAvailable === true, 
+   * then find the next time at which .isAvailable becomes false.
+   * @param newRow current row
+   */
+  private _findNextAvailabilityChange(currentNewRow): moment.Moment{ 
+    // console.log("To do:  start here.")
+    const currentRowIndex = this.rows.indexOf(currentNewRow);
     // const 
     return null;
   }
@@ -170,12 +179,11 @@ export class TimeSelectionColumnComponent implements OnInit {
       Reminder:  isAvailable === !isActive  
     */
     let isActive: boolean = false;
-    // console.log("this.availability: , " , this.availability)
     let foundWholeRowSpan = this.availability.find(item => {
       return newRow.startTime.isSameOrAfter(item.startTime) && newRow.endTime.isSameOrBefore(item.endTime);
     });
     if (foundWholeRowSpan) {
-      isActive = foundWholeRowSpan.isActive;
+      isActive = foundWholeRowSpan.hasValue;
     } else {
       let foundStart = this.availability.find(item => {
         return newRow.startTime.isSameOrAfter(item.startTime) && newRow.startTime.isSameOrBefore(item.endTime);
@@ -193,9 +201,9 @@ export class TimeSelectionColumnComponent implements OnInit {
         const secondPeriodDurationMS = rowEnd.diff(breakPoint, 'milliseconds');
 
         if (firstPeriodDurationMS > secondPeriodDurationMS) {
-          isActive = foundStart.isActive;
+          isActive = foundStart.hasValue;
         } else {
-          isActive = foundEnd.isActive;
+          isActive = foundEnd.hasValue;
         }
 
       } else {
@@ -204,7 +212,7 @@ export class TimeSelectionColumnComponent implements OnInit {
         console.log("  Found end  : ", foundEnd);
       }
     }
-    console.log("New Row: " + newRow.startTime.format('hh:mm a') + " isAvailable? " + !isActive);
+    // console.log("New Row: " + newRow.startTime.format('hh:mm a') + " isAvailable? " + !isActive);
     return !isActive;
   }
 

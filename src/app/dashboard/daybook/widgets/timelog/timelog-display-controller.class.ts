@@ -1,0 +1,507 @@
+
+import { TimelogZoomControl } from './timelog-large/timelog-zoom-controller/timelog-zoom-control.interface';
+import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import * as moment from 'moment';
+import { TimelogDelineator, TimelogDelineatorType } from './timelog-delineator.class';
+import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { DaybookController } from '../../controller/daybook-controller.class';
+
+export class TimelogDisplayController {
+
+  /**
+   * The TimelogDisplayController is the primary class for the production of the Timelog widget in the daybook, used by timelog-body.component
+   * 
+   * 
+   * 
+   * 
+   * @param timelogZoomControl 
+   * @param activeDay 
+   * @param minutesPerTwentyPixels 
+   * 
+   * 
+   * 
+   */
+  constructor(timelogZoomControl: TimelogZoomControl, activeDayController: DaybookController, minutesPerTwentyPixels: number) {
+    this._timelogZoomControl = timelogZoomControl;
+    this._activeDayController = activeDayController;
+    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
+    this._update();
+  }
+
+  private _log: string[] = [];
+
+  private _update() {
+    this._setDefaultDayStructureTimes();
+    this._loadTimelogDelineators();
+    // this._updateTimeDelineators();
+    // this._updateTimelogEntryItems();
+
+    this._logToConsole();
+  }
+
+  private _logToConsole() {
+    console.log("Constructing TimelogDisplayController - logToConsole is ON")
+    this._log.forEach((logEntry) => {
+      console.log("   " + logEntry);
+    });
+  }
+
+  public get frameStart(): moment.Moment { return this._timelogZoomControl.startTime; }
+  public get wakeupTime(): moment.Moment { return this._activeDayController.sleepController.firstWakeupTime; }
+  public get fallAsleepTime(): moment.Moment { return this._activeDayController.sleepController.fallAsleepTime; }
+  public get frameEnd(): moment.Moment { return this._timelogZoomControl.endTime; }
+
+  private _loadTimelogDelineators() {
+    const nowTime = moment();
+
+    const timelogDelineators: TimelogDelineator[] = [];
+    timelogDelineators.push(new TimelogDelineator(this.frameStart, TimelogDelineatorType.FRAME_START));
+    timelogDelineators.push(new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME));
+    if (this._activeDayController.isToday) {
+      timelogDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
+    }
+    timelogDelineators.push(new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME));
+    timelogDelineators.push(new TimelogDelineator(this.frameEnd, TimelogDelineatorType.FRAME_END));
+
+    this._activeDayController.timeDelineatorController.timeDelineations.forEach((timeDelineation) => {
+      timelogDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
+    });
+    this._activeDayController.timelogEntryController.timelogEntryItems.forEach((timelogEntryItem) => {
+      timelogDelineators.push(new TimelogDelineator(timelogEntryItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START));
+      timelogDelineators.push(new TimelogDelineator(timelogEntryItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END));
+    });
+
+    const sortedDelineators = this._sortDelineators(timelogDelineators);
+    let logItems: string[] = [];
+    sortedDelineators.forEach(sd => logItems.push("  Sorted Delineator: " + sd.time.format('YYYY-MM-DD hh:mm a') + " : " + sd.delineatorType))
+    this._log = this._log.concat(logItems);
+  }
+
+  private _sortDelineators(timelogDelineators: TimelogDelineator[]): TimelogDelineator[] {
+    const sortedDelineators = timelogDelineators
+      .filter((delineator) => { return delineator.time.isSameOrAfter(this.frameStart) && delineator.time.isSameOrBefore(this.frameEnd); })
+      .sort((td1, td2) => {
+        if (td1.time.isBefore(td2.time)) { return -1; }
+        else if (td1.time.isAfter(td2.time)) { return 1; }
+        else { return 0; }
+      });
+    let filteredDelineators: TimelogDelineator[] = [sortedDelineators[0]];
+    for (let i = 1; i < sortedDelineators.length; i++) {
+      const lastIndex = filteredDelineators.length - 1
+      let lastFilteredDelineator = filteredDelineators[lastIndex];
+      if (sortedDelineators[i].time.isSame(lastFilteredDelineator.time)) {
+        const orderedTypes: TimelogDelineatorType[] = [TimelogDelineatorType.FRAME_START,
+        TimelogDelineatorType.FRAME_END,
+        TimelogDelineatorType.WAKEUP_TIME,
+        TimelogDelineatorType.FALLASLEEP_TIME,
+        TimelogDelineatorType.NOW,
+        TimelogDelineatorType.TIMELOG_ENTRY_START,
+        TimelogDelineatorType.TIMELOG_ENTRY_END,
+        TimelogDelineatorType.SAVED_DELINEATOR
+        ];
+        const sortIndexOfExisting: number = orderedTypes.findIndex(type => {
+          return type === lastFilteredDelineator.delineatorType;
+        });
+        const sortIndexOfNew: number = orderedTypes.findIndex(type => {
+          return type === sortedDelineators[i].delineatorType;
+        });
+        if (sortIndexOfExisting > sortIndexOfNew) {
+          filteredDelineators.splice(lastIndex, 1, sortedDelineators[i]);
+        }
+      } else {
+        filteredDelineators.push(sortedDelineators[i]);
+      }
+    }
+    return filteredDelineators
+  }
+
+  private _setDefaultDayStructureTimes() {
+    this._defaultDayStructureTimes = [
+      moment(this._activeDayController.dateYYYYMMDD).hour(0).startOf('hour'),
+      moment(this._activeDayController.dateYYYYMMDD).hour(6).startOf('hour'),
+      moment(this._activeDayController.dateYYYYMMDD).hour(12).startOf('hour'),
+      moment(this._activeDayController.dateYYYYMMDD).hour(18).startOf('hour'),
+      moment(this._activeDayController.dateYYYYMMDD).hour(24).startOf('hour'),
+    ];
+  }
+
+
+
+
+
+
+  faMoon = faMoon;
+  faSun = faSun;
+
+  private _minutesPerTwentyPixels: number;
+  private _timelogZoomControl: TimelogZoomControl;
+
+  private _activeDayController: DaybookController;
+  private _entryItemsNgStyle: any = { 'grid-template-rows': '1fr' };
+  private _entryItems: TimelogEntryItem[] = [];
+  private _timeDelineators: TimelogDelineator[] = [];
+  private _timeDelineatorsNgStyle: any = { 'grid-template-rows': '1fr' };
+
+  private _defaultDayStructureTimes: moment.Moment[] = [];
+
+  // private getTotalViewSeconds(): number {
+  //   return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'seconds');
+  // }
+  // private timeIsInView(time: moment.Moment): boolean {
+  //   return time.isSameOrAfter(this._timelogZoomControl.startTime) && time.isSameOrBefore(this._timelogZoomControl.endTime);
+  // }
+
+  public updateEntrySizes(minutesPerTwentyPixels: number) {
+    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
+    // console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
+    this._entryItems.forEach((entryItem) => {
+      if (entryItem.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
+        entryItem.isSmallSize = true;
+      } else {
+        entryItem.isSmallSize = false;
+      }
+    });
+  }
+
+
+
+  public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
+  public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
+
+
+  public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
+  public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; }
+
+  public get defaultDayStructureTimes(): moment.Moment[] { return this._defaultDayStructureTimes; }
+
+  public addTimeDelineator(time: moment.Moment) {
+    // if (!this.crossesAnyTimelogEntry(time)) {
+    //   console.log("method disabled")
+    //   // this._activeDay.timelog.addTimeDelineator(time.toISOString());
+    //   // this.update();
+    // }
+  }
+
+  // public drawNewTLE(timelogEntry: TimelogEntryItem){
+  //   console.log("Timelog.Class: Drawing new TLE: " , timelogEntry)
+
+  // }
+
+  public addTemporaryDelineator(time: moment.Moment) {
+
+  }
+
+  public removeTimeDelineator(delineator: TimelogDelineator) {
+    console.log("method disabled")
+    // this._activeDay.timelog.removeTimeDelineator(delineator.time.toISOString());
+    // this.update();
+  }
+
+
+
+
+
+
+
+  // private _updateTimeDelineators() {
+  //   let allTimes: TimelogDelineator[] = [];
+  //   allTimes = this.addTimeSpanItemDelineators(allTimes);
+  //   allTimes = this.addNowTimeDelineator(allTimes);
+
+  //   for (let i = 0; i < this._activeDayController.timelogEntryController.timelogEntryItems.length; i++) {
+  //     /**
+  //      * For each timelog entry: add 1 delineator for the start time and 1 delineator for the end time, 
+  //      * unless if the end of one entry is the same as the start of the next entry, 
+  //      * in which case it will be added for the start of the next entry.
+  //      */
+  //     const startTime: moment.Moment = moment(this._activeDayController.timelogEntryController.timelogEntryItems[i].startTime);
+  //     const endTime: moment.Moment = moment(this._activeDayController.timelogEntryController.timelogEntryItems[i].endTime);
+
+  //     const startDelineator: TimelogDelineator = new TimelogDelineator(startTime, 'TIMELOG_ENTRY');
+  //     startDelineator.nextDelineatorTime = endTime;
+  //     let endDelineator: TimelogDelineator;
+
+  //     if (i < this._activeDayController.timelogEntryController.timelogEntryItems.length - 1) {
+  //       const nextStartTime: moment.Moment = moment(this._activeDayController.timelogEntryController.timelogEntryItems[i + 1].startTime);
+  //       if (!nextStartTime.isSame(endTime)) {
+  //         endDelineator = new TimelogDelineator(endTime, 'TIMELOG_ENTRY');
+  //       }
+  //     } else if (i === this._activeDayController.timelogEntryController.timelogEntryItems.length - 1) {
+  //       endDelineator = new TimelogDelineator(endTime, 'TIMELOG_ENTRY');
+  //     }
+
+  //     allTimes.push(startDelineator);
+  //     if (endDelineator) {
+  //       allTimes.push(endDelineator);
+  //     }
+  //   }
+
+  //   allTimes = this.addExistingDelineators(allTimes);
+  //   allTimes = this.setFollowingTimesOfDelineators(allTimes);
+  //   allTimes = this.setVisibilityOfTimelogDelineators(allTimes);
+  //   // allTimes.forEach((time) => {
+  //   //   console.log("Delineators:  " + time.time.format("hh:mm a") + " isVisible?: ", time.isVisible , " type: ", time.delineatorType);
+  //   // });
+
+  //   if (allTimes.length > 0) {
+  //     let gridTemplateRows = '';
+  //     const percentages: number[] = [];
+  //     let currentTime: moment.Moment = this._timelogZoomControl.startTime;
+  //     for (let i = 0; i < allTimes.length; i++) {
+  //       const seconds: number = allTimes[i].time.diff(currentTime, 'seconds');
+  //       percentages.push((seconds / this.getTotalViewSeconds()) * 100);
+  //       currentTime = moment(allTimes[i].time);
+  //     }
+  //     const finalSeconds: number = this._timelogZoomControl.endTime.diff(currentTime, 'seconds');
+  //     percentages.push((finalSeconds / this.getTotalViewSeconds()) * 100);
+  //     percentages.forEach((percentage: number) => {
+  //       gridTemplateRows += '' + percentage.toFixed(2) + '% ';
+  //     });
+  //     this._timeDelineators = allTimes;
+  //     this._timeDelineatorsNgStyle = { 'grid-template-rows': gridTemplateRows };
+  //   } else {
+  //     this._timeDelineators = [];
+  //     this._timeDelineatorsNgStyle = { 'grid-template-rows': '1fr' };
+  //   }
+
+
+  //   /**
+  //    * At the end of selecting, then check the very first and very last delineator if within 30 minutes, and make visible if not.
+  //    */
+
+  // }
+
+  // private setVisibilityOfTimelogDelineators(allTimes: TimelogDelineator[]): TimelogDelineator[] {
+  //   const timelogEntryDelineators: TimelogDelineator[] = allTimes.filter((time) => time.delineatorType === 'TIMELOG_ENTRY')
+  //     .sort((delineator1, delineator2) => {
+  //       if (delineator1.durationSeconds > delineator2.durationSeconds) { return -1; }
+  //       if (delineator1.durationSeconds < delineator2.durationSeconds) { return 1; }
+  //       return 0;
+  //     });
+  //   const sleepTimes: moment.Moment[] = allTimes.filter((time) => time.delineatorType === 'SLEEP')
+  //     .map((delineator) => delineator.time);
+  //   timelogEntryDelineators.forEach((entryDelineator) => {
+  //     if (!this.isWithin30MinutesOfAnother(entryDelineator, allTimes)) {
+  //       entryDelineator.isVisible = true;
+  //     } else { entryDelineator.isVisible = false; }
+  //     sleepTimes.forEach((sleepTime) => {
+  //       if (entryDelineator.time.isSame(sleepTime)) {
+  //         entryDelineator.isVisible = false;
+  //       }
+  //     });
+  //   });
+
+  //   allTimes.filter((time) => time.delineatorType === 'NOW').forEach((nowTime) => { nowTime.isVisible = false; });
+  //   // allTimes[allTimes.length - 1].isVisible = true;
+  //   return allTimes;
+  // }
+
+  // private setFollowingTimesOfDelineators(allTimes: TimelogDelineator[]): TimelogDelineator[] {
+  //   allTimes = this.filterAndSortDelineators(allTimes);
+  //   for (let i = 0; i < allTimes.length - 1; i++) {
+  //     if (allTimes[i].nextDelineatorTime === null) {
+  //       allTimes[i].nextDelineatorTime = moment(allTimes[i + 1].time);
+  //     }
+  //   }
+  //   return allTimes;
+  // }
+
+  // private addExistingDelineators(allTimes: TimelogDelineator[]): TimelogDelineator[] {
+  //   console.log('Method disabled');
+  //   // this._activeDay.timeDelineators.forEach((time: string) => {
+  //   //   if (!this.crossesAnyTimelogEntry(moment(time))) {
+  //   //     const delineator: TimelogDelineator = new TimelogDelineator(moment(time), 'DELINEATOR');
+  //   //     delineator.isVisible = true;
+  //   //     allTimes.push(delineator);
+  //   //   }
+  //   // });
+  //   return allTimes;
+  // }
+
+
+  // public showNowTime(): boolean {
+  //   let nowDelineator: TimelogDelineator = this._timeDelineators.filter((delineator) => delineator.delineatorType === 'NOW')[0];
+  //   if (!nowDelineator) {
+  //     nowDelineator = new TimelogDelineator(moment(), 'NOW');
+  //   }
+  //   return !this.isWithin30MinutesOfAnother(nowDelineator);
+  // }
+
+  // private isWithin30MinutesOfAnother(checkDelineator: TimelogDelineator, currentDelineators?: TimelogDelineator[]): boolean {
+  //   let delineators: TimelogDelineator[] = [];
+  //   if (!currentDelineators) {
+  //     delineators = this._timeDelineators;
+  //   } else {
+  //     delineators = currentDelineators;
+  //   }
+
+  //   delineators = delineators.filter((delineator) => delineator.isVisible);
+
+  //   let isWithin30Minutes = false;
+  //   if (checkDelineator.delineatorType === 'NOW') {
+  //     delineators.forEach((delineator) => {
+  //       const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), 'minutes'));
+  //       if (differenceMinutes < 30) {
+  //         isWithin30Minutes = true;
+  //       }
+  //     });
+  //   } else {
+  //     delineators.forEach((delineator) => {
+  //       const isSameTime: boolean = moment(delineator.time).isSame(moment(checkDelineator.time));
+  //       const differenceMinutes: number = Math.abs(moment(delineator.time).diff(moment(checkDelineator.time), 'minutes'));
+  //       if (differenceMinutes < 30 && !isSameTime) {
+  //         isWithin30Minutes = true;
+  //       }
+  //     });
+  //   }
+  //   return isWithin30Minutes;
+  // }
+
+  // public crossesAnyTimelogEntry(time: moment.Moment): boolean {
+  //   let crossesExisting = false;
+  //   this._activeDayController.timelogEntryController.timelogEntryItems.forEach((entryDataItem) => {
+  //     const start: moment.Moment = moment(entryDataItem.startTime);
+  //     const end: moment.Moment = moment(entryDataItem.endTime);
+  //     if (time.isSameOrAfter(start) && time.isSameOrBefore(end)) {
+  //       crossesExisting = true;
+  //     }
+  //   });
+  //   return crossesExisting;
+  // }
+
+
+  // private filterAndSortDelineators(delineators: TimelogDelineator[]): TimelogDelineator[] {
+  //   return delineators.filter((delineator) => {
+  //     return this.timeIsInView(delineator.time);
+  //   }).sort((delineator1, delineator2) => {
+  //     if (delineator1.time.isBefore(delineator2.time)) { return -1; }
+  //     if (delineator1.time.isAfter(delineator2.time)) { return 1; }
+  //     return 0;
+  //   });
+  // }
+
+  // private addNowTimeDelineator(delineations: TimelogDelineator[]): TimelogDelineator[] {
+  //   const now: moment.Moment = moment();
+  //   if (this.timeIsInView(now)) {
+  //     const nowDelineator: TimelogDelineator = new TimelogDelineator(now, 'NOW');
+  //     if (!this.crossesAnyTimelogEntry(now)) {
+  //       delineations.push(nowDelineator);
+  //     }
+  //   }
+  //   return delineations;
+  // }
+
+  // private addTimeSpanItemDelineators(delineations: TimelogDelineator[]): TimelogDelineator[] {
+  //   console.log('Method disabled');
+  //   // let wakeupDelineator: TimelogDelineator;
+  //   // let bedtimeDelineator: TimelogDelineator;
+
+  //   // if (this._activeDay.sleepProfile.wakeupTimeIsSet) {
+  //   //   if (this.timeIsInView(moment(this._activeDay.sleepProfile.wakeupTime))) {
+  //   //     wakeupDelineator = new TimelogDelineator(moment(this._activeDay.sleepProfile.wakeupTime), 'SLEEP', faSun, 'rgb(235, 201, 12)');
+  //   //   }
+  //   // } else {
+  //   //   if (this.timeIsInView(this._activeDay.sleepProfile.wakeupTime)) {
+  //   //     wakeupDelineator = new TimelogDelineator(this._activeDay.sleepProfile.wakeupTime, 'SLEEP', faSun, 'rgb(200, 200, 200)');
+  //   //   }
+  //   // }
+
+  //   // if (this._activeDay.sleepProfile.bedTimeIsSet) {
+  //   //   if (this.timeIsInView(moment(this._activeDay.sleepProfile.bedTime))) {
+  //   //     bedtimeDelineator = new TimelogDelineator(moment(this._activeDay.sleepProfile.bedTime), 'SLEEP', faMoon, 'rgb(68, 0, 255)');
+  //   //   }
+  //   // } else {
+  //   //   if (this.timeIsInView(this._activeDay.sleepProfile.bedTime)) {
+  //   //     bedtimeDelineator = new TimelogDelineator(this._activeDay.sleepProfile.bedTime, 'SLEEP', faMoon, 'rgb(200, 200, 200)');
+  //   //   }
+  //   // }
+
+  //   // if (wakeupDelineator) {
+  //   //   wakeupDelineator.isVisible = true;
+  //   //   wakeupDelineator.label = 'wake up';
+  //   //   delineations.push(wakeupDelineator);
+  //   // }
+  //   // if (bedtimeDelineator) {
+  //   //   bedtimeDelineator.isVisible = true;
+  //   //   bedtimeDelineator.label = 'bed time';
+  //   //   delineations.push(bedtimeDelineator);
+  //   // }
+  //   return delineations;
+  // }
+
+  // private _updateTimelogEntryItems() {
+  //   console.log('method misabled');
+  //   const totalViewSeconds: number = this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'seconds');
+  //   let delineators: TimelogDelineator[] = Object.assign([], this._timeDelineators);
+  //   delineators.push(new TimelogDelineator(moment(this._timelogZoomControl.startTime), 'FRAME'));
+  //   delineators.push(new TimelogDelineator(moment(this._timelogZoomControl.endTime), 'FRAME'));
+  //   delineators = this.filterAndSortDelineators(delineators);
+
+  //   const entriesCount: number = delineators.length - 1;
+  //   let entries: TimelogEntryItem[] = [];
+  //   // const wakeupTime: moment.Moment = this._activeDay.sleepProfile.wakeupTime;
+  //   // const bedTime: moment.Moment = this._activeDay.sleepProfile.bedTime;
+
+  //   for (let i = 0; i < entriesCount; i++) {
+  //     const startTime: moment.Moment = delineators[i].time;
+  //     const endTime: moment.Moment = delineators[i + 1].time;
+  //     if (!moment(startTime).isSame(moment(endTime))) {
+  //       /* 
+  //         there was a problem where there would be a duplicate delineator at the wakeup time, e.g. 8:30am,
+  //         a delineator for the wakeup and a delineator for the start of a timelog entry for that day.
+  //         so this if statement catches the case where the start and end time are the same 
+  //         (sorted array would have i and i+1 have same value );
+  //       */
+  //       // let sleepState: 'AWAKE' | 'SLEEP' = 'AWAKE';
+  //       // if (endTime.isSameOrBefore(wakeupTime) || startTime.isSameOrAfter(bedTime)) {
+  //       //   sleepState = 'SLEEP';
+  //       // }
+  //       const entry: TimelogEntryItem = new TimelogEntryItem(startTime, endTime);
+  //       if (delineators[i + 1].delineatorType === 'NOW') {
+  //         entry.isCurrentEntry = true;
+  //       }
+  //       entries.push(entry);
+  //     }
+
+  //   }
+
+
+  //   this._activeDayController.timelogEntryController.timelogEntryItems.forEach((entryDataItem) => {
+  //     const entryDataStartTime: moment.Moment = moment(entryDataItem.startTime);
+  //     const entryDataEndTime: moment.Moment = moment(entryDataItem.endTime);
+  //     entries.forEach((entry) => {
+  //       if (entry.startTime.isSame(entryDataStartTime) && entry.endTime.isSame(entryDataEndTime)) {
+  //         entry.note = entryDataItem.note;
+  //         entry.timelogEntryActivities = entryDataItem.timelogEntryActivities;
+  //         entry.isSavedEntry = true;
+  //       }
+  //     });
+  //   });
+
+
+  //   entries = entries.sort((entry1, entry2) => {
+  //     if (entry1.startTime.isBefore(entry2.startTime)) { return -1; }
+  //     else if (entry2.startTime.isBefore(entry1.startTime)) { return 1; }
+  //     else { return 0; }
+  //   });
+
+  //   let gridTemplateRows = '';
+  //   entries.forEach(item => {
+  //     // console.log("percent la: ", item.percentOfTotal(totalViewSeconds).toFixed(2))
+  //     gridTemplateRows += '' + item.percentOfTotal(totalViewSeconds).toFixed(2) + '% ';
+  //     if (item.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
+  //       item.isSmallSize = true;
+  //     } else {
+  //       item.isSmallSize = false;
+  //     }
+  //   });
+
+  //   // console.log("Timelog Entry items grid-template-rows:", gridTemplateRows)
+  //   this._entryItemsNgStyle = { 'grid-template-rows': gridTemplateRows };
+  //   this._entryItems = entries;
+  // }
+
+
+
+
+}

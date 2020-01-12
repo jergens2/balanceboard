@@ -45,7 +45,7 @@ export class DaybookDayItem {
     public get id(): string { return this.httpShape._id; }
     public get userId(): string { return this.httpShape.userId; }
     public get dateYYYYMMDD(): string { return this.httpShape.dateYYYYMMDD; }
-    public get timeDelineators(): string[] { return this.httpShape.timeDelineators; }
+    public get timeDelineators(): moment.Moment[] { return this.httpShape.timeDelineators.map(timeString => moment(timeString)); }
     public get sleepTimes(): TimeSpanItem[] { return this.httpShape.sleepTimes; }
     public get timelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this.httpShape.daybookTimelogEntryDataItems; }
     public get sleepEnergyLevelInputs(): SleepEnergyLevelInput[] { return this.httpShape.sleepEnergyLevelInputs; }
@@ -58,8 +58,8 @@ export class DaybookDayItem {
     public get isToday(): boolean { return this._isToday; }
     public setIsToday() { this._isToday = true; }
 
-    public set timelogEntryDataItems(items: DaybookTimelogEntryDataItem[]){
-        console.log(this.dateYYYYMMDD + ": setting tle items: " , items)
+    public set timelogEntryDataItems(items: DaybookTimelogEntryDataItem[]) {
+        console.log(this.dateYYYYMMDD + ": setting tle items: ", items)
         this._httpShape.daybookTimelogEntryDataItems = items;
     }
 

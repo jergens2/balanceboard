@@ -12,6 +12,7 @@ export class DaybookEnergyItem {
 
 
     constructor(startTime: moment.Moment, endTime: moment.Moment, energyLevelStart: number, energyLevelRateOfChangePerHour: number, ) {
+        // console.log("Constructing daybookEnergyItem: " + startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + endTime.format('YYYY-MM-DD hh:mm:ss a') + " : energy level start : " + energyLevelStart + " - energyRateofChange : " + energyLevelRateOfChangePerHour)
         this.startTime = startTime;
         this.endTime = endTime;
         this.energyLevelStart = energyLevelStart;

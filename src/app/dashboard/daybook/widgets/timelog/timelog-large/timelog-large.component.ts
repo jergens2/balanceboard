@@ -37,9 +37,8 @@ export class TimelogLargeComponent implements OnInit {
       isActive: true,
       isFirst: false,
       isLast: false,
-      itemState: null,
       startTime: moment(this.daybookService.activeDayController.sleepController.firstWakeupTime), 
-      endTime: moment(this.daybookService.activeDayController.sleepController.bedTime) 
+      endTime: moment(this.daybookService.activeDayController.sleepController.fallAsleepTime) 
     };
     // this.activeDayController = this.daybookService.activeDayController;
     // this.daybookService.activeDayController$.subscribe((dayChanged)=>{

@@ -4,15 +4,26 @@ import * as moment from 'moment';
 import { Subject, Observable } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 import { TimelogZoomControl } from '../widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-control.interface';
+import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
+import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 
-export class DaybookTimelogController {
+export class DaybookTimelogEntryController {
     constructor(dateYYYYMMDD: string, timelogEntryDataItems: DaybookTimelogEntryDataItem[], sleepTimes?: TimeSpanItem[]) {
         // console.log("Rebuilding Timelog Controller")
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._timelogEntryItems = timelogEntryDataItems.map((item) => {
             return this._buildTimelogEntryFromDataItem(item);
         });
-        this._buildActivityTimes();
+        this._buildSchedule();
+
+        // console.log(" Timelog Controller: Activity times: " )
+        // if(this._activityTimes.length > 0){
+        //     console.log("this._activityTimes", this._activityTimes)
+        //     this._activityTimes.forEach((activityTime)=>{
+        //         console.log("   " + activityTime.start.format('YYYY-MM-DD hh:mm a') + " to " + activityTime.end.format('YYYY-MM-DD hh:mm a') + " -  isActive? " + activityTime.isActive)
+        //     });
+        // }
+
     }
 
     private _dateYYYYMMDD: string;
@@ -21,7 +32,7 @@ export class DaybookTimelogController {
 
     private _timelogActionComplete$: Subject<boolean> = new Subject();
 
-    private _activityTimes: { start: moment.Moment, end: moment.Moment, isActive: boolean }[] = [];
+    private _timelogSchedule: TimeSchedule;
 
     private _timelogUpdated$: Subject<
         {
@@ -29,6 +40,8 @@ export class DaybookTimelogController {
             thisDayItems: DaybookTimelogEntryDataItem[],
             nextDayItems: DaybookTimelogEntryDataItem[],
         }> = new Subject();
+
+    public get timelogSchedule(): TimeSchedule { return this._timelogSchedule; }
 
     public get lastTimelogEntryItemTime(): moment.Moment {
         if (this._timelogEntryItems.length > 0) {
@@ -38,56 +51,6 @@ export class DaybookTimelogController {
         }
     }
 
-    public getColumnAvailability(zoomController: TimelogZoomControl): { startTime: moment.Moment, endTime: moment.Moment, isActive: boolean }[] {
-
-        let columnAvailability: { startTime: moment.Moment, endTime: moment.Moment, isActive: boolean }[] = [];
-        
-        let startIndex: number = this._activityTimes.findIndex(item =>{
-            return zoomController.startTime.isSameOrAfter(item.start) && zoomController.startTime.isSameOrBefore(item.end)
-        });
-        let endIndex: number = this._activityTimes.findIndex(item =>{
-            return zoomController.endTime.isSameOrAfter(item.start) && zoomController.endTime.isSameOrBefore(item.end)
-        });
-        
-        if(startIndex < 0 || endIndex < 0){
-            console.log("Error with _activityTimes");
-        }else{
-            if(startIndex === endIndex){
-                columnAvailability = [{
-                    startTime: zoomController.startTime,
-                    endTime: zoomController.endTime,
-                    isActive: this._activityTimes[startIndex].isActive,
-                }];
-            }else if(startIndex < endIndex){
-                for(let i=startIndex; i<= endIndex; i++){
-                    if(i === startIndex){
-                        columnAvailability.push({
-                            startTime: zoomController.startTime,
-                            endTime: this._activityTimes[i].end,
-                            isActive: this._activityTimes[i].isActive,
-                        });
-                    }else if(i === endIndex){
-                        columnAvailability.push({
-                            startTime: this._activityTimes[i].start,
-                            endTime: zoomController.endTime,
-                            isActive: this._activityTimes[i].isActive,
-                        });
-                        
-                    }else{
-                        columnAvailability.push({
-                            startTime: this._activityTimes[i].start,
-                            endTime: this._activityTimes[i].end,
-                            isActive: this._activityTimes[i].isActive,
-                        });
-                    }
-                }
-            }else{
-                console.log("error with indexes")
-            }
-            
-        }
-        return columnAvailability;
-    }
 
 
     public get prevDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
@@ -100,6 +63,9 @@ export class DaybookTimelogController {
 
 
     public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
+
+    public isActiveAtTime(timeToCheck: moment.Moment): boolean { return this.timelogSchedule.hasValueAtTime(timeToCheck); }
+
 
     public getNewTLEStartTime(wakeupTime: moment.Moment): moment.Moment {
         const filteredItems = this.timelogEntryItems.filter((item) => {
@@ -275,20 +241,6 @@ export class DaybookTimelogController {
 
 
 
-    public get activityTimes(): { start: moment.Moment, end: moment.Moment, isActive: boolean }[] {
-        return this._activityTimes;
-    }
-
-    public isActiveAtTime(timeToCheck: moment.Moment): boolean {
-        this._activityTimes.forEach((timeSection) => {
-            if (timeToCheck.isSameOrAfter(timeSection.start) && timeToCheck.isSameOrBefore(timeSection.end)) {
-                return timeSection.isActive;
-            }
-        });
-        console.log(' error?  could not determine activity times, ', this._activityTimes);
-        return false;
-    }
-
     private _sendUpdate(updateItem: {
         prevDayItems: DaybookTimelogEntryDataItem[],
         thisDayItems: DaybookTimelogEntryDataItem[],
@@ -297,89 +249,14 @@ export class DaybookTimelogController {
         this._timelogUpdated$.next(updateItem);
     }
 
-    private _buildActivityTimes() {
-        let activityTimes: { start: moment.Moment, end: moment.Moment, isActive: boolean }[] = [];
-        let currentTime = this.startOfPrevDate;
-
-        for (let i = 0; i < this._timelogEntryItems.length; i++) {
-            if (currentTime.isBefore(this._timelogEntryItems[i].startTime)) {
-                activityTimes.push({
-                    start: currentTime,
-                    end: this._timelogEntryItems[i].startTime,
-                    isActive: false,
-                });
-                activityTimes.push({
-                    start: this._timelogEntryItems[i].startTime,
-                    end: this._timelogEntryItems[i].endTime,
-                    isActive: true,
-                });
-            } else if (currentTime.isSame(this._timelogEntryItems[i].startTime)) {
-                activityTimes.push({
-                    start: this._timelogEntryItems[i].startTime,
-                    end: this._timelogEntryItems[i].endTime,
-                    isActive: true,
-                });
-            } else if (currentTime.isAfter(this._timelogEntryItems[i].startTime)) {
-                console.log("Error:  current time after timelogEntry start time");
-                activityTimes.push({
-                    start: currentTime,
-                    end: this._timelogEntryItems[i].endTime,
-                    isActive: true,
-                });
-            } else {
-                console.log('Error: impossible');
-            }
-            currentTime = this._timelogEntryItems[i].endTime;
-            if (i == this._timelogEntryItems.length - 1) {
-                if (currentTime.isBefore(this.endOfNextDate)) {
-                    activityTimes.push({
-                        start: currentTime,
-                        end: this.endOfNextDate,
-                        isActive: false,
-                    });
-                } else if (currentTime.isSame(this.endOfNextDate)) {
-
-                } else if (currentTime.isAfter(this.endOfNextDate)) {
-                    console.log("??? Error ")
-                } else {
-                    console.log("??? Error")
-                }
-            } else {
-                currentTime = this._timelogEntryItems[i + 1].startTime;
-            }
-        }
-        this._activityTimes = this._mergeActivityTimes(activityTimes);
-        // console.log("Activity times: ", this._activityTimes);
-        // this._activityTimes.forEach((item) => {
-        //     console.log("   " + item.start.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.end.format('YYYY-MM-DD hh:mm:ss a') + " : isActive? " + item.isActive);
-        // })
+    private _buildSchedule() {
+        let newSchedule: TimeSchedule = new TimeSchedule(this.startOfPrevDate, this.endOfNextDate);
+        const positiveValues: TimeScheduleItem[] = this.timelogEntryItems.map(item => new TimeScheduleItem(item.startTime, item.endTime, true));
+        newSchedule.setScheduleFromSingleValues(positiveValues, true);
+        this._timelogSchedule = newSchedule;
     }
 
-    private _mergeActivityTimes(activityTimes: { start: moment.Moment, end: moment.Moment, isActive: boolean }[])
-        : { start: moment.Moment, end: moment.Moment, isActive: boolean }[] {
-        let mergedActivities: {start: moment.Moment, end: moment.Moment, isActive: boolean}[] = [activityTimes[0]];
-        for(let i=1; i<activityTimes.length; i++){
-            if(activityTimes[i].isActive === activityTimes[i-1].isActive){
-                const mergedActivityTime: {start: moment.Moment, end: moment.Moment, isActive: boolean} = {
-                    start: mergedActivities[mergedActivities.length-1].start,
-                    end: activityTimes[i].end,
-                    isActive: mergedActivities[mergedActivities.length-1].isActive,
-                };
-                mergedActivities.splice(mergedActivities.length-1, 1, mergedActivityTime);
-            }else{
-                mergedActivities.push({
-                    start: activityTimes[i].start,
-                    end: activityTimes[i].end,
-                    isActive: activityTimes[i].isActive,
-                });
-            }
-        }
-        // console.log("Merged activities: " , mergedActivities);
-        // mergedActivities.forEach((item) => {
-        //     console.log("   " + item.start.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.end.format('YYYY-MM-DD hh:mm:ss a') + " : isActive? " + item.isActive);
-        // })
-        return mergedActivities;
-    }
+
 
     private _buildTimelogEntryFromDataItem(dataItem: DaybookTimelogEntryDataItem): TimelogEntryItem {
         const timelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(dataItem.startTimeISO), moment(dataItem.endTimeISO));

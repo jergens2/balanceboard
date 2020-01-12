@@ -21,6 +21,9 @@ export class TimeSelectionRow {
     public endTime: moment.Moment;
     public rowIndex: number;
     public isAvailable = true;
+    /**
+     * This property is a marker of the next time at which the availabilty flag changes.
+     */
     public nextAvailabilityChange: moment.Moment;
 
     public get mouseIsDown(): boolean { return this._mouseIsDown; }

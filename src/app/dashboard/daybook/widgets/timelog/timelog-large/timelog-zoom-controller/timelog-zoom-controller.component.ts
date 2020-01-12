@@ -14,7 +14,7 @@ import { DaybookController } from '../../../../controller/daybook-controller.cla
   templateUrl: './timelog-zoom-controller.component.html',
   styleUrls: ['./timelog-zoom-controller.component.css']
 })
-export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
+export class TimelogZoomControllerComponent implements OnInit {
 
   constructor(private daybookService: DaybookService) { }
 
@@ -26,90 +26,46 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   private _currentTime: moment.Moment = moment();
 
   ngOnInit() {
-
-    let activeDay: DaybookController = this.daybookService.activeDayController;
-
-    let awakeStartTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepController.firstWakeupTime), 30, "DOWN");
-    let awakeEndTime: moment.Moment = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepController.bedTime), 30, "UP");
-
-    // if (activeDay.sleepProfile.wakeupTimeIsSet && activeDay.sleepProfile.bedTimeIsSet) {
-    //   awakeStartTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.wakeupTime), 30, "DOWN");
-    //   awakeEndTime = RoundToNearestMinute.roundToNearestMinute(moment(activeDay.sleepProfile.bedTime), 30, "UP");
-    // }
-    this._wakeCycleZoom = {
-      icon: faSun,
-      name: "AWAKE",
-      isActive: true,
-      isFirst: false,
-      isLast: false,
-      startTime: awakeStartTime,
-      endTime: awakeEndTime,
-      itemState: new ItemState(null),
-    };
-    this._currentZoomLevel = this._wakeCycleZoom;
     this._currentTime = moment();
-    this.buildZoomButtons();
-
-
-    let nextMinute: moment.Moment = moment().startOf("minute").add(1, "minute");
-    let msUntilNextMinute: number = nextMinute.diff(moment(), "milliseconds");
-    this._clockSubscription = timer(msUntilNextMinute, 60000).subscribe((tick) => {
-      // console.log("Clock passed the minute")
-      this._currentTime = moment();
-      // console.log("this._currentTime =  ", this._currentTime.format("hh:mm:ss a"))
-      if (this.daybookService.activeDayController.isToday) {
-        this.buildZoomButtons();
-      }
-    });
-
-
+    this._updateWakeCycleZoom(this.daybookService.activeDayController);
+    this._buildZoomButtons();
     this.daybookService.activeDayController$.subscribe((activeDayChanged) => {
-      // console.log("Zoom day changed:")
       let changedDate: moment.Moment = moment(activeDayChanged.dateYYYYMMDD);
       this._currentTime = moment(this._currentTime).year(changedDate.year()).month(changedDate.month()).date(changedDate.date());
-
-      this.updateWakeCycleZoom(activeDayChanged);
-      this.buildZoomButtons();
-    });
-
-    this._itemState.mouseIsOver$.subscribe((mouseIsOver: boolean) => {
-      if (mouseIsOver === false) {
-        this._zoomButtons.forEach((zoomButton) => {
-          zoomButton.itemState.onMouseLeave();
-        });
-      }
+      this._updateWakeCycleZoom(activeDayChanged);
+      this._buildZoomButtons();
     });
   }
 
-  private updateWakeCycleZoom(activeDayChanged: DaybookController) {
-    const wakeZoomActive: boolean = this._currentZoomLevel.name === "AWAKE";
 
+  private _updateWakeCycleZoom(activeDayChanged: DaybookController) {
+    const wakeZoomActive: boolean = this._currentZoomLevel ? this._currentZoomLevel.name === "AWAKE" : true;
+    
     let wakeupTime: moment.Moment = activeDayChanged.sleepController.firstWakeupTime;
-    let bedTime: moment.Moment = activeDayChanged.sleepController.bedTime;
-    wakeupTime = RoundToNearestMinute.roundToNearestMinute(wakeupTime, 30, "DOWN");
-    bedTime = RoundToNearestMinute.roundToNearestMinute(bedTime, 30, "UP");
-    wakeupTime = moment(wakeupTime).subtract(30, "minutes");
-
+    let fallAsleepTime: moment.Moment = activeDayChanged.sleepController.fallAsleepTime;
+    let frameStart = RoundToNearestMinute.roundToNearestMinute(wakeupTime, 30, "DOWN");
+    let frameEnd = RoundToNearestMinute.roundToNearestMinute(fallAsleepTime, 30, "UP");
+    
+    if(frameStart.isSame(wakeupTime)){
+      frameStart = moment(frameStart).subtract(30, 'minutes');
+    }
+    if(frameEnd.isSame(fallAsleepTime)){
+      frameEnd = moment(frameEnd).add(30, 'minutes');
+    }
     this._wakeCycleZoom = {
       icon: faSun,
       name: "AWAKE",
       isActive: wakeZoomActive,
       isFirst: false,
       isLast: false,
-      startTime: wakeupTime,
-      endTime: bedTime,
-      itemState: new ItemState(null),
-    }
+      startTime: frameStart,
+      endTime: frameEnd
+    };
     if (wakeZoomActive) {
       this._currentZoomLevel = this._wakeCycleZoom;
     }
   }
 
-
-  private _clockSubscription: Subscription = new Subscription();
-  ngOnDestroy() {
-    this._clockSubscription.unsubscribe();
-  }
 
   private _itemState: ItemState = new ItemState(null);
   public get itemState(): ItemState { return this._itemState; }
@@ -122,7 +78,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
 
 
-  private buildZoomButtons() {
+  private _buildZoomButtons() {
     let zoomButtons: TimelogZoomControl[] = [];
 
     let changedValue: TimelogZoomControl;
@@ -141,8 +97,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       isFirst: true,
       isLast: false,
       startTime: moment(this._currentTime).startOf("day"),
-      endTime: moment(this._currentTime).startOf("day").add(24, "hours"),
-      itemState: new ItemState(null),
+      endTime: moment(this._currentTime).startOf("day").add(24, "hours")
     };
 
     this._eightHourZoom = {
@@ -152,9 +107,8 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       isFirst: false,
       isLast: false,
       startTime: RoundToNearestMinute.roundToNearestMinute(moment(this._currentTime).subtract(4, "hours"), 30, "DOWN"),
-      endTime: RoundToNearestMinute.roundToNearestMinute(moment(this._currentTime).add(4, "hours"), 30, "UP"),
-      itemState: new ItemState(null),
-    }
+      endTime: RoundToNearestMinute.roundToNearestMinute(moment(this._currentTime).add(4, "hours"), 30, "UP")
+    };
 
     this._listZoom = {
       icon: faListUl,
@@ -164,8 +118,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       isLast: false,
       startTime: moment(this._currentTime).startOf("day"),
       endTime: moment(this._currentTime).startOf("day").add(24, "hours"),
-      itemState: new ItemState(null),
-    }
+    };
 
     this._customZoom = {
       icon: faWrench,
@@ -175,7 +128,6 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       isLast: true,
       startTime: moment(this._currentTime).startOf("day"),
       endTime: moment(this._currentTime).startOf("day").add(24, "hours"),
-      itemState: new ItemState(null),
     };
 
     if (twentyFourHourZoomActive) {
@@ -236,7 +188,6 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
       isActive: newValue.isActive,
       isFirst: newValue.isFirst,
       isLast: newValue.isLast,
-      itemState: newValue.itemState,
       startTime: moment(newValue.startTime),
       endTime: moment(newValue.endTime),
     }

@@ -7,17 +7,18 @@ import defaultWakeupTime from './default-wakeup-time';
 import { DaybookEnergyItem } from './daybook-energy-item.class';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookEnergyLevel } from './daybook-energy-level.enum';
+import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 
 export class DaybookEnergyController {
 
 
-    private _sleepSchedule: { startTime: moment.Moment, endTime: moment.Moment, isAsleep: boolean }[];
+    private _sleepSchedule: TimeScheduleItem[];
     private _allEnergyLevelInputs: SleepEnergyLevelInput[];
     private _awakeToAsleepRatio: number;
     private _energyItems: DaybookEnergyItem[] = [];
     private _dateYYYYMMDD: string;
 
-    constructor(dateYYYYMMDD: string, sleepTimes: { startTime: moment.Moment, endTime: moment.Moment, isAsleep: boolean }[],
+    constructor(dateYYYYMMDD: string, sleepTimes: TimeScheduleItem[],
         sleepEnergyLevelInputs: SleepEnergyLevelInput[], sleepRatio: number) {
 
         this._dateYYYYMMDD = dateYYYYMMDD;
@@ -60,7 +61,7 @@ export class DaybookEnergyController {
 
         this._sleepSchedule.forEach((item) => {
             let rate: number;
-            if (item.isAsleep) {
+            if (item.hasValue) {
                 rate = energyGainPerHourAsleep;
             } else {
                 rate = energyDecayPerHourAwake * -1;

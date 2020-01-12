@@ -199,13 +199,13 @@ export class TimelogEntryFormComponent implements OnInit {
     this._entryItem.timelogEntryActivities = this._activityItems;
     if (this.formCase === 'NEW_CURRENT') {
       console.log(' $$$ Saving current TLEF to Today item');
-      this.daybookService.todayController.timelogController.saveTimelogEntryItem$(this.entryItem);
+      this.daybookService.todayController.timelogEntryController.saveTimelogEntryItem$(this.entryItem);
     } else if (this.formCase === 'NEW_FUTURE' || this.formCase === 'NEW_PREVIOUS') {
       console.log(' $$$ Saving new TLEF to Active Day Item');
-      this.daybookService.activeDayController.timelogController.saveTimelogEntryItem$(this.entryItem);
+      this.daybookService.activeDayController.timelogEntryController.saveTimelogEntryItem$(this.entryItem);
     } else if (this.formCase === 'EXISTING_PREVIOUS' || this.formCase === 'EXISTING_FUTURE') {
       console.log(' $$$ Updating existing entry to Active Day item');
-      this.daybookService.activeDayController.timelogController.updateTimelogEntry$(this.entryItem);
+      this.daybookService.activeDayController.timelogEntryController.updateTimelogEntry$(this.entryItem);
     }
     this.toolsService.closeTool();
   }
@@ -243,7 +243,7 @@ export class TimelogEntryFormComponent implements OnInit {
     if (this.confirmDelete === false) {
       this._confirmDelete = true;
     } else {
-      this.daybookService.activeDayController.timelogController.deleteTimelogEntry$(this.entryItem);
+      this.daybookService.activeDayController.timelogEntryController.deleteTimelogEntry$(this.entryItem);
       console.log('Deleting item without subscribing tor response');
       this.toolsService.closeTool();
     }

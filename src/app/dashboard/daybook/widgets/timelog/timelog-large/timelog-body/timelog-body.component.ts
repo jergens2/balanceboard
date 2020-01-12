@@ -8,12 +8,13 @@ import { TimelogZoomControl } from '../timelog-zoom-controller/timelog-zoom-cont
 import { Subscription, Observable } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
-import { Timelog } from '../../timelog.class';
-import { TimeDelineator } from '../../time-delineator.class';
+import { TimelogDisplayController } from '../../timelog-display-controller.class';
+import { TimelogDelineator } from '../../timelog-delineator.class';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { ScreenSizeService } from '../../../../../../shared/app-screen-size/screen-size.service';
 import { DaybookController } from '../../../../controller/daybook-controller.class';
+import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 
 @Component({
   selector: 'app-timelog-body',
@@ -46,6 +47,8 @@ export class TimelogBodyComponent implements OnInit {
       this.estimateInitialMinutesPerPixel(dimensions.height);
     });
     this.buildTimelog();
+
+    
   }
 
   private _drawNewTLE: TimelogEntryItem;
@@ -62,7 +65,7 @@ export class TimelogBodyComponent implements OnInit {
   }
 
 
-  public columnAvailability: {startTime: moment.Moment, endTime: moment.Moment, isActive: boolean}[] = [];
+  public columnAvailability: TimeScheduleItem[] = [];
 
   private _activeDayController: DaybookController;
 
@@ -75,11 +78,11 @@ export class TimelogBodyComponent implements OnInit {
   private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
   public get relativeMousePosition(): RelativeMousePosition { return this._relativeMousePosition; }
 
-  private _timelog: Timelog = null;
-  public get timelog(): Timelog { return this._timelog; }
+  private _timelogDisplayController: TimelogDisplayController = null;
+  public get timelogDisplayController(): TimelogDisplayController { return this._timelogDisplayController; }
 
-  public get timelogEntryItemsNgStyle(): any { return this._timelog.entryItemsNgStyle; }
-  public get timelogEntryItems(): TimelogEntryItem[] { return this._timelog.entryItems; }
+  public get timelogEntryItemsNgStyle(): any { return this._timelogDisplayController.entryItemsNgStyle; }
+  public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogDisplayController.entryItems; }
 
   private _mousePosition: { time: moment.Moment, ngStyle: any, crossesExistingTimelogEntry: boolean } = null;
   public get mousePosition(): { time: moment.Moment, ngStyle: any, crossesExistingTimelogEntry: boolean } { return this._mousePosition; };
@@ -92,8 +95,8 @@ export class TimelogBodyComponent implements OnInit {
 
 
 
-  public get timeDelineators(): TimeDelineator[] { return this._timelog.timeDelineators; }
-  public get timeDelineatorsNgStyle(): any { return this._timelog.timeDelineatorsNgStyle; };
+  public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
+  public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
 
   private buildTimelog() {
     this._activeDayController = this.daybookService.activeDayController;
@@ -103,8 +106,9 @@ export class TimelogBodyComponent implements OnInit {
     this.updateNowLine();
     this.updateTickMarginLine();
 
-    this.columnAvailability = this.daybookService.activeDayController.timelogController.getColumnAvailability(this.zoomControl);
-
+    const availabilitySchedule = this.daybookService.activeDayController.getColumnAvailability(this.zoomControl);
+    this.columnAvailability = availabilitySchedule.fullSchedule;
+    console.log("Column availability is: " , this.columnAvailability)
   }
 
 
@@ -163,7 +167,8 @@ export class TimelogBodyComponent implements OnInit {
       let percentFromStart: number = (secondsFromStart / totalDurationSeconds) * 100;
       let percentRemaining: number = 100 - percentFromStart;
       let ngStyle: any = { "grid-template-rows": percentFromStart.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
-      let showTime: boolean = this.timelog.showNowTime();
+      // let showTime: boolean = this.timelogDisplayController.showNowTime();
+      let showTime = false;
       this._nowLine = { time: now, ngStyle: ngStyle, showTime: showTime };
     } else {
       this._nowLine = null;
@@ -177,11 +182,11 @@ export class TimelogBodyComponent implements OnInit {
 
   private updateTickMarginLine() {
     console.log("as of:  2020-01-05:  I don't know if I need this method")
-    if (this.timelog.entryItems.length > 0) {
+    if (this.timelogDisplayController.entryItems.length > 0) {
       const totalDurationSeconds: number = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "seconds");
 
 
-      let sleepStates: { durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number }[] = this.timelog.entryItems.map((entryItem) => {
+      let sleepStates: { durationSeconds: number, sleepState: "AWAKE" | "SLEEP", percentage: number }[] = this.timelogDisplayController.entryItems.map((entryItem) => {
         return { durationSeconds: entryItem.durationSeconds, sleepState: entryItem.sleepState, percentage: 0 };
       });
 
@@ -216,14 +221,14 @@ export class TimelogBodyComponent implements OnInit {
 
 
   private updateTimelog() {
-    let timelog: Timelog = new Timelog(this._zoomControl, this._activeDayController, this._minutesPerTwentyPixels);
-    this._timelog = timelog;
+    let timelog: TimelogDisplayController = new TimelogDisplayController(this._zoomControl, this._activeDayController, this._minutesPerTwentyPixels);
+    this._timelogDisplayController = timelog;
   }
 
   public onMouseMove(event: MouseEvent) {
     // let start = moment();
-    this._relativeMousePosition.onMouseMove(event, "tick-margin-line-container");
-    this.updateMousePosition();
+    // this._relativeMousePosition.onMouseMove(event, "tick-margin-line-container");
+    // this.updateMousePosition();
     // console.log("Mouse position update: " + moment().diff(start, "milliseconds") + " ms")
     // this.updateMinutesPerPixel(this.relativeMousePosition.elementHeight);
   }
@@ -233,17 +238,17 @@ export class TimelogBodyComponent implements OnInit {
   }
 
 
-  private updateMousePosition() {
-    let percentY: number = this.relativeMousePosition.percentY;
-    let totalDurationSeconds: number = this.endTime.diff(this.startTime, "seconds");
-    let relativeSeconds: number = (percentY * totalDurationSeconds) / 100;
-    let percentRemaining: number = 100 - percentY;
-    let ngStyle: any = { "grid-template-rows": percentY.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
-    let time: moment.Moment = moment(this.startTime).add(relativeSeconds, "seconds");
-    // time = RoundToNearestMinute.roundToNearestMinute(moment(this.startTime).add(relativeSeconds, "seconds"), 5);
-    let crossesAnyTimelogEntry: boolean = this._timelog.crossesAnyTimelogEntry(time);
-    this._mousePosition = { time: time, ngStyle: ngStyle, crossesExistingTimelogEntry: crossesAnyTimelogEntry };
-  }
+  // private updateMousePosition() {
+  //   let percentY: number = this.relativeMousePosition.percentY;
+  //   let totalDurationSeconds: number = this.endTime.diff(this.startTime, "seconds");
+  //   let relativeSeconds: number = (percentY * totalDurationSeconds) / 100;
+  //   let percentRemaining: number = 100 - percentY;
+  //   let ngStyle: any = { "grid-template-rows": percentY.toFixed(2) + "% " + percentRemaining.toFixed(2) + "%", };
+  //   let time: moment.Moment = moment(this.startTime).add(relativeSeconds, "seconds");
+  //   // time = RoundToNearestMinute.roundToNearestMinute(moment(this.startTime).add(relativeSeconds, "seconds"), 5);
+  //   let crossesAnyTimelogEntry: boolean = this._timelogDisplayController.crossesAnyTimelogEntry(time);
+  //   this._mousePosition = { time: time, ngStyle: ngStyle, crossesExistingTimelogEntry: crossesAnyTimelogEntry };
+  // }
   private estimateInitialMinutesPerPixel(screenHeight: number) {
     /**
      * This is not a highly reliable mechanism for determining how many minutes per pixel because it depends on making assumptions
@@ -266,8 +271,8 @@ export class TimelogBodyComponent implements OnInit {
     const totalMinutes = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "minutes");
     const minutesPerTwentyPixels = (totalMinutes / elementHeight) * 20;
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
-    if (this._timelog) {
-      this._timelog.updateEntrySizes(minutesPerTwentyPixels);
+    if (this._timelogDisplayController) {
+      this._timelogDisplayController.updateEntrySizes(minutesPerTwentyPixels);
     }
   }
 

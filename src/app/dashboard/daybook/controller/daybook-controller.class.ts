@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { DaybookEnergyController } from './daybook-energy-controller.class';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookDayItemTimelog } from './daybook-day-item-timelog.class';
-import { DaybookTimelogController } from './daybook-timelog-controller.class';
+import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import { TimeSpanItem } from '../api/data-items/time-span-item.interface';
 import { DaybookSleepController } from './daybook-sleep-controller.class';
@@ -11,6 +11,10 @@ import { Subject, Observable, Subscription } from 'rxjs';
 import { DaybookEnergyLevel } from './daybook-energy-level.enum';
 import { DaybookTimelogEntryTemplate } from './interfaces/daybook-timelog-entry-template.interface';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookTimeDelineatorController } from './daybook-time-delineator-controller.class';
+import { TimelogZoomControl } from '../widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-control.interface';
+import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 
 
 export class DaybookController {
@@ -20,8 +24,9 @@ export class DaybookController {
     private _followingDay: DaybookDayItem;
 
     private _sleepController: DaybookSleepController;
-    private _timelogController: DaybookTimelogController;
+    private _timelogEntryController: DaybookTimelogEntryController;
     private _energyController: DaybookEnergyController;
+    private _timeDelineatorController: DaybookTimeDelineatorController;
 
     private _awakeToAsleepRatio = 2;
 
@@ -62,22 +67,22 @@ export class DaybookController {
     private get startOfNextDay(): moment.Moment { return this.endOfThisDay; }
     private get endOfNextDay(): moment.Moment { return moment(this.followingDay.dateYYYYMMDD).startOf('day').add(1, 'days'); };
 
-
-
+    public get timelogEntryController(): DaybookTimelogEntryController { return this._timelogEntryController; }
+    public get sleepController(): DaybookSleepController { return this._sleepController; }
+    public get energyController(): DaybookEnergyController { return this._energyController; }
+    public get timeDelineatorController(): DaybookTimeDelineatorController { return this._timeDelineatorController; }
 
     public get dataChanged$(): Observable<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> {
         return this._dataChanged$.asObservable();
     }
 
-    public get timelogController(): DaybookTimelogController { return this._timelogController; }
-    public get sleepController(): DaybookSleepController { return this._sleepController; }
-    public get energyController(): DaybookEnergyController { return this._energyController; }
+
 
     public getNewCurrentTLETemplate(): DaybookTimelogEntryTemplate {
         let startTime: moment.Moment;
         let endTime: moment.Moment = moment();
         if (this.sleepController.wakeupTimeIsSet) {
-            startTime = this.timelogController.getNewTLEStartTime(this.sleepController.firstWakeupTime);
+            startTime = this.timelogEntryController.getNewTLEStartTime(this.sleepController.firstWakeupTime);
         } else {
             startTime = this.sleepController.firstWakeupTime;
         }
@@ -88,6 +93,19 @@ export class DaybookController {
         };
     }
 
+    public getColumnAvailability(zoomController: TimelogZoomControl): TimeSchedule {
+        let availabilitySchedule: TimeSchedule = this.sleepController.sleepSchedule;
+        console.log("Availability Schedule from sleep controller: ", availabilitySchedule.fullSchedule);
+        availabilitySchedule.mergeValues(this.timelogEntryController.timelogSchedule);
+        console.log("Availability Schedule after merge with timelog: ", availabilitySchedule.fullSchedule);
+
+        availabilitySchedule.getScheduleSlice(zoomController.startTime, zoomController.endTime);
+        console.log("Availability Schedule after sliced by zoomController range", availabilitySchedule.fullSchedule);
+        availabilitySchedule.splitScheduleAtTimes([this.startOfThisDay, this.endOfThisDay]);
+        console.log("Availability Schedule after split over midnight times", availabilitySchedule.fullSchedule);
+        return availabilitySchedule;
+
+    }
 
     private _reload(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
         this._previousDay = dayItem.prevDay;
@@ -111,12 +129,14 @@ export class DaybookController {
         const allTimeSpanItems = this._previousDay.sleepTimes.concat(this._thisDay.sleepTimes).concat(this._followingDay.sleepTimes);
         const allEnergyLevelInputs = this._previousDay.sleepEnergyLevelInputs.concat(this._thisDay.sleepEnergyLevelInputs)
             .concat(this._followingDay.sleepEnergyLevelInputs);
+        const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);
 
         this._sleepController = new DaybookSleepController(this._previousDay.sleepTimes,
             this._thisDay.sleepTimes, this._followingDay.sleepTimes, this.dateYYYYMMDD, this._awakeToAsleepRatio);
-        this._timelogController = new DaybookTimelogController(this.dateYYYYMMDD, timelogDataItems, allTimeSpanItems);
-        this._energyController = new DaybookEnergyController(this.dateYYYYMMDD, this._sleepController.sleepSchedule,
+        this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems, allTimeSpanItems);
+        this._energyController = new DaybookEnergyController(this.dateYYYYMMDD, this._sleepController.sleepSchedule.fullSchedule,
             allEnergyLevelInputs, this._awakeToAsleepRatio);
+        this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
         this._updateSubscriptions();
     }
 
@@ -125,7 +145,7 @@ export class DaybookController {
         let newTLEisStartOfDay: boolean = true;
         if (this.sleepController.wakeupTimeIsSet) {
             newTLEisStartOfDay = false;
-        } else if (this.timelogController.lastTimelogEntryItemTime) {
+        } else if (this.timelogEntryController.lastTimelogEntryItemTime) {
             /**
              * if there is a previous time in the timelog, then that means that the user was active in the previous day, 
              * but now it's a new day and the wakeuptime is not set. 
@@ -142,7 +162,7 @@ export class DaybookController {
         let isLast: boolean = false;
         if (this.sleepController.wakeupTimeIsSet) {
             const checkWithinHours: number = 2;
-            const askTimeDelineation: moment.Moment = moment(this.sleepController.bedTime).subtract(checkWithinHours, 'hours')
+            const askTimeDelineation: moment.Moment = moment(this.sleepController.fallAsleepTime).subtract(checkWithinHours, 'hours')
             if (currentTime.isSameOrAfter(askTimeDelineation)) {
                 isLast = true;
             }
@@ -157,7 +177,7 @@ export class DaybookController {
     private _updateSubscriptions() {
         this._subscriptions.forEach(s => s.unsubscribe());
         this._subscriptions = [];
-        const timelogSub = this._timelogController.timelogUpdated$.subscribe((update) => {
+        const timelogSub = this._timelogEntryController.timelogUpdated$.subscribe((update) => {
             // console.log("Received an update from timelog.  Updating.")
             this._updateTimelog(update);
         });
