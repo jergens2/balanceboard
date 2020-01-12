@@ -6,21 +6,15 @@ import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybo
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 
 export class TimelogEntryItem {
-    constructor(startTime: moment.Moment, endTime: moment.Moment, sleepState?: 'SLEEP' | 'AWAKE') {
+    constructor(startTime: moment.Moment, endTime: moment.Moment) {
         this._startTime = moment(startTime);
         this._utcOffsetMinutes = this._startTime.utcOffset();
         this._endTime = moment(endTime);
         this._itemState = new ItemState({ startTime: this._startTime, endTime: this._endTime });
-        if (sleepState) {
-            this._sleepState = sleepState;
-        } else {
-            this._sleepState = 'AWAKE';
-        }
-
     }
 
 
-    private _sleepState: 'SLEEP' | 'AWAKE' = 'AWAKE';
+    // private _sleepState: 'SLEEP' | 'AWAKE' = 'AWAKE';
     private _isConfirmed = false;
     private _utcOffsetMinutes: number;
     private _timelogEntryActivities: TimelogEntryActivity[] = [];
@@ -66,7 +60,7 @@ export class TimelogEntryItem {
     /**
      * This property probably ultimately is not required, but it might be
      */
-    public get sleepState(): 'SLEEP' | 'AWAKE' { return this._sleepState; }
+    // public get sleepState(): 'SLEEP' | 'AWAKE' { return this._sleepState; }
 
 
     public get isConfirmed(): boolean { return this._isConfirmed; }

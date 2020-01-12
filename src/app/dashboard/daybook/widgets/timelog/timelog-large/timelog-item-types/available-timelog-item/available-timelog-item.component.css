@@ -1,5 +1,13 @@
 .availability-root{
     width:100%;
     height:100%;
-    background-color:orange;
+    
+    display:grid;
+}
+
+.draw-tle{
+    margin: 3px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background-color:red;
 }

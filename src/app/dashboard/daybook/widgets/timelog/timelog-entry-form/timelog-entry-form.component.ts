@@ -153,7 +153,7 @@ export class TimelogEntryFormComponent implements OnInit {
 
 
   private setEntryItem(entryItem: TimelogEntryItem) {
-    this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime, entryItem.sleepState);
+    this._entryItem = new TimelogEntryItem(entryItem.startTime, entryItem.endTime);
     this._entryItem.isSavedEntry = entryItem.isSavedEntry;
     this._entryItem.timelogEntryActivities = entryItem.timelogEntryActivities;
     this._dataEntryItem = this._entryItem.dataEntryItem;

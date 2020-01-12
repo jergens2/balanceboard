@@ -1,3 +1,5 @@
-<div class="availability-root">
-
+<div class="availability-root" [ngStyle]="rootNgStyle">
+    <div class="draw-tle" *ngIf="drawTLE" [ngStyle]="drawTLENgStyle">
+        drawing TLE :)
+    </div>
 </div>

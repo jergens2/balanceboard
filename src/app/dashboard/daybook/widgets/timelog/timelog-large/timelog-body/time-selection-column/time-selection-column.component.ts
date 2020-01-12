@@ -24,6 +24,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _availability: TimeScheduleItem[];
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
+  @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) { this._zoomControl = zoomControl; }
   @Input() public set availability(availability: TimeScheduleItem[]){ this._availability = availability; }
 
@@ -148,12 +149,13 @@ export class TimeSelectionColumnComponent implements OnInit {
 
 
   private _createNewTimeMarks() {
-    console.log("Creating a new Timelog Entry from a drag event: ")
-    console.log("    from " + this._mouseDownRow.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._mouseUpRow.startTime.format('YYYY-MM-DD hh:mm a'))
+    // console.log("Creating a new Timelog Entry from a drag event: ")
+    // console.log("    from " + this._mouseDownRow.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._mouseUpRow.startTime.format('YYYY-MM-DD hh:mm a'))
     if (this._mouseDownRow.startTime.isSame(this._mouseUpRow.startTime) && this._mouseDownRow.endTime.isSame(this._mouseUpRow.endTime)) {
-      console.log("single click : " + this._mouseDownRow.startTime.format('hh:mm a'))
+      // console.log("single click : " + this._mouseDownRow.startTime.format('hh:mm a'))
     } else {
-      console.log("Dragged range : " + this._mouseDownRow.startTime.format('hh:mm a') + this._mouseUpRow.startTime.format('hh:mm a'));
+      // console.log("Dragged range : " + this._mouseDownRow.startTime.format('hh:mm a') + this._mouseUpRow.startTime.format('hh:mm a'));
+      this.createNewTLE.emit(new TimelogEntryItem(this._mouseDownRow.startTime, this._mouseUpRow.startTime));
     }
 
     this._mouseDownRow = null;

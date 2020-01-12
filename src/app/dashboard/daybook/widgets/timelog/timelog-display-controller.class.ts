@@ -6,6 +6,7 @@ import { TimelogDelineator, TimelogDelineatorType } from './timelog-delineator.c
 import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { DaybookController } from '../../controller/daybook-controller.class';
 import { TimelogDisplayGridItemType } from './timelog-display-grid-item.enum';
+import { TimelogBodyGridItem } from './timelog-large/timelog-body/timelog-body-grid-item.interface';
 
 export class TimelogDisplayController {
 
@@ -27,7 +28,7 @@ export class TimelogDisplayController {
   private _activeDayController: DaybookController;
 
   private _displayGridNgStyle: any = {};
-  private _gridItems: TimelogDisplayGridItemType[] = [];
+  private _gridItems: TimelogBodyGridItem[] = [];
   // private _entryItemsNgStyle: any = { 'grid-template-rows': '1fr' };
   // private _timeDelineatorsNgStyle: any = { 'grid-template-rows': '1fr' };
 
@@ -42,7 +43,7 @@ export class TimelogDisplayController {
   public get fallAsleepTime(): moment.Moment { return this._activeDayController.sleepController.fallAsleepTime; }
   public get frameEnd(): moment.Moment { return this._timelogZoomControl.endTime; }
 
-  public get gridItems(): TimelogDisplayGridItemType[] { return this._gridItems; }
+  public get gridItems(): TimelogBodyGridItem[] { return this._gridItems; }
   public get displayGridNgStyle(): any { return this._displayGridNgStyle; }
 
   // public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
@@ -94,7 +95,7 @@ export class TimelogDisplayController {
     // this._updateTimeDelineators();
     // this._updateTimelogEntryItems();
 
-    this._logToConsole();
+    // this._logToConsole();
   }
   private _logToConsole() {
     console.log("Constructing TimelogDisplayController - logToConsole is ON")
@@ -118,39 +119,41 @@ export class TimelogDisplayController {
           "display": "grid"
         };
         let currentTime: moment.Moment = this.timeDelineators[0].time;
-        let gridItemTypes: TimelogDisplayGridItemType[] = [];
-        let percentages: { gridItem: TimelogDisplayGridItemType, percent: number }[] = [];
+        let gridItems: TimelogBodyGridItem[] = [];
         for (let i = 1; i < this.timeDelineators.length; i++) {
           const diff: number = this.timeDelineators[i].time.diff(currentTime, 'milliseconds');
           const gridItem: TimelogDisplayGridItemType = this._getGridItem(this.timeDelineators[i - 1].delineatorType, this.timeDelineators[i].delineatorType);
-          console.log("Grid item produced from: Start: " + this.timeDelineators[i - 1].delineatorType + ", End: " + this.timeDelineators[i].delineatorType + "  produces: " + gridItem)
+          // console.log("Grid item produced from: Start: " + this.timeDelineators[i - 1].delineatorType + ", End: " + this.timeDelineators[i].delineatorType + "  produces: " + gridItem)
           const percent = (diff / this.totalViewMilliseconds) * 100;
-          percentages.push({
-            gridItem: gridItem,
+          gridItems.push({
+            gridItemType: gridItem,
+            startTime: this.timeDelineators[i-1].time,
+            endTime: this.timeDelineators[i].time,
             percent: percent,
           });
           currentTime = moment(this.timeDelineators[i].time);
         }
-        let percentagesLength = percentages.length;
-        for (let i = 1; i < percentagesLength; i++) {
-          if(percentages[i-1].gridItem === percentages[i].gridItem){
-            percentages[i-1].percent = percentages[i-1].percent + percentages[i].percent;
-            percentages.splice(i, 1);
-            percentagesLength = percentages.length;
+        let length = gridItems.length;
+        for (let i = 1; i < length; i++) {
+          if(gridItems[i-1].gridItemType === gridItems[i].gridItemType){
+            gridItems[i-1].percent = gridItems[i-1].percent + gridItems[i].percent;
+            gridItems[i-1].endTime = gridItems[i].endTime;
+            gridItems.splice(i, 1);
+            length = gridItems.length;
             i--;
           }
         }
-        percentages.forEach(percentage => gridItemTypes.push(percentage.gridItem));
+
         let gridTemplateRows: string = "";
-        percentages.forEach((percentage) => {
-          console.log("PERCENTAGE:  " + percentage.percent + " item: " + percentage.gridItem)
+        gridItems.forEach((percentage) => {
+          // console.log("PERCENTAGE:  " + percentage.percent + " item: " + percentage.gridItem)
           gridTemplateRows += "" + percentage.percent.toFixed(3) + "% ";
         });
         displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
-        console.log("Display grid style: ", displayGridNgStyle);
-        console.log("grid items:  ", gridItemTypes);
+        // console.log("Display grid style: ", displayGridNgStyle);
+        // console.log("grid items:  ", gridItemTypes);
         this._displayGridNgStyle = displayGridNgStyle;
-        this._gridItems = gridItemTypes;
+        this._gridItems = gridItems;
       } else {
         console.log("No Time Delineators.  ")
       }

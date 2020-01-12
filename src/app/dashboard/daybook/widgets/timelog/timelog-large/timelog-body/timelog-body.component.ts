@@ -16,6 +16,7 @@ import { ScreenSizeService } from '../../../../../../shared/app-screen-size/scre
 import { DaybookController } from '../../../../controller/daybook-controller.class';
 import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimelogDisplayGridItemType } from '../../timelog-display-grid-item.enum';
+import { TimelogBodyGridItem } from './timelog-body-grid-item.interface';
 
 @Component({
   selector: 'app-timelog-body',
@@ -28,7 +29,7 @@ export class TimelogBodyComponent implements OnInit {
 
   private _zoomControl: TimelogZoomControl;
   private _zoomControlSubscription: Subscription = new Subscription();
-  // private _drawNewTLE: TimelogEntryItem;
+  private _drawNewTLE: TimelogEntryItem;
   private _activeDayController: DaybookController;
   private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
   private _timelogDisplayController: TimelogDisplayController = null;
@@ -52,20 +53,19 @@ export class TimelogBodyComponent implements OnInit {
   public get timelogDisplayController(): TimelogDisplayController { return this._timelogDisplayController; }
   public get zoomControl(): TimelogZoomControl { return this._zoomControl; }
   public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
-  public get gridItems(): TimelogDisplayGridItemType[] { return this._timelogDisplayController.gridItems; }
+  public get gridItems(): TimelogBodyGridItem[] { return this._timelogDisplayController.gridItems; }
   public get gridItemsNgStyle(): any { return this._timelogDisplayController.displayGridNgStyle; }
   public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
+  public get drawTLE(): TimelogEntryItem { return this._drawNewTLE; }
   // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
   // public get drawNewTLE(): TimelogEntryItem { return this._drawNewTLE; }
-  public onDrawNewTLE(timelogEntry: TimelogEntryItem) {
-    console.log("  * Drawing TLE from: " + timelogEntry.startTime.format('YYYY-MM-DD hh:mm a') + " to: " + timelogEntry.endTime.format('YYYY-MM-DD hh:mm a'))
-
-  }
+  public onDrawNewTLE(timelogEntry: TimelogEntryItem) { this._drawNewTLE = timelogEntry; }
+  public onCreateNewTLE(timelogEntry: TimelogEntryItem) { this._drawNewTLE = null; }
 
   public onMouseMove(event: MouseEvent) { }
   public onMouseLeave() { }
-  public onClickGridItem(gridItem: TimelogDisplayGridItemType){
-    console.log("Grid item clicked: " + gridItem)
+  public onClickGridItem(gridItem: TimelogBodyGridItem){
+    console.log("Grid item clicked: " + gridItem.gridItemType)
   }
 
 
@@ -78,7 +78,7 @@ export class TimelogBodyComponent implements OnInit {
     this.daybookService.activeDayController$.subscribe((dayChanged) => {
       this._buildTimelog();
     });
-
+    console.log("this.gridItems = " , this.gridItems)
   }
 
   private _buildTimelog() {
