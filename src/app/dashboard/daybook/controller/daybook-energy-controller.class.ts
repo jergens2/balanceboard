@@ -1,11 +1,7 @@
 import { SleepEnergyLevelInput } from '../api/data-items/energy-level-input.interface';
-import { TimeSpanItem } from '../api/data-items/time-span-item.interface';
-import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 
 import * as moment from 'moment';
-import defaultWakeupTime from './default-wakeup-time';
 import { DaybookEnergyItem } from './daybook-energy-item.class';
-import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookEnergyLevel } from './daybook-energy-level.enum';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 
@@ -27,6 +23,7 @@ export class DaybookEnergyController {
         this._allEnergyLevelInputs = sleepEnergyLevelInputs;
 
         this._calculateSchedule();
+        console.log("Sleep controller:  at current time, ("+moment().format('hh:mm a')+") sleep level is: " + (this.getEnergyAtTime(moment())*100).toFixed(0));
     }
 
     public getEnergyLevelAtTime(timeToCheck: moment.Moment): DaybookEnergyLevel {

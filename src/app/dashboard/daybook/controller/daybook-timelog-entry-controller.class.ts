@@ -1,5 +1,5 @@
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimeSpanItem } from '../api/data-items/time-span-item.interface';
+import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import * as moment from 'moment';
 import { Subject, Observable } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';

@@ -1,5 +1,5 @@
 <div class="availability-root" [ngStyle]="rootNgStyle">
     <div class="draw-tle" *ngIf="drawTLE" [ngStyle]="drawTLENgStyle">
-        drawing TLE :)
+        {{ drawTLE.startTime.format('hh:mm a')}} to {{ drawTLE.endTime.format('hh:mm a')}}
     </div>
 </div>

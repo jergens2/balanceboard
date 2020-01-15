@@ -15,8 +15,9 @@ import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { ScreenSizeService } from '../../../../../../shared/app-screen-size/screen-size.service';
 import { DaybookController } from '../../../../controller/daybook-controller.class';
 import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
-import { TimelogDisplayGridItemType } from '../../timelog-display-grid-item.enum';
-import { TimelogBodyGridItem } from './timelog-body-grid-item.interface';
+
+import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
+import { TimelogDisplayGridItem, TimelogDisplayGridItemType } from '../../timelog-display-grid-item.class';
 
 @Component({
   selector: 'app-timelog-body',
@@ -34,6 +35,7 @@ export class TimelogBodyComponent implements OnInit {
   private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
   private _timelogDisplayController: TimelogDisplayController = null;
   private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
+  private _minutesPerTwentyPixels: number = 30;
 
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
@@ -43,7 +45,7 @@ export class TimelogBodyComponent implements OnInit {
 
   @Input() public set zoomHover(zoom: TimelogZoomControl) { }
 
-  public columnAvailability: TimeScheduleItem[] = [];
+
   public faTimes = faTimes;
   public faClock = faClock;
   public faPlus = faPlus;
@@ -53,19 +55,21 @@ export class TimelogBodyComponent implements OnInit {
   public get timelogDisplayController(): TimelogDisplayController { return this._timelogDisplayController; }
   public get zoomControl(): TimelogZoomControl { return this._zoomControl; }
   public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
-  public get gridItems(): TimelogBodyGridItem[] { return this._timelogDisplayController.gridItems; }
-  public get gridItemsNgStyle(): any { return this._timelogDisplayController.displayGridNgStyle; }
+  public get timelogDisplayGrid(): TimelogDisplayGrid { return this._timelogDisplayController.displayGrid; }
+  public get gridItems(): TimelogDisplayGridItem[] { return this.timelogDisplayGrid.gridItems; }
+  public get gridItemsNgStyle(): any { return this.timelogDisplayGrid.ngStyle; }
   public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
   public get drawTLE(): TimelogEntryItem { return this._drawNewTLE; }
+  
+  public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
   // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
-  // public get drawNewTLE(): TimelogEntryItem { return this._drawNewTLE; }
   public onDrawNewTLE(timelogEntry: TimelogEntryItem) { this._drawNewTLE = timelogEntry; }
   public onCreateNewTLE(timelogEntry: TimelogEntryItem) { this._drawNewTLE = null; }
 
   public onMouseMove(event: MouseEvent) { }
   public onMouseLeave() { }
-  public onClickGridItem(gridItem: TimelogBodyGridItem){
-    console.log("Grid item clicked: " + gridItem.gridItemType)
+  public onClickGridItem(gridItem: TimelogDisplayGridItem){
+    console.log("Grid item clicked: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a') + " : "+ gridItem.type)
   }
 
 
@@ -78,7 +82,14 @@ export class TimelogBodyComponent implements OnInit {
     this.daybookService.activeDayController$.subscribe((dayChanged) => {
       this._buildTimelog();
     });
-    console.log("this.gridItems = " , this.gridItems)
+
+    console.log("Grid items is: ", this.timelogDisplayGrid) 
+    this.timelogDisplayGrid.gridItems.forEach((gridItem)=>{
+      console.log("   GI: " + gridItem.startTime.format('hh:mm a') + " to " + gridItem.endTime.format('hh:mm a') + " type: " + gridItem.type + " (" + gridItem.percent+"%)")
+      if(gridItem.type === TimelogDisplayGridItemType.TIMELOG_ENTRY){
+        console.log("    TIMELOGENTRY: " , gridItem.timelogEntry)
+      }
+    })
   }
 
   private _buildTimelog() {
@@ -88,10 +99,6 @@ export class TimelogBodyComponent implements OnInit {
     this._updateTimelog();
     // this.updateNowLine();
     // this._updateTickMarginLine();
-
-    const availabilitySchedule = this.daybookService.activeDayController.getColumnAvailability(this.zoomControl);
-    this.columnAvailability = availabilitySchedule.fullSchedule;
-    console.log("Column availability is: ", this.columnAvailability)
   }
 
   private _buildGuideLineHours() {
@@ -161,8 +168,7 @@ export class TimelogBodyComponent implements OnInit {
     }
     this._updateMinutesPerPixel(elementHeight);
   }
-  private _minutesPerTwentyPixels: number = 30;
-  public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
+
   private _updateMinutesPerPixel(elementHeight: number) {
     const totalMinutes = moment(this._zoomControl.endTime).diff(moment(this._zoomControl.startTime), "minutes");
     const minutesPerTwentyPixels = (totalMinutes / elementHeight) * 20;

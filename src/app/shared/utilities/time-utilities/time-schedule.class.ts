@@ -11,7 +11,7 @@ export class TimeSchedule {
     constructor(startTime: moment.Moment, endTime: moment.Moment) {
         this._startTime = startTime;
         this._endTime = endTime;
-        this._fullSchedule = [];
+        this._fullSchedule = [new TimeScheduleItem(startTime, endTime, false)];
     }
 
     private _startTime: moment.Moment;
@@ -24,32 +24,40 @@ export class TimeSchedule {
 
     public get fullSchedule(): TimeScheduleItem[] { return this._fullSchedule; }
     public getScheduleSlice(startTime: moment.Moment, endTime: moment.Moment): TimeSchedule {
-        let slicedSchedule: TimeSchedule = new TimeSchedule(startTime, endTime);
-        if (this.fullSchedule.length > 0) {
-            let foundItems = this.fullSchedule.filter((item) => {
+        // console.log("   Finding slice: " + startTime.format('YYYY-MM-DD hh:mm a') + " to " + endTime.format('YYYY-MM-DD hh:mm a') ) 
+        if (startTime.isSameOrAfter(this.startTime) && endTime.isSameOrBefore(this.endTime)) {
+            let slicedSchedule: TimeSchedule = new TimeSchedule(startTime, endTime);
+            let foundSliceItems = this.fullSchedule.filter((item) => {
                 let crossesStart = item.startTime.isSameOrBefore(startTime) && item.endTime.isAfter(startTime);
-                let inBetween = item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(endTime);
-                let crossesEnd = item.endTime.isBefore(endTime) && item.endTime.isSameOrAfter(startTime);
-                return crossesStart || inBetween || crossesEnd;
-            }).map((item) => {
-                let startTime: moment.Moment, endTime: moment.Moment;
-                if (item.startTime.isBefore(startTime)) {
-                    startTime = moment(startTime);
-                } else {
-                    startTime = item.startTime;
-                }
-                if (item.endTime.isAfter(endTime)) {
-                    endTime = moment(endTime);
-                } else {
-                    endTime = item.endTime;
-                }
-                return new TimeScheduleItem(startTime, endTime, item.hasValue);
+                let inside = item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(endTime);
+                let crossesEnd = item.startTime.isBefore(endTime) && item.endTime.isAfter(endTime);
+                return crossesStart || inside || crossesEnd;
             });
-            if(foundItems.length){
-                slicedSchedule.setScheduleFromFullValues(foundItems);
+            if (foundSliceItems.length > 0) {
+                let currentTime: moment.Moment = moment(startTime);
+                let newTimeScheduleFullItems: TimeScheduleItem[] = [];
+                for (let i = 0; i < foundSliceItems.length; i++) {
+                    if (foundSliceItems[i].endTime.isSameOrBefore(endTime)) {
+                        newTimeScheduleFullItems.push(new TimeScheduleItem(currentTime, foundSliceItems[i].endTime, foundSliceItems[i].hasValue));
+                    } else if (foundSliceItems[i].endTime.isAfter(endTime)) {
+                        newTimeScheduleFullItems.push(new TimeScheduleItem(currentTime, endTime, foundSliceItems[i].hasValue));
+                    }
+                    currentTime = foundSliceItems[i].endTime;
+                }
+                slicedSchedule.setScheduleFromFullValues(newTimeScheduleFullItems);
+                // console.log("Returning Sliced Schedule:");
+                // slicedSchedule.fullSchedule.forEach((item) => {
+                //     console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a'), item.hasValue)
+                // })
+                return slicedSchedule;
+            } else {
+                console.log("No slice found.  returning empty schedule.")
+                return new TimeSchedule(startTime, endTime);
             }
+        } else {
+            console.log("No slice found.  returning empty schedule.")
+            return new TimeSchedule(startTime, endTime);
         }
-        return slicedSchedule;
     }
     public hasValueAtTime(timeToCheck: moment.Moment): boolean {
         if (this.fullSchedule.length > 0) {
@@ -82,16 +90,16 @@ export class TimeSchedule {
         let fullSchedule: TimeScheduleItem[] = [];
         if (valueItems.length > 0) {
             let currentTime = this.startTime;
-            for(let i=0; i< valueItems.length; i++){
+            for (let i = 0; i < valueItems.length; i++) {
                 const itemStart = valueItems[i].startTime;
                 const itemEnd = valueItems[i].endTime;
-                if(currentTime.isAfter(itemStart)){
-                    if(currentTime.isBefore(itemEnd)){
+                if (currentTime.isAfter(itemStart)) {
+                    if (currentTime.isBefore(itemEnd)) {
                         fullSchedule.push(new TimeScheduleItem(currentTime, itemEnd, setValue));
                         // console.log("  POOSH: " , new TimeScheduleItem(currentTime, itemEnd, setValue))
                     }
-                }else{
-                    if(currentTime.isBefore(itemStart)){
+                } else {
+                    if (currentTime.isBefore(itemStart)) {
                         fullSchedule.push(new TimeScheduleItem(currentTime, itemStart, !setValue));
                         // console.log("  POOSH: " , new TimeScheduleItem(currentTime, itemStart, !setValue))
                     }
@@ -100,10 +108,10 @@ export class TimeSchedule {
                 }
                 currentTime = itemEnd;
             }
-            if(currentTime.isBefore(this.endTime)){
+            if (currentTime.isBefore(this.endTime)) {
                 fullSchedule.push(new TimeScheduleItem(currentTime, this.endTime, !setValue));
                 // console.log("  POOSH: " , new TimeScheduleItem(currentTime, this.endTime, !setValue))
-            }else if(currentTime.isAfter(this.endTime)){
+            } else if (currentTime.isAfter(this.endTime)) {
                 console.log('Error with items');
             }
             // console.log("full schedule: " , fullSchedule)
@@ -115,7 +123,7 @@ export class TimeSchedule {
         // console.log("thisfullsched", this._fullSchedule)
         // console.log("TimeSchedule Class: setting the schedule from values.  IsPositive? " , setValue);
         // this._fullSchedule.forEach((item) => {
-        //     console.log("   " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " hasValue? " + item.hasValue)
+        //     console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " hasValue? " + item.hasValue)
         // });
     }
 
@@ -125,10 +133,10 @@ export class TimeSchedule {
 
 
 
-    public splitScheduleAtTimes(times: moment.Moment[]){
-        times.forEach((time)=>{
-            for(let i=0; i<this.fullSchedule.length; i++){
-                if(time.isAfter(this.fullSchedule[i].startTime) && time.isBefore(this.fullSchedule[i].endTime)){
+    public splitScheduleAtTimes(times: moment.Moment[]) {
+        times.forEach((time) => {
+            for (let i = 0; i < this.fullSchedule.length; i++) {
+                if (time.isAfter(this.fullSchedule[i].startTime) && time.isBefore(this.fullSchedule[i].endTime)) {
                     const splitItems: TimeScheduleItem[] = [
                         new TimeScheduleItem(this.fullSchedule[i].startTime, time, this.fullSchedule[i].hasValue),
                         new TimeScheduleItem(time, this.fullSchedule[i].endTime, this.fullSchedule[i].hasValue)
@@ -139,7 +147,36 @@ export class TimeSchedule {
             }
         });
     }
-    
+
+
+    public getPreviousValueChangeTime(startTime: moment.Moment, currentValue: boolean = false): moment.Moment {
+        let foundIndex = this.fullSchedule.findIndex((item) => {
+            return startTime.isSameOrAfter(item.startTime) && startTime.isSameOrBefore(item.endTime);
+        });
+        if (foundIndex >= 0) {
+            let foundTime: moment.Moment;
+            for (let i = foundIndex; i > 0; i--) {
+
+                if(this.fullSchedule[i].hasValue !== currentValue){
+                    foundTime = this.fullSchedule[i].startTime;
+                    i = 0;
+                }else if(i > 0){
+                    if(this.fullSchedule[i-1].hasValue !== currentValue){
+                        foundTime = this.fullSchedule[i-1].endTime;
+                        i=0;
+                    }
+                }
+            }
+            if(foundTime){
+                return foundTime
+            }else{
+                return this.startTime;   
+            }
+        } else {
+            console.log('Error: could not find item')
+            return startTime;
+        }
+    }
 
     public getNextValueChangeTime(currentTime: moment.Moment): moment.Moment {
         if (this.fullSchedule.length > 0) {
@@ -185,31 +222,31 @@ export class TimeSchedule {
         }
         return foundTime;
     }
-    public getNextValueFalseTime(currentTime: moment.Moment): moment.Moment {
-        if (!this.hasValueAtTime(currentTime)) {
-            return currentTime;
-        }
-        let foundTime: moment.Moment;
-        if (this.fullSchedule.length > 0) {
-            let foundItems = this.fullSchedule.filter((item) => {
-                const crosses = item.startTime.isSameOrBefore(currentTime) && item.endTime.isSameOrAfter(currentTime);
-                return crosses || item.startTime.isSameOrAfter(currentTime);
-            });
-            if (foundItems.length > 0) {
-                foundItems.forEach((item) => {
-                    if (!foundTime) {
-                        if (item.hasValue === false) {
-                            foundTime = item.startTime;
-                        }
-                    }
-                });
-            }
-        }
-        if (!foundTime) {
-            foundTime = this.endTime;
-        }
-        return foundTime;
-    }
+    // public getNextValueFalseTime(currentTime: moment.Moment): moment.Moment {
+    //     if (!this.hasValueAtTime(currentTime)) {
+    //         return currentTime;
+    //     }
+    //     let foundTime: moment.Moment;
+    //     if (this.fullSchedule.length > 0) {
+    //         let foundItems = this.fullSchedule.filter((item) => {
+    //             const crosses = item.startTime.isSameOrBefore(currentTime) && item.endTime.isSameOrAfter(currentTime);
+    //             return crosses || item.startTime.isSameOrAfter(currentTime);
+    //         });
+    //         if (foundItems.length > 0) {
+    //             foundItems.forEach((item) => {
+    //                 if (!foundTime) {
+    //                     if (item.hasValue === false) {
+    //                         foundTime = item.startTime;
+    //                     }
+    //                 }
+    //             });
+    //         }
+    //     }
+    //     if (!foundTime) {
+    //         foundTime = this.endTime;
+    //     }
+    //     return foundTime;
+    // }
 
     /**
      * It is implied that all (hasValue === true) means positive; not dealing in negatives here.
@@ -220,33 +257,43 @@ export class TimeSchedule {
         if (this.startTime.isSame(otherSchedule.startTime) && this.endTime.isSame(otherSchedule.endTime)) {
             let freshSchedule: TimeScheduleItem[] = [];
             // console.log("Merging values from this schedule and otherSchedule, ", this.fullSchedule, otherSchedule.fullSchedule)
-            
+
             let sched1: TimeScheduleItem[] = this.fullSchedule;
             let sched2: TimeScheduleItem[] = otherSchedule.fullSchedule;
 
             if (sched1.length > 0 && sched2.length > 0) {
-                for(let i=0; i<sched1.length;i++){
-                    if(!sched1[i].hasValue){
+                /**
+                 * In this for loop, we search sched1 for each instance of no value.
+                 * in these cases, we search sced2 for value, and insert in place.
+                 */
+                for (let i = 0; i < sched1.length; i++) {
+                    if (!sched1[i].hasValue) {
+                        //if it does not have value, then it is potentially unoccupied, but the other schedule might have value.
                         const otherItems = otherSchedule.getScheduleSlice(sched1[i].startTime, sched1[i].endTime);
                         freshSchedule.splice(i, 1, ...otherItems.fullSchedule);
-                    }else{
+                    } else {
+                        // if it does have value, then this time is definitely occupied.
                         freshSchedule.push(sched1[i]);
                     }
                 }
-                let mergedSchedule :TimeScheduleItem[] = [];
-                for(let i=0; i<sched1.length;i++){
-                    if(mergedSchedule.length === 0){
+                let mergedSchedule: TimeScheduleItem[] = [];
+                /**
+                 * In this for loop, we are consolidating the results from the previous loop.
+                 * e.g. item[3].hasValue === true, item[4].hasValue === true, therefore merge 3 & 4.
+                 */
+                for (let i = 0; i < sched1.length; i++) {
+                    if (mergedSchedule.length === 0) {
                         mergedSchedule.push(sched1[i]);
-                    }else{
-                        const originalVal = mergedSchedule[mergedSchedule.length-1];
-                        if(originalVal.hasValue === sched1[i].hasValue){
-                            mergedSchedule.splice(mergedSchedule.length-1, 1, new TimeScheduleItem(originalVal.startTime, sched1[i].endTime, originalVal.hasValue));
-                        }else{
+                    } else {
+                        const originalVal = mergedSchedule[mergedSchedule.length - 1];
+                        if (originalVal.hasValue === sched1[i].hasValue) {
+                            mergedSchedule.splice(mergedSchedule.length - 1, 1, new TimeScheduleItem(originalVal.startTime, sched1[i].endTime, originalVal.hasValue));
+                        } else {
                             mergedSchedule.push(sched1[i]);
                         }
                     }
                 }
-                freshSchedule = mergedSchedule;
+                this._fullSchedule = mergedSchedule;
             } else {
                 if (sched1.length === 0 && sched2.length > 0) {
                     freshSchedule = sched2;
@@ -258,8 +305,8 @@ export class TimeSchedule {
                     freshSchedule = [new TimeScheduleItem(this.startTime, this.endTime, false)];
                     console.log("Error with schedules");
                 }
+                this._fullSchedule = freshSchedule;
             }
-            // console.log("Merge complete: ")
             this._fullSchedule = freshSchedule;
             // this._fullSchedule.forEach((item) => {
             //     console.log("   " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " hasValue? " + item.hasValue)

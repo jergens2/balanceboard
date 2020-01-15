@@ -5,8 +5,8 @@ import * as moment from 'moment';
 import { TimelogDelineator, TimelogDelineatorType } from './timelog-delineator.class';
 import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { DaybookController } from '../../controller/daybook-controller.class';
-import { TimelogDisplayGridItemType } from './timelog-display-grid-item.enum';
-import { TimelogBodyGridItem } from './timelog-large/timelog-body/timelog-body-grid-item.interface';
+import { TimelogDisplayGridItemType } from './timelog-display-grid-item.class';
+import { TimelogDisplayGrid } from './timelog-display-grid-class';
 
 export class TimelogDisplayController {
 
@@ -26,11 +26,7 @@ export class TimelogDisplayController {
   private _timeDelineators: TimelogDelineator[] = [];
   private _entryItems: TimelogEntryItem[] = [];
   private _activeDayController: DaybookController;
-
-  private _displayGridNgStyle: any = {};
-  private _gridItems: TimelogBodyGridItem[] = [];
-  // private _entryItemsNgStyle: any = { 'grid-template-rows': '1fr' };
-  // private _timeDelineatorsNgStyle: any = { 'grid-template-rows': '1fr' };
+  private _displayGrid: TimelogDisplayGrid;
 
   private _defaultDayStructureTimes: moment.Moment[] = [];
 
@@ -42,24 +38,14 @@ export class TimelogDisplayController {
   public get wakeupTime(): moment.Moment { return this._activeDayController.sleepController.firstWakeupTime; }
   public get fallAsleepTime(): moment.Moment { return this._activeDayController.sleepController.fallAsleepTime; }
   public get frameEnd(): moment.Moment { return this._timelogZoomControl.endTime; }
-
-  public get gridItems(): TimelogBodyGridItem[] { return this._gridItems; }
-  public get displayGridNgStyle(): any { return this._displayGridNgStyle; }
-
-  // public get entryItemsNgStyle(): any { return this._entryItemsNgStyle; }
   public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
-
   public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
-  // public get timeDelineatorsNgStyle(): any { return this._timeDelineatorsNgStyle; }
-
   public get defaultDayStructureTimes(): moment.Moment[] { return this._defaultDayStructureTimes; }
+  public get displayGrid(): TimelogDisplayGrid { return this._displayGrid; }
+
+
 
   public addTimeDelineator(time: moment.Moment) {
-    // if (!this.crossesAnyTimelogEntry(time)) {
-    //   console.log("method disabled")
-    //   // this._activeDay.timelog.addTimeDelineator(time.toISOString());
-    //   // this.update();
-    // }
   }
   public drawNewTLE(timelogEntry: TimelogEntryItem) {
     console.log("Timelog.Class: Drawing new TLE: ", timelogEntry)
@@ -103,119 +89,32 @@ export class TimelogDisplayController {
       console.log("   " + logEntry);
     });
   }
-  private get totalViewMilliseconds(): number {
-    return this._timelogZoomControl.endTime.diff(this._timelogZoomControl.startTime, 'milliseconds');
-  }
+
 
   private _buildGrid() {
-    const checkValues = this.totalViewMilliseconds - (this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'));
-    if (checkValues !== 0) {
-      console.log("Error:  mismatching times:")
-      console.log("  ZoomControl ms: " + this.totalViewMilliseconds);
-      console.log("   Calculated ms: " + this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'))
-    } else {
-      if (this.timeDelineators.length >= 2) {
-        let displayGridNgStyle: any = {
-          "display": "grid"
-        };
-        let currentTime: moment.Moment = this.timeDelineators[0].time;
-        let gridItems: TimelogBodyGridItem[] = [];
-        for (let i = 1; i < this.timeDelineators.length; i++) {
-          const diff: number = this.timeDelineators[i].time.diff(currentTime, 'milliseconds');
-          const gridItem: TimelogDisplayGridItemType = this._getGridItem(this.timeDelineators[i - 1].delineatorType, this.timeDelineators[i].delineatorType);
-          // console.log("Grid item produced from: Start: " + this.timeDelineators[i - 1].delineatorType + ", End: " + this.timeDelineators[i].delineatorType + "  produces: " + gridItem)
-          const percent = (diff / this.totalViewMilliseconds) * 100;
-          gridItems.push({
-            gridItemType: gridItem,
-            startTime: this.timeDelineators[i-1].time,
-            endTime: this.timeDelineators[i].time,
-            percent: percent,
-          });
-          currentTime = moment(this.timeDelineators[i].time);
-        }
-        let length = gridItems.length;
-        for (let i = 1; i < length; i++) {
-          if(gridItems[i-1].gridItemType === gridItems[i].gridItemType){
-            gridItems[i-1].percent = gridItems[i-1].percent + gridItems[i].percent;
-            gridItems[i-1].endTime = gridItems[i].endTime;
-            gridItems.splice(i, 1);
-            length = gridItems.length;
-            i--;
-          }
-        }
-
-        let gridTemplateRows: string = "";
-        gridItems.forEach((percentage) => {
-          // console.log("PERCENTAGE:  " + percentage.percent + " item: " + percentage.gridItem)
-          gridTemplateRows += "" + percentage.percent.toFixed(3) + "% ";
-        });
-        displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
-        // console.log("Display grid style: ", displayGridNgStyle);
-        // console.log("grid items:  ", gridItemTypes);
-        this._displayGridNgStyle = displayGridNgStyle;
-        this._gridItems = gridItems;
-      } else {
-        console.log("No Time Delineators.  ")
-      }
-    }
+    let newGrid: TimelogDisplayGrid = new TimelogDisplayGrid(this.frameStart, this.frameEnd, this._timeDelineators, this._activeDayController);
+    this._displayGrid = newGrid;
   }
 
 
-
-
-  private _getGridItem(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
-    let startsWith: TimelogDisplayGridItemType = this._gridItemStartsWith(startDelineator, endDelineator);
-    let endsWith: TimelogDisplayGridItemType = this._gridItemEndsWith(startDelineator, endDelineator);
-    if (startsWith) {
-      return startsWith;
-    } else {
-      if (endsWith) {
-        return endsWith;
-      } else {
-        console.log('Error:  could not find a grid item type from the provided delineators (start, end): ', startDelineator, endDelineator)
-        return null;
-      }
-    }
-  }
-
-
-  private _gridItemStartsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
-    if (startDelineator === TimelogDelineatorType.FALLASLEEP_TIME) {
-      return TimelogDisplayGridItemType.SLEEP_END;
-    } else if (startDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-      return TimelogDisplayGridItemType.TIMELOG_ENTRY;
-    } else if (startDelineator === TimelogDelineatorType.NOW) {
-      if (endDelineator === TimelogDelineatorType.FALLASLEEP_TIME ||
-        endDelineator === TimelogDelineatorType.FRAME_END ||
-        endDelineator === TimelogDelineatorType.DAY_STRUCTURE ||
-        endDelineator === TimelogDelineatorType.SAVED_DELINEATOR ||
-        endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-        return TimelogDisplayGridItemType.AVAILABLE;
-      }
-    }
-    return null;
-  }
-  private _gridItemEndsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
-    if (endDelineator === TimelogDelineatorType.WAKEUP_TIME) {
-      return TimelogDisplayGridItemType.SLEEP_START;
-    } else if (endDelineator === TimelogDelineatorType.NOW) {
-      return TimelogDisplayGridItemType.AVAILABLE;
-    } else if (endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_END) {
-      return TimelogDisplayGridItemType.TIMELOG_ENTRY;
-    }
-    return null;
-  }
 
 
   private _loadTimelogDelineators() {
     const nowTime = moment();
 
     const timelogDelineators: TimelogDelineator[] = [];
-    timelogDelineators.push(new TimelogDelineator(this.frameStart, TimelogDelineatorType.FRAME_START));
-    timelogDelineators.push(new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME));
+    const frameStartDelineator = new TimelogDelineator(this.frameStart, TimelogDelineatorType.FRAME_START);
+    timelogDelineators.push(frameStartDelineator);
+
+    const wakeupDelineator = new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME);
+    timelogDelineators.push(wakeupDelineator);
+
+    
     if (this._activeDayController.isToday) {
       timelogDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
     }
+
+
     timelogDelineators.push(new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME));
     timelogDelineators.push(new TimelogDelineator(this.frameEnd, TimelogDelineatorType.FRAME_END));
 
@@ -223,8 +122,14 @@ export class TimelogDisplayController {
       timelogDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
     });
     this._activeDayController.timelogEntryController.timelogEntryItems.forEach((timelogEntryItem) => {
-      timelogDelineators.push(new TimelogDelineator(timelogEntryItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START));
-      timelogDelineators.push(new TimelogDelineator(timelogEntryItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END));
+      const timeDelineatorStart = new TimelogDelineator(timelogEntryItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
+      const timeDelineatorEnd = new TimelogDelineator(timelogEntryItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
+      timeDelineatorStart.nextDelineator = timeDelineatorEnd;
+      timeDelineatorStart.timelogEntryStart = timelogEntryItem;
+      timeDelineatorEnd.previousDelineator = timeDelineatorStart;
+      timeDelineatorEnd.timelogEntryEnd = timelogEntryItem;
+      timelogDelineators.push(timeDelineatorStart);
+      timelogDelineators.push(timeDelineatorEnd);
     });
 
     const sortedDelineators = this._sortDelineators(timelogDelineators);
@@ -242,35 +147,7 @@ export class TimelogDisplayController {
         else if (td1.time.isAfter(td2.time)) { return 1; }
         else { return 0; }
       });
-    let filteredDelineators: TimelogDelineator[] = [sortedDelineators[0]];
-    for (let i = 1; i < sortedDelineators.length; i++) {
-      const lastIndex = filteredDelineators.length - 1
-      let lastFilteredDelineator = filteredDelineators[lastIndex];
-      if (sortedDelineators[i].time.isSame(lastFilteredDelineator.time)) {
-        const orderedTypes: TimelogDelineatorType[] = [TimelogDelineatorType.FRAME_START,
-        TimelogDelineatorType.FRAME_END,
-        TimelogDelineatorType.WAKEUP_TIME,
-        TimelogDelineatorType.FALLASLEEP_TIME,
-        TimelogDelineatorType.NOW,
-        TimelogDelineatorType.TIMELOG_ENTRY_START,
-        TimelogDelineatorType.TIMELOG_ENTRY_END,
-        TimelogDelineatorType.SAVED_DELINEATOR,
-        TimelogDelineatorType.DAY_STRUCTURE,
-        ];
-        const sortIndexOfExisting: number = orderedTypes.findIndex(type => {
-          return type === lastFilteredDelineator.delineatorType;
-        });
-        const sortIndexOfNew: number = orderedTypes.findIndex(type => {
-          return type === sortedDelineators[i].delineatorType;
-        });
-        if (sortIndexOfExisting > sortIndexOfNew) {
-          filteredDelineators.splice(lastIndex, 1, sortedDelineators[i]);
-        }
-      } else {
-        filteredDelineators.push(sortedDelineators[i]);
-      }
-    }
-    return filteredDelineators
+      return sortedDelineators;
   }
 
   private _setDefaultDayStructureTimes() {

@@ -6,8 +6,9 @@
 }
 
 .draw-tle{
-    margin: 3px;
+    /* margin: 3px; */
     margin-left: 10px;
     margin-right: 10px;
     background-color:red;
+    border-radius: 5px;
 }

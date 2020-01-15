@@ -1,8 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../../timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimelogBodyGridItem } from '../../timelog-body/timelog-body-grid-item.interface';
 import { TimeSchedule } from '../../../../../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-available-timelog-item',
@@ -18,8 +19,11 @@ export class AvailableTimelogItemComponent implements OnInit {
   private _rootNgStyle: any = {};
 
 
-  @Input() public set drawTLE(timelogEntry: TimelogEntryItem) { this._update(timelogEntry); }
-  @Input() gridItem: TimelogBodyGridItem;
+  @Input() public set drawTLE(timelogEntry: TimelogEntryItem) { 
+    // console.log("Drawing TLE: " + timelogEntry.startTime.format('YYYY-MM-DD hh:mm a'))
+    this._update(timelogEntry); 
+  }
+  @Input() gridItem: TimelogDisplayGridItem;
 
   public get drawTLE(): TimelogEntryItem { return this._drawTLE; }
   public get drawTLENgStyle(): any { return this._drawTLENgStyle; }
@@ -29,13 +33,16 @@ export class AvailableTimelogItemComponent implements OnInit {
   }
 
   private _update(timelogEntry: TimelogEntryItem) {
+    // console.log("Updating drawing")
     if (timelogEntry) {
       if (this.gridItem) {
-        if (timelogEntry.startTime.isAfter(timelogEntry.endTime)) {
-          this._drawTLE = new TimelogEntryItem(timelogEntry.endTime, timelogEntry.startTime);
-        } else {
-          this._drawTLE = timelogEntry;
+        if(timelogEntry.startTime.isBefore(this.gridItem.startTime)){
+          timelogEntry.startTime = moment(this.gridItem.startTime);
         }
+        if(timelogEntry.endTime.isAfter(this.gridItem.endTime)){
+          timelogEntry.endTime = moment(this.gridItem.endTime);
+        }
+        this._drawTLE = timelogEntry;
         const durationMS: number = this.gridItem.endTime.diff(this.gridItem.startTime, 'milliseconds');
         // console.log("Drawing TLE " + this._drawTLE.startTime.format('hh:mm a') + " to " + this._drawTLE.endTime.format('hh:mm a'));
         const timeSchedule: TimeSchedule = new TimeSchedule(this.gridItem.startTime, this.gridItem.endTime);

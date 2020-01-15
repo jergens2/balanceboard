@@ -1,20 +1,20 @@
-<div class="timelog-entry-root" id="timelog-entry-root" (mouseenter)="onMouseEnter($event)"
-    (mouseleave)="entry.itemState.onMouseLeave()" (click)="onClickTimelogEntry()">
+<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="entry">
+    <div style="display:flex; flex-direction: row; align-items: center;">
+        <div style="display:flex;flex-direction: row; flex-wrap: wrap; max-width: 150px; margin-right :10px;">
+            <div *ngFor="let unit of units">
+                <div *ngIf="unit.unitType === 'HOUR'" class="hour-unit" [ngClass]="{'slim-hour-unit': unit.fill.length == 1}">
+                    <div *ngFor="let square of unit.fill" class="unit" [style.background-color]="unit.color"></div>
+                </div>
+                <div *ngIf="unit.unitType === 'FIFTEEN'" class="unit" [style.background-color]="unit.color" >
 
-    <app-timelog-entry-display [entry]="entry" [minutesPerTwentyPixels]="minutesPerTwentyPixels"
-        *ngIf="!entry.isSmallSize && entry.isSavedEntry" class="tle large-tle saved"></app-timelog-entry-display>
-    <div *ngIf="!entry.isSmallSize && !entry.isSavedEntry" class="tle large-tle not-saved">
-        <!-- it's big but not saved -->
+                </div>
+            </div>
+
+        </div>
+        <div [ngClass]="{'small-text': screenSize === 0}">
+            {{ displayString }}
+        </div>
     </div>
-
-    <div *ngIf="entry.isSmallSize && entry.isSavedEntry" class="tle small-tle saved"
-        style="background-color: rgba(136, 136, 136, 0.267);">
-    </div>
-
-
-
-    <div *ngIf="entry.isSmallSize && !entry.isSavedEntry" class="tle small-tle not-saved">
-    </div>
-
 
 </div>
+<div *ngIf="!entry" class="error-message">Error:  No timelog entry</div>

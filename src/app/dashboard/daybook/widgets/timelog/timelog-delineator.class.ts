@@ -2,6 +2,7 @@
 import * as moment from 'moment';
 // import { ItemState } from '../../../../shared/utilities/item-state.class';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 
 export enum TimelogDelineatorType {
     FRAME_START = 'FRAME_START',
@@ -19,22 +20,31 @@ export enum TimelogDelineatorType {
 export class TimelogDelineator {
 
     constructor(time: moment.Moment, type: TimelogDelineatorType) {
-
         this._time = moment(time);
-        this.delineatorType = type;
-
-        // this._itemState = new ItemState(this._time);
-        // this._isConfirmed = isConfirmed;
-
-        // if (icon) { 
-        //     this._icon = icon;
-        // }
-        // if (iconColor) {
-        //     this._ngStyle = { 'color': iconColor };
-        // }
-
+        this._delineatorType = type;
         this._setIcon();
     }
+
+    
+    
+    private _time: moment.Moment;
+    private _icon: IconDefinition;
+    private _delineatorType: TimelogDelineatorType;
+    
+    public ngStyle: any = {};
+    public timelogEntryStart: TimelogEntryItem;
+    public timelogEntryEnd: TimelogEntryItem;
+    
+    public isVisible = false;
+    public label = '';
+    public nextDelineator: TimelogDelineator;
+    public previousDelineator: TimelogDelineator;
+
+    public get time(): moment.Moment { return this._time; }
+    public get icon(): IconDefinition { return this._icon; }
+    public get delineatorType(): TimelogDelineatorType { return this._delineatorType; };
+
+    
 
 
     private _setIcon(){
@@ -42,43 +52,5 @@ export class TimelogDelineator {
         // if wakeupTime: sun, nowtime: clock, fallAsleeptime: moon.
         
     }
-
-    public label = '';
-
-    public get isTimelogEntry(): boolean {
-        return this.delineatorType === 'TIMELOG_ENTRY_START';
-    }
-    public get durationSeconds(): number {
-        if (this._nextDelineatorTime !== null) {
-            return moment(this._nextDelineatorTime).diff(moment(this._time), 'seconds');
-        } else {
-            return 0;
-        }
-    }
-
-    public isVisible = false;
-
-    private _time: moment.Moment;
-    public get time(): moment.Moment { return this._time; }
-
-    private _nextDelineatorTime: moment.Moment;
-    public get nextDelineatorTime(): moment.Moment { return this._nextDelineatorTime; }
-    public set nextDelineatorTime(time: moment.Moment) { this._nextDelineatorTime = moment(time); }
-
-    // private _itemState: ItemState;
-    // public get itemState(): ItemState { return this._itemState; }
-
-    public delineatorType: TimelogDelineatorType;
-
-    // public get mouseIsOver(): boolean { return this._itemState.mouseIsOver; }
-
-    private _icon: IconDefinition;
-    public get icon(): IconDefinition { return this._icon; }
-
-    private _ngStyle: any = {};
-    public get ngStyle(): any { return this._ngStyle; }
-
-
-
 }
 

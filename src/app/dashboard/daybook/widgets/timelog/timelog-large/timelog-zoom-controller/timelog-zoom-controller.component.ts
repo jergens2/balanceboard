@@ -26,6 +26,7 @@ export class TimelogZoomControllerComponent implements OnInit {
   private _currentTime: moment.Moment = moment();
 
   ngOnInit() {
+
     this._currentTime = moment();
     this._updateWakeCycleZoom(this.daybookService.activeDayController);
     this._buildZoomButtons();
@@ -52,6 +53,12 @@ export class TimelogZoomControllerComponent implements OnInit {
     if(frameEnd.isSame(fallAsleepTime)){
       frameEnd = moment(frameEnd).add(30, 'minutes');
     }
+    
+    // console.log(" zoom controller ")
+    // console.log(" frame start:  " + activeDayChanged.sleepController.firstWakeupTime.format('hh:mm a'))
+    // console.log(" framestart set: " + frameStart.format('hh:mm a'))
+    
+    
     this._wakeCycleZoom = {
       icon: faSun,
       name: "AWAKE",
@@ -159,6 +166,7 @@ export class TimelogZoomControllerComponent implements OnInit {
     }
 
     this._zoomButtons = zoomButtons;
+    // this.
     // console.log("Emitting from rebuild: ", this._currentZoomLevel, this._currentZoomLevel.startTime.format("hh:mm a"), this._currentZoomLevel.endTime.format("hh:mm a"))
     this.emitChange(changedValue);
   }

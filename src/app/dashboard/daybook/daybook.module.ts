@@ -34,7 +34,6 @@ import { TimelogBodyComponent } from './widgets/timelog/timelog-large/timelog-bo
 import { TimelogZoomControllerComponent } from './widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-controller.component';
 import { WeightLogEntryComponent } from './widgets/weight-log-entry/weight-log-entry.component';
 import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry.component';
-import { TimelogEntryDisplayComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-display/timelog-entry-display.component';
 import { TimelogEntryFormComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form.component';
 import { TlefWakeupTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-wakeup-time/tlef-wakeup-time.component';
 import { TlefModifyTimesComponent } from './widgets/timelog/timelog-entry-form/tlef-modify-times/tlef-modify-times.component';
@@ -81,7 +80,6 @@ import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large/t
     TimelogBodyComponent,
     TimelogZoomControllerComponent,
     WeightLogEntryComponent,
-    TimelogEntryDisplayComponent,
     TimelogEntryFormComponent,
     TlefWakeupTimeComponent,
     TlefModifyTimesComponent,

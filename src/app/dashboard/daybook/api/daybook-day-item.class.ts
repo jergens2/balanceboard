@@ -12,7 +12,7 @@ import { DaybookDayItemTimelog } from '../controller/daybook-day-item-timelog.cl
 import blankDaybookItemHttpShape from './data-items/blank-http-shape';
 import { DaybookTimeReferencer } from './controllers/daybook-time-referencer.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimeSpanItem } from './data-items/time-span-item.interface';
+import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
 
 

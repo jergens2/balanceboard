@@ -5,7 +5,7 @@ import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookDayItemTimelog } from './daybook-day-item-timelog.class';
 import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimeSpanItem } from '../api/data-items/time-span-item.interface';
+import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import { DaybookSleepController } from './daybook-sleep-controller.class';
 import { Subject, Observable, Subscription } from 'rxjs';
 import { DaybookEnergyLevel } from './daybook-energy-level.enum';
@@ -95,13 +95,27 @@ export class DaybookController {
 
     public getColumnAvailability(zoomController: TimelogZoomControl): TimeSchedule {
         let availabilitySchedule: TimeSchedule = this.sleepController.sleepSchedule;
-        // console.log("Availability Schedule from sleep controller: ", availabilitySchedule.fullSchedule);
+        // console.log("this.sleepController.sleepSchedule: ") 
+        // this.sleepController.sleepSchedule.fullSchedule.forEach((item)=>{
+        //     console.log("  " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " has value?: " , item.hasValue)
+        // })
+
         availabilitySchedule.mergeValues(this.timelogEntryController.timelogSchedule);
+        // console.log("this.timelogEntryController.timelogSchedule: ") 
+        // this.timelogEntryController.timelogSchedule.fullSchedule.forEach((item)=>{
+        //     console.log("  " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " has value?: " , item.hasValue)
+        // })
         // console.log("Availability Schedule after merge with timelog: ", availabilitySchedule.fullSchedule);
         availabilitySchedule.getScheduleSlice(zoomController.startTime, zoomController.endTime);
         // console.log("Availability Schedule after sliced by zoomController range", availabilitySchedule.fullSchedule);
         availabilitySchedule.splitScheduleAtTimes([this.startOfThisDay, this.endOfThisDay]);
         // console.log("Availability Schedule after split over midnight times", availabilitySchedule.fullSchedule);
+
+
+        // console.log("Returning Column Availability: ") 
+        // availabilitySchedule.fullSchedule.forEach((item)=>{
+        //     console.log("  " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " has value?: " , item.hasValue)
+        // })
         return availabilitySchedule;
 
     }

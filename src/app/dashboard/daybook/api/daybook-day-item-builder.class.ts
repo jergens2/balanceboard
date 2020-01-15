@@ -4,7 +4,7 @@ import { DaybookTimelogEntryDataItem } from './data-items/daybook-timelog-entry-
 
 import * as moment from 'moment';
 import { TimelogEntryActivity } from './data-items/timelog-entry-activity.interface';
-import { TimeSpanItem } from './data-items/time-span-item.interface';
+import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
 import { DaybookActivityDataItem } from './data-items/daybook-activity-data-item.interface';
 import { DailyTaskListDataItem } from './data-items/daily-task-list-data-item.interface';

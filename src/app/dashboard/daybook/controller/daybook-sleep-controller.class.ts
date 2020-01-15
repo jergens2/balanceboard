@@ -1,6 +1,5 @@
-import { TimeSpanItem } from '../api/data-items/time-span-item.interface';
+import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import * as moment from 'moment';
-import defaultWakeupTime from './default-wakeup-time';
 import { Observable, Subject } from 'rxjs';
 import { RoundToNearestMinute } from '../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
@@ -84,10 +83,20 @@ export class DaybookSleepController {
         return foundItem.startTime;
     }
     public get fallAsleepTime(): moment.Moment {
+        // console.log(" getting fall asleep time.")
+        // console.log(" this._sleepschedule = " , this._sleepSchedule.fullSchedule)
+        // this.sleepSchedule.fullSchedule.forEach((item)=>{
+        //     console.log("    " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a'), item.hasValue)
+        // })
         const foundItem = this._sleepSchedule.fullSchedule
             .filter(item => item.startTime.isSameOrAfter(this.firstWakeupTime) && item.endTime.isSameOrBefore(this.endOfNextDay))
             .find(item => item.hasValue === true);
-        return foundItem.startTime;
+        if(foundItem){
+            return foundItem.startTime;
+        }else{
+
+        }
+        
     }
     public isAwakeAtTime(timeToCheck: moment.Moment): boolean {
         return !this.isAsleepAtTime(timeToCheck);
@@ -180,6 +189,14 @@ export class DaybookSleepController {
         });
         let newSchedule = new TimeSchedule(this.controllerStartTime, this.controllerEndTime);
         if (asleepItems.length > 0) {
+            const currentTime = moment();
+            asleepItems.forEach((item)=>{
+                if(currentTime.isSameOrAfter(item.startTime) && currentTime.isSameOrBefore(item.endTime)){
+                    item.endTime = moment(currentTime);
+                }
+            })
+
+
             newSchedule.setScheduleFromSingleValues(asleepItems, true);
             newSchedule.splitScheduleAtTimes([this.startOfThisDay, this.endOfThisDay]);
         } else {
@@ -199,9 +216,13 @@ export class DaybookSleepController {
         });
     }
 
+
+
     private _buildDefaultTimeSpanItems(): TimeSpanItem[] {
+        const defaultWakeupHour =7;
+        const defaultWakeupMinute = 30;
         const startOfDay: moment.Moment = moment(this.thisDateYYYYMMDD).startOf('day');
-        const wakeupTime: moment.Moment = moment(startOfDay).hour(defaultWakeupTime.hour()).minute(defaultWakeupTime.minute());
+        const wakeupTime: moment.Moment = moment(startOfDay).hour(defaultWakeupHour).minute(defaultWakeupMinute);
 
         const awakeHoursPerDay: number = (this._awakeToAsleepRatio * 24) / (this._awakeToAsleepRatio + 1);
         // const asleepHoursPerDay: number = 24 - awakeHoursPerDay;
@@ -211,6 +232,7 @@ export class DaybookSleepController {
         let startTime: moment.Moment = moment(startOfDay);
         let endTime: moment.Moment = moment(wakeupTime);
         if (fallAsleepTime.isAfter(moment(startOfDay).add(24, 'hours'))) {
+            //not sure if this block is really necessary or useful.
             startTime = moment(fallAsleepTime).subtract(24, 'hours');
             endTime = moment(wakeupTime);
             const sleepTime: TimeSpanItem = {

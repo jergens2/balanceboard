@@ -20,7 +20,24 @@ export class SleepProfileWidgetComponent implements OnInit {
   private _batteryConfiguration: SleepBatteryConfiguration;
   public get batteryConfiguration(): SleepBatteryConfiguration { return this._batteryConfiguration; }
 
+  private _wakeupTime: moment.Moment;
+  private _sleepAtTime: moment.Moment;
 
+  public get wakeupTime(): string{
+    if(this._wakeupTime){
+      return this._wakeupTime.format('hh:mm a');
+    }else{
+      return "";
+    }
+    
+  }
+  public get sleepAtTime(): string { 
+    if(this._sleepAtTime){
+      return this._sleepAtTime.format('hh:mm a');
+    }else{
+      return "";
+    }
+  }
 
 
 
@@ -30,6 +47,12 @@ export class SleepProfileWidgetComponent implements OnInit {
       // console.log("SLEEP PROFILE WIDGET: REINITIATING  - " + dayChanged.dateYYYYMMDD);
       this.reInitiate();
     });
+
+    this._wakeupTime = this.daybookService.activeDayController.sleepController.firstWakeupTime;
+    this._sleepAtTime = this.daybookService.activeDayController.sleepController.fallAsleepTime;
+
+    console.log("This wakeup time is : " + this.wakeupTime);
+    console.log("This.sleeptime is " + this.sleepAtTime)
   }
 
   public onWakeupTimeChanged(time: moment.Moment){
