@@ -15,7 +15,7 @@ export class TimelogDisplayGrid {
     this._buildGrid();
     console.log("Grid is built.")
     this.gridItems.forEach((item) => {
-      console.log("   " + item.type + " : " + item.startTime.format('hh:mm a'))
+      console.log("   " + item.type + " : " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a'))
     })
 
   }
@@ -73,22 +73,39 @@ export class TimelogDisplayGrid {
           const percent = (diff / this.totalViewMilliseconds) * 100;
           const startTime = this.timeDelineators[i - 1].time;
           const endTime = this.timeDelineators[i].time;
-          const type: TimelogDisplayGridItemType = this._getGridItemType(this.timeDelineators[i - 1].delineatorType, this.timeDelineators[i].delineatorType);
-          const newGridItem = new TimelogDisplayGridItem(startTime, endTime, percent, type);
-          if(type === TimelogDisplayGridItemType.TIMELOG_ENTRY){
-            newGridItem.timelogEntry = this._activeController.timelogEntryController.timelogEntryItems.find(tle => tle.startTime.isSame(startTime));
+          const typeFound: TimelogDisplayGridItemType = this._getGridItemType(this.timeDelineators[i - 1].delineatorType, this.timeDelineators[i].delineatorType);
+          if (typeFound) {
+            const newGridItem = new TimelogDisplayGridItem(startTime, endTime, percent, typeFound);
+            if (typeFound === TimelogDisplayGridItemType.TIMELOG_ENTRY) {
+              newGridItem.timelogEntries = [this._activeController.timelogEntryController.timelogEntryItems.find(tle => tle.startTime.isSame(startTime))];
+            }
+            gridItems.push(newGridItem);
+            currentTime = moment(this.timeDelineators[i].time);
+          } else {
+
           }
-          gridItems.push(newGridItem);
-          currentTime = moment(this.timeDelineators[i].time);
         }
         let length = gridItems.length;
         for (let i = 1; i < length; i++) {
-          if (gridItems[i - 1].type === gridItems[i].type) {
-            gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
-            gridItems[i - 1].endTime = gridItems[i].endTime;
-            gridItems.splice(i, 1);
-            length = gridItems.length;
-            i--;
+          if (gridItems[i - 1].type === gridItems[i].type && gridItems[i].type) {
+            let merge = false;
+            if (gridItems[i].type === TimelogDisplayGridItemType.TIMELOG_ENTRY) {
+              const minPercent = 5;
+              const minimumTimeMS: number = 0.05 * this.totalViewMilliseconds;
+              if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
+                merge = true;
+                gridItems[i-1].timelogEntries.push(...gridItems[i].timelogEntries);
+              }
+            } else {
+              merge = true;
+            }
+            if (merge) {
+              gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
+              gridItems[i - 1].endTime = gridItems[i].endTime;
+              gridItems.splice(i, 1);
+              length = gridItems.length;
+              i--;
+            }
           }
         }
 
@@ -119,7 +136,7 @@ export class TimelogDisplayGrid {
       if (endsWith) {
         return endsWith;
       } else {
-        console.log('Error:  could not find a grid item type from the provided delineators (start, end): ', startDelineator, endDelineator)
+        // console.log('Error:  could not find a grid item type from the provided delineators (start, end): ', startDelineator, endDelineator)
         return null;
       }
     }

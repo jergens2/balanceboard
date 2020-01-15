@@ -9,6 +9,6 @@
     /* margin: 3px; */
     margin-left: 10px;
     margin-right: 10px;
-    background-color:red;
+    background-color: rgba(255, 0, 0, 0.1);
     border-radius: 5px;
 }

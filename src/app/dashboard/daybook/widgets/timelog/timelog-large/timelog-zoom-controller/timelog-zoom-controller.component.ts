@@ -5,7 +5,7 @@ import { DaybookService } from '../../../../daybook.service';
 import { faWrench, faSun, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { Subscription, timer } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
-import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
+import { TimeUtilities } from '../../../../../../shared/utilities/time-utilities/time-utilities';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 import { DaybookController } from '../../../../controller/daybook-controller.class';
 
@@ -44,19 +44,17 @@ export class TimelogZoomControllerComponent implements OnInit {
     
     let wakeupTime: moment.Moment = activeDayChanged.sleepController.firstWakeupTime;
     let fallAsleepTime: moment.Moment = activeDayChanged.sleepController.fallAsleepTime;
-    let frameStart = RoundToNearestMinute.roundToNearestMinute(wakeupTime, 30, "DOWN");
-    let frameEnd = RoundToNearestMinute.roundToNearestMinute(fallAsleepTime, 30, "UP");
+    let frameStart = TimeUtilities.roundDownToFloor(wakeupTime, 15);
+    if(frameStart.minute() % 30 !== 0){ frameStart = frameStart.subtract(15, 'minutes'); }
+    let frameEnd = TimeUtilities.roundUpToCeiling(fallAsleepTime, 15);
+    if(frameEnd.minute() % 30 !== 0){ frameStart = frameStart.add(15, 'minutes'); }
     
-    if(frameStart.isSame(wakeupTime)){
-      frameStart = moment(frameStart).subtract(30, 'minutes');
-    }
-    if(frameEnd.isSame(fallAsleepTime)){
-      frameEnd = moment(frameEnd).add(30, 'minutes');
-    }
+
     
-    // console.log(" zoom controller ")
-    // console.log(" frame start:  " + activeDayChanged.sleepController.firstWakeupTime.format('hh:mm a'))
-    // console.log(" framestart set: " + frameStart.format('hh:mm a'))
+    console.log(" zoom controller vs sleep controller.  (sleep, frameStart, bed, frameENd)");
+    console.log("   " + activeDayChanged.sleepController.firstWakeupTime.format('hh:mm a') + " --> " + frameStart.format('hh:mm a'))
+    console.log("   " + activeDayChanged.sleepController.fallAsleepTime.format('hh:mm a') + " --> " + frameEnd.format('hh:mm a'))
+
     
     
     this._wakeCycleZoom = {
@@ -113,8 +111,8 @@ export class TimelogZoomControllerComponent implements OnInit {
       isActive: eightHourZoomActive,
       isFirst: false,
       isLast: false,
-      startTime: RoundToNearestMinute.roundToNearestMinute(moment(this._currentTime).subtract(4, "hours"), 30, "DOWN"),
-      endTime: RoundToNearestMinute.roundToNearestMinute(moment(this._currentTime).add(4, "hours"), 30, "UP")
+      startTime: TimeUtilities.roundDownToFloor(moment(this._currentTime).subtract(4, "hours"), 30),
+      endTime: TimeUtilities.roundUpToCeiling(moment(this._currentTime).add(4, "hours"), 30)
     };
 
     this._listZoom = {

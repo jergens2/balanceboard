@@ -30,8 +30,8 @@ export class TimeSelectionColumnComponent implements OnInit {
   @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) { this._zoomControl = zoomControl; }
 
-  @HostListener('window:mouseup', ['$event.target']) onMouseUp(){ 
-    if(!this._mouseIsInComponent){
+  @HostListener('window:mouseup', ['$event.target']) onMouseUp() {
+    if (!this._mouseIsInComponent) {
       this._reset();
     }
   }
@@ -43,10 +43,13 @@ export class TimeSelectionColumnComponent implements OnInit {
   public get isActive(): boolean { return (this._mouseDownRow ? true : false); }
 
   ngOnInit() {
-    this._availabilitySchedule = (this.daybookService.activeDayController.getColumnAvailability(this.zoomControl));
-    this._buildRows(this._calculateDivisor());
-    console.log("Rows: " + this.rows.length + " , minutes per: " + this._calculateDivisor())
-    console.log("mousedown, and isactive: ", this._mouseDownRow, this.isActive)
+
+    this.daybookService.activeDayController$.subscribe((valueChanged)=>{
+      this._availabilitySchedule = (this.daybookService.activeDayController.getColumnAvailability(this.zoomControl));
+      this._buildRows(this._calculateDivisor());
+    });
+    // console.log("Rows: " + this.rows.length + " , minutes per: " + this._calculateDivisor())
+    // console.log("mousedown, and isactive: ", this._mouseDownRow, this.isActive)
   }
 
   public onMouseLeave() { this._mouseIsInComponent = false; }
@@ -95,7 +98,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
 
 
-  private _reset(){
+  private _reset() {
     this._mouseDownRow = null;
     this._mouseUpRow = null;
     this._mouseOverRow = null;
@@ -122,7 +125,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     let currentTime: moment.Moment = moment(this._zoomControl.startTime);
     for (let i = 0; i < rowCount; i++) {
       let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(divisorMinutes, 'minutes'), i);
-      newRow.isAvailable = this._checkAvailability(newRow);
+      newRow.isAvailable = this._checkRowAvailability(newRow);
       newRow.nextAvailabilityChange = this._findNextAvailabilityChange(newRow);
       rows.push(newRow);
       currentTime = moment(currentTime).add(divisorMinutes, 'minutes');
@@ -165,9 +168,10 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _drawNewTimelogEntry() {
     if (this._mouseDownRow.startTime.isBefore(this._mouseOverRow.startTime)) {
       this.drawNewTLE.emit(new TimelogEntryItem(this._mouseDownRow.startTime, this._mouseOverRow.startTime))
-    } else if(this._mouseDownRow.startTime.isAfter(this._mouseOverRow.startTime)){
+    } else if (this._mouseDownRow.startTime.isAfter(this._mouseOverRow.startTime)) {
       this.drawNewTLE.emit(new TimelogEntryItem(this._mouseOverRow.startTime, this._mouseDownRow.startTime))
-    }else if(this._mouseDownRow.startTime.isSame(this._mouseOverRow.startTime)){
+    } else if (this._mouseDownRow.startTime.isSame(this._mouseOverRow.startTime)) {
+      this.drawNewTLE.emit(null);
       console.log("To do:  draw a thing;")
     }
     // console.log("Draw out the new TLE")
@@ -185,46 +189,43 @@ export class TimeSelectionColumnComponent implements OnInit {
     this._reset();
   }
 
-  private _checkAvailability(newRow: TimeSelectionRow): boolean {
+  private _checkRowAvailability(checkRow: TimeSelectionRow): boolean {
     /*  
       Reminder:  isAvailable === !isActive  
     */
+    let isAvailable: boolean;
     let isActive: boolean = false;
-    let foundWholeRowSpan = this.availabilitySchedule.fullSchedule.find(item => {
-      return newRow.startTime.isSameOrAfter(item.startTime) && newRow.endTime.isSameOrBefore(item.endTime);
+
+
+    let scheduleItems = this.availabilitySchedule.fullSchedule.filter((scheduleItem) => {
+      const fullyEncompasses = scheduleItem.startTime.isSameOrBefore(checkRow.startTime) && scheduleItem.endTime.isSameOrAfter(checkRow.endTime);
+      const fullyEnclosed = scheduleItem.startTime.isSameOrAfter(checkRow.startTime) && scheduleItem.endTime.isSameOrBefore(checkRow.endTime);
+      const crossesStart = scheduleItem.startTime.isSameOrBefore(checkRow.startTime) && scheduleItem.endTime.isAfter(checkRow.startTime);
+      const crossesEnd = scheduleItem.startTime.isBefore(checkRow.endTime) && scheduleItem.endTime.isSameOrAfter(checkRow.endTime);
+      return fullyEncompasses || fullyEnclosed || crossesStart || crossesEnd;
     });
-    if (foundWholeRowSpan) {
-      isActive = foundWholeRowSpan.hasValue;
-    } else {
-      let foundStart = this.availabilitySchedule.fullSchedule.find(item => {
-        return newRow.startTime.isSameOrAfter(item.startTime) && newRow.startTime.isSameOrBefore(item.endTime);
-      });
-      let foundEnd = this.availabilitySchedule.fullSchedule.find(item => {
-        return newRow.endTime.isSameOrAfter(item.startTime) && newRow.endTime.isSameOrBefore(item.endTime);
-      })
-      if (foundStart && foundEnd) {
-        const rowStart: moment.Moment = newRow.startTime;
-        const breakPoint: moment.Moment = foundStart.endTime;
-        const rowEnd: moment.Moment = newRow.endTime;
-        if (!foundStart.endTime.isSame(foundEnd.startTime)) { console.log(" Error: mismatch in time.") }
 
-        const firstPeriodDurationMS = breakPoint.diff(rowStart, 'milliseconds');
-        const secondPeriodDurationMS = rowEnd.diff(breakPoint, 'milliseconds');
-
-        if (firstPeriodDurationMS > secondPeriodDurationMS) {
-          isActive = foundStart.hasValue;
+    if (scheduleItems.length === 0) {
+      // console.log("Error:  couldn't find an availability item." + checkRow.startTime.format('YYYY-MM-DD hh:mm a') + " to " + checkRow.endTime.format('YYYY-MM-DD hh:mm a'));
+    } else if (scheduleItems.length === 1) {
+      const fullyEncompasses = scheduleItems[0].startTime.isSameOrBefore(checkRow.startTime) && scheduleItems[0].endTime.isSameOrAfter(checkRow.endTime);
+      const fullyEnclosed = scheduleItems[0].startTime.isSameOrAfter(checkRow.startTime) && scheduleItems[0].endTime.isSameOrBefore(checkRow.endTime);
+      if (fullyEncompasses) {
+        isActive = scheduleItems[0].hasValue;
+      } else if (fullyEnclosed) {
+        let itemMS = scheduleItems[0].endTime.diff(scheduleItems[0].startTime, 'milliseconds');
+        let rowMS = checkRow.endTime.diff(checkRow.startTime, 'milliseconds');
+        if (itemMS > (rowMS / 2)) {
+          isActive = true;
         } else {
-          isActive = foundEnd.hasValue;
+          isActive = false;
         }
-
-      } else {
-        console.log("Error:  couldn't find an availability item.");
-        console.log("  Found start: ", foundStart);
-        console.log("  Found end  : ", foundEnd);
       }
+    } else if (scheduleItems.length > 1) {
+      isActive = true;
     }
-    // console.log("New Row: " + newRow.startTime.format('hh:mm a') + " isAvailable? " + !isActive);
-    return !isActive;
+    isAvailable = !isActive;
+    return isAvailable;
   }
 
   private _calculateDivisor(): number {

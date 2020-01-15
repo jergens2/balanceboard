@@ -27,7 +27,7 @@ export class SleepProfileWidgetComponent implements OnInit {
     if(this._wakeupTime){
       return this._wakeupTime.format('hh:mm a');
     }else{
-      return "";
+      return " err";
     }
     
   }
@@ -35,14 +35,18 @@ export class SleepProfileWidgetComponent implements OnInit {
     if(this._sleepAtTime){
       return this._sleepAtTime.format('hh:mm a');
     }else{
-      return "";
+      return " err";
     }
   }
 
 
 
   ngOnInit() {
-    console.log("Is this component necessary?");
+    
+    console.log("wakeup time: " + this.daybookService.activeDayController.sleepController.firstWakeupTime.format('hh:mm a'))
+    console.log("sleep time: " + this.daybookService.activeDayController.sleepController.fallAsleepTime.format('hh:mm a'))
+    
+    
     this.daybookService.activeDayController$.subscribe((dayChanged) => { 
       // console.log("SLEEP PROFILE WIDGET: REINITIATING  - " + dayChanged.dateYYYYMMDD);
       this.reInitiate();

@@ -17,18 +17,18 @@ export class TimelogEntryComponent implements OnInit {
 
   constructor(private activitiesService: ActivityCategoryDefinitionService, private screenSizeService: ScreenSizeService) { }
 
-  private _entry: TimelogEntryItem;
-  @Input() public set entry(item: TimelogEntryItem) {
-    this._entry = item;
+  private _entries: TimelogEntryItem[] = [];
+  @Input() public set entries(entryItems: TimelogEntryItem[]) {
+    this._entries = entryItems;
     this.rebuild();
   }
-  public get entry(): TimelogEntryItem { return this._entry; }
+  public get entries(): TimelogEntryItem[] { return this._entries; }
 
   private _minutesPerTwentyPixels: number = 20;
   @Input() public set minutesPerTwentyPixels(minutesPerTwentyPixels: number) {
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
-    if(this._entry){
-      const minutes: number = this.entry.durationSeconds / 60;
+    if(this._entries.length > 0){
+      const minutes: number = this.entries[this.entries.length-1].endTime.diff(this.entries[0].startTime, 'minutes');
       const safeBuffer: number = 5; // subtract a few px just so as to not go over
       let height: number = ((minutes * 20) / minutesPerTwentyPixels) - safeBuffer;
       const rowHeight: number = 20;
@@ -72,83 +72,88 @@ export class TimelogEntryComponent implements OnInit {
 
 
   private rebuild() {
-    if(this.entry){
-      const entryDuration: number = this._entry.durationSeconds/60;
+    if(this.entries.length > 0){
+      if(this.entries.length === 1){
 
-      let displayString: string = "";
-  
-      let units: { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] = [];
-      let topActivitySet: boolean = false;
-      this._entry.timelogEntryActivities.sort((a1, a2)=>{
-        if(a1.percentage > a2.percentage) return -1;
-        else if(a1.percentage < a2.percentage) return 1;
-        else return 0;
-      }).forEach((activityEntry) => {
-        let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
-        let durationMinutes: number =(activityEntry.percentage * entryDuration) / 100;
-  
-        if(!topActivitySet){
-          topActivitySet = true;
-          const alpha = 0.06;
-          this._backgroundColor = ColorConverter.convert(foundActivity.color, ColorType.RGBA, alpha);
-          if(foundActivity){
-            displayString = foundActivity.name;
-          }else{
-            displayString = "Unknown activity";
-          }
-        } 
-      
-        let color: string = "";
-        if (foundActivity) {
-          color = foundActivity.color;
-        } else {
-          color = "rgba(0,0,0,0.1)";
-        }
-  
-        let unitCount: number = Math.ceil(durationMinutes/15);
-        if(this._rows === 1){
-          for(let i=0; i< unitCount; i++){
-            units.push({
-              color: color,
-              unitType: "FIFTEEN",
-              fill: [1],
-            });
-          }
-        }else if(this._rows > 1){
-          let remainingUnitCount: number = unitCount;
-          while(remainingUnitCount > 0){
-            if(remainingUnitCount >= 4){
-              let fill: any[] = [1, 2, 3, 4];
-              units.push({
-                color: color,
-                unitType: "HOUR",
-                fill: fill,
-              });
-              remainingUnitCount-= 4;
+      }else{
+        const entryDuration: number = this.entries[0].durationSeconds/60;
+
+        let displayString: string = "";
+    
+        let units: { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] = [];
+        let topActivitySet: boolean = false;
+        this.entries[0].timelogEntryActivities.sort((a1, a2)=>{
+          if(a1.percentage > a2.percentage) return -1;
+          else if(a1.percentage < a2.percentage) return 1;
+          else return 0;
+        }).forEach((activityEntry) => {
+          let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
+          let durationMinutes: number =(activityEntry.percentage * entryDuration) / 100;
+    
+          if(!topActivitySet){
+            topActivitySet = true;
+            const alpha = 0.06;
+            this._backgroundColor = ColorConverter.convert(foundActivity.color, ColorType.RGBA, alpha);
+            if(foundActivity){
+              displayString = foundActivity.name;
             }else{
-              let fill: any[] = [];
-              for(let i=1; i<=remainingUnitCount; i++){
-                fill.push(i);
-              }
+              displayString = "Unknown activity";
+            }
+          } 
+        
+          let color: string = "";
+          if (foundActivity) {
+            color = foundActivity.color;
+          } else {
+            color = "rgba(0,0,0,0.1)";
+          }
+    
+          let unitCount: number = Math.ceil(durationMinutes/15);
+          if(this._rows === 1){
+            for(let i=0; i< unitCount; i++){
               units.push({
                 color: color,
-                unitType: "HOUR",
-                fill: fill,
+                unitType: "FIFTEEN",
+                fill: [1],
               });
-              remainingUnitCount = 0;
+            }
+          }else if(this._rows > 1){
+            let remainingUnitCount: number = unitCount;
+            while(remainingUnitCount > 0){
+              if(remainingUnitCount >= 4){
+                let fill: any[] = [1, 2, 3, 4];
+                units.push({
+                  color: color,
+                  unitType: "HOUR",
+                  fill: fill,
+                });
+                remainingUnitCount-= 4;
+              }else{
+                let fill: any[] = [];
+                for(let i=1; i<=remainingUnitCount; i++){
+                  fill.push(i);
+                }
+                units.push({
+                  color: color,
+                  unitType: "HOUR",
+                  fill: fill,
+                });
+                remainingUnitCount = 0;
+              }
             }
           }
+        });
+    
+        if(this.entries[0].timelogEntryActivities.length > 1){
+          displayString += " +" + (this.entries[0].timelogEntryActivities.length-1) + " more";
         }
-      });
-  
-      if(this._entry.timelogEntryActivities.length > 1){
-        displayString += " +" + (this._entry.timelogEntryActivities.length-1) + " more";
+        
+    
+    
+        this._displayString = displayString;
+        this._units = units;
       }
-      
-  
-  
-      this._displayString = displayString;
-      this._units = units;
+
     }else{
       
     }

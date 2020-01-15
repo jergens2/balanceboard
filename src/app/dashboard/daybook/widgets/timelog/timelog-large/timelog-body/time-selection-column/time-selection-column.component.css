@@ -4,11 +4,12 @@
     background-color: rgba(255, 0, 0, 0.007);
     display:flex;
     flex-direction: column;
-    cursor: grab;
     border-radius: 3px;
 }
 .active-root{
     border: 1px solid rgb(0, 117, 185);
+}
+.active-root > .selection-row{
     cursor: grabbing;
 }
 
@@ -16,10 +17,11 @@
     background-color: rgba(0, 0, 255, 0.021);
     flex-grow: 2;
 }
-.available{
+.available-row{
     background-color: rgba(0, 162, 255, 0.1);
+    cursor: grab;
 }
-.selection-row:hover{
+.available-row:hover{
     border-top: 1px solid rgb(0, 117, 185);
     /* background-color: rgba(0, 162, 255, 0.658); */
 }

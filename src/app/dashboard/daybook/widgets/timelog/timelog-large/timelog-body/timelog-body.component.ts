@@ -2,7 +2,7 @@ import { Component, OnInit, Input, HostListener } from '@angular/core';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
 import { RelativeMousePosition } from '../../../../../../shared/utilities/relative-mouse-position.class';
 import * as moment from 'moment';
-import { RoundToNearestMinute } from '../../../../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
+import { TimeUtilities } from '../../../../../../shared/utilities/time-utilities/time-utilities';
 import { DaybookService } from '../../../../daybook.service';
 import { TimelogZoomControl } from '../timelog-zoom-controller/timelog-zoom-control.interface';
 import { Subscription, Observable } from 'rxjs';
@@ -87,7 +87,7 @@ export class TimelogBodyComponent implements OnInit {
     this.timelogDisplayGrid.gridItems.forEach((gridItem)=>{
       console.log("   GI: " + gridItem.startTime.format('hh:mm a') + " to " + gridItem.endTime.format('hh:mm a') + " type: " + gridItem.type + " (" + gridItem.percent+"%)")
       if(gridItem.type === TimelogDisplayGridItemType.TIMELOG_ENTRY){
-        console.log("    TIMELOGENTRY: " , gridItem.timelogEntry)
+        console.log("    TIMELOGENTRY: " , gridItem.timelogEntries)
       }
     })
   }

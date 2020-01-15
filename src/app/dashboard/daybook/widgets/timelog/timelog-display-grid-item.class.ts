@@ -21,5 +21,5 @@ export class TimelogDisplayGridItem{
     public percent: number;
     public type: TimelogDisplayGridItemType
 
-    public timelogEntry: TimelogEntryItem;
+    public timelogEntries: TimelogEntryItem[] = [];
 }

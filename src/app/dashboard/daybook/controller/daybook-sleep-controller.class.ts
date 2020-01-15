@@ -1,7 +1,7 @@
 import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import * as moment from 'moment';
 import { Observable, Subject } from 'rxjs';
-import { RoundToNearestMinute } from '../../../shared/utilities/time-utilities/round-to-nearest-minute.class';
+import { TimeUtilities } from '../../../shared/utilities/time-utilities/time-utilities';
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 
@@ -12,6 +12,9 @@ export class DaybookSleepController {
     private _awakeToAsleepRatio: number;
     private _wakeupTimeIsSet = false;
     private _sleepSchedule: TimeSchedule;
+
+    private _firstWakeupTime: moment.Moment;
+    private _fallAsleepTime: moment.Moment;
 
     private _prevDayDBval: TimeSpanItem[];
     private _thisDayDBval: TimeSpanItem[];
@@ -28,7 +31,10 @@ export class DaybookSleepController {
         this._nextDayDBval = nextDayTimeSpanItems;
         this._buildSleepController(prevDayTimeSpanItems, thisDayTimeSpanItems, nextDayTimeSpanItems);
 
-        // this._logToConsole();
+        this._logToConsole();
+        console.log("Sleep controller: ")
+        console.log("  wakeuptime:  " + this.firstWakeupTime.format('hh:mm a'))
+        console.log("  fallasleeptime: " + this.fallAsleepTime.format('hh:mm a'))
     }
 
     private get prevDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
@@ -72,32 +78,10 @@ export class DaybookSleepController {
         }
     }
 
-    public get firstWakeupTime(): moment.Moment {
-        let startTime = this.startOfThisDay;
-        if (this.isAwakeAtTime(this.startOfThisDay)) {
-            startTime = this.prevDayFallAsleepTime;
-        }
-        const foundItem = this._sleepSchedule.fullSchedule
-            .filter(item => item.startTime.isAfter(startTime) && item.endTime.isSameOrBefore(this.endOfThisDay))
-            .find(item => item.hasValue === false);
-        return foundItem.startTime;
-    }
-    public get fallAsleepTime(): moment.Moment {
-        // console.log(" getting fall asleep time.")
-        // console.log(" this._sleepschedule = " , this._sleepSchedule.fullSchedule)
-        // this.sleepSchedule.fullSchedule.forEach((item)=>{
-        //     console.log("    " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a'), item.hasValue)
-        // })
-        const foundItem = this._sleepSchedule.fullSchedule
-            .filter(item => item.startTime.isSameOrAfter(this.firstWakeupTime) && item.endTime.isSameOrBefore(this.endOfNextDay))
-            .find(item => item.hasValue === true);
-        if(foundItem){
-            return foundItem.startTime;
-        }else{
+    public get firstWakeupTime(): moment.Moment { return this._firstWakeupTime; }
+    public get fallAsleepTime(): moment.Moment { return this._fallAsleepTime; }
 
-        }
-        
-    }
+
     public isAwakeAtTime(timeToCheck: moment.Moment): boolean {
         return !this.isAsleepAtTime(timeToCheck);
     }
@@ -127,7 +111,7 @@ export class DaybookSleepController {
     public get sleepTimesUpdated$(): Observable<TimeSpanItem[]> { return this._sleepTimesUpdated$.asObservable(); }
 
     public setWakeupTimeForDay(wakeupTime: moment.Moment) {
-        const fallAsleepTime = RoundToNearestMinute.roundToNearestMinute(moment(wakeupTime).add(this.ratioAwakeHoursPerDay, 'hours'), 15, 'UP');
+        const fallAsleepTime = TimeUtilities.roundUpToCeiling(moment(wakeupTime).add(this.ratioAwakeHoursPerDay, 'hours'), 15);
 
         console.log("Setting wakeup time and bedtime: ");
         console.log("Wakeuptime: " + wakeupTime.format('YYYY-MM-DD hh:mm a'));
@@ -190,8 +174,8 @@ export class DaybookSleepController {
         let newSchedule = new TimeSchedule(this.controllerStartTime, this.controllerEndTime);
         if (asleepItems.length > 0) {
             const currentTime = moment();
-            asleepItems.forEach((item)=>{
-                if(currentTime.isSameOrAfter(item.startTime) && currentTime.isSameOrBefore(item.endTime)){
+            asleepItems.forEach((item) => {
+                if (currentTime.isSameOrAfter(item.startTime) && currentTime.isSameOrBefore(item.endTime)) {
                     item.endTime = moment(currentTime);
                 }
             })
@@ -202,7 +186,35 @@ export class DaybookSleepController {
         } else {
             console.log('Error: no sleep times');
         }
+
+
         this._sleepSchedule = newSchedule;
+
+        this._setFirstWakeupTime();
+        this._setFallAsleepTime();
+    }
+    private _setFallAsleepTime() {
+        const foundItem = this._sleepSchedule.fullSchedule
+            .filter(item => item.startTime.isSameOrAfter(this.firstWakeupTime) && item.endTime.isSameOrBefore(this.endOfNextDay))
+            .find(item => item.hasValue === true);
+        if (foundItem) {
+            this._fallAsleepTime = foundItem.startTime;
+        } else {
+            console.log('Error:  could not find the fallAsleepTime ');
+        }
+    }
+    private _setFirstWakeupTime() {
+        let startTime = this.startOfThisDay;
+        console.log("finding first wakeup time after startTIme: " + startTime.format('YYYY-MM-DD hh:mm a'))
+        if (this.isAwakeAtTime(this.startOfThisDay)) {
+            console.log("  we were awake at the start of the day, so we are setting it to prev day fall asleep time.")
+            startTime = this.prevDayFallAsleepTime;
+        }
+        const foundItem = this._sleepSchedule.fullSchedule
+            .filter(item => item.startTime.isAfter(startTime) && item.endTime.isSameOrBefore(this.endOfThisDay))
+            .find(item => item.hasValue === false);
+        console.log("   Found item: " + foundItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + foundItem.endTime.format('YYYY-MM-DD hh:mm a'))
+        this._firstWakeupTime = foundItem.startTime;
     }
 
     private _copyTimeSpanItemsFromDate(thisDayTimeSpanItems: TimeSpanItem[], daysDifference: number): TimeSpanItem[] {
@@ -219,7 +231,7 @@ export class DaybookSleepController {
 
 
     private _buildDefaultTimeSpanItems(): TimeSpanItem[] {
-        const defaultWakeupHour =7;
+        const defaultWakeupHour = 7;
         const defaultWakeupMinute = 30;
         const startOfDay: moment.Moment = moment(this.thisDateYYYYMMDD).startOf('day');
         const wakeupTime: moment.Moment = moment(startOfDay).hour(defaultWakeupHour).minute(defaultWakeupMinute);
