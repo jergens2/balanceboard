@@ -1,6 +1,10 @@
-<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="entry">
+<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="displayEntry" >
+    <div [ngClass]="{'small-timelog-entry': isSmallEntry }">
+        <span *ngIf="isSmallEntry"> Small TLE </span>
+    </div>
+
     <div style="display:flex; flex-direction: row; align-items: center;">
-        <div style="display:flex;flex-direction: row; flex-wrap: wrap; max-width: 150px; margin-right :10px;">
+        <div style="display:flex;flex-direction: row; flex-wrap: wrap; max-width: 150px; margin-right :10px;" >
             <div *ngFor="let unit of units">
                 <div *ngIf="unit.unitType === 'HOUR'" class="hour-unit" [ngClass]="{'slim-hour-unit': unit.fill.length == 1}">
                     <div *ngFor="let square of unit.fill" class="unit" [style.background-color]="unit.color"></div>
@@ -12,9 +16,9 @@
 
         </div>
         <div [ngClass]="{'small-text': screenSize === 0}">
-            {{ displayString }}
+            {{ displayEntry.displayString }}
         </div>
     </div>
 
 </div>
-<div *ngIf="!entry" class="error-message">Error:  No timelog entry</div>
+<div *ngIf="!displayEntry" class="error-message">Error:  No timelog entry</div>

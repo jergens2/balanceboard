@@ -90,11 +90,14 @@ export class TimelogDisplayGrid {
           if (gridItems[i - 1].type === gridItems[i].type && gridItems[i].type) {
             let merge = false;
             if (gridItems[i].type === TimelogDisplayGridItemType.TIMELOG_ENTRY) {
-              const minPercent = 5;
-              const minimumTimeMS: number = 0.05 * this.totalViewMilliseconds;
+              const minPercent = 4.75;
+              const smallPercent = 6; // from 4.75 to 6
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
+                // console.log("one of the items was less than minPercent " + minPercent, gridItems[i].percent, gridItems[i-1].percent )
                 merge = true;
                 gridItems[i-1].timelogEntries.push(...gridItems[i].timelogEntries);
+              }else if(gridItems[i].percent < smallPercent){
+                gridItems[i].isSmallGridItem = true;
               }
             } else {
               merge = true;

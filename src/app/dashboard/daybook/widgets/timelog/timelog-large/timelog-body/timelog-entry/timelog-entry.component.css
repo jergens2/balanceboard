@@ -11,6 +11,10 @@
     padding-left: 10px;
     padding-right: 10px;
 }
+.small-timelog-entry{
+    flex-direction: row;
+    /* Todo:  set it so that it is a slim pencil and not a fat hamburger. */
+}
 
 .hour-unit{
     display:grid;

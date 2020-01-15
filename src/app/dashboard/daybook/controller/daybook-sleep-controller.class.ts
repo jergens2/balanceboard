@@ -30,11 +30,7 @@ export class DaybookSleepController {
         this._thisDayDBval = thisDayTimeSpanItems;
         this._nextDayDBval = nextDayTimeSpanItems;
         this._buildSleepController(prevDayTimeSpanItems, thisDayTimeSpanItems, nextDayTimeSpanItems);
-
-        this._logToConsole();
-        console.log("Sleep controller: ")
-        console.log("  wakeuptime:  " + this.firstWakeupTime.format('hh:mm a'))
-        console.log("  fallasleeptime: " + this.fallAsleepTime.format('hh:mm a'))
+        // this._logToConsole();
     }
 
     private get prevDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
@@ -112,11 +108,6 @@ export class DaybookSleepController {
 
     public setWakeupTimeForDay(wakeupTime: moment.Moment) {
         const fallAsleepTime = TimeUtilities.roundUpToCeiling(moment(wakeupTime).add(this.ratioAwakeHoursPerDay, 'hours'), 15);
-
-        console.log("Setting wakeup time and bedtime: ");
-        console.log("Wakeuptime: " + wakeupTime.format('YYYY-MM-DD hh:mm a'));
-        console.log("Fall Asleep Time: " + fallAsleepTime.format('YYYY-MM-DD hh:mm a'));
-
         const thisDayTimeSpanItems: TimeSpanItem[] = [];
         let startTime = this.startOfThisDay;
         // console.log("Previous day fall asleep time: " + this.prevDayFallAsleepTime.format('YYYY-MM-DD hh:mm a'))

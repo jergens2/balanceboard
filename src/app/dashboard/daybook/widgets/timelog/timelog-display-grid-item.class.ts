@@ -20,6 +20,7 @@ export class TimelogDisplayGridItem{
     public endTime: moment.Moment;
     public percent: number;
     public type: TimelogDisplayGridItemType
+    public isSmallGridItem: boolean = false;
 
     public timelogEntries: TimelogEntryItem[] = [];
 }

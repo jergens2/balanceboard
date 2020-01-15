@@ -44,7 +44,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   ngOnInit() {
 
-    this.daybookService.activeDayController$.subscribe((valueChanged)=>{
+    this.daybookService.activeDayController$.subscribe((valueChanged) => {
       this._availabilitySchedule = (this.daybookService.activeDayController.getColumnAvailability(this.zoomControl));
       this._buildRows(this._calculateDivisor());
     });
@@ -58,6 +58,8 @@ export class TimeSelectionColumnComponent implements OnInit {
   public onMouseDownRow(row: TimeSelectionRow) {
     // console.log("Row mouse down" + row.startTime.format("hh:mm a"))
     if (row.isAvailable) {
+      this._mouseDownRow = row;
+    } else if (this.rows[row.rowIndex + 1].isAvailable) {
       this._mouseDownRow = row;
     } else {
       this._reset();
@@ -221,7 +223,23 @@ export class TimeSelectionColumnComponent implements OnInit {
           isActive = false;
         }
       }
-    } else if (scheduleItems.length > 1) {
+    } else if (scheduleItems.length === 2) {
+      let activityMS = scheduleItems.map((item) => {
+        if (item.hasValue) {
+          return item.endTime.diff(item.startTime, 'milliseconds')
+        }
+        else {
+          return 0;
+        }
+      }).reduce((prev, current) => {        return prev + current;      });
+      let rowMS = checkRow.endTime.diff(checkRow.startTime, 'milliseconds');
+      if (activityMS > (rowMS / 2)) {
+        isActive = true;
+      } else {
+        isActive = false;
+      }
+
+    } else if (scheduleItems.length > 2) {
       isActive = true;
     }
     isAvailable = !isActive;
