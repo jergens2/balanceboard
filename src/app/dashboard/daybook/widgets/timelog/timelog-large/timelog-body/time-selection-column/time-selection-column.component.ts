@@ -7,6 +7,7 @@ import { DaybookService } from '../../../../../daybook.service';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimeSchedule } from '../../../../../../../shared/utilities/time-utilities/time-schedule.class';
+import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -27,6 +28,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
+  @Output() drawNewTimeDelineator: EventEmitter<TimelogDelineator> = new EventEmitter();
   @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) { this._zoomControl = zoomControl; }
 
@@ -45,11 +47,16 @@ export class TimeSelectionColumnComponent implements OnInit {
   ngOnInit() {
 
     this.daybookService.activeDayController$.subscribe((valueChanged) => {
+      console.log("Building rows");
       this._availabilitySchedule = (this.daybookService.activeDayController.getColumnAvailability(this.zoomControl));
       this._buildRows(this._calculateDivisor());
     });
-    // console.log("Rows: " + this.rows.length + " , minutes per: " + this._calculateDivisor())
-    // console.log("mousedown, and isactive: ", this._mouseDownRow, this.isActive)
+    
+
+    console.log("Availability items: ")
+    this._availabilitySchedule.fullSchedule.forEach((item)=>{
+      console.log("   " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + "  - " + item.hasValue);
+    })
   }
 
   public onMouseLeave() { this._mouseIsInComponent = false; }
@@ -59,32 +66,39 @@ export class TimeSelectionColumnComponent implements OnInit {
     // console.log("Row mouse down" + row.startTime.format("hh:mm a"))
     if (row.isAvailable) {
       this._mouseDownRow = row;
-    } else if (this.rows[row.rowIndex + 1].isAvailable) {
-      this._mouseDownRow = row;
-    } else {
-      this._reset();
-    }
+    } else{
+      const nextRowIndex = row.rowIndex + 1;
+      if((nextRowIndex+1) <= this.rows.length){
+        if (this.rows[row.rowIndex + 1].isAvailable) {
+          this._mouseDownRow = row;
+        }else{
+          this._reset();
+        }
+      }
+       else {
+        this._reset();
+      }
+    } 
   }
 
   public onMouseUpRow(row: TimeSelectionRow) {
-    console.log("Row mouse up " + row.startTime.format("hh:mm a") + " - is Available?  " + row.isAvailable);
+    // console.log("Row mouse up " + row.startTime.format("hh:mm a") + " - is Available?  " + row.isAvailable);
     if (this._mouseDownRow) {
       if (row.isAvailable) {
         this._mouseUpRow = row;
       } else {
         if (!this._mouseUpRow) {
           if (this._mouseOverRow) {
-            console.log("Setting mouseUp row to mouseOver row");
+            // console.log("Setting mouseUp row to mouseOver row");
             this._mouseUpRow = this._mouseOverRow;
           } else {
-            console.log("Setting mouseUp row to mouseDown row");
+            // console.log("Setting mouseUp row to mouseDown row");
             this._mouseUpRow = this._mouseDownRow;
           }
         }
       }
       this._createNewTimeMarks();
     } else {
-      console.log("  No mouseDownRow")
       this._reset();
     }
   }
@@ -107,18 +121,6 @@ export class TimeSelectionColumnComponent implements OnInit {
     this.drawNewTLE.emit(null);
     this.createNewTLE.emit(null);
   }
-  /**
-   * Find the next time that the availability changes value.
-   * For example, if currentNewRow.isAvailable === true, 
-   * then find the next time at which .isAvailable becomes false.
-   * @param newRow current row
-   */
-  private _findNextAvailabilityChange(currentNewRow): moment.Moment {
-    // console.log("To do:  start here.")
-    const currentRowIndex = this.rows.indexOf(currentNewRow);
-    // const 
-    return null;
-  }
 
   private _buildRows(divisorMinutes: number) {
     const durationMinutes: number = this._zoomControl.endTime.diff(this._zoomControl.startTime, 'minutes');
@@ -128,45 +130,14 @@ export class TimeSelectionColumnComponent implements OnInit {
     for (let i = 0; i < rowCount; i++) {
       let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(divisorMinutes, 'minutes'), i);
       newRow.isAvailable = this._checkRowAvailability(newRow);
-      newRow.nextAvailabilityChange = this._findNextAvailabilityChange(newRow);
+      // newRow.nextAvailabilityChange = this._findNextAvailabilityChange(newRow);
       rows.push(newRow);
       currentTime = moment(currentTime).add(divisorMinutes, 'minutes');
     }
     this._rows = rows;
   }
 
-  // private _getMinStartTime(): moment.Moment {
-  //   if (this._availabilitySchedule) {
-  //     const valueAtStart = this.availabilitySchedule.hasValueAtTime(this._mouseDownRow.startTime);
-  //     const valueAtEnd = this.availabilitySchedule.hasValueAtTime(this._mouseDownRow.endTime);
-  //     if (valueAtStart && valueAtEnd) {
-  //       console.log('Error:  seemingly impossible:   ' + this._mouseDownRow.startTime.format('hh:mm a') + " to " + this._mouseDownRow.endTime.format('hh:mm a'));
-  //       return null;
-  //     } else if (valueAtStart && !valueAtEnd) {
-  //       return this.availabilitySchedule.getPreviousValueChangeTime(this._mouseDownRow.endTime);
-  //     } else if (valueAtEnd && !valueAtStart) {
-  //       console.log('Error:  seemingly impossible');
-  //       return null;
-  //     } else if (!valueAtStart && !valueAtEnd) {
-  //       return this.availabilitySchedule.getPreviousValueChangeTime(this._mouseDownRow.startTime);
-  //     }
-  //   } else {
-  //     console.log("Error, no availability to check");
-  //     return null;
-  //   }
-  // }
-
-  // private _getMaxEndTime(currentStartTime: moment.Moment, currentEndTime: moment.Moment): moment.Moment {
-  //   const nextTrueTime = this.availabilitySchedule.getNextValueTrueTime(moment(currentStartTime).add(1,'millisecond'));
-  //   if(nextTrueTime){
-  //     if (currentEndTime.isAfter(nextTrueTime)) {
-  //       return nextTrueTime;
-  //     }
-  //   }
-  //   return currentEndTime;
-  // }
-
-
+  
   private _drawNewTimelogEntry() {
     if (this._mouseDownRow.startTime.isBefore(this._mouseOverRow.startTime)) {
       this.drawNewTLE.emit(new TimelogEntryItem(this._mouseDownRow.startTime, this._mouseOverRow.startTime))
@@ -174,19 +145,22 @@ export class TimeSelectionColumnComponent implements OnInit {
       this.drawNewTLE.emit(new TimelogEntryItem(this._mouseOverRow.startTime, this._mouseDownRow.startTime))
     } else if (this._mouseDownRow.startTime.isSame(this._mouseOverRow.startTime)) {
       this.drawNewTLE.emit(null);
-      console.log("To do:  draw a thing;")
+      this._drawNewTimeDelineator();
+      
     }
     // console.log("Draw out the new TLE")
   }
 
+  private _drawNewTimeDelineator(){
+    let newDelineator: TimelogDelineator = new TimelogDelineator(this._mouseDownRow.startTime, TimelogDelineatorType.SAVED_DELINEATOR);
+    this.drawNewTimeDelineator.emit(newDelineator);
+  }
 
   private _createNewTimeMarks() {
     if (this._mouseDownRow.startTime.isSame(this._mouseUpRow.startTime) && this._mouseDownRow.endTime.isSame(this._mouseUpRow.endTime)) {
       // console.log("single click : " + this._mouseDownRow.startTime.format('hh:mm a'))
     } else {
-      // console.log("Dragged range : " + this._mouseDownRow.startTime.format('hh:mm a') + this._mouseUpRow.startTime.format('hh:mm a'));
       this.createNewTLE.emit(new TimelogEntryItem(this._mouseDownRow.startTime, this._mouseUpRow.startTime));
-      console.log("Creating new TLE")
     }
     this._reset();
   }

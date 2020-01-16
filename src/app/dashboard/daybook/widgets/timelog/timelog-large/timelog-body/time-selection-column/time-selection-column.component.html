@@ -1,6 +1,13 @@
-<div class="selection-column-root" (mouseleave)="onMouseLeave()" (mouseenter)="onMouseEnter()" [ngClass]="{'active-root': isActive}">
-    <div *ngFor="let row of rows" class="selection-row" [ngClass]="{'available-row':row.isAvailable}" (mousedown)="onMouseDownRow(row)"
-        (mouseenter)="onMouseEnterRow(row)" (mouseleave)="onMouseLeaveRow(row)" (mouseup)="onMouseUpRow(row)">
+<div class="selection-column-root" (mouseleave)="onMouseLeave()" (mouseenter)="onMouseEnter()"
+    [ngClass]="{'active-root': isActive}">
+    <div *ngFor="let row of rows" class="selection-row" [ngClass]="{'available-row':row.isAvailable}"
+        (mousedown)="onMouseDownRow(row)" (mouseenter)="onMouseEnterRow(row)" (mouseleave)="onMouseLeaveRow(row)"
+        (mouseup)="onMouseUpRow(row)">
+        <div class="time-delineator-container" *ngIf="row.drawTimeDelineator">
+            <div class="time-delineator">
+
+            </div>
+        </div>
 
     </div>
 </div>

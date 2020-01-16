@@ -13,10 +13,10 @@ export class TimelogDisplayGrid {
     this._activeController = activeDayController;
 
     this._buildGrid();
-    console.log("Grid is built.")
-    this.gridItems.forEach((item) => {
-      console.log("   " + item.type + " : " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a'))
-    })
+    // console.log("Grid is built.")
+    // this.gridItems.forEach((item) => {
+    //   console.log("   " + item.type + " : " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a'))
+    // })
 
   }
 

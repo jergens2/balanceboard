@@ -16,6 +16,7 @@
 .selection-row{
     background-color: rgba(0, 0, 255, 0.021);
     flex-grow: 2;
+
 }
 .available-row{
     background-color: rgba(0, 162, 255, 0.1);
@@ -24,4 +25,16 @@
 .available-row:hover{
     border-top: 1px solid rgb(0, 117, 185);
     /* background-color: rgba(0, 162, 255, 0.658); */
+}
+
+
+.time-delineator-container{
+    width:0px; 
+    height: 20px; 
+    margin-top: -10px;
+}
+.time-delineator{
+    background-color: orange;
+    font-size: 0.6em;
+    font-weight: bold;
 }

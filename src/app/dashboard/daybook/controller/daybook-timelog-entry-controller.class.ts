@@ -24,10 +24,10 @@ export class DaybookTimelogEntryController {
         //     });
         // }
 
-        console.log(" Timelog Entries: ")
-        this.timelogEntryItems.forEach((item)=>{
-            console.log("    " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a '))
-        })
+        // console.log(" Timelog Entries: ")
+        // this.timelogEntryItems.forEach((item)=>{
+        //     console.log("    " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a '))
+        // })
     }
 
     private _dateYYYYMMDD: string;

@@ -83,13 +83,13 @@ export class TimelogBodyComponent implements OnInit {
       this._buildTimelog();
     });
 
-    console.log("Grid items is: ", this.timelogDisplayGrid) 
-    this.timelogDisplayGrid.gridItems.forEach((gridItem)=>{
-      console.log("   GI: " + gridItem.startTime.format('hh:mm a') + " to " + gridItem.endTime.format('hh:mm a') + " type: " + gridItem.type + " (" + gridItem.percent+"%)")
-      if(gridItem.type === TimelogDisplayGridItemType.TIMELOG_ENTRY){
-        console.log("    TIMELOGENTRY: " , gridItem.timelogEntries)
-      }
-    })
+    // console.log("Grid items is: ", this.timelogDisplayGrid) 
+    // this.timelogDisplayGrid.gridItems.forEach((gridItem)=>{
+    //   // console.log("    griditem: " + gridItem.startTime.format('hh:mm a') + " to " + gridItem.endTime.format('hh:mm a') + " type: " + gridItem.type + " (" + gridItem.percent+"%)")
+    //   if(gridItem.type === TimelogDisplayGridItemType.TIMELOG_ENTRY){
+    //     // console.log("    TIMELOGENTRY: " , gridItem.timelogEntries)
+    //   }
+    // })
   }
 
   private _buildTimelog() {

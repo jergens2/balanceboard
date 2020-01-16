@@ -24,7 +24,7 @@ export class TimeSelectionRow {
     /**
      * This property is a marker of the next time at which the availabilty flag changes.
      */
-    public nextAvailabilityChange: moment.Moment;
+    // public nextAvailabilityChange: moment.Moment;
 
     public get mouseIsDown(): boolean { return this._mouseIsDown; }
     public get mouseDown$(): Observable<boolean> { return this._mouseDown$.asObservable(); }

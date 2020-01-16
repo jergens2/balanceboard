@@ -105,10 +105,13 @@ export class DaybookController {
         // this.timelogEntryController.timelogSchedule.fullSchedule.forEach((item)=>{
         //     console.log("  " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " has value?: " , item.hasValue)
         // })
-        // console.log("Availability Schedule after merge with timelog: ", availabilitySchedule.fullSchedule);
-        availabilitySchedule.getScheduleSlice(zoomController.startTime, zoomController.endTime);
+
+        // console.log("Zoom controller:  " + zoomController.startTime.format('hh:mm a') + zoomController.endTime.format('hh:mm a'));
+
         // console.log("Availability Schedule after sliced by zoomController range", availabilitySchedule.fullSchedule);
+        availabilitySchedule = availabilitySchedule.getScheduleSlice(zoomController.startTime, zoomController.endTime);
         availabilitySchedule.splitScheduleAtTimes([this.startOfThisDay, this.endOfThisDay]);
+
         // console.log("Availability Schedule after split over midnight times", availabilitySchedule.fullSchedule);
 
 
@@ -119,6 +122,7 @@ export class DaybookController {
         return availabilitySchedule;
 
     }
+    
 
     private _reload(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
         this._previousDay = dayItem.prevDay;
