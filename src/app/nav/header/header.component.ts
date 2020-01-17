@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@ang
 import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent, Subscriber } from 'rxjs';
-import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks, faUsers, IconDefinition, faBatteryEmpty, faBatteryQuarter, faBatteryHalf, faBatteryThreeQuarters, faBatteryFull } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
@@ -14,6 +14,7 @@ import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { Modal } from '../../modal/modal.class';
 import { ModalService } from '../../modal/modal.service';
 import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
+import { DaybookService } from '../../dashboard/daybook/daybook.service';
 
 @Component({
   selector: 'app-header',
@@ -23,14 +24,19 @@ import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons
 export class HeaderComponent implements OnInit {
 
   constructor(
-    private headerService: HeaderService, 
-    private authService: AuthenticationService, 
+    private headerService: HeaderService,
+    private authService: AuthenticationService,
     private toolsService: ToolsService,
-    private modalService: ModalService) { }
+    private modalService: ModalService,
+    private daybookService: DaybookService, ) { }
 
   faBars = faBars;
   faCogs = faCogs;
   faUsers = faUsers;
+
+  private _batteryIcon: IconDefinition;
+  private _batteryNgClass: string;
+  private _batteryPercent: string = "";
 
   activeAppTool: string = null;
 
@@ -38,6 +44,10 @@ export class HeaderComponent implements OnInit {
   private activeSubscriptions: Subscription[] = [];
   // private closeMenuSubscription: Subscription = new Subscription();
   private documentClickListener: Observable<Event> = fromEvent(document, 'click');
+
+  public get batteryIcon(): IconDefinition { return this._batteryIcon; }
+  public get batteryPercent(): string { return this._batteryPercent; }
+  public get batteryNgClass(): string { return this._batteryNgClass; }
 
   @Output() sidebarButtonClicked: EventEmitter<boolean> = new EventEmitter();
 
@@ -55,15 +65,22 @@ export class HeaderComponent implements OnInit {
 
     this.headerService.activeBalanceBoardComponentMenu$.subscribe((componentMenu: HeaderMenu) => {
       if (componentMenu != null) {
-        this.headerMenus = Object.assign([], this.buildHeaderMenus(componentMenu)) ;
+        this.headerMenus = Object.assign([], this._buildHeaderMenus(componentMenu));
       } else {
-        this.headerMenus = Object.assign([], this.buildHeaderMenus());
+        this.headerMenus = Object.assign([], this._buildHeaderMenus());
       }
     });
-    this.headerMenus = Object.assign([], this.buildHeaderMenus());
+    this.headerMenus = Object.assign([], this._buildHeaderMenus());
+
+    this._setBattery();
+    this.daybookService.activeDayController$.subscribe((item) => {
+      this._setBattery();
+    })
+
+    
   }
 
-  private buildHeaderMenus(currentComponentMenu?: HeaderMenu): HeaderMenu[] {
+  private _buildHeaderMenus(currentComponentMenu?: HeaderMenu): HeaderMenu[] {
     this.closeMenus();
     this.activeSubscriptions.forEach((sub: Subscription) => {
       sub.unsubscribe();
@@ -84,15 +101,15 @@ export class HeaderComponent implements OnInit {
           dataObject: null,
         }
       ];
-      let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm );
+      let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm);
       modal.headerIcon = faSignOutAlt;
 
       this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
         if (selectedOption.value == "Logout") {
           this.logout();
-  
+
         } else if (selectedOption.value == "Cancel") {
-  
+
         } else {
           //error 
         }
@@ -109,23 +126,23 @@ export class HeaderComponent implements OnInit {
     let toolsMenuItems: MenuItem[] = [];
 
     let notepadMenuItem: MenuItem = new MenuItem('Notebook Entry', null, faStickyNote);
-    this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(()=>{
+    this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(() => {
       this.toolsService.openTool(ToolComponents.Notepad);
     }));
     let actionItemMenuItem: MenuItem = new MenuItem("Action Item", null, faCheckCircle);
-    this.activeSubscriptions.push(actionItemMenuItem.clickEmitted$.subscribe(()=>{
+    this.activeSubscriptions.push(actionItemMenuItem.clickEmitted$.subscribe(() => {
       this.toolsService.openTool(ToolComponents.ActionItem);
     }));
     let timelogEntryMenuItem: MenuItem = new MenuItem("Timelog Entry", null, faTable);
-    this.activeSubscriptions.push(timelogEntryMenuItem.clickEmitted$.subscribe(()=>{
+    this.activeSubscriptions.push(timelogEntryMenuItem.clickEmitted$.subscribe(() => {
       this.toolsService.openTool(ToolComponents.TimelogEntry);
     }));
     let futureEventMenuItem: MenuItem = new MenuItem("Appointment / Future Event", null, faCalendarAlt);
-    this.activeSubscriptions.push(futureEventMenuItem.clickEmitted$.subscribe(()=>{
+    this.activeSubscriptions.push(futureEventMenuItem.clickEmitted$.subscribe(() => {
       this.toolsService.openTool(ToolComponents.FutureEvent);
     }));
     let dailyTaskListMenuItem: MenuItem = new MenuItem("Daily Task List", null, faTasks);
-    this.activeSubscriptions.push(dailyTaskListMenuItem.clickEmitted$.subscribe(()=>{
+    this.activeSubscriptions.push(dailyTaskListMenuItem.clickEmitted$.subscribe(() => {
       this.toolsService.openTool(ToolComponents.DailyTaskList);
     }));
 
@@ -134,7 +151,7 @@ export class HeaderComponent implements OnInit {
     toolsMenuItems.push(timelogEntryMenuItem);
     toolsMenuItems.push(futureEventMenuItem);
     toolsMenuItems.push(dailyTaskListMenuItem);
-    
+
     let toolsMenu: HeaderMenu = new HeaderMenu('Tools', toolsMenuItems);
     toolsMenu.icon = faWrench;
     newMenus.push(toolsMenu);
@@ -151,7 +168,36 @@ export class HeaderComponent implements OnInit {
     return newMenus;
   }
 
-  private logout(){
+  private _setBattery() {
+    const batteryLevel: number = this.daybookService.activeDayController.energyController.getEnergyAtTime(this.daybookService.clock);
+    console.log("Battery level is: " + batteryLevel);
+    if (batteryLevel >= 0 && batteryLevel < 0.125) {
+      this._batteryIcon = faBatteryEmpty;
+      this._batteryNgClass = 'battery-empty';
+    }
+    else if (batteryLevel >= 0.125 && batteryLevel < 0.375) {
+      this._batteryIcon = faBatteryQuarter;
+      this._batteryNgClass = 'battery-quarter';
+    }
+    else if (batteryLevel >= 0.375 && batteryLevel < 0.625) {
+      this._batteryIcon = faBatteryHalf;
+      this._batteryNgClass = 'battery-half';
+    }
+    else if (batteryLevel >= 0.625 && batteryLevel < 0.875) {
+      this._batteryIcon = faBatteryThreeQuarters;
+      this._batteryNgClass = 'battery-three-quarters';
+    }
+    else if (batteryLevel >= 0.875 && batteryLevel <= 1) {
+      this._batteryIcon = faBatteryFull;
+      this._batteryNgClass = 'battery-full';
+    } else {
+      console.log('Error with battery')
+    }
+    console.log("battery ng class" + this.batteryNgClass)
+    this._batteryPercent = (batteryLevel * 100).toFixed(0);
+  }
+
+  private logout() {
     this.activeSubscriptions.forEach(subscription => {
       subscription.unsubscribe();
     });

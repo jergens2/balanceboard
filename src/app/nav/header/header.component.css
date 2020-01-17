@@ -55,6 +55,15 @@
     flex-direction: row;
     align-items: center;
 }
+.battery-section{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 15px;
+}
+.battery-section:hover{
+
+}
 
 .menu-name{
     padding: 3px;
@@ -103,4 +112,21 @@
     .sidebar-button{
         display:none;
     }
+}
+
+
+.battery-empty{
+    color: rgb(90, 0, 0);
+}
+.battery-quarter{
+    color: rgb(117, 34, 2);
+}
+.battery-half{
+    color: rgb(103, 141, 0);
+}
+.battery-three-quarters{
+    color: rgb(38, 71, 0);
+}
+.battery-full{
+    color: rgb(6, 66, 0);
 }

@@ -24,6 +24,11 @@ export class DaybookEnergyController {
 
         this._calculateSchedule();
         console.log("Sleep controller:  at current time, ("+moment().format('hh:mm a')+") sleep level is: " + (this.getEnergyAtTime(moment())*100).toFixed(0));
+
+        this._energyItems.forEach((item)=>{
+            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a ') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + "  -  "  + item.energyLevelStart)
+        })
+            
     }
 
     public getEnergyLevelAtTime(timeToCheck: moment.Moment): DaybookEnergyLevel {
