@@ -5,7 +5,6 @@ import * as moment from 'moment';
 import { TimelogDelineator, TimelogDelineatorType } from './timelog-delineator.class';
 import { faMoon, faSun, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { DaybookController } from '../../controller/daybook-controller.class';
-import { TimelogDisplayGridItemType } from './timelog-display-grid-item.class';
 import { TimelogDisplayGrid } from './timelog-display-grid-class';
 
 export class TimelogDisplayController {
@@ -36,8 +35,8 @@ export class TimelogDisplayController {
   public faSun = faSun;
 
   public get frameStart(): moment.Moment { return this._timelogZoomControl.startTime; }
-  public get wakeupTime(): moment.Moment { return this._activeDayController.sleepController.firstWakeupTime; }
-  public get fallAsleepTime(): moment.Moment { return this._activeDayController.sleepController.fallAsleepTime; }
+  public get wakeupTime(): moment.Moment { return this._activeDayController.wakeupTime; }
+  public get fallAsleepTime(): moment.Moment { return this._activeDayController.fallAsleepTime; }
   public get frameEnd(): moment.Moment { return this._timelogZoomControl.endTime; }
   public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
   public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
@@ -119,10 +118,10 @@ export class TimelogDisplayController {
     timelogDelineators.push(new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME));
     timelogDelineators.push(new TimelogDelineator(this.frameEnd, TimelogDelineatorType.FRAME_END));
 
-    this._activeDayController.timeDelineatorController.timeDelineations.forEach((timeDelineation) => {
+    this._activeDayController.timeDelineations.forEach((timeDelineation) => {
       timelogDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
     });
-    this._activeDayController.timelogEntryController.timelogEntryItems.forEach((timelogEntryItem) => {
+    this._activeDayController.timelogEntryItems.forEach((timelogEntryItem) => {
       const timeDelineatorStart = new TimelogDelineator(timelogEntryItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
       const timeDelineatorEnd = new TimelogDelineator(timelogEntryItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
       timeDelineatorStart.nextDelineator = timeDelineatorEnd;

@@ -1,15 +1,11 @@
 import * as moment from 'moment';
 import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { DaybookAvailabilityType } from '../../controller/items/daybook-availability-type.enum';
 
-export enum TimelogDisplayGridItemType{
-    SLEEP_START = 'SLEEP_START',
-    TIMELOG_ENTRY = 'TIMELOG_ENTRY',
-    AVAILABLE = 'AVAILABLE',
-    SLEEP_END = 'SLEEP_END',
-}
+
 export class TimelogDisplayGridItem{
 
-    constructor(startTime: moment.Moment, endTime:moment.Moment, percent: number, type: TimelogDisplayGridItemType){
+    constructor(startTime: moment.Moment, endTime:moment.Moment, percent: number, type: DaybookAvailabilityType){
         this.startTime = startTime;
         this.endTime = endTime;
         this.percent = percent;
@@ -19,7 +15,7 @@ export class TimelogDisplayGridItem{
     public startTime: moment.Moment;
     public endTime: moment.Moment;
     public percent: number;
-    public type: TimelogDisplayGridItemType
+    public type: DaybookAvailabilityType
     public isSmallGridItem: boolean = false;
 
     public timelogEntries: TimelogEntryItem[] = [];

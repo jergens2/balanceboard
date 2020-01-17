@@ -30,7 +30,7 @@
       </div>
       <div class="header-component-section battery-section">
         <span style="color: gray; font-weight:bold; font-size:0.6em; margin-right: 2px;">{{ batteryPercent }}% </span>
-        <fa-icon [icon]="batteryIcon" [ngClass]="batteryNgClass"></fa-icon>
+        <fa-icon *ngIf="batteryIcon" [icon]="batteryIcon" [ngClass]="batteryNgClass"></fa-icon>
       </div>
       <div class="search-bar">
         <app-search-bar></app-search-bar>

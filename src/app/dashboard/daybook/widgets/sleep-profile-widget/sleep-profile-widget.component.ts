@@ -43,8 +43,8 @@ export class SleepProfileWidgetComponent implements OnInit {
 
   ngOnInit() {
     
-    console.log("wakeup time: " + this.daybookService.activeDayController.sleepController.firstWakeupTime.format('hh:mm a'))
-    console.log("sleep time: " + this.daybookService.activeDayController.sleepController.fallAsleepTime.format('hh:mm a'))
+    console.log("wakeup time: " + this.daybookService.activeDayController.wakeupTime.format('hh:mm a'))
+    console.log("sleep time: " + this.daybookService.activeDayController.fallAsleepTime.format('hh:mm a'))
     
     
     this.daybookService.activeDayController$.subscribe((dayChanged) => { 
@@ -52,8 +52,8 @@ export class SleepProfileWidgetComponent implements OnInit {
       this.reInitiate();
     });
 
-    this._wakeupTime = this.daybookService.activeDayController.sleepController.firstWakeupTime;
-    this._sleepAtTime = this.daybookService.activeDayController.sleepController.fallAsleepTime;
+    this._wakeupTime = this.daybookService.activeDayController.wakeupTime;
+    this._sleepAtTime = this.daybookService.activeDayController.fallAsleepTime;
 
     console.log("This wakeup time is : " + this.wakeupTime);
     console.log("This.sleeptime is " + this.sleepAtTime)

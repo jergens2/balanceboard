@@ -36,7 +36,7 @@ export class DaybookTimelogEntryController {
 
     private _timelogActionComplete$: Subject<boolean> = new Subject();
 
-    private _timelogSchedule: TimeSchedule;
+    private _timelogSchedule: TimeSchedule<TimelogEntryItem>;
 
     private _timelogUpdated$: Subject<
         {
@@ -45,7 +45,7 @@ export class DaybookTimelogEntryController {
             nextDayItems: DaybookTimelogEntryDataItem[],
         }> = new Subject();
 
-    public get timelogSchedule(): TimeSchedule { return this._timelogSchedule; }
+    public get timelogSchedule(): TimeSchedule<TimelogEntryItem> { return this._timelogSchedule; }
 
     public get lastTimelogEntryItemTime(): moment.Moment {
         if (this._timelogEntryItems.length > 0) {
@@ -164,7 +164,7 @@ export class DaybookTimelogEntryController {
         return this._timelogActionComplete$.asObservable();
     }
 
-    public updateTimelogEntry$(updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
+    public updateTimelogEntryItem$(updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
         const updateDateYYYYMMDD: string = moment(updateTimelogEntry.startTime).format('YYYY-MM-DD');
         const startOfDay: moment.Moment = moment(updateTimelogEntry.startTime).startOf('day');
         const endOfDay: moment.Moment = moment(startOfDay).add(1, 'days');
@@ -203,7 +203,7 @@ export class DaybookTimelogEntryController {
             return null;
         }
     }
-    public deleteTimelogEntry$(deleteTimelogEntry: TimelogEntryItem): Observable<boolean> {
+    public deleteTimelogEntryItem$(deleteTimelogEntry: TimelogEntryItem): Observable<boolean> {
         const deleteDateYYYYMMDD: string = moment(deleteTimelogEntry.startTime).format('YYYY-MM-DD');
         const startOfDay: moment.Moment = moment(deleteTimelogEntry.startTime).startOf('day');
         const endOfDay: moment.Moment = moment(startOfDay).add(1, 'days');
@@ -254,9 +254,9 @@ export class DaybookTimelogEntryController {
     }
 
     private _buildSchedule() {
-        let newSchedule: TimeSchedule = new TimeSchedule(this.startOfPrevDate, this.endOfNextDate);
-        const positiveValues: TimeScheduleItem[] = this.timelogEntryItems.map(item => new TimeScheduleItem(item.startTime, item.endTime, true));
-        newSchedule.setScheduleFromSingleValues(positiveValues, true);
+        let newSchedule: TimeSchedule<TimelogEntryItem> = new TimeSchedule(this.startOfPrevDate, this.endOfNextDate);
+        const positiveValues: TimeScheduleItem<TimelogEntryItem>[] = this.timelogEntryItems.map(item => new TimeScheduleItem(item.startTime, item.endTime, true, item));
+        newSchedule.addScheduleValueItems(positiveValues);
         this._timelogSchedule = newSchedule;
     }
 

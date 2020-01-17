@@ -45,8 +45,8 @@ export class AvailableTimelogItemComponent implements OnInit {
         this._drawTLE = timelogEntry;
         const durationMS: number = this.gridItem.endTime.diff(this.gridItem.startTime, 'milliseconds');
         // console.log("Drawing TLE " + this._drawTLE.startTime.format('hh:mm a') + " to " + this._drawTLE.endTime.format('hh:mm a'));
-        const timeSchedule: TimeSchedule = new TimeSchedule(this.gridItem.startTime, this.gridItem.endTime);
-        timeSchedule.setScheduleFromSingleValues([new TimeScheduleItem(timelogEntry.startTime, timelogEntry.endTime, true)], true);
+        const timeSchedule: TimeSchedule<any> = new TimeSchedule(this.gridItem.startTime, this.gridItem.endTime);
+        timeSchedule.addScheduleValueItems([new TimeScheduleItem(timelogEntry.startTime, timelogEntry.endTime, true, timelogEntry)]);
         let percentages: number[] = timeSchedule.fullScheduleItems.map((item)=>{
           return (item.endTime.diff(item.startTime, 'milliseconds') / durationMS) * 100;
         });

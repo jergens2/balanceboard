@@ -10,7 +10,7 @@ import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-tim
 import { faEdit, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { LoggingService } from '../../../../../shared/logging/logging.service';
 import { TLEFFormCase } from './tlef-form-case.enum';
-import { DaybookTimelogEntryTemplate } from '../../../controller/interfaces/daybook-timelog-entry-template.interface';
+import { DaybookTimelogEntryTemplate } from '../../../controller/items/daybook-timelog-entry-template.interface';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -50,7 +50,7 @@ export class TimelogEntryFormComponent implements OnInit {
   public get dataEntryItem(): DaybookTimelogEntryDataItem { return this._dataEntryItem; }
   public get startTimeBoundary(): moment.Moment { return this._startTimeBoundary; }
   public get endTimeBoundary(): moment.Moment { return this._endTimeBoundary; }
-  public get wakeupTimeIsSet(): boolean { return this.daybookService.todayController.sleepController.wakeupTimeIsSet; }
+  public get wakeupTimeIsSet(): boolean { return this.daybookService.todayController.wakeupTimeIsSet; }
 
   public get formCase(): TLEFFormCase { return this._formCase; }
   public get isNewTLEF(): boolean {
@@ -203,13 +203,13 @@ export class TimelogEntryFormComponent implements OnInit {
     this._entryItem.timelogEntryActivities = this._activityItems;
     if (this.formCase === 'NEW_CURRENT') {
       console.log(' $$$ Saving current TLEF to Today item');
-      this.daybookService.todayController.timelogEntryController.saveTimelogEntryItem$(this.entryItem);
+      this.daybookService.todayController.saveTimelogEntryItem$(this.entryItem);
     } else if (this.formCase === 'NEW_FUTURE' || this.formCase === 'NEW_PREVIOUS') {
       console.log(' $$$ Saving new TLEF to Active Day Item');
-      this.daybookService.activeDayController.timelogEntryController.saveTimelogEntryItem$(this.entryItem);
+      this.daybookService.activeDayController.saveTimelogEntryItem$(this.entryItem);
     } else if (this.formCase === 'EXISTING_PREVIOUS' || this.formCase === 'EXISTING_FUTURE') {
       console.log(' $$$ Updating existing entry to Active Day item');
-      this.daybookService.activeDayController.timelogEntryController.updateTimelogEntry$(this.entryItem);
+      this.daybookService.activeDayController.updateTimelogEntryItem$(this.entryItem);
     }
     this.toolsService.closeTool();
   }
@@ -247,7 +247,7 @@ export class TimelogEntryFormComponent implements OnInit {
     if (this.confirmDelete === false) {
       this._confirmDelete = true;
     } else {
-      this.daybookService.activeDayController.timelogEntryController.deleteTimelogEntry$(this.entryItem);
+      this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
       console.log('Deleting item without subscribing tor response');
       this.toolsService.closeTool();
     }

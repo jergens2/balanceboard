@@ -17,9 +17,9 @@ export class TimelogEntryListComponent implements OnInit {
   public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
 
   ngOnInit() {
-    this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryController.timelogEntryItems;
+    this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryItems;
     this.daybookService.activeDayController$.subscribe((updated)=>{
-      this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryController.timelogEntryItems;
+      this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryItems;
     });
 
   }

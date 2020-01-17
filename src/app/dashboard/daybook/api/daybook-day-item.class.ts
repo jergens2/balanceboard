@@ -2,16 +2,14 @@
 import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
 import { DaybookTimelogEntryDataItem } from './data-items/daybook-timelog-entry-data-item.interface';
 import { DailyTaskListDataItem } from './data-items/daily-task-list-data-item.interface';
-import { Subject, Observable, Subscription } from 'rxjs';
+
 import * as moment from 'moment';
 
 import { ActivityCategoryDefinition } from '../../activities/api/activity-category-definition.class';
 import { ActivityTree } from '../../activities/api/activity-tree.class';
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from './data-items/daybook-day-item-scheduled-activity.class';
-import { DaybookDayItemTimelog } from '../controller/daybook-day-item-timelog.class';
+
 import blankDaybookItemHttpShape from './data-items/blank-http-shape';
-import { DaybookTimeReferencer } from './controllers/daybook-time-referencer.class';
-import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
 

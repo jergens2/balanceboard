@@ -1,8 +1,9 @@
 import * as moment from 'moment';
 import { TimelogDelineator, TimelogDelineatorType } from "./timelog-delineator.class";
-import { TimelogDisplayGridItem, TimelogDisplayGridItemType } from './timelog-display-grid-item.class';
+import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
 import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookController } from '../../controller/daybook-controller.class';
+import { DaybookAvailabilityType } from '../../controller/items/daybook-availability-type.enum';
 
 export class TimelogDisplayGrid {
 
@@ -73,11 +74,11 @@ export class TimelogDisplayGrid {
           const percent = (diff / this.totalViewMilliseconds) * 100;
           const startTime = this.timeDelineators[i - 1].time;
           const endTime = this.timeDelineators[i].time;
-          const typeFound: TimelogDisplayGridItemType = this._getGridItemType(this.timeDelineators[i - 1].delineatorType, this.timeDelineators[i].delineatorType);
+          const typeFound: DaybookAvailabilityType = this._getGridItemType(this.timeDelineators[i - 1].delineatorType, this.timeDelineators[i].delineatorType);
           if (typeFound) {
             const newGridItem = new TimelogDisplayGridItem(startTime, endTime, percent, typeFound);
-            if (typeFound === TimelogDisplayGridItemType.TIMELOG_ENTRY) {
-              newGridItem.timelogEntries = [this._activeController.timelogEntryController.timelogEntryItems.find(tle => tle.startTime.isSame(startTime))];
+            if (typeFound === DaybookAvailabilityType.TIMELOG_ENTRY) {
+              newGridItem.timelogEntries = [this._activeController.timelogEntryItems.find(tle => tle.startTime.isSame(startTime))];
             }
             gridItems.push(newGridItem);
             currentTime = moment(this.timeDelineators[i].time);
@@ -89,7 +90,7 @@ export class TimelogDisplayGrid {
         for (let i = 1; i < length; i++) {
           if (gridItems[i - 1].type === gridItems[i].type && gridItems[i].type) {
             let merge = false;
-            if (gridItems[i].type === TimelogDisplayGridItemType.TIMELOG_ENTRY) {
+            if (gridItems[i].type === DaybookAvailabilityType.TIMELOG_ENTRY) {
               const minPercent = 4.75;
               const smallPercent = 6; // from 4.75 to 6
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
@@ -130,9 +131,9 @@ export class TimelogDisplayGrid {
 
 
 
-  private _getGridItemType(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
-    let startsWith: TimelogDisplayGridItemType = this._gridItemStartsWith(startDelineator, endDelineator);
-    let endsWith: TimelogDisplayGridItemType = this._gridItemEndsWith(startDelineator, endDelineator);
+  private _getGridItemType(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
+    let startsWith: DaybookAvailabilityType = this._gridItemStartsWith(startDelineator, endDelineator);
+    let endsWith: DaybookAvailabilityType = this._gridItemEndsWith(startDelineator, endDelineator);
     if (startsWith) {
       return startsWith;
     } else {
@@ -146,29 +147,29 @@ export class TimelogDisplayGrid {
   }
 
 
-  private _gridItemStartsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
+  private _gridItemStartsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
     if (startDelineator === TimelogDelineatorType.FALLASLEEP_TIME) {
-      return TimelogDisplayGridItemType.SLEEP_END;
+      return DaybookAvailabilityType.SLEEP;
     } else if (startDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-      return TimelogDisplayGridItemType.TIMELOG_ENTRY;
+      return DaybookAvailabilityType.TIMELOG_ENTRY;
     } else if (startDelineator === TimelogDelineatorType.NOW) {
       if (endDelineator === TimelogDelineatorType.FALLASLEEP_TIME ||
         endDelineator === TimelogDelineatorType.FRAME_END ||
         endDelineator === TimelogDelineatorType.DAY_STRUCTURE ||
         endDelineator === TimelogDelineatorType.SAVED_DELINEATOR ||
         endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-        return TimelogDisplayGridItemType.AVAILABLE;
+        return DaybookAvailabilityType.AVAILABLE;
       }
     }
     return null;
   }
-  private _gridItemEndsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): TimelogDisplayGridItemType {
+  private _gridItemEndsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
     if (endDelineator === TimelogDelineatorType.WAKEUP_TIME) {
-      return TimelogDisplayGridItemType.SLEEP_START;
+      return DaybookAvailabilityType.SLEEP;
     } else if (endDelineator === TimelogDelineatorType.NOW) {
-      return TimelogDisplayGridItemType.AVAILABLE;
+      return DaybookAvailabilityType.AVAILABLE;
     } else if (endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_END) {
-      return TimelogDisplayGridItemType.TIMELOG_ENTRY;
+      return DaybookAvailabilityType.TIMELOG_ENTRY;
     }
     return null;
   }

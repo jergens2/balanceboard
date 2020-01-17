@@ -21,9 +21,9 @@ export class TlefWakeupTimeComponent implements OnInit {
   ngOnInit() {
 
 
-    this._time = moment(this.daybookService.activeDayController.sleepController.firstWakeupTime);
+    this._time = moment(this.daybookService.activeDayController.wakeupTime);
     this.maxVal = moment();
-    this.minVal = this.daybookService.todayController.sleepController.prevDayFallAsleepTime;
+    this.minVal = this.daybookService.todayController.prevDayFallAsleepTime;
   }
 
   @Output() timeChanged: EventEmitter<moment.Moment> = new EventEmitter();
@@ -46,6 +46,6 @@ export class TlefWakeupTimeComponent implements OnInit {
 
     this._saveClicked = true;
     // console.log("Saving time to sleepcontroller: " + this.time.format('YYYY-MM-DD hh:mm a'))
-    this.daybookService.todayController.sleepController.setWakeupTimeForDay(this.time)
+    this.daybookService.todayController.setWakeupTimeForDay(this.time)
   }
 }

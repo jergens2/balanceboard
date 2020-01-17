@@ -1,4 +1,4 @@
-import { DaybookEnergyLevel } from './daybook-energy-level.enum';
+import { DaybookEnergyLevel } from '../daybook-energy-level.enum';
 import * as moment from 'moment';
 
 export class DaybookEnergyItem {

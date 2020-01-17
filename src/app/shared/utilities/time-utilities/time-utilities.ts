@@ -19,7 +19,7 @@ export class TimeUtilities {
             return moment(time).add(ceilingMinute, 'minutes');
         } else {
             let currentTime = moment(time).startOf('hour');
-            
+
             while (currentTime.isSameOrBefore(moment(time).startOf('hour').add(1, 'hour'))) {
                 if (currentTime.isAfter(time)) {
                     // console.log("Rounding up time (by : " + ceilingMinute + "): " + time.format('hh:mm a') + "  :output: " + currentTime.format('hh:mm a'))
@@ -27,12 +27,13 @@ export class TimeUtilities {
                 }
                 currentTime = moment(currentTime).add(ceilingMinute, 'minutes');
             }
-            console.log('error: did not find a time:  ('+ceilingMinute+') : ' + time.format('hh:mm a') );
+            console.log('error: did not find a time:  (' + ceilingMinute + ') : ' + time.format('hh:mm a'));
+            return time;
         }
-        return time;
+
     }
     public static roundDownToFloor(time: moment.Moment, floorMinute: 5 | 10 | 15 | 20 | 30): moment.Moment {
-        
+
         const mod = time.minute() % floorMinute
         if (mod === 0) {
             return time;
@@ -46,7 +47,8 @@ export class TimeUtilities {
                 currentTime = moment(currentTime).subtract(floorMinute, 'minutes');
             }
             console.log('error: did not find a time');
-        }        
-        return time;
+            return time;
+        }
+
     }
 }

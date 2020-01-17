@@ -169,8 +169,8 @@ export class HeaderComponent implements OnInit {
   }
 
   private _setBattery() {
-    const batteryLevel: number = this.daybookService.activeDayController.energyController.getEnergyAtTime(this.daybookService.clock);
-    console.log("Battery level is: " + batteryLevel);
+    const batteryLevel: number = this.daybookService.activeDayController.getEnergyAtTime(this.daybookService.clock);
+    // console.log("Battery level is: " + batteryLevel);
     if (batteryLevel >= 0 && batteryLevel < 0.125) {
       this._batteryIcon = faBatteryEmpty;
       this._batteryNgClass = 'battery-empty';
@@ -191,9 +191,11 @@ export class HeaderComponent implements OnInit {
       this._batteryIcon = faBatteryFull;
       this._batteryNgClass = 'battery-full';
     } else {
-      console.log('Error with battery')
+      console.log('Error with battery: ' + batteryLevel)
+      this._batteryNgClass = '';
+      this._batteryIcon = null;
     }
-    console.log("battery ng class" + this.batteryNgClass)
+    // console.log("battery ng class" + this.batteryNgClass)
     this._batteryPercent = (batteryLevel * 100).toFixed(0);
   }
 
