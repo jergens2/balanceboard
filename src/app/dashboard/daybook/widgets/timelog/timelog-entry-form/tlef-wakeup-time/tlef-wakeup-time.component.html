@@ -10,6 +10,6 @@
     </div>
 
     <div style="display:flex;flex-direction: row-reverse;">
-        <button class="medium-button" (click)="onClickSave()">Save</button>
+        <button class="medium-button" (click)="onClickSave()">Save <span *ngIf="saveClicked" style="width:20px;"><fa-icon [icon]="faSpinner" [spin]="true"></fa-icon></span></button>
     </div>
 </div>

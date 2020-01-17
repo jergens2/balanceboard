@@ -47,7 +47,7 @@ export class AvailableTimelogItemComponent implements OnInit {
         // console.log("Drawing TLE " + this._drawTLE.startTime.format('hh:mm a') + " to " + this._drawTLE.endTime.format('hh:mm a'));
         const timeSchedule: TimeSchedule = new TimeSchedule(this.gridItem.startTime, this.gridItem.endTime);
         timeSchedule.setScheduleFromSingleValues([new TimeScheduleItem(timelogEntry.startTime, timelogEntry.endTime, true)], true);
-        let percentages: number[] = timeSchedule.fullSchedule.map((item)=>{
+        let percentages: number[] = timeSchedule.fullScheduleItems.map((item)=>{
           return (item.endTime.diff(item.startTime, 'milliseconds') / durationMS) * 100;
         });
         // console.log("Percenates is : " , percentages);

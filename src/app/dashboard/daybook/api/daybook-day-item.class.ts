@@ -45,6 +45,8 @@ export class DaybookDayItem {
     public get id(): string { return this.httpShape._id; }
     public get userId(): string { return this.httpShape.userId; }
     public get dateYYYYMMDD(): string { return this.httpShape.dateYYYYMMDD; }
+    public get startOfThisDay(): moment.Moment { return moment(this.dateYYYYMMDD).startOf('day'); }
+    public get endOfThisDay(): moment.Moment { return moment(this.startOfThisDay).add(24, 'hours'); }
     public get timeDelineators(): moment.Moment[] { return this.httpShape.timeDelineators.map(timeString => moment(timeString)); }
     public get sleepTimes(): TimeSpanItem[] { return this.httpShape.sleepTimes; }
     public get timelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this.httpShape.daybookTimelogEntryDataItems; }

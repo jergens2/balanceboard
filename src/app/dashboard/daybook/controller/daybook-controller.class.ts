@@ -17,7 +17,7 @@ import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 
 
-export class DaybookController {
+export class DaybookController extends TimeSchedule {
 
     private _previousDay: DaybookDayItem;
     private _thisDay: DaybookDayItem;
@@ -35,6 +35,7 @@ export class DaybookController {
     private _subscriptions: Subscription[] = [];
 
     constructor(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
+        super(dayItem.thisDay.startOfThisDay, dayItem.thisDay.endOfThisDay);
         // console.log("Constructing the controller: ", dayItem);
         this._reload(dayItem);
     }
@@ -93,34 +94,8 @@ export class DaybookController {
         };
     }
 
-    public getColumnAvailability(zoomController: TimelogZoomControl): TimeSchedule {
-        let availabilitySchedule: TimeSchedule = this.sleepController.sleepSchedule;
-        // console.log("this.sleepController.sleepSchedule: ") 
-        // this.sleepController.sleepSchedule.fullSchedule.forEach((item)=>{
-        //     console.log("  " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " has value?: " , item.hasValue)
-        // })
-
-        availabilitySchedule.mergeValues(this.timelogEntryController.timelogSchedule);
-        // console.log("this.timelogEntryController.timelogSchedule: ") 
-        // this.timelogEntryController.timelogSchedule.fullSchedule.forEach((item)=>{
-        //     console.log("  " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " has value?: " , item.hasValue)
-        // })
-
-        // console.log("Zoom controller:  " + zoomController.startTime.format('hh:mm a') + zoomController.endTime.format('hh:mm a'));
-
-        // console.log("Availability Schedule after sliced by zoomController range", availabilitySchedule.fullSchedule);
-        availabilitySchedule = availabilitySchedule.getScheduleSlice(zoomController.startTime, zoomController.endTime);
-        availabilitySchedule.splitScheduleAtTimes([this.startOfThisDay, this.endOfThisDay]);
-
-        // console.log("Availability Schedule after split over midnight times", availabilitySchedule.fullSchedule);
-
-
-        // console.log("Returning Column Availability: ") 
-        // availabilitySchedule.fullSchedule.forEach((item)=>{
-        //     console.log("  " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " has value?: " , item.hasValue)
-        // })
-        return availabilitySchedule;
-
+    public getColumnAvailability(startTime: moment.Moment, endTime: moment.Moment): TimeScheduleItem[] {
+        return this.getScheduleSlice(startTime, endTime);
     }
     
 
@@ -128,11 +103,7 @@ export class DaybookController {
         this._previousDay = dayItem.prevDay;
         this._thisDay = dayItem.thisDay;
         this._followingDay = dayItem.nextDay;
-
-        // console.log("Building controller.  dayItem received:", dayItem)
-        // console.log("  prevDay: " + dayItem.prevDay.dateYYYYMMDD, this._previousDay)
-        // console.log("  thisDay: " + dayItem.thisDay.dateYYYYMMDD, this._thisDay)
-        // console.log("  nextDay: " + dayItem.nextDay.dateYYYYMMDD, this._followingDay)
+        super._reInitializeTimeSchedule(this.startOfPrevDay, this.endOfNextDay);
         this._buildController();
     }
 
@@ -141,17 +112,25 @@ export class DaybookController {
         // console.log("PRev day: " , this._previousDay)
         // console.log(" cur day"  ,this._thisDay)
         // console.log("next day: " , this._followingDay)
-        const timelogDataItems = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
+        const timelogDataItems: DaybookTimelogEntryDataItem[] = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
             .concat(this._followingDay.timelogEntryDataItems);
-        const allTimeSpanItems = this._previousDay.sleepTimes.concat(this._thisDay.sleepTimes).concat(this._followingDay.sleepTimes);
+        const allSleepSpanItems = this._previousDay.sleepTimes.concat(this._thisDay.sleepTimes).concat(this._followingDay.sleepTimes);
         const allEnergyLevelInputs = this._previousDay.sleepEnergyLevelInputs.concat(this._thisDay.sleepEnergyLevelInputs)
             .concat(this._followingDay.sleepEnergyLevelInputs);
         const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);
 
+        const timeScheduleValueItems: TimeScheduleItem[] = [
+            ...timelogDataItems.map(item => new TimeScheduleItem(moment(item.startTimeISO), moment(item.endTimeISO), true)),
+            ...allSleepSpanItems.map(item => new TimeScheduleItem(moment(item.startTimeISO), moment(item.endTimeISO), true)),
+        ]
+        this.setScheduleFromSingleValues(timeScheduleValueItems, true);
+        console.log("Daybook controller:  Full Schedule Log:")
+        this.logFullScheduleItems();
+
         this._sleepController = new DaybookSleepController(this._previousDay.sleepTimes,
             this._thisDay.sleepTimes, this._followingDay.sleepTimes, this.dateYYYYMMDD, this._awakeToAsleepRatio);
-        this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems, allTimeSpanItems);
-        this._energyController = new DaybookEnergyController(this.dateYYYYMMDD, this._sleepController.sleepSchedule.fullSchedule,
+        this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems, allSleepSpanItems);
+        this._energyController = new DaybookEnergyController(this.dateYYYYMMDD, this._sleepController.sleepSchedule,
             allEnergyLevelInputs, this._awakeToAsleepRatio);
         this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
         this._updateSubscriptions();
@@ -159,17 +138,32 @@ export class DaybookController {
 
 
     private _isNewTLEFirstOfDay(currentTime: moment.Moment): boolean {
+        console.log("Is TLEF first one of the day ? "  + currentTime.format('YYYY-MM-DD hh:mm a'))
         let newTLEisStartOfDay: boolean = true;
         if (this.sleepController.wakeupTimeIsSet) {
+            console.log("The wakeup time is set.  Therefore, this is not the start entry.  teehee")
             newTLEisStartOfDay = false;
         } else if (this.timelogEntryController.lastTimelogEntryItemTime) {
             /**
              * if there is a previous time in the timelog, then that means that the user was active in the previous day, 
              * but now it's a new day and the wakeuptime is not set. 
              */
-            console.log("Assumption taken that it is past midnight but sleep time is imminent.")
-            console.log("With this, the energy level is probably low: " + this.energyController.getEnergyLevelAtTime(currentTime));
-            newTLEisStartOfDay = false;
+            const energyAtLastActivityEnd: number = this.energyController.getEnergyAtTime(this.timelogEntryController.lastTimelogEntryItemTime);
+            const currentEnergy: number = this.energyController.getEnergyAtTime(currentTime);
+            const energyDiff = currentEnergy - energyAtLastActivityEnd;
+
+            const energyDiffThreshold = 0.5;
+            if(energyDiff >= energyDiffThreshold){
+                newTLEisStartOfDay = true;
+            }else{
+                const minutesDiff = moment(currentTime).diff(this.sleepController.prevDayFallAsleepTime);
+                
+                newTLEisStartOfDay = false;
+            }
+            // this.sleepController.prevDayFallAsleepTime
+            console.log("Energy difference between current time ("+currentTime.format('YYYY-MM-DD hh:mm a')+")and last time ("+this.timelogEntryController.lastTimelogEntryItemTime.format('YYYY-MM-DD hh:mm a')+") - ", energyDiff )
+        }else{
+            console.log("The wakeup time is not set")
         }
         return newTLEisStartOfDay;
     }

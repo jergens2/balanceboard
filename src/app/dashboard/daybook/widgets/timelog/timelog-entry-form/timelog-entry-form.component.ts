@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { ItemState } from '../../../../../shared/utilities/item-state.class';
 import { TimelogEntryActivity } from '../../../api/data-items/timelog-entry-activity.interface';
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { LoggingService } from '../../../../../shared/logging/logging.service';
 import { TLEFFormCase } from './tlef-form-case.enum';
 import { DaybookTimelogEntryTemplate } from '../../../controller/interfaces/daybook-timelog-entry-template.interface';
@@ -38,7 +38,12 @@ export class TimelogEntryFormComponent implements OnInit {
 
   private _confirmDelete = false;
   private _confirmDiscard = false;
+  
+
   faEdit = faEdit;
+
+
+  
 
 
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
@@ -60,7 +65,6 @@ export class TimelogEntryFormComponent implements OnInit {
 
   public get isStartOfCurrentDay(): boolean { return this._isStartOfCurrentDay; }
   public get isEndOfCurrentDay(): boolean { return this._isEndOfCurrentDay; }
-
 
   public get modifyingTimes(): boolean { return this._modifyingTimes; }
 
@@ -195,7 +199,7 @@ export class TimelogEntryFormComponent implements OnInit {
   }
 
   onClickSave() {
-    // console.log("Saving timelog entry: ", this.entryItem);
+
     this._entryItem.timelogEntryActivities = this._activityItems;
     if (this.formCase === 'NEW_CURRENT') {
       console.log(' $$$ Saving current TLEF to Today item');

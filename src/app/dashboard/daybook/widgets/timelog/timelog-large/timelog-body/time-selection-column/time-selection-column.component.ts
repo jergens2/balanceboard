@@ -24,7 +24,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _mouseDownRow: TimeSelectionRow;
   private _mouseUpRow: TimeSelectionRow;
   private _mouseOverRow: TimeSelectionRow;
-  private _availabilitySchedule: TimeSchedule;
+  private _fullScheduleItems: TimeScheduleItem[];
 
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
@@ -39,7 +39,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
 
-  public get availabilitySchedule(): TimeSchedule { return this._availabilitySchedule; }
+  public get fullScheduleItems(): TimeScheduleItem[] { return this._fullScheduleItems; }
   public get rows(): TimeSelectionRow[] { return this._rows; }
   public get zoomControl(): TimelogZoomControl { return this._zoomControl; }
   public get isActive(): boolean { return (this._mouseDownRow ? true : false); }
@@ -48,13 +48,13 @@ export class TimeSelectionColumnComponent implements OnInit {
 
     this.daybookService.activeDayController$.subscribe((valueChanged) => {
       console.log("Building rows");
-      this._availabilitySchedule = (this.daybookService.activeDayController.getColumnAvailability(this.zoomControl));
+      this._fullScheduleItems = this.daybookService.activeDayController.getColumnAvailability(this.zoomControl.startTime, this.zoomControl.endTime);
       this._buildRows(this._calculateDivisor());
     });
     
 
     console.log("Availability items: ")
-    this._availabilitySchedule.fullSchedule.forEach((item)=>{
+    this._fullScheduleItems.forEach((item)=>{
       console.log("   " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + "  - " + item.hasValue);
     })
   }
@@ -173,7 +173,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     let isActive: boolean = false;
 
 
-    let scheduleItems = this.availabilitySchedule.fullSchedule.filter((scheduleItem) => {
+    let scheduleItems = this.fullScheduleItems.filter((scheduleItem) => {
       const fullyEncompasses = scheduleItem.startTime.isSameOrBefore(checkRow.startTime) && scheduleItem.endTime.isSameOrAfter(checkRow.endTime);
       const fullyEnclosed = scheduleItem.startTime.isSameOrAfter(checkRow.startTime) && scheduleItem.endTime.isSameOrBefore(checkRow.endTime);
       const crossesStart = scheduleItem.startTime.isSameOrBefore(checkRow.startTime) && scheduleItem.endTime.isAfter(checkRow.startTime);
