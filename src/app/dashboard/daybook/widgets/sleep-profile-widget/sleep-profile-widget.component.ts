@@ -42,21 +42,11 @@ export class SleepProfileWidgetComponent implements OnInit {
 
 
   ngOnInit() {
-    
-    console.log("wakeup time: " + this.daybookService.activeDayController.wakeupTime.format('hh:mm a'))
-    console.log("sleep time: " + this.daybookService.activeDayController.fallAsleepTime.format('hh:mm a'))
-    
-    
+    this.reInitiate();
     this.daybookService.activeDayController$.subscribe((dayChanged) => { 
-      // console.log("SLEEP PROFILE WIDGET: REINITIATING  - " + dayChanged.dateYYYYMMDD);
+      console.log("SLEEP PROFILE WIDGET: REINITIATING  - " + dayChanged.dateYYYYMMDD);
       this.reInitiate();
     });
-
-    this._wakeupTime = this.daybookService.activeDayController.wakeupTime;
-    this._sleepAtTime = this.daybookService.activeDayController.fallAsleepTime;
-
-    console.log("This wakeup time is : " + this.wakeupTime);
-    console.log("This.sleeptime is " + this.sleepAtTime)
   }
 
   public onWakeupTimeChanged(time: moment.Moment){
@@ -64,8 +54,12 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
   private reInitiate() {
-
-
+    this._wakeupTime = this.daybookService.activeDayController.wakeupTime;
+    this._sleepAtTime = this.daybookService.activeDayController.fallAsleepTime;
+    console.log("  SPW: This wakeup time is : " + this.wakeupTime);
+    console.log("  SPW: his.sleeptime is " + this.sleepAtTime)
+    console.log("  SPW: wakeup time: " + this.daybookService.activeDayController.wakeupTime.format('hh:mm a'))
+    console.log("  SPW: sleep time: " + this.daybookService.activeDayController.fallAsleepTime.format('hh:mm a'))
   }
 
 

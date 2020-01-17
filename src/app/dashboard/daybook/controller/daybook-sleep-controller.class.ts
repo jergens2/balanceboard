@@ -257,14 +257,14 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
         const foundItem = this.valueItems
             .find(item => item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(this.endOfThisDay));
         if (foundItem) {
-            this._firstWakeupTime = foundItem.endTime;
+            this._firstWakeupTime = moment(foundItem.endTime);
         }
         else {
             const foundItem = this.fullScheduleItems
                 .filter(item => item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(this.endOfThisDay))
                 .find(item => item.hasValue === false);
             if (foundItem) {
-                this._firstWakeupTime = foundItem.startTime;
+                this._firstWakeupTime = moment(foundItem.startTime);
             } else {
                 console.log("Error.  May need to theck TimeSchedule._sort method")
             }

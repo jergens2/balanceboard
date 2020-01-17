@@ -42,8 +42,8 @@ export class TimelogZoomControllerComponent implements OnInit {
   private _updateWakeCycleZoom(activeDayChanged: DaybookController) {
     const wakeZoomActive: boolean = this._currentZoomLevel ? this._currentZoomLevel.name === "AWAKE" : true;
     
-    let wakeupTime: moment.Moment = activeDayChanged.wakeupTime;
-    let fallAsleepTime: moment.Moment = activeDayChanged.fallAsleepTime;
+    let wakeupTime: moment.Moment = moment(activeDayChanged.wakeupTime);
+    let fallAsleepTime: moment.Moment = moment(activeDayChanged.fallAsleepTime);
     console.log("Wakeup time is " + wakeupTime.format('hh:mm a'))
     let frameStart: moment.Moment;
     let frameEnd: moment.Moment;
