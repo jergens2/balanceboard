@@ -40,6 +40,7 @@ export class TimelogBodyComponent implements OnInit {
 
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
+    this._buildTimelog();
   }
 
   @Input() public set zoomHover(zoom: TimelogZoomControl) { }

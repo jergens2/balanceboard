@@ -17,7 +17,7 @@ export class TimelogDisplayController {
     this._activeDayController = activeDayController;
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
     this._update();
-    console.log("TIMELOG_ZOOM: " + this._timelogZoomControl.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._timelogZoomControl.endTime.format('YYYY-MM-DD hh:mm a'));
+    // console.log("TIMELOG_ZOOM: " + this._atimelogZoomControl.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._timelogZoomControl.endTime.format('YYYY-MM-DD hh:mm a'));
   }
 
   private _log: string[] = [];

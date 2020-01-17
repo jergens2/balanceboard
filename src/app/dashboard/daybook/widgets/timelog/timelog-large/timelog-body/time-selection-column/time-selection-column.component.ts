@@ -29,7 +29,10 @@ export class TimeSelectionColumnComponent implements OnInit {
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Output() drawNewTimeDelineator: EventEmitter<TimelogDelineator> = new EventEmitter();
   @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
-  @Input() public set zoomControl(zoomControl: TimelogZoomControl) { this._zoomControl = zoomControl; }
+  @Input() public set zoomControl(zoomControl: TimelogZoomControl) { 
+    this._zoomControl = zoomControl; 
+    this._buildRows(this._calculateDivisor());
+  }
 
   @HostListener('window:mouseup', ['$event.target']) onMouseUp() {
     if (!this._mouseIsInComponent) {
@@ -43,7 +46,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   public get isActive(): boolean { return (this._mouseDownRow ? true : false); }
 
   ngOnInit() {
-
+    // this._buildRows(this._calculateDivisor());
     this.daybookService.activeDayController$.subscribe((valueChanged) => {this._buildRows(this._calculateDivisor());
     });
   }
@@ -112,6 +115,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _buildRows(divisorMinutes: number) {
+    this._reset();
     const durationMinutes: number = this._zoomControl.endTime.diff(this._zoomControl.startTime, 'minutes');
     const rowCount = durationMinutes / divisorMinutes;
     const rows: TimeSelectionRow[] = [];

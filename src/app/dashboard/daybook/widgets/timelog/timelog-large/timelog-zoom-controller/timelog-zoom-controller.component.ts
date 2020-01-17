@@ -44,15 +44,14 @@ export class TimelogZoomControllerComponent implements OnInit {
     
     let wakeupTime: moment.Moment = moment(activeDayChanged.wakeupTime);
     let fallAsleepTime: moment.Moment = moment(activeDayChanged.fallAsleepTime);
-    console.log("Wakeup time is " + wakeupTime.format('hh:mm a'))
     let frameStart: moment.Moment;
     let frameEnd: moment.Moment;
     if(wakeupTime.minute() >= 0 && wakeupTime.minute() < 15){
-      frameStart = moment(wakeupTime).startOf('hour').subtract(30, 'minutes');
+      frameStart = (moment(wakeupTime).startOf('hour')).subtract(30, 'minutes');
     }else if(wakeupTime.minute() >= 15 && wakeupTime.minute() < 45){
       frameStart = moment(wakeupTime.startOf('hour'));
     }else if(wakeupTime.minute() >= 45){
-      frameStart = moment(wakeupTime).startOf('hour').add('30 minutes');
+      frameStart = moment(wakeupTime).minute(30).startOf('minute');
     }
 
     if(fallAsleepTime.minute() >= 0 && fallAsleepTime.minute() < 15){
@@ -63,9 +62,9 @@ export class TimelogZoomControllerComponent implements OnInit {
       frameEnd = moment(fallAsleepTime).startOf('hour').add(1, 'hour').add(30, 'minutes');
     }
 
-    console.log(" zoom controller vs sleep controller.  (wakeup, frameStart, fallasleep, frameENd)");
-    console.log("   " + activeDayChanged.wakeupTime.format('hh:mm a') + " --> " + frameStart.format('hh:mm a'))
-    console.log("   " + activeDayChanged.fallAsleepTime.format('hh:mm a') + " --> " + frameEnd.format('hh:mm a'))
+    // console.log(" zoom controller vs sleep controller.  (wakeup, frameStart, fallasleep, frameENd)");
+    // console.log("   " + activeDayChanged.wakeupTime.format('hh:mm a') + " --> " + frameStart.format('hh:mm a'))
+    // console.log("   " + activeDayChanged.fallAsleepTime.format('hh:mm a') + " --> " + frameEnd.format('hh:mm a'))
 
     this._wakeCycleZoom = {
       icon: faSun,

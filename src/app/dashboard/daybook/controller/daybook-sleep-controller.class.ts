@@ -21,7 +21,7 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
     private _thisDayDBval: TimeSpanItem[];
     private _nextDayDBval: TimeSpanItem[];
 
-    private _sleepTimesUpdated$: Subject<TimeSpanItem[]> = new Subject();
+    private _sleepTimesUpdated$: Subject<DaybookSleepEntryItem[]> = new Subject();
 
     constructor(prevDayTimeSpanItems: TimeSpanItem[], thisDayTimeSpanItems: TimeSpanItem[], nextDayTimeSpanItems: TimeSpanItem[],
         dateYYYYMMDD: string) {
@@ -33,11 +33,11 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
         this._nextDayDBval = nextDayTimeSpanItems;
         this._buildSleepController(prevDayTimeSpanItems, thisDayTimeSpanItems, nextDayTimeSpanItems);
         // this._logToConsole();
-        console.log("Sleep controller value items: ")
-        this.valueItems.forEach((item) => {
-            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + "   ", item.hasValue, item.value)
-        })
-        console.log("Sleep controller is built.  Wakeup time is set?  ", this.wakeupTimeIsSet, this.firstWakeupTime.format('YYYY-MM-DD hh:mm a'));
+        // console.log("Sleep controller value items: ")
+        // this.valueItems.forEach((item) => {
+        //     console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + "   ", item.hasValue, item.value)
+        // })
+        // console.log("Sleep controller is built.  Wakeup time is set?  ", this.wakeupTimeIsSet, this.firstWakeupTime.format('YYYY-MM-DD hh:mm a'));
     }
 
     private get prevDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
@@ -121,30 +121,20 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
     public getSleepScheduleItems(startTime: moment.Moment, endTime: moment.Moment): TimeScheduleItem<DaybookSleepEntryItem>[] {
         return this.getScheduleSlice(startTime, endTime);
     }
-    public get sleepTimesUpdated$(): Observable<TimeSpanItem[]> { return this._sleepTimesUpdated$.asObservable(); }
+    public get sleepTimesUpdated$(): Observable<DaybookSleepEntryItem[]> { return this._sleepTimesUpdated$.asObservable(); }
 
     public setWakeupTimeForDay(wakeupTime: moment.Moment) {
         const fallAsleepTime = TimeUtilities.roundUpToCeiling(moment(wakeupTime).add(this.ratioAwakeHoursPerDay, 'hours'), 15);
-        const thisDayTimeSpanItems: TimeSpanItem[] = [];
+        const thisDayTimeSpanItems: DaybookSleepEntryItem[] = [];
         let startTime = this.startOfThisDay;
         // console.log("Previous day fall asleep time: " + this.prevDayFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
         if (this.prevDayFallAsleepTime.isAfter(this.startOfThisDay)) {
             startTime = this.prevDayFallAsleepTime;
         }
-        thisDayTimeSpanItems.push({
-            startTimeISO: startTime.toISOString(),
-            startTimeUtcOffset: startTime.utcOffset(),
-            endTimeISO: wakeupTime.toISOString(),
-            endTimeUtcOffset: wakeupTime.utcOffset(),
-        });
+        thisDayTimeSpanItems.push( new DaybookSleepEntryItem(startTime, wakeupTime));
 
         if (fallAsleepTime.isBefore(this.endOfThisDay)) {
-            thisDayTimeSpanItems.push({
-                startTimeISO: fallAsleepTime.toISOString(),
-                startTimeUtcOffset: fallAsleepTime.utcOffset(),
-                endTimeISO: this.endOfThisDay.toISOString(),
-                endTimeUtcOffset: this.endOfThisDay.utcOffset(),
-            });
+            thisDayTimeSpanItems.push(new DaybookSleepEntryItem(fallAsleepTime, this.endOfThisDay));
         }
         console.log("Updating sleep times for thisDay: ", thisDayTimeSpanItems)
         this._sleepTimesUpdated$.next(thisDayTimeSpanItems);
@@ -155,16 +145,21 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
         const allPositives = [...prevDayTimeSpanItems, ...thisDayTimeSpanItems, ...nextDayTimeSpanItems]
             .map(item => new DaybookSleepEntryItem(moment(item.startTimeISO), moment(item.endTimeISO)))
             .map(item => new TimeScheduleItem<DaybookSleepEntryItem>(item.startTime, item.endTime, true, item))
-        console.log("allPositives items boyo: ")
-        allPositives.forEach((item) => {
-            console.log("    " + item.startTime.format('YYYY-MM-DD hh:mm a ') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " has Value? ")
-        })
+        // console.log("allPositives items boyo: ")
+        // allPositives.forEach((item) => {
+        //     console.log("    " + item.startTime.format('YYYY-MM-DD hh:mm a ') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " has Value? ", item.hasValue)
+        // });
 
         this.addScheduleValueItems(allPositives)
         this._populateRemainder();
 
         this._setFirstWakeupTime();
         this._setFallAsleepTime();
+
+        if(thisDayTimeSpanItems.length > 0){
+            this._wakeupTimeIsSet = true;
+
+        }
     }
 
 
@@ -260,6 +255,7 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
             this._firstWakeupTime = moment(foundItem.endTime);
         }
         else {
+            console.log("wolo bolo?")
             const foundItem = this.fullScheduleItems
                 .filter(item => item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(this.endOfThisDay))
                 .find(item => item.hasValue === false);

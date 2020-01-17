@@ -48,7 +48,6 @@ export class SleepProfileFormComponent implements OnInit {
   ngOnInit() {
     this.reInitiate();
     this.daybookService.activeDayController$.subscribe((dayChanged) => {
-      console.log("SLEEP PROFILE WIDGET: REINITIATING  - " + dayChanged.dateYYYYMMDD);
       this.reInitiate();
     });
   }

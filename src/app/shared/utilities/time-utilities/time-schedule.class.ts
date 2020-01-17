@@ -8,7 +8,7 @@ export class TimeSchedule<T>{
      *  The TimeSchedule class is a class that keeps track of a congruous table of time, with some property associated with each block.
      *  Currently only performs this functionality for a single bool value property.
      */
-    constructor(startTime: moment.Moment, endTime: moment.Moment) { this._rebuildSchedule(startTime, endTime); }
+    constructor(startTime: moment.Moment, endTime: moment.Moment) { this._reconstructSchedule(startTime, endTime); }
 
 
     private _startTime: moment.Moment;
@@ -21,7 +21,6 @@ export class TimeSchedule<T>{
 
 
     public addScheduleValueItems(items: TimeScheduleItem<T>[]) {
-        this._validateItems(items);
         items.forEach((item) => {
             this._addScheduleValueItem(item);
         });
@@ -160,9 +159,15 @@ export class TimeSchedule<T>{
 
 
     /** */
-    protected _rebuildSchedule(startTime: moment.Moment, endTime: moment.Moment) {
+
+    protected _reconstructSchedule(startTime, endTime){
         this._startTime = startTime;
         this._endTime = endTime;
+        this._valueItems = [];
+        this._reOrganizeSchedule();
+    }
+    protected _reOrganizeSchedule() {
+        // console.log("**** REBUILDING THE SCHEDULE")
         this._sortValueItems();
         if (this._valueItems.length > 0) {
             
@@ -182,7 +187,7 @@ export class TimeSchedule<T>{
             }
             this._fullScheduleItems = fullScheduleItems;
         } else {
-            this._fullScheduleItems = [new TimeScheduleItem<T>(startTime, endTime, false, null)]
+            this._fullScheduleItems = [new TimeScheduleItem<T>(this.startTime, this.endTime, false, null)]
         }
         // console.log("TimeSchedule has been rebuilt.  fullItems, valueItems: ", this._fullScheduleItems, this._valueItems);
         // console.log("  FullScheduleItems:")
@@ -280,53 +285,43 @@ export class TimeSchedule<T>{
         const endsAfter = item.startTime.isSameOrAfter(this.startTime) && item.endTime.isAfter(this.endTime);
         const encompasses = item.startTime.isSameOrBefore(this.startTime) && item.endTime.isSameOrAfter(this.endTime);
         if (isInside || startsBefore || endsAfter || encompasses) {
-            let itemStart: moment.Moment = item.startTime;
-            let itemEnd: moment.Moment = item.endTime;
-            if (startsBefore || encompasses) { itemStart = this.startTime; }
-            if (endsAfter || encompasses) { itemEnd = this.endTime; }
-            if (this.hasValueAtTime(moment(itemStart).add(1, 'millisecond')) || this.hasValueAtTime(moment(itemEnd).subtract(1, 'millisecond'))) {
-                if (overRide === true) {
-                    this._setOverridePriority(item);
-                } else {
-                    this._setLowPriority(item);
-                }
-            }
+            // let itemStart: moment.Moment = item.startTime;
+            // let itemEnd: moment.Moment = item.endTime;
+            // if (startsBefore || encompasses) { itemStart = this.startTime; }
+            // if (endsAfter || encompasses) { itemEnd = this.endTime; }
+
+            // if (this.hasValueAtTime(moment(itemStart).add(1, 'millisecond')) || this.hasValueAtTime(moment(itemEnd).subtract(1, 'millisecond'))) {
+            //     if (overRide === true) {
+            //         this._setOverridePriority(item);
+            //     } else {
+            //         this._setLowPriority(item);
+            //     }
+            // }
             this._valueItems.push(item);
-            this._rebuildSchedule(this.startTime, this.endTime);
+            this._reOrganizeSchedule();
         } else {
             console.log('Error: Item was not added to time schedule because it was not in range')
         }
     }
 
-    private _setLowPriority(item: TimeScheduleItem<T>) {
-        this._valueItems.forEach((item) => {
-            item.priority++;
-        });
-        item.priority = 0;
-    }
+    // private _setLowPriority(item: TimeScheduleItem<T>) {
+    //     this._valueItems.forEach((item) => {
+    //         item.priority++;
+    //     });
+    //     item.priority = 0;
+    // }
 
-    private _setOverridePriority(item: TimeScheduleItem<T>) {
-        let maxPriority: number = 0;
-        this._valueItems.forEach((item) => {
-            if (item.priority > maxPriority) {
-                maxPriority = item.priority;
-            }
-        });
-        item.priority = maxPriority + 1;
-    }
+    // private _setOverridePriority(item: TimeScheduleItem<T>) {
+    //     let maxPriority: number = 0;
+    //     this._valueItems.forEach((item) => {
+    //         if (item.priority > maxPriority) {
+    //             maxPriority = item.priority;
+    //         }
+    //     });
+    //     item.priority = maxPriority + 1;
+    // }
 
-    private _validateItems(items: TimeScheduleItem<T>[]) {
-        if (items.length > 1) {
-            for (let i = 1; i < items.length; i++) {
-                if (items[i].startTime.isBefore(items[i - 1].endTime)) {
-                    console.log('Error: Nonbreaking error: Item start time begins before end of previous item')
-                }
-            }
-        }
-    }
-
-
-
+    
     public logFullScheduleItems() {
         console.log("Full Schedule Items: ")
         this._fullScheduleItems.forEach((item) => {

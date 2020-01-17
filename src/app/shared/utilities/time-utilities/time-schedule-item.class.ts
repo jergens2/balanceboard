@@ -14,7 +14,7 @@ export class TimeScheduleItem<T>{
     }
 
     public toString(): string{
-        return " " + this.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.endTime.format('YYYY-MM-DD hh:mm a') + " hasValue?: " + this.hasValue;
+        return " " + this.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.endTime.format('YYYY-MM-DD hh:mm a') + " hasValue?: " + this.hasValue + " , " + this.value.toString();
     }
     /**
      * Default value is 0 for all items.  Higher number is higher priority.

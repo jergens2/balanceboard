@@ -44,7 +44,6 @@ export class TimelogEntryComponent implements OnInit {
   public get displayString(): string { return this.displayEntry.displayString; };
 
   ngOnInit() {
-    console.log("TimelogEntry Display Init()")
     this.screenSize = this.screenSizeService.appScreenSize;
     this.screenSizeService.appScreenSize$.subscribe((size) => {
       this.screenSize = size;

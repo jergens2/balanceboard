@@ -42,7 +42,7 @@ export class DaybookEnergyController {
         const energyDecayPerHourAwake: number = 1 / awakeHoursPerDay;
         const energyGainPerHourAsleep: number = 1 / asleepHoursPerDay;
 
-        console.log("Energy decay per hour, gain per hour: " , energyDecayPerHourAwake, energyGainPerHourAsleep)
+        // console.log("Energy decay per hour, gain per hour: " , energyDecayPerHourAwake, energyGainPerHourAsleep)
 
         let energyItems: DaybookEnergyItem[] = [];
         let currentEnergy = 0;
@@ -64,7 +64,7 @@ export class DaybookEnergyController {
             energyItems.push(energyItem);
 
             currentEnergy = energyItem.getEnergyAtTime(item.endTime);
-            console.log("Rate is " + rate + " , current energy is : " + currentEnergy)
+            // console.log("Rate is " + rate + " , current energy is : " + currentEnergy)
         });
 
         if (bottomValue < 0) {
@@ -86,10 +86,10 @@ export class DaybookEnergyController {
         }
 
 
-        console.log(" ** Energy Items: ")
-        energyItems.forEach((item)=>{
-            console.log("     "+ item.startTime.format("YYYY-MM-DD hh:mm a") + " - " + item.endTime.format('YYYY-MM-DD hh:mm a') + " --:   " + item.energyLevelStart);
-        })
+        // console.log(" ** Energy Items: ")
+        // energyItems.forEach((item)=>{
+        //     console.log("     "+ item.startTime.format("YYYY-MM-DD hh:mm a") + " - " + item.endTime.format('YYYY-MM-DD hh:mm a') + " --:   " + item.energyLevelStart);
+        // })
 
 
         this._energyItems = energyItems;
