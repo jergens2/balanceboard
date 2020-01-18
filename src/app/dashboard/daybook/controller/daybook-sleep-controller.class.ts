@@ -240,7 +240,7 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
         } else {
             console.log('Error:  could not find the fallAsleepTime ');
         }
-        console.log("This.fallasleep time set to: " + this.fallAsleepTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("This.fallasleep time set to: " + this.fallAsleepTime.format('YYYY-MM-DD hh:mm a'))
     }
     private _setFirstWakeupTime() {
         let startTime = this.startOfThisDay;
@@ -255,7 +255,6 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
             this._firstWakeupTime = moment(foundItem.endTime);
         }
         else {
-            console.log("wolo bolo?")
             const foundItem = this.fullScheduleItems
                 .filter(item => item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(this.endOfThisDay))
                 .find(item => item.hasValue === false);
@@ -265,6 +264,6 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
                 console.log("Error.  May need to theck TimeSchedule._sort method")
             }
         }
-        console.log("This.Wakeuptime = " + this._firstWakeupTime.format("YYYY-MM-DD hh:mm a"))
+        // console.log("This.Wakeuptime = " + this._firstWakeupTime.format("YYYY-MM-DD hh:mm a"))
     }
 }

@@ -1,25 +1,26 @@
 .selection-column-root{
     width:100%;
     height:100%;
-    background-color: rgba(255, 0, 0, 0.007);
     display:flex;
     flex-direction: column;
     border-radius: 3px;
 }
 .active-root{
-    border: 1px solid rgb(0, 117, 185);
+    
 }
 .active-root > .selection-row{
     cursor: grabbing;
 }
+.active-root > .available-row{
+    background-color: rgba(0, 117, 185, 0.05);
+}
 
 .selection-row{
-    background-color: rgba(0, 0, 255, 0.021);
     flex-grow: 2;
-
+    border-top: 1px solid rgba(0, 117, 185, 0);
 }
 .available-row{
-    background-color: rgba(0, 162, 255, 0.1);
+    background-color: rgba(0, 162, 255, 0.01);
     cursor: grab;
 }
 .available-row:hover{
@@ -29,12 +30,23 @@
 
 
 .time-delineator-container{
-    width:0px; 
-    height: 20px; 
-    margin-top: -10px;
+    width:100%; 
+    height: 0px; 
+        display:flex;
+    flex-direction: row;
+    justify-content: center;
 }
 .time-delineator{
-    background-color: orange;
-    font-size: 0.6em;
+    background-color: rgba(247, 251, 255, 0.85);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding:2px;
+    border: 1px solid gray;
+    border-radius: 3px;
+    font-size: 0.8em;
     font-weight: bold;
+    height: 20px;
+    margin-top: -10px;
 }

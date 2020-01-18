@@ -63,6 +63,8 @@ export class DaybookDayItem {
         this._httpShape.daybookTimelogEntryDataItems = items;
     }
 
+    public set timeDelineators(timeDelineators: moment.Moment[]) { this._httpShape.timeDelineators = timeDelineators.map(item => item.toISOString()); }
+
 
     public get dailyWeightLogEntryKg(): number { return this.httpShape.dailyWeightLogEntryKg; }
     public set dailyWeightLogEntryKg(kg: number) { this._httpShape.dailyWeightLogEntryKg = kg; }

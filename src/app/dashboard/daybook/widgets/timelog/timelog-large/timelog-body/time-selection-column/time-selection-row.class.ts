@@ -1,6 +1,7 @@
 import * as moment from 'moment';
 import { ItemState } from '../../../../../../../shared/utilities/item-state.class';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { TimelogDelineator } from '../../../timelog-delineator.class';
 
 export class TimeSelectionRow {
     constructor(startTime: moment.Moment, endTime: moment.Moment, rowIndex: number) {
@@ -17,6 +18,8 @@ export class TimeSelectionRow {
     private _mouseDown$: Subject<boolean> = new Subject();
     private _mouseUp$: Subject<boolean> = new Subject();
 
+    private _drawDelineator: TimelogDelineator;
+
     public startTime: moment.Moment;
     public endTime: moment.Moment;
     public rowIndex: number;
@@ -29,6 +32,14 @@ export class TimeSelectionRow {
     public get mouseIsDown(): boolean { return this._mouseIsDown; }
     public get mouseDown$(): Observable<boolean> { return this._mouseDown$.asObservable(); }
     public get mouseUp$(): Observable<boolean> { return this._mouseUp$.asObservable(); }
+
+    public get drawDelineator(): TimelogDelineator { return this._drawDelineator; }
+
+    public onDrawDelineator(newDelineator: TimelogDelineator){
+        // console.log("DRAWING THE DELINEATOR IN THE ROW")
+        this._drawDelineator = newDelineator;
+    }
+
     public onMouseDown() {
         this._mouseIsDown = true;
         this._mouseDown$.next(true);
@@ -36,6 +47,10 @@ export class TimeSelectionRow {
     public onMouseUp() {
         this._mouseIsDown = false;
         this._mouseUp$.next(true);
+    }
+
+    public reset(){
+        this._drawDelineator = null;
     }
 
 

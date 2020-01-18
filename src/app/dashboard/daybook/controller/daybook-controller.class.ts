@@ -20,6 +20,11 @@ import { DaybookSleepEntryItem } from './items/daybook-sleep-entry-item.class';
 
 export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
+    constructor(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
+        super(dayItem.thisDay.startOfThisDay, dayItem.thisDay.endOfThisDay);
+        this._reload(dayItem);
+    }
+
     private _previousDay: DaybookDayItem;
     private _thisDay: DaybookDayItem;
     private _followingDay: DaybookDayItem;
@@ -29,24 +34,19 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     private _energyController: DaybookEnergyController;
     private _timeDelineatorController: DaybookTimeDelineatorController;
 
-
     private _dataChanged$: Subject<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> = new Subject();
-
     private _subscriptions: Subscription[] = [];
 
-    constructor(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
-        super(dayItem.thisDay.startOfThisDay, dayItem.thisDay.endOfThisDay);
-        this._reload(dayItem);
+    private get timelogEntryController(): DaybookTimelogEntryController { return this._timelogEntryController; }
+    private get sleepController(): DaybookSleepController { return this._sleepController; }
+    private get energyController(): DaybookEnergyController { return this._energyController; }
+    private get timeDelineatorController(): DaybookTimeDelineatorController { return this._timeDelineatorController; }
 
-                // console.log("Daybook controller:  Full Schedule Log:")
-        // this.logFullScheduleItems();
-    }
 
     public reload(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
         // console.log("Reloading the controller: ", dayItem)
         this._reload(dayItem);
     }
-
 
     public get dateYYYYMMDD(): string { return this._thisDay.dateYYYYMMDD; }
     public get isToday(): boolean { return this._thisDay.dateYYYYMMDD === moment().format('YYYY-MM-DD'); }
@@ -57,8 +57,6 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public get thisDay(): DaybookDayItem { return this._thisDay; }
     public get followingDay(): DaybookDayItem { return this._followingDay; }
 
-    public get dailyWeightLogEntryKg(): number { return this._thisDay.dailyWeightLogEntryKg; }
-
     public get startOfPrevDay(): moment.Moment { return moment(this.previousDay.dateYYYYMMDD).startOf('day'); }
     public get startOfThisDay(): moment.Moment { return moment(this.thisDay.dateYYYYMMDD).startOf('day'); }
     public get endOfPrevDay(): moment.Moment { return this.startOfThisDay; }
@@ -66,10 +64,24 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public get startOfNextDay(): moment.Moment { return this.endOfThisDay; }
     public get endOfNextDay(): moment.Moment { return moment(this.followingDay.dateYYYYMMDD).startOf('day').add(1, 'days'); };
 
-    private get timelogEntryController(): DaybookTimelogEntryController { return this._timelogEntryController; }
-    private get sleepController(): DaybookSleepController { return this._sleepController; }
-    private get energyController(): DaybookEnergyController { return this._energyController; }
-    private get timeDelineatorController(): DaybookTimeDelineatorController { return this._timeDelineatorController; }
+    public get dailyWeightLogEntryKg(): number { return this._thisDay.dailyWeightLogEntryKg; }
+    
+
+    public get timeDelineations(): moment.Moment[] { return this.timeDelineatorController.timeDelineations; }
+    public saveTimeDelineator$(time: moment.Moment){
+        this._timeDelineatorController.saveTimeDelineator$(time);
+    }
+
+
+    public get wakeupTime(): moment.Moment { return this.sleepController.firstWakeupTime; }
+    public get wakeupTimeIsSet(): boolean { return this.sleepController.wakeupTimeIsSet; }
+    public get fallAsleepTime(): moment.Moment { return this.sleepController.fallAsleepTime; }
+    public get prevDayFallAsleepTime(): moment.Moment { return this.sleepController.prevDayFallAsleepTime; }
+    public get awakeToAsleepRatio(): number { return this.sleepController.awakeToAsleepRatio; }
+
+    public getEnergyAtTime(time: moment.Moment): number {return this.energyController.getEnergyAtTime(time);}
+    public setWakeupTimeForDay(time: moment.Moment) {this.sleepController.setWakeupTimeForDay(time);}
+
 
 
     public get timelogEntryItems(): TimelogEntryItem[] { return this.timelogEntryController.timelogEntryItems; }
@@ -82,22 +94,6 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public deleteTimelogEntryItem$(updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
         return this.timelogEntryController.deleteTimelogEntryItem$(updateTimelogEntry);
     }
-
-    public get timeDelineations(): moment.Moment[] { return this.timeDelineatorController.timeDelineations; }
-
-    public get wakeupTime(): moment.Moment { return this.sleepController.firstWakeupTime; }
-    public get wakeupTimeIsSet(): boolean { return this.sleepController.wakeupTimeIsSet; }
-    public get fallAsleepTime(): moment.Moment { return this.sleepController.fallAsleepTime; }
-    public get prevDayFallAsleepTime(): moment.Moment { return this.sleepController.prevDayFallAsleepTime; }
-    public get awakeToAsleepRatio(): number { return this.sleepController.awakeToAsleepRatio; }
-    public getEnergyAtTime(time: moment.Moment): number {return this.energyController.getEnergyAtTime(time);}
-    public setWakeupTimeForDay(time: moment.Moment) {this.sleepController.setWakeupTimeForDay(time);}
-
-    public get dataChanged$(): Observable<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> {
-        return this._dataChanged$.asObservable();
-    }
-
-
 
     public getNewCurrentTLETemplate(): DaybookTimelogEntryTemplate {
         let startTime: moment.Moment;
@@ -127,9 +123,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         if (foundItems.length === 0) {
             isAvailable = false;
         } else if (foundItems.length === 1) {
-            isAvailable = !foundItems[0].hasValue;
+            isAvailable = foundItems[0].value === DaybookAvailabilityType.AVAILABLE;
         } else if (foundItems.length > 1) {
-            const availableMS: number = foundItems.filter(item => !item.hasValue).reduce((a, b) => { return a += b.durationMS }, 0);
+            const availableMS: number = foundItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE).reduce((a, b) => { return a += b.durationMS }, 0);
             if (availableMS > (Math.abs(diffMS) / 2)) {
                 isAvailable = true;
             }else{
@@ -138,6 +134,17 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         }
         return isAvailable;
     }
+
+
+    public get dataChanged$(): Observable<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> {
+        return this._dataChanged$.asObservable();
+    }
+
+
+
+
+
+
 
     private _reload(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
         this._previousDay = dayItem.prevDay;
@@ -173,6 +180,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         // })
         // console.log("Adding TimeScheudle value itmes:  " + timeScheduleValueItems.length)
         this.addScheduleValueItems(timeScheduleValueItems);
+        this.fullScheduleItems.filter(item => item.value === null).forEach((item)=>{
+            item.value = DaybookAvailabilityType.AVAILABLE;
+        });
 
         // console.log("Schedule has been rebuilt in the daybookcontoller.")
         // this.logFullScheduleItems();
@@ -182,7 +192,6 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
         this._updateSubscriptions();
     }
-
 
     private _isNewTLEFirstOfDay(currentTime: moment.Moment): boolean {
         console.log("Is TLEF first one of the day ? " + currentTime.format('YYYY-MM-DD hh:mm a'))
@@ -242,7 +251,19 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         const sleepSub = this.sleepController.sleepTimesUpdated$.subscribe((sleepTimes: DaybookSleepEntryItem[]) => {
             this._updateThisDaySleepTimes(sleepTimes);
         });
-        this._subscriptions = [timelogSub, sleepSub];
+        const delineatorSub = this.timeDelineatorController.saveChanges$.subscribe((delineators: moment.Moment[])=>{
+            this._updateTimeDelineators(delineators);
+        })
+        this._subscriptions = [timelogSub, sleepSub, delineatorSub];
+    }
+
+    private _updateTimeDelineators(delineators: moment.Moment[]){
+        this._thisDay.timeDelineators = delineators;
+        this._dataChanged$.next({
+            prevDayChanged: false,
+            thisDayChanged: true,
+            nextDayChanged: false,
+        });
     }
 
     private _updateThisDaySleepTimes(sleepTimes: DaybookSleepEntryItem[]) {
@@ -274,7 +295,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     }
 
     private _updateTimelog(update: { prevDayItems: DaybookTimelogEntryDataItem[], thisDayItems: DaybookTimelogEntryDataItem[], nextDayItems: DaybookTimelogEntryDataItem[] }) {
-        console.log("Updating timelog: ", update);
+        // console.log("Updating timelog: ", update);
         let prevDayChanged = false, thisDayChanged = false, nextDayChanged = false;
         if (update.prevDayItems) {
             this._previousDay.timelogEntryDataItems = update.prevDayItems;

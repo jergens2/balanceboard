@@ -47,10 +47,6 @@ export class TimelogDisplayController {
 
   public addTimeDelineator(time: moment.Moment) {
   }
-  public drawNewTLE(timelogEntry: TimelogEntryItem) {
-    console.log("Timelog.Class: Drawing new TLE: ", timelogEntry)
-
-  }
   public addTemporaryDelineator(time: moment.Moment) {
 
   }

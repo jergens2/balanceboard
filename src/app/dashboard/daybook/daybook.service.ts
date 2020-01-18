@@ -129,8 +129,7 @@ export class DaybookService implements ServiceAuthenticates {
     } else {
       this._todayController$.next(todayController);
     }
-
-
+    
     if (!this._activeDayController$) {
 
       this._updateActiveDay(todayController);

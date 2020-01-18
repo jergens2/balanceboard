@@ -26,8 +26,6 @@ export class TimeSchedule<T>{
         });
     }
 
-
-
     public get valueItems(): TimeScheduleItem<T>[] { return this._valueItems; }
     public get fullScheduleItems(): TimeScheduleItem<T>[] { return this._fullScheduleItems; }
 
@@ -131,6 +129,44 @@ export class TimeSchedule<T>{
             return this.endTime;
         }
     }
+    
+
+    public getNextOccurrenceOfValue(timeToCheck: moment.Moment, findValue: T): moment.Moment { 
+        let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isSameOrBefore(item.endTime));
+        if(startIndex >= 0){
+            for(let i=startIndex; i<this.fullScheduleItems.length; i++){
+                if(this.fullScheduleItems[i].value === findValue){
+                    if(this.fullScheduleItems[i].startTime.isBefore(timeToCheck)){
+                        return timeToCheck;
+                    }else{
+                        return this.fullScheduleItems[i].startTime;
+                    }
+                }
+            
+            }
+            return null;
+        }else{
+            console.log("Bad index for time to check in full items: " + timeToCheck.format('hh:mm a'), this.fullScheduleItems)
+            return null;
+        }
+    }
+    public getNextOccurrenceOfNotValue(timeToCheck: moment.Moment, findNotValue: T){
+        let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isSameOrBefore(item.endTime));
+        if(startIndex >= 0){
+            for(let i=startIndex; i<this.fullScheduleItems.length; i++){
+                if(this.fullScheduleItems[i].value !== findNotValue){
+                    if(this.fullScheduleItems[i].startTime.isBefore(timeToCheck)){
+                        return timeToCheck;
+                    }else{
+                        return this.fullScheduleItems[i].startTime;
+                    }
+                }
+            }
+        }else{
+            return null;
+        }
+    }
+
     public getNextValueTrueTime(currentTime: moment.Moment): moment.Moment {
         if (this.hasValueAtTime(currentTime)) {
             return currentTime;
