@@ -111,6 +111,7 @@ export class TimelogDisplayController {
     }
 
 
+
     timelogDelineators.push(new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME));
     timelogDelineators.push(new TimelogDelineator(this.frameEnd, TimelogDelineatorType.FRAME_END));
 

@@ -71,6 +71,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public saveTimeDelineator$(time: moment.Moment){
         this._timeDelineatorController.saveTimeDelineator$(time);
     }
+    public deleteDelineator(time: moment.Moment){
+        this._timeDelineatorController.deleteDelineator(time);
+    }
 
 
     public get wakeupTime(): moment.Moment { return this.sleepController.firstWakeupTime; }
@@ -194,10 +197,8 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     }
 
     private _isNewTLEFirstOfDay(currentTime: moment.Moment): boolean {
-        console.log("Is TLEF first one of the day ? " + currentTime.format('YYYY-MM-DD hh:mm a'))
         let newTLEisStartOfDay: boolean = true;
         if (this.sleepController.wakeupTimeIsSet) {
-            console.log("The wakeup time is set.  Therefore, this is not the start entry.  teehee")
             newTLEisStartOfDay = false;
         } else if (this.timelogEntryController.lastTimelogEntryItemTime) {
             /**
@@ -217,9 +218,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
                 newTLEisStartOfDay = false;
             }
             // this.sleepController.prevDayFallAsleepTime
-            console.log("Energy difference between current time (" + currentTime.format('YYYY-MM-DD hh:mm a') + ")and last time (" + this.timelogEntryController.lastTimelogEntryItemTime.format('YYYY-MM-DD hh:mm a') + ") - ", energyDiff)
+            // console.log("Energy difference between current time (" + currentTime.format('YYYY-MM-DD hh:mm a') + ")and last time (" + this.timelogEntryController.lastTimelogEntryItemTime.format('YYYY-MM-DD hh:mm a') + ") - ", energyDiff)
         } else {
-            console.log("The wakeup time is not set")
+            // console.log("The wakeup time is not set")
         }
         return newTLEisStartOfDay;
     }

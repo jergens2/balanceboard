@@ -39,6 +39,11 @@ export class TimelogDisplayGrid {
 
 
   private _buildGrid() {
+    
+
+    const scheduleSlice = this._activeController.getScheduleSlice(this.startTime, this.endTime);
+    // scheduleSlice.forEach((item)=>{ console.log("   "+item.toString())})
+
     let allDelineatorTimes: moment.Moment[] = this.timeDelineators.map(item => item.time).sort((time1, time2) => {
       if (time1.isBefore(time2)) { return -1; }
       else if (time1.isAfter(time2)) { return 1; }
@@ -124,7 +129,7 @@ export class TimelogDisplayGrid {
         this.ngStyle = displayGridNgStyle;
         this._gridItems = gridItems;
       } else {
-        console.log("No Time Delineators.  ")
+        console.log("Bigtime error: No Time Delineators.  ")
       }
     }
   }

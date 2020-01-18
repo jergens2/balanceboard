@@ -37,7 +37,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
   }
 
   private saveDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
-    console.log(' $ Saving daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
+    // console.log(' $ Saving daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
     const postUrl = serverUrl + '/api/daybook-day-item/create';
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
@@ -56,8 +56,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
       }));
   }
   public updateDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
-    console.log(' $ updating daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
-    console.log(daybookDayItem)
+    // console.log(' $ updating daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
+    // console.log(daybookDayItem)
     const postUrl = serverUrl + '/api/daybook-day-item/update';
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
@@ -69,7 +69,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
         const responseItem: DaybookDayItem = this._itemBuilder.buildItemFromResponse(response.data as any);
-        console.log("Response item is ", responseItem);
+        // console.log("Response item is ", responseItem);
         return responseItem;
       }));
   }

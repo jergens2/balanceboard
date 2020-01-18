@@ -25,6 +25,13 @@ export class DaybookTimeDelineatorController{
         this._validateDelineators();
         this._saveChanges$.next(this._timeDelineations);
     }
+    public deleteDelineator(time: moment.Moment){
+        const foundDelineator = this._timeDelineations.find(item => item.isSame(time));
+        if(foundDelineator){
+            this._timeDelineations.splice(this._timeDelineations.indexOf(foundDelineator), 1);
+            this._saveChanges$.next(this._timeDelineations);
+        }
+    }
 
     private _validateDelineators(){
         this._timeDelineations = this._timeDelineations.sort((d1, d2)=>{
@@ -35,7 +42,7 @@ export class DaybookTimeDelineatorController{
         if(this._timeDelineations.length > 1){
             for(let i=1; i<this._timeDelineations.length;i++){
                 if(this._timeDelineations[i].isSame(this._timeDelineations[i-1])){
-                    this._timeDelineations.splice(i);
+                    this._timeDelineations.splice(i, 1);
                     i--;
                 }
             }

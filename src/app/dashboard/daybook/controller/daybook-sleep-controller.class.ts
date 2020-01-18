@@ -209,7 +209,6 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
                 });
             }else{
                 thisDayNewItems = this._buildThisDayDefaultSleepItems();
-                console.log("THIS DAY NOY ITEMS IS " , thisDayNewItems)
             }
             this.addScheduleValueItems(thisDayNewItems);
         }else{

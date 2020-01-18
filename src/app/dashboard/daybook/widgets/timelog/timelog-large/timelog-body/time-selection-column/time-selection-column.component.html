@@ -3,9 +3,14 @@
     <div *ngFor="let row of rows" class="selection-row" [ngClass]="{'available-row':row.isAvailable}"
         (mousedown)="onMouseDownRow(row)" (mouseenter)="onMouseEnterRow(row)" (mouseleave)="onMouseLeaveRow(row)"
         (mouseup)="onMouseUpRow(row)">
-        <div class="time-delineator-container" *ngIf="row.drawDelineator">
-            <div class="time-delineator">
+        <div class="draw-time-delineator-container" *ngIf="row.drawDelineator">
+            <div class="draw-time-delineator">
                 {{ row.drawDelineator.time.format('hh:mm a') }}
+            </div>
+        </div>
+        <div class="saved-time-delineators-container" *ngIf="row.delineators.length > 0" [ngStyle]="row.delineatorsStyle">
+            <div *ngFor="let delineator of row.delineators" class="saved-delineator-container" [ngStyle]="delineator.ngStyle">
+                <div class="saved-delineator" (click)="onDeleteDelineator(delineator.time)">{{ delineator.time.format('hh:mm a')}}</div>
             </div>
         </div>
 
