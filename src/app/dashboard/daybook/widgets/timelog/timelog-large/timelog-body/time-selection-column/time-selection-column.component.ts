@@ -9,6 +9,8 @@ import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-uti
 import { TimeSchedule } from '../../../../../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
+import { ToolsService } from '../../../../../../../tools-menu/tools/tools.service';
+import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-components.enum';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -17,7 +19,7 @@ import { DaybookAvailabilityType } from '../../../../../controller/items/daybook
 })
 export class TimeSelectionColumnComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookService, private toolsService: ToolsService) { }
 
   private _rows: TimeSelectionRow[] = [];
   private _zoomControl: TimelogZoomControl;
@@ -25,7 +27,8 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _mouseDownRow: TimeSelectionRow;
   private _mouseUpRow: TimeSelectionRow;
   private _mouseOverRow: TimeSelectionRow;
-
+  
+  private _timeDelineations: moment.Moment[] = [];;
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Output() drawNewTimeDelineator: EventEmitter<TimelogDelineator> = new EventEmitter();
@@ -41,7 +44,6 @@ export class TimeSelectionColumnComponent implements OnInit {
     }
   }
 
-
   public get rows(): TimeSelectionRow[] { return this._rows; }
   public get zoomControl(): TimelogZoomControl { return this._zoomControl; }
   public get isActive(): boolean { return (this._mouseDownRow ? true : false); }
@@ -49,8 +51,9 @@ export class TimeSelectionColumnComponent implements OnInit {
   public get endTime(): moment.Moment { return this.zoomControl.endTime; }
 
   ngOnInit() {
-    // this._buildRows(this._calculateDivisor());
+    this._timeDelineations = this.daybookService.activeDayController.timeDelineations;
     this.daybookService.activeDayController$.subscribe((valueChanged) => {
+      this._timeDelineations = valueChanged.timeDelineations;
       this._buildRows(this._calculateDivisor());
     });
   }
@@ -70,7 +73,12 @@ export class TimeSelectionColumnComponent implements OnInit {
     // console.log("Row mouse down" + row.startTime.format("hh:mm a"))
     if (row.isAvailable) {
       this._mouseDownRow = row;
-      this._drawNewTimeDelineator(this._mouseDownRow);
+      if (this._mouseDownRow.delineator) {
+        this.onDeleteDelineator(this._mouseDownRow.delineator.time);
+      } else {
+        this._drawNewTimeDelineator(this._mouseDownRow);
+      }
+
     } else {
       this._reset();
     }
@@ -93,11 +101,12 @@ export class TimeSelectionColumnComponent implements OnInit {
         }
       }
       if (this._mouseUpRow.startTime.isSame(this._mouseDownRow.startTime)) {
+
         this._saveNewTimeDelineator(this._mouseDownRow);
-      } else if (this._mouseUpRow.startTime.isSame(this._mouseDownRow.startTime)) {
-
-      } else if (this._mouseUpRow.startTime.isSame(this._mouseDownRow.startTime)) {
-
+      } else if (this._mouseUpRow.startTime.isBefore(this._mouseDownRow.startTime)) {
+        this._saveNewTimelogEntry(this._mouseUpRow, this._mouseDownRow);
+      } else if (this._mouseUpRow.startTime.isAfter(this._mouseDownRow.startTime)) {
+        this._saveNewTimelogEntry(this._mouseDownRow, this._mouseUpRow);
       } else {
         console.log('Error with time values');
       }
@@ -147,20 +156,10 @@ export class TimeSelectionColumnComponent implements OnInit {
             this._mouseOverRow = this.rows[foundIndex + 1];
             newDelineator = new TimelogDelineator(prevAvailability, TimelogDelineatorType.SAVED_DELINEATOR);
           }
-
           this._drawNewTimeDelineator(this._mouseOverRow, newDelineator);
           this._drawNewTimelogEntry();
         }
-
-
       }
-      // }else if(enterRow.isAvailable){
-      //     this.rows.forEach((existingRow) => {
-      //       if (existingRow !== this._mouseDownRow) {
-      //         existingRow.reset();
-      //       }
-      //     });
-      //     this._drawNewTimeDelineator(enterRow);
     } else {
       this._reset();
     }
@@ -168,8 +167,25 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   public onMouseLeaveRow(row: TimeSelectionRow) { }
 
-  public onDeleteDelineator(time: moment.Moment){
-    this.daybookService.activeDayController.deleteDelineator(time);
+  public onDeleteDelineator(time: moment.Moment) {
+    // console.log("onclickdelete")
+
+    const foundTime = this._timeDelineations.find(item => item.isSame(time));
+    if (foundTime) {
+      this._timeDelineations.splice(this._timeDelineations.indexOf(foundTime), 1);
+      this._timeDelineations = this._timeDelineations.sort((item1, item2) => {
+        if (item1.isBefore(item2)) { return -1; }
+        else if (item1.isAfter(item2)) { return 1; }
+        else { return 0; }
+      })
+      this._buildRows(this._calculateDivisor());
+      this.daybookService.activeDayController.deleteDelineator(time);
+    } else {
+      console.log("Error: could not delete delineator because time was not found: " + time.format('hh:mm a'));
+    }
+
+
+
   }
 
   private _reset() {
@@ -193,9 +209,9 @@ export class TimeSelectionColumnComponent implements OnInit {
       // console.log(" " + i + " :" + currentTime.format('hh:mm a') + " to " + moment(currentTime).add(divisorMinutes, 'minutes').format('hh:mm a'))
       let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(divisorMinutes, 'minutes'), i);
       newRow.isAvailable = this._isAvailable(newRow);
-      let delineators = this._findDelineators(newRow);
-      if (delineators.length > 0) {
-        newRow.setDelineators(delineators);
+      let delineator = this._findDelineator(newRow);
+      if (delineator) {
+        newRow.setDelineator(delineator);
       }
       rows.push(newRow);
       currentTime = moment(currentTime).add(divisorMinutes, 'minutes');
@@ -206,10 +222,9 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _isAvailable(newRow) {
     return this.daybookService.activeDayController.isRowAvailable(newRow.startTime, newRow.endTime);
   }
-  private _findDelineators(newRow): moment.Moment[] {
-    return this.daybookService.activeDayController
-      .timeDelineations.filter(item =>
-        item.isSameOrAfter(newRow.startTime) && item.isBefore(newRow.endTime));
+  private _findDelineator(newRow): moment.Moment {
+    return this._timeDelineations.find(item =>
+      item.isSameOrAfter(newRow.startTime) && item.isBefore(newRow.endTime));
   }
 
   private _drawNewTimelogEntry() {
@@ -231,32 +246,27 @@ export class TimeSelectionColumnComponent implements OnInit {
     }
     if (newDelineator.time)
       actionRow.onDrawDelineator(newDelineator);
-      console.log("DrAWING")
     this.drawNewTimeDelineator.emit(newDelineator);
   }
 
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
-    // const foundItem = this.rows.find(item => time.isSameOrAfter(item.startTime) && time.isSameOrBefore(item.endTime))
-    // if (foundItem) {
-    //   let delineators: {time: moment.Moment, ngStyle: any}[] = foundItem.delineators;
-    //   delineators.push({ 
-    //     time: time, 
-    //     ngStyle: {} 
-    //   });
-    //   foundItem.setDelineators(delineators.map(item => item.time));
-    // }
-    this._drawNewTimeDelineator(actionRow);
+
+    // console.log("Saving delinetaor.", actionRow)
+    this._timeDelineations.push(actionRow.startTime);
+    this._timeDelineations = this._timeDelineations.sort((item1, item2) => {
+      if (item1.isBefore(item2)) { return -1; }
+      else if (item1.isAfter(item2)) { return 1; }
+      else { return 0; }
+    })
+    this._buildRows(this._calculateDivisor());
     this.daybookService.activeDayController.saveTimeDelineator$(actionRow.startTime);
   }
 
-  private _createNewTimeMarks() {
-    if (this._mouseDownRow.startTime.isSame(this._mouseUpRow.startTime) && this._mouseDownRow.endTime.isSame(this._mouseUpRow.endTime)) {
-      // console.log("single click : " + this._mouseDownRow.startTime.format('hh:mm a'))
-    } else {
-      this.createNewTLE.emit(new TimelogEntryItem(this._mouseDownRow.startTime, this._mouseUpRow.startTime));
-    }
-    this._reset();
+  private _saveNewTimelogEntry(startRow: TimeSelectionRow, endRow: TimeSelectionRow) {
+    console.log("Opening new Timelog entry.")
+    // this.toolsService.openTool(ToolComponents.TimelogEntry)
   }
+
 
   private _calculateDivisor(): number {
 
