@@ -183,9 +183,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         // })
         // console.log("Adding TimeScheudle value itmes:  " + timeScheduleValueItems.length)
         this.addScheduleValueItems(timeScheduleValueItems);
-        this.fullScheduleItems.filter(item => item.value === null).forEach((item)=>{
-            item.value = DaybookAvailabilityType.AVAILABLE;
-        });
+        this._setAvailabilitySections(allTimeDelineations);
 
         // console.log("Schedule has been rebuilt in the daybookcontoller.")
         // this.logFullScheduleItems();
@@ -194,6 +192,20 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         this._energyController = new DaybookEnergyController(this.fullScheduleItems, this.awakeToAsleepRatio);
         this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
         this._updateSubscriptions();
+    }
+
+    private _setAvailabilitySections(allTimeDelineations: moment.Moment[]){
+        let nullItems = this.fullScheduleItems.filter(item => item.value === null);
+        nullItems.forEach((scheduleItem)=>{
+            scheduleItem.value = DaybookAvailabilityType.AVAILABLE; 
+        });
+        allTimeDelineations.forEach((timeDelineator)=>{
+            const foundItem = nullItems.find(item => timeDelineator.isSameOrAfter(item.startTime) && timeDelineator.isSameOrBefore(item.endTime));
+            const foundDelineators = allTimeDelineations.filter(del => del.isSameOrAfter(foundItem.startTime) && del.isSameOrBefore(foundItem.endTime));
+            if(foundItem){
+                this._splitItemAtTimes(foundDelineators, foundItem);
+            }
+        });
     }
 
     private _isNewTLEFirstOfDay(currentTime: moment.Moment): boolean {

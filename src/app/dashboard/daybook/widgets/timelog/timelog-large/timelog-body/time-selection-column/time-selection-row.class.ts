@@ -15,6 +15,14 @@ export class TimeSelectionRow {
     }
 
 
+    public mouseIsOver: boolean = false;
+    public onMouseEnter() {
+        this.mouseIsOver = true;
+    }
+    public onMouseLeave() { 
+        this.mouseIsOver = false;
+    }
+
     private _itemState: ItemState;
     private _mouseIsDown = false;
     private _mouseDown$: Subject<boolean> = new Subject();
@@ -25,10 +33,15 @@ export class TimeSelectionRow {
     private _delineatorStyle: any = { 'grid-template-rows': "1fr", };
     private _delineator: { time: moment.Moment, ngStyle: any } = null;
 
+    public sectionIndex: number = -1;
+
     public startTime: moment.Moment;
     public endTime: moment.Moment;
     public rowIndex: number;
-    public isAvailable = true;
+    public isAvailable = false;
+    public isGrabbingSection = false; 
+
+
     public setDelineator(delineator: moment.Moment) {
         if (delineator) {
             this._delineator = {
@@ -65,6 +78,8 @@ export class TimeSelectionRow {
     }
 
     public reset() {
+        this.isGrabbingSection = false;
+        this.mouseIsOver = false;
         this._drawDelineator = null;
     }
 

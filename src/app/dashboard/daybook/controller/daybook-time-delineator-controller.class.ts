@@ -4,7 +4,6 @@ import { Subject, Observable } from 'rxjs';
 export class DaybookTimeDelineatorController{
 
     constructor(dateYYYYMMDD: string, timeDelineations: moment.Moment[]) {
-        // console.log("Rebuilding Timelog Controller")
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._timeDelineations = timeDelineations;
     }
@@ -30,6 +29,8 @@ export class DaybookTimeDelineatorController{
         if(foundDelineator){
             this._timeDelineations.splice(this._timeDelineations.indexOf(foundDelineator), 1);
             this._saveChanges$.next(this._timeDelineations);
+        }else{
+            console.log('Error:  could not delete delineator because could not find time: ' + time.format('hh:mm a'))
         }
     }
 

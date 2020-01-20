@@ -129,40 +129,40 @@ export class TimeSchedule<T>{
             return this.endTime;
         }
     }
-    
 
-    public getNextOccurrenceOfValue(timeToCheck: moment.Moment, findValue: T): moment.Moment { 
+
+    public getNextOccurrenceOfValue(timeToCheck: moment.Moment, findValue: T): moment.Moment {
         let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isSameOrBefore(item.endTime));
-        if(startIndex >= 0){
-            for(let i=startIndex; i<this.fullScheduleItems.length; i++){
-                if(this.fullScheduleItems[i].value === findValue){
-                    if(this.fullScheduleItems[i].startTime.isBefore(timeToCheck)){
+        if (startIndex >= 0) {
+            for (let i = startIndex; i < this.fullScheduleItems.length; i++) {
+                if (this.fullScheduleItems[i].value === findValue) {
+                    if (this.fullScheduleItems[i].startTime.isBefore(timeToCheck)) {
                         return timeToCheck;
-                    }else{
+                    } else {
                         return this.fullScheduleItems[i].startTime;
                     }
                 }
-            
+
             }
             return null;
-        }else{
+        } else {
             console.log("Bad index for time to check in full items: " + timeToCheck.format('hh:mm a'), this.fullScheduleItems)
             return null;
         }
     }
-    public getNextOccurrenceOfNotValue(timeToCheck: moment.Moment, findNotValue: T){
+    public getNextOccurrenceOfNotValue(timeToCheck: moment.Moment, findNotValue: T) {
         let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isSameOrBefore(item.endTime));
-        if(startIndex >= 0){
-            for(let i=startIndex; i<this.fullScheduleItems.length; i++){
-                if(this.fullScheduleItems[i].value !== findNotValue){
-                    if(this.fullScheduleItems[i].startTime.isBefore(timeToCheck)){
+        if (startIndex >= 0) {
+            for (let i = startIndex; i < this.fullScheduleItems.length; i++) {
+                if (this.fullScheduleItems[i].value !== findNotValue) {
+                    if (this.fullScheduleItems[i].startTime.isBefore(timeToCheck)) {
                         return timeToCheck;
-                    }else{
+                    } else {
                         return this.fullScheduleItems[i].startTime;
                     }
                 }
             }
-        }else{
+        } else {
             return null;
         }
     }
@@ -195,8 +195,58 @@ export class TimeSchedule<T>{
 
 
     /** */
+    protected _splitItemAtTimes(allSplitTimes: moment.Moment[], splitItem: TimeScheduleItem<T>) {
+        const foundIndex = this._fullScheduleItems.indexOf(splitItem);
+        if (foundIndex >= 0) {
+            const foundItem = this._fullScheduleItems[foundIndex];
+            
+            
+            const foundDelineations = allSplitTimes.filter(timeDelineation =>
+                timeDelineation.isSameOrAfter(splitItem.startTime) && timeDelineation.isSameOrBefore(splitItem.endTime));
+        
+            if (foundDelineations.length > 0) {
+                const newTimeSchedule = new TimeSchedule<T>(foundItem.startTime, foundItem.endTime);
+                let timeScheduleItems: TimeScheduleItem<T>[] = [];
+                if (foundDelineations.length === 1) {
+                    if (foundDelineations[0].isSame(splitItem.startTime) || foundDelineations[0].isSame(splitItem.endTime)) {
+                        /**
+                         * In this case, do nothing.  The delineator is at the same time as the item start or end, 
+                         * therefore there is no splitting occuring, we don't need to take any action.
+                         */
+                        return;
+                    } else {
+                        timeScheduleItems = [
+                            new TimeScheduleItem<T>(splitItem.startTime, foundDelineations[0], true, splitItem.value),
+                            new TimeScheduleItem<T>(foundDelineations[0], splitItem.endTime, true, splitItem.value),
+                        ];
+                    }
+                } else if (foundDelineations.length > 1) {
+                    let currentTime = moment(splitItem.startTime);
+                    for(let i=0; i<foundDelineations.length; i++){
+                        if(currentTime.isBefore(foundDelineations[i])){
+                            timeScheduleItems.push(new TimeScheduleItem<T>(currentTime, foundDelineations[i], true, splitItem.value));
+                            
+                        }else if(currentTime.isSame(foundDelineations[i])){
+                            // do nothing, ignore it.  I dont think it is possible for this to ever happen.
+                            console.log('Error.  duplicate delineations?');
+                        }else if(currentTime.isAfter(foundDelineations[i])){
+                            console.log('Error: the array was not sorted correctly.');
+                        }
+                        currentTime = moment(foundDelineations[i]);
+                    }
+                    if(currentTime.isBefore(splitItem.endTime)){
+                        timeScheduleItems.push(new TimeScheduleItem<T>(currentTime, splitItem.endTime, true, splitItem.value));
+                    }
+                }
+                newTimeSchedule.addScheduleValueItems(timeScheduleItems);
+                this._fullScheduleItems.splice(foundIndex, 1, ...newTimeSchedule.fullScheduleItems);
+            }
+        } else {
+            // console.log('Error: could not find item.')
+        }
+    }
 
-    protected _reconstructSchedule(startTime, endTime){
+    protected _reconstructSchedule(startTime, endTime) {
         this._startTime = startTime;
         this._endTime = endTime;
         this._valueItems = [];
@@ -206,7 +256,7 @@ export class TimeSchedule<T>{
         // console.log("**** REBUILDING THE SCHEDULE")
         this._sortValueItems();
         if (this._valueItems.length > 0) {
-            
+
             let currentTime: moment.Moment = moment(this._startTime);
             let fullScheduleItems: TimeScheduleItem<T>[] = [];
             for (let i = 0; i < this._valueItems.length; i++) {
@@ -216,7 +266,7 @@ export class TimeSchedule<T>{
                     console.log('Error: this shouldnt ever happen.  Please check this._sortValueItems() method.');
                 } else if (currentTime.isBefore(vi.startTime)) {
                     fullScheduleItems.push(new TimeScheduleItem(currentTime, vi.startTime, false, null));
-                    
+
                 }
                 fullScheduleItems.push(vi);
                 currentTime = moment(vi.endTime);
@@ -237,12 +287,12 @@ export class TimeSchedule<T>{
     }
 
     private _sortValueItems() {
-        this._valueItems = this._valueItems.sort((item1, item2)=>{
-            if(item1.startTime.isBefore(item2.startTime)){
+        this._valueItems = this._valueItems.sort((item1, item2) => {
+            if (item1.startTime.isBefore(item2.startTime)) {
                 return -1;
-            }else if(item1.startTime.isAfter(item2.startTime)){
+            } else if (item1.startTime.isAfter(item2.startTime)) {
                 return 1;
-            }else{
+            } else {
                 return 0;
             }
         })
@@ -305,14 +355,14 @@ export class TimeSchedule<T>{
                         ];
                         this._valueItems.splice(i - 1, 2, ...newItems)
                     }
-                }else{
+                } else {
                     // console.log("   ITS NONE OF THESE THINGS")
                 }
             }
         }
 
 
-        
+
     }
 
     private _addScheduleValueItem(item: TimeScheduleItem<T>, overRide: boolean = false) {
@@ -357,7 +407,7 @@ export class TimeSchedule<T>{
     //     item.priority = maxPriority + 1;
     // }
 
-    
+
     public logFullScheduleItems() {
         console.log("Full Schedule Items: ")
         this._fullScheduleItems.forEach((item) => {

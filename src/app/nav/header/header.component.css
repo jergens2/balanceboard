@@ -50,10 +50,44 @@
     flex-direction: row;
     align-items: center;
 }
+
 .header-component-section{
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+
+
+.header-top-right-section{
+    display:flex;
+    flex-direction: row;
+    flex-grow: 2;
+    justify-content: flex-end;
+    align-items: center;
+    margin-right: 5px;
+}
+.header-top-right-section-item{
+    margin-left: 5px;
+    padding-left: 6px;
+    padding-right: 6px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 5px;
+}
+.header-top-right-section-item:hover{
+    background-color:rgb(233, 233, 233);
+    cursor: pointer;
+}
+
+
+
+
+.clock{
+    font-weight: bold;
+    font-size: 0.9em;
+    color: rgb(0, 43, 124);
 }
 .battery-section{
     display: flex;
@@ -94,7 +128,6 @@
     display:flex;
     justify-content: center;
     align-items: center;
-    padding-left: 25px;
 }
 
 

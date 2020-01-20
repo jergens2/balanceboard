@@ -1,7 +1,7 @@
 <div class="selection-column-root" (mouseleave)="onMouseLeave()" (mouseenter)="onMouseEnter()"
     [ngClass]="{'active-root': isActive}">
 
-    <div *ngFor="let row of rows" class="selection-row" [ngClass]="{'available-row':row.isAvailable}"
+    <div *ngFor="let row of rows" class="selection-row" [ngClass]="{'available-row':row.isAvailable, 'grabbing-row':row.isGrabbingSection}" 
         (mousedown)="onMouseDownRow(row)" (mouseenter)="onMouseEnterRow(row)" (mouseleave)="onMouseLeaveRow(row)"
         (mouseup)="onMouseUpRow(row)">
 
@@ -16,7 +16,14 @@
         <div class="saved-time-delineators-container" *ngIf="row.delineator" [ngStyle]="row.delineatorStyle">
 
             <div class="saved-delineator-container" [ngStyle]="row.delineator.ngStyle">
-                <div class="saved-delineator">{{ row.delineator.time.format('hh:mm a')}}</div>
+                <div class="saved-delineator" >
+                    <span class="delete-saved-delineator" >Delete</span>
+                    <span class="show-saved-delineator">
+                        {{ row.delineator.time.format('hh:mm a')}}
+                    </span>
+                    
+                </div>
+                
             </div>
 
         </div>

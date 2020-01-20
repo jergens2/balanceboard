@@ -11,6 +11,7 @@
     </div>
   </div>
   <div class="header-component-sections">
+    
     <div class="header-component-section">
       <div *ngFor="let headerMenu of headerMenus" class="header-menu" [ngClass]="{'header-is-open':headerMenu.isOpen}">
         <div class="menu-name" (click)="onClickHeaderMenuName(headerMenu)"
@@ -24,17 +25,22 @@
         </div>
       </div>
     </div>
-    <div class="header-component-section" style="margin-right:5px;">
-      <div class="header-component-section">
+
+    <div class="header-top-right-section">
+      <!-- <div class="header-top-right-section-item">
         <fa-icon [icon]="faUsers" style="color:rgb(0, 119, 134);"></fa-icon>
-      </div>
-      <div class="header-component-section battery-section">
+      </div> -->
+      <div class="header-top-right-section-item battery-section" (click)="onClickBattery()">
         <span style="color: gray; font-weight:bold; font-size:0.6em; margin-right: 2px;">{{ batteryPercent }}% </span>
         <fa-icon *ngIf="batteryIcon" [icon]="batteryIcon" [ngClass]="batteryNgClass"></fa-icon>
       </div>
-      <div class="search-bar">
+      <div class="header-top-right-section-item clock" (click)="onClickClock()">
+        {{ clock.format('h:mm a') }}
+      </div>
+      <div class="header-top-right-section-item search-bar">
         <app-search-bar></app-search-bar>
       </div>
     </div>
+
   </div>
 </div>

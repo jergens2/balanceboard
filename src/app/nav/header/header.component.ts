@@ -15,6 +15,7 @@ import { Modal } from '../../modal/modal.class';
 import { ModalService } from '../../modal/modal.service';
 import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import { DaybookService } from '../../dashboard/daybook/daybook.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-header',
@@ -28,7 +29,8 @@ export class HeaderComponent implements OnInit {
     private authService: AuthenticationService,
     private toolsService: ToolsService,
     private modalService: ModalService,
-    private daybookService: DaybookService, ) { }
+    private daybookService: DaybookService, 
+    private router: Router ) { }
 
   faBars = faBars;
   faCogs = faCogs;
@@ -37,6 +39,7 @@ export class HeaderComponent implements OnInit {
   private _batteryIcon: IconDefinition;
   private _batteryNgClass: string;
   private _batteryPercent: string = "";
+  
 
   activeAppTool: string = null;
 
@@ -48,6 +51,7 @@ export class HeaderComponent implements OnInit {
   public get batteryIcon(): IconDefinition { return this._batteryIcon; }
   public get batteryPercent(): string { return this._batteryPercent; }
   public get batteryNgClass(): string { return this._batteryNgClass; }
+  public get clock(): moment.Moment { return this.daybookService.clock; }
 
   @Output() sidebarButtonClicked: EventEmitter<boolean> = new EventEmitter();
 
@@ -78,6 +82,22 @@ export class HeaderComponent implements OnInit {
     })
 
     
+  }
+
+  public onClickClock(){
+    this.toolsService.openTool(ToolComponents.TimelogEntry);
+  }
+  public onClickBattery(){
+    /**
+     * Undecided on what is most appropriate here.
+     * Make a new component for battery / sleep page or create them as widgets in the day book?
+     * or perhaps, separate pages that are "Under" the daybook but are not widgets but in fact their own page.
+     * 
+     * 
+     * 
+     */
+    console.log("todo: implement battery page")
+    this.router.navigate(['/daybook']);
   }
 
   private _buildHeaderMenus(currentComponentMenu?: HeaderMenu): HeaderMenu[] {
