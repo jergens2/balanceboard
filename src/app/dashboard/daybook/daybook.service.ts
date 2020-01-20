@@ -8,6 +8,7 @@ import { ServiceAuthenticates } from '../../authentication/service-authenticatio
 import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
 import { TimelogEntryItem } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookController } from './controller/daybook-controller.class';
+import { DaybookWidgetType } from './widgets/daybook-widget.class';
 
 
 @Injectable({
@@ -29,6 +30,7 @@ export class DaybookService implements ServiceAuthenticates {
   private _todayController$: BehaviorSubject<DaybookController>;
   private _todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
   private _activeDayController$: BehaviorSubject<DaybookController>;
+  private _widgetChanged$: BehaviorSubject<DaybookWidgetType> = new BehaviorSubject(DaybookWidgetType.TIMELOG);
 
   private _clockSubscriptions: Subscription[] = [];
   private _daybookItemSubs: Subscription[] = [];
@@ -42,6 +44,12 @@ export class DaybookService implements ServiceAuthenticates {
 
   public get activeDayController$(): Observable<DaybookController> { return this._activeDayController$.asObservable(); }
   public get activeDayController(): DaybookController { return this._activeDayController$.getValue(); }
+
+  public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock)}
+
+  public get widgetChanged$(): Observable<DaybookWidgetType>{ return this._widgetChanged$.asObservable(); }
+  public get widgetChanged(): DaybookWidgetType { return this._widgetChanged$.getValue(); }
+  public setDaybookWidget(widget: DaybookWidgetType) { this._widgetChanged$.next(widget); }
 
   public login$(authStatus: AuthStatus): Observable<boolean> {
     this._authStatus = authStatus;

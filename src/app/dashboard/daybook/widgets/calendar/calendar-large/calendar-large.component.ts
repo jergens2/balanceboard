@@ -41,7 +41,6 @@ export class CalendarLargeComponent implements OnInit {
         months.push({firstDate: moment(day), season: season});
         day = moment(day).add(1, "month");
       }
-      console.log("higgy ziggy")
       this.months = months;
     });
   }

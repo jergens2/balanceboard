@@ -22,7 +22,7 @@ import { PointsWidgetLargeComponent } from './widgets/points/points-widget-large
 
 import { TlefActivitiesComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activities.component';
 import { ActivitySliderBarComponent } from './widgets/timelog/timelog-entry-form/tlef-activities/tlef-activity-slider-bar/activity-slider-bar.component';
-import { SleepBatteryComponent } from './widgets/sleep-battery/sleep-battery.component';
+import { SleepBatteryWidgetComponent } from './widgets/sleep-battery/small/sleep-battery-widget.component';
 // import { WakeupSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/wakeup-section/wakeup-section.component';
 // import { DaySectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/time-of-day-section/time-of-day-section.component';
 // import { BedtimeSectionComponent } from './daybook-entry-form-mobile/daybook-entry-form-section/form-sections/bedtime-section/bedtime-section.component';
@@ -44,6 +44,7 @@ import { TimeSelectionColumnComponent } from './widgets/timelog/timelog-large/ti
 import { TlefViewOnlyComponent } from './widgets/timelog/timelog-entry-form/tlef-view-only/tlef-view-only.component';
 import { TlefBedTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-bed-time/tlef-bed-time.component';
 import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large/timelog-item-types/available-timelog-item/available-timelog-item.component';
+import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep-profile-large/sleep-profile-large.component';
 
 
 @NgModule({
@@ -69,7 +70,7 @@ import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large/t
 
     TlefActivitiesComponent,
     ActivitySliderBarComponent,
-    SleepBatteryComponent,
+    SleepBatteryWidgetComponent,
     // DaybookEntryFormComponent,
     // WakeupSectionComponent,
     // DaySectionComponent,
@@ -90,6 +91,7 @@ import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large/t
     TlefViewOnlyComponent,
     TlefBedTimeComponent,
     AvailableTimelogItemComponent,
+    SleepProfileLargeComponent,
   ],
   exports: [
     // DaybookEntryFormComponent,

@@ -1,0 +1,51 @@
+<div class="sleep-profile-root">
+    <div class="profile-row">
+        <div class="row-header">
+            <div style="width: 200px;"> Wake up time:  </div>
+            <div>
+                {{ wakeupTime.format('h:mm a') }}
+            </div> 
+        </div>
+    </div>
+
+    <div class="profile-row">
+        <div class="row-header">
+            <div style="width: 200px;">Awake for:   </div> 
+            <div>
+                {{ awakeForString }}
+            </div> 
+        </div>
+    </div>
+
+    <div class="profile-row">
+        <div class="row-header">
+            <div style="width: 200px;"> Time until fall asleep :   </div>
+            <div>
+                {{ timeUntilFallAsleepString }}
+            </div> 
+        </div>
+    </div>
+
+    <div class="profile-row">
+        <div class="row-header">
+            <div style="width: 200px;"> Fall asleep time: </div>
+            <div>
+                {{ fallAsleepTime.format('h:mm a') }}
+            </div>  
+        </div>
+    </div>
+
+
+    <div class="profile-row">
+        <div class="row-header">
+            <div style="width: 200px;">Current energy:  </div> 
+            <div>
+                {{ currentEnergy.toFixed(1) }} %
+            </div> 
+            
+        </div>
+    </div>
+
+    
+
+</div>

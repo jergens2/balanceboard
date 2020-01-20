@@ -16,6 +16,7 @@ import { ModalService } from '../../modal/modal.service';
 import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import { DaybookService } from '../../dashboard/daybook/daybook.service';
 import * as moment from 'moment';
+import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
 
 @Component({
   selector: 'app-header',
@@ -85,18 +86,12 @@ export class HeaderComponent implements OnInit {
   }
 
   public onClickClock(){
+    this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
+    this.router.navigate(['/daybook']);
     this.toolsService.openTool(ToolComponents.TimelogEntry);
   }
   public onClickBattery(){
-    /**
-     * Undecided on what is most appropriate here.
-     * Make a new component for battery / sleep page or create them as widgets in the day book?
-     * or perhaps, separate pages that are "Under" the daybook but are not widgets but in fact their own page.
-     * 
-     * 
-     * 
-     */
-    console.log("todo: implement battery page")
+    this.daybookService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);
     this.router.navigate(['/daybook']);
   }
 

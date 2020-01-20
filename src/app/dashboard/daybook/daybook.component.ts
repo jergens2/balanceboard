@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, Observable } from 'rxjs';
 import { ScreenSizeService } from '../../shared/app-screen-size/screen-size.service';
@@ -16,136 +16,102 @@ import { DaybookController } from './controller/daybook-controller.class';
 })
 export class DaybookComponent implements OnInit, OnDestroy {
 
-  constructor(private screenScreenSizeService: ScreenSizeService, private daybookService: DaybookService){}
+  constructor(private screenScreenSizeService: ScreenSizeService, private daybookService: DaybookService) { }
+
+  private _widgets: DaybookWidget[] = [];
+
+  private _widgetSubscriptions: Subscription[] = [];
+  private _screenSize: AppScreenSize;
+  private _screenSizeSubscription: Subscription = new Subscription();
+  private _activeDay: DaybookController;
 
   public faSpinner = faSpinner;
   public faExpand = faExpand;
-  private _screenSize: AppScreenSize;
-  private _screenSizeSubscription: Subscription = new Subscription();
-  public get appScreenSize(): AppScreenSize{
-    return this._screenSize;
-  }
-  private _activeDay: DaybookController;
-  public get activeDay(): DaybookController{
-    return this._activeDay;
-  }
-  public set activeDay(activeDay: DaybookController){
-    this._activeDay = activeDay;
-  }
-
 
   public daybookIsLoading: boolean = true;
 
+  public get widgets(): DaybookWidget[] { return this._widgets; }
+  public get primaryWidget(): DaybookWidget { return this.widgets.find(w => w.isExpanded); }
+  public get calendarWidget(): DaybookWidget { return this.widgets.find(w => w.type === 'CALENDAR') }
+  public get timelogWidget(): DaybookWidget { return this.widgets.find(w => w.type === 'TIMELOG') }
+  public get dailyTaskListWidget(): DaybookWidget { return this.widgets.find(w => w.type === 'DAILY_TASK_LIST') }
+  public get sleepProfileWidget(): DaybookWidget { return this.widgets.find(w => w.type === 'SLEEP_PROFILE') }
+
+
+  public get daybookHeader(): string {
+    return moment(this.daybookService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
+  }
+
+  public get appScreenSize(): AppScreenSize { return this._screenSize; }
+
+  public get activeDay(): DaybookController { return this._activeDay; }
+  public set activeDay(activeDay: DaybookController) { this._activeDay = activeDay; }
+
+  private _dbSub: Subscription = new Subscription();
+
   ngOnInit() {
     this._screenSize = this.screenScreenSizeService.appScreenSize;
-    this.screenScreenSizeService.appScreenSize$.subscribe((changedSize)=>{
+    this.screenScreenSizeService.appScreenSize$.subscribe((changedSize) => {
       this._screenSize = changedSize;
       // console.log("Screensize changed to: " , this._screenSize)
     });
     this._activeDay = this.daybookService.activeDayController;
     // console.log("This active day is", this._activeDay)
-    this.daybookService.activeDayController$.subscribe((activeDayChanged)=>{
-      if(activeDayChanged){
+    this.daybookService.activeDayController$.subscribe((activeDayChanged) => {
+      if (activeDayChanged) {
         this._activeDay = activeDayChanged;
-      }     
+      }
     });
 
 
-    this.arrangeWidgets();
-    this.setPrimaryWidget(DaybookWidgetType.timelog);
+    this._buildWidgets();
 
     this.daybookIsLoading = false;
-  }
-
-
-  private setPrimaryWidget(widget: DaybookWidgetType){
-    if(widget == "Timelog"){
-      this.timelogWidget.expand();
-      this.calendarWidget.minimize();
-      this.dailyTaskListWidget.minimize();
-    }else if(widget == "DailyTaskList"){
-      this.timelogWidget.minimize();
-      this.calendarWidget.minimize();
-      this.dailyTaskListWidget.expand();
-    }else if(widget == "Calendar"){
-      this.timelogWidget.minimize();
-      this.calendarWidget.expand();
-      this.dailyTaskListWidget.minimize();
-    }
-  }
-  
-
-  private timelogWidget: DaybookWidget;
-  private calendarWidget: DaybookWidget;
-  private dailyTaskListWidget: DaybookWidget;
-
-  private widgetSubscriptions: Subscription[] = [];
-
-  private arrangeWidgets(){
-    this.timelogWidget = new DaybookWidget(DaybookWidgetType.timelog, true);
-    this.calendarWidget = new DaybookWidget(DaybookWidgetType.calendar, false);
-    this.dailyTaskListWidget = new DaybookWidget(DaybookWidgetType.dailyTaskList, false);
-
-    let timelogClickSubscription: Subscription = this.timelogWidget.widgetSizeChanged$.subscribe((changeDirection: string)=>{
-      if(changeDirection == "EXPAND"){
-        this.setPrimaryWidget(DaybookWidgetType.timelog);
+    let currentValue: DaybookWidgetType = this.daybookService.widgetChanged;
+    this._setPrimaryWidget(currentValue);
+    this._dbSub = this.daybookService.widgetChanged$.subscribe((changedWidget: DaybookWidgetType) => {
+      if (changedWidget !== currentValue) {
+        currentValue = changedWidget;
+        this._setPrimaryWidget(changedWidget);
       }
     });
-    let calendarClickSubscription: Subscription = this.calendarWidget.widgetSizeChanged$.subscribe((changeDirection: string)=>{
-      if(changeDirection == "EXPAND"){
-        this.setPrimaryWidget(DaybookWidgetType.calendar);
+  }
+
+  private _buildWidgets() {
+    let widgets: DaybookWidget[] = [];
+    [DaybookWidgetType.CALENDAR, DaybookWidgetType.DAILY_TASK_LIST, DaybookWidgetType.SLEEP_PROFILE, DaybookWidgetType.TIMELOG].forEach((type) => {
+      if (type === DaybookWidgetType.TIMELOG) {
+        widgets.push(new DaybookWidget(type, true))
+      } else {
+        widgets.push(new DaybookWidget(type));
       }
-    }); 
-    let dailyTaskListClickSubscription: Subscription = this.dailyTaskListWidget.widgetSizeChanged$.subscribe((changeDirection: string)=>{
-      if(changeDirection == "EXPAND"){
-        this.setPrimaryWidget(DaybookWidgetType.dailyTaskList);
-      }
-    }); 
+    });
+    this._widgetSubscriptions.forEach(sub => sub.unsubscribe());
+    this._widgetSubscriptions = [];
+    this._widgetSubscriptions = widgets.map(widget => widget.widgetSizeChanged$.subscribe((changeDirection: string) => {
+      if (changeDirection === 'EXPAND') { this._setPrimaryWidget(widget.type); }
+    }));
+    this._widgets = widgets;
+  }
 
-    this.widgetSubscriptions = [timelogClickSubscription, calendarClickSubscription, dailyTaskListClickSubscription];
-  }
-  
-  
 
-  private _timelogContainerClasses: any = {};
-  public get timelogContainerClasses(): any{
-    return this._timelogContainerClasses;
-  }
-  private _calendarContainerClasses: any = {};
-  public get calendarContainerClasses(): any{
-    return this._calendarContainerClasses;
-  }
-  private _dailyTaskListContainerClasses: any = {};
-  public get dailyTaskListContainerClasses(): any{
-    return this._dailyTaskListContainerClasses;
-  }
-  private _activityDataContainerClasses: any = {};
-  public get activityDataContainerClasses(): any{
-    return this._activityDataContainerClasses;
+  private _setPrimaryWidget(setToType: DaybookWidgetType) {
+    this.widgets.forEach((widget) => {
+      if (widget.type === setToType) { widget.expand(); }
+      else { widget.minimize(); }
+    });
   }
 
 
 
-
-  public get daybookHeader(): string{
-    return moment(this.daybookService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
-  }
-
-  ngOnDestroy(){
+  ngOnDestroy() {
     this._screenSizeSubscription.unsubscribe();
-    this.widgetSubscriptions.forEach((sub)=>{
-      sub.unsubscribe();
-    })
-    this.widgetSubscriptions = [];
-    this.timelogWidget = null;
-    this.calendarWidget = null;
-    this.dailyTaskListWidget = null;
+    this._widgetSubscriptions.forEach(sub => sub.unsubscribe());
+    this._widgetSubscriptions = [];
+    this._widgets = null;
+    this._dbSub.unsubscribe();
+    this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
   }
 
-
-  // public onClickKillKillKill(){
-  //   console.log("This method is for destroying all daybookdayitems.")
-  //   this.daybookService.killKillKill()
-  // }
 
 }

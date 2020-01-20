@@ -1,21 +1,19 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { timer } from 'rxjs';
 import * as moment from 'moment';
-import { DurationString } from '../../../../shared/utilities/time-utilities/duration-string.class';
-import { SleepBatteryConfiguration } from './sleep-battery-configuration.interface';
+import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
+import { SleepBatteryConfiguration } from '../sleep-battery-configuration.interface';
 
 @Component({
-  selector: 'app-sleep-battery',
-  templateUrl: './sleep-battery.component.html',
-  styleUrls: ['./sleep-battery.component.css']
+  selector: 'app-sleep-battery-widget-widget',
+  templateUrl: './sleep-battery-widget.component.html',
+  styleUrls: ['./sleep-battery-widget.component.css']
 })
-export class SleepBatteryComponent implements OnInit {
+export class SleepBatteryWidgetComponent implements OnInit {
 
   constructor() { }
 
-
   private _percentage: number = 0;
-
 
   private _wakeupTime: moment.Moment;
   private _bedtime: moment.Moment;

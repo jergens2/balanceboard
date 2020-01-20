@@ -84,7 +84,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     public getEnergyAtTime(time: moment.Moment): number {return this.energyController.getEnergyAtTime(time);}
     public setWakeupTimeForDay(time: moment.Moment) {this.sleepController.setWakeupTimeForDay(time);}
-
+    
 
 
     public get timelogEntryItems(): TimelogEntryItem[] { return this.timelogEntryController.timelogEntryItems; }

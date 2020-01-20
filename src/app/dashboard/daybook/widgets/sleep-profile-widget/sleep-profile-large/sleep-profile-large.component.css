@@ -1,0 +1,21 @@
+.sleep-profile-root{
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    display:flex;
+    flex-direction: column;
+}
+
+.profile-row{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.row-header{
+    display: flex;
+    flex-direction: row;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: rgb(0, 28, 104);
+}
