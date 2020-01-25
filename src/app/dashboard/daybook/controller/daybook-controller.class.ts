@@ -65,14 +65,57 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public get endOfNextDay(): moment.Moment { return moment(this.followingDay.dateYYYYMMDD).startOf('day').add(1, 'days'); };
 
     public get dailyWeightLogEntryKg(): number { return this._thisDay.dailyWeightLogEntryKg; }
-    
+
 
     public get timeDelineations(): moment.Moment[] { return this.timeDelineatorController.timeDelineations; }
-    public saveTimeDelineator$(time: moment.Moment){
+    public saveTimeDelineator$(time: moment.Moment) {
         this._timeDelineatorController.saveTimeDelineator$(time);
     }
-    public deleteDelineator(time: moment.Moment){
+    public deleteDelineator(time: moment.Moment) {
         this._timeDelineatorController.deleteDelineator(time);
+    }
+    public updateDelineator(originalTime: moment.Moment, saveNewDelineator: moment.Moment) {
+        this._timeDelineatorController.updateDelineator(originalTime, saveNewDelineator);
+    }
+    public getEarliestAvailability(rowStartTime: moment.Moment): moment.Moment {
+        const availabileItems = this.fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
+        const foundIndex = availabileItems.findIndex(item => rowStartTime.isSameOrAfter(item.startTime) && rowStartTime.isSameOrBefore(item.endTime));
+        if (foundIndex >= 0) {
+            if (foundIndex === 0) {
+                return availabileItems[foundIndex].startTime;
+            } else if (foundIndex > 0) {
+                let startTime = availabileItems[foundIndex].startTime;
+                for (let i = foundIndex - 1; i < 0; i--) {
+                    if (availabileItems[i].startTime.isSame(availabileItems[i -1].endTime)) {
+                        startTime = availabileItems[i-1].startTime;
+                    } else {
+                        i = -1;
+                    }
+                }
+                return startTime;
+            }
+        } else {
+            console.log('error: couldnt find availability start time.');
+        }
+    }
+    public getLatestAvailability(rowStartTime: moment.Moment): moment.Moment {
+        const availabileItems = this.fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
+        const foundIndex = availabileItems.findIndex(item => rowStartTime.isSameOrAfter(item.startTime) && rowStartTime.isSameOrBefore(item.endTime));
+        if (foundIndex >= 0) {
+
+            let endTime = availabileItems[foundIndex].endTime;
+            for (let i = foundIndex; i < availabileItems.length; i++) {
+                if (availabileItems[i].endTime.isSame(availabileItems[i + 1].startTime)) {
+                    endTime = availabileItems[i+1].endTime;
+                } else {
+                    i = availabileItems.length + 1;
+                }
+            }
+            return endTime;
+
+        } else {
+            console.log('error: couldnt find availability start time.');
+        }
     }
 
 
@@ -82,9 +125,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public get prevDayFallAsleepTime(): moment.Moment { return this.sleepController.prevDayFallAsleepTime; }
     public get awakeToAsleepRatio(): number { return this.sleepController.awakeToAsleepRatio; }
 
-    public getEnergyAtTime(time: moment.Moment): number {return this.energyController.getEnergyAtTime(time);}
-    public setWakeupTimeForDay(time: moment.Moment) {this.sleepController.setWakeupTimeForDay(time);}
-    
+    public getEnergyAtTime(time: moment.Moment): number { return this.energyController.getEnergyAtTime(time); }
+    public setWakeupTimeForDay(time: moment.Moment) { this.sleepController.setWakeupTimeForDay(time); }
+
 
 
     public get timelogEntryItems(): TimelogEntryItem[] { return this.timelogEntryController.timelogEntryItems; }
@@ -131,7 +174,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             const availableMS: number = foundItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE).reduce((a, b) => { return a += b.durationMS }, 0);
             if (availableMS > (Math.abs(diffMS) / 2)) {
                 isAvailable = true;
-            }else{
+            } else {
                 isAvailable = false;
             }
         }
@@ -173,13 +216,13 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         this._sleepController = new DaybookSleepController(this._previousDay.sleepTimes,
             this._thisDay.sleepTimes, this._followingDay.sleepTimes, this.dateYYYYMMDD);
 
-            // console.log("TimelogDataItems is ", timelogDataItems)
+        // console.log("TimelogDataItems is ", timelogDataItems)
         const timeScheduleValueItems: TimeScheduleItem<DaybookAvailabilityType>[] = [
             ...timelogDataItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(moment(item.startTimeISO), moment(item.endTimeISO), true, DaybookAvailabilityType.TIMELOG_ENTRY)),
             ...this.sleepController.valueItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(item.startTime, item.endTime, true, DaybookAvailabilityType.SLEEP)),
         ]
         // timeScheduleValueItems.forEach((item)=>{
-            // console.log("TSE: " + item.toString());
+        // console.log("TSE: " + item.toString());
         // })
         // console.log("Adding TimeScheudle value itmes:  " + timeScheduleValueItems.length)
         this.addScheduleValueItems(timeScheduleValueItems);
@@ -194,15 +237,15 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         this._updateSubscriptions();
     }
 
-    private _setAvailabilitySections(allTimeDelineations: moment.Moment[]){
+    private _setAvailabilitySections(allTimeDelineations: moment.Moment[]) {
         let nullItems = this.fullScheduleItems.filter(item => item.value === null);
-        nullItems.forEach((scheduleItem)=>{
-            scheduleItem.value = DaybookAvailabilityType.AVAILABLE; 
+        nullItems.forEach((scheduleItem) => {
+            scheduleItem.value = DaybookAvailabilityType.AVAILABLE;
         });
-        allTimeDelineations.forEach((timeDelineator)=>{
+        allTimeDelineations.forEach((timeDelineator) => {
             const foundItem = nullItems.find(item => timeDelineator.isSameOrAfter(item.startTime) && timeDelineator.isSameOrBefore(item.endTime));
             const foundDelineators = allTimeDelineations.filter(del => del.isSameOrAfter(foundItem.startTime) && del.isSameOrBefore(foundItem.endTime));
-            if(foundItem){
+            if (foundItem) {
                 this._splitItemAtTimes(foundDelineators, foundItem);
             }
         });
@@ -264,13 +307,13 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         const sleepSub = this.sleepController.sleepTimesUpdated$.subscribe((sleepTimes: DaybookSleepEntryItem[]) => {
             this._updateThisDaySleepTimes(sleepTimes);
         });
-        const delineatorSub = this.timeDelineatorController.saveChanges$.subscribe((delineators: moment.Moment[])=>{
+        const delineatorSub = this.timeDelineatorController.saveChanges$.subscribe((delineators: moment.Moment[]) => {
             this._updateTimeDelineators(delineators);
         })
         this._subscriptions = [timelogSub, sleepSub, delineatorSub];
     }
 
-    private _updateTimeDelineators(delineators: moment.Moment[]){
+    private _updateTimeDelineators(delineators: moment.Moment[]) {
         this._thisDay.timeDelineators = delineators;
         this._dataChanged$.next({
             prevDayChanged: false,
@@ -289,15 +332,15 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             .filter(time => moment(time.startTime).isSameOrAfter(this.startOfNextDay) && moment(time.endTime).isSameOrBefore(this.endOfNextDay));
         if (thisDayTimes.length > 0) {
             thisDayChanged = true;
-            this._thisDay.sleepTimes = thisDayTimes.map(item => item.saveToDB );
+            this._thisDay.sleepTimes = thisDayTimes.map(item => item.saveToDB);
         }
         if (prevDayTimes.length > 0) {
             prevDayChanged = true;
-            this._previousDay.sleepTimes = prevDayTimes.map(item => item.saveToDB );
+            this._previousDay.sleepTimes = prevDayTimes.map(item => item.saveToDB);
         }
         if (nextDayTimes.length > 0) {
             nextDayChanged = true;
-            this._followingDay.sleepTimes = nextDayTimes.map(item => item.saveToDB );
+            this._followingDay.sleepTimes = nextDayTimes.map(item => item.saveToDB);
         }
         const daysChanged = {
             prevDayChanged: prevDayChanged,

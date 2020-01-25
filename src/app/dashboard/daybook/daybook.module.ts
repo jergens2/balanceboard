@@ -45,6 +45,7 @@ import { TlefViewOnlyComponent } from './widgets/timelog/timelog-entry-form/tlef
 import { TlefBedTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-bed-time/tlef-bed-time.component';
 import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large/timelog-item-types/available-timelog-item/available-timelog-item.component';
 import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep-profile-large/sleep-profile-large.component';
+import { TimeSelectionRowComponent } from './widgets/timelog/timelog-large/timelog-body/time-selection-row/time-selection-row.component';
 
 
 @NgModule({
@@ -92,6 +93,7 @@ import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep
     TlefBedTimeComponent,
     AvailableTimelogItemComponent,
     SleepProfileLargeComponent,
+    TimeSelectionRowComponent,
   ],
   exports: [
     // DaybookEntryFormComponent,

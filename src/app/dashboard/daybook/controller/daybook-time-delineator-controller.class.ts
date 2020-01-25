@@ -34,6 +34,16 @@ export class DaybookTimeDelineatorController{
         }
     }
 
+    public updateDelineator(originalTime, saveNewDelineator){
+        const foundOriginal = this._timeDelineations.find(item => item.isSame(originalTime));
+        if(foundOriginal){
+            this._timeDelineations.splice(this._timeDelineations.indexOf(foundOriginal), 1, saveNewDelineator);
+            this._saveChanges$.next(this._timeDelineations);
+        }else{
+            console.log('Error:  did not find original time ('+originalTime.format('hh:mm a')+') in the time delineations array: ' , this._timeDelineations);
+        }
+    }
+
     private _validateDelineators(){
         this._timeDelineations = this._timeDelineations.sort((d1, d2)=>{
             if(d1.isBefore(d2)){ return -1; }

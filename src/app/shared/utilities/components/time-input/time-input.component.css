@@ -20,3 +20,9 @@
     color: gray;
     font-style: italic;
 }
+
+.minimal{
+    border: none;
+    flex-shrink: 2;
+    margin: none;
+}

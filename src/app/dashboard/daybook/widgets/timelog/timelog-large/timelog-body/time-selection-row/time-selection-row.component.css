@@ -1,0 +1,95 @@
+.row-root{
+    height: 100%;
+    width:100%;
+
+    display:flex;
+    flex-direction: row;
+}
+
+
+
+
+
+.draw-time-delineator-container{
+    width:100%; 
+    height: 1px; 
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.draw-time-delineator{
+    flex-grow: 2;
+    
+    background-color: rgba(247, 251, 255, 0.85);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding:2px;
+    border: 1px solid rgb(216, 216, 216);
+    border-radius: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+    height: 20px;
+}
+
+
+
+.saved-delineator-container{
+    background-color: purple;
+    height: 1px;
+    width:100%;
+
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.saved-delineator{
+    
+    background-color: rgba(0, 128, 255, 0.3);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding:2px;
+    border: 1px solid rgb(216, 216, 216);
+    border-radius: 3px;
+    font-size: 0.8em;
+    font-weight: bold;
+    height: 20px;
+}
+.saved-delineator:hover{
+    background-color: rgb(137, 196, 255);
+    cursor: pointer;
+}
+
+.edit-delineator{
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 30px;
+    padding: 15px;
+    margin-left: 3px;
+    border-radius: 5px;
+    background-color: rgba(255, 123, 0, 0.897);
+}
+
+
+
+
+.edit-time-container{
+    display:flex;
+    flex-direction: row;
+    
+}
+.save-edit-time{
+    color: rgba(0, 255, 0, 0.404);
+    cursor: pointer;
+}
+.save-edit-time:hover{
+    color: lime;
+    cursor: pointer;
+}

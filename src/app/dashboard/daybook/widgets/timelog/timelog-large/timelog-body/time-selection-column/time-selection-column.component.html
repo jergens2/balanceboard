@@ -1,34 +1,9 @@
 <div class="selection-column-root" (mouseleave)="onMouseLeave()" (mouseenter)="onMouseEnter()"
     [ngClass]="{'active-root': isActive}">
 
-    <div *ngFor="let row of rows" class="selection-row" [ngClass]="{'available-row':row.isAvailable, 'grabbing-row':row.isGrabbingSection}" 
-        (mousedown)="onMouseDownRow(row)" (mouseenter)="onMouseEnterRow(row)" (mouseleave)="onMouseLeaveRow(row)"
-        (mouseup)="onMouseUpRow(row)">
-
-
-        <div class="draw-time-delineator-container" *ngIf="row.drawDelineator">
-            <div class="draw-time-delineator">
-                {{ row.drawDelineator.time.format('hh:mm a') }}
-            </div>
-        </div>
-
-
-        <div class="saved-time-delineators-container" *ngIf="row.delineator" [ngStyle]="row.delineatorStyle">
-
-            <div class="saved-delineator-container" [ngStyle]="row.delineator.ngStyle">
-                <div class="saved-delineator" >
-                    <span class="delete-saved-delineator" >Delete</span>
-                    <span class="show-saved-delineator">
-                        {{ row.delineator.time.format('hh:mm a')}}
-                    </span>
-                    
-                </div>
-                
-            </div>
-
-        </div>
-
-
-
-    </div>
+    <app-time-selection-row *ngFor="let row of rows" class="selection-row" [row]="row"
+        [ngClass]="{'available-row':row.isAvailable, 'grabbing-row':row.isGrabbingSection}"
+        (mousedown)="row.onMouseDown()" (mouseenter)="row.onMouseEnter(startRow)" (mouseleave)="row.onMouseLeave()"
+        (mouseup)="row.onMouseUp(startRow)">
+    </app-time-selection-row>
 </div>

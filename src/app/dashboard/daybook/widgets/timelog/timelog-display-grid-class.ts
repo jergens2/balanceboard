@@ -13,11 +13,12 @@ export class TimelogDisplayGrid {
     this._timeDelineators = delineators;
     this._activeController = activeDayController;
 
+    // console.log("Building TimelogDisplayGrid: (startTime, endTime, delineators, activeDayController", startTime, endTime, delineators, activeDayController )
     this._buildGrid();
-    // console.log("Grid is built.")
-    // this.gridItems.forEach((item) => {
-    //   console.log("   " + item.type + " : " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a'))
-    // })
+    console.log("TimelogDisplayGrid is built.")
+    this.gridItems.forEach((item) => {
+      console.log("   " + item.type + " : " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a'))
+    })
 
   }
 
@@ -25,6 +26,7 @@ export class TimelogDisplayGrid {
   private _endTime: moment.Moment
   private _timeDelineators: TimelogDelineator[];
   private _activeController: DaybookController;
+  
 
   private _gridItems: TimelogDisplayGridItem[] = [];
 

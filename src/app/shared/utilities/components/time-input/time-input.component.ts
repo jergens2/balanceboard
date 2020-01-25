@@ -26,6 +26,8 @@ export class TimeInputComponent implements OnInit {
   @Input() maxValue: moment.Moment;
   @Input() minValue: moment.Moment;
   @Input() buttons: boolean = true;
+  @Input() showDate: boolean = true;
+  @Input() minimal: boolean = false;
 
   @Output() timeChanged: EventEmitter<moment.Moment> = new EventEmitter();
 
