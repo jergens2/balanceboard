@@ -362,16 +362,17 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
-
-    // console.log("Saving delinetaor.", actionRow)
-    this._timeDelineations.push(actionRow.startTime);
-    this._timeDelineations = this._timeDelineations.sort((item1, item2) => {
-      if (item1.isBefore(item2)) { return -1; }
-      else if (item1.isAfter(item2)) { return 1; }
-      else { return 0; }
-    })
-    this._buildRows(this._calculateDivisor());
-    this.daybookService.activeDayController.saveTimeDelineator$(actionRow.startTime);
+    const maxDelineators = 16;
+    if(this._timeDelineations.length < maxDelineators){
+      this._timeDelineations.push(actionRow.startTime);
+      this._timeDelineations = this._timeDelineations.sort((item1, item2) => {
+        if (item1.isBefore(item2)) { return -1; }
+        else if (item1.isAfter(item2)) { return 1; }
+        else { return 0; }
+      });
+      this._buildRows(this._calculateDivisor());
+      this.daybookService.activeDayController.saveTimeDelineator$(actionRow.startTime);
+    }
   }
 
   private _saveNewTimelogEntry(startRow: TimeSelectionRow, endRow: TimeSelectionRow) {
