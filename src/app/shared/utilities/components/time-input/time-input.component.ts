@@ -28,6 +28,7 @@ export class TimeInputComponent implements OnInit {
   @Input() buttons: boolean = true;
   @Input() showDate: boolean = true;
   @Input() minimal: boolean = false;
+  @Input() incrementMinutes: number = 15;
 
   @Output() timeChanged: EventEmitter<moment.Moment> = new EventEmitter();
 
@@ -60,9 +61,9 @@ export class TimeInputComponent implements OnInit {
   public onClickChangeTime(action: "ADD" | "SUBTRACT", time: string) {
     let newValue: moment.Moment;
     if (action == "ADD") {
-      newValue = moment(this.timeValue).add(30, "minutes");
+      newValue = moment(this.timeValue).add(this.incrementMinutes, "minutes");
     } else if (action == "SUBTRACT") {
-      newValue = moment(this.timeValue).subtract(30, "minutes");
+      newValue = moment(this.timeValue).subtract(this.incrementMinutes, "minutes");
     }
 
     if (this.maxValue) {

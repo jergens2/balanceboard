@@ -24,7 +24,8 @@ export class TimeSelectionRow {
 
     private _drawDelineator: TimelogDelineator;
 
-    private _savedDelineatorStyle: any = { 'grid-template-rows': "1fr", };
+    private _gridStyle: any = {};
+    private _bodyStyle: any = {};
     private _savedDelineatorTime: moment.Moment;
 
     private _deleteDelineator$: Subject<moment.Moment> = new Subject();
@@ -59,9 +60,12 @@ export class TimeSelectionRow {
             this._buildDelineatorsStyle();
         }else{
             this._savedDelineatorTime = null;
-            this._savedDelineatorStyle = null;
+            this._gridStyle = {};
         }
         
+    }
+    public deleteDelineator(savedDelineator: moment.Moment){
+        this._deleteDelineator$.next(savedDelineator);
     }
     public updateSavedDelineator(newDelineatorTime: moment.Moment){
         if(newDelineatorTime.isSameOrAfter(this.startTime) && newDelineatorTime.isSameOrBefore(this.endTime)){
@@ -75,7 +79,8 @@ export class TimeSelectionRow {
     }
     public get savedDelineatorTime(): moment.Moment { return this._savedDelineatorTime; }
 
-    public get delineatorStyle(): any { return this._savedDelineatorStyle; }
+    public get gridStyle(): any { return this._gridStyle; }
+    public get bodyStyle(): any { return this._bodyStyle; }
 
     public get diffMS(): number { return this.endTime.diff(this.startTime, 'milliseconds'); }
 
@@ -105,11 +110,11 @@ export class TimeSelectionRow {
                 }
                 
             }else if(this.isEditing){
-                console.log('we editing')
+                // console.log('we editing')
                 // this.isEditing = true;
-                console.log(this.savedDelineatorTime.toISOString())
-                console.log(this.savedDelineatorTime.format('hh:mm a'))
-                console.log(this.savedDelineatorTime.format('HH:mm'))
+                // console.log(this.savedDelineatorTime.toISOString())
+                // console.log(this.savedDelineatorTime.format('hh:mm a'))
+                // console.log(this.savedDelineatorTime.format('HH:mm'))
             }
 
             
@@ -121,7 +126,6 @@ export class TimeSelectionRow {
         }
     }
     public onMouseUp(startRow: TimeSelectionRow) {
-        console.log("mouse up", startRow)
         if(this.isEditing || this.isDeleting){
 
         }else{
@@ -182,6 +186,9 @@ export class TimeSelectionRow {
         this._hoverSavedDelineator = false;
         this.mouseIsOver = false;
         this._drawDelineator = null;
+
+        // this._gridStyle = {};
+        // this._bodyStyle = {};
     }
 
 
@@ -191,25 +198,17 @@ export class TimeSelectionRow {
         // let currentTime = moment(this.startTime);
         if (this.savedDelineatorTime) {
 
-
             if (this.startTime.isSame(this.savedDelineatorTime)) {
-
-
-                this._savedDelineatorStyle = { 'margin-top':'0' };
-
-
-            } else if (this.endTime.isSame(this.savedDelineatorTime)) {
-
-
-
-                this._savedDelineatorStyle = { 'margin-top':'100%' };
+                this._gridStyle = { 'grid-template-rows':'1fr' };
+                this._bodyStyle = { 'grid-row': '1/ span 1'};
             }else{
                 const totalMS = moment(this.endTime).diff(this.startTime, 'milliseconds');
                 const delineatorMS = moment(this.savedDelineatorTime).diff(this.startTime, 'milliseconds');
                 if(delineatorMS > 0){
                     const percent = (delineatorMS / totalMS) * 100;
-
-                    this._savedDelineatorStyle = { 'margin-top': percent.toFixed(0) + '%' };
+                    const inversePercent = 100-percent;
+                    this._gridStyle = { 'grid-template-rows': percent.toFixed(0) + '% ' + inversePercent.toFixed(0)+ '%'  };
+                    this._bodyStyle = { 'grid-row': '2/ span 1'};
                 }else{
                     console.log('bigtime error')
                 }
@@ -219,7 +218,7 @@ export class TimeSelectionRow {
 
         }
 
-        console.log("Style is: " , this._savedDelineatorStyle);
+        console.log("Style is: (grid, body)" , this._gridStyle, this._bodyStyle);
     }
 
 

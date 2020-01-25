@@ -20,7 +20,7 @@ export class TimeSelectionRowComponent implements OnInit {
     this._editTime = this.row.savedDelineatorTime;
     if(this.row.isAvailable){
 
-      console.log("RoW SECTION START AND END: " + this.row.earliestAvailability.format('hh:mm a') + " to " + this.row.latestAvailability.format('hh:mm a'))
+      // console.log("RoW SECTION START AND END: " + this.row.earliestAvailability.format('hh:mm a') + " to " + this.row.latestAvailability.format('hh:mm a'))
     }
   }
 
@@ -37,6 +37,9 @@ export class TimeSelectionRowComponent implements OnInit {
   public onClickSaveEdit(){
     console.log("on click save edit");
     this.row.updateSavedDelineator(this._editTime);
+  }
+  public onClickDelete(){
+    this.row.deleteDelineator(this.row.savedDelineatorTime);
   }
 
 }
