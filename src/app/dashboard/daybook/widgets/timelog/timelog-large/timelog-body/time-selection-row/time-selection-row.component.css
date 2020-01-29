@@ -32,21 +32,26 @@
 .draw-time-delineator{
     flex-grow: 2;
     
-    background-color: rgba(247, 251, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0);
+    color: rgba(0, 89, 255, 1);
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     padding:2px;
-    border: 1px solid rgb(216, 216, 216);
     border-radius: 3px;
     font-size: 0.8em;
     font-weight: bold;
     height: 20px;
+
+    position: relative;
+    z-index: -1;
 }
 
 
 .saved-delineator{
+
+    flex-grow:2;
     
     background-color: rgba(0, 128, 255, 0.3);
     display: flex;
@@ -68,6 +73,13 @@
 .saved-delineator:hover{
     background-color: rgb(137, 196, 255);
     cursor: pointer;
+}
+.push-backwards{
+    position:relative;
+    z-index: -5;
+}
+.is-drawing{
+    color: rgba(0, 89, 255, 1);
 }
 
 .edit-delineator{
@@ -100,7 +112,7 @@
     margin-right: 5px;
 }
 .save-edit-time:hover{
-    color: lime;
+    color: rgb(17, 202, 17);
     cursor: pointer;
 }
 .delete-time{

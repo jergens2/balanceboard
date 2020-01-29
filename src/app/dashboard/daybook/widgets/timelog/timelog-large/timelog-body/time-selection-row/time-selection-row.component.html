@@ -1,13 +1,13 @@
 <div class="row-root" [ngStyle]="row.gridStyle">
 
-    <div class="row-body" [ngStyle]="row.bodyStyle">
+    <div class="row-body" [ngStyle]="row.bodyStyle" >
         <div *ngIf="!row.savedDelineator && row.drawDelineator" class="draw-time-delineator-container">
             <div class="draw-time-delineator">
                 {{ row.drawDelineator.time.format('hh:mm a') }}
             </div>
         </div>
 
-        <div class="saved-delineator" *ngIf="row.savedDelineatorTime && !row.isEditing"
+        <div class="saved-delineator" [ngClass]="{'push-backwards': row.isDragging, 'is-drawing':row.ngClassIsDrawing }" *ngIf="row.savedDelineatorTime && !row.isEditing"
             (mouseenter)="row.onMouseEnterSavedDelineator()" [ngClass]="{'editing-saved-delineator':row.isEditing}"
             (mouseleave)="row.onMouseLeaveSavedDelineator()" (mousedown)="row.startEditing()">
             <!-- <div *ngIf="row.hoverSavedDelineator"
@@ -17,7 +17,7 @@
                 </div>
                 <div *ngIf="!row.hoverSavedDelineator"> -->
             {{ row.savedDelineatorTime.format('hh:mm a')}}
-            <!-- </div> -->
+            <!-- </div> -->   
         </div>
 
         <div class="edit-delineator" *ngIf="row.savedDelineatorTime && row.isEditing">

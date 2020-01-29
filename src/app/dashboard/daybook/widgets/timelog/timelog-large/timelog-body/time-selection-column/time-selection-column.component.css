@@ -8,12 +8,6 @@
 .active-root{
     
 }
-.active-root > .selection-row{
-    cursor: grabbing;
-}
-.active-root > .grabbing-row{
-    background-color: rgba(0, 117, 185, 0.356);
-}
 
 .selection-row{
     flex-grow: 2;
@@ -21,14 +15,16 @@
     width: 100%;
 }
 
-.grabbing-row{ 
-    background-color: rgb(155, 25, 47);
-}
+
 .available-row{
     background-color: rgba(0, 162, 255, 0.01);
     cursor: grab;
 }
 .available-row:hover{
-    border-top: 1px solid rgb(0, 117, 185);
+    border-top: 1px solid rgba(0, 89, 255, 0.5);
     /* background-color: rgba(0, 162, 255, 0.658); */
+}
+.grabbing-row{ 
+    background-color: rgba(0, 162, 255, 0.05);
+    cursor: grabbing;
 }

@@ -243,6 +243,7 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
     }
     private _setFirstWakeupTime() {
         let startTime = this.startOfThisDay;
+        let foundWakeupTime: moment.Moment;
         // console.log("finding first wakeup time after startTIme: " + startTime.format('YYYY-MM-DD hh:mm a'))
         if (this.isAwakeAtTime(this.startOfThisDay)) {
             console.log("  we were awake at the start of the day, so we are setting it to prev day fall asleep time.")
@@ -251,18 +252,28 @@ export class DaybookSleepController extends TimeSchedule<DaybookSleepEntryItem> 
         const foundItem = this.valueItems
             .find(item => item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(this.endOfThisDay));
         if (foundItem) {
-            this._firstWakeupTime = moment(foundItem.endTime);
+            foundWakeupTime = moment(foundItem.endTime);
         }
         else {
             const foundItem = this.fullScheduleItems
                 .filter(item => item.startTime.isSameOrAfter(startTime) && item.endTime.isSameOrBefore(this.endOfThisDay))
                 .find(item => item.hasValue === false);
             if (foundItem) {
-                this._firstWakeupTime = moment(foundItem.startTime);
+                foundWakeupTime = moment(foundItem.startTime);
             } else {
                 console.log("Error.  May need to theck TimeSchedule._sort method")
             }
         }
+
+        const now = moment();
+        if(this.thisDateYYYYMMDD === now.format('YYYY-MM-DD')){
+            console.log('Sleep profile:  its the same date')
+            if(foundWakeupTime.isAfter(now)){
+                foundWakeupTime = TimeUtilities.roundDownToFloor(now, 15);
+            }
+        }
+
+        this._firstWakeupTime = moment(foundWakeupTime);
         // console.log("This.Wakeuptime = " + this._firstWakeupTime.format("YYYY-MM-DD hh:mm a"))
     }
 }
