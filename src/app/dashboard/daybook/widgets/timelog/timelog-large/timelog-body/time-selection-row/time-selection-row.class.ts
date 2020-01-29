@@ -34,14 +34,14 @@ export class TimeSelectionRow {
     public sectionIndex: number = -1;
     public earliestAvailability: moment.Moment;
     public latestAvailability: moment.Moment;
-     
+
 
     public startTime: moment.Moment;
     public endTime: moment.Moment;
 
     public rowIndex: number;
     public isAvailable = false;
-    public isGrabbingSection = false; 
+    public isGrabbingSection = false;
     public isDragging = false;
 
     public isEditing = false;
@@ -60,20 +60,20 @@ export class TimeSelectionRow {
         if (delineator) {
             this._savedDelineatorTime = moment(delineator);
             this._buildDelineatorsStyle();
-        }else{
+        } else {
             this._savedDelineatorTime = null;
             this._gridStyle = {};
         }
-        
+
     }
-    public deleteDelineator(savedDelineator: moment.Moment){
+    public deleteDelineator(savedDelineator: moment.Moment) {
         this._deleteDelineator$.next(savedDelineator);
     }
-    public updateSavedDelineator(newDelineatorTime: moment.Moment){
-        if(newDelineatorTime.isSameOrAfter(this.startTime) && newDelineatorTime.isSameOrBefore(this.endTime)){
+    public updateSavedDelineator(newDelineatorTime: moment.Moment) {
+        if (newDelineatorTime.isSameOrAfter(this.startTime) && newDelineatorTime.isSameOrBefore(this.endTime)) {
             this._editDelineator$.next(newDelineatorTime);
             this.setDelineator(newDelineatorTime);
-        }else{
+        } else {
 
             this._editDelineator$.next(newDelineatorTime);
             this.setDelineator(null);
@@ -92,40 +92,70 @@ export class TimeSelectionRow {
 
     public get drawDelineator(): TimelogDelineator { return this._drawDelineator; }
 
-    public onDrawDelineator(drawTime: moment.Moment) {
+    public onDrawDelineator(drawStart: moment.Moment, drawEnd?: moment.Moment) {
         // console.log("DRAWING THE DELINEATOR IN THE ROW")
-        if(this.savedDelineatorTime){
-            this._drawDelineator = null;
-            // if(drawTime){
-            //     this.ngClassIsDrawing = true;
-            // }
-        }else{
-            if(drawTime){
-                this._drawDelineator = new TimelogDelineator(drawTime, TimelogDelineatorType.SAVED_DELINEATOR);
-            }else{
-                this._drawDelineator = null;
-            }
 
-        }        
+        if (drawStart && drawEnd) {
+            if (this.savedDelineatorTime) {
+                if (this.savedDelineatorTime.isSame(drawStart) || this.savedDelineatorTime.isSame(drawEnd)) {
+                    this.ngClassIsDrawing = true;
+                } else {
+                    this.ngClassIsDrawing = false;
+                }
+                this._drawDelineator = null;
+            } else {
+                this.ngClassIsDrawing = false;
+
+                if (drawStart.isSame(this.startTime) || drawEnd.isSame(this.startTime)) {
+                    this._drawDelineator = new TimelogDelineator(this.startTime, TimelogDelineatorType.SAVED_DELINEATOR);
+        
+                } else if (drawStart.isAfter(this.startTime) && drawStart.isBefore(this.endTime)) {
+                    this._drawDelineator = new TimelogDelineator(drawStart, TimelogDelineatorType.SAVED_DELINEATOR);
+                } else if (drawEnd.isAfter(this.startTime) && drawEnd.isBefore(this.endTime)) {
+                    this._drawDelineator = new TimelogDelineator(drawEnd, TimelogDelineatorType.SAVED_DELINEATOR);
+                } else {
+                    this._drawDelineator = null;
+                }
+            }
+        } else if (drawStart && !drawEnd) {
+            if (this.savedDelineatorTime) {
+                if (this.savedDelineatorTime.isSame(drawStart)) {
+                    this.ngClassIsDrawing = true;
+                } else {
+                    this.ngClassIsDrawing = false;
+                }
+            } else {
+                this.ngClassIsDrawing = false;
+                if (this.startTime.isSame(drawStart)) {
+                    this._drawDelineator = new TimelogDelineator(drawStart, TimelogDelineatorType.SAVED_DELINEATOR);
+                } else {
+                    this._drawDelineator = null;
+                }
+            }
+        } else {
+            console.log('Error in method TimeSelectionRow.onDrawDelineator(): param values are null')
+            this._drawDelineator = null;
+            this.ngClassIsDrawing = false;
+        }
     }
 
 
-    public startEditing(){
+    public startEditing() {
         this.isEditing = true;
     }
 
     public onMouseDown() {
 
-        if(this.isDeleting || this.isEditing){
-            if(this.isDeleting){
+        if (this.isDeleting || this.isEditing) {
+            if (this.isDeleting) {
                 console.log('we deleting')
-                if(this.savedDelineatorTime){
-                    this._deleteDelineator$.next(this.savedDelineatorTime); 
-                }else{
+                if (this.savedDelineatorTime) {
+                    this._deleteDelineator$.next(this.savedDelineatorTime);
+                } else {
                     console.log('Bigtime error with saved delineator.')
                 }
-                
-            }else if(this.isEditing){
+
+            } else if (this.isEditing) {
                 // console.log('we editing')
                 // this.isEditing = true;
                 // console.log(this.savedDelineatorTime.toISOString())
@@ -133,39 +163,39 @@ export class TimeSelectionRow {
                 // console.log(this.savedDelineatorTime.format('HH:mm'))
             }
 
-            
-        }else{
-            if(this.isAvailable){
+
+        } else {
+            if (this.isAvailable) {
                 console.log("Row Class: Start dragging")
                 this._startDragging$.next(this);
             }
         }
     }
     public onMouseUp(startRow: TimeSelectionRow) {
-        if(this.isEditing || this.isDeleting){
+        if (this.isEditing || this.isDeleting) {
 
-        }else{
-            if(startRow){
-                if(this.isDeleting){
+        } else {
+            if (startRow) {
+                if (this.isDeleting) {
                     console.log("this.isDeleting === true", this.isDeleting);
-                }else if(this.isEditing){
+                } else if (this.isEditing) {
                     console.log("this.isEditing === true, ", this.isEditing);
-                }else{
+                } else {
                     console.log("Neither deleting or editing, so STOP DRAGGING");
                     this._stopDragging$.next(this);
-                } 
-    
+                }
+
             }
         }
-        
+
     }
     public onMouseEnter(startRow: TimeSelectionRow) {
-        if(startRow){
+        if (startRow) {
             this._updateDragging$.next(this);
             this.isDragging = true;
         }
     }
-    public onMouseLeave(startRow: TimeSelectionRow){
+    public onMouseLeave(startRow: TimeSelectionRow) {
         // if(startRow){
         //     if(this.sectionIndex === startRow.sectionIndex){
         //         if(this.startTime.isSame(startRow.startTime)){
@@ -186,20 +216,20 @@ export class TimeSelectionRow {
     }
 
 
-    public hideSavedDelineator(){
+    public hideSavedDelineator() {
         this.setDelineator(null);
     }
 
     public get hoverSavedDelineator(): boolean { return this._hoverSavedDelineator; }
-    public onMouseEnterSavedDelineator(){
+    public onMouseEnterSavedDelineator() {
         this._hoverSavedDelineator = true;
     }
-    public onMouseLeaveSavedDelineator(){
+    public onMouseLeaveSavedDelineator() {
         this._hoverSavedDelineator = false;
     }
 
 
-    public startDeleting(){ 
+    public startDeleting() {
         this.isDeleting = true;
     }
 
@@ -224,20 +254,20 @@ export class TimeSelectionRow {
         if (this.savedDelineatorTime) {
 
             if (this.startTime.isSame(this.savedDelineatorTime)) {
-                this._gridStyle = { 'grid-template-rows':'1fr' };
-                this._bodyStyle = { 'grid-row': '1/ span 1'};
-            }else{
+                this._gridStyle = { 'grid-template-rows': '1fr' };
+                this._bodyStyle = { 'grid-row': '1/ span 1' };
+            } else {
                 const totalMS = moment(this.endTime).diff(this.startTime, 'milliseconds');
                 const delineatorMS = moment(this.savedDelineatorTime).diff(this.startTime, 'milliseconds');
-                if(delineatorMS > 0){
+                if (delineatorMS > 0) {
                     const percent = (delineatorMS / totalMS) * 100;
-                    const inversePercent = 100-percent;
-                    this._gridStyle = { 'grid-template-rows': percent.toFixed(0) + '% ' + inversePercent.toFixed(0)+ '%'  };
-                    this._bodyStyle = { 'grid-row': '2/ span 1'};
-                }else{
+                    const inversePercent = 100 - percent;
+                    this._gridStyle = { 'grid-template-rows': percent.toFixed(0) + '% ' + inversePercent.toFixed(0) + '%' };
+                    this._bodyStyle = { 'grid-row': '2/ span 1' };
+                } else {
                     console.log('bigtime error')
                 }
-                
+
             }
 
 

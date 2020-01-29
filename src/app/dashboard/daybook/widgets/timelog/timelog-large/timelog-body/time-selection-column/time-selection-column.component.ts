@@ -61,13 +61,13 @@ export class TimeSelectionColumnComponent implements OnInit {
   ngOnInit() {
     this._timeDelineations = Object.assign([], this.daybookService.activeDayController.timeDelineations);
     this.daybookService.activeDayController$.subscribe((valueChanged) => {
-      this._timeDelineations = Object.assign([], valueChanged.timeDelineations);
-      this._buildRows(this._calculateDivisor());
+      if(!this.startRow){
+        this._timeDelineations = Object.assign([], valueChanged.timeDelineations);
+        this._buildRows(this._calculateDivisor());
+      }
     });
-
-    console.log("Building rows:")
-    this.daybookService.activeDayController.logFullScheduleItems();
-
+    // console.log("Building rows:")
+    // this.daybookService.activeDayController.logFullScheduleItems();
   }
 
   public onMouseLeave() {
@@ -85,19 +85,6 @@ export class TimeSelectionColumnComponent implements OnInit {
     this.daybookService.activeDayController.updateDelineator(originalTime, saveNewDelineator);
   }
 
-  private _getSectionStart(sectionIndex: number): moment.Moment {
-    return this.rows.find(row => row.sectionIndex === sectionIndex).startTime;
-  }
-  private _getSectionEnd(sectionIndex: number): moment.Moment {
-    const foundRows = this.rows.filter(row => row.sectionIndex === sectionIndex);
-    if (foundRows.length > 0) {
-      return foundRows[foundRows.length - 1].endTime;
-    } else {
-      console.log('Bigtime error with sections');
-    }
-  }
-
-
 
 
   private _startDragging(row: TimeSelectionRow) {
@@ -110,59 +97,28 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _updateDragging(updateRow: TimeSelectionRow) {
-
     this._endRow = updateRow;
     const startSectionIndex = this.startRow.sectionIndex;
     const sectionStart = moment(this._getSectionStart(startSectionIndex));
     const sectionEnd = moment(this._getSectionEnd(startSectionIndex));
-
-
-
-    this.rows.forEach((row) => {
-      let startTime: moment.Moment = moment(this.startRow.startTime);
-        let endTime: moment.Moment = moment(this.endRow.startTime);
-        if (endTime.isBefore(startTime)) {
-          startTime = moment(this.endRow.startTime);
-          endTime = moment(this.startRow.startTime);
-        }
-
-      if (row.sectionIndex === startSectionIndex) {
-        row.isGrabbingSection = true;
-        if (row.startTime.isSame(startTime) && row.startTime.isSame(endTime)) {
-          row.onDrawDelineator(startTime);
-        } else if (row.startTime.isSame(startTime)) {
-          row.onDrawDelineator(startTime);
-        } else if (row.startTime.isSame(endTime)) {
-          row.onDrawDelineator(endTime);
-        } else {
-          row.onDrawDelineator(null);
-        }
+    let startTime: moment.Moment = moment(this.startRow.startTime);
+    let endTime: moment.Moment = moment(this.endRow.startTime);
+    if (endTime.isAfter(sectionEnd)) {
+      endTime = moment(sectionEnd);
+    } else if (endTime.isBefore(startTime)) {
+      if (endTime.isBefore(sectionStart)) {
+        startTime = moment(sectionStart);
+        endTime = moment(this.startRow.startTime);
       } else {
-        row.isGrabbingSection = false;
-        row.onDrawDelineator(null);
-        
+        startTime = moment(this.endRow.startTime);
+        endTime = moment(this.startRow.startTime);
       }
-      if (this.endRow.startTime.isSameOrAfter(sectionEnd)) {
-        // console.log("update row is its same or after section end")
-        if(row.startTime.isSameOrAfter(startTime)){
-          row.ngClassIsDrawing = true;
-        }else{
-          row.ngClassIsDrawing = false;
-        }
-      } else if (this.endRow.endTime.isSameOrBefore(sectionStart)) {
-        // console.log("update row is its same or before sectionstart")
-        if(row.startTime.isSameOrBefore(endTime)){
-          row.ngClassIsDrawing = true;
-        }else{
-          row.ngClassIsDrawing = false;
-        }
-      } else {
-        // console.log("update row is neighter before nor after")
-        row.ngClassIsDrawing = false;
-      }
+    }
+    this.rows.forEach((row)=>{
+      row.onDrawDelineator(startTime, endTime);
     });
-
-    this._drawNewTimelogEntry();
+    this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime));
+    // this._drawNewTimelogEntry(startTime, endTime);
   }
 
   private _stopDragging(stopRow: TimeSelectionRow) {
@@ -310,6 +266,26 @@ export class TimeSelectionColumnComponent implements OnInit {
     }
 
   }
+  private _getSectionStart(sectionIndex: number): moment.Moment {
+    const availableItems = this.daybookService.activeDayController.fullScheduleItems
+      .filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
+    if (availableItems.length >= sectionIndex + 1) {
+      return availableItems[sectionIndex].startTime;
+    } else {
+      console.log('Error with finding section end time.');
+      return null;
+    }
+  }
+  private _getSectionEnd(sectionIndex: number): moment.Moment {
+    const availableItems = this.daybookService.activeDayController.fullScheduleItems
+      .filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
+    if (availableItems.length >= sectionIndex + 1) {
+      return availableItems[sectionIndex].endTime;
+    } else {
+      console.log('Error with finding section end time.');
+      return null;
+    }
+  }
 
 
 
@@ -321,18 +297,10 @@ export class TimeSelectionColumnComponent implements OnInit {
       item.isSameOrAfter(newRow.startTime) && item.isBefore(newRow.endTime));
   }
 
-  private _drawNewTimelogEntry() {
-    console.log("DRAWING")
-    if (this.startRow.startTime.isBefore(this.endRow.startTime)) {
-      const startTime = this.startRow.startTime;
-      const endTime = this.endRow.startTime;
-      this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime))
-    } else if (this.startRow.startTime.isAfter(this.endRow.startTime)) {
-      this.drawNewTLE.emit(new TimelogEntryItem(this.endRow.startTime, this.startRow.startTime))
-    } else if (this.startRow.startTime.isSame(this.endRow.startTime)) {
-      this.drawNewTLE.emit(null);
-    }
-  }
+  // private _drawNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
+  //   // console.log("Emitting new Timelog Entry, from: " + startTime.format('hh:mm a') + ' to ' + endTime.format('hh:mm a'));
+  //   this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime));
+  // }
 
 
 
@@ -376,70 +344,3 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
 }
-
-
-
-  // public onMouseDownRow(row: TimeSelectionRow) {
-
-
-  // }
-  // public onMouseUpRow(row: TimeSelectionRow) {
-  // }
-
-  // public onMouseEnterRow(enterRow: TimeSelectionRow) {
-  //   // enterRow.mouseIsOver = true;
-  //   if (this.startRow) {
-  //     this._mouseOverRow = enterRow;
-  //     if (enterRow.isAvailable) {
-  //       this.rows.forEach((existingRow) => {
-  //         if (existingRow !== this.startRow) {
-  //           existingRow.reset();
-  //         }
-  //       });
-  //       this._mouseOverRow.onDrawDelineator(this._mouseOverRow.startTime);
-  //       this._drawNewTimelogEntry();
-  //     } else {
-  //       let nextAvailability: moment.Moment, prevAvailability: moment.Moment;
-  //       if (this._mouseOverRow.startTime.isBefore(this.startRow.startTime)) {
-  //         nextAvailability = this.daybookService
-  //           .activeDayController.getNextOccurrenceOfValue(this._mouseOverRow.startTime, DaybookAvailabilityType.AVAILABLE);
-  //       } else {
-  //         prevAvailability = this.daybookService
-  //           .activeDayController.getNextOccurrenceOfNotValue(this.startRow.startTime, DaybookAvailabilityType.AVAILABLE);
-  //         if (prevAvailability) {
-  //           this.rows.forEach((existingRow) => {
-  //             if (existingRow !== this.startRow) {
-  //               existingRow.reset();
-  //             }
-  //           });
-  //         }
-  //       }
-  //       if (nextAvailability || prevAvailability) {
-  //         let newDelineator: TimelogDelineator;
-  //         this.rows.forEach((existingRow) => {
-  //           if (existingRow !== this.startRow) {
-  //             existingRow.reset();
-  //           }
-  //         });
-  //         if (nextAvailability) {
-  //           this._mouseOverRow = this.rows.find(item => nextAvailability.isSameOrAfter(item.startTime) && nextAvailability.isSameOrBefore(item.endTime))
-  //           newDelineator = new TimelogDelineator(nextAvailability, TimelogDelineatorType.SAVED_DELINEATOR);
-  //         } else if (prevAvailability) {
-  //           const foundIndex = this.rows.findIndex(item => prevAvailability.isSameOrAfter(item.startTime) && prevAvailability.isSameOrBefore(item.endTime))
-  //           this._mouseOverRow = this.rows[foundIndex + 1];
-  //           newDelineator = new TimelogDelineator(prevAvailability, TimelogDelineatorType.SAVED_DELINEATOR);
-  //         }
-  //         this._mouseOverRow.onDrawDelineator(newDelineator);
-  //         this._drawNewTimelogEntry();
-  //       }
-  //     }
-  //     this._reset();
-  //   } else {
-
-  //   }
-  // }
-
-  // public onMouseLeaveRow(row: TimeSelectionRow) { 
-
-
-  // }
