@@ -151,6 +151,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _reset() {
+    
     // console.log("COLUMN:  RESET")
     this._rows.forEach((row) => {
       row.reset();
