@@ -56,6 +56,10 @@ export class TimelogDisplayController {
     // this.update();
   }
 
+  // public drawTimelogEntry(drawTLE: TimelogEntryItem){
+  //   this.displayGrid.drawTimelogEntry(drawTLE);
+  // }
+
   public updateEntrySizes(minutesPerTwentyPixels: number) {
     this._minutesPerTwentyPixels = minutesPerTwentyPixels;
     // console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
@@ -105,7 +109,7 @@ export class TimelogDisplayController {
     const wakeupDelineator = new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME);
     timelogDelineators.push(wakeupDelineator);
 
-    
+
     if (this._activeDayController.isToday) {
       timelogDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
     }
@@ -137,14 +141,44 @@ export class TimelogDisplayController {
   }
 
   private _sortDelineators(timelogDelineators: TimelogDelineator[]): TimelogDelineator[] {
-    const sortedDelineators = timelogDelineators
+    let sortedDelineators = timelogDelineators
       .filter((delineator) => { return delineator.time.isSameOrAfter(this.frameStart) && delineator.time.isSameOrBefore(this.frameEnd); })
       .sort((td1, td2) => {
         if (td1.time.isBefore(td2.time)) { return -1; }
         else if (td1.time.isAfter(td2.time)) { return 1; }
-        else { return 0; }
+        else {
+          return 0;
+        }
       });
-      return sortedDelineators;
+    const priority = [
+      TimelogDelineatorType.FRAME_START,
+      TimelogDelineatorType.FRAME_END,
+      TimelogDelineatorType.NOW,
+      TimelogDelineatorType.WAKEUP_TIME,
+      TimelogDelineatorType.FALLASLEEP_TIME,
+      TimelogDelineatorType.TIMELOG_ENTRY_START,
+      TimelogDelineatorType.TIMELOG_ENTRY_END,
+      TimelogDelineatorType.SAVED_DELINEATOR,
+      TimelogDelineatorType.DAY_STRUCTURE,
+    ];
+    if(sortedDelineators.length > 0){
+      for (let i = 1; i < sortedDelineators.length; i++){
+        if(sortedDelineators[i].time.isSame(sortedDelineators[i-1].time)){
+          const thisPriorityIndex = priority.indexOf(sortedDelineators[i].delineatorType);
+          const prevPriorityIndex = priority.indexOf(sortedDelineators[i-1].delineatorType);
+          // lower priority index is higher priority
+          if(thisPriorityIndex < prevPriorityIndex){
+            sortedDelineators.splice(i-1,1);
+          }else if(thisPriorityIndex > prevPriorityIndex){
+            sortedDelineators.splice(i, 1);
+          }else{
+            console.log('Error somehow with delineators.');
+          }
+          i--;
+        }
+      }
+    }
+    return sortedDelineators;
   }
 
   private _setDefaultDayStructureTimes() {

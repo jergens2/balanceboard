@@ -15,9 +15,11 @@ export class ToolsService {
   private _timelogEntryStorage$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
   private _currentTool$: BehaviorSubject<{ component: ToolComponents, data: any }> = new BehaviorSubject(null);
 
+  private _toolIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public openTool(component: ToolComponents, data?: any) {
     this._currentTool$.next({ component: component, data: data });
+    this._toolIsOpen$.next(true);
   }
 
   public closeTool(component?: ToolComponents) {
@@ -26,9 +28,12 @@ export class ToolsService {
     } else {
       this._currentTool$.next(null);
     }
+    this._toolIsOpen$.next(false);
   }
 
 
+  public get toolIsOpen(): boolean { return this._toolIsOpen$.getValue(); }
+  public get toolIsOpen$(): Observable<boolean> { return this._toolIsOpen$.asObservable(); }
 
   public get currentTool$(): Observable<{ component: ToolComponents, data: any }> {
     return this._currentTool$.asObservable();

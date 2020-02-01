@@ -82,15 +82,23 @@ export class TimelogEntryFormComponent implements OnInit {
   ngOnInit() {
     const receivedEntry = this.toolsService.timelogEntryStorage;
     this._determineCase(receivedEntry);
+    let storageChangeCount = 0, controllerChangeCount = 0;
     this.toolsService.timelogEntryStorage$.subscribe((newValue: TimelogEntryItem) => {
       if (newValue !== null) {
-        console.log('New value from toolsService: ' + newValue.startTime.format('YYYY-MM-DD hh:mm a'));
-        this._determineCase(newValue);
+        if(storageChangeCount > 0){
+          // console.log('New value from toolsService: ' + newValue.startTime.format('YYYY-MM-DD hh:mm a'));
+          this._determineCase(newValue);
+        }
+        storageChangeCount ++;
       }
     });
-    this.daybookService.activeDayController$.subscribe((changedController) => {
-      this._determineCase();
-    });
+    // this.daybookService.activeDayController$.subscribe((changedController) => {
+    //   if(controllerChangeCount > 0){
+    //     // console.log("New TLEF form: active day changed.")
+    //     this._determineCase();
+    //   }
+    //   controllerChangeCount ++; 
+    // });
   }
 
 
@@ -98,6 +106,7 @@ export class TimelogEntryFormComponent implements OnInit {
 
 
   private _determineCase(receivedEntry?: TimelogEntryItem) {
+    // console.log('Determining form case with received entry: ' , receivedEntry)
     if (!receivedEntry) {
       /*  In this case, the user opened the form from the Tool menu */
       this._setFormCase(TLEFFormCase.NEW_CURRENT);
@@ -105,7 +114,7 @@ export class TimelogEntryFormComponent implements OnInit {
       const isPrevious: boolean = receivedEntry.startTime.isBefore(moment()) && receivedEntry.endTime.isBefore(moment());
       const isFuture: boolean = receivedEntry.startTime.isAfter(moment()) && receivedEntry.endTime.isAfter(moment());
       if (receivedEntry.isCurrentEntry) {
-        /* In this case, the user clicked on the current Timelo`g Entry in the Daybook */
+        /* In this case, the user clicked on the current Timelog Entry in the Daybook */
         this._setFormCase(TLEFFormCase.NEW_CURRENT, receivedEntry);
       } else if (receivedEntry.isSavedEntry) {
         if (isPrevious) {
@@ -118,6 +127,8 @@ export class TimelogEntryFormComponent implements OnInit {
           this._setFormCase(TLEFFormCase.NEW_PREVIOUS, receivedEntry);
         } else if (isFuture) {
           this._setFormCase(TLEFFormCase.NEW_FUTURE, receivedEntry);
+        } else{
+          this._setFormCase(TLEFFormCase.NEW_CURRENT, receivedEntry);
         }
       }
     }

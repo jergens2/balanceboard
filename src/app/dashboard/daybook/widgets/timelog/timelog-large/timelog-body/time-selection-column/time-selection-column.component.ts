@@ -40,7 +40,11 @@ export class TimeSelectionColumnComponent implements OnInit {
   @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
-    this._buildRows(this._calculateDivisor());
+    if(this.startRow !== null){
+      console.log("STARTA ROW IS NOT NULL SO WE REBUILDLA")
+      this._timeDelineations = Object.assign([], this.daybookService.activeDayController.timeDelineations);
+      this._buildRows(this._calculateDivisor());
+    }
   }
 
   @HostListener('window:mouseup', ['$event.target']) onMouseUp() {
@@ -59,15 +63,15 @@ export class TimeSelectionColumnComponent implements OnInit {
   public get endRow(): TimeSelectionRow { return this._endRow; }
 
   ngOnInit() {
+    console.log("WE RE-INIT ?")
     this._timeDelineations = Object.assign([], this.daybookService.activeDayController.timeDelineations);
+    this._buildRows(this._calculateDivisor());
     this.daybookService.activeDayController$.subscribe((valueChanged) => {
-      if(!this.startRow){
-        this._timeDelineations = Object.assign([], valueChanged.timeDelineations);
+      if(this.startRow !== null){
+        this._timeDelineations = Object.assign([], this.daybookService.activeDayController.timeDelineations);
         this._buildRows(this._calculateDivisor());
       }
     });
-    // console.log("Building rows:")
-    // this.daybookService.activeDayController.logFullScheduleItems();
   }
 
   public onMouseLeave() {
@@ -88,7 +92,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
 
   private _startDragging(row: TimeSelectionRow) {
-    console.log("_startDragging " + row.startTime.format("hh:mm a") + " ---- " + row.sectionIndex)
+    // console.log("_startDragging " + row.startTime.format("hh:mm a") + " ---- " + row.sectionIndex)
     this._startRow = row;
     this._activateSection(this._startRow);
     if (!this._startRow.savedDelineatorTime) {
@@ -98,6 +102,17 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   private _updateDragging(updateRow: TimeSelectionRow) {
     this._endRow = updateRow;
+    const dragTimes = this._buildSection();
+    const startTime = dragTimes.startTime;
+    const endTime = dragTimes.endTime;
+    this.rows.forEach((row)=>{
+      row.onDrawDelineator(startTime, endTime);
+    });
+    this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime));
+    // this._drawNewTimelogEntry(startTime, endTime);
+  }
+
+  private _buildSection(): {startTime: moment.Moment, endTime: moment.Moment} {
     const startSectionIndex = this.startRow.sectionIndex;
     const sectionStart = moment(this._getSectionStart(startSectionIndex));
     const sectionEnd = moment(this._getSectionEnd(startSectionIndex));
@@ -114,22 +129,26 @@ export class TimeSelectionColumnComponent implements OnInit {
         endTime = moment(this.startRow.startTime);
       }
     }
-    this.rows.forEach((row)=>{
-      row.onDrawDelineator(startTime, endTime);
-    });
-    this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime));
-    // this._drawNewTimelogEntry(startTime, endTime);
+    return {
+      startTime: startTime,
+      endTime: endTime,
+    };
   }
 
   private _stopDragging(stopRow: TimeSelectionRow) {
-    if (stopRow.startTime.isSame(this.startRow.startTime)) {
-      this._saveNewTimeDelineator(this.startRow);
-    } else if (stopRow.startTime.isBefore(this.startRow.startTime)) {
-      this._saveNewTimelogEntry(stopRow, this.startRow);
-    } else if (stopRow.startTime.isAfter(this.startRow.startTime)) {
-      this._saveNewTimelogEntry(this.startRow, stopRow);
-    } else {
-      console.log('Error with time values');
+    
+    if(this.endRow){
+      const dragTimes = this._buildSection();
+      const startTime = dragTimes.startTime;
+      const endTime = dragTimes.endTime;
+      this._saveNewTimelogEntry(startTime, endTime);
+    }else{
+      if (stopRow.startTime.isSame(this.startRow.startTime)) {
+        this._saveNewTimeDelineator(this.startRow);
+      } else {
+        console.log('Error with time values');
+      }
+      
     }
     this._reset();
   }
@@ -157,6 +176,7 @@ export class TimeSelectionColumnComponent implements OnInit {
       row.reset();
     });
     this._startRow = null;
+    this._endRow = null;
     // this._mouseUpRow = null;
     // this._mouseOverRow = null;
     this.drawNewTLE.emit(null);
@@ -164,6 +184,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _buildRows(divisorMinutes: number) {
+    console.log('asdf')
     this._reset();
     const durationMinutes: number = this._zoomControl.endTime.diff(this._zoomControl.startTime, 'minutes');
     const rowCount = durationMinutes / divisorMinutes;
@@ -319,9 +340,13 @@ export class TimeSelectionColumnComponent implements OnInit {
     }
   }
 
-  private _saveNewTimelogEntry(startRow: TimeSelectionRow, endRow: TimeSelectionRow) {
-    console.log("Opening new Timelog entry.: " + startRow.startTime.format('hh:mm a') + endRow.startTime.format('hh:mm a'))
-    // this.toolsService.openTool(ToolComponents.TimelogEntry)
+  private _saveNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
+    const saveNewTLE = new TimelogEntryItem(startTime, endTime);
+    this.toolsService.setTimelogEntry(saveNewTLE);
+    console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
+    this.toolsService.openTool(ToolComponents.TimelogEntry);
+    this._reset();
+    this.createNewTLE.emit(saveNewTLE);
   }
 
 

@@ -13,9 +13,9 @@
 
         <div *ngIf="gridItems.length > 0" [ngStyle]="gridItemsNgStyle" class="grid-items">
             <div *ngFor="let gridItem of gridItems" class="grid-item" (click)="onClickGridItem(gridItem)">
-                <app-available-timelog-item *ngIf="gridItem.type === 'AVAILABLE'" [drawTLE]="drawTLE"
+                <app-available-timelog-item *ngIf="gridItem.availability === 'AVAILABLE'"
                     [gridItem]="gridItem"></app-available-timelog-item>
-                <app-timelog-entry *ngIf="gridItem.type === 'TIMELOG_ENTRY' && gridItem.timelogEntries.length > 0"
+                <app-timelog-entry *ngIf="gridItem.availability === 'TIMELOG_ENTRY'"
                     [timelogEntries]="gridItem.timelogEntries" [isSmallEntry]="gridItem.isSmallGridItem">
                 </app-timelog-entry>
             </div>

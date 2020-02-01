@@ -148,7 +148,7 @@ export class TimeSelectionRow {
 
         if (this.isDeleting || this.isEditing) {
             if (this.isDeleting) {
-                console.log('we deleting')
+                // console.log('we deleting')
                 if (this.savedDelineatorTime) {
                     this._deleteDelineator$.next(this.savedDelineatorTime);
                 } else {
@@ -166,7 +166,7 @@ export class TimeSelectionRow {
 
         } else {
             if (this.isAvailable) {
-                console.log("Row Class: Start dragging")
+                // console.log("Row Class: Start dragging")
                 this._startDragging$.next(this);
             }
         }
@@ -177,11 +177,11 @@ export class TimeSelectionRow {
         } else {
             if (startRow) {
                 if (this.isDeleting) {
-                    console.log("this.isDeleting === true", this.isDeleting);
+                    // console.log("this.isDeleting === true", this.isDeleting);
                 } else if (this.isEditing) {
-                    console.log("this.isEditing === true, ", this.isEditing);
+                    // console.log("this.isEditing === true, ", this.isEditing);
                 } else {
-                    console.log("Neither deleting or editing, so STOP DRAGGING");
+                    // console.log("Neither deleting or editing, so STOP DRAGGING");
                     this._stopDragging$.next(this);
                 }
 

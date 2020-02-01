@@ -35,7 +35,7 @@ export class TimeSelectionRowComponent implements OnInit {
   }
 
   public onClickSaveEdit(){
-    console.log("on click save edit");
+    // console.log("on click save edit");
     this.row.updateSavedDelineator(this._editTime);
   }
   public onClickDelete(){

@@ -31,7 +31,7 @@ export class TimelogBodyComponent implements OnInit {
 
   private _zoomControl: TimelogZoomControl;
   private _zoomControlSubscription: Subscription = new Subscription();
-  private _drawNewTLE: TimelogEntryItem;
+
   private _activeDayController: DaybookController;
   private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
   private _timelogDisplayController: TimelogDisplayController = null;
@@ -59,31 +59,36 @@ export class TimelogBodyComponent implements OnInit {
   public get gridItems(): TimelogDisplayGridItem[] { return this.timelogDisplayGrid.gridItems; }
   public get gridItemsNgStyle(): any { return this.timelogDisplayGrid.ngStyle; }
   public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
-  public get drawTLE(): TimelogEntryItem { return this._drawNewTLE; }
+
   
   public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
   // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
-  public onDrawNewTLE(timelogEntry: TimelogEntryItem) { this._drawNewTLE = timelogEntry; }
-  public onCreateNewTLE(timelogEntry: TimelogEntryItem) { this._drawNewTLE = null; }
+  public onDrawNewTLE(drawTLE: TimelogEntryItem) { 
+    this.timelogDisplayGrid.drawTimelogEntry(drawTLE);
+  }
+  public onCreateNewTLE(timelogEntry: TimelogEntryItem) { 
+    this.timelogDisplayGrid.createTimelogEntry(timelogEntry);
+   }
 
   public onMouseMove(event: MouseEvent) { }
   public onMouseLeave() { }
   public onClickGridItem(gridItem: TimelogDisplayGridItem){
-    console.log("Grid item clicked: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a') + " : "+ gridItem.type)
-    if(gridItem.type === DaybookAvailabilityType.TIMELOG_ENTRY){
+    console.log("Grid item clicked: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a') + " : "+ gridItem.availability)
+    if(gridItem.availability === DaybookAvailabilityType.TIMELOG_ENTRY){
       console.log(gridItem.timelogEntries)
     }
   }
 
+  public drawTLEIsInGridItem(gridItem: TimelogDisplayGridItem): boolean{
+    
+    return false;
+  }
 
   ngOnInit() {
-    this._buildTimelog();
-    this.daybookService.activeDayController$.subscribe((dayChanged) => {
-      this._buildTimelog();
-    });
   }
 
   private _buildTimelog() {
+    console.log("BUILDING TIMELOG")
     this._activeDayController = this.daybookService.activeDayController;
     this._buildGuideLineHours();
 
