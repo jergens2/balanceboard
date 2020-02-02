@@ -95,7 +95,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
                 return startTime;
             }
         } else {
-            console.log('error: couldnt find availability start time.');
+            // console.log('error: couldnt find availability start time. Row start time:  ' + rowStartTime.format('hh:mm a'));
         }
     }
     public getLatestAvailability(rowStartTime: moment.Moment): moment.Moment {
@@ -114,7 +114,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             return endTime;
 
         } else {
-            console.log('error: couldnt find availability start time.');
+            // console.log('error: couldnt find availability start time. Row start time:  ' + rowStartTime.format('hh:mm a'));
         }
     }
 
@@ -156,10 +156,20 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         };
     }
 
+    public isTimeAvailable(time: moment.Moment): boolean{
+        const foundItem = this.fullScheduleItems.find((item)=>{ 
+            return time.isSameOrAfter(item.startTime) && time.isSameOrBefore(item.endTime);
+        });
+        if(foundItem){
+            return foundItem.value === DaybookAvailabilityType.AVAILABLE;
+        }else{
+            console.log("Error: could not find item for time : " + time.format('YYYY-MM-DD hh:mm a'));
+        }
+    }
     /**
      * Searches for availability, which is where the schedule item does not have value.
      */
-    public isRowAvailable(startTime: moment.Moment, endTime: moment.Moment): boolean {
+    public isRangeAvailable(startTime: moment.Moment, endTime: moment.Moment): boolean {
         let foundItems = this.getScheduleSlice(startTime, endTime);
         const diffMS = endTime.diff(startTime, 'milliseconds');
         let isAvailable: boolean = false;
@@ -210,6 +220,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         const allSleepSpanItems = this._previousDay.sleepTimes.concat(this._thisDay.sleepTimes).concat(this._followingDay.sleepTimes);
         const allEnergyLevelInputs = this._previousDay.sleepEnergyLevelInputs.concat(this._thisDay.sleepEnergyLevelInputs)
             .concat(this._followingDay.sleepEnergyLevelInputs);
+
+        // console.log("Building the controller: " + moment().format('hh:mm:ss a'))
+        // const nowTime = moment(); 
         const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);
 
 
@@ -238,16 +251,27 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     }
 
     private _setAvailabilitySections(allTimeDelineations: moment.Moment[]) {
+
+        allTimeDelineations = allTimeDelineations.sort((t1, t2)=>{
+            if(t1.isBefore(t2)){ return -1; }
+            else if(t1.isAfter(t2)){ return 1; }
+            else { return 0; }
+        });
         let nullItems = this.fullScheduleItems.filter(item => item.value === null);
         nullItems.forEach((scheduleItem) => {
             scheduleItem.value = DaybookAvailabilityType.AVAILABLE;
         });
         allTimeDelineations.forEach((timeDelineator) => {
-            const foundItem = nullItems.find(item => timeDelineator.isSameOrAfter(item.startTime) && timeDelineator.isSameOrBefore(item.endTime));
-            const foundDelineators = allTimeDelineations.filter(del => del.isSameOrAfter(foundItem.startTime) && del.isSameOrBefore(foundItem.endTime));
-            if (foundItem) {
-                this._splitItemAtTimes(foundDelineators, foundItem);
-            }
+            // if(timeDelineator.isSame(nowTime)){
+
+            // }else{
+                const foundItem = nullItems.find(item => timeDelineator.isSameOrAfter(item.startTime) && timeDelineator.isSameOrBefore(item.endTime));
+                if (foundItem) {
+                    const foundDelineators = allTimeDelineations.filter(del => del.isSameOrAfter(foundItem.startTime) && del.isSameOrBefore(foundItem.endTime));
+                    this._splitItemAtTimes(foundDelineators, foundItem);
+                }
+            // }
+            
         });
     }
 

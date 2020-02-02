@@ -39,7 +39,11 @@
 
 .grid-item{
     /* padding: 5px; */
-    border: 1px solid rgba(255, 166, 0, 0.9);
+    border-top: 1px solid rgba(0, 68, 255, 0);
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction: column;
 }
 
 .guide-line-hours{
@@ -90,4 +94,19 @@
     position:relative; 
     z-index: 10; 
     padding-left: 3px;
+}
+
+
+.available-item{
+    background-color: rgba(247, 247, 247, 0.445);
+    flex-grow: 2;
+}
+.activity-item{
+    background-color: rgba(0, 89, 255, 0.151);
+    flex-grow: 2;
+}
+.sleep-item{
+    background-color: rgba(0, 89, 255, 0.351);
+    font-size: 0.5em;
+    flex-grow: 2;
 }

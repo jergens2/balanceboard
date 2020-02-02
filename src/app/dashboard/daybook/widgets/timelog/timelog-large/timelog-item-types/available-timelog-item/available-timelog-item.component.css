@@ -13,3 +13,17 @@
     background-color: rgba(250, 253, 255, 0.363);
     border: 1px solid rgba(0, 0, 0, 0.116);
 }
+
+.create-new-tle{
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+}
+.create-new-tle:hover{
+    border: 1px solid blue;
+}
+
+
+.icon-button:hover{
+    color: rgb(0, 89, 255);
+}

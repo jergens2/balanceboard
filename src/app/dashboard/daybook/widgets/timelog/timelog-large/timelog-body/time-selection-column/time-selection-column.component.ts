@@ -24,25 +24,19 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _rows: TimeSelectionRow[] = [];
   private _zoomControl: TimelogZoomControl;
   private _mouseIsInComponent: boolean;
-  // // private _mouseDownRow: TimeSelectionRow;
-  // private _mouseUpRow: TimeSelectionRow;
-  // private _mouseOverRow: TimeSelectionRow;
-
   private _startRow: TimeSelectionRow;
   private _endRow: TimeSelectionRow;
-
-  private _timeDelineations: moment.Moment[] = [];;
-
-
+  private _timeDelineators: TimelogDelineator[] = [];
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   // @Output() drawNewTimeDelineator: EventEmitter<TimelogDelineator> = new EventEmitter();
   @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
+  @Input() public set timeDelineators(delineators: TimelogDelineator[]){
+    this._timeDelineators = delineators;
+  }
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
-    if(this.startRow !== null){
-      console.log("STARTA ROW IS NOT NULL SO WE REBUILDLA")
-      this._timeDelineations = Object.assign([], this.daybookService.activeDayController.timeDelineations);
+    if (this.startRow !== null) {
       this._buildRows(this._calculateDivisor());
     }
   }
@@ -62,13 +56,13 @@ export class TimeSelectionColumnComponent implements OnInit {
   public get startRow(): TimeSelectionRow { return this._startRow; }
   public get endRow(): TimeSelectionRow { return this._endRow; }
 
+  public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
+
   ngOnInit() {
-    console.log("WE RE-INIT ?")
-    this._timeDelineations = Object.assign([], this.daybookService.activeDayController.timeDelineations);
-    this._buildRows(this._calculateDivisor());
+    
     this.daybookService.activeDayController$.subscribe((valueChanged) => {
-      if(this.startRow !== null){
-        this._timeDelineations = Object.assign([], this.daybookService.activeDayController.timeDelineations);
+      console.log("  updating time selection column")
+      if (this.startRow === null) {
         this._buildRows(this._calculateDivisor());
       }
     });
@@ -89,13 +83,11 @@ export class TimeSelectionColumnComponent implements OnInit {
     this.daybookService.activeDayController.updateDelineator(originalTime, saveNewDelineator);
   }
 
-
-
   private _startDragging(row: TimeSelectionRow) {
     // console.log("_startDragging " + row.startTime.format("hh:mm a") + " ---- " + row.sectionIndex)
     this._startRow = row;
     this._activateSection(this._startRow);
-    if (!this._startRow.savedDelineatorTime) {
+    if (!this._startRow.timelogDelineator) {
       this._startRow.onDrawDelineator(this.startRow.startTime);
     }
   }
@@ -105,14 +97,14 @@ export class TimeSelectionColumnComponent implements OnInit {
     const dragTimes = this._buildSection();
     const startTime = dragTimes.startTime;
     const endTime = dragTimes.endTime;
-    this.rows.forEach((row)=>{
+    this.rows.forEach((row) => {
       row.onDrawDelineator(startTime, endTime);
     });
     this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime));
     // this._drawNewTimelogEntry(startTime, endTime);
   }
 
-  private _buildSection(): {startTime: moment.Moment, endTime: moment.Moment} {
+  private _buildSection(): { startTime: moment.Moment, endTime: moment.Moment } {
     const startSectionIndex = this.startRow.sectionIndex;
     const sectionStart = moment(this._getSectionStart(startSectionIndex));
     const sectionEnd = moment(this._getSectionEnd(startSectionIndex));
@@ -136,41 +128,48 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _stopDragging(stopRow: TimeSelectionRow) {
-    
-    if(this.endRow){
+
+    if (this.endRow) {
       const dragTimes = this._buildSection();
       const startTime = dragTimes.startTime;
       const endTime = dragTimes.endTime;
       this._saveNewTimelogEntry(startTime, endTime);
-    }else{
+    } else {
       if (stopRow.startTime.isSame(this.startRow.startTime)) {
         this._saveNewTimeDelineator(this.startRow);
       } else {
         console.log('Error with time values');
       }
-      
+
     }
     this._reset();
   }
 
-  private _onDeleteDelineator(time: moment.Moment) {
-    const foundTime = this._timeDelineations.find(item => item.isSame(time));
+  private _onDeleteDelineator(deleteTime: moment.Moment) {
+    if(deleteTime){
+      const foundTime = this.timeDelineators
+      .filter(item => item.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR)
+      .find(item => item.time.isSame(deleteTime));
     if (foundTime) {
-      this._timeDelineations.splice(this._timeDelineations.indexOf(foundTime), 1);
-      this._timeDelineations = this._timeDelineations.sort((item1, item2) => {
-        if (item1.isBefore(item2)) { return -1; }
-        else if (item1.isAfter(item2)) { return 1; }
+      this._timeDelineators.splice(this._timeDelineators.indexOf(foundTime), 1);
+      this._timeDelineators = this.timeDelineators.sort((item1, item2) => {
+        if (item1.time.isBefore(item2.time)) { return -1; }
+        else if (item1.time.isAfter(item2.time)) { return 1; }
         else { return 0; }
-      })
+      });
       this._buildRows(this._calculateDivisor());
-      this.daybookService.activeDayController.deleteDelineator(time);
+      this.daybookService.activeDayController.deleteDelineator(deleteTime);
     } else {
-      console.log("Error: could not delete delineator because time was not found: " + time.format('hh:mm a'));
+      console.log("Error: could not delete delineator because time was not found: " + deleteTime.format('hh:mm a'));
     }
+    }else{
+      console.log('Error:  no deleteTime value provided')
+    }
+    
   }
 
   private _reset() {
-    
+
     // console.log("COLUMN:  RESET")
     this._rows.forEach((row) => {
       row.reset();
@@ -184,7 +183,6 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _buildRows(divisorMinutes: number) {
-    console.log('asdf')
     this._reset();
     const durationMinutes: number = this._zoomControl.endTime.diff(this._zoomControl.startTime, 'minutes');
     const rowCount = durationMinutes / divisorMinutes;
@@ -231,7 +229,7 @@ export class TimeSelectionColumnComponent implements OnInit {
       this._onDeleteDelineator(del);
     }));
     const editSubscriptions = this.rows.map(row => row.editDelineator$.subscribe((saveNewDelineator: moment.Moment) => {
-      this.onEditDelineator(row.savedDelineatorTime, saveNewDelineator);
+      this.onEditDelineator(row.timelogDelineator.time, saveNewDelineator);
     }));
     const startDragSubs = this.rows.map(row => row.startDragging$.subscribe((startDragging: TimeSelectionRow) => {
       if (startDragging) {
@@ -312,27 +310,28 @@ export class TimeSelectionColumnComponent implements OnInit {
 
 
   private _isAvailable(newRow): boolean {
-    return this.daybookService.activeDayController.isRowAvailable(newRow.startTime, newRow.endTime);
+    return this.daybookService.activeDayController.isRangeAvailable(newRow.startTime, newRow.endTime);
   }
-  private _findDelineator(newRow): moment.Moment {
-    return this._timeDelineations.find(item =>
-      item.isSameOrAfter(newRow.startTime) && item.isBefore(newRow.endTime));
-  }
+  private _findDelineator(newRow): TimelogDelineator {
+    const foundItem = this.timeDelineators.find(item =>
+      item.time.isSameOrAfter(newRow.startTime) && item.time.isBefore(newRow.endTime));
 
-  // private _drawNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
-  //   // console.log("Emitting new Timelog Entry, from: " + startTime.format('hh:mm a') + ' to ' + endTime.format('hh:mm a'));
-  //   this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime));
-  // }
+    if (foundItem) {
+      return foundItem;
+    }else{ 
+      return null;
+    }
+  }
 
 
 
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
     const maxDelineators = 16;
-    if (this._timeDelineations.length < maxDelineators) {
-      this._timeDelineations.push(actionRow.startTime);
-      this._timeDelineations = this._timeDelineations.sort((item1, item2) => {
-        if (item1.isBefore(item2)) { return -1; }
-        else if (item1.isAfter(item2)) { return 1; }
+    if (this.timeDelineators.length < maxDelineators) {
+      this.timeDelineators.push(new TimelogDelineator(actionRow.startTime, TimelogDelineatorType.SAVED_DELINEATOR));
+      this._timeDelineators = this.timeDelineators.sort((item1, item2) => {
+        if (item1.time.isBefore(item2.time)) { return -1; }
+        else if (item1.time.isAfter(item2.time)) { return 1; }
         else { return 0; }
       });
       this._buildRows(this._calculateDivisor());

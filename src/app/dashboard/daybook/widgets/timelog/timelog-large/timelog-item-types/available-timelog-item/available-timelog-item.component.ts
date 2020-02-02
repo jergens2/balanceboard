@@ -5,6 +5,9 @@ import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-uti
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import * as moment from 'moment';
 import { ToolsService } from '../../../../../../../tools-menu/tools/tools.service';
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-components.enum';
+
 
 @Component({
   selector: 'app-available-timelog-item',
@@ -18,6 +21,7 @@ export class AvailableTimelogItemComponent implements OnInit {
   private _drawTLE: TimelogEntryItem;
   private _drawTLENgStyle: any = {};
   private _rootNgStyle: any = {};
+  private _mouseIsOver: boolean = false;
 
 
   @Input() public gridItem: TimelogDisplayGridItem;
@@ -25,6 +29,9 @@ export class AvailableTimelogItemComponent implements OnInit {
   public get drawTLE(): TimelogEntryItem { return this._drawTLE; }
   public get drawTLENgStyle(): any { return this._drawTLENgStyle; }
   public get rootNgStyle(): any { return this._rootNgStyle; }
+  public get mouseIsOver(): boolean { return this._mouseIsOver; }
+
+  public faPlusCircle = faPlusCircle;
 
   ngOnInit() {
     this.gridItem.drawTLE$.subscribe((drawTimelogEntry: TimelogEntryItem) =>{
@@ -40,6 +47,18 @@ export class AvailableTimelogItemComponent implements OnInit {
         this.gridItem.stopCreating();
       }
     });
+  }
+
+  public onMouseEnter(){
+    this._mouseIsOver = true;
+  } 
+  public onMouseLeave(){
+    this._mouseIsOver = false;
+  }
+
+  public onClickCreateNewTLE(){
+    this.toolsService.setTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
+    this.toolsService.openTool(ToolComponents.TimelogEntry);
   }
 
 

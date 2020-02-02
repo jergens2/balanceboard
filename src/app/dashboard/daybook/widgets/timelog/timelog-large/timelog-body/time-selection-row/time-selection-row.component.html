@@ -1,29 +1,24 @@
 <div class="row-root" [ngStyle]="row.gridStyle">
 
-    <div class="row-body" [ngStyle]="row.bodyStyle" >
-        <div *ngIf="!row.savedDelineator && row.drawDelineator" class="draw-time-delineator-container">
+    <div class="row-body" [ngStyle]="row.bodyStyle">
+        <div *ngIf="!row.timelogDelineator && row.drawDelineator" class="draw-time-delineator-container">
             <div class="draw-time-delineator">
                 {{ row.drawDelineator.time.format('hh:mm a') }}
             </div>
         </div>
-
-        <div class="saved-delineator" [ngClass]="{'push-backwards': row.isDragging, 'is-drawing':row.ngClassIsDrawing }" *ngIf="row.savedDelineatorTime && !row.isEditing"
-            (mouseenter)="row.onMouseEnterSavedDelineator()" [ngClass]="{'editing-saved-delineator':row.isEditing}"
+        <div class="timelog-delineator"
+            [ngClass]="{'push-backwards': row.isDragging, 'is-drawing':row.ngClassIsDrawing, 'editing-saved-delineator':row.isEditing}"
+            [ngStyle]="row.delineatorNgStyle" *ngIf="row.showTimelogDelineator" (mouseenter)="row.onMouseEnterSavedDelineator()"
             (mouseleave)="row.onMouseLeaveSavedDelineator()" (mousedown)="row.startEditing()">
-            <!-- <div *ngIf="row.hoverSavedDelineator"
-                    style="display:flex;flex-direction: row;justify-content: space-evenly; width: 50px;">
-                    <fa-icon [icon]="faEdit" class="icon-button" (mousedown)="row.startEditing()"></fa-icon>
-                    <fa-icon [icon]="faTrash" class="icon-button" (mousedown)="row.startDeleting()"></fa-icon>
-                </div>
-                <div *ngIf="!row.hoverSavedDelineator"> -->
-            {{ row.savedDelineatorTime.format('hh:mm a')}}
-            <!-- </div> -->   
+
+            {{ row.timelogDelineator.time.format('hh:mm a')}}
+
         </div>
 
-        <div class="edit-delineator" *ngIf="row.savedDelineatorTime && row.isEditing">
+        <div class="edit-delineator" *ngIf="row.timelogDelineator && row.isEditing">
 
             <div class="edit-time-container">
-                <app-time-input [timeValue]="row.savedDelineatorTime" [minValue]="row.earliestAvailability"
+                <app-time-input [timeValue]="row.timelogDelineator.time" [minValue]="row.earliestAvailability"
                     [incrementMinutes]="1" [maxValue]="row.latestAvailability" [showDate]="false" [minimal]="true"
                     class="edit-time" (timeChanged)="onEditTimeChanged($event)">
                 </app-time-input>

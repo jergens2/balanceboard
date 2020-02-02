@@ -1,5 +1,19 @@
 <div class="timelog-entry-list">
     <div class="timelog-entry-item" *ngFor="let entry of timelogEntryItems">
-        {{ entry.startTime.format('hh:mm a') }} to {{ entry.endTime.format('hh:mm a') }}
+        <div class="body">
+            <div>
+                {{ entry.startTime.format('hh:mm a') }} to {{ entry.endTime.format('hh:mm a') }}
+            </div>
+            <div>
+                {{ durationString(entry) }}
+            </div>
+
+        </div>
+        <div class="controls">
+            <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEdit(entry)"></fa-icon>
+            <fa-icon [icon]="faTrash" class="icon-button" (click)="onClickDelete(entry)"></fa-icon>
+            <!-- <fa-icon [icon]="faTrash" class="icon-button" (click)="onClickConfirmDelete(entry)" *ngIf="confirmDelete"></fa-icon> -->
+        </div>
+        
     </div>
 </div>

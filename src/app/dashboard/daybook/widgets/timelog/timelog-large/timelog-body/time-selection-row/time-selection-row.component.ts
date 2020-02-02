@@ -17,11 +17,15 @@ export class TimeSelectionRowComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    this._editTime = this.row.savedDelineatorTime;
+    if(this.row.timelogDelineator){
+      this._editTime = this.row.timelogDelineator.time;
+    }
+    
     if(this.row.isAvailable){
 
       // console.log("RoW SECTION START AND END: " + this.row.earliestAvailability.format('hh:mm a') + " to " + this.row.latestAvailability.format('hh:mm a'))
     }
+
   }
 
   faCheck = faCheck;
@@ -39,7 +43,8 @@ export class TimeSelectionRowComponent implements OnInit {
     this.row.updateSavedDelineator(this._editTime);
   }
   public onClickDelete(){
-    this.row.deleteDelineator(this.row.savedDelineatorTime);
+    this.row.deleteDelineator(this.row.timelogDelineator.time);
   }
+
 
 }

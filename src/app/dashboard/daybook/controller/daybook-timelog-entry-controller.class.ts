@@ -112,6 +112,11 @@ export class DaybookTimelogEntryController {
         }
         dataItemsToSave = this._timelogEntryItems
             .filter(item => item.startTime.isSameOrAfter(startOfDay) && item.endTime.isSameOrBefore(endOfDay))
+            .sort((item1, item2)=>{
+                if(item1.startTime.isBefore(item2.startTime)){ return -1; }
+                else if(item1.startTime.isAfter(item2.startTime)){ return 1; }
+                else { return 0; }
+            })
             .map(item => item.dataEntryItem);
         dataItemsToSave.push(saveTimelogEntry.dataEntryItem);
 

@@ -1,9 +1,11 @@
-<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="displayEntry" >
-    <div [ngClass]="{'small-timelog-entry': isSmallEntry }">
-        <span *ngIf="isSmallEntry"> Small TLE </span>
+<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="displayEntry" (click)="onClickOpenTimelogEntry()">
+
+    <div *ngIf="isSmallEntry">
+        small
     </div>
 
-    <div style="display:flex; flex-direction: row; align-items: center;">
+
+    <div *ngIf="!isSmallEntry" style="display:flex; flex-direction: row; align-items: center;">
         <div style="display:flex;flex-direction: row; flex-wrap: wrap; max-width: 150px; margin-right :10px;" >
             <div *ngFor="let unit of units">
                 <div *ngIf="unit.unitType === 'HOUR'" class="hour-unit" [ngClass]="{'slim-hour-unit': unit.fill.length == 1}">
@@ -20,5 +22,9 @@
         </div>
     </div>
 
+ 
+
 </div>
+
+
 <div *ngIf="!displayEntry" class="error-message">Error:  No timelog entry</div>

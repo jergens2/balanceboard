@@ -10,10 +10,22 @@
     margin-top: 0px;
     padding: 5px;
     border-radius: 5px;
+    border: 1px solid gray;
 
     display: flex;
     flex-direction: row;
 }
 .timelog-entry-item:hover{
     background-color: rgb(247, 247, 247);
+}
+
+.body{
+    flex-grow: 2;
+    display:flex;
+    flex-direction: column;
+}
+.controls{
+    width: 50px;
+    display:flex;
+    flex-direction: row;
 }

@@ -8,6 +8,9 @@ import { ColorConverter } from '../../../../../../../shared/utilities/color-conv
 import { ColorType } from '../../../../../../../shared/utilities/color-type.enum';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { TimelogEntryDisplayItem } from './timelog-entry-display-item.class';
+import { ToolsService } from '../../../../../../../tools-menu/tools/tools.service';
+import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-components.enum';
+import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 
 @Component({
   selector: 'app-timelog-entry',
@@ -16,27 +19,21 @@ import { TimelogEntryDisplayItem } from './timelog-entry-display-item.class';
 })
 export class TimelogEntryComponent implements OnInit {
 
-  constructor(private activitiesService: ActivityCategoryDefinitionService, private screenSizeService: ScreenSizeService) { }
+  constructor(
+    private activitiesService: ActivityCategoryDefinitionService,
+    private screenSizeService: ScreenSizeService,
+    private toolsService: ToolsService) { }
 
   private _displayEntry: TimelogEntryDisplayItem;
   private _entries: TimelogEntryItem[] = [];
   private _activityDisplayEntries: { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] = [];
 
-
-  private _isSmallEntry: boolean = false;
-
   public screenSize: AppScreenSize;
 
-  @Input() public set timelogEntries(entryItems: TimelogEntryItem[]) {
-    this._entries = entryItems;
-    this._rebuild();
-  }
-  @Input() public set isSmallEntry(isSmall: boolean) {
-    this._isSmallEntry = isSmall;
-  }
+  @Input() public gridItem: TimelogDisplayGridItem;
 
-  public get isSmallEntry(): boolean { return this._isSmallEntry; }
-  public get timelogEntries(): TimelogEntryItem[] { return this._entries; }
+
+  public get timelogEntries(): TimelogEntryItem[] { return this.gridItem.timelogEntries; }
   public get displayEntry(): TimelogEntryDisplayItem { return this._displayEntry; }
   public get activityDisplayEntries(): { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] { return this._activityDisplayEntries; }
   public get backgroundColor(): string { return this.displayEntry.backgroundColor; };
@@ -44,6 +41,7 @@ export class TimelogEntryComponent implements OnInit {
   public get displayString(): string { return this.displayEntry.displayString; };
 
   ngOnInit() {
+    this._rebuild();
     this.screenSize = this.screenSizeService.appScreenSize;
     this.screenSizeService.appScreenSize$.subscribe((size) => {
       this.screenSize = size;
@@ -54,14 +52,18 @@ export class TimelogEntryComponent implements OnInit {
 
   }
 
+  public onClickOpenTimelogEntry() {
+    console.log('Warning: opening only the first item in the array.');
+    this.toolsService.setTimelogEntry(this.timelogEntries[0]);
+    this.toolsService.openTool(ToolComponents.TimelogEntry);
+  }
+
 
   private _rebuild() {
-    if (this.timelogEntries.length > 0) {
-      let displayEntry: TimelogEntryDisplayItem = new TimelogEntryDisplayItem(this.timelogEntries, this.activitiesService.activitiesTree, this.isSmallEntry);
-      this._displayEntry = displayEntry;
-    } else {
 
-    }
+    let displayEntry: TimelogEntryDisplayItem = new TimelogEntryDisplayItem(this.timelogEntries, this.activitiesService.activitiesTree, this.gridItem.isSmallGridItem);
+    this._displayEntry = displayEntry;
+
   }
 
 

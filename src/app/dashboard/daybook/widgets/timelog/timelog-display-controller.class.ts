@@ -44,7 +44,6 @@ export class TimelogDisplayController {
   public get displayGrid(): TimelogDisplayGrid { return this._displayGrid; }
 
 
-
   public addTimeDelineator(time: moment.Moment) {
   }
   public addTemporaryDelineator(time: moment.Moment) {
@@ -100,7 +99,47 @@ export class TimelogDisplayController {
 
 
   private _loadTimelogDelineators() {
-    const nowTime = moment();
+
+
+
+    /*
+    let timeDelineators: TimelogDelineator[] = [];
+    this.daybookService.activeDayController.timeDelineations.forEach((timeDelineation)=>{
+      if(this.daybookService.activeDayController.isTimeAvailable(timeDelineation)){
+        timeDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
+      }
+    });
+    this.daybookService.activeDayController.timelogEntryItems.forEach((timelogEntry)=>{
+      if(timelogEntry.startTime.isSameOrAfter(this.startTime) && timelogEntry.startTime.isBefore(this.endTime)){
+        timeDelineators.push(new TimelogDelineator(timelogEntry.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START));
+      }
+      if(timelogEntry.endTime.isAfter(this.startTime) && timelogEntry.endTime.isSameOrBefore(this.endTime)){
+        timeDelineators.push(new TimelogDelineator(timelogEntry.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END));
+      }
+    });
+    const nowTime = this.daybookService.clock;
+    if(nowTime.isSameOrAfter(this.startTime) && nowTime.isSameOrBefore(this.endTime) ){
+      timeDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
+    }
+
+
+
+    timeDelineators = timeDelineators.sort((t1, t2)=>{
+      if(t1.time.isBefore(t2.time)){ return -1; }
+      else if(t1.time.isAfter(t2.time)) { return 1;}
+      else { return 0; }
+    });
+
+    if(timeDelineators.length > 0){
+      for(let i=1; i< timeDelineators.length; i++){
+        if(timeDelineators[i].time.isSame(timeDelineators[i-1].time)){
+          const priorityItem = this._findPriorityItem(timeDelineators[i], timeDelineators[i-1]);
+        }
+      }
+    }
+    
+    */
+    
 
     const timelogDelineators: TimelogDelineator[] = [];
     const frameStartDelineator = new TimelogDelineator(this.frameStart, TimelogDelineatorType.FRAME_START);
@@ -109,10 +148,13 @@ export class TimelogDisplayController {
     const wakeupDelineator = new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME);
     timelogDelineators.push(wakeupDelineator);
 
-
+    
     if (this._activeDayController.isToday) {
+      const nowTime = moment();
       timelogDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
     }
+
+
 
 
 
@@ -169,12 +211,17 @@ export class TimelogDisplayController {
           // lower priority index is higher priority
           if(thisPriorityIndex < prevPriorityIndex){
             sortedDelineators.splice(i-1,1);
+            i--;
           }else if(thisPriorityIndex > prevPriorityIndex){
             sortedDelineators.splice(i, 1);
+            i--;
           }else{
-            console.log('Error somehow with delineators.');
+            // console.log('Error somehow with delineators.' + thisPriorityIndex + " ,  " + prevPriorityIndex)
+            // console.log(priority[thisPriorityIndex])
+            // sortedDelineators.forEach((item)=>{
+            //   console.log("   " + item.time.format('hh:mm a') + "  Type:" + item.delineatorType)
+            // })
           }
-          i--;
         }
       }
     }

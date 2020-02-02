@@ -102,8 +102,7 @@ export class DaybookService implements ServiceAuthenticates {
         this._crossMidnight();
       }
     });
-    const msToNextMinute = moment(this._clock).startOf('minute').add(1, 'minute').add(30, 'seconds')
-      .diff(moment(this._clock), 'milliseconds');
+    const msToNextMinute = moment(this._clock).startOf('minute').add(1, 'minute').diff(moment(this._clock), 'milliseconds');
     const minuteSub = timer(msToNextMinute, 60000).subscribe((minute) => {
       // console.log(moment().format('YYYY-MM-DD hh:mm ss a') + " : every minute updating");
       this._updateTodayFromDatabase();

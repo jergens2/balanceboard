@@ -16,7 +16,7 @@ export class TimelogDisplayGrid {
 
     // console.log("Building TimelogDisplayGrid: (startTime, endTime, delineators, activeDayController", startTime, endTime, delineators, activeDayController )
     this._buildGrid();
-    console.log("TimelogDisplayGrid is built. (" + this.gridItems.length + " grid items)")
+    // console.log("TimelogDisplayGrid is built. (" + this.gridItems.length + " grid items)")
     // this.gridItems.forEach((item) => {
     //   console.log("   " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " : " + item.type)
     // })
@@ -79,16 +79,8 @@ export class TimelogDisplayGrid {
       console.log("  ZoomControl ms: " + this.totalViewMilliseconds);
       console.log("   Calculated ms: " + this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'))
     } else {
-      // at the very minimum there shall always be 2:  FRAME_START and FRAME_END delineators.
+      // at the very minimum there will be 2:  FRAME_START and FRAME_END delineators.
       if (this.timeDelineators.length >= 2) {
-
-
-        console.log('Building Grid.  ' + this.timeDelineators.length + ' time delineators.')
-        // this.timeDelineators.forEach((td)=>{
-        //   console.log("   " + td.time.format('YYYY-MM-DD hh:mm a') + " - " + td.label + " - " + td.delineatorType)
-        // })
-
-
 
         let displayGridNgStyle: any = {};
         let currentTime: moment.Moment = this.timeDelineators[0].time;
@@ -112,12 +104,14 @@ export class TimelogDisplayGrid {
           if (gridItems[i - 1].availability === gridItems[i].availability) {
             let merge = false;
             if (gridItems[i].availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
+              // from 4.75 to 6 
               const minPercent = 4.75;
-              const smallPercent = 6; // from 4.75 to 6
+              const smallPercent = 6; 
+              console.log("Grid item percent: " + gridItems[i].percent)
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
-                // console.log("one of the items was less than minPercent " + minPercent, gridItems[i].percent, gridItems[i-1].percent )
+                console.log("one of the items was less than minPercent " + minPercent, gridItems[i].percent, gridItems[i-1].percent )
                 merge = true;
-                gridItems[i - 1].timelogEntries.push(...gridItems[i].timelogEntries);
+                
               } else if (gridItems[i].percent < smallPercent) {
                 gridItems[i].isSmallGridItem = true;
               }
@@ -127,6 +121,8 @@ export class TimelogDisplayGrid {
               merge = true;
             }
             if (merge) {
+              console.log("MERGE")
+              gridItems[i - 1].timelogEntries.push(...gridItems[i].timelogEntries);
               gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
               gridItems[i - 1].endTime = gridItems[i].endTime;
               gridItems.splice(i, 1);
@@ -142,8 +138,8 @@ export class TimelogDisplayGrid {
           gridTemplateRows += "" + gridItem.percent.toFixed(3) + "% ";
         });
         displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
-        console.log("Display grid style: ", displayGridNgStyle);
-        console.log("grid items:  ", gridItems);
+        // console.log("Display grid style: ", displayGridNgStyle);
+        // console.log("grid items:  ", gridItems);
         this.ngStyle = displayGridNgStyle;
         this._gridItems = gridItems;
       } else {
@@ -154,49 +150,49 @@ export class TimelogDisplayGrid {
 
 
 
-  private _getGridItemType(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
-    let startsWith: DaybookAvailabilityType = this._gridItemStartsWith(startDelineator, endDelineator);
-    let endsWith: DaybookAvailabilityType = this._gridItemEndsWith(startDelineator, endDelineator);
-    if (startsWith) {
-      return startsWith;
-    } else {
-      if (endsWith) {
-        return endsWith;
-      } else {
-        // console.log('Error:  could not find a grid item type from the provided delineators (start, end): ', startDelineator, endDelineator)
-        return null;
-      }
-    }
-  }
+  // private _getGridItemType(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
+  //   let startsWith: DaybookAvailabilityType = this._gridItemStartsWith(startDelineator, endDelineator);
+  //   let endsWith: DaybookAvailabilityType = this._gridItemEndsWith(startDelineator, endDelineator);
+  //   if (startsWith) {
+  //     return startsWith;
+  //   } else {
+  //     if (endsWith) {
+  //       return endsWith;
+  //     } else {
+  //       // console.log('Error:  could not find a grid item type from the provided delineators (start, end): ', startDelineator, endDelineator)
+  //       return null;
+  //     }
+  //   }
+  // }
 
 
-  private _gridItemStartsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
-    if (startDelineator === TimelogDelineatorType.FALLASLEEP_TIME) {
-      return DaybookAvailabilityType.SLEEP;
-    } else if (startDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-      return DaybookAvailabilityType.TIMELOG_ENTRY;
-    } else if (startDelineator === TimelogDelineatorType.NOW) {
-      if (endDelineator === TimelogDelineatorType.FALLASLEEP_TIME ||
-        endDelineator === TimelogDelineatorType.FRAME_END ||
-        endDelineator === TimelogDelineatorType.DAY_STRUCTURE ||
-        endDelineator === TimelogDelineatorType.SAVED_DELINEATOR ||
-        endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-        return DaybookAvailabilityType.AVAILABLE;
-      }
-    } else if (startDelineator === TimelogDelineatorType.SAVED_DELINEATOR) {
-      return DaybookAvailabilityType.AVAILABLE;
-    }
-    return null;
-  }
-  private _gridItemEndsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
-    if (endDelineator === TimelogDelineatorType.WAKEUP_TIME) {
-      return DaybookAvailabilityType.SLEEP;
-    } else if (endDelineator === TimelogDelineatorType.NOW) {
-      return DaybookAvailabilityType.AVAILABLE;
-    } else if (endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_END) {
-      return DaybookAvailabilityType.TIMELOG_ENTRY;
-    }
-    return null;
-  }
+  // private _gridItemStartsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
+  //   if (startDelineator === TimelogDelineatorType.FALLASLEEP_TIME) {
+  //     return DaybookAvailabilityType.SLEEP;
+  //   } else if (startDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
+  //     return DaybookAvailabilityType.TIMELOG_ENTRY;
+  //   } else if (startDelineator === TimelogDelineatorType.NOW) {
+  //     if (endDelineator === TimelogDelineatorType.FALLASLEEP_TIME ||
+  //       endDelineator === TimelogDelineatorType.FRAME_END ||
+  //       endDelineator === TimelogDelineatorType.DAY_STRUCTURE ||
+  //       endDelineator === TimelogDelineatorType.SAVED_DELINEATOR ||
+  //       endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
+  //       return DaybookAvailabilityType.AVAILABLE;
+  //     }
+  //   } else if (startDelineator === TimelogDelineatorType.SAVED_DELINEATOR) {
+  //     return DaybookAvailabilityType.AVAILABLE;
+  //   }
+  //   return null;
+  // }
+  // private _gridItemEndsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
+  //   if (endDelineator === TimelogDelineatorType.WAKEUP_TIME) {
+  //     return DaybookAvailabilityType.SLEEP;
+  //   } else if (endDelineator === TimelogDelineatorType.NOW) {
+  //     return DaybookAvailabilityType.AVAILABLE;
+  //   } else if (endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_END) {
+  //     return DaybookAvailabilityType.TIMELOG_ENTRY;
+  //   }
+  //   return null;
+  // }
 
 }
