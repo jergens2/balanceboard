@@ -63,8 +63,20 @@ export class TimeSelectionRow {
     public get drawDelineator(): TimelogDelineator { return this._drawDelineator; }
     public get showTimelogDelineator(): boolean {
         if (this.timelogDelineator) {
-            if (!this.isEditing && this.timelogDelineator.delineatorType !== TimelogDelineatorType.FRAME_START
-                && this.timelogDelineator.delineatorType !== TimelogDelineatorType.FRAME_END) {
+            const doNotShow: TimelogDelineatorType[] = [
+                TimelogDelineatorType.FRAME_START,
+                TimelogDelineatorType.FRAME_END,
+                TimelogDelineatorType.NOW
+            ];
+            if (!this.isEditing && doNotShow.indexOf(this.timelogDelineator.delineatorType) === -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public get showNowDelineator(): boolean {
+        if (this.timelogDelineator) {
+            if (this.timelogDelineator.delineatorType === TimelogDelineatorType.NOW) {
                 return true;
             }
         }
@@ -78,9 +90,9 @@ export class TimeSelectionRow {
             this._timelogDelineator = null;
             this._gridStyle = {};
         }
-        if (this.timelogDelineator) {
-            console.log("TIME LOG DELINEATOR:  " + this.timelogDelineator.time.format('hh:mm a') + " : " + this.timelogDelineator.delineatorType)
-        }
+        // if (this.timelogDelineator) {
+        //     console.log("TIME LOG DELINEATOR:  " + this.timelogDelineator.time.format('hh:mm a') + " : " + this.timelogDelineator.delineatorType)
+        // }
     }
 
     public deleteDelineator(timelogDelineator: moment.Moment) {
@@ -96,9 +108,7 @@ export class TimeSelectionRow {
             this.setDelineator(null);
         }
     }
-    public startEditing() {
-        this.isEditing = true;
-    }
+
 
     public onDrawDelineator(drawStart: moment.Moment, drawEnd?: moment.Moment) {
         // console.log("DRAWING THE DELINEATOR IN THE ROW")
@@ -147,14 +157,12 @@ export class TimeSelectionRow {
         }
     }
     public onMouseDown() {
-        if (this.isDeleting || this.isEditing) {
+        if (this.timelogDelineator) {
             if (this.isDeleting) {
-                if (this.timelogDelineator) {
-                    this._deleteDelineator$.next(this.timelogDelineator.time);
-                } else {
-                    console.log('Bigtime error with saved delineator.')
-                }
-            } else if (this.isEditing) { }
+                this._deleteDelineator$.next(this.timelogDelineator.time);
+            } else if (this.timelogDelineator.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR) {
+                this.isEditing = true;
+            }
         } else {
             if (this.isAvailable) {
                 this._startDragging$.next(this);
@@ -232,7 +240,7 @@ export class TimeSelectionRow {
 
             if (this.startTime.isSame(this.timelogDelineator.time)) {
                 this._gridStyle = { 'grid-template-rows': '1fr' };
-                this._bodyStyle = { 'grid-row': '1/ span 1' };
+                this._bodyStyle = { 'grid-row': '1 / span 1' };
             } else {
                 const totalMS = moment(this.endTime).diff(this.startTime, 'milliseconds');
                 const delineatorMS = moment(this.timelogDelineator.time).diff(this.startTime, 'milliseconds');
@@ -240,7 +248,7 @@ export class TimeSelectionRow {
                     const percent = (delineatorMS / totalMS) * 100;
                     const inversePercent = 100 - percent;
                     this._gridStyle = { 'grid-template-rows': percent.toFixed(0) + '% ' + inversePercent.toFixed(0) + '%' };
-                    this._bodyStyle = { 'grid-row': '2/ span 1' };
+                    this._bodyStyle = { 'grid-row': '2 / span 1' };
                 } else {
                     console.log('bigtime error')
                 }
@@ -249,21 +257,18 @@ export class TimeSelectionRow {
 
             const thisType = this.timelogDelineator.delineatorType;
             const types = TimelogDelineatorType;
-            if(thisType === types.WAKEUP_TIME || thisType === types.FALLASLEEP_TIME){
+            if (thisType === types.WAKEUP_TIME || thisType === types.FALLASLEEP_TIME) {
                 this._delineatorNgStyle = {
                     'background-color': 'orange',
                 };
-            }else if(thisType === types.TIMELOG_ENTRY_START || thisType === types.TIMELOG_ENTRY_END){
+            } else if (thisType === types.TIMELOG_ENTRY_START || thisType === types.TIMELOG_ENTRY_END) {
                 this._delineatorNgStyle = {
                     'background-color': 'lime',
                 };
-            }else if(thisType === types.NOW){
-                this._delineatorNgStyle = {
-                    'background-color': 'pink',
-                };
-            }else if(thisType === types.SAVED_DELINEATOR){
+            } else if (thisType === types.SAVED_DELINEATOR) {
                 this._delineatorNgStyle = {
                     'background-color': 'blue',
+                    'cursor':'pointer'
                 };
             }
         }

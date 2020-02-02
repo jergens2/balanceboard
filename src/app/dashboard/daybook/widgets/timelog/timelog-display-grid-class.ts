@@ -107,11 +107,8 @@ export class TimelogDisplayGrid {
               // from 4.75 to 6 
               const minPercent = 4.75;
               const smallPercent = 6; 
-              console.log("Grid item percent: " + gridItems[i].percent)
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
-                console.log("one of the items was less than minPercent " + minPercent, gridItems[i].percent, gridItems[i-1].percent )
                 merge = true;
-                
               } else if (gridItems[i].percent < smallPercent) {
                 gridItems[i].isSmallGridItem = true;
               }
@@ -121,7 +118,6 @@ export class TimelogDisplayGrid {
               merge = true;
             }
             if (merge) {
-              console.log("MERGE")
               gridItems[i - 1].timelogEntries.push(...gridItems[i].timelogEntries);
               gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
               gridItems[i - 1].endTime = gridItems[i].endTime;
@@ -149,50 +145,5 @@ export class TimelogDisplayGrid {
   }
 
 
-
-  // private _getGridItemType(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
-  //   let startsWith: DaybookAvailabilityType = this._gridItemStartsWith(startDelineator, endDelineator);
-  //   let endsWith: DaybookAvailabilityType = this._gridItemEndsWith(startDelineator, endDelineator);
-  //   if (startsWith) {
-  //     return startsWith;
-  //   } else {
-  //     if (endsWith) {
-  //       return endsWith;
-  //     } else {
-  //       // console.log('Error:  could not find a grid item type from the provided delineators (start, end): ', startDelineator, endDelineator)
-  //       return null;
-  //     }
-  //   }
-  // }
-
-
-  // private _gridItemStartsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
-  //   if (startDelineator === TimelogDelineatorType.FALLASLEEP_TIME) {
-  //     return DaybookAvailabilityType.SLEEP;
-  //   } else if (startDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-  //     return DaybookAvailabilityType.TIMELOG_ENTRY;
-  //   } else if (startDelineator === TimelogDelineatorType.NOW) {
-  //     if (endDelineator === TimelogDelineatorType.FALLASLEEP_TIME ||
-  //       endDelineator === TimelogDelineatorType.FRAME_END ||
-  //       endDelineator === TimelogDelineatorType.DAY_STRUCTURE ||
-  //       endDelineator === TimelogDelineatorType.SAVED_DELINEATOR ||
-  //       endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-  //       return DaybookAvailabilityType.AVAILABLE;
-  //     }
-  //   } else if (startDelineator === TimelogDelineatorType.SAVED_DELINEATOR) {
-  //     return DaybookAvailabilityType.AVAILABLE;
-  //   }
-  //   return null;
-  // }
-  // private _gridItemEndsWith(startDelineator: TimelogDelineatorType, endDelineator: TimelogDelineatorType): DaybookAvailabilityType {
-  //   if (endDelineator === TimelogDelineatorType.WAKEUP_TIME) {
-  //     return DaybookAvailabilityType.SLEEP;
-  //   } else if (endDelineator === TimelogDelineatorType.NOW) {
-  //     return DaybookAvailabilityType.AVAILABLE;
-  //   } else if (endDelineator === TimelogDelineatorType.TIMELOG_ENTRY_END) {
-  //     return DaybookAvailabilityType.TIMELOG_ENTRY;
-  //   }
-  //   return null;
-  // }
 
 }

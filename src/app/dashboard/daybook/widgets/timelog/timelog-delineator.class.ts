@@ -14,7 +14,7 @@ export enum TimelogDelineatorType {
     TIMELOG_ENTRY_END = 'TIMELOG_ENTRY_END',
     SAVED_DELINEATOR = 'SAVED_DELINEATOR',
     DAY_STRUCTURE = 'DAY_STRUCTURE',
-
+    CUSTOM = 'CUSTOM',
 }
 
 export class TimelogDelineator {

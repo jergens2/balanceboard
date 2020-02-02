@@ -68,8 +68,8 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
 
     public get timeDelineations(): moment.Moment[] { return this.timeDelineatorController.timeDelineations; }
-    public saveTimeDelineator$(time: moment.Moment) {
-        this._timeDelineatorController.saveTimeDelineator$(time);
+    public saveTimeDelineators(delineators: moment.Moment[]) {
+        this._timeDelineatorController.saveTimeDelineators(delineators);
     }
     public deleteDelineator(time: moment.Moment) {
         this._timeDelineatorController.deleteDelineator(time);
@@ -239,6 +239,8 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         // })
         // console.log("Adding TimeScheudle value itmes:  " + timeScheduleValueItems.length)
         this.addScheduleValueItems(timeScheduleValueItems);
+        this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
+        allTimeDelineations.push(moment().startOf('minute'));
         this._setAvailabilitySections(allTimeDelineations);
 
         // console.log("Schedule has been rebuilt in the daybookcontoller.")
@@ -246,7 +248,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
         this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems, allSleepSpanItems);
         this._energyController = new DaybookEnergyController(this.fullScheduleItems, this.awakeToAsleepRatio);
-        this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
+
         this._updateSubscriptions();
     }
 

@@ -19,8 +19,8 @@ export class DaybookTimeDelineatorController{
     public get saveChanges$(): Observable<moment.Moment[]> { return this._saveChanges$.asObservable(); }
 
 
-    public saveTimeDelineator$(time: moment.Moment){
-        this._timeDelineations.push(time);
+    public saveTimeDelineators(delineators: moment.Moment[]){
+        this._timeDelineations = Object.assign([], delineators);
         this._validateDelineators();
         this._saveChanges$.next(this._timeDelineations);
     }

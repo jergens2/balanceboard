@@ -29,10 +29,13 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _timeDelineators: TimelogDelineator[] = [];
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
-  // @Output() drawNewTimeDelineator: EventEmitter<TimelogDelineator> = new EventEmitter();
   @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Input() public set timeDelineators(delineators: TimelogDelineator[]){
     this._timeDelineators = delineators;
+    if(this.zoomControl){
+      this._buildRows(this._calculateDivisor());
+    }
+
   }
   @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
     this._zoomControl = zoomControl;
@@ -49,21 +52,19 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   public get rows(): TimeSelectionRow[] { return this._rows; }
   public get zoomControl(): TimelogZoomControl { return this._zoomControl; }
-  // public get isActive(): boolean { return (this._startRow ? true : false); }
   public get startTime(): moment.Moment { return this.zoomControl.startTime; }
   public get endTime(): moment.Moment { return this.zoomControl.endTime; }
-
   public get startRow(): TimeSelectionRow { return this._startRow; }
   public get endRow(): TimeSelectionRow { return this._endRow; }
-
   public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
 
   ngOnInit() {
-    
     this.daybookService.activeDayController$.subscribe((valueChanged) => {
-      console.log("  updating time selection column")
+      console.log('value changed')
       if (this.startRow === null) {
         this._buildRows(this._calculateDivisor());
+      }else{
+        console.log('start row was NOT NULL')
       }
     });
   }
@@ -191,7 +192,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     for (let i = 0; i < rowCount; i++) {
       // console.log(" " + i + " :" + currentTime.format('hh:mm a') + " to " + moment(currentTime).add(divisorMinutes, 'minutes').format('hh:mm a'))
       let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(divisorMinutes, 'minutes'), i);
-      newRow.isAvailable = this._isAvailable(newRow);
+      newRow.isAvailable = this.daybookService.activeDayController.isRangeAvailable(newRow.startTime, newRow.endTime);
       if (newRow.isAvailable) {
         newRow.sectionIndex = this._findSectionIndex(newRow);
       }
@@ -308,16 +309,34 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
 
-
-  private _isAvailable(newRow): boolean {
-    return this.daybookService.activeDayController.isRangeAvailable(newRow.startTime, newRow.endTime);
-  }
   private _findDelineator(newRow): TimelogDelineator {
-    const foundItem = this.timeDelineators.find(item =>
+    const foundItems = this.timeDelineators.filter(item =>
       item.time.isSameOrAfter(newRow.startTime) && item.time.isBefore(newRow.endTime));
 
-    if (foundItem) {
-      return foundItem;
+    if (foundItems.length > 0) {
+      if(foundItems.length === 1){
+        return foundItems[0];
+      }else if(foundItems.length > 1){
+        const priority = [
+          TimelogDelineatorType.FRAME_START,
+          TimelogDelineatorType.FRAME_END,
+          TimelogDelineatorType.NOW,
+          TimelogDelineatorType.WAKEUP_TIME,
+          TimelogDelineatorType.FALLASLEEP_TIME,
+          TimelogDelineatorType.TIMELOG_ENTRY_START,
+          TimelogDelineatorType.TIMELOG_ENTRY_END,
+          TimelogDelineatorType.SAVED_DELINEATOR,
+          TimelogDelineatorType.DAY_STRUCTURE,
+        ];
+        let foundItem = foundItems[0];
+        for(let i = 1; i < foundItems.length; i++){
+          if(priority.indexOf(foundItems[i].delineatorType) < priority.indexOf(foundItems[i-1].delineatorType)){
+            foundItem = foundItems[i];
+          }
+        }
+        return foundItem;
+      }
+      
     }else{ 
       return null;
     }
@@ -327,7 +346,19 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
     const maxDelineators = 16;
-    if (this.timeDelineators.length < maxDelineators) {
+
+    let saveAllDelineators: moment.Moment[] = [];
+    const existingValues = this.daybookService.activeDayController.timeDelineations;
+    if(existingValues.length >= maxDelineators){
+      existingValues.forEach((existingValue)=>{
+        if(this.daybookService.activeDayController.isTimeAvailable(existingValue)){
+          saveAllDelineators.push(moment(existingValue));
+        }
+      });
+    }
+
+
+    if (saveAllDelineators.length < maxDelineators) {
       this.timeDelineators.push(new TimelogDelineator(actionRow.startTime, TimelogDelineatorType.SAVED_DELINEATOR));
       this._timeDelineators = this.timeDelineators.sort((item1, item2) => {
         if (item1.time.isBefore(item2.time)) { return -1; }
@@ -335,7 +366,8 @@ export class TimeSelectionColumnComponent implements OnInit {
         else { return 0; }
       });
       this._buildRows(this._calculateDivisor());
-      this.daybookService.activeDayController.saveTimeDelineator$(actionRow.startTime);
+      saveAllDelineators.push(actionRow.startTime);
+      this.daybookService.activeDayController.saveTimeDelineators(saveAllDelineators);
     }
   }
 

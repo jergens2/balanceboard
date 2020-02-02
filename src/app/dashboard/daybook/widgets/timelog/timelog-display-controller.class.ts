@@ -216,6 +216,7 @@ export class TimelogDisplayController {
             sortedDelineators.splice(i, 1);
             i--;
           }else{
+            console.log('Same? ' , priority[thisPriorityIndex], priority[prevPriorityIndex])
             // console.log('Error somehow with delineators.' + thisPriorityIndex + " ,  " + prevPriorityIndex)
             // console.log(priority[thisPriorityIndex])
             // sortedDelineators.forEach((item)=>{

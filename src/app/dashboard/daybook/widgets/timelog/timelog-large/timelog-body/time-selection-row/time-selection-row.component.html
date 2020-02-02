@@ -6,13 +6,16 @@
                 {{ row.drawDelineator.time.format('hh:mm a') }}
             </div>
         </div>
-        <div class="timelog-delineator"
+        <div class="timelog-delineator" *ngIf="row.showTimelogDelineator" 
             [ngClass]="{'push-backwards': row.isDragging, 'is-drawing':row.ngClassIsDrawing, 'editing-saved-delineator':row.isEditing}"
-            [ngStyle]="row.delineatorNgStyle" *ngIf="row.showTimelogDelineator" (mouseenter)="row.onMouseEnterSavedDelineator()"
-            (mouseleave)="row.onMouseLeaveSavedDelineator()" (mousedown)="row.startEditing()">
+            [ngStyle]="row.delineatorNgStyle" (mouseenter)="row.onMouseEnterSavedDelineator()"
+            (mouseleave)="row.onMouseLeaveSavedDelineator()">
 
             {{ row.timelogDelineator.time.format('hh:mm a')}}
 
+        </div>
+        <div class="timelog-delineator timelog-delineator-now" *ngIf="row.showNowDelineator">
+            {{ row.timelogDelineator.time.format('hh:mm a')}}
         </div>
 
         <div class="edit-delineator" *ngIf="row.timelogDelineator && row.isEditing">

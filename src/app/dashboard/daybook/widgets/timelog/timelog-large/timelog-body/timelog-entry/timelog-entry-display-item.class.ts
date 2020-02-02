@@ -12,7 +12,6 @@ export class TimelogEntryDisplayItem {
         this._timelogEntries = timelogEntries;
         this._activityTree = activityTree;
         this._isSmallEntry = isSmallEntry;
-        console.log("Is small ? ", isSmallEntry)
         this._buildEntry();
 
 

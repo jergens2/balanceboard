@@ -196,6 +196,10 @@ export class TimeSchedule<T>{
 
     /** */
     protected _splitItemAtTimes(allSplitTimes: moment.Moment[], splitItem: TimeScheduleItem<T>) {
+        // console.log("ALL SPLIT TIMES: ")
+        // allSplitTimes.forEach((item)=>{
+        //     console.log("   "+ item.format('hh:mm a'))
+        // })
         const foundIndex = this._fullScheduleItems.indexOf(splitItem);
         if (foundIndex >= 0) {
             const foundItem = this._fullScheduleItems[foundIndex];
@@ -227,8 +231,8 @@ export class TimeSchedule<T>{
                             timeScheduleItems.push(new TimeScheduleItem<T>(currentTime, foundDelineations[i], true, splitItem.value));
                             
                         }else if(currentTime.isSame(foundDelineations[i])){
-                            // do nothing, ignore it.  I dont think it is possible for this to ever happen.
-                            console.log('Error.  duplicate delineations?');
+                            // same value, for example same as the start time.
+                            // in this case, do not do any splitting.
                         }else if(currentTime.isAfter(foundDelineations[i])){
                             console.log('Error: the array was not sorted correctly.');
                         }
