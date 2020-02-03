@@ -85,12 +85,8 @@ export class TimelogEntryFormComponent implements OnInit {
     let storageChangeCount = 0, controllerChangeCount = 0;
     this.toolsService.timelogEntryStorage$.subscribe((newValue: TimelogEntryItem) => {
       if (newValue !== null) {
-        // if(storageChangeCount > 0){
-          // console.log('New value from toolsService: ' + newValue.startTime.format('YYYY-MM-DD hh:mm a'));
           this._determineCase(newValue);
-        // }
-        // storageChangeCount ++;
-      }////////////////////////////////////////////////////////////////////////
+      }
     });
     this.daybookService.activeDayController$.subscribe((changedController) => {
       if(controllerChangeCount > 0){

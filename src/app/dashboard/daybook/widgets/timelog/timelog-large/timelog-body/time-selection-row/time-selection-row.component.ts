@@ -26,7 +26,6 @@ export class TimeSelectionRowComponent implements OnInit {
 
       // console.log("RoW SECTION START AND END: " + this.row.earliestAvailability.format('hh:mm a') + " to " + this.row.latestAvailability.format('hh:mm a'))
     }
-    //this is just a test :)
   }
 
   faCheck = faCheck;

@@ -46,6 +46,11 @@ import { TlefBedTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-
 import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large/timelog-item-types/available-timelog-item/available-timelog-item.component';
 import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep-profile-large/sleep-profile-large.component';
 import { TimeSelectionRowComponent } from './widgets/timelog/timelog-large/timelog-body/time-selection-row/time-selection-row.component';
+import { TlefNewCurrentComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-new-current/tlef-new-current.component';
+import { TlefNewPreviousComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-new-previous/tlef-new-previous.component';
+import { TlefNewFutureComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-new-future/tlef-new-future.component';
+import { TlefExistingFutureComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-existing-future/tlef-existing-future.component';
+import { TlefExistingPreviousComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-existing-previous/tlef-existing-previous.component';
 
 
 @NgModule({
@@ -94,6 +99,11 @@ import { TimeSelectionRowComponent } from './widgets/timelog/timelog-large/timel
     AvailableTimelogItemComponent,
     SleepProfileLargeComponent,
     TimeSelectionRowComponent,
+    TlefNewCurrentComponent,
+    TlefNewPreviousComponent,
+    TlefNewFutureComponent,
+    TlefExistingFutureComponent,
+    TlefExistingPreviousComponent,
   ],
   exports: [
     // DaybookEntryFormComponent,

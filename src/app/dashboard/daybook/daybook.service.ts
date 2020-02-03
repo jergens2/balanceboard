@@ -134,6 +134,7 @@ export class DaybookService implements ServiceAuthenticates {
     if (!this._todayController$) {
       this._todayController$ = new BehaviorSubject(todayController);
     } else {
+      
       this._todayController$.next(todayController);
     }
     

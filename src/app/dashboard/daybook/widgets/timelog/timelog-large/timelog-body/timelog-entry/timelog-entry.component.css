@@ -10,6 +10,11 @@
     /* padding: 5px; */
     padding-left: 10px;
     padding-right: 10px;
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius: 2px;
+}
+.timelog-entry-display-root:hover{
+    border: 1px solid gray;
 }
 .small-timelog-entry{
     flex-direction: row;
