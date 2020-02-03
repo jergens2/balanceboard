@@ -3,7 +3,7 @@
     <div class="row-body" [ngStyle]="row.bodyStyle">
         <div *ngIf="!row.timelogDelineator && row.drawDelineator" class="draw-time-delineator-container">
             <div class="draw-time-delineator">
-                {{ row.drawDelineator.time.format('hh:mm a') }}
+                {{ row.drawDelineator.time.format('h:mm a') }}
             </div>
         </div>
         <div class="timelog-delineator" *ngIf="row.showTimelogDelineator" 
@@ -11,11 +11,11 @@
             [ngStyle]="row.delineatorNgStyle" (mouseenter)="row.onMouseEnterSavedDelineator()"
             (mouseleave)="row.onMouseLeaveSavedDelineator()">
 
-            {{ row.timelogDelineator.time.format('hh:mm a')}}
+            {{ row.timelogDelineator.time.format('h:mm a')}}
 
         </div>
-        <div class="timelog-delineator timelog-delineator-now" *ngIf="row.showNowDelineator">
-            {{ row.timelogDelineator.time.format('hh:mm a')}}
+        <div class="timelog-delineator timelog-delineator-now" *ngIf="row.showNowDelineator" (click)="onClickNowDelineator()">
+            {{ row.timelogDelineator.time.format('h:mm a')}}
         </div>
 
         <div class="edit-delineator" *ngIf="row.timelogDelineator && row.isEditing">

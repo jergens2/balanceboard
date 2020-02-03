@@ -51,36 +51,17 @@ export class TimelogDisplayController {
   }
   public removeTimeDelineator(delineator: TimelogDelineator) {
     console.log("method disabled")
-    // this._activeDay.timelog.removeTimeDelineator(delineator.time.toISOString());
-    // this.update();
-  }
 
-  // public drawTimelogEntry(drawTLE: TimelogEntryItem){
-  //   this.displayGrid.drawTimelogEntry(drawTLE);
-  // }
-
-  public updateEntrySizes(minutesPerTwentyPixels: number) {
-    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
-    // console.log("Minutes per 20 pixels (approx): ", this._minutesPerTwentyPixels);
-    this._entryItems.forEach((entryItem) => {
-      if (entryItem.durationSeconds < (this._minutesPerTwentyPixels * 60)) {
-        entryItem.isSmallSize = true;
-      } else {
-        entryItem.isSmallSize = false;
-      }
-    });
   }
 
 
-  /**  private methods**/
+
+
   private _update() {
     this._setDefaultDayStructureTimes();
     this._loadTimelogDelineators();
     this._buildGrid();
-    // this._updateTimeDelineators();
-    // this._updateTimelogEntryItems();
 
-    // this._logToConsole();
   }
   private _logToConsole() {
     console.log("Constructing TimelogDisplayController - logToConsole is ON")
@@ -99,68 +80,19 @@ export class TimelogDisplayController {
 
 
   private _loadTimelogDelineators() {
-
-
-
-    /*
-    let timeDelineators: TimelogDelineator[] = [];
-    this.daybookService.activeDayController.timeDelineations.forEach((timeDelineation)=>{
-      if(this.daybookService.activeDayController.isTimeAvailable(timeDelineation)){
-        timeDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
-      }
-    });
-    this.daybookService.activeDayController.timelogEntryItems.forEach((timelogEntry)=>{
-      if(timelogEntry.startTime.isSameOrAfter(this.startTime) && timelogEntry.startTime.isBefore(this.endTime)){
-        timeDelineators.push(new TimelogDelineator(timelogEntry.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START));
-      }
-      if(timelogEntry.endTime.isAfter(this.startTime) && timelogEntry.endTime.isSameOrBefore(this.endTime)){
-        timeDelineators.push(new TimelogDelineator(timelogEntry.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END));
-      }
-    });
-    const nowTime = this.daybookService.clock;
-    if(nowTime.isSameOrAfter(this.startTime) && nowTime.isSameOrBefore(this.endTime) ){
-      timeDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
-    }
-
-
-
-    timeDelineators = timeDelineators.sort((t1, t2)=>{
-      if(t1.time.isBefore(t2.time)){ return -1; }
-      else if(t1.time.isAfter(t2.time)) { return 1;}
-      else { return 0; }
-    });
-
-    if(timeDelineators.length > 0){
-      for(let i=1; i< timeDelineators.length; i++){
-        if(timeDelineators[i].time.isSame(timeDelineators[i-1].time)){
-          const priorityItem = this._findPriorityItem(timeDelineators[i], timeDelineators[i-1]);
-        }
-      }
-    }
-    
-    */
-    
-
     const timelogDelineators: TimelogDelineator[] = [];
     const frameStartDelineator = new TimelogDelineator(this.frameStart, TimelogDelineatorType.FRAME_START);
-    timelogDelineators.push(frameStartDelineator);
-
+    const fameEndDelineator = new TimelogDelineator(this.frameEnd, TimelogDelineatorType.FRAME_END);
     const wakeupDelineator = new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME);
+    const fallAsleepDelineator = new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME);
+    timelogDelineators.push(frameStartDelineator);
     timelogDelineators.push(wakeupDelineator);
-
-    
+    timelogDelineators.push(fallAsleepDelineator);
+    timelogDelineators.push(fameEndDelineator);
     if (this._activeDayController.isToday) {
       const nowTime = moment();
       timelogDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
     }
-
-
-
-
-
-    timelogDelineators.push(new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME));
-    timelogDelineators.push(new TimelogDelineator(this.frameEnd, TimelogDelineatorType.FRAME_END));
-
     this._activeDayController.timeDelineations.forEach((timeDelineation) => {
       timelogDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
     });
@@ -174,7 +106,6 @@ export class TimelogDisplayController {
       timelogDelineators.push(timeDelineatorStart);
       timelogDelineators.push(timeDelineatorEnd);
     });
-
     const sortedDelineators = this._sortDelineators(timelogDelineators);
     this._timeDelineators = sortedDelineators;
     let logItems: string[] = [];

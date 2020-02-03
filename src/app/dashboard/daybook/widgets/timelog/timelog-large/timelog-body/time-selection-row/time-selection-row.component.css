@@ -17,7 +17,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
 
     background-color: none;
 }
@@ -33,7 +33,6 @@
     align-items: center;
 }
 .draw-time-delineator{
-    flex-grow: 2;
     
     background-color: rgba(255, 255, 255, 0);
     color: rgba(0, 89, 255, 1);
@@ -54,7 +53,6 @@
 
 .timelog-delineator{
 
-    flex-grow:2;
     
     background-color: rgba(255, 255, 255, 0);
     display: flex;
@@ -79,12 +77,15 @@
 
 .timelog-delineator-now{
     z-index: 9;
-    background-color: rgba(255, 255, 255, 0);
-    border: 1px solid rgba(255, 255, 255, 0);
+    font-size: 0.8em;
+    color: rgba(255, 0, 0, 0.5);
+    border: 1px solid white;
 }
 .timelog-delineator-now:hover{
     z-index: 9;
     cursor: pointer;
+    background-color: rgb(255, 251, 251);
+    border:1px solid rgba(255, 0, 0, 0.5);
 }
 
 .push-backwards{

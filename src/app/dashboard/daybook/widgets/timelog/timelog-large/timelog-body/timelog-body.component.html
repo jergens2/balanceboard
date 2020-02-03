@@ -13,17 +13,13 @@
 
         <div *ngIf="gridItems.length > 0" [ngStyle]="gridItemsNgStyle" class="grid-items">
             <div *ngFor="let gridItem of gridItems" class="grid-item" (click)="onClickGridItem(gridItem)">
-                <div *ngIf="gridItem.availability === 'AVAILABLE'"
-                    style="position:relative; width:100%; height:1px; margin-top: -1px; border-top: 1px solid rgba(0, 68, 255, 0.9);">
-
-                </div>
+                <div *ngIf="showNowLine(gridItem)" class="now-line"></div>
                 <app-available-timelog-item *ngIf="gridItem.availability === 'AVAILABLE'" class='available-item'
                     [gridItem]="gridItem"></app-available-timelog-item>
                 <app-timelog-entry *ngIf="gridItem.availability === 'TIMELOG_ENTRY'" class='activity-item'
                     [gridItem]="gridItem">
                 </app-timelog-entry>
                 <div *ngIf="gridItem.availability === 'SLEEP'" class='sleep-item'>
-                    sleep item
                 </div>
             </div>
         </div>

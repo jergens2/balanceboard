@@ -21,6 +21,10 @@ export class ToolsService {
     this._currentTool$.next({ component: component, data: data });
     this._toolIsOpen$.next(true);
   }
+  public openToolNewTimelogEntry(){
+    this._currentTool$.next({ component: ToolComponents.TimelogEntry, data: null });
+    this._toolIsOpen$.next(true);
+  }
 
   public closeTool(component?: ToolComponents) {
     if (component == this.currentTool.component) {
