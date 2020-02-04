@@ -44,19 +44,6 @@ export class TimelogDisplayController {
   public get displayGrid(): TimelogDisplayGrid { return this._displayGrid; }
 
 
-  public addTimeDelineator(time: moment.Moment) {
-  }
-  public addTemporaryDelineator(time: moment.Moment) {
-
-  }
-  public removeTimeDelineator(delineator: TimelogDelineator) {
-    console.log("method disabled")
-
-  }
-
-
-
-
   private _update() {
     this._setDefaultDayStructureTimes();
     this._loadTimelogDelineators();
@@ -93,7 +80,9 @@ export class TimelogDisplayController {
       const nowTime = moment();
       timelogDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
     }
-    this._activeDayController.timeDelineations.forEach((timeDelineation) => {
+    // console.log("current: " , this._activeDayController.savedTimeDelineators.length)
+    this._activeDayController.savedTimeDelineators.forEach((timeDelineation) => {
+      // console.log("a saved delineator: " + timeDelineation.format('hh:mm a'))
       timelogDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
     });
     this._activeDayController.timelogEntryItems.forEach((timelogEntryItem) => {
@@ -157,6 +146,10 @@ export class TimelogDisplayController {
         }
       }
     }
+    // console.log("SORTED DELINEATORS: ")
+    // sortedDelineators.forEach((item)=>{
+    //   console.log("   " + item.time.format('hh:mm a') + " : " + item.delineatorType) 
+    // })
     return sortedDelineators;
   }
 

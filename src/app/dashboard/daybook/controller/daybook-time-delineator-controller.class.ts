@@ -5,26 +5,32 @@ export class DaybookTimeDelineatorController{
 
     constructor(dateYYYYMMDD: string, timeDelineations: moment.Moment[]) {
         this._dateYYYYMMDD = dateYYYYMMDD;
-        this._timeDelineations = timeDelineations;
+        // console.log("Delinator Controller: timeDelineators: " + timeDelineations.length, timeDelineations )
+        this._timeDelineations = Object.assign([], timeDelineations);
+        // console.log("THIS.TIMEDELINEATORS: " ,this._timeDelineations)
     }
 
     private _dateYYYYMMDD: string;
-    private _timeDelineations: moment.Moment[];
+    private _timeDelineations: moment.Moment[] = [];
     
     private _saveChanges$: Subject<moment.Moment[]> = new Subject();
     
     public get dateYYYYMMDD(): string { return this._dateYYYYMMDD; }
-    public get timeDelineations(): moment.Moment[] { return this._timeDelineations; }
+    public get savedTimeDelineators(): moment.Moment[] { 
+        return this._timeDelineations; 
+    }
 
     public get saveChanges$(): Observable<moment.Moment[]> { return this._saveChanges$.asObservable(); }
 
 
     public saveTimeDelineators(delineators: moment.Moment[]){
+        // console.log("SAVING TIME DELINEATORS: " +  delineators.length, delineators)
         this._timeDelineations = Object.assign([], delineators);
         this._validateDelineators();
         this._saveChanges$.next(this._timeDelineations);
     }
     public deleteDelineator(time: moment.Moment){
+        // console.log("DELETING DELINEATOR: " + time.format('hh:mm a'))
         const foundDelineator = this._timeDelineations.find(item => item.isSame(time));
         if(foundDelineator){
             this._timeDelineations.splice(this._timeDelineations.indexOf(foundDelineator), 1);
@@ -34,7 +40,8 @@ export class DaybookTimeDelineatorController{
         }
     }
 
-    public updateDelineator(originalTime, saveNewDelineator){
+    public updateDelineator(originalTime, saveNewDelineator: moment.Moment){
+        // console.log("UPDATING DELINEATOR: " + originalTime.format('hh:mm a') + " changed to " + saveNewDelineator.format('hh:mm a'))
         const foundOriginal = this._timeDelineations.find(item => item.isSame(originalTime));
         if(foundOriginal){
             this._timeDelineations.splice(this._timeDelineations.indexOf(foundOriginal), 1, saveNewDelineator);

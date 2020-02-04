@@ -30,9 +30,9 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   @Output() drawNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
-  @Input() public set timeDelineators(delineators: TimelogDelineator[]){
+  @Input() public set timeDelineators(delineators: TimelogDelineator[]) {
     this._timeDelineators = delineators;
-    if(this.zoomControl){
+    if (this.zoomControl) {
       this._buildRows(this._calculateDivisor());
     }
 
@@ -60,11 +60,11 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   ngOnInit() {
     this.daybookService.activeDayController$.subscribe((valueChanged) => {
-      console.log('value changed')
+      // console.log('value changed')
       if (this.startRow === null) {
         this._buildRows(this._calculateDivisor());
-      }else{
-        console.log('start row was NOT NULL')
+      } else {
+        // console.log('start row was NOT NULL')
       }
     });
   }
@@ -147,26 +147,26 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _onDeleteDelineator(deleteTime: moment.Moment) {
-    if(deleteTime){
+    if (deleteTime) {
       const foundTime = this.timeDelineators
-      .filter(item => item.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR)
-      .find(item => item.time.isSame(deleteTime));
-    if (foundTime) {
-      this._timeDelineators.splice(this._timeDelineators.indexOf(foundTime), 1);
-      this._timeDelineators = this.timeDelineators.sort((item1, item2) => {
-        if (item1.time.isBefore(item2.time)) { return -1; }
-        else if (item1.time.isAfter(item2.time)) { return 1; }
-        else { return 0; }
-      });
-      this._buildRows(this._calculateDivisor());
-      this.daybookService.activeDayController.deleteDelineator(deleteTime);
+        .filter(item => item.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR)
+        .find(item => item.time.isSame(deleteTime));
+      if (foundTime) {
+        this._timeDelineators.splice(this._timeDelineators.indexOf(foundTime), 1);
+        this._timeDelineators = this.timeDelineators.sort((item1, item2) => {
+          if (item1.time.isBefore(item2.time)) { return -1; }
+          else if (item1.time.isAfter(item2.time)) { return 1; }
+          else { return 0; }
+        });
+        this._buildRows(this._calculateDivisor());
+        this.daybookService.activeDayController.deleteDelineator(deleteTime);
+      } else {
+        console.log("Error: could not delete delineator because time was not found: " + deleteTime.format('hh:mm a'));
+      }
     } else {
-      console.log("Error: could not delete delineator because time was not found: " + deleteTime.format('hh:mm a'));
-    }
-    }else{
       console.log('Error:  no deleteTime value provided')
     }
-    
+
   }
 
   private _reset() {
@@ -314,9 +314,9 @@ export class TimeSelectionColumnComponent implements OnInit {
       item.time.isSameOrAfter(newRow.startTime) && item.time.isBefore(newRow.endTime));
 
     if (foundItems.length > 0) {
-      if(foundItems.length === 1){
+      if (foundItems.length === 1) {
         return foundItems[0];
-      }else if(foundItems.length > 1){
+      } else if (foundItems.length > 1) {
         const priority = [
           TimelogDelineatorType.FRAME_START,
           TimelogDelineatorType.FRAME_END,
@@ -329,15 +329,15 @@ export class TimeSelectionColumnComponent implements OnInit {
           TimelogDelineatorType.DAY_STRUCTURE,
         ];
         let foundItem = foundItems[0];
-        for(let i = 1; i < foundItems.length; i++){
-          if(priority.indexOf(foundItems[i].delineatorType) < priority.indexOf(foundItems[i-1].delineatorType)){
+        for (let i = 1; i < foundItems.length; i++) {
+          if (priority.indexOf(foundItems[i].delineatorType) < priority.indexOf(foundItems[i - 1].delineatorType)) {
             foundItem = foundItems[i];
           }
         }
         return foundItem;
       }
-      
-    }else{ 
+
+    } else {
       return null;
     }
   }
@@ -346,35 +346,31 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
     const maxDelineators = 16;
-
     let saveAllDelineators: moment.Moment[] = [];
-    const existingValues = this.daybookService.activeDayController.timeDelineations;
-    if(existingValues.length >= maxDelineators){
-      existingValues.forEach((existingValue)=>{
-        if(this.daybookService.activeDayController.isTimeAvailable(existingValue)){
-          saveAllDelineators.push(moment(existingValue));
-        }
-      });
-    }
-
-
+    const existingValues = this.daybookService.activeDayController.savedTimeDelineators;
+5
+    existingValues.forEach((existingValue) => {
+      if (this.daybookService.activeDayController.isTimeAvailable(existingValue)) {
+        saveAllDelineators.push(moment(existingValue));
+      }
+    });
     if (saveAllDelineators.length < maxDelineators) {
-      this.timeDelineators.push(new TimelogDelineator(actionRow.startTime, TimelogDelineatorType.SAVED_DELINEATOR));
-      this._timeDelineators = this.timeDelineators.sort((item1, item2) => {
-        if (item1.time.isBefore(item2.time)) { return -1; }
-        else if (item1.time.isAfter(item2.time)) { return 1; }
-        else { return 0; }
-      });
-      this._buildRows(this._calculateDivisor());
       saveAllDelineators.push(actionRow.startTime);
-      this.daybookService.activeDayController.saveTimeDelineators(saveAllDelineators);
     }
+    saveAllDelineators = saveAllDelineators.sort((item1, item2) => {
+      if (item1.isBefore(item2)) { return -1; }
+      else if (item1.isAfter(item2)) { return 1; }
+      else { return 0; }
+    });
+
+    this.daybookService.activeDayController.saveTimeDelineators(saveAllDelineators);
+    this._buildRows(this._calculateDivisor());
   }
 
   private _saveNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
     const saveNewTLE = new TimelogEntryItem(startTime, endTime);
     this.toolsService.setTimelogEntry(saveNewTLE);
-    console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
+    // console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
     this.toolsService.openTool(ToolComponents.TimelogEntry);
     this._reset();
     this.createNewTLE.emit(saveNewTLE);

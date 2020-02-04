@@ -259,15 +259,15 @@ export class TimeSelectionRow {
             const types = TimelogDelineatorType;
             if (thisType === types.WAKEUP_TIME || thisType === types.FALLASLEEP_TIME) {
                 this._delineatorNgStyle = {
-                    'background-color': 'orange',
+                    'color': 'orange',
                 };
             } else if (thisType === types.TIMELOG_ENTRY_START || thisType === types.TIMELOG_ENTRY_END) {
                 this._delineatorNgStyle = {
-                    'background-color': 'lime',
+                    // 'background-color': 'lime',
                 };
             } else if (thisType === types.SAVED_DELINEATOR) {
                 this._delineatorNgStyle = {
-                    'background-color': 'blue',
+                    'color': 'darkblue',
                     'cursor':'pointer'
                 };
             }

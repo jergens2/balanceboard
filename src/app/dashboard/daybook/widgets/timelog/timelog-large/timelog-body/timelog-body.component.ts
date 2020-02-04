@@ -96,7 +96,7 @@ export class TimelogBodyComponent implements OnInit {
   }
 
   private _buildTimelog() {
-    console.log("BUILDING TIMELOG")
+    // console.log("BUILDING TIMELOG")
     this._activeDayController = this.daybookService.activeDayController;
     this._buildGuideLineHours();
 

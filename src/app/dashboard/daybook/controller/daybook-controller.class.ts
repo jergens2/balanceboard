@@ -67,7 +67,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public get dailyWeightLogEntryKg(): number { return this._thisDay.dailyWeightLogEntryKg; }
 
 
-    public get timeDelineations(): moment.Moment[] { return this.timeDelineatorController.timeDelineations; }
+    public get savedTimeDelineators(): moment.Moment[] { return this.timeDelineatorController.savedTimeDelineators; }
     public saveTimeDelineators(delineators: moment.Moment[]) {
         this._timeDelineatorController.saveTimeDelineators(delineators);
     }
