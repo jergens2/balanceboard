@@ -73,10 +73,10 @@ export class TimelogBodyComponent implements OnInit {
   public onMouseMove(event: MouseEvent) { }
   public onMouseLeave() { }
   public onClickGridItem(gridItem: TimelogDisplayGridItem){
-    console.log("Grid item clicked: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a') + " : "+ gridItem.availability)
-    if(gridItem.availability === DaybookAvailabilityType.TIMELOG_ENTRY){
-      console.log(gridItem.timelogEntries)
-    }
+    // console.log("Grid item clicked: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a') + " : "+ gridItem.availability)
+    // if(gridItem.availability === DaybookAvailabilityType.TIMELOG_ENTRY){
+    //   console.log(gridItem.timelogEntries)
+    // }
   }
 
   public drawTLEIsInGridItem(gridItem: TimelogDisplayGridItem): boolean{

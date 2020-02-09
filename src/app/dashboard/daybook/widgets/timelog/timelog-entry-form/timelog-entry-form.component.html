@@ -2,11 +2,11 @@
 
 
 
-    <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'"></app-tlef-new-current>
-    <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'"></app-tlef-new-future>
-    <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'"></app-tlef-new-previous>
-    <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'"></app-tlef-existing-future>
-    <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'"></app-tlef-existing-previous>
+    <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [entryItem]="entryItem"></app-tlef-new-current>
+    <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'" [entryItem]="entryItem"></app-tlef-new-future>
+    <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'" [entryItem]="entryItem"></app-tlef-new-previous>
+    <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'" [entryItem]="entryItem"></app-tlef-existing-future>
+    <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'" [entryItem]="entryItem"></app-tlef-existing-previous>
 
     <div *ngIf="isNewTLEF || editingExistingTLEF" style="display:flex;flex-direction: column;">
 

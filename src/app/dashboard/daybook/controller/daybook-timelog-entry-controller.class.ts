@@ -271,6 +271,7 @@ export class DaybookTimelogEntryController {
         const timelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(dataItem.startTimeISO), moment(dataItem.endTimeISO));
         timelogEntry.note = dataItem.note;
         timelogEntry.timelogEntryActivities = dataItem.timelogEntryActivities;
+        timelogEntry.isSavedEntry = true;
         return timelogEntry;
     }
 

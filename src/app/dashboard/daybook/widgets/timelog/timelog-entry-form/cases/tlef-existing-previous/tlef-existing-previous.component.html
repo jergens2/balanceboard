@@ -1,1 +1,9 @@
-<p>tlef-existing-previous works!</p>
+<div style="display:flex;flex-direction: column;">
+    Previously saved Timelog Entry
+    <div style="background-color: gray; margin: 10px; border-radius: 5px; display: flex; flex-direction: column;">
+        Activities
+        <div *ngFor="let activity of activitiies">
+            <div class="activity-circle" [ngStyle]="{'background-color': activity.color}"></div> {{ activity.name }}
+        </div>
+    </div>
+</div>

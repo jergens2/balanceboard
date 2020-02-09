@@ -35,7 +35,7 @@ export class DaybookService implements ServiceAuthenticates {
   private _clockSubscriptions: Subscription[] = [];
   private _daybookItemSubs: Subscription[] = [];
 
-  public get clock(): moment.Moment { return moment(this._clock); }
+  public get clock(): moment.Moment { return this._clock; }
   public get clockMinuteTicker$(): Observable<moment.Moment> { return this._clockMinuteTicker$.asObservable(); } 
   public get todayYYYYMMDD(): string { return this._todayYYYYMMDD; }
   public get todayController$(): Observable<DaybookController> { return this._todayController$.asObservable(); }
