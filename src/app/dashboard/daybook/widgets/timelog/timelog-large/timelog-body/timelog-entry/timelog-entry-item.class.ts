@@ -79,8 +79,8 @@ export class TimelogEntryItem {
             endTimeISO: this._endTime.toISOString(),
             endTimeUtcOffsetMinutes: this._endTime.utcOffset(),
             timelogEntryActivities: this.timelogEntryActivities,
-            isConfirmed: false,
-            note: this._note,
+            embeddedNote: this._note,
+            noteIds: [],
         }
     }
 

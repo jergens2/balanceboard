@@ -4,9 +4,9 @@ import { TimeSchedule } from '../../../../../../../shared/utilities/time-utiliti
 import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import * as moment from 'moment';
-import { ToolsService } from '../../../../../../../tools-menu/tools/tools.service';
+import { ToolboxService } from '../../../../../../../tools-menu/toolbox.service';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-components.enum';
+import { ToolType } from '../../../../../../../tools-menu/tool-type.enum';
 
 
 @Component({
@@ -16,7 +16,7 @@ import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-compo
 })
 export class AvailableTimelogItemComponent implements OnInit {
 
-  constructor(private toolsService: ToolsService) { }
+  constructor(private toolsService: ToolboxService) { }
 
   private _drawTLE: TimelogEntryItem;
   private _drawTLENgStyle: any = {};
@@ -58,7 +58,7 @@ export class AvailableTimelogItemComponent implements OnInit {
 
   public onClickCreateNewTLE(){
     this.toolsService.setTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
-    this.toolsService.openTool(ToolComponents.TimelogEntry);
+    this.toolsService.openTool(ToolType.TimelogEntry);
   }
 
 

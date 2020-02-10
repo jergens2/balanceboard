@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DaybookService } from '../../../daybook.service';
+import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import * as moment from 'moment';
 
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +14,7 @@ export class SleepProfileFormComponent implements OnInit {
 
   faExclamationTriangle = faExclamationTriangle;
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
   // public wakeupTime: moment.Moment;
   // public wakeupTimeMin: moment.Moment;

@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { Subscription, Observable } from 'rxjs';
 import { ScreenSizeService } from '../../shared/app-screen-size/screen-size.service';
 import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.enum';
-import { DaybookService } from './daybook.service';
+import { DaybookControllerService } from './controller/daybook-controller.service';
 import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
 import { DaybookDayItem } from './api/daybook-day-item.class';
 import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
@@ -16,7 +16,7 @@ import { DaybookController } from './controller/daybook-controller.class';
 })
 export class DaybookComponent implements OnInit, OnDestroy {
 
-  constructor(private screenScreenSizeService: ScreenSizeService, private daybookService: DaybookService) { }
+  constructor(private screenScreenSizeService: ScreenSizeService, private daybookService: DaybookControllerService) { }
 
   private _widgets: DaybookWidget[] = [];
 

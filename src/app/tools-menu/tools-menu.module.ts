@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DtlToolComponent } from './tools/tool-components/dtl-tool/dtl-tool.component';
-import { ToolsComponent } from './tools/tools.component';
+import { ToolsComponent } from './toolbox.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';

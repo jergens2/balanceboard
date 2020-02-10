@@ -1,21 +1,38 @@
 <div class="timelog-entry-form-root" *ngIf="entryItem">
 
+    <div class="tlef-form-header">
+        <div>
+            <app-daybook-grid-items-bar [startTime]="entryItem.startTime"></app-daybook-grid-items-bar>
+        </div>
+        <div>
+            <span class="entry-time">{{ entryItem.startTime.format('h:mm a') }}</span> -
+            <span class="entry-time">{{ entryItem.endTime.format('h:mm a') }}</span>
+        </div>
+        <div style="font-size:0.75em; color:gray; font-weight: bold; margin-bottom: 10px;">
+            {{ durationString }}
+        </div>
 
+    </div>
 
-    <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [entryItem]="entryItem"></app-tlef-new-current>
-    <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'" [entryItem]="entryItem"></app-tlef-new-future>
-    <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'" [entryItem]="entryItem"></app-tlef-new-previous>
-    <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'" [entryItem]="entryItem"></app-tlef-existing-future>
-    <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'" [entryItem]="entryItem"></app-tlef-existing-previous>
+    <div class="tlef-form-body">
+        <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [entryItem]="entryItem"></app-tlef-new-current>
+        <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'" [entryItem]="entryItem"></app-tlef-new-future>
+        <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'" [entryItem]="entryItem"></app-tlef-new-previous>
+        <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'" [entryItem]="entryItem">
+        </app-tlef-existing-future>
+        <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'" [entryItem]="entryItem">
+        </app-tlef-existing-previous>
+    </div>
 
-    <div *ngIf="isNewTLEF || editingExistingTLEF" style="display:flex;flex-direction: column;">
-
-        
-
-
-
-    </div> 
-
+    <div class="tlef-form-footer">
+        <button class="medium-button save-button" (click)="onClickSave()">Save</button>
+        <div *ngIf="entryItem.isSaved">
+            <button class="medium-button delete-button" (click)="onClickDelete()" *ngIf="!confirmDelete">Delete</button>
+            <button class="medium-button confirm-delete-button" (click)="onClickConfirmDelete()"
+                *ngIf="confirmDelete">Confirm</button>
+        </div>
+        <button class="medium-button discard-button" (click)="onClickDiscard()" *ngIf="!entryItem.isSaved">Discard</button>
+    </div>
 </div>
 
 <div *ngIf="!entryItem">

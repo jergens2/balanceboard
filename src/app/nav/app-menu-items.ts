@@ -3,7 +3,7 @@ import { faHome, faSitemap, faCheckCircle, faProjectDiagram, faListOl, faDollarS
 import { faCalendarAlt, faLightbulb, faClock } from "@fortawesome/free-regular-svg-icons";
 import { Subscription } from "rxjs";
 import { HeaderMenu } from "./header/header-menu/header-menu.model";
-import { ToolComponents } from "../tools-menu/tools/tool-components.enum";
+import { ToolType } from "../tools-menu/tool-type.enum";
 
 
 let menuItems: MenuItem[] = [];
@@ -11,7 +11,7 @@ let menuItems: MenuItem[] = [];
 menuItems.push(new MenuItem('Home', '/home', faHome));
 
 let daybookMenu = new MenuItem('Daybook', '/daybook', faBookOpen);
-daybookMenu.sidebarToolComponent = ToolComponents.TimelogEntry;
+daybookMenu.sidebarToolComponent = ToolType.TimelogEntry;
 let daybookMenuItems: MenuItem[] = [new MenuItem('Daily Task List', '/daily-task-list', faListUl)];
 daybookMenu.subMenu = new HeaderMenu('Daybook submenu', daybookMenuItems);
 menuItems.push(daybookMenu);
@@ -22,20 +22,20 @@ menuItems.push(daybookMenu);
 menuItems.push(new MenuItem('Social', '/social', faUsers));
 
 let notebookItem: MenuItem = new MenuItem('Notebooks', '/notebooks', faBook);
-notebookItem.sidebarToolComponent = ToolComponents.Notepad;
+notebookItem.sidebarToolComponent = ToolType.Notepad;
 menuItems.push(notebookItem);
 
 
 
 
 let tasksItem: MenuItem = new MenuItem('Tasks', '/tasks', faCheckCircle);
-tasksItem.sidebarToolComponent = ToolComponents.ActionItem;
+tasksItem.sidebarToolComponent = ToolType.ActionItem;
 menuItems.push(tasksItem);
 
 
 
 let schedulingMenu = new MenuItem('Scheduling', '/scheduling', faCalendar);
-schedulingMenu.sidebarToolComponent = ToolComponents.FutureEvent;
+schedulingMenu.sidebarToolComponent = ToolType.FutureEvent;
 let schedulingMenuItems: MenuItem[] = [
     new MenuItem('Schedule Rotations', '/schedule-rotations', faClock),
     new MenuItem('Day Templates', '/day-templates', faClock),

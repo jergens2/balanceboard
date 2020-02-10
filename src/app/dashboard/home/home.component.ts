@@ -6,7 +6,7 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { RelativeMousePosition } from '../../shared/utilities/relative-mouse-position.class';
 import { AdmintoolsService } from './admintools.service';
-import { DaybookService } from '../daybook/daybook.service';
+import { DaybookControllerService } from '../daybook/controller/daybook-controller.service';
 import { TimelogEntryItem } from '../daybook/widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import { TimelogEntryActivity } from '../daybook/api/data-items/timelog-entry-activity.interface';
 import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthenticationService,
     private specialService: AdmintoolsService,
-    private daybookService: DaybookService,
+    private daybookService: DaybookControllerService,
     private daybookHttpService: DaybookHttpRequestService,
     private activitiesService: ActivityCategoryDefinitionService,
     private updateActivitiesService: UpdateActivityDatabaseItemsService) { }

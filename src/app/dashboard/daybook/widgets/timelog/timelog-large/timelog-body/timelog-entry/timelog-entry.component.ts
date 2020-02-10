@@ -8,8 +8,8 @@ import { ColorConverter } from '../../../../../../../shared/utilities/color-conv
 import { ColorType } from '../../../../../../../shared/utilities/color-type.enum';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { TimelogEntryDisplayItem } from './timelog-entry-display-item.class';
-import { ToolsService } from '../../../../../../../tools-menu/tools/tools.service';
-import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-components.enum';
+import { ToolboxService } from '../../../../../../../tools-menu/toolbox.service';
+import { ToolType } from '../../../../../../../tools-menu/tool-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 
 @Component({
@@ -22,7 +22,7 @@ export class TimelogEntryComponent implements OnInit {
   constructor(
     private activitiesService: ActivityCategoryDefinitionService,
     private screenSizeService: ScreenSizeService,
-    private toolsService: ToolsService) { }
+    private toolsService: ToolboxService) { }
 
   private _displayEntry: TimelogEntryDisplayItem;
   private _entries: TimelogEntryItem[] = [];
@@ -55,7 +55,7 @@ export class TimelogEntryComponent implements OnInit {
   public onClickOpenTimelogEntry() {
     console.log('Warning: opening only the first item in the array.');
     this.toolsService.setTimelogEntry(this.timelogEntries[0]);
-    this.toolsService.openTool(ToolComponents.TimelogEntry);
+    this.toolsService.openTool(ToolType.TimelogEntry);
   }
 
 

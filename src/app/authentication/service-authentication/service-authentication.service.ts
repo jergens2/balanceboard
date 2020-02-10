@@ -11,7 +11,7 @@ import { RoutineDefinitionService } from '../../dashboard/activities/routines/ap
 
 import { SocialService } from '../../shared/document-definitions/user-account/social.service';
 import { DaybookHttpRequestService } from '../../dashboard/daybook/api/daybook-http-request.service';
-import { DaybookService } from '../../dashboard/daybook/daybook.service';
+import { DaybookControllerService } from '../../dashboard/daybook/controller/daybook-controller.service';
 import { AuthStatus } from '../auth-status.class';
 import { Observable, Subject, Subscription, timer, forkJoin, BehaviorSubject, merge } from 'rxjs';
 import { ServiceAuthentication } from './service-authentication.class';
@@ -36,7 +36,7 @@ export class ServiceAuthenticationService {
     // private dailyTaskListService: DailyTaskListService,
     private socialService: SocialService,
     private daybookHttpRequestService: DaybookHttpRequestService,
-    private daybookService: DaybookService,
+    private daybookService: DaybookControllerService,
     private scheduleRotationService: ScheduleRotationsService,
 
   ) {

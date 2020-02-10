@@ -81,54 +81,54 @@ export class TimeSchedule<T>{
         }
     }
 
-    public getPreviousValueChangeTime(startTime: moment.Moment, currentValue: boolean = false): moment.Moment {
-        let foundIndex = this.fullScheduleItems.findIndex((item) => {
-            return startTime.isSameOrAfter(item.startTime) && startTime.isSameOrBefore(item.endTime);
-        });
-        if (foundIndex >= 0) {
-            let foundTime: moment.Moment;
-            for (let i = foundIndex; i > 0; i--) {
+    // public getPreviousValueChangeTime(startTime: moment.Moment, currentValue: boolean = false): moment.Moment {
+    //     let foundIndex = this.fullScheduleItems.findIndex((item) => {
+    //         return startTime.isSameOrAfter(item.startTime) && startTime.isSameOrBefore(item.endTime);
+    //     });
+    //     if (foundIndex >= 0) {
+    //         let foundTime: moment.Moment;
+    //         for (let i = foundIndex; i > 0; i--) {
 
-                if (this.fullScheduleItems[i].hasValue !== currentValue) {
-                    foundTime = this.fullScheduleItems[i].startTime;
-                    i = 0;
-                } else if (i > 0) {
-                    if (this.fullScheduleItems[i - 1].hasValue !== currentValue) {
-                        foundTime = this.fullScheduleItems[i - 1].endTime;
-                        i = 0;
-                    }
-                }
-            }
-            if (foundTime) {
-                return foundTime
-            } else {
-                return this.startTime;
-            }
-        } else {
-            console.log('Error: could not find item')
-            return startTime;
-        }
-    }
+    //             if (this.fullScheduleItems[i].hasValue !== currentValue) {
+    //                 foundTime = this.fullScheduleItems[i].startTime;
+    //                 i = 0;
+    //             } else if (i > 0) {
+    //                 if (this.fullScheduleItems[i - 1].hasValue !== currentValue) {
+    //                     foundTime = this.fullScheduleItems[i - 1].endTime;
+    //                     i = 0;
+    //                 }
+    //             }
+    //         }
+    //         if (foundTime) {
+    //             return foundTime
+    //         } else {
+    //             return this.startTime;
+    //         }
+    //     } else {
+    //         console.log('Error: could not find item')
+    //         return startTime;
+    //     }
+    // }
 
-    public getNextValueChangeTime(currentTime: moment.Moment): moment.Moment {
-        if (this.fullScheduleItems.length > 0) {
-            let foundItems = this.fullScheduleItems.filter((item) => {
-                const crosses = item.startTime.isSameOrBefore(currentTime) && item.endTime.isSameOrAfter(currentTime);
-                return crosses || item.startTime.isSameOrAfter(currentTime);
-            });
-            if (foundItems.length > 0) {
-                /**
-                 * It is implied that the next item has the opposite value for hasValue (therefore ValueChange)
-                 * the next item's startTime is the same as foundItems[0].endTime
-                 */
-                return foundItems[0].endTime;
-            } else {
-                return this.endTime;
-            }
-        } else {
-            return this.endTime;
-        }
-    }
+    // public getNextValueChangeTime(currentTime: moment.Moment): moment.Moment {
+    //     if (this.fullScheduleItems.length > 0) {
+    //         let foundItems = this.fullScheduleItems.filter((item) => {
+    //             const crosses = item.startTime.isSameOrBefore(currentTime) && item.endTime.isSameOrAfter(currentTime);
+    //             return crosses || item.startTime.isSameOrAfter(currentTime);
+    //         });
+    //         if (foundItems.length > 0) {
+    //             /**
+    //              * It is implied that the next item has the opposite value for hasValue (therefore ValueChange)
+    //              * the next item's startTime is the same as foundItems[0].endTime
+    //              */
+    //             return foundItems[0].endTime;
+    //         } else {
+    //             return this.endTime;
+    //         }
+    //     } else {
+    //         return this.endTime;
+    //     }
+    // }
 
 
     public getNextOccurrenceOfValue(timeToCheck: moment.Moment, findValue: T): moment.Moment {

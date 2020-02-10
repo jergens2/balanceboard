@@ -3,7 +3,7 @@ import { ItemState } from '../../../../../../shared/utilities/item-state.class';
 import { RelativeMousePosition } from '../../../../../../shared/utilities/relative-mouse-position.class';
 import * as moment from 'moment';
 import { TimeUtilities } from '../../../../../../shared/utilities/time-utilities/time-utilities';
-import { DaybookService } from '../../../../daybook.service';
+import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
 import { TimelogZoomControl } from '../timelog-zoom-controller/timelog-zoom-control.interface';
 import { Subscription, Observable } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
@@ -19,6 +19,8 @@ import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilit
 import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
 import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
 import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
+import { ToolboxService } from '../../../../../../tools-menu/toolbox.service';
+import { SleepEntryItem } from '../../sleep-entry-form/sleep-entry-item.class';
 
 @Component({
   selector: 'app-timelog-body',
@@ -27,7 +29,7 @@ import { DaybookAvailabilityType } from '../../../../controller/items/daybook-av
 })
 export class TimelogBodyComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService, private screenSizeService: ScreenSizeService) { }
+  constructor(private daybookService: DaybookControllerService, private screenSizeService: ScreenSizeService, private toolsService: ToolboxService) { }
 
   private _zoomControl: TimelogZoomControl;
   private _zoomControlSubscription: Subscription = new Subscription();
@@ -60,36 +62,47 @@ export class TimelogBodyComponent implements OnInit {
   public get gridItemsNgStyle(): any { return this.timelogDisplayGrid.ngStyle; }
   public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
 
-  
+
   public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
   // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
-  public onDrawNewTLE(drawTLE: TimelogEntryItem) { 
+  public onDrawNewTLE(drawTLE: TimelogEntryItem) {
     this.timelogDisplayGrid.drawTimelogEntry(drawTLE);
   }
-  public onCreateNewTLE(timelogEntry: TimelogEntryItem) { 
+  public onCreateNewTLE(timelogEntry: TimelogEntryItem) {
     this.timelogDisplayGrid.createTimelogEntry(timelogEntry);
-   }
+  }
 
   public onMouseMove(event: MouseEvent) { }
   public onMouseLeave() { }
-  public onClickGridItem(gridItem: TimelogDisplayGridItem){
-    // console.log("Grid item clicked: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a') + " : "+ gridItem.availability)
-    // if(gridItem.availability === DaybookAvailabilityType.TIMELOG_ENTRY){
-    //   console.log(gridItem.timelogEntries)
-    // }
-  }
 
-  public drawTLEIsInGridItem(gridItem: TimelogDisplayGridItem): boolean{
-    
+
+  public drawTLEIsInGridItem(gridItem: TimelogDisplayGridItem): boolean {
+
     return false;
   }
 
   ngOnInit() {
+    let changedCount = 0;
+    this.daybookService.activeDayController$.subscribe((dayChanged) => {
+      if (changedCount > 0) {
+        console.log("Rebuilding timelog.")
+        this._buildTimelog();
+        
+
+      }
+      changedCount++;
+    });
   }
 
-  public showNowLine(gridItem: TimelogDisplayGridItem): boolean{
+  public onClickSleepItem(gridItem: TimelogDisplayGridItem) {
+    let sleepItem: SleepEntryItem = this.daybookService.activeDayController.getSleepItem(gridItem.startTime, gridItem.endTime);
+    console.log("found sleep item: " + sleepItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + sleepItem.endTime.format('YYYY-MM-DD hh:mm a'))
+    this.toolsService.openToolSleepInput(sleepItem);
+  }
+
+  public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
     const now = moment();
-    if(now.isSameOrAfter(gridItem.startTime) && now.isSameOrBefore(gridItem.endTime)){
+    if (now.isSameOrAfter(gridItem.startTime) && now.isSameOrBefore(gridItem.endTime)) {
       return true;
     }
     return false;

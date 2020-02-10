@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { DaybookService } from '../../daybook.service';
+import { DaybookControllerService } from '../../controller/daybook-controller.service';
 import * as moment from 'moment';
 import { SleepBatteryConfiguration } from '../sleep-battery/sleep-battery-configuration.interface';
 import { faBed, faPlusCircle, faMinusCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -13,7 +13,7 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 })
 export class SleepProfileWidgetComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
 
   public sleepProfileForm: FormGroup;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ToolsService } from '../../tools.service';
-import { ToolComponents } from '../../tool-components.enum';
+import { ToolboxService } from '../../../toolbox.service';
+import { ToolType } from '../../../tool-type.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { NotebookEntry } from '../../../../dashboard/notebooks/notebook-entry/notebook-entry.model';
@@ -21,7 +21,7 @@ export class NotebookEntryFormComponent implements OnInit {
 
 
   constructor(
-    private toolsService: ToolsService,
+    private toolsService: ToolboxService,
     private notebooksService: NotebooksService,
     private modalService: ModalService
   ) { }
@@ -47,7 +47,7 @@ export class NotebookEntryFormComponent implements OnInit {
   }
 
   onClickCloseNotepad() {
-    this.toolsService.closeTool(ToolComponents.Notepad);
+    this.toolsService.closeTool();
     this.modalService.closeModal();
   }
 
@@ -74,7 +74,7 @@ export class NotebookEntryFormComponent implements OnInit {
 
     // console.log("Saving note:", notebookEntry);
     this.notebooksService.saveNotebookEntry(notebookEntry);
-    this.toolsService.closeTool(ToolComponents.Notepad);
+    this.toolsService.closeTool();
   }
 
 

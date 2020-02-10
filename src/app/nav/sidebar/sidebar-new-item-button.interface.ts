@@ -1,6 +1,6 @@
-import { ToolComponents } from "../../tools-menu/tools/tool-components.enum";
+import { ToolType } from "../../tools-menu/tool-type.enum";
 
 export interface SidebarNewItemButton{
-    sidebarToolComponent: ToolComponents,
+    sidebarToolComponent: ToolType,
     sidebarToolComponentMouseOver: boolean,
 }

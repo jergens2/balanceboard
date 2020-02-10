@@ -1,20 +1,20 @@
 import { Injectable } from '@angular/core';
-import { DaybookHttpRequestService } from './api/daybook-http-request.service';
+import { DaybookHttpRequestService } from '../api/daybook-http-request.service';
 import { BehaviorSubject, Observable, Subject, timer, Subscription, forkJoin } from 'rxjs';
 import * as moment from 'moment';
-import { DaybookDayItem } from './api/daybook-day-item.class';
-import { AuthStatus } from '../../authentication/auth-status.class';
-import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
-import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
-import { TimelogEntryItem } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { DaybookController } from './controller/daybook-controller.class';
-import { DaybookWidgetType } from './widgets/daybook-widget.class';
+import { DaybookDayItem } from '../api/daybook-day-item.class';
+import { AuthStatus } from '../../../authentication/auth-status.class';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { ActivityCategoryDefinitionService } from '../../activities/api/activity-category-definition.service';
+import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { DaybookController } from './daybook-controller.class';
+import { DaybookWidgetType } from '../widgets/daybook-widget.class';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class DaybookService implements ServiceAuthenticates {
+export class DaybookControllerService implements ServiceAuthenticates {
 
   constructor(
     private daybookHttpRequestService: DaybookHttpRequestService,
@@ -26,7 +26,7 @@ export class DaybookService implements ServiceAuthenticates {
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   private _clock: moment.Moment = moment();
-  private _clockMinuteTicker$: Subject<moment.Moment>;
+  // private _clockMinuteTicker$: Subject<moment.Moment>;
   private _todayController$: BehaviorSubject<DaybookController>;
   private _todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
   private _activeDayController$: BehaviorSubject<DaybookController>;
@@ -36,7 +36,7 @@ export class DaybookService implements ServiceAuthenticates {
   private _daybookItemSubs: Subscription[] = [];
 
   public get clock(): moment.Moment { return this._clock; }
-  public get clockMinuteTicker$(): Observable<moment.Moment> { return this._clockMinuteTicker$.asObservable(); } 
+  // public get clockMinuteTicker$(): Observable<moment.Moment> { return this._clockMinuteTicker$.asObservable(); } 
   public get todayYYYYMMDD(): string { return this._todayYYYYMMDD; }
   public get todayController$(): Observable<DaybookController> { return this._todayController$.asObservable(); }
   public get todayController(): DaybookController { return this._todayController$.getValue(); }
@@ -74,18 +74,6 @@ export class DaybookService implements ServiceAuthenticates {
   }
 
   private _initiate() {
-    console.log('Method incomplete');
-    // TO DO
-    /*
-      Calculate Sleep Ratio:
-      at this stage, get last7 daybook day items, and the next 1, 
-      (-7 to +1 from today)
-
-      last 7 use to calculate sleep ratio.
-
-      then from -1 to +1 create the Controller.
-    */
-
     this._startClock();
     this._updateTodayFromDatabase();
   }
@@ -104,7 +92,7 @@ export class DaybookService implements ServiceAuthenticates {
     });
     const msToNextMinute = moment(this._clock).startOf('minute').add(1, 'minute').diff(moment(this._clock), 'milliseconds');
     const minuteSub = timer(msToNextMinute, 60000).subscribe((minute) => {
-      // console.log(moment().format('YYYY-MM-DD hh:mm ss a') + " : every minute updating");
+      console.log(moment().format('YYYY-MM-DD hh:mm ss a') + " : every minute updating");
       this._updateTodayFromDatabase();
     });
     this._clockSubscriptions = [clockSub, minuteSub];
@@ -127,7 +115,7 @@ export class DaybookService implements ServiceAuthenticates {
     // console.log("  prevDay: " + todayItem.prevDay.dateYYYYMMDD);
     // console.log(" *thisDay: " + todayItem.thisDay.dateYYYYMMDD + " *");
     // console.log("  nextDay: " + todayItem.nextDay.dateYYYYMMDD);
-    const todayController: DaybookController = new DaybookController(todayItem);
+    const todayController: DaybookController = new DaybookController(todayItem, this.clock);
 
 
     // todayItem.setIsToday();
@@ -215,7 +203,7 @@ export class DaybookService implements ServiceAuthenticates {
     this.daybookHttpRequestService.getDaybookDayItemByDate$(dateYYYYMMDD)
       .subscribe((activeDayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) => {
         console.log("getting active date item: ", activeDayItem);
-        const newController = new DaybookController(activeDayItem);
+        const newController = new DaybookController(activeDayItem, this.clock);
         this._updateActiveDay(newController);
       });
   }

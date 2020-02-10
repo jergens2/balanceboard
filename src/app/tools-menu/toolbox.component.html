@@ -38,6 +38,19 @@
     </div>
   </div>
 
+  <div class="tool" *ngIf="toolName == 'SLEEP_INPUT'"
+  [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
+  <div class="tool-header">
+    <div class="tool-header-item font-family-open-sans">
+      Sleep Input
+    </div>
+    <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+  </div>
+  <div class="tool-body">
+    <app-sleep-entry-form></app-sleep-entry-form>
+  </div>
+</div>
+
   <div class="tool" *ngIf="toolName == 'FUTURE_EVENT'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
     <div class="tool-header">

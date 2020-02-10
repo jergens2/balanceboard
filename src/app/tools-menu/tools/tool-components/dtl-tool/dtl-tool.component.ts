@@ -5,7 +5,7 @@ import { faCheckCircle as faCheckCircleSolid, faTasks } from '@fortawesome/free-
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 import { Router } from '@angular/router';
-import { ToolsService } from '../../tools.service';
+import { ToolboxService } from '../../../toolbox.service';
 
 import { Subscription } from 'rxjs';
 import { DailyTaskListService } from './daily-task-list.service';
@@ -39,7 +39,7 @@ export class DtlToolComponent implements OnInit, OnDestroy {
   faCheckCircleSolid = faCheckCircleSolid;
   faTasks = faTasks;
 
-  constructor(private toolsService: ToolsService, private router: Router, private dailyTaskListService: DailyTaskListService, private routineDefinitionService: RoutineDefinitionService) { }
+  constructor(private toolsService: ToolboxService, private router: Router, private dailyTaskListService: DailyTaskListService, private routineDefinitionService: RoutineDefinitionService) { }
 
   // dtclItems: DailyTaskListItem[];
 

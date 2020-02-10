@@ -6,6 +6,8 @@ export interface DaybookTimelogEntryDataItem {
     endTimeISO: string;
     endTimeUtcOffsetMinutes: number;
     timelogEntryActivities: TimelogEntryActivity[];
-    isConfirmed: boolean;
-    note: string;
+
+    embeddedNote: string;
+    noteIds: string[]
+
 }

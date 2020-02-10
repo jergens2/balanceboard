@@ -2,7 +2,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { EventEmitter } from "@angular/core";
 import { HeaderMenu } from "./header-menu.model";
 import { SidebarNewItemButton } from "../../sidebar/sidebar-new-item-button.interface";
-import { ToolComponents } from "../../../tools-menu/tools/tool-components.enum";
+import { ToolType } from "../../../tools-menu/tool-type.enum";
 
 export class MenuItem implements SidebarNewItemButton{
     routerLink: string;
@@ -38,7 +38,7 @@ export class MenuItem implements SidebarNewItemButton{
 
 
 
-    sidebarToolComponent: ToolComponents = null;
+    sidebarToolComponent: ToolType = null;
     sidebarToolComponentMouseOver: boolean = false;
 
 }

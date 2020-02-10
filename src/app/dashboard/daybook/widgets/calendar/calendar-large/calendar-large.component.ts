@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
 import * as moment from 'moment';
-import { DaybookService } from '../../../daybook.service';
+import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 
 @Component({
   selector: 'app-calendar-large',
@@ -10,7 +10,7 @@ import { DaybookService } from '../../../daybook.service';
 })
 export class CalendarLargeComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
 
   ngOnInit() {

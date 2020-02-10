@@ -1,0 +1,34 @@
+
+<div *ngIf="!isStartOfCurrentDay" style="display:flex;flex-direction: column;">
+    <div class="form-section times-section" style="flex-direction: row;" *ngIf="!modifyingTimes"
+        (click)="onClickModifyTimes()">
+        <div style="display:flex;flex-direction: column; flex-grow:2;">
+            <div style="font-size: 0.8em; color: gray; font-style: italic;">{{ entryItemDate }}</div>
+            <div>{{ entryItem.startTime.format('h:mm a')}} to {{ entryItem.endTime.format('h:mm a')}}</div>
+            <div style="font-weight:bold; font-size:0.9em; color: rgb(0, 57, 163);">
+                {{ entryItem.durationString }}
+            </div>
+        </div>
+        <fa-icon class="icon-button" [icon]="faEdit"></fa-icon>
+    </div>
+
+    <div class="form-section" *ngIf="modifyingTimes">
+        <app-tlef-modify-times [entryItem]="entryItem" [startTimeBoundary]="startTimeBoundary"
+            [endTimeBoundary]="endTimeBoundary" (timesModified)="onTimesModified($event)">
+        </app-tlef-modify-times>
+    </div>
+
+    <div class="form-section" style="background-color: rgb(252, 252, 252);">
+        <app-tlef-activities [timelogEntryDataItem]="dataEntryItem"
+            (tlefActivitiesChanged)="onActivitiesChanged($event)">
+        </app-tlef-activities>
+    </div>
+
+    <div class="form-section" *ngIf="isEndOfCurrentDay && !isStartOfCurrentDay">
+        <app-tlef-bed-time></app-tlef-bed-time>
+    </div>
+
+
+
+
+</div>

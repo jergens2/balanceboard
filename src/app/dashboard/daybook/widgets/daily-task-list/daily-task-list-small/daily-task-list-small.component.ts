@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DailyTaskListDataItem } from '../../../api/data-items/daily-task-list-data-item.interface';
 // import { RecurringTasksService } from '../../../../activities/routines/routine-definition/api/routine-definition.service';
 // import { RecurringTaskDefinition } from '../../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
-import { DaybookService } from '../../../daybook.service';
+import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import { DaybookController } from '../../../controller/daybook-controller.class';
 
 @Component({
@@ -12,7 +12,7 @@ import { DaybookController } from '../../../controller/daybook-controller.class'
 })
 export class DailyTaskListSmallComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
 
 

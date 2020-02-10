@@ -3,7 +3,7 @@ import { TimeSelectionRow } from './time-selection-row.class';
 
 import { faEdit, faTrash, faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
-import { ToolsService } from '../../../../../../../tools-menu/tools/tools.service';
+import { ToolboxService } from '../../../../../../../tools-menu/toolbox.service';
 
 @Component({
   selector: 'app-time-selection-row',
@@ -15,7 +15,7 @@ export class TimeSelectionRowComponent implements OnInit {
 
   @Input() row: TimeSelectionRow;
 
-  constructor(private toolsService: ToolsService) { }
+  constructor(private toolsService: ToolboxService) { }
 
   ngOnInit() {
     if(this.row.timelogDelineator){

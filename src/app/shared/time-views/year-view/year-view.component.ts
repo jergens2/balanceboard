@@ -11,7 +11,7 @@ import { YearViewData } from './year-view-data.interface';
 import { TimeViewsService } from '../time-views.service';
 import { TimeViewDayData } from '../time-view-day-data-interface';
 import { TimeViewConfiguration } from '../time-view-configuration.interface';
-import { DaybookService } from '../../../dashboard/daybook/daybook.service';
+import { DaybookControllerService } from '../../../dashboard/daybook/controller/daybook-controller.service';
 
 @Component({
   selector: 'app-year-view',
@@ -21,7 +21,7 @@ import { DaybookService } from '../../../dashboard/daybook/daybook.service';
 export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   constructor(
-    private daybookService: DaybookService,
+    private daybookService: DaybookControllerService,
     private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
     private router: Router,
     private sizeService: ScreenSizeService,

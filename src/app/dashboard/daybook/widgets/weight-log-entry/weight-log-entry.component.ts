@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DaybookDayItem } from '../../api/daybook-day-item.class';
-import { DaybookService } from '../../daybook.service';
+import { DaybookControllerService } from '../../controller/daybook-controller.service';
 import { DaybookController } from '../../controller/daybook-controller.class';
 
 @Component({
@@ -10,7 +10,7 @@ import { DaybookController } from '../../controller/daybook-controller.class';
 })
 export class WeightLogEntryComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
   private activeDayController: DaybookController;
 

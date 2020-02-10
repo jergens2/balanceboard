@@ -14,8 +14,8 @@ import { Modal } from '../../modal/modal.class';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { ModalService } from '../../modal/modal.service';
-import { ToolsService } from '../../tools-menu/tools/tools.service';
-import { ToolComponents } from '../../tools-menu/tools/tool-components.enum';
+import { ToolboxService } from '../../tools-menu/toolbox.service';
+import { ToolType } from '../../tools-menu/tool-type.enum';
 
 @Component({
   selector: 'app-sidebar',
@@ -24,7 +24,7 @@ import { ToolComponents } from '../../tools-menu/tools/tool-components.enum';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
 
-  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private router: Router, private modalService: ModalService, private toolsService: ToolsService) { }
+  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private router: Router, private modalService: ModalService, private toolsService: ToolboxService) { }
 
 
   faPlus = faPlus;

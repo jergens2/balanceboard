@@ -10,6 +10,7 @@ import { DaybookActivityDataItem } from './data-items/daybook-activity-data-item
 import { DailyTaskListDataItem } from './data-items/daily-task-list-data-item.interface';
 import { DayStructureDataItem } from './data-items/day-structure-data-item.interface';
 import { DaybookDayItemScheduledActivityItem } from './data-items/daybook-day-item-scheduled-activity.class';
+import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data-item.interface';
 
 export class DaybookDayItemBuilder {
 
@@ -78,10 +79,10 @@ export class DaybookDayItemBuilder {
             }
         }
 
-        let sleepTimes: TimeSpanItem[] = [];
-        if (dayItemHttpData.sleepTimes) {
-            if (dayItemHttpData.sleepTimes.length > 0) {
-                sleepTimes = dayItemHttpData.sleepTimes.map((dbTime: any) => {
+        let sleepInputItems: DaybookSleepInputDataItem[] = [];
+        if (dayItemHttpData.sleepInputItems) {
+            if (dayItemHttpData.sleepInputItems.length > 0) {
+                sleepInputItems = dayItemHttpData.sleepInputItems.map((dbTime: any) => {
                     const startTimeISO: string = dbTime.startTimeISO;
                     const startTimeUtcOffset: number = dbTime.startTimeUtcOffset;
                     const endTimeISO: number = dbTime.endTimeISO;
@@ -95,16 +96,7 @@ export class DaybookDayItemBuilder {
                 });
             }
         } else {
-            console.log('No sleepTimes property on DB item');
-            if (dayItemHttpData.sleepProfile) {
-                if (dayItemHttpData.sleepProfile.wakeupTimeISO) {
-                    // prior to 2019-11-26
-                    // TO DO
-                    // if (dayItemHttpData.sleepProfile.wakeupTimeUtcOffsetMinutes !== null) {
-                    // }
-                }
-            }
-
+            console.log('No sleepInputItems property on DB item');
         }
 
         let sleepEnergyLevelInputs: SleepEnergyLevelInput[] = [];
@@ -154,7 +146,7 @@ export class DaybookDayItemBuilder {
             dateYYYYMMDD: dateYYYYMMDD,
             daybookTimelogEntryDataItems: daybookTimelogEntryDataItems,
             timeDelineators: timeDelineators,
-            sleepTimes: sleepTimes,
+            sleepInputItems: sleepInputItems,
             sleepEnergyLevelInputs: sleepEnergyLevelInputs,
             daybookActivityDataItems: daybookActivityDataItems,
             dailyTaskListDataItems: dailyTaskListDataItems,

@@ -7,14 +7,14 @@ import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
-import { ToolsService } from '../../tools-menu/tools/tools.service';
-import { ToolComponents } from '../../tools-menu/tools/tool-components.enum';
+import { ToolboxService } from '../../tools-menu/toolbox.service';
+import { ToolType } from '../../tools-menu/tool-type.enum';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { Modal } from '../../modal/modal.class';
 import { ModalService } from '../../modal/modal.service';
 import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
-import { DaybookService } from '../../dashboard/daybook/daybook.service';
+import { DaybookControllerService } from '../../dashboard/daybook/controller/daybook-controller.service';
 import * as moment from 'moment';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
 
@@ -28,9 +28,9 @@ export class HeaderComponent implements OnInit {
   constructor(
     private headerService: HeaderService,
     private authService: AuthenticationService,
-    private toolsService: ToolsService,
+    private toolsService: ToolboxService,
     private modalService: ModalService,
-    private daybookService: DaybookService, 
+    private daybookService: DaybookControllerService, 
     private router: Router ) { }
 
   faBars = faBars;
@@ -88,7 +88,7 @@ export class HeaderComponent implements OnInit {
   public onClickClock(){
     this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
     this.router.navigate(['/daybook']);
-    this.toolsService.openTool(ToolComponents.TimelogEntry);
+    this.toolsService.openTool(ToolType.TimelogEntry);
   }
   public onClickBattery(){
     this.daybookService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);
@@ -142,23 +142,23 @@ export class HeaderComponent implements OnInit {
 
     let notepadMenuItem: MenuItem = new MenuItem('Notebook Entry', null, faStickyNote);
     this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolComponents.Notepad);
+      this.toolsService.openTool(ToolType.Notepad);
     }));
     let actionItemMenuItem: MenuItem = new MenuItem("Action Item", null, faCheckCircle);
     this.activeSubscriptions.push(actionItemMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolComponents.ActionItem);
+      this.toolsService.openTool(ToolType.ActionItem);
     }));
     let timelogEntryMenuItem: MenuItem = new MenuItem("Timelog Entry", null, faTable);
     this.activeSubscriptions.push(timelogEntryMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolComponents.TimelogEntry);
+      this.toolsService.openTool(ToolType.TimelogEntry);
     }));
     let futureEventMenuItem: MenuItem = new MenuItem("Appointment / Future Event", null, faCalendarAlt);
     this.activeSubscriptions.push(futureEventMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolComponents.FutureEvent);
+      this.toolsService.openTool(ToolType.FutureEvent);
     }));
     let dailyTaskListMenuItem: MenuItem = new MenuItem("Daily Task List", null, faTasks);
     this.activeSubscriptions.push(dailyTaskListMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolComponents.DailyTaskList);
+      this.toolsService.openTool(ToolType.DailyTaskList);
     }));
 
     toolsMenuItems.push(notepadMenuItem);

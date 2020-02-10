@@ -4,7 +4,7 @@ import { faCog, faEye, faAngleLeft, faAngleRight } from '@fortawesome/free-solid
 import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import * as moment from 'moment';
 import { DayStructureDataItem } from '../../../api/data-items/day-structure-data-item.interface';
-import { DaybookService } from '../../../daybook.service';
+import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import { TimelogZoomControl } from './timelog-zoom-controller/timelog-zoom-control.interface';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { DaybookController } from '../../../controller/daybook-controller.class';
@@ -18,19 +18,8 @@ export class TimelogLargeComponent implements OnInit {
 
 
 
-  constructor(private daybookService: DaybookService) { }
-
-  // private _activeDay: DaybookDayItem;
-  // public get activeDay():DaybookDayItem{
-  //   return this._activeDay;
-  // }
-  // public set activeDay(activeDay: DaybookDayItem){
-  //   this._activeDay = activeDay;
-  // }
-  // public activeDayController: DaybookController;
-
+  constructor(private daybookService: DaybookControllerService) { }
   ngOnInit() {
-    console.log("This component gets the firstTLEF time from controller")
     this.zoomControl = { 
       icon: null,
       name: "AWAKE",
@@ -40,10 +29,6 @@ export class TimelogLargeComponent implements OnInit {
       startTime: moment(this.daybookService.activeDayController.wakeupTime), 
       endTime: moment(this.daybookService.activeDayController.fallAsleepTime) 
     };
-    // this.activeDayController = this.daybookService.activeDayController;
-    // this.daybookService.activeDayController$.subscribe((dayChanged)=>{
-    //   this.activeDayController = dayChanged;
-    // });
   }
 
 

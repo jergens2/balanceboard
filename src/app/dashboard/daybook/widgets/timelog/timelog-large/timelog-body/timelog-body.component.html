@@ -12,7 +12,7 @@
         </div>
 
         <div *ngIf="gridItems.length > 0" [ngStyle]="gridItemsNgStyle" class="grid-items">
-            <div *ngFor="let gridItem of gridItems" class="grid-item" (click)="onClickGridItem(gridItem)">
+            <div *ngFor="let gridItem of gridItems" class="grid-item" >
 
                 <div *ngIf="showNowLine(gridItem)" class="now-line"></div>
 
@@ -22,8 +22,8 @@
                 <app-timelog-entry *ngIf="gridItem.availability === 'TIMELOG_ENTRY'" class='activity-item'
                     [gridItem]="gridItem"></app-timelog-entry>
 
-                <div *ngIf="gridItem.availability === 'SLEEP'" class='sleep-item'>
-                    
+                <div *ngIf="gridItem.availability === 'SLEEP'" class='sleep-item' (click)="onClickSleepItem(gridItem)">
+
                 </div>
             </div>
         </div>

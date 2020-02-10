@@ -7,6 +7,7 @@ import { DayStructureDataItem } from './data-items/day-structure-data-item.inter
 import { DaybookDayItemScheduledActivityItem } from './data-items/daybook-day-item-scheduled-activity.class';
 import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
+import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data-item.interface';
 
 
 export interface DaybookDayItemHttpShape {
@@ -18,7 +19,7 @@ export interface DaybookDayItemHttpShape {
     daybookTimelogEntryDataItems: DaybookTimelogEntryDataItem[];
     timeDelineators: string[];
 
-    sleepTimes: TimeSpanItem[];
+    sleepInputItems: DaybookSleepInputDataItem[];
     sleepEnergyLevelInputs: SleepEnergyLevelInput[];
     
 

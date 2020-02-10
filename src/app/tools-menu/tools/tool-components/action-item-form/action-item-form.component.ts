@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { ToolsService } from '../../tools.service';
-import { ToolComponents } from '../../tool-components.enum';
+import { ToolboxService } from '../../../toolbox.service';
+import { ToolType } from '../../../tool-type.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { faCircle, faCheckCircle, IconDefinition } from '@fortawesome/free-regular-svg-icons';
 import { Task } from '../../../../dashboard/tasks/task/task.model';
@@ -20,7 +20,7 @@ export class ActionItemFormComponent implements OnInit {
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
 
-  constructor(private toolsService: ToolsService, private taskService: TaskService, private modalService: ModalService) { }
+  constructor(private toolsService: ToolboxService, private taskService: TaskService, private modalService: ModalService) { }
 
 
   taskForm: FormGroup;
@@ -93,11 +93,11 @@ export class ActionItemFormComponent implements OnInit {
       this.taskService.createTaskHTTP(task);
     }
 
-    this.toolsService.closeTool(ToolComponents.ActionItem);
+    this.toolsService.closeTool();
     this.modalService.closeModal();
   }
   onClickCloseTask(){
-    this.toolsService.closeTool(ToolComponents.ActionItem);
+    this.toolsService.closeTool();
     this.modalService.closeModal();
   }
   public get saveTaskDisabled(): string{

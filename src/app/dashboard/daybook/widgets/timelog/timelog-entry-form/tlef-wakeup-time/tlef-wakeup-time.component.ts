@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
-import { DaybookService } from '../../../../../daybook/daybook.service';
+import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
 import { faSpinner} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -13,7 +13,7 @@ export class TlefWakeupTimeComponent implements OnInit {
   /**
    * This form will only ever be used for NEW_CURRENT timelog entries, so at this point there is no need to consider dealing with other cases.
    */
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
   faSpinner = faSpinner;
 
   private _saveClicked = false;

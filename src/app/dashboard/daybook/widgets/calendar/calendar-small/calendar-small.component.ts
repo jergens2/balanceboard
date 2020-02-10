@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
-import { DaybookService } from '../../../daybook.service';
+import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import { DaybookController } from '../../../controller/daybook-controller.class';
 
 @Component({
@@ -12,7 +12,7 @@ import { DaybookController } from '../../../controller/daybook-controller.class'
 })
 export class CalendarSmallComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
   faExpand = faExpand;
 

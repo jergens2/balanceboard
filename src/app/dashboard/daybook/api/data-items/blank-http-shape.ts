@@ -9,7 +9,7 @@ let blankDaybookItemHttpShape: DaybookDayItemHttpShape = {
     daybookActivityDataItems: [],
     dailyTaskListDataItems: [],
     dayStructureDataItems: [],
-    sleepTimes: [],
+    sleepInputItems: [],
     sleepEnergyLevelInputs: [],
 
     dailyWeightLogEntryKg: -1,

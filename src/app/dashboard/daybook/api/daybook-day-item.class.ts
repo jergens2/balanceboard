@@ -12,6 +12,7 @@ import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } 
 import blankDaybookItemHttpShape from './data-items/blank-http-shape';
 import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
+import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data-item.interface';
 
 
 export class DaybookDayItem {
@@ -36,7 +37,7 @@ export class DaybookDayItem {
     public set id(id: string) { this._httpShape._id = id; }
     public set userId(userId: string) { this._httpShape.userId = userId; }
 
-    public set sleepTimes(times: TimeSpanItem[]) { this._httpShape.sleepTimes = times; }
+    public set sleepDataItems(items: DaybookSleepInputDataItem[]) { this._httpShape.sleepInputItems = items; }
 
     public get httpShape(): DaybookDayItemHttpShape { return this._httpShape; }
 
@@ -46,7 +47,7 @@ export class DaybookDayItem {
     public get startOfThisDay(): moment.Moment { return moment(this.dateYYYYMMDD).startOf('day'); }
     public get endOfThisDay(): moment.Moment { return moment(this.startOfThisDay).add(24, 'hours'); }
     public get timeDelineators(): moment.Moment[] { return this.httpShape.timeDelineators.map(timeString => moment(timeString)); }
-    public get sleepTimes(): TimeSpanItem[] { return this.httpShape.sleepTimes; }
+    public get sleepDataItems(): DaybookSleepInputDataItem[] { return this.httpShape.sleepInputItems; }
     public get timelogEntryDataItems(): DaybookTimelogEntryDataItem[] { return this.httpShape.daybookTimelogEntryDataItems; }
     public get sleepEnergyLevelInputs(): SleepEnergyLevelInput[] { return this.httpShape.sleepEnergyLevelInputs; }
     public get dayTemplateId(): string { return this.httpShape.dayTemplateId; }

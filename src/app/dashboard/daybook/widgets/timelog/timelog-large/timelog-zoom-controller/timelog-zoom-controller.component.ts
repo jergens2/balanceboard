@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogZoomControl } from './timelog-zoom-control.interface';
-import { DaybookService } from '../../../../daybook.service';
+import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
 import { faWrench, faSun, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { Subscription, timer } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
@@ -16,7 +16,7 @@ import { DaybookController } from '../../../../controller/daybook-controller.cla
 })
 export class TimelogZoomControllerComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
   private _currentZoomLevel: TimelogZoomControl;
   @Output() public zoomControl: EventEmitter<TimelogZoomControl> = new EventEmitter();

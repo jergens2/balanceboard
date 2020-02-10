@@ -6,9 +6,10 @@ import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-e
 import { TimelogZoomControl } from '../widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-control.interface';
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 
 export class DaybookTimelogEntryController {
-    constructor(dateYYYYMMDD: string, timelogEntryDataItems: DaybookTimelogEntryDataItem[], sleepTimes?: TimeSpanItem[]) {
+    constructor(dateYYYYMMDD: string, timelogEntryDataItems: DaybookTimelogEntryDataItem[], sleepTimes?: DaybookSleepInputDataItem[]) {
         // console.log("Rebuilding Timelog Controller")
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._timelogEntryItems = timelogEntryDataItems.map((item) => {
@@ -16,24 +17,10 @@ export class DaybookTimelogEntryController {
         });
         this._buildSchedule();
 
-        // console.log(" Timelog Controller: Activity times: " )
-        // if(this._activityTimes.length > 0){
-        //     console.log("this._activityTimes", this._activityTimes)
-        //     this._activityTimes.forEach((activityTime)=>{
-        //         console.log("   " + activityTime.start.format('YYYY-MM-DD hh:mm a') + " to " + activityTime.end.format('YYYY-MM-DD hh:mm a') + " -  isActive? " + activityTime.isActive)
-        //     });
-        // }
-
-        // console.log(" Timelog Entries: ")
-        // this.timelogEntryItems.forEach((item)=>{
-        //     console.log("    " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a '))
-        // })
     }
 
     private _dateYYYYMMDD: string;
     private _timelogEntryItems: TimelogEntryItem[];
-    // private _sleepTimes: TimeSpanItem[];
-
     private _timelogActionComplete$: Subject<boolean> = new Subject();
 
     private _timelogSchedule: TimeSchedule<TimelogEntryItem>;
@@ -54,8 +41,6 @@ export class DaybookTimelogEntryController {
             return null
         }
     }
-
-
 
     public get prevDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
     public get thisDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).format('YYYY-MM-DD'); }
@@ -269,7 +254,7 @@ export class DaybookTimelogEntryController {
 
     private _buildTimelogEntryFromDataItem(dataItem: DaybookTimelogEntryDataItem): TimelogEntryItem {
         const timelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(dataItem.startTimeISO), moment(dataItem.endTimeISO));
-        timelogEntry.note = dataItem.note;
+        timelogEntry.note = dataItem.embeddedNote;
         timelogEntry.timelogEntryActivities = dataItem.timelogEntryActivities;
         timelogEntry.isSavedEntry = true;
         return timelogEntry;

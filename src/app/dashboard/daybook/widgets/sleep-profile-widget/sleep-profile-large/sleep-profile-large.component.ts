@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { DaybookService } from '../../../daybook.service';
+import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
 
 @Component({
@@ -10,7 +10,7 @@ import { DurationString } from '../../../../../shared/utilities/time-utilities/d
 })
 export class SleepProfileLargeComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
   public get wakeupTime(): moment.Moment { 
     return this.daybookService.activeDayController.wakeupTime; 

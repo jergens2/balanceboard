@@ -7,11 +7,12 @@ import { DaybookDayItemHttpShape } from '../daybook-day-item-http-shape.interfac
 export class DaybookDayItemTimelog {
 
     constructor(httpShape: DaybookDayItemHttpShape) {
+        console.log('does this ever happen?')
         const timelogEntries: TimelogEntryItem[] = [];
         if (httpShape.daybookTimelogEntryDataItems.length > 0) {
             httpShape.daybookTimelogEntryDataItems.forEach((item) => {
                 const timelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(item.startTimeISO), moment(item.endTimeISO));
-                timelogEntry.note = item.note;
+                timelogEntry.note = item.embeddedNote;
                 if (item.timelogEntryActivities) {
                     item.timelogEntryActivities.forEach((activity) => {
                         timelogEntry.timelogEntryActivities.push(activity);

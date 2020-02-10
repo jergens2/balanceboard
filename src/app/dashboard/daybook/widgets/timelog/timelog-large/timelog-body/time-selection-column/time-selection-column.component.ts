@@ -3,14 +3,14 @@ import { TimelogZoomControl } from '../../timelog-zoom-controller/timelog-zoom-c
 import * as moment from 'moment';
 import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class';
 import { Subscription } from 'rxjs';
-import { DaybookService } from '../../../../../daybook.service';
+import { DaybookControllerService } from '../../../../../controller/daybook-controller.service';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimeSchedule } from '../../../../../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
-import { ToolsService } from '../../../../../../../tools-menu/tools/tools.service';
-import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-components.enum';
+import { ToolboxService } from '../../../../../../../tools-menu/toolbox.service';
+import { ToolType } from '../../../../../../../tools-menu/tool-type.enum';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -19,7 +19,7 @@ import { ToolComponents } from '../../../../../../../tools-menu/tools/tool-compo
 })
 export class TimeSelectionColumnComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService, private toolsService: ToolsService) { }
+  constructor(private daybookService: DaybookControllerService, private toolsService: ToolboxService) { }
 
   private _rows: TimeSelectionRow[] = [];
   private _zoomControl: TimelogZoomControl;
@@ -371,7 +371,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     const saveNewTLE = new TimelogEntryItem(startTime, endTime);
     this.toolsService.setTimelogEntry(saveNewTLE);
     // console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
-    this.toolsService.openTool(ToolComponents.TimelogEntry);
+    this.toolsService.openTool(ToolType.TimelogEntry);
     this._reset();
     this.createNewTLE.emit(saveNewTLE);
   }

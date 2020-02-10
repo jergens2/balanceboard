@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DaybookService } from '../../../../../daybook/daybook.service';
+import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
 import { DaybookDayItem } from '../../../../../daybook/api/daybook-day-item.class';
 import { TimelogEntryItem } from '../timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
@@ -13,7 +13,7 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 })
 export class TimelogEntryListComponent implements OnInit {
 
-  constructor(private daybookService: DaybookService) { }
+  constructor(private daybookService: DaybookControllerService) { }
 
   private _timelogEntryItems: TimelogEntryItem[] = [];
   public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
