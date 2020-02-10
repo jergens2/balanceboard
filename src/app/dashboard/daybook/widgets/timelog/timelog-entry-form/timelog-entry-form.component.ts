@@ -1,11 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { ToolboxService } from '../../../../../tools-menu/toolbox.service';
+import { ToolboxService } from '../../../../../toolbox-menu/toolbox.service';
 import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import * as moment from 'moment';
 import { LoggingService } from '../../../../../shared/logging/logging.service';
 import { TLEFFormCase } from './tlef-form-case.enum';
 import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
+import { TimelogEntryFormService } from './timelog-entry-form.service';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -14,7 +15,12 @@ import { DurationString } from '../../../../../shared/utilities/time-utilities/d
 })
 export class TimelogEntryFormComponent implements OnInit {
 
-  constructor(private toolsService: ToolboxService, private daybookService: DaybookControllerService, private loggingService: LoggingService) { }
+  constructor(
+    private toolsService: ToolboxService, 
+    private daybookService: DaybookControllerService, 
+    private loggingService: LoggingService,
+    private timelogEntryFormService: TimelogEntryFormService,
+    ) { }
 
   private _formCase: TLEFFormCase;
   private _entryItem: TimelogEntryItem;
@@ -23,20 +29,17 @@ export class TimelogEntryFormComponent implements OnInit {
   private _confirmDelete: boolean = false;
 
   ngOnInit() {
-    this._entryItem = this.toolsService.timelogEntryStorage;
+    this._entryItem = this.timelogEntryFormService.getInitialTimelogEntry();
+    this.timelogEntryFormService.activeFormEntry$.subscribe((item)=>{
+      if(item){
+        this._entryItem = item;
+        this._determineCase();
+      }
+    });
     if(!this._entryItem){
       this._entryItem = this.daybookService.todayController.getNewCurrentTLE();
     }
     this._determineCase();
-    if (!this._entryItem) {
-      console.log("Error: not timelog entry item");
-    }
-    this.toolsService.timelogEntryStorage$.subscribe((newTLE) => {
-      if (newTLE) {
-        this._entryItem = newTLE;
-        this._determineCase();
-      }
-    });
   }
 
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
@@ -48,12 +51,15 @@ export class TimelogEntryFormComponent implements OnInit {
   
   public onClickSave(){
     this.daybookService.activeDayController.saveTimelogEntryItem$(this.entryItem);
+    this.toolsService.closeTool();
   }
   public onClickDelete(){
     this._confirmDelete = true;
+    
   }
   public onClickConfirmDelete(){
     this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
+    this.toolsService.closeTool();
   }
 
   public onClickDiscard(){

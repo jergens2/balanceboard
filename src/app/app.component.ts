@@ -6,8 +6,8 @@ import { UserSettingsService } from './shared/document-definitions/user-account/
 import { UserSetting } from './shared/document-definitions/user-account/user-settings/user-setting.model';
 import { ModalService } from './modal/modal.service';
 import { Modal } from './modal/modal.class';
-import { ToolboxService } from './tools-menu/toolbox.service';
-import { ToolType } from './tools-menu/tool-type.enum';
+import { ToolboxService } from './toolbox-menu/toolbox.service';
+import { ToolType } from './toolbox-menu/tool-type.enum';
 import { ScreenSizeService } from './shared/app-screen-size/screen-size.service';
 import { AppScreenSize } from './shared/app-screen-size/app-screen-size.enum';
 import { OnScreenSizeChanged } from './shared/app-screen-size/on-screen-size-changed.interface';

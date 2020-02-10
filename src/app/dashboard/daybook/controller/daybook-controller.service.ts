@@ -45,9 +45,9 @@ export class DaybookControllerService implements ServiceAuthenticates {
   public get activeDayController$(): Observable<DaybookController> { return this._activeDayController$.asObservable(); }
   public get activeDayController(): DaybookController { return this._activeDayController$.getValue(); }
 
-  public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock)}
+  public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock) }
 
-  public get widgetChanged$(): Observable<DaybookWidgetType>{ return this._widgetChanged$.asObservable(); }
+  public get widgetChanged$(): Observable<DaybookWidgetType> { return this._widgetChanged$.asObservable(); }
   public get widgetChanged(): DaybookWidgetType { return this._widgetChanged$.getValue(); }
   public setDaybookWidget(widget: DaybookWidgetType) { this._widgetChanged$.next(widget); }
 
@@ -86,13 +86,13 @@ export class DaybookControllerService implements ServiceAuthenticates {
     const clockSub = timer(0, 1000).subscribe((second) => {
       this._clock = moment();
       if (this._clock.format('YYYY-MM-DD') !== this.todayYYYYMMDD) {
-        console.log("Not the same day.  i have a belief that this will also fire if you open the app on another pc.")
         this._crossMidnight();
       }
     });
     const msToNextMinute = moment(this._clock).startOf('minute').add(1, 'minute').diff(moment(this._clock), 'milliseconds');
     const minuteSub = timer(msToNextMinute, 60000).subscribe((minute) => {
-      console.log(moment().format('YYYY-MM-DD hh:mm ss a') + " : every minute updating");
+
+      this._clock = moment();
       this._updateTodayFromDatabase();
     });
     this._clockSubscriptions = [clockSub, minuteSub];
@@ -122,21 +122,22 @@ export class DaybookControllerService implements ServiceAuthenticates {
     if (!this._todayController$) {
       this._todayController$ = new BehaviorSubject(todayController);
     } else {
-      
+
       this._todayController$.next(todayController);
     }
-    
+
     if (!this._activeDayController$) {
 
       this._updateActiveDay(todayController);
-    } else if (this.activeDayController.dateYYYYMMDD === todayController.dateYYYYMMDD) { this._updateActiveDay(todayController); } else
-      if (crossedMidnight === true) {
-        if (this.activeDayController.dateYYYYMMDD === moment(todayController.dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD')) {
-          console.log("Crossed midnight, active day was "
-            + this.activeDayController.dateYYYYMMDD + " , updating to today: " + todayController.dateYYYYMMDD);
-          this._updateActiveDay(todayController);
-        }
+    } else if (this.activeDayController.dateYYYYMMDD === todayController.dateYYYYMMDD) {
+      this._updateActiveDay(todayController);
+    } else if (crossedMidnight === true) {
+      if (this.activeDayController.dateYYYYMMDD === moment(todayController.dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD')) {
+        console.log("Crossed midnight, active day was "
+          + this.activeDayController.dateYYYYMMDD + " , updating to today: " + todayController.dateYYYYMMDD);
+        this._updateActiveDay(todayController);
       }
+    }
     this._updateChangeSubscriptions();
   }
 
@@ -150,6 +151,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
   }
 
   private _crossMidnight() {
+    console.log('Crossing midnight')
     this._todayYYYYMMDD = this.clock.format('YYYY-MM-DD');
     this._updateTodayFromDatabase(true);
   }

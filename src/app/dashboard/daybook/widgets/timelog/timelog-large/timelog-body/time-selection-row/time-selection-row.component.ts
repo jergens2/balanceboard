@@ -3,7 +3,7 @@ import { TimeSelectionRow } from './time-selection-row.class';
 
 import { faEdit, faTrash, faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
-import { ToolboxService } from '../../../../../../../tools-menu/toolbox.service';
+import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 
 @Component({
   selector: 'app-time-selection-row',

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ToolboxService } from '../../../../../tools-menu/toolbox.service';
+import { ToolboxService } from '../../../../../toolbox-menu/toolbox.service';
 import { SleepEntryItem } from './sleep-entry-item.class';
 
 @Component({

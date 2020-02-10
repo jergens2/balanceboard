@@ -28,7 +28,7 @@ import { ConfirmModalComponent } from './modal/custom-modals/confirm-modal/confi
 import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notepad-modal.component';
 import { SharedModule } from './shared/shared.module';
 import { SearchBarComponent } from './nav/search-bar/search-bar.component';
-import { ToolsMenuModule } from './tools-menu/tools-menu.module';
+import { ToolsMenuModule } from './toolbox-menu/tools-menu.module';
 import { ColorPickerModule } from 'ngx-color-picker';
 
 

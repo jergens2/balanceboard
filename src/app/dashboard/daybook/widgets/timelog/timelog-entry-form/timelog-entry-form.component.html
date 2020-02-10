@@ -11,7 +11,6 @@
         <div style="font-size:0.75em; color:gray; font-weight: bold; margin-bottom: 10px;">
             {{ durationString }}
         </div>
-
     </div>
 
     <div class="tlef-form-body">
@@ -26,12 +25,12 @@
 
     <div class="tlef-form-footer">
         <button class="medium-button save-button" (click)="onClickSave()">Save</button>
-        <div *ngIf="entryItem.isSaved">
+        <div *ngIf="entryItem.isSavedEntry">
             <button class="medium-button delete-button" (click)="onClickDelete()" *ngIf="!confirmDelete">Delete</button>
             <button class="medium-button confirm-delete-button" (click)="onClickConfirmDelete()"
                 *ngIf="confirmDelete">Confirm</button>
         </div>
-        <button class="medium-button discard-button" (click)="onClickDiscard()" *ngIf="!entryItem.isSaved">Discard</button>
+        <button class="medium-button discard-button" (click)="onClickDiscard()" *ngIf="!entryItem.isSavedEntry">Discard</button>
     </div>
 </div>
 

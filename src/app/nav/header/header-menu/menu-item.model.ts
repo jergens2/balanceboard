@@ -2,7 +2,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { EventEmitter } from "@angular/core";
 import { HeaderMenu } from "./header-menu.model";
 import { SidebarNewItemButton } from "../../sidebar/sidebar-new-item-button.interface";
-import { ToolType } from "../../../tools-menu/tool-type.enum";
+import { ToolType } from "../../../toolbox-menu/tool-type.enum";
 
 export class MenuItem implements SidebarNewItemButton{
     routerLink: string;

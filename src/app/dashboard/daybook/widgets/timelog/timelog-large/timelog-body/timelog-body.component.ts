@@ -19,7 +19,7 @@ import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilit
 import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
 import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
 import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
-import { ToolboxService } from '../../../../../../tools-menu/toolbox.service';
+import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
 import { SleepEntryItem } from '../../sleep-entry-form/sleep-entry-item.class';
 
 @Component({
@@ -84,19 +84,13 @@ export class TimelogBodyComponent implements OnInit {
   ngOnInit() {
     let changedCount = 0;
     this.daybookService.activeDayController$.subscribe((dayChanged) => {
-      if (changedCount > 0) {
-        console.log("Rebuilding timelog.")
-        this._buildTimelog();
-        
-
-      }
+      if (changedCount > 0) { this._buildTimelog(); }
       changedCount++;
     });
   }
 
   public onClickSleepItem(gridItem: TimelogDisplayGridItem) {
     let sleepItem: SleepEntryItem = this.daybookService.activeDayController.getSleepItem(gridItem.startTime, gridItem.endTime);
-    console.log("found sleep item: " + sleepItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + sleepItem.endTime.format('YYYY-MM-DD hh:mm a'))
     this.toolsService.openToolSleepInput(sleepItem);
   }
 
@@ -164,6 +158,7 @@ export class TimelogBodyComponent implements OnInit {
 
   private _updateTimelog() {
     let timelog: TimelogDisplayController = new TimelogDisplayController(this._zoomControl, this._activeDayController, this._minutesPerTwentyPixels);
+
     this._timelogDisplayController = timelog;
   }
 

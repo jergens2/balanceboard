@@ -4,6 +4,7 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 // tslint:disable-next-line: max-line-length
 import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import { SleepEntryItem } from '../dashboard/daybook/widgets/timelog/sleep-entry-form/sleep-entry-item.class';
+import { TimelogEntryFormService } from '../dashboard/daybook/widgets/timelog/timelog-entry-form/timelog-entry-form.service';
 
 
 @Injectable({
@@ -11,15 +12,15 @@ import { SleepEntryItem } from '../dashboard/daybook/widgets/timelog/sleep-entry
 })
 export class ToolboxService {
 
-  constructor() { }
+  constructor(private timelogEntryFormService: TimelogEntryFormService) { }
 
-  private _timelogEntryStorage$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
+  // private _timelogEntryStorage$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
   private _sleepInputStorage$: BehaviorSubject<SleepEntryItem> = new BehaviorSubject(null);
   private _currentTool$: BehaviorSubject<ToolType> = new BehaviorSubject(null);
 
   private _toolIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  public openTool(component: ToolType, data?: any) {
+  public openTool(component: ToolType) {
     this._currentTool$.next(component);
     this._toolIsOpen$.next(true);
   }
@@ -48,15 +49,16 @@ export class ToolboxService {
 
 
   public setTimelogEntry(timelogEntry: TimelogEntryItem) {
-    this._timelogEntryStorage$.next(timelogEntry);
+    this.timelogEntryFormService.setTimelogEntry(timelogEntry);
+    // this._timelogEntryStorage$.next(timelogEntry);
   }
 
-  public get timelogEntryStorage$(): Observable<TimelogEntryItem> { return this._timelogEntryStorage$.asObservable(); }
-  public get timelogEntryStorage(): TimelogEntryItem {
-    const value = this._timelogEntryStorage$.getValue();
-    this._timelogEntryStorage$.next(null);
-    return value;
-  }
+  // public get timelogEntryStorage$(): Observable<TimelogEntryItem> { return this._timelogEntryStorage$.asObservable(); }
+  // public get timelogEntryStorage(): TimelogEntryItem {
+  //   const value = this._timelogEntryStorage$.getValue();
+  //   this._timelogEntryStorage$.next(null);
+  //   return value;
+  // }
 
   public get sleepInputStorage$(): Observable<SleepEntryItem> { return this._sleepInputStorage$.asObservable(); }
   public get sleepInputStorage(): SleepEntryItem { 

@@ -9,8 +9,8 @@ import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-uti
 import { TimeSchedule } from '../../../../../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
-import { ToolboxService } from '../../../../../../../tools-menu/toolbox.service';
-import { ToolType } from '../../../../../../../tools-menu/tool-type.enum';
+import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
+import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -326,15 +326,10 @@ export class TimeSelectionColumnComponent implements OnInit {
     const rangeMS = totalViewMS * percentThreshold;
     const rangeStart = moment(newRow.startTime).subtract(rangeMS, 'milliseconds');
     const rangeEnd = moment(newRow.startTime).add(rangeMS, 'milliseconds');
-    // console.log("Checking range: " + rangeStart.format('hh:mm a') + " - " + rangeEnd.format('hh:mm a'))
     const foundRangeItems = this.timeDelineators.filter(item => {
       return item.time.isSameOrAfter(rangeStart) && item.time.isSameOrBefore(rangeEnd);
     });
     if (foundRangeItems.length > 0) {
-      // console.log("found " + foundRangeItems.length + " items")
-      // foundRangeItems.forEach((item)=>{
-      //   console.log("   " + item.time.format('hh:mm a') + " - " + item.delineatorType)
-      // })
       const foundItems = this.timeDelineators.filter(item =>
         item.time.isSameOrAfter(newRow.startTime) && item.time.isBefore(newRow.endTime));
       let foundDelineator: TimelogDelineator;
@@ -354,7 +349,6 @@ export class TimeSelectionColumnComponent implements OnInit {
         if (foundRangeItems.length == 1) {
           return foundDelineator;
         } else if (foundRangeItems.length > 1) {
-          console.log("found range items = ", foundRangeItems)
           if (priority.indexOf(foundDelineator.delineatorType) <= 5) {
             return foundDelineator
           } else {

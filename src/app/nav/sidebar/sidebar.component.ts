@@ -14,8 +14,8 @@ import { Modal } from '../../modal/modal.class';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { ModalService } from '../../modal/modal.service';
-import { ToolboxService } from '../../tools-menu/toolbox.service';
-import { ToolType } from '../../tools-menu/tool-type.enum';
+import { ToolboxService } from '../../toolbox-menu/toolbox.service';
+import { ToolType } from '../../toolbox-menu/tool-type.enum';
 
 @Component({
   selector: 'app-sidebar',

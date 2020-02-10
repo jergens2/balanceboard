@@ -3,7 +3,7 @@ import { faHome, faSitemap, faCheckCircle, faProjectDiagram, faListOl, faDollarS
 import { faCalendarAlt, faLightbulb, faClock } from "@fortawesome/free-regular-svg-icons";
 import { Subscription } from "rxjs";
 import { HeaderMenu } from "./header/header-menu/header-menu.model";
-import { ToolType } from "../tools-menu/tool-type.enum";
+import { ToolType } from "../toolbox-menu/tool-type.enum";
 
 
 let menuItems: MenuItem[] = [];

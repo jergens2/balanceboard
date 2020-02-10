@@ -14,11 +14,6 @@ export class TimelogDisplayGrid {
     this._timeDelineators = delineators;
     this._activeController = activeDayController;
     this._buildGrid();
-    // console.log("TimelogDisplayGrid is built. (" + this.gridItems.length + " grid items)")
-    // this.gridItems.forEach((item) => {
-    //   console.log("   " + item.startTime.format('hh:mm a') + " to " + item.endTime.format('hh:mm a') + " : " + item.type)
-    // })
-
   }
 
   private _startTime: moment.Moment;
@@ -125,15 +120,11 @@ export class TimelogDisplayGrid {
             }
           }
         }
-
         let gridTemplateRows: string = "";
         gridItems.forEach((gridItem) => {
-          // console.log("PERCENTAGE:  " + gridItem.percent + " item: " + gridItem.type + " start: " + gridItem.startTime.format('hh:mm a') + " to end: " + gridItem.endTime.format('hh:mm a'))
           gridTemplateRows += "" + gridItem.percent.toFixed(3) + "% ";
         });
         displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
-        // console.log("Display grid style: ", displayGridNgStyle);
-        // console.log("grid items:  ", gridItems);
         this.ngStyle = displayGridNgStyle;
         this._gridItems = gridItems;
       } else {

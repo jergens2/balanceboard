@@ -4,9 +4,9 @@ import { TimeSchedule } from '../../../../../../../shared/utilities/time-utiliti
 import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import * as moment from 'moment';
-import { ToolboxService } from '../../../../../../../tools-menu/toolbox.service';
+import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import { ToolType } from '../../../../../../../tools-menu/tool-type.enum';
+import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 
 
 @Component({

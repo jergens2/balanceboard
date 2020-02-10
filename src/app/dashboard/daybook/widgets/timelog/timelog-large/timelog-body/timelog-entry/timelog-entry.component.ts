@@ -8,8 +8,8 @@ import { ColorConverter } from '../../../../../../../shared/utilities/color-conv
 import { ColorType } from '../../../../../../../shared/utilities/color-type.enum';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { TimelogEntryDisplayItem } from './timelog-entry-display-item.class';
-import { ToolboxService } from '../../../../../../../tools-menu/toolbox.service';
-import { ToolType } from '../../../../../../../tools-menu/tool-type.enum';
+import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
+import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 
 @Component({
