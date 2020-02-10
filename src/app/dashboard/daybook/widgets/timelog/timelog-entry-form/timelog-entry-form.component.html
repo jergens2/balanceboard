@@ -2,7 +2,7 @@
 
     <div class="tlef-form-header">
         <div>
-            <app-daybook-grid-items-bar [startTime]="entryItem.startTime"></app-daybook-grid-items-bar>
+            <app-daybook-grid-items-bar [startTime]="entryItem.startTime" [endTime]="entryItem.endTime"></app-daybook-grid-items-bar>
         </div>
         <div>
             <span class="entry-time">{{ entryItem.startTime.format('h:mm a') }}</span> -

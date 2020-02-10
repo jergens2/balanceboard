@@ -1,4 +1,10 @@
 <div class="sleep-form-root">
-    le sleepy
-    {{ sleepItem.startTime.format('h:mm a') }} to {{ sleepItem.endTime.format('h:mm a')}}
-</div> 
+    <div>
+        <app-daybook-grid-items-bar [startTime]="sleepItem.startTime" [endTime]="sleepItem.endTime">
+        </app-daybook-grid-items-bar>
+    </div>
+    <div>
+        <span style="font-size: 0.9em; color: gray;">{{ previousDay }}</span> {{ sleepItem.startTime.format('h:mm a') }}
+        to {{ sleepItem.endTime.format('h:mm a')}} <span style="font-size: 0.9em; color: gray;">{{ followingDay }}</span>
+    </div>
+</div>

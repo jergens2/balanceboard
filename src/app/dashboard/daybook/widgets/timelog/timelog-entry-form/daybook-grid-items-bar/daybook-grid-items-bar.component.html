@@ -1,1 +1,7 @@
-<p>daybook-grid-items-bar works!</p>
+<div class="items-bar-root">
+    <div *ngFor="let item of items" class="item"
+        [ngClass]="{'sleep-item': item.isSleepItem}"
+        (mouseenter)="item.onMouseEnter()"
+        (mouseleave)="item.onMouseLeave()"
+        (click)="onClickItem(item)"></div>
+</div>

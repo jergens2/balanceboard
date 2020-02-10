@@ -57,7 +57,7 @@ export class AvailableTimelogItemComponent implements OnInit {
   }
 
   public onClickCreateNewTLE(){
-    this.toolsService.setTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
+    this.toolsService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
     this.toolsService.openTool(ToolType.TimelogEntry);
   }
 

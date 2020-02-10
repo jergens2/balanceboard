@@ -26,4 +26,18 @@ export class SleepInputFormComponent implements OnInit {
     })
   }
 
+  public get previousDay(): string { 
+    if(this._sleepInputItem.startTime.format('YYYY-MM-DD') != this._sleepInputItem.endTime.format('YYYY-MM-DD')){
+      return '(' + this._sleepInputItem.startTime.format('MMM Do') + ')';
+    }
+    return "";
+  }
+
+  public get followingDay(): string { 
+    if(this._sleepInputItem.startTime.format('YYYY-MM-DD') != this._sleepInputItem.endTime.format('YYYY-MM-DD')){
+      return '(' + this._sleepInputItem.endTime.format('MMM Do') + ')';
+    }
+    return "";
+  }
+
 }

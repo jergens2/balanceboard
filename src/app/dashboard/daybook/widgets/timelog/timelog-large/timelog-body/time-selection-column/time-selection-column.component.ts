@@ -396,7 +396,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   private _saveNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
     const saveNewTLE = new TimelogEntryItem(startTime, endTime);
-    this.toolsService.setTimelogEntry(saveNewTLE);
+    this.toolsService.openTimelogEntry(saveNewTLE);
     // console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
     this.toolsService.openTool(ToolType.TimelogEntry);
     this._reset();

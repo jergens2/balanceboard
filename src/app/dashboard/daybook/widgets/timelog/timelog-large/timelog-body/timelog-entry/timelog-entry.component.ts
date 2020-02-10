@@ -54,7 +54,7 @@ export class TimelogEntryComponent implements OnInit {
 
   public onClickOpenTimelogEntry() {
     console.log('Warning: opening only the first item in the array.');
-    this.toolsService.setTimelogEntry(this.timelogEntries[0]);
+    this.toolsService.openTimelogEntry(this.timelogEntries[0]);
     this.toolsService.openTool(ToolType.TimelogEntry);
   }
 

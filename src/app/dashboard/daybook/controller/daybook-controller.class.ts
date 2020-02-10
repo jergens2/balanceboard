@@ -16,6 +16,7 @@ import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-sche
 import { DaybookAvailabilityType } from './items/daybook-availability-type.enum';
 import { SleepEntryItem } from '../widgets/timelog/sleep-entry-form/sleep-entry-item.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
+import { DisplayGridBarItem } from '../widgets/timelog/timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
 
 /** 
  *  The DaybookController class is a superclass to contain and control the DaybookDayItem class objects.
@@ -41,6 +42,8 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     private _energyController: DaybookEnergyController;
     private _timeDelineatorController: DaybookTimeDelineatorController;
 
+    private _tlefGridDisplayItems: DisplayGridBarItem[] = [];
+
     private _dataChanged$: Subject<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> = new Subject();
     private _subscriptions: Subscription[] = [];
 
@@ -49,6 +52,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     private get energyController(): DaybookEnergyController { return this._energyController; }
     private get timeDelineatorController(): DaybookTimeDelineatorController { return this._timeDelineatorController; }
 
+    public get tlefGridDisplayItems(): DisplayGridBarItem[] { return this._tlefGridDisplayItems; }
 
     public reload(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
         // console.log("Reloading the controller: ", dayItem)
@@ -90,10 +94,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         return this.sleepController.getSleepItem(gridItemStart, gridItemEnd);
     }
 
-    public getGridBarItems(startTime: moment.Moment): moment.Moment[] {
-        console.log("to do")
-        return [];
-    }
+
     public getEarliestAvailability(rowStartTime: moment.Moment): moment.Moment {
         const availabileItems = this.fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
         const foundIndex = availabileItems.findIndex(item => rowStartTime.isSameOrAfter(item.startTime) && rowStartTime.isSameOrBefore(item.endTime));
@@ -236,7 +237,68 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         this._setAvailabilitySections(allTimeDelineations);
         this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems, allSleepSpanItems);
         this._energyController = new DaybookEnergyController(this.fullScheduleItems, this.awakeToAsleepRatio);
+        this._buildTLEFGridDisplayItems();
         this._updateSubscriptions();
+    }
+
+    private _buildTLEFGridDisplayItems() {
+        let gridBarItems: DisplayGridBarItem[] = [];
+        let currentIndex = -1;
+
+        currentIndex = this.fullScheduleItems.findIndex((item) => {
+            if (item.value === DaybookAvailabilityType.SLEEP) { }
+            return item.startTime.isSame(this.clock);
+        });
+
+        if (currentIndex) {
+            let foundFirstSleepIndex = -1;
+            for (let i = currentIndex; i >= 0; i--) {
+                if (foundFirstSleepIndex < 0) {
+                    if (this.fullScheduleItems[i].value === DaybookAvailabilityType.SLEEP) {
+                        foundFirstSleepIndex = i;
+                        i = -1;
+                    }
+                }
+            }
+            if (foundFirstSleepIndex >= 0 && foundFirstSleepIndex < this.fullScheduleItems.length) {
+                let foundLastSleepIndex = -1;
+                for (let i = foundFirstSleepIndex + 1; i < this.fullScheduleItems.length; i++) {
+                    if (this.fullScheduleItems[i].value === DaybookAvailabilityType.SLEEP) {
+                        foundLastSleepIndex = i;
+                        i = this.fullScheduleItems.length + 1;
+                    }
+                }
+                if (foundLastSleepIndex >= 0) {
+                    for (let i = foundFirstSleepIndex; i <= foundLastSleepIndex; i++) {
+                        let newItem = new DisplayGridBarItem(this.fullScheduleItems[i]);
+                        if (i === currentIndex) {
+                            newItem.isCurrent = true;
+                        }
+                        if (newItem.availabilityType === DaybookAvailabilityType.SLEEP) {
+                            newItem.sleepEntry = this.sleepController.getSleepItemAtTime(newItem.startTime);
+                        } else if (newItem.availabilityType === DaybookAvailabilityType.TIMELOG_ENTRY) {
+                            newItem.timelogEntry = this.timelogEntryController.getItemAtTime(newItem.startTime)
+                        } else if (newItem.availabilityType === DaybookAvailabilityType.AVAILABLE) {
+                            newItem.timelogEntry = new TimelogEntryItem(newItem.startTime, newItem.endTime)
+                        }
+                        gridBarItems.push(newItem);
+                    }
+                } else {
+                    console.log('Error finding last sleep index' + foundLastSleepIndex);
+                }
+            } else {
+                console.log('Error finding first sleep index: ' + foundFirstSleepIndex);
+            }
+        } else {
+            console.log('Error: could not find index');
+        }
+        this._tlefGridDisplayItems = gridBarItems;
+
+
+        console.log("TLEF ITEMS")
+        this._tlefGridDisplayItems.forEach(item=>{
+            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " : " + item.availabilityType)
+        })
     }
 
     private _setAvailabilitySections(allTimeDelineations: moment.Moment[]) {
@@ -334,6 +396,5 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         // console.log("Next: ", daysChanged);
         this._dataChanged$.next(daysChanged);
     }
-
 
 }

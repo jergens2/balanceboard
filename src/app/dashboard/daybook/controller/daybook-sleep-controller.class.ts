@@ -143,6 +143,16 @@ export class DaybookSleepController extends TimeSchedule<SleepEntryItem> {
 
     }
 
+    public getSleepItemAtTime(startTime: moment.Moment): SleepEntryItem{
+        const foundItem = this.sleepEntryItems.find(item => startTime.isSameOrAfter(item.startTime) && startTime.isSameOrBefore(item.endTime));
+        if(foundItem){
+            return foundItem;
+        }else{
+            console.log('Error: could not find item.')
+            return null;
+        }
+    }
+
 
     public setWakeupTimeForDay(wakeupTime: moment.Moment) {
         const fallAsleepTime = TimeUtilities.roundUpToCeiling(moment(wakeupTime).add(this.ratioAwakeHoursPerDay, 'hours'), 15);
@@ -203,6 +213,12 @@ export class DaybookSleepController extends TimeSchedule<SleepEntryItem> {
             }
         }
         this._sleepEntryItems = sleepEntryItems;
+
+        console.log("Sleep entry items: ")
+        this._sleepEntryItems.forEach(item=>{
+            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " : ")
+        
+        })
     }
 
     private _buildThisDayDefaultSleepItems(): TimeScheduleItem<SleepEntryItem>[] {

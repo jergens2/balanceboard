@@ -48,10 +48,11 @@ export class ToolboxService {
   public get currentTool(): ToolType { return this._currentTool$.getValue(); }
 
 
-  public setTimelogEntry(timelogEntry: TimelogEntryItem) {
+  public openTimelogEntry(timelogEntry: TimelogEntryItem) {
     this.timelogEntryFormService.setTimelogEntry(timelogEntry);
-    // this._timelogEntryStorage$.next(timelogEntry);
+    this._currentTool$.next(ToolType.TimelogEntry);
   }
+
 
   // public get timelogEntryStorage$(): Observable<TimelogEntryItem> { return this._timelogEntryStorage$.asObservable(); }
   // public get timelogEntryStorage(): TimelogEntryItem {

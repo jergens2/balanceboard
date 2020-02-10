@@ -55,6 +55,13 @@ export class DaybookTimelogEntryController {
 
     public isActiveAtTime(timeToCheck: moment.Moment): boolean { return this.timelogSchedule.hasValueAtTime(timeToCheck); }
 
+    public getItemAtTime(startTime: moment.Moment): TimelogEntryItem{
+        const foundItem = this.timelogEntryItems.find(item => item.startTime.isSame(startTime));
+        if(!foundItem){
+            console.log('Error: could not find timelog entry at time: ' + startTime.format('YYYY-MM-DD hh:mm a'))
+        }
+        return foundItem
+    }
 
     public getNewTLEStartTime(wakeupTime: moment.Moment): moment.Moment {
         const filteredItems = this.timelogEntryItems.filter((item) => {
