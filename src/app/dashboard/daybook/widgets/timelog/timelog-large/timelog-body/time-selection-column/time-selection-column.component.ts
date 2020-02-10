@@ -309,37 +309,70 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
 
-  private _findDelineator(newRow): TimelogDelineator {
-    const foundItems = this.timeDelineators.filter(item =>
-      item.time.isSameOrAfter(newRow.startTime) && item.time.isBefore(newRow.endTime));
+  private _findDelineator(newRow: TimeSelectionRow): TimelogDelineator {
+    const priority = [
+      TimelogDelineatorType.FRAME_START,
+      TimelogDelineatorType.FRAME_END,
+      TimelogDelineatorType.NOW,
+      TimelogDelineatorType.WAKEUP_TIME,
+      TimelogDelineatorType.FALLASLEEP_TIME,
+      TimelogDelineatorType.SAVED_DELINEATOR,
+      TimelogDelineatorType.TIMELOG_ENTRY_START,
+      TimelogDelineatorType.TIMELOG_ENTRY_END,
+      TimelogDelineatorType.DAY_STRUCTURE,
+    ];
+    const percentThreshold: number = 0.03;
+    const totalViewMS = this.endTime.diff(this.startTime, 'milliseconds');
+    const rangeMS = totalViewMS * percentThreshold;
+    const rangeStart = moment(newRow.startTime).subtract(rangeMS, 'milliseconds');
+    const rangeEnd = moment(newRow.startTime).add(rangeMS, 'milliseconds');
+    // console.log("Checking range: " + rangeStart.format('hh:mm a') + " - " + rangeEnd.format('hh:mm a'))
+    const foundRangeItems = this.timeDelineators.filter(item => {
+      return item.time.isSameOrAfter(rangeStart) && item.time.isSameOrBefore(rangeEnd);
+    });
+    if (foundRangeItems.length > 0) {
+      // console.log("found " + foundRangeItems.length + " items")
+      // foundRangeItems.forEach((item)=>{
+      //   console.log("   " + item.time.format('hh:mm a') + " - " + item.delineatorType)
+      // })
+      const foundItems = this.timeDelineators.filter(item =>
+        item.time.isSameOrAfter(newRow.startTime) && item.time.isBefore(newRow.endTime));
+      let foundDelineator: TimelogDelineator;
+      if (foundItems.length > 0) {
+        if (foundItems.length === 1) {
+          foundDelineator = foundItems[0];
+        } else if (foundItems.length > 1) {
 
-    if (foundItems.length > 0) {
-      if (foundItems.length === 1) {
-        return foundItems[0];
-      } else if (foundItems.length > 1) {
-        const priority = [
-          TimelogDelineatorType.FRAME_START,
-          TimelogDelineatorType.FRAME_END,
-          TimelogDelineatorType.NOW,
-          TimelogDelineatorType.WAKEUP_TIME,
-          TimelogDelineatorType.FALLASLEEP_TIME,
-          TimelogDelineatorType.TIMELOG_ENTRY_START,
-          TimelogDelineatorType.TIMELOG_ENTRY_END,
-          TimelogDelineatorType.SAVED_DELINEATOR,
-          TimelogDelineatorType.DAY_STRUCTURE,
-        ];
-        let foundItem = foundItems[0];
-        for (let i = 1; i < foundItems.length; i++) {
-          if (priority.indexOf(foundItems[i].delineatorType) < priority.indexOf(foundItems[i - 1].delineatorType)) {
-            foundItem = foundItems[i];
+          let foundItem = foundItems[0];
+          for (let i = 1; i < foundItems.length; i++) {
+            if (priority.indexOf(foundItems[i].delineatorType) < priority.indexOf(foundItems[i - 1].delineatorType)) {
+              foundItem = foundItems[i];
+            }
+          }
+          foundDelineator = foundItem;
+        }
+        if (foundRangeItems.length == 1) {
+          return foundDelineator;
+        } else if (foundRangeItems.length > 1) {
+          console.log("found range items = ", foundRangeItems)
+          if (priority.indexOf(foundDelineator.delineatorType) <= 5) {
+            return foundDelineator
+          } else {
+            let mostPriority = priority.indexOf(foundRangeItems[0].delineatorType);
+            for(let i=0; i< foundRangeItems.length; i++){
+              let thisItemPriority = priority.indexOf(foundRangeItems[i].delineatorType);
+              if(thisItemPriority < mostPriority){
+                mostPriority = thisItemPriority;
+              }
+            }
+            if(priority.indexOf(foundDelineator.delineatorType) === mostPriority){
+              return foundDelineator;
+            }
           }
         }
-        return foundItem;
       }
-
-    } else {
-      return null;
     }
+    return null;
   }
 
 
@@ -348,7 +381,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     const maxDelineators = 16;
     let saveAllDelineators: moment.Moment[] = [];
     const existingValues = this.daybookService.activeDayController.savedTimeDelineators;
-5
+    5
     existingValues.forEach((existingValue) => {
       if (this.daybookService.activeDayController.isTimeAvailable(existingValue)) {
         saveAllDelineators.push(moment(existingValue));
