@@ -128,10 +128,18 @@ export class DaybookSleepController extends TimeSchedule<SleepEntryItem> {
 
     public getSleepItem(gridItemStart, gridItemEnd): SleepEntryItem{ 
         const foundItem = this.sleepEntryItems.find((item)=>{
-            return gridItemStart.isSameOrAfter(item.startTime) && gridItemEnd.isSameOrBefore(item.endTime);
-        })
-        return null;
-
+            const startsAfterStart = gridItemStart.isSameOrAfter(item.startTime);
+            const startsBeforeEnd = gridItemStart.isSameOrBefore(item.endTime);
+            const endsAfterStart = gridItemEnd.isSameOrAfter(item.startTime);
+            const endsBeforeEnd = gridItemEnd.isSameOrBefore(item.endTime);
+            return startsAfterStart && startsBeforeEnd && endsAfterStart && endsBeforeEnd;
+        });
+        if (foundItem){
+            return foundItem;
+        }else{
+            console.log('Error: could not find sleep item from grid item.');
+            return null;
+        }
 
     }
 
