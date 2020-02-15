@@ -17,6 +17,7 @@ import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons
 import { DaybookControllerService } from '../../dashboard/daybook/controller/daybook-controller.service';
 import * as moment from 'moment';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
+import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
 
 @Component({
   selector: 'app-header',
@@ -30,7 +31,7 @@ export class HeaderComponent implements OnInit {
     private authService: AuthenticationService,
     private toolsService: ToolboxService,
     private modalService: ModalService,
-    private daybookService: DaybookControllerService, 
+    private daybookDisplayService: DaybookDisplayService,
     private router: Router ) { }
 
   faBars = faBars;
@@ -52,7 +53,7 @@ export class HeaderComponent implements OnInit {
   public get batteryIcon(): IconDefinition { return this._batteryIcon; }
   public get batteryPercent(): string { return this._batteryPercent; }
   public get batteryNgClass(): string { return this._batteryNgClass; }
-  public get clock(): moment.Moment { return this.daybookService.clock; }
+  public get clock(): moment.Moment { return this.daybookDisplayService.clock; }
 
   @Output() sidebarButtonClicked: EventEmitter<boolean> = new EventEmitter();
 
@@ -78,7 +79,7 @@ export class HeaderComponent implements OnInit {
     this.headerMenus = Object.assign([], this._buildHeaderMenus());
 
     this._setBattery();
-    this.daybookService.activeDayController$.subscribe((item) => {
+    this.daybookDisplayService.displayUpdated$.subscribe((item) => {
       this._setBattery();
     })
 
@@ -86,12 +87,12 @@ export class HeaderComponent implements OnInit {
   }
 
   public onClickClock(){
-    this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
+    this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
     this.router.navigate(['/daybook']);
     this.toolsService.openTool(ToolType.TimelogEntry);
   }
   public onClickBattery(){
-    this.daybookService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);
+    this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);
     this.router.navigate(['/daybook']);
   }
 
@@ -184,7 +185,7 @@ export class HeaderComponent implements OnInit {
   }
 
   private _setBattery() {
-    const batteryLevel: number = this.daybookService.activeDayController.getEnergyAtTime(this.daybookService.clock);
+    const batteryLevel: number = this.daybookDisplayService.activeDayController.getEnergyAtTime(this.clock);
     // console.log("Battery level is: " + batteryLevel);
     if (batteryLevel >= 0 && batteryLevel < 0.125) {
       this._batteryIcon = faBatteryEmpty;

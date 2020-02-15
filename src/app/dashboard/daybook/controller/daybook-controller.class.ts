@@ -4,19 +4,17 @@ import { DaybookEnergyController } from './daybook-energy-controller.class';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import { DaybookSleepController } from './daybook-sleep-controller.class';
 import { Subject, Observable, Subscription } from 'rxjs';
-import { DaybookEnergyLevel } from './daybook-energy-level.enum';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 import { DaybookTimeDelineatorController } from './daybook-time-delineator-controller.class';
-import { TimelogZoomControl } from '../widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-control.interface';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 import { DaybookAvailabilityType } from './items/daybook-availability-type.enum';
-import { SleepEntryItem } from '../widgets/timelog/sleep-entry-form/sleep-entry-item.class';
+import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 import { DisplayGridBarItem } from '../widgets/timelog/timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
+
 
 /** 
  *  The DaybookController class is a superclass to contain and control the DaybookDayItem class objects.
@@ -222,83 +220,26 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         const timelogDataItems: DaybookTimelogEntryDataItem[] = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
             .concat(this._followingDay.timelogEntryDataItems);
         const allSleepSpanItems = this._previousDay.sleepDataItems.concat(this._thisDay.sleepDataItems).concat(this._followingDay.sleepDataItems);
-        const allEnergyLevelInputs = this._previousDay.sleepEnergyLevelInputs.concat(this._thisDay.sleepEnergyLevelInputs)
-            .concat(this._followingDay.sleepEnergyLevelInputs);
         const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);
-        this._sleepController = new DaybookSleepController(this._previousDay.sleepDataItems,
-            this._thisDay.sleepDataItems, this._followingDay.sleepDataItems, this.dateYYYYMMDD);
+
+        this._sleepController = new DaybookSleepController(this._previousDay.sleepDataItems, this._thisDay.sleepDataItems, this._followingDay.sleepDataItems, this.dateYYYYMMDD);
+        
         const timeScheduleValueItems: TimeScheduleItem<DaybookAvailabilityType>[] = [
             ...timelogDataItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(moment(item.startTimeISO), moment(item.endTimeISO), true, DaybookAvailabilityType.TIMELOG_ENTRY)),
             ...this.sleepController.valueItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(item.startTime, item.endTime, true, DaybookAvailabilityType.SLEEP)),
         ];
         this.addScheduleValueItems(timeScheduleValueItems);
+        
         this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
-        allTimeDelineations.push(this.clock.startOf('minute'));
-        this._setAvailabilitySections(allTimeDelineations);
         this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems, allSleepSpanItems);
         this._energyController = new DaybookEnergyController(this.fullScheduleItems, this.awakeToAsleepRatio);
-        this._buildTLEFGridDisplayItems();
+
+        allTimeDelineations.push(this.clock.startOf('minute'));
+
+        this._setAvailabilitySections(allTimeDelineations);
+
+
         this._updateSubscriptions();
-    }
-
-    private _buildTLEFGridDisplayItems() {
-        let gridBarItems: DisplayGridBarItem[] = [];
-        let currentIndex = -1;
-
-        currentIndex = this.fullScheduleItems.findIndex((item) => {
-            if (item.value === DaybookAvailabilityType.SLEEP) { }
-            return item.startTime.isSame(this.clock);
-        });
-
-        if (currentIndex) {
-            let foundFirstSleepIndex = -1;
-            for (let i = currentIndex; i >= 0; i--) {
-                if (foundFirstSleepIndex < 0) {
-                    if (this.fullScheduleItems[i].value === DaybookAvailabilityType.SLEEP) {
-                        foundFirstSleepIndex = i;
-                        i = -1;
-                    }
-                }
-            }
-            if (foundFirstSleepIndex >= 0 && foundFirstSleepIndex < this.fullScheduleItems.length) {
-                let foundLastSleepIndex = -1;
-                for (let i = foundFirstSleepIndex + 1; i < this.fullScheduleItems.length; i++) {
-                    if (this.fullScheduleItems[i].value === DaybookAvailabilityType.SLEEP) {
-                        foundLastSleepIndex = i;
-                        i = this.fullScheduleItems.length + 1;
-                    }
-                }
-                if (foundLastSleepIndex >= 0) {
-                    for (let i = foundFirstSleepIndex; i <= foundLastSleepIndex; i++) {
-                        let newItem = new DisplayGridBarItem(this.fullScheduleItems[i]);
-                        if (i === currentIndex) {
-                            newItem.isCurrent = true;
-                        }
-                        if (newItem.availabilityType === DaybookAvailabilityType.SLEEP) {
-                            newItem.sleepEntry = this.sleepController.getSleepItemAtTime(newItem.startTime);
-                        } else if (newItem.availabilityType === DaybookAvailabilityType.TIMELOG_ENTRY) {
-                            newItem.timelogEntry = this.timelogEntryController.getItemAtTime(newItem.startTime)
-                        } else if (newItem.availabilityType === DaybookAvailabilityType.AVAILABLE) {
-                            newItem.timelogEntry = new TimelogEntryItem(newItem.startTime, newItem.endTime)
-                        }
-                        gridBarItems.push(newItem);
-                    }
-                } else {
-                    console.log('Error finding last sleep index' + foundLastSleepIndex);
-                }
-            } else {
-                console.log('Error finding first sleep index: ' + foundFirstSleepIndex);
-            }
-        } else {
-            console.log('Error: could not find index');
-        }
-        this._tlefGridDisplayItems = gridBarItems;
-
-
-        console.log("TLEF ITEMS")
-        this._tlefGridDisplayItems.forEach(item=>{
-            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " : " + item.availabilityType)
-        })
     }
 
     private _setAvailabilitySections(allTimeDelineations: moment.Moment[]) {

@@ -36,7 +36,7 @@ export class ServiceAuthenticationService {
     // private dailyTaskListService: DailyTaskListService,
     private socialService: SocialService,
     private daybookHttpRequestService: DaybookHttpRequestService,
-    private daybookService: DaybookControllerService,
+    private daybookControllerService: DaybookControllerService,
     private scheduleRotationService: ScheduleRotationsService,
 
   ) {
@@ -66,7 +66,7 @@ export class ServiceAuthenticationService {
     let daybookHttpSA: ServiceAuthentication = new ServiceAuthentication("DaybookHttp", this.daybookHttpRequestService);
 
 
-    daybookHttpSA.setChild(new ServiceAuthentication("Daybook", this.daybookService));
+    daybookHttpSA.setChild(new ServiceAuthentication("Daybook", this.daybookControllerService));
     scheduleRotationSA.setChild(daybookHttpSA);
     dayTemplatesSA.setChild(scheduleRotationSA);
     routineDefinitionSA.setChild(dayTemplatesSA)

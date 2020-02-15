@@ -1,9 +1,7 @@
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import * as moment from 'moment';
 import { Subject, Observable } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
-import { TimelogZoomControl } from '../widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-control.interface';
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';

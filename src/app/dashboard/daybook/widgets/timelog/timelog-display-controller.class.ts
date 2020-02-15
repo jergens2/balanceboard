@@ -1,5 +1,5 @@
 
-import { TimelogZoomControl } from './timelog-large/timelog-zoom-controller/timelog-zoom-control.interface';
+import { TimelogZoomControllerItem } from './timelog-large/timelog-zoom-controller/timelog-zoom-controller-item.class';
 import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
 import { TimelogDelineator, TimelogDelineatorType } from './timelog-delineator.class';
@@ -12,17 +12,18 @@ export class TimelogDisplayController {
   /**
    * The TimelogDisplayController is the primary class for the production of the Timelog widget in the daybook, used by timelog-body.component
    */
-  constructor(timelogZoomControl: TimelogZoomControl, activeDayController: DaybookController, minutesPerTwentyPixels: number) {
-    this._timelogZoomControl = timelogZoomControl;
+  constructor(startTime: moment.Moment, endTime: moment.Moment, activeDayController: DaybookController) {
+    this._startTime = startTime;
+    this._endTime = endTime;
     this._activeDayController = activeDayController;
-    this._minutesPerTwentyPixels = minutesPerTwentyPixels;
     this._update();
-    // console.log("TIMELOG_ZOOM: " + this._atimelogZoomControl.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._timelogZoomControl.endTime.format('YYYY-MM-DD hh:mm a'));
   }
 
+
+  private _startTime: moment.Moment;
+  private _endTime: moment.Moment;
+
   private _log: string[] = [];
-  private _minutesPerTwentyPixels: number;
-  private _timelogZoomControl: TimelogZoomControl;
   private _timeDelineators: TimelogDelineator[] = [];
   private _entryItems: TimelogEntryItem[] = [];
   private _activeDayController: DaybookController;
@@ -34,10 +35,10 @@ export class TimelogDisplayController {
   public faMoon = faMoon;
   public faSun = faSun;
 
-  public get frameStart(): moment.Moment { return this._timelogZoomControl.startTime; }
+  public get frameStart(): moment.Moment { return this._startTime; }
   public get wakeupTime(): moment.Moment { return this._activeDayController.wakeupTime; }
   public get fallAsleepTime(): moment.Moment { return this._activeDayController.fallAsleepTime; }
-  public get frameEnd(): moment.Moment { return this._timelogZoomControl.endTime; }
+  public get frameEnd(): moment.Moment { return this._endTime; }
   public get entryItems(): TimelogEntryItem[] { return this._entryItems; }
   public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
   public get defaultDayStructureTimes(): moment.Moment[] { return this._defaultDayStructureTimes; }

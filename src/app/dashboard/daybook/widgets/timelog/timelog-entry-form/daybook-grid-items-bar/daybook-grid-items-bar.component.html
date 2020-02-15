@@ -1,7 +1,19 @@
 <div class="items-bar-root">
-    <div *ngFor="let item of items" class="item"
-        [ngClass]="{'sleep-item': item.isSleepItem}"
-        (mouseenter)="item.onMouseEnter()"
-        (mouseleave)="item.onMouseLeave()"
-        (click)="onClickItem(item)"></div>
+
+    <div class="go-left icon-button" (click)="onClickGoLeft()">
+        <fa-icon [icon]="faArrowLeft"></fa-icon>
+    </div>
+
+    <div class="items">
+        <div *ngFor="let item of items" class="item"
+            [ngClass]="{'sleep-item': item.isSleepItem, 'active-item': item.isActive, 'current-item': item.isCurrent }"
+            (mouseenter)="item.onMouseEnter()" (mouseleave)="item.onMouseLeave()" (click)="onClickItem(item)">
+        </div>
+    </div>
+
+
+    <div class="go-right icon-button" (click)="onClickGoRight()">
+        <fa-icon [icon]="faArrowRight"></fa-icon>
+    </div>
+
 </div>

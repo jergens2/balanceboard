@@ -10,12 +10,12 @@ import { DaybookControllerService } from '../../../controller/daybook-controller
 })
 export class CalendarLargeComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
 
   ngOnInit() {
 
-    let day: moment.Moment = moment(this.daybookService.activeDayController.dateYYYYMMDD).startOf("year");
+    let day: moment.Moment = moment(this.daybookControllerService.activeDayController.dateYYYYMMDD).startOf("year");
     let months = [];
     for(let i=0; i< 12; i++){
       months.push(moment(day));
@@ -24,7 +24,7 @@ export class CalendarLargeComponent implements OnInit {
 
     this.months = months;
 
-    this.daybookService.activeDayController$.subscribe((activeDay)=>{
+    this.daybookControllerService.activeDayController$.subscribe((activeDay)=>{
       let day: moment.Moment = moment(activeDay.dateYYYYMMDD).startOf("year");
       let months: {firstDate: moment.Moment, season: "WINTER" | "SPRING" | "SUMMER" | "AUTUMN"}[] = [];
       for(let i=0; i< 12; i++){

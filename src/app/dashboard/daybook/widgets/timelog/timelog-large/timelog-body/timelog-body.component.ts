@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, HostListener, Type } from '@angular/core';
+import { Component, OnInit, Input, HostListener, Type, OnDestroy } from '@angular/core';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
 import { RelativeMousePosition } from '../../../../../../shared/utilities/relative-mouse-position.class';
 import * as moment from 'moment';
 import { TimeUtilities } from '../../../../../../shared/utilities/time-utilities/time-utilities';
 import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
-import { TimelogZoomControl } from '../timelog-zoom-controller/timelog-zoom-control.interface';
+import { TimelogZoomControllerItem } from '../timelog-zoom-controller/timelog-zoom-controller-item.class';
 import { Subscription, Observable } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
@@ -20,47 +20,36 @@ import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
 import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
 import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
 import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
-import { SleepEntryItem } from '../../sleep-entry-form/sleep-entry-item.class';
+import { SleepEntryItem } from '../../timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
+import { DaybookDisplayService } from '../../../../../daybook/daybook-display.service';
 
 @Component({
   selector: 'app-timelog-body',
   templateUrl: './timelog-body.component.html',
   styleUrls: ['./timelog-body.component.css']
 })
-export class TimelogBodyComponent implements OnInit {
+export class TimelogBodyComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookService: DaybookControllerService, private screenSizeService: ScreenSizeService, private toolsService: ToolboxService) { }
+  constructor(private daybookDisplayService: DaybookDisplayService, private toolsService: ToolboxService) { }
 
-  private _zoomControl: TimelogZoomControl;
-  private _zoomControlSubscription: Subscription = new Subscription();
-
-  private _activeDayController: DaybookController;
-  private _relativeMousePosition: RelativeMousePosition = new RelativeMousePosition();
   private _timelogDisplayController: TimelogDisplayController = null;
   private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
   private _minutesPerTwentyPixels: number = 30;
-
-  @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
-    this._zoomControl = zoomControl;
-    this._buildTimelog();
-  }
-
-  @Input() public set zoomHover(zoom: TimelogZoomControl) { }
 
 
   public faTimes = faTimes;
   public faClock = faClock;
   public faPlus = faPlus;
-  public get startTime(): moment.Moment { return this._zoomControl.startTime; }
-  public get endTime(): moment.Moment { return this._zoomControl.endTime; }
+  public get startTime(): moment.Moment { return this.daybookDisplayService.displayStartTime; }
+  public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
   // public get relativeMousePosition(): RelativeMousePosition { return this._relativeMousePosition; }
   public get timelogDisplayController(): TimelogDisplayController { return this._timelogDisplayController; }
-  public get zoomControl(): TimelogZoomControl { return this._zoomControl; }
   public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
   public get timelogDisplayGrid(): TimelogDisplayGrid { return this._timelogDisplayController.displayGrid; }
   public get gridItems(): TimelogDisplayGridItem[] { return this.timelogDisplayGrid.gridItems; }
   public get gridItemsNgStyle(): any { return this.timelogDisplayGrid.ngStyle; }
   public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
+  public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
 
   public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
@@ -81,17 +70,27 @@ export class TimelogBodyComponent implements OnInit {
     return false;
   }
 
+  private _updateDisplaySub: Subscription = new Subscription();
+
   ngOnInit() {
-    let changedCount = 0;
-    this.daybookService.activeDayController$.subscribe((dayChanged) => {
-      if (changedCount > 0) { this._buildTimelog(); }
-      changedCount++;
+
+    this._buildTimelog();
+
+    this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update)=>{
+      this._buildTimelog();
     });
+
+    console.log("Timelog body:");
+    this.gridItems.forEach((item)=>{
+      console.log("   grid item " + item.startTime.format('hh:mm a') + " - " + item.availability)
+    });
+  }
+  ngOnDestroy(){
+    this._updateDisplaySub.unsubscribe();
   }
 
   public onClickSleepItem(gridItem: TimelogDisplayGridItem) {
-    let sleepItem: SleepEntryItem = this.daybookService.activeDayController.getSleepItem(gridItem.startTime, gridItem.endTime);
-    this.toolsService.openToolSleepInput(sleepItem);
+    console.log("sleep item clicked.  no action taken, method disabled")
   }
 
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
@@ -103,8 +102,6 @@ export class TimelogBodyComponent implements OnInit {
   }
 
   private _buildTimelog() {
-    // console.log("BUILDING TIMELOG")
-    this._activeDayController = this.daybookService.activeDayController;
     this._buildGuideLineHours();
 
     this._updateTimelog();
@@ -157,7 +154,7 @@ export class TimelogBodyComponent implements OnInit {
   }
 
   private _updateTimelog() {
-    let timelog: TimelogDisplayController = new TimelogDisplayController(this._zoomControl, this._activeDayController, this._minutesPerTwentyPixels);
+    let timelog: TimelogDisplayController = new TimelogDisplayController(this.startTime, this.endTime, this.activeDayController);
 
     this._timelogDisplayController = timelog;
   }

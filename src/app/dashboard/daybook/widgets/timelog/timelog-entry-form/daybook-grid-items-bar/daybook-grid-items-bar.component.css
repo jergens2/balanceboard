@@ -1,8 +1,16 @@
 .items-bar-root{
     display:flex;
     flex-direction: row;
-    justify-content: center;
-    margin: 3px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.items{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .item{
@@ -11,7 +19,8 @@
     border-radius: 10px;
     border: 1px solid rgb(233, 233, 233);
     background-color: rgb(255, 255, 255);
-    margin: 3px;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 .item:hover{
@@ -21,13 +30,39 @@
 
 .current-item{
     background-color: rgb(190, 213, 255);
+    border: 1px solid rgb(0, 89, 255);
 }
-/* 
-.active-item{
-    
-} */
+
 
 .sleep-item{
     background-color: rgb(146, 146, 255);
     border: 1px solid rgb(146, 146, 255);
+}
+.active-item{
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);
+    box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);
+    border: 1px solid rgb(0, 89, 255);
+}
+
+
+
+.icon-button{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    width: 10px;
+    height: 10px;
+    color: rgb(235, 235, 235);
+}
+
+.go-left{
+    margin-right: 15px;
+}
+.go-right{
+    margin-left: 15px;
+}
+
+.items-bar-root:hover > .icon-button{
+    color: gray;
 }

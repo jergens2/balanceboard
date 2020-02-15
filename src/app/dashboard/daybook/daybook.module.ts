@@ -52,7 +52,7 @@ import { TlefNewFutureComponent } from './widgets/timelog/timelog-entry-form/cas
 import { TlefExistingFutureComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-existing-future/tlef-existing-future.component';
 import { TlefExistingPreviousComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-existing-previous/tlef-existing-previous.component';
 import { TlefNewComponent } from './widgets/timelog/timelog-entry-form/tlef-new/tlef-new.component';
-import { SleepInputFormComponent } from './widgets/timelog/sleep-entry-form/sleep-entry-form.component';
+import { SleepInputFormComponent } from './widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-form.component';
 import { DaybookGridItemsBarComponent } from './widgets/timelog/timelog-entry-form/daybook-grid-items-bar/daybook-grid-items-bar.component';
 
 

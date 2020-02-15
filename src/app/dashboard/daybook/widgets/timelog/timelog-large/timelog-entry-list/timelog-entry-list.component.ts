@@ -13,7 +13,7 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 })
 export class TimelogEntryListComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
   private _timelogEntryItems: TimelogEntryItem[] = [];
   public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
@@ -25,9 +25,9 @@ export class TimelogEntryListComponent implements OnInit {
   public faTrash = faTrash;
 
   ngOnInit() {
-    this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryItems;
-    this.daybookService.activeDayController$.subscribe((updated)=>{
-      this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryItems;
+    this._timelogEntryItems = this.daybookControllerService.activeDayController.timelogEntryItems;
+    this.daybookControllerService.activeDayController$.subscribe((updated)=>{
+      this._timelogEntryItems = this.daybookControllerService.activeDayController.timelogEntryItems;
     });
 
   }
@@ -35,7 +35,7 @@ export class TimelogEntryListComponent implements OnInit {
   public onClickEdit(entry: TimelogEntryItem){
   }
   public onClickDelete(entry: TimelogEntryItem){
-    this.daybookService.activeDayController.deleteTimelogEntryItem$(entry);
+    this.daybookControllerService.activeDayController.deleteTimelogEntryItem$(entry);
   }
 
 

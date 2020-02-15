@@ -10,26 +10,26 @@ import { DurationString } from '../../../../../shared/utilities/time-utilities/d
 })
 export class SleepProfileLargeComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
   public get wakeupTime(): moment.Moment { 
-    return this.daybookService.activeDayController.wakeupTime; 
+    return this.daybookControllerService.activeDayController.wakeupTime; 
   }
   public get wakeupTimeIsSet(): boolean { 
-    return this.daybookService.activeDayController.wakeupTimeIsSet;
+    return this.daybookControllerService.activeDayController.wakeupTimeIsSet;
   }
   public get fallAsleepTime(): moment.Moment { 
-    return this.daybookService.activeDayController.fallAsleepTime;
+    return this.daybookControllerService.activeDayController.fallAsleepTime;
   }
   public get prevDayFallAsleepTime(): moment.Moment{ 
-    return this.daybookService.activeDayController.prevDayFallAsleepTime;
+    return this.daybookControllerService.activeDayController.prevDayFallAsleepTime;
   }
   public get currentEnergy(): number { 
-    return (this.daybookService.getCurrentEnergy() * 100);
+    return (this.daybookControllerService.getCurrentEnergy() * 100);
   }
 
   public get awakeForString(): string {
-    let now = this.daybookService.clock;
+    let now = this.daybookControllerService.clock;
     if(now.isBefore(this.wakeupTime)){
       return "Just woke up";
     }else{
@@ -38,7 +38,7 @@ export class SleepProfileLargeComponent implements OnInit {
   }
 
   public get timeUntilFallAsleepString(): string { 
-    let now = this.daybookService.clock;
+    let now = this.daybookControllerService.clock;
     if(now.isBefore(this.fallAsleepTime)){
       return DurationString.calculateDurationString(now, this.fallAsleepTime);
     }else{

@@ -11,6 +11,7 @@ import { TimelogEntryDisplayItem } from './timelog-entry-display-item.class';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
+import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
 
 @Component({
   selector: 'app-timelog-entry',
@@ -22,7 +23,7 @@ export class TimelogEntryComponent implements OnInit {
   constructor(
     private activitiesService: ActivityCategoryDefinitionService,
     private screenSizeService: ScreenSizeService,
-    private toolsService: ToolboxService) { }
+    private tlefService: TimelogEntryFormService) { }
 
   private _displayEntry: TimelogEntryDisplayItem;
   private _entries: TimelogEntryItem[] = [];
@@ -53,9 +54,10 @@ export class TimelogEntryComponent implements OnInit {
   }
 
   public onClickOpenTimelogEntry() {
-    console.log('Warning: opening only the first item in the array.');
-    this.toolsService.openTimelogEntry(this.timelogEntries[0]);
-    this.toolsService.openTool(ToolType.TimelogEntry);
+    
+    this.tlefService.openCurrentTimelogEntryForm();
+
+
   }
 
 

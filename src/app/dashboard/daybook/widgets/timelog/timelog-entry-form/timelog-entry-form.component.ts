@@ -16,11 +16,11 @@ import { TimelogEntryFormService } from './timelog-entry-form.service';
 export class TimelogEntryFormComponent implements OnInit {
 
   constructor(
-    private toolsService: ToolboxService, 
-    private daybookService: DaybookControllerService, 
+    private toolsService: ToolboxService,
+    private daybookControllerService: DaybookControllerService,
     private loggingService: LoggingService,
     private timelogEntryFormService: TimelogEntryFormService,
-    ) { }
+  ) { }
 
   private _formCase: TLEFFormCase;
   private _entryItem: TimelogEntryItem;
@@ -30,14 +30,14 @@ export class TimelogEntryFormComponent implements OnInit {
 
   ngOnInit() {
     this._entryItem = this.timelogEntryFormService.getInitialTimelogEntry();
-    this.timelogEntryFormService.activeFormEntry$.subscribe((item)=>{
-      if(item){
+    this.timelogEntryFormService.activeFormEntry$.subscribe((item) => {
+      if (item) {
         this._entryItem = item;
         this._determineCase();
       }
     });
-    if(!this._entryItem){
-      this._entryItem = this.daybookService.todayController.getNewCurrentTLE();
+    if (!this._entryItem) {
+      this._entryItem = this.daybookControllerService.todayController.getNewCurrentTLE();
     }
     this._determineCase();
   }
@@ -48,34 +48,33 @@ export class TimelogEntryFormComponent implements OnInit {
   public get durationString(): string { return this._entryItem.durationString; }
   public get confirmDelete(): boolean { return this._confirmDelete; }
 
-  
-  public onClickSave(){
-    this.daybookService.activeDayController.saveTimelogEntryItem$(this.entryItem);
+
+  public onClickSave() {
+    this.daybookControllerService.activeDayController.saveTimelogEntryItem$(this.entryItem);
     this.toolsService.closeTool();
   }
-  public onClickDelete(){
+  public onClickDelete() {
     this._confirmDelete = true;
-    
+
   }
-  public onClickConfirmDelete(){
-    this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
+  public onClickConfirmDelete() {
+    this.daybookControllerService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
     this.toolsService.closeTool();
   }
 
-  public onClickDiscard(){
-    if(!this._changesMade){
+  public onClickDiscard() {
+    if (!this._changesMade) {
       this.toolsService.closeTool();
-    }else{
+    } else {
       console.log("Warning: need to implement a confirmation here")
       this.toolsService.closeTool();
     }
-
   }
 
   private _determineCase() {
     const startTime: moment.Moment = this.entryItem.startTime;
     const endTime: moment.Moment = this.entryItem.endTime;
-    const now: moment.Moment = moment(this.daybookService.clock).startOf('minute');
+    const now: moment.Moment = moment(this.daybookControllerService.clock).startOf('minute');
     const isPrevious: boolean = endTime.isBefore(now);
     const isFuture: boolean = startTime.isAfter(now);
     if (isPrevious) {

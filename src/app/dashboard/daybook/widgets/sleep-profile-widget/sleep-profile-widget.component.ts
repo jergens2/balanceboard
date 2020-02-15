@@ -13,7 +13,7 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 })
 export class SleepProfileWidgetComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
 
   public sleepProfileForm: FormGroup;
@@ -43,7 +43,7 @@ export class SleepProfileWidgetComponent implements OnInit {
 
   ngOnInit() {
     this.reInitiate();
-    this.daybookService.activeDayController$.subscribe((dayChanged) => { 
+    this.daybookControllerService.activeDayController$.subscribe((dayChanged) => { 
       this.reInitiate();
     });
   }
@@ -53,12 +53,12 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
   private reInitiate() {
-    this._wakeupTime = this.daybookService.activeDayController.wakeupTime;
-    this._sleepAtTime = this.daybookService.activeDayController.fallAsleepTime;
+    this._wakeupTime = this.daybookControllerService.activeDayController.wakeupTime;
+    this._sleepAtTime = this.daybookControllerService.activeDayController.fallAsleepTime;
     // console.log("  SPW: This wakeup time is : " + this.wakeupTime);
     // console.log("  SPW: his.sleeptime is " + this.sleepAtTime)
-    // console.log("  SPW: wakeup time: " + this.daybookService.activeDayController.wakeupTime.format('hh:mm a'))
-    // console.log("  SPW: sleep time: " + this.daybookService.activeDayController.fallAsleepTime.format('hh:mm a'))
+    // console.log("  SPW: wakeup time: " + this.daybookControllerService.activeDayController.wakeupTime.format('hh:mm a'))
+    // console.log("  SPW: sleep time: " + this.daybookControllerService.activeDayController.fallAsleepTime.format('hh:mm a'))
   }
 
 

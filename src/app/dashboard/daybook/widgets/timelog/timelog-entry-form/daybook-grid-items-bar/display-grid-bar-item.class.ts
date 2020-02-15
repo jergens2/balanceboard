@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
 import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimelogEntryItem } from '../../timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { SleepEntryItem } from '../../sleep-entry-form/sleep-entry-item.class';
+import { SleepEntryItem } from '../sleep-entry-form/sleep-entry-item.class';
 
 
 export class DisplayGridBarItem {
@@ -34,6 +34,7 @@ export class DisplayGridBarItem {
     public get availabilityType(): DaybookAvailabilityType { return this._daybookAvailabilty; }
 
     public isCurrent = false;
+    public isActive = false;
 
     public timelogEntry: TimelogEntryItem;
     public sleepEntry: SleepEntryItem;

@@ -34,7 +34,7 @@ export class TimelogDisplayGrid {
 
 
   public drawTimelogEntry(drawTLE: TimelogEntryItem) {
-    if(drawTLE){
+    if (drawTLE) {
       const foundItem = this.gridItems.find((gridItem) => {
         return drawTLE.startTime.isSameOrAfter(gridItem.startTime) && drawTLE.endTime.isSameOrBefore(gridItem.endTime);
       });
@@ -45,13 +45,13 @@ export class TimelogDisplayGrid {
         this.gridItems.forEach(item => item.stopDrawing());
         console.log('Error : no found item to draw timelog entry')
       }
-    }else{
+    } else {
       this.gridItems.forEach(item => item.stopDrawing());
     }
   }
 
-  public createTimelogEntry(drawTLE: TimelogEntryItem){
-    if(drawTLE){
+  public createTimelogEntry(drawTLE: TimelogEntryItem) {
+    if (drawTLE) {
       const foundItem = this.gridItems.find((gridItem) => {
         return drawTLE.startTime.isSameOrAfter(gridItem.startTime) && drawTLE.endTime.isSameOrBefore(gridItem.endTime);
       });
@@ -63,6 +63,14 @@ export class TimelogDisplayGrid {
         console.log('Error : no found item to draw timelog entry')
       }
     }
+  }
+
+  public setActiveItemByIndex(currentActiveIndex: number) {
+
+    this.gridItems.forEach((item) => {
+      item.isActiveFormItem = false;
+    });
+    this.gridItems[currentActiveIndex].isActiveFormItem = true;
   }
 
   private _buildGrid() {
@@ -99,7 +107,7 @@ export class TimelogDisplayGrid {
             if (gridItems[i].availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
               // from 4.75 to 6 
               const minPercent = 4.75;
-              const smallPercent = 6; 
+              const smallPercent = 6;
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
                 merge = true;
               } else if (gridItems[i].percent < smallPercent) {
@@ -133,6 +141,31 @@ export class TimelogDisplayGrid {
     }
   }
 
+  public updateOnToolChange(toolChange: { startTime: moment.Moment, endTime: moment.Moment }) {
+    if (toolChange) {
+      // console.log("Tool change "  +  toolChange.startTime.format('YYYY-MM-DD hh:mm a') + " to " + toolChange.endTime.format('YYYY-MM-DD hh:mm a'))
 
+      const foundItem = this.gridItems.find((item) => {
+        const startsAfterStart = item.startTime.isSameOrAfter(toolChange.startTime);
+        const startsBeforeEnd = item.startTime.isSameOrBefore(toolChange.endTime);
+        const endsAfterStart = item.endTime.isSameOrAfter(toolChange.startTime);
+        const endsBeforeEnd = item.endTime.isSameOrBefore(toolChange.endTime);
+        return startsAfterStart && startsBeforeEnd && endsAfterStart && endsBeforeEnd;
+      });
+      if (foundItem) {
+        this.gridItems.forEach((item) => {
+          item.isActiveFormItem = false;
+        });
+        foundItem.isActiveFormItem = true;
+      } else {
+        console.log("Error: unable to find grid item from toolChange " + toolChange.startTime.format('hh:mm a') + " to " + toolChange.endTime.format('hh:mm a'))
+      }
+    } else {
+      this.gridItems.forEach((item) => {
+        item.isActiveFormItem = false;
+      });
+    }
+
+  }
 
 }

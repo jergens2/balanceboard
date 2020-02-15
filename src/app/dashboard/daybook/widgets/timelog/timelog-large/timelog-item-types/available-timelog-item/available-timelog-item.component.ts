@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
+import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
 
 
 @Component({
@@ -16,7 +17,7 @@ import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 })
 export class AvailableTimelogItemComponent implements OnInit {
 
-  constructor(private toolsService: ToolboxService) { }
+  constructor(private tlefService: TimelogEntryFormService) { }
 
   private _drawTLE: TimelogEntryItem;
   private _drawTLENgStyle: any = {};
@@ -42,11 +43,11 @@ export class AvailableTimelogItemComponent implements OnInit {
         this._stopDrawing();
       }
     });
-    this.toolsService.toolIsOpen$.subscribe(toolIsOpen =>{
-      if(toolIsOpen === false){
-        this.gridItem.stopCreating();
-      }
-    });
+    // this.toolsService.toolIsOpen$.subscribe(toolIsOpen =>{
+    //   if(toolIsOpen === false){
+    //     this.gridItem.stopCreating();
+    //   }
+    // });
   }
 
   public onMouseEnter(){
@@ -57,8 +58,9 @@ export class AvailableTimelogItemComponent implements OnInit {
   }
 
   public onClickCreateNewTLE(){
-    this.toolsService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
-    this.toolsService.openTool(ToolType.TimelogEntry);
+    this.tlefService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
+    // this.toolsService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
+    // this.toolsService.openTool(ToolType.TimelogEntry);
   }
 
 

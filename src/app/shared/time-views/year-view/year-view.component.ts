@@ -21,7 +21,7 @@ import { DaybookControllerService } from '../../../dashboard/daybook/controller/
 export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   constructor(
-    private daybookService: DaybookControllerService,
+    private daybookControllerService: DaybookControllerService,
     private activityCategoryDefinitionService: ActivityCategoryDefinitionService,
     private router: Router,
     private sizeService: ScreenSizeService,

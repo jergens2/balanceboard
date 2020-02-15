@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ToolboxService } from '../../../../../toolbox-menu/toolbox.service';
+import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
 import { SleepEntryItem } from './sleep-entry-item.class';
 
 @Component({
@@ -15,15 +15,15 @@ export class SleepInputFormComponent implements OnInit {
   public get sleepItem(): SleepEntryItem { return this._sleepInputItem;}
 
   ngOnInit() {
-    this._sleepInputItem = this.toolsService.sleepInputStorage;
-    if(!this._sleepInputItem){
-      console.log('Error: no sleep input item');
-    }
-    this.toolsService.sleepInputStorage$.subscribe((item)=>{
-      if(item){
-        this._sleepInputItem = item;
-      }
-    })
+    // this._sleepInputItem = this.toolsService.sleepInputStorage;
+    // if(!this._sleepInputItem){
+    //   console.log('Error: no sleep input item');
+    // }
+    // this.toolsService.sleepInputStorage$.subscribe((item)=>{
+    //   if(item){
+    //     this._sleepInputItem = item;
+    //   }
+    // })
   }
 
   public get previousDay(): string { 

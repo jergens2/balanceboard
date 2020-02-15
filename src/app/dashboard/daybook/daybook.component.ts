@@ -8,6 +8,7 @@ import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class
 import { DaybookDayItem } from './api/daybook-day-item.class';
 import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { DaybookController } from './controller/daybook-controller.class';
+import { DaybookDisplayService } from './daybook-display.service';
 
 @Component({
   selector: 'app-daybook',
@@ -16,14 +17,17 @@ import { DaybookController } from './controller/daybook-controller.class';
 })
 export class DaybookComponent implements OnInit, OnDestroy {
 
-  constructor(private screenScreenSizeService: ScreenSizeService, private daybookService: DaybookControllerService) { }
+  constructor(
+    private screenScreenSizeService: ScreenSizeService, 
+    private daybookDisplayService: DaybookDisplayService,
+    // private daybookControllerService: DaybookControllerService
+    ) { }
 
   private _widgets: DaybookWidget[] = [];
 
   private _widgetSubscriptions: Subscription[] = [];
   private _screenSize: AppScreenSize;
   private _screenSizeSubscription: Subscription = new Subscription();
-  private _activeDay: DaybookController;
 
   public faSpinner = faSpinner;
   public faExpand = faExpand;
@@ -39,13 +43,13 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
 
   public get daybookHeader(): string {
-    return moment(this.daybookService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
+    return "daybook header.  insert date here";
+    // return moment(this.daybookControllerService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
   }
 
   public get appScreenSize(): AppScreenSize { return this._screenSize; }
 
-  public get activeDay(): DaybookController { return this._activeDay; }
-  public set activeDay(activeDay: DaybookController) { this._activeDay = activeDay; }
+  public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
   private _dbSub: Subscription = new Subscription();
 
@@ -55,26 +59,31 @@ export class DaybookComponent implements OnInit, OnDestroy {
       this._screenSize = changedSize;
       // console.log("Screensize changed to: " , this._screenSize)
     });
-    this._activeDay = this.daybookService.activeDayController;
+
+
+    this.daybookDisplayService.initiate();
+
+
+    // this._activeDay = this.daybookControllerService.activeDayController;
     // console.log("This active day is", this._activeDay)
-    this.daybookService.activeDayController$.subscribe((activeDayChanged) => {
-      if (activeDayChanged) {
-        this._activeDay = activeDayChanged;
-      }
-    });
+    // this.daybookControllerService.activeDayController$.subscribe((activeDayChanged) => {
+    //   if (activeDayChanged) {
+    //     this._activeDay = activeDayChanged;
+    //   }
+    // });
 
 
     this._buildWidgets();
 
     this.daybookIsLoading = false;
-    let currentValue: DaybookWidgetType = this.daybookService.widgetChanged;
+    let currentValue: DaybookWidgetType = this.daybookDisplayService.widgetChanged;
     this._setPrimaryWidget(currentValue);
-    this._dbSub = this.daybookService.widgetChanged$.subscribe((changedWidget: DaybookWidgetType) => {
-      if (changedWidget !== currentValue) {
-        currentValue = changedWidget;
-        this._setPrimaryWidget(changedWidget);
-      }
-    });
+    // this._dbSub = this.daybookControllerService.widgetChanged$.subscribe((changedWidget: DaybookWidgetType) => {
+    //   if (changedWidget !== currentValue) {
+    //     currentValue = changedWidget;
+    //     this._setPrimaryWidget(changedWidget);
+    //   }
+    // });
   }
 
   private _buildWidgets() {
@@ -110,7 +119,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this._widgetSubscriptions = [];
     this._widgets = null;
     this._dbSub.unsubscribe();
-    this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
+    this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
   }
 
 

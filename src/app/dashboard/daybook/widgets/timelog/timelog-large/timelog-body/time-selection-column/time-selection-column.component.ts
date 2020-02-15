@@ -1,16 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
-import { TimelogZoomControl } from '../../timelog-zoom-controller/timelog-zoom-control.interface';
 import * as moment from 'moment';
 import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class';
 import { Subscription } from 'rxjs';
-import { DaybookControllerService } from '../../../../../controller/daybook-controller.service';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
-import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
-import { TimeSchedule } from '../../../../../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
-import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
-import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
+import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -19,10 +15,9 @@ import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 })
 export class TimeSelectionColumnComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService, private toolsService: ToolboxService) { }
+  constructor(private daybookDisplayService: DaybookDisplayService, private tlefService: TimelogEntryFormService) { }
 
   private _rows: TimeSelectionRow[] = [];
-  private _zoomControl: TimelogZoomControl;
   private _mouseIsInComponent: boolean;
   private _startRow: TimeSelectionRow;
   private _endRow: TimeSelectionRow;
@@ -32,16 +27,9 @@ export class TimeSelectionColumnComponent implements OnInit {
   @Output() createNewTLE: EventEmitter<TimelogEntryItem> = new EventEmitter();
   @Input() public set timeDelineators(delineators: TimelogDelineator[]) {
     this._timeDelineators = delineators;
-    if (this.zoomControl) {
-      this._buildRows(this._calculateDivisor());
-    }
 
-  }
-  @Input() public set zoomControl(zoomControl: TimelogZoomControl) {
-    this._zoomControl = zoomControl;
-    if (this.startRow !== null) {
-      this._buildRows(this._calculateDivisor());
-    }
+    this._buildRows(this._calculateDivisor());
+
   }
 
   @HostListener('window:mouseup', ['$event.target']) onMouseUp() {
@@ -51,21 +39,16 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   public get rows(): TimeSelectionRow[] { return this._rows; }
-  public get zoomControl(): TimelogZoomControl { return this._zoomControl; }
-  public get startTime(): moment.Moment { return this.zoomControl.startTime; }
-  public get endTime(): moment.Moment { return this.zoomControl.endTime; }
+  public get startTime(): moment.Moment { return this.daybookDisplayService.displayStartTime; }
+  public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
   public get startRow(): TimeSelectionRow { return this._startRow; }
   public get endRow(): TimeSelectionRow { return this._endRow; }
   public get timeDelineators(): TimelogDelineator[] { return this._timeDelineators; }
 
   ngOnInit() {
-    this.daybookService.activeDayController$.subscribe((valueChanged) => {
-      // console.log('value changed')
-      if (this.startRow === null) {
-        this._buildRows(this._calculateDivisor());
-      } else {
-        // console.log('start row was NOT NULL')
-      }
+    this._buildRows(this._calculateDivisor());
+    this.daybookDisplayService.displayUpdated$.subscribe((changed) => {
+      this._buildRows(this._calculateDivisor());
     });
   }
 
@@ -81,7 +64,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   public onEditDelineator(originalTime: moment.Moment, saveNewDelineator: moment.Moment) {
-    this.daybookService.activeDayController.updateDelineator(originalTime, saveNewDelineator);
+    this.daybookDisplayService.activeDayController.updateDelineator(originalTime, saveNewDelineator);
   }
 
   private _startDragging(row: TimeSelectionRow) {
@@ -159,7 +142,7 @@ export class TimeSelectionColumnComponent implements OnInit {
           else { return 0; }
         });
         this._buildRows(this._calculateDivisor());
-        this.daybookService.activeDayController.deleteDelineator(deleteTime);
+        this.daybookDisplayService.activeDayController.deleteDelineator(deleteTime);
       } else {
         console.log("Error: could not delete delineator because time was not found: " + deleteTime.format('hh:mm a'));
       }
@@ -185,14 +168,14 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   private _buildRows(divisorMinutes: number) {
     this._reset();
-    const durationMinutes: number = this._zoomControl.endTime.diff(this._zoomControl.startTime, 'minutes');
+    const durationMinutes: number = this.endTime.diff(this.startTime, 'minutes');
     const rowCount = durationMinutes / divisorMinutes;
     const rows: TimeSelectionRow[] = [];
-    let currentTime: moment.Moment = moment(this._zoomControl.startTime);
+    let currentTime: moment.Moment = moment(this.startTime);
     for (let i = 0; i < rowCount; i++) {
       // console.log(" " + i + " :" + currentTime.format('hh:mm a') + " to " + moment(currentTime).add(divisorMinutes, 'minutes').format('hh:mm a'))
       let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(divisorMinutes, 'minutes'), i);
-      newRow.isAvailable = this.daybookService.activeDayController.isRangeAvailable(newRow.startTime, newRow.endTime);
+      newRow.isAvailable = this.daybookDisplayService.activeDayController.isRangeAvailable(newRow.startTime, newRow.endTime);
       if (newRow.isAvailable) {
         newRow.sectionIndex = this._findSectionIndex(newRow);
       }
@@ -215,10 +198,10 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _getEarliestAvailability(rowStart: moment.Moment): moment.Moment {
-    return this.daybookService.activeDayController.getEarliestAvailability(rowStart);
+    return this.daybookDisplayService.activeDayController.getEarliestAvailability(rowStart);
   }
   private _getLatestAvailability(rowStart: moment.Moment): moment.Moment {
-    return this.daybookService.activeDayController.getLatestAvailability(rowStart);
+    return this.daybookDisplayService.activeDayController.getLatestAvailability(rowStart);
   }
 
 
@@ -233,19 +216,13 @@ export class TimeSelectionColumnComponent implements OnInit {
       this.onEditDelineator(row.timelogDelineator.time, saveNewDelineator);
     }));
     const startDragSubs = this.rows.map(row => row.startDragging$.subscribe((startDragging: TimeSelectionRow) => {
-      if (startDragging) {
-        this._startDragging(startDragging);
-      }
+      if (startDragging) { this._startDragging(startDragging); }
     }));
     const updateDragSubs = this.rows.map(row => row.updateDragging$.subscribe((updateDragging: TimeSelectionRow) => {
-      if (updateDragging) {
-        this._updateDragging(updateDragging);
-      }
+      if (updateDragging) { this._updateDragging(updateDragging); }
     }));
     const stopDragSbus = this.rows.map(row => row.stopDragging$.subscribe((stopDragging: TimeSelectionRow) => {
-      if (stopDragging) {
-        this._stopDragging(stopDragging);
-      }
+      if (stopDragging) { this._stopDragging(stopDragging); }
     }));
     this._rowSubscriptions = [
       ...deleteSubscriptions,
@@ -266,7 +243,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _findSectionIndex(newRow: TimeSelectionRow): number {
-    const availableItems = this.daybookService.activeDayController
+    const availableItems = this.daybookDisplayService.activeDayController
       .fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
 
 
@@ -288,7 +265,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   }
   private _getSectionStart(sectionIndex: number): moment.Moment {
-    const availableItems = this.daybookService.activeDayController.fullScheduleItems
+    const availableItems = this.daybookDisplayService.activeDayController.fullScheduleItems
       .filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
     if (availableItems.length >= sectionIndex + 1) {
       return availableItems[sectionIndex].startTime;
@@ -298,7 +275,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     }
   }
   private _getSectionEnd(sectionIndex: number): moment.Moment {
-    const availableItems = this.daybookService.activeDayController.fullScheduleItems
+    const availableItems = this.daybookDisplayService.activeDayController.fullScheduleItems
       .filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
     if (availableItems.length >= sectionIndex + 1) {
       return availableItems[sectionIndex].endTime;
@@ -353,13 +330,13 @@ export class TimeSelectionColumnComponent implements OnInit {
             return foundDelineator
           } else {
             let mostPriority = priority.indexOf(foundRangeItems[0].delineatorType);
-            for(let i=0; i< foundRangeItems.length; i++){
+            for (let i = 0; i < foundRangeItems.length; i++) {
               let thisItemPriority = priority.indexOf(foundRangeItems[i].delineatorType);
-              if(thisItemPriority < mostPriority){
+              if (thisItemPriority < mostPriority) {
                 mostPriority = thisItemPriority;
               }
             }
-            if(priority.indexOf(foundDelineator.delineatorType) === mostPriority){
+            if (priority.indexOf(foundDelineator.delineatorType) === mostPriority) {
               return foundDelineator;
             }
           }
@@ -374,10 +351,10 @@ export class TimeSelectionColumnComponent implements OnInit {
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
     const maxDelineators = 16;
     let saveAllDelineators: moment.Moment[] = [];
-    const existingValues = this.daybookService.activeDayController.savedTimeDelineators;
+    const existingValues = this.daybookDisplayService.activeDayController.savedTimeDelineators;
     5
     existingValues.forEach((existingValue) => {
-      if (this.daybookService.activeDayController.isTimeAvailable(existingValue)) {
+      if (this.daybookDisplayService.activeDayController.isTimeAvailable(existingValue)) {
         saveAllDelineators.push(moment(existingValue));
       }
     });
@@ -390,15 +367,15 @@ export class TimeSelectionColumnComponent implements OnInit {
       else { return 0; }
     });
 
-    this.daybookService.activeDayController.saveTimeDelineators(saveAllDelineators);
+    this.daybookDisplayService.activeDayController.saveTimeDelineators(saveAllDelineators);
     this._buildRows(this._calculateDivisor());
   }
 
   private _saveNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
     const saveNewTLE = new TimelogEntryItem(startTime, endTime);
-    this.toolsService.openTimelogEntry(saveNewTLE);
+    this.tlefService.openTimelogEntry(saveNewTLE);
     // console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
-    this.toolsService.openTool(ToolType.TimelogEntry);
+
     this._reset();
     this.createNewTLE.emit(saveNewTLE);
   }
@@ -409,7 +386,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     // for performance reasons we don't want too many, but for functionality reasons we don't want too few.
     //  100-200 seems like a pretty good range.
     const nearestTo = 100;
-    const durationMinutes: number = this._zoomControl.endTime.diff(this._zoomControl.startTime, 'minutes');
+    const durationMinutes: number = this.endTime.diff(this.startTime, 'minutes');
     let nearest = 5;
     let nearestDistance = Math.abs(nearestTo - (durationMinutes / nearest));
     [5, 10, 15, 30, 60].forEach((numberOfMinutes) => {

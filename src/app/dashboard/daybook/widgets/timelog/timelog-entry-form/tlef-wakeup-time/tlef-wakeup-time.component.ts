@@ -13,7 +13,7 @@ export class TlefWakeupTimeComponent implements OnInit {
   /**
    * This form will only ever be used for NEW_CURRENT timelog entries, so at this point there is no need to consider dealing with other cases.
    */
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
   faSpinner = faSpinner;
 
   private _saveClicked = false;
@@ -21,9 +21,9 @@ export class TlefWakeupTimeComponent implements OnInit {
   ngOnInit() {
 
 
-    this._time = moment(this.daybookService.activeDayController.wakeupTime);
+    this._time = moment(this.daybookControllerService.activeDayController.wakeupTime);
     this.maxVal = moment();
-    this.minVal = this.daybookService.todayController.prevDayFallAsleepTime;
+    this.minVal = this.daybookControllerService.todayController.prevDayFallAsleepTime;
   }
 
   @Output() timeChanged: EventEmitter<moment.Moment> = new EventEmitter();
@@ -46,6 +46,6 @@ export class TlefWakeupTimeComponent implements OnInit {
 
     this._saveClicked = true;
     // console.log("Saving time to sleepcontroller: " + this.time.format('YYYY-MM-DD hh:mm a'))
-    this.daybookService.todayController.setWakeupTimeForDay(this.time)
+    this.daybookControllerService.todayController.setWakeupTimeForDay(this.time)
   }
 }

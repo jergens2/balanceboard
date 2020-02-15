@@ -10,14 +10,14 @@ import { DaybookController } from '../../controller/daybook-controller.class';
 })
 export class WeightLogEntryComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
   private activeDayController: DaybookController;
 
   ngOnInit() {
-    this.activeDayController = this.daybookService.activeDayController;
+    this.activeDayController = this.daybookControllerService.activeDayController;
     this.updateWeightInfo()
-    this.daybookService.activeDayController$.subscribe((activeDayChanged)=>{
+    this.daybookControllerService.activeDayController$.subscribe((activeDayChanged)=>{
       this.activeDayController = activeDayChanged;
       this.updateWeightInfo();
     });

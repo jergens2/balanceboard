@@ -10,7 +10,7 @@ import { DaybookControllerService } from '../../../../dashboard/daybook/controll
 })
 export class WeightlogEntryInputComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
   @Input() onClickSave$: Observable<boolean>
 
   public weightInputForm: FormGroup;
@@ -20,8 +20,8 @@ export class WeightlogEntryInputComponent implements OnInit, OnDestroy {
   private saveSubscription: Subscription = new Subscription();
   ngOnInit() {
     console.log("Component disabled.");
-    // if(this.daybookService.activeDay.dailyWeightLogEntryKg > 0){
-    //   this.currentWeight = this.daybookService.activeDay.dailyWeightLogEntryKg;
+    // if(this.daybookControllerService.activeDay.dailyWeightLogEntryKg > 0){
+    //   this.currentWeight = this.daybookControllerService.activeDay.dailyWeightLogEntryKg;
     // }
     // this.saveSubscription = this.onClickSave$.subscribe((onSave)=>{
     //   this.saveForm()
@@ -39,7 +39,7 @@ export class WeightlogEntryInputComponent implements OnInit, OnDestroy {
     // if(this._unit == "lbs"){
     //   weightInputKg = Number(this.convertToKg(weightInputKg).toFixed(0));
     // }
-    // this.daybookService.activeDay.dailyWeightLogEntryKg = weightInputKg;
+    // this.daybookControllerService.activeDay.dailyWeightLogEntryKg = weightInputKg;
   }
 
   private _unit: string = "kg";

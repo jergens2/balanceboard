@@ -1,6 +1,6 @@
 import * as moment from 'moment';
-import { TimeSpanItem } from '../../../../../shared/utilities/time-utilities/time-span-item.interface';
-import { DaybookSleepInputDataItem } from '../../../api/data-items/daybook-sleep-input-data-item.interface';
+import { TimeSpanItem } from '../../../../../../shared/utilities/time-utilities/time-span-item.interface';
+import { DaybookSleepInputDataItem } from '../../../../api/data-items/daybook-sleep-input-data-item.interface';
 
 export class SleepEntryItem{
 

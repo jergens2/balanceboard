@@ -12,7 +12,7 @@ import { DaybookController } from '../../../controller/daybook-controller.class'
 })
 export class CalendarSmallComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
   faExpand = faExpand;
 
@@ -29,7 +29,7 @@ export class CalendarSmallComponent implements OnInit {
   public isLarge: boolean = false;
 
   ngOnInit() {
-    this.activeDayController = this.daybookService.activeDayController;
+    this.activeDayController = this.daybookControllerService.activeDayController;
 
     if (this.date) {
       // Large calendar
@@ -39,7 +39,7 @@ export class CalendarSmallComponent implements OnInit {
       // Small calendar
       this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
 
-      this.daybookService.activeDayController$.subscribe((activeDayChanged) => {
+      this.daybookControllerService.activeDayController$.subscribe((activeDayChanged) => {
         this.activeDayController = activeDayChanged;
         this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
       });
@@ -51,7 +51,7 @@ export class CalendarSmallComponent implements OnInit {
   }
 
   public onClickCalendarDay(dayOfCalendar: CalendarDay) {
-    this.daybookService.setActiveDayYYYYMMDD(dayOfCalendar.date.format("YYYY-MM-DD"));
+    this.daybookControllerService.setActiveDayYYYYMMDD(dayOfCalendar.date.format("YYYY-MM-DD"));
   }
 
   private buildDaysOfCalendar(date: moment.Moment, size: "SMALL" | "LARGE") {

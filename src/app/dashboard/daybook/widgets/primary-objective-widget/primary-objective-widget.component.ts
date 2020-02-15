@@ -38,7 +38,7 @@ export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // this._getDaySubscription.unsubscribe();
-    // this._getDaySubscription = this.daybookService.currentDay$.subscribe((day: DayData)=>{
+    // this._getDaySubscription = this.daybookControllerService.currentDay$.subscribe((day: DayData)=>{
 
     //   // console.log("PrimaryTaskWidget:  Day changed", day)
     //   this.loading = true;

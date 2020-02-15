@@ -22,6 +22,8 @@ export class TimelogDisplayGridItem{
     public availability: DaybookAvailabilityType
     public isSmallGridItem: boolean = false;
 
+    public isActiveFormItem: boolean = false;
+
     public get drawTimelogEntry(): TimelogEntryItem { return this._drawTLE$.getValue(); }
     public get drawTLE$(): Observable<TimelogEntryItem> { return this._drawTLE$.asObservable(); }
 

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { TimelogEntryItem } from '../timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ToolboxService } from '../../../../../toolbox-menu/toolbox.service';
+import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TimelogEntryFormService {
 
-  constructor() { }
+  constructor(private toolBoxService: ToolboxService, private daybookControllerService: DaybookControllerService) { }
 
 
   private _activeFormEntry$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
@@ -24,6 +26,17 @@ export class TimelogEntryFormService {
     return this._activeFormEntry$.asObservable();
   }
 
+  public openCurrentTimelogEntryForm(){
+
+
+  }
+
+
+
+  public openTimelogEntry(timelogEntry: TimelogEntryItem){
+    this.setTimelogEntry(timelogEntry);
+    this.toolBoxService.openToolNewTimelogEntry();
+  }
 
 
 }

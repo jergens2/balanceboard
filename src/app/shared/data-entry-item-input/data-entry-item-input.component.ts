@@ -13,7 +13,7 @@ import { Subject, Observable } from 'rxjs';
 })
 export class DataEntryItemInputComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
   inputItemTypes: DataEntryInput[] = []; 
 

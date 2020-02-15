@@ -3,8 +3,9 @@ import { ToolType } from './tool-type.enum';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 // tslint:disable-next-line: max-line-length
 import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
-import { SleepEntryItem } from '../dashboard/daybook/widgets/timelog/sleep-entry-form/sleep-entry-item.class';
+import { SleepEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 import { TimelogEntryFormService } from '../dashboard/daybook/widgets/timelog/timelog-entry-form/timelog-entry-form.service';
+import * as moment from 'moment';
 
 
 @Injectable({
@@ -12,15 +13,15 @@ import { TimelogEntryFormService } from '../dashboard/daybook/widgets/timelog/ti
 })
 export class ToolboxService {
 
-  constructor(private timelogEntryFormService: TimelogEntryFormService) { }
+  constructor() { }
 
-  // private _timelogEntryStorage$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
-  private _sleepInputStorage$: BehaviorSubject<SleepEntryItem> = new BehaviorSubject(null);
   private _currentTool$: BehaviorSubject<ToolType> = new BehaviorSubject(null);
-
   private _toolIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public openTool(component: ToolType) {
+    if(component === ToolType.TimelogEntry){
+      this.openToolNewTimelogEntry();
+    }
     this._currentTool$.next(component);
     this._toolIsOpen$.next(true);
   }
@@ -29,11 +30,6 @@ export class ToolboxService {
     this._toolIsOpen$.next(true);
   }
 
-  public openToolSleepInput(sleepItem: SleepEntryItem) {
-    this._sleepInputStorage$.next(sleepItem);
-    this._currentTool$.next(ToolType.SleepInput);
-    this._toolIsOpen$.next(true);
-  }
 
   public closeTool() {
     this._currentTool$.next(null);
@@ -48,23 +44,11 @@ export class ToolboxService {
   public get currentTool(): ToolType { return this._currentTool$.getValue(); }
 
 
-  public openTimelogEntry(timelogEntry: TimelogEntryItem) {
-    this.timelogEntryFormService.setTimelogEntry(timelogEntry);
-    this._currentTool$.next(ToolType.TimelogEntry);
-  }
-
-
-  // public get timelogEntryStorage$(): Observable<TimelogEntryItem> { return this._timelogEntryStorage$.asObservable(); }
-  // public get timelogEntryStorage(): TimelogEntryItem {
-  //   const value = this._timelogEntryStorage$.getValue();
-  //   this._timelogEntryStorage$.next(null);
-  //   return value;
+  // public openTimelogEntry(timelogEntry: TimelogEntryItem) {
+  //   this.timelogEntryFormService.setTimelogEntry(timelogEntry);
+  //   this._currentTool$.next(ToolType.TimelogEntry);
   // }
 
-  public get sleepInputStorage$(): Observable<SleepEntryItem> { return this._sleepInputStorage$.asObservable(); }
-  public get sleepInputStorage(): SleepEntryItem { 
-    const value = this._sleepInputStorage$.getValue();
-    this._sleepInputStorage$.next(null);
-    return value;
-  }
+
+
 }

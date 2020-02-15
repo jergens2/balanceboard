@@ -12,7 +12,7 @@ import { DaybookController } from '../../../controller/daybook-controller.class'
 })
 export class DailyTaskListSmallComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
 
 
@@ -23,8 +23,8 @@ export class DailyTaskListSmallComponent implements OnInit {
     return this._dailyTaskListItems;
   }
   ngOnInit() {
-    this.activeDayController = this.daybookService.activeDayController;
-    this.daybookService.activeDayController$.subscribe((dayChanged)=>{
+    this.activeDayController = this.daybookControllerService.activeDayController;
+    this.daybookControllerService.activeDayController$.subscribe((dayChanged)=>{
       this.activeDayController = dayChanged;
     });
   }

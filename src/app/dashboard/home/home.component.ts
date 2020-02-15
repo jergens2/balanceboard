@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthenticationService,
     private specialService: AdmintoolsService,
-    private daybookService: DaybookControllerService,
+    private daybookControllerService: DaybookControllerService,
     private daybookHttpService: DaybookHttpRequestService,
     private activitiesService: ActivityCategoryDefinitionService,
     private updateActivitiesService: UpdateActivityDatabaseItemsService) { }

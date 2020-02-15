@@ -5,7 +5,7 @@ import { DaybookTimelogEntryDataItem } from '../../../api/data-items/daybook-tim
 import * as moment from 'moment';
 import { DayStructureDataItem } from '../../../api/data-items/day-structure-data-item.interface';
 import { DaybookControllerService } from '../../../controller/daybook-controller.service';
-import { TimelogZoomControl } from './timelog-zoom-controller/timelog-zoom-control.interface';
+import { TimelogZoomControllerItem } from './timelog-zoom-controller/timelog-zoom-controller-item.class';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { DaybookController } from '../../../controller/daybook-controller.class';
 
@@ -16,19 +16,11 @@ import { DaybookController } from '../../../controller/daybook-controller.class'
 })
 export class TimelogLargeComponent implements OnInit {
 
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
 
-  constructor(private daybookService: DaybookControllerService) { }
   ngOnInit() {
-    this.zoomControl = { 
-      icon: null,
-      name: "AWAKE",
-      isActive: true,
-      isFirst: false,
-      isLast: false,
-      startTime: moment(this.daybookService.activeDayController.wakeupTime), 
-      endTime: moment(this.daybookService.activeDayController.fallAsleepTime) 
-    };
+
   }
 
 
@@ -39,24 +31,7 @@ export class TimelogLargeComponent implements OnInit {
   public showTimelogBody: boolean = true;
   public showTimelogList: boolean = false;
 
-  public onZoomControlChanged(changedZoomControl: TimelogZoomControl){
-    this.zoomControl = changedZoomControl;
-    if(this.zoomControl.name === "LIST"){
-      this.showTimelogBody = false;
-      this.showTimelogList = true; 
-    }else{
-      this.showTimelogList = false;
-      this.showTimelogBody = true;
-    }
-  }
-  public onZoomHover(zoomButton: TimelogZoomControl){
-    this._zoomHover = zoomButton;
-  }
-
-  private _zoomHover: TimelogZoomControl = null;
-  public get zoomHover(): TimelogZoomControl{ return this._zoomHover; }
-  public zoomControl: TimelogZoomControl;
-
+  
   faCog = faCog;
   faEye = faEye;
   faAngleRight = faAngleRight;

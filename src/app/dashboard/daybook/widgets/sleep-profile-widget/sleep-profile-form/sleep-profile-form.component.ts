@@ -14,7 +14,7 @@ export class SleepProfileFormComponent implements OnInit {
 
   faExclamationTriangle = faExclamationTriangle;
 
-  constructor(private daybookService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService) { }
 
   // public wakeupTime: moment.Moment;
   // public wakeupTimeMin: moment.Moment;
@@ -39,15 +39,15 @@ export class SleepProfileFormComponent implements OnInit {
   //   SleepQuality.VeryWell,
   // ];
 
-  // public get sleepTimesSet(): boolean { return this.daybookService.activeDayController.sleepController.wakeupTimeIsSet; }
-  // public get wakeupTimeIsSet(): boolean { return this.daybookService.activeDay.timeReferencer.thisDayWakeupTime.isSet; }
-  // public get bedTimeIsSet(): boolean { return this.daybookService.activeDay.timeReferencer.thisDayBedTime.isSet; }
-  // public get previousBedTimeIsSet(): boolean { return this.daybookService.activeDay.timeReferencer.previousDayBedTime.isSet; }
-  // public get previousBedTime(): moment.Moment { return this.daybookService.activeDay.timeReferencer.previousDayBedTime.startTime; }
+  // public get sleepTimesSet(): boolean { return this.daybookControllerService.activeDayController.sleepController.wakeupTimeIsSet; }
+  // public get wakeupTimeIsSet(): boolean { return this.daybookControllerService.activeDay.timeReferencer.thisDayWakeupTime.isSet; }
+  // public get bedTimeIsSet(): boolean { return this.daybookControllerService.activeDay.timeReferencer.thisDayBedTime.isSet; }
+  // public get previousBedTimeIsSet(): boolean { return this.daybookControllerService.activeDay.timeReferencer.previousDayBedTime.isSet; }
+  // public get previousBedTime(): moment.Moment { return this.daybookControllerService.activeDay.timeReferencer.previousDayBedTime.startTime; }
 
   ngOnInit() {
     this.reInitiate();
-    this.daybookService.activeDayController$.subscribe((dayChanged) => {
+    this.daybookControllerService.activeDayController$.subscribe((dayChanged) => {
       this.reInitiate();
     });
   }
@@ -61,7 +61,7 @@ export class SleepProfileFormComponent implements OnInit {
 
 
 
-    // this.sleepQuality = this.daybookService.activeDay.sleepProfile.sleepQuality;
+    // this.sleepQuality = this.daybookControllerService.activeDay.sleepProfile.sleepQuality;
 
     // console.log("REINITIATE:  SLeep profile: :: : : :")
     // console.log(" this wakeup time:  " + this.wakeupTime.format("YYYY-MM-DD hh:mm a"))

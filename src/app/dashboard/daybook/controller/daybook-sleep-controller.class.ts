@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { TimeUtilities } from '../../../shared/utilities/time-utilities/time-utilities';
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
-import { SleepEntryItem } from '../widgets/timelog/sleep-entry-form/sleep-entry-item.class';
+import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 
 export class DaybookSleepController extends TimeSchedule<SleepEntryItem> {
@@ -213,12 +213,11 @@ export class DaybookSleepController extends TimeSchedule<SleepEntryItem> {
             }
         }
         this._sleepEntryItems = sleepEntryItems;
-
-        console.log("Sleep entry items: ")
-        this._sleepEntryItems.forEach(item=>{
-            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " : ")
+        // console.log("Sleep entry items: ")
+        // this._sleepEntryItems.forEach(item=>{
+        //     console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " : ")
         
-        })
+        // })
     }
 
     private _buildThisDayDefaultSleepItems(): TimeScheduleItem<SleepEntryItem>[] {

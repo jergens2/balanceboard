@@ -1,10 +1,5 @@
-<div class="zoom-controller-root no-select" (mouseenter)="itemState.onMouseEnter()" (mouseleave)="itemState.onMouseLeave()">
-    <div *ngFor="let zoomButton of zoomButtons" class="zoom-button" (click)="onClickButton(zoomButton)"
-        (mouseenter)="onZoomHover(zoomButton)"
-        [ngClass]="{
-            'first-zoom-button': zoomButton.isFirst, 
-            'last-zoom-button': zoomButton.isLast, 
-            'zoom-button-active': zoomButton.isActive}">
+<div class="zoom-controller-root no-select">
+    <div *ngFor="let zoomButton of zoomButtons" class="zoom-button" (click)="onClickButton(zoomButton)">
         <fa-icon *ngIf="zoomButton.icon" [icon]="zoomButton.icon"></fa-icon>
         <div *ngIf="!zoomButton.icon && zoomButton.name">{{ zoomButton.name }}</div>
     </div>
