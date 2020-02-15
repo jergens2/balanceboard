@@ -84,7 +84,12 @@ export class TimeSelectionColumnComponent implements OnInit {
     this.rows.forEach((row) => {
       row.onDrawDelineator(startTime, endTime);
     });
-    this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime));
+    if(!startTime.isSame(endTime)){
+      this.drawNewTLE.emit(new TimelogEntryItem(startTime, endTime));
+    }else{
+      this.drawNewTLE.emit(null);
+    }
+
     // this._drawNewTimelogEntry(startTime, endTime);
   }
 
@@ -113,7 +118,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   private _stopDragging(stopRow: TimeSelectionRow) {
 
-    if (this.endRow) {
+    if (this.endRow  && !this.endRow.startTime.isSame(this.startRow.startTime)) {
       const dragTimes = this._buildSection();
       const startTime = dragTimes.startTime;
       const endTime = dragTimes.endTime;
@@ -326,9 +331,11 @@ export class TimeSelectionColumnComponent implements OnInit {
         if (foundRangeItems.length == 1) {
           return foundDelineator;
         } else if (foundRangeItems.length > 1) {
-          if (priority.indexOf(foundDelineator.delineatorType) <= 5) {
+          if (priority.indexOf(foundDelineator.delineatorType) <= 8) {
+            // console.log("its less than or equal to 5: " , priority[priority.indexOf(foundDelineator.delineatorType)])
             return foundDelineator
           } else {
+            // console.log("its greater than 5: " , priority[priority.indexOf(foundDelineator.delineatorType)])
             let mostPriority = priority.indexOf(foundRangeItems[0].delineatorType);
             for (let i = 0; i < foundRangeItems.length; i++) {
               let thisItemPriority = priority.indexOf(foundRangeItems[i].delineatorType);

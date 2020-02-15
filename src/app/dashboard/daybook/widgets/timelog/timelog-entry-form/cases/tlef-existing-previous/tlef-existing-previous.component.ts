@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TimelogEntryItem } from '../../../timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
 import { TimelogEntryActivity } from '../../../../../../daybook/api/data-items/timelog-entry-activity.interface';

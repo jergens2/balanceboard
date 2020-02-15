@@ -2,7 +2,7 @@
 import * as moment from 'moment';
 // import { ItemState } from '../../../../shared/utilities/item-state.class';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
 export enum TimelogDelineatorType {
     FRAME_START = 'FRAME_START',

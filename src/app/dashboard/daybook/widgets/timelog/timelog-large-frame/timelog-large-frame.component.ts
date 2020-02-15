@@ -10,11 +10,11 @@ import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { DaybookController } from '../../../controller/daybook-controller.class';
 
 @Component({
-  selector: 'app-timelog-large',
-  templateUrl: './timelog-large.component.html',
-  styleUrls: ['./timelog-large.component.css']
+  selector: 'app-timelog-large-frame',
+  templateUrl: './timelog-large-frame.component.html',
+  styleUrls: ['./timelog-large-frame.component.css']
 })
-export class TimelogLargeComponent implements OnInit {
+export class TimelogLargeFrameComponent implements OnInit {
 
   constructor(private daybookControllerService: DaybookControllerService) { }
 

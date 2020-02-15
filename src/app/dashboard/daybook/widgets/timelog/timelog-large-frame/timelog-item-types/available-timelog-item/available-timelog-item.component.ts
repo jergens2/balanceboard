@@ -43,11 +43,17 @@ export class AvailableTimelogItemComponent implements OnInit {
         this._stopDrawing();
       }
     });
-    // this.toolsService.toolIsOpen$.subscribe(toolIsOpen =>{
-    //   if(toolIsOpen === false){
-    //     this.gridItem.stopCreating();
-    //   }
-    // });
+    this.tlefService.toolIsOpen$.subscribe(toolIsOpen =>{
+      if(toolIsOpen === false){
+        this.gridItem.stopCreating();
+      }
+    });
+    this.tlefService.formChanged$.subscribe((changed)=>{
+      if(changed){
+        this.gridItem.stopCreating();
+      }
+    })
+    
   }
 
   public onMouseEnter(){

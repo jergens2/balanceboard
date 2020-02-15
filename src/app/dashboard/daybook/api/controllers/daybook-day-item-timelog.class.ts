@@ -1,6 +1,6 @@
 import { DaybookTimelogEntryDataItem } from '../data-items/daybook-timelog-entry-data-item.interface';
 import { Subject, Observable } from 'rxjs';
-import { TimelogEntryItem } from '../../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
 import { DaybookDayItemHttpShape } from '../daybook-day-item-http-shape.interface';
 

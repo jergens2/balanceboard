@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TimelogEntryItem } from '../timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { ToolboxService } from '../../../../../toolbox-menu/toolbox.service';
 import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import * as moment from 'moment';
@@ -29,23 +29,17 @@ export class TimelogEntryFormComponent implements OnInit {
   private _confirmDelete: boolean = false;
 
   ngOnInit() {
-    this._entryItem = this.timelogEntryFormService.getInitialTimelogEntry();
-    this.timelogEntryFormService.activeFormEntry$.subscribe((item) => {
-      if (item) {
-        this._entryItem = item;
-        this._determineCase();
-      }
-    });
-    if (!this._entryItem) {
-      this._entryItem = this.daybookControllerService.todayController.getNewCurrentTLE();
-    }
-    this._determineCase();
+
+
+
+    
+
   }
 
-  public get entryItem(): TimelogEntryItem { return this._entryItem; }
-  public get formCase(): TLEFFormCase { return this._formCase; }
+  public get entryItem(): TimelogEntryItem { return this.timelogEntryFormService.openedTimelogEntry; }
+  public get formCase(): TLEFFormCase { return this.timelogEntryFormService.formCase; }
 
-  public get durationString(): string { return this._entryItem.durationString; }
+  public get durationString(): string { return this.entryItem.durationString; }
   public get confirmDelete(): boolean { return this._confirmDelete; }
 
 
@@ -71,31 +65,6 @@ export class TimelogEntryFormComponent implements OnInit {
     }
   }
 
-  private _determineCase() {
-    const startTime: moment.Moment = this.entryItem.startTime;
-    const endTime: moment.Moment = this.entryItem.endTime;
-    const now: moment.Moment = moment(this.daybookControllerService.clock).startOf('minute');
-    const isPrevious: boolean = endTime.isBefore(now);
-    const isFuture: boolean = startTime.isAfter(now);
-    if (isPrevious) {
-      if (this.entryItem.isSavedEntry) {
-        this._formCase = TLEFFormCase.EXISTING_PREVIOUS;
-      } else {
-        this._formCase = TLEFFormCase.NEW_PREVIOUS;
-      }
-    } else if (isFuture) {
-      if (this.entryItem.isSavedEntry) {
-        this._formCase = TLEFFormCase.EXISTING_FUTURE;
-      } else {
-        this._formCase = TLEFFormCase.NEW_FUTURE;
-      }
-    } else {
-      if (now.isSame(startTime)) {
-        this._formCase = TLEFFormCase.NEW_FUTURE;
-      } else {
-        this._formCase = TLEFFormCase.NEW_CURRENT;
-      }
-    }
-  }
+  
 
 }

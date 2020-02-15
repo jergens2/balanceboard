@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookAvailabilityType } from '../../controller/items/daybook-availability-type.enum';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 
@@ -19,7 +19,7 @@ export class TimelogDisplayGridItem{
     public startTime: moment.Moment;
     public endTime: moment.Moment;
     public percent: number;
-    public availability: DaybookAvailabilityType
+    public availability: DaybookAvailabilityType;
     public isSmallGridItem: boolean = false;
 
     public isActiveFormItem: boolean = false;

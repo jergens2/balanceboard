@@ -11,7 +11,7 @@ import { SharedModule } from '../../shared/shared.module';
 
 import { DailyTaskListSmallComponent } from './widgets/daily-task-list/daily-task-list-small/daily-task-list-small.component';
 import { DailyTaskListLargeComponent } from './widgets/daily-task-list/daily-task-list-large/daily-task-list-large.component';
-import { TimelogLargeComponent } from './widgets/timelog/timelog-large/timelog-large.component';
+import { TimelogLargeFrameComponent } from './widgets/timelog/timelog-large-frame/timelog-large-frame.component';
 import { TimelogSmallComponent } from './widgets/timelog/timelog-small/timelog-small.component';
 import { CalendarLargeComponent } from './widgets/calendar/calendar-large/calendar-large.component';
 import { CalendarSmallComponent } from './widgets/calendar/calendar-small/calendar-small.component';
@@ -30,22 +30,22 @@ import { SleepBatteryWidgetComponent } from './widgets/sleep-battery/small/sleep
 // import { DaybookEntryFormComponent } from './daybook-entry-form-mobile/daybook-entry-form.component';
 
 import { SleepProfileWidgetComponent } from './widgets/sleep-profile-widget/sleep-profile-widget.component';
-import { TimelogBodyComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-body.component';
-import { TimelogZoomControllerComponent } from './widgets/timelog/timelog-large/timelog-zoom-controller/timelog-zoom-controller.component';
+import { TimelogBodyComponent } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-body.component';
+import { TimelogZoomControllerComponent } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-controller.component';
 import { WeightLogEntryComponent } from './widgets/weight-log-entry/weight-log-entry.component';
-import { TimelogEntryComponent } from './widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry.component';
+import { TimelogEntryComponent } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry.component';
 import { TimelogEntryFormComponent } from './widgets/timelog/timelog-entry-form/timelog-entry-form.component';
 import { TlefWakeupTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-wakeup-time/tlef-wakeup-time.component';
 import { TlefModifyTimesComponent } from './widgets/timelog/timelog-entry-form/tlef-modify-times/tlef-modify-times.component';
-import { TimelogEntryListComponent } from './widgets/timelog/timelog-large/timelog-entry-list/timelog-entry-list.component';
+import { TimelogEntryListComponent } from './widgets/timelog/timelog-large-frame/timelog-entry-list/timelog-entry-list.component';
 import { SleepProfileFormComponent } from './widgets/sleep-profile-widget/sleep-profile-form/sleep-profile-form.component';
 import { SleepProfileDisplayComponent } from './widgets/sleep-profile-widget/sleep-profile-display/sleep-profile-display.component';
-import { TimeSelectionColumnComponent } from './widgets/timelog/timelog-large/timelog-body/time-selection-column/time-selection-column.component';
+import { TimeSelectionColumnComponent } from './widgets/timelog/timelog-large-frame/timelog-body/time-selection-column/time-selection-column.component';
 import { TlefViewOnlyComponent } from './widgets/timelog/timelog-entry-form/tlef-view-only/tlef-view-only.component';
 import { TlefBedTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-bed-time/tlef-bed-time.component';
-import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large/timelog-item-types/available-timelog-item/available-timelog-item.component';
+import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large-frame/timelog-item-types/available-timelog-item/available-timelog-item.component';
 import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep-profile-large/sleep-profile-large.component';
-import { TimeSelectionRowComponent } from './widgets/timelog/timelog-large/timelog-body/time-selection-row/time-selection-row.component';
+import { TimeSelectionRowComponent } from './widgets/timelog/timelog-large-frame/timelog-body/time-selection-row/time-selection-row.component';
 import { TlefNewCurrentComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-new-current/tlef-new-current.component';
 import { TlefNewPreviousComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-new-previous/tlef-new-previous.component';
 import { TlefNewFutureComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-new-future/tlef-new-future.component';
@@ -54,6 +54,8 @@ import { TlefExistingPreviousComponent } from './widgets/timelog/timelog-entry-f
 import { TlefNewComponent } from './widgets/timelog/timelog-entry-form/tlef-new/tlef-new.component';
 import { SleepInputFormComponent } from './widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-form.component';
 import { DaybookGridItemsBarComponent } from './widgets/timelog/timelog-entry-form/daybook-grid-items-bar/daybook-grid-items-bar.component';
+import { TlefNewCurrentFutureComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-new-current-future/tlef-new-current-future.component';
+import { TlefExistingCurrentComponent } from './widgets/timelog/timelog-entry-form/cases/tlef-existing-current/tlef-existing-current.component';
 
 
 @NgModule({
@@ -70,7 +72,7 @@ import { DaybookGridItemsBarComponent } from './widgets/timelog/timelog-entry-fo
     TaskQueueWidgetComponent,
     DailyTaskListSmallComponent,
     DailyTaskListLargeComponent,
-    TimelogLargeComponent,
+    TimelogLargeFrameComponent,
     TimelogSmallComponent,
     CalendarLargeComponent,
     CalendarSmallComponent,
@@ -110,6 +112,8 @@ import { DaybookGridItemsBarComponent } from './widgets/timelog/timelog-entry-fo
     TlefNewComponent,
     SleepInputFormComponent,
     DaybookGridItemsBarComponent,
+    TlefNewCurrentFutureComponent,
+    TlefExistingCurrentComponent,
   ],
   exports: [
     // DaybookEntryFormComponent,

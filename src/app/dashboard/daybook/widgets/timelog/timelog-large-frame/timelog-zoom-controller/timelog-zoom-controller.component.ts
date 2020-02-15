@@ -6,7 +6,7 @@ import { faWrench, faSun, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { Subscription, timer } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
 import { TimelogZoomType } from './timelog-zoom-type.enum';
-import { DaybookDisplayService } from '../../../../../../dashboard/daybook/daybook-display.service';
+import { DaybookDisplayService } from '../../../../daybook-display.service';
 
 @Component({
   selector: 'app-timelog-zoom-controller',

@@ -17,8 +17,8 @@
 
 
       <div class="main-widget">
-        <app-timelog-large *ngIf="primaryWidget.type === 'TIMELOG'" [ngStyle]="primaryWidget.ngStyle"
-          [ngClass]="primaryWidget.ngClass"></app-timelog-large>
+        <app-timelog-large-frame *ngIf="primaryWidget.type === 'TIMELOG'" [ngStyle]="primaryWidget.ngStyle"
+          [ngClass]="primaryWidget.ngClass"></app-timelog-large-frame>
         <app-calendar-large *ngIf="primaryWidget.type === 'CALENDAR'" [ngStyle]="primaryWidget.ngStyle"
           [ngClass]="primaryWidget.ngClass"></app-calendar-large>
         <app-daily-task-list-large *ngIf="primaryWidget.type === 'DAILY_TASK_LIST'" [ngClass]="primaryWidget.ngStyle"

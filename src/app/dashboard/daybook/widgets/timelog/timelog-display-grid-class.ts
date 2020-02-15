@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { TimelogDelineator, TimelogDelineatorType } from "./timelog-delineator.class";
 import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
-import { TimelogEntryItem } from './timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookController } from '../../controller/daybook-controller.class';
 import { DaybookAvailabilityType } from '../../controller/items/daybook-availability-type.enum';
 import { TimeScheduleItem } from '../../../../shared/utilities/time-utilities/time-schedule-item.class';
@@ -74,6 +74,11 @@ export class TimelogDisplayGrid {
   }
 
   private _buildGrid() {
+
+    // console.log("Building grid.")
+    // this._activeController.logFullScheduleItems();
+
+
     const checkValues = this.totalViewMilliseconds - (this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'));
     if (checkValues !== 0) {
       console.log("Error:  mismatching times:")

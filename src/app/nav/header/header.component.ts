@@ -18,6 +18,7 @@ import { DaybookControllerService } from '../../dashboard/daybook/controller/day
 import * as moment from 'moment';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
 import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
+import { TimelogEntryFormService } from '../../dashboard/daybook/widgets/timelog/timelog-entry-form/timelog-entry-form.service';
 
 @Component({
   selector: 'app-header',
@@ -32,7 +33,8 @@ export class HeaderComponent implements OnInit {
     private toolsService: ToolboxService,
     private modalService: ModalService,
     private daybookDisplayService: DaybookDisplayService,
-    private router: Router ) { }
+    private router: Router,
+    private tlefService: TimelogEntryFormService ) { }
 
   faBars = faBars;
   faCogs = faCogs;
@@ -89,7 +91,7 @@ export class HeaderComponent implements OnInit {
   public onClickClock(){
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
     this.router.navigate(['/daybook']);
-    this.toolsService.openTool(ToolType.TimelogEntry);
+    this.tlefService.openNewCurrentTimelogEntry();
   }
   public onClickBattery(){
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);

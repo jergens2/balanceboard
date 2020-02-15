@@ -5,7 +5,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { ScreenSizeService } from '../shared/app-screen-size/screen-size.service';
 import { AppScreenSize } from '../shared/app-screen-size/app-screen-size.enum';
 import * as moment from 'moment';
-import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
 @Component({
   selector: 'app-toolbox',

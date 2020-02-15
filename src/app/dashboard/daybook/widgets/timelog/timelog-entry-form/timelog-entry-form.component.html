@@ -13,14 +13,18 @@
         </div>
     </div>
 
+
     <div class="tlef-form-body">
         <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [entryItem]="entryItem"></app-tlef-new-current>
+        <app-tlef-new-current-future *ngIf="formCase === 'NEW_CURRENT_FUTURE'"></app-tlef-new-current-future>
         <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'" [entryItem]="entryItem"></app-tlef-new-future>
         <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'" [entryItem]="entryItem"></app-tlef-new-previous>
         <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'" [entryItem]="entryItem">
         </app-tlef-existing-future>
         <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'" [entryItem]="entryItem">
         </app-tlef-existing-previous>
+        <app-tlef-existing-current *ngIf="formCase === 'EXISTING_CURRENT'">
+        </app-tlef-existing-current>
     </div>
 
     <div class="tlef-form-footer">
@@ -30,7 +34,7 @@
             <button class="medium-button confirm-delete-button" (click)="onClickConfirmDelete()"
                 *ngIf="confirmDelete">Confirm</button>
         </div>
-        <button class="medium-button discard-button" (click)="onClickDiscard()" *ngIf="!entryItem.isSavedEntry">Discard</button>
+        <button class="medium-button discard-button" (click)="onClickDiscard()">Discard</button>
     </div>
 </div>
 

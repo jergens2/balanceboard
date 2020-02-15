@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { DaybookEnergyController } from './daybook-energy-controller.class';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
-import { TimelogEntryItem } from '../widgets/timelog/timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookSleepController } from './daybook-sleep-controller.class';
 import { Subject, Observable, Subscription } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
@@ -93,9 +93,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     }
 
 
-    public getEarliestAvailability(rowStartTime: moment.Moment): moment.Moment {
+    public getEarliestAvailability(fromTime: moment.Moment): moment.Moment {
         const availabileItems = this.fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
-        const foundIndex = availabileItems.findIndex(item => rowStartTime.isSameOrAfter(item.startTime) && rowStartTime.isSameOrBefore(item.endTime));
+        const foundIndex = availabileItems.findIndex(item => fromTime.isSameOrAfter(item.startTime) && fromTime.isBefore(item.endTime));
         if (foundIndex >= 0) {
             if (foundIndex === 0) {
                 return availabileItems[foundIndex].startTime;
@@ -111,7 +111,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
                 return startTime;
             }
         } else {
-            // console.log('error: couldnt find availability start time. Row start time:  ' + rowStartTime.format('hh:mm a'));
+            console.log('error: couldnt find availability start time. Row start time:  ' + fromTime.format('hh:mm a'));
         }
     }
     public getLatestAvailability(rowStartTime: moment.Moment): moment.Moment {

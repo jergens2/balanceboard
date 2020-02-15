@@ -5,30 +5,34 @@ import { ColorConverter } from "../../../../../../../shared/utilities/color-conv
 import { ColorType } from "../../../../../../../shared/utilities/color-type.enum";
 import { TimelogEntryActivity } from "../../../../../api/data-items/timelog-entry-activity.interface";
 import * as moment from 'moment';
+import { TimelogDisplayGridItem } from "../../../timelog-display-grid-item.class";
 
 export class TimelogEntryDisplayItem {
 
-    constructor(timelogEntries: TimelogEntryItem[], activityTree: ActivityTree, isSmallEntry: boolean = false) {
-        this._timelogEntries = timelogEntries;
+    constructor(gridItem: TimelogDisplayGridItem, activityTree: ActivityTree) {
+        this._gridItem = gridItem;
         this._activityTree = activityTree;
-        this._isSmallEntry = isSmallEntry;
         this._buildEntry();
-
-
+        if(this._gridItem.isSmallGridItem){
+            console.log("It's a small grid item.", gridItem)
+        }
     }
 
-    private _isSmallEntry: boolean;
-    private _timelogEntries: TimelogEntryItem[];
+
+
+    private _gridItem: TimelogDisplayGridItem;
     private _activityTree: ActivityTree;
     private _backgroundColor: string = "";
     private _displayString: string = "";
     private _units: { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] = [];
 
-    public get timelogEntries(): TimelogEntryItem[] { return this._timelogEntries; }
+    
+
+    public get timelogEntries(): TimelogEntryItem[] { return this._gridItem.timelogEntries; }
     public get displayString(): string { return this._displayString; }
     public get backgroundColor(): string { return this._backgroundColor; }
     public get units(): { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] { return this._units; };
-    public get isSmallEntry(): boolean { return this._isSmallEntry; }
+    public get gridItem(): TimelogDisplayGridItem { return this._gridItem; }
 
 
     private _buildEntry() {

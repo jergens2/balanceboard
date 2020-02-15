@@ -8,7 +8,6 @@ import { TimelogZoomControllerItem } from '../timelog-zoom-controller/timelog-zo
 import { Subscription, Observable } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
-import { TimelogDisplayController } from '../../timelog-display-controller.class';
 import { TimelogDelineator } from '../../timelog-delineator.class';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
@@ -21,7 +20,8 @@ import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
 import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
 import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
 import { SleepEntryItem } from '../../timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
-import { DaybookDisplayService } from '../../../../../daybook/daybook-display.service';
+import { DaybookDisplayService } from '../../../../daybook-display.service';
+import { TimelogEntryFormService } from '../../timelog-entry-form/timelog-entry-form.service';
 
 @Component({
   selector: 'app-timelog-body',
@@ -30,9 +30,9 @@ import { DaybookDisplayService } from '../../../../../daybook/daybook-display.se
 })
 export class TimelogBodyComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookDisplayService: DaybookDisplayService, private toolsService: ToolboxService) { }
+  constructor(private daybookDisplayService: DaybookDisplayService, private tlefService: TimelogEntryFormService) { }
 
-  private _timelogDisplayController: TimelogDisplayController = null;
+
   private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
   private _minutesPerTwentyPixels: number = 30;
 
@@ -43,12 +43,11 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public get startTime(): moment.Moment { return this.daybookDisplayService.displayStartTime; }
   public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
   // public get relativeMousePosition(): RelativeMousePosition { return this._relativeMousePosition; }
-  public get timelogDisplayController(): TimelogDisplayController { return this._timelogDisplayController; }
   public get guideLineHours(): { label: string, ngStyle: any, lineNgClass: any }[] { return this._guideLineHours; }
-  public get timelogDisplayGrid(): TimelogDisplayGrid { return this._timelogDisplayController.displayGrid; }
+  public get timelogDisplayGrid(): TimelogDisplayGrid { return this.daybookDisplayService.timelogDisplayGrid; }
   public get gridItems(): TimelogDisplayGridItem[] { return this.timelogDisplayGrid.gridItems; }
   public get gridItemsNgStyle(): any { return this.timelogDisplayGrid.ngStyle; }
-  public get timeDelineators(): TimelogDelineator[] { return this._timelogDisplayController.timeDelineators; }
+  public get timeDelineators(): TimelogDelineator[] { return this.daybookDisplayService.timelogDelineators; }
   public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
 
@@ -80,17 +79,19 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
       this._buildTimelog();
     });
 
-    console.log("Timelog body:");
-    this.gridItems.forEach((item)=>{
-      console.log("   grid item " + item.startTime.format('hh:mm a') + " - " + item.availability)
-    });
+    // console.log("Timelog body:");
+    // this.gridItems.forEach((item)=>{
+    //   console.log("   grid item " + item.startTime.format('hh:mm a') + " - " + item.availability)
+    // });
   }
   ngOnDestroy(){
     this._updateDisplaySub.unsubscribe();
   }
 
   public onClickSleepItem(gridItem: TimelogDisplayGridItem) {
-    console.log("sleep item clicked.  no action taken, method disabled")
+    const sleepItem = this.daybookDisplayService.activeDayController.getSleepItem(gridItem.startTime, gridItem.endTime);
+    console.log("Sleep item is ", sleepItem)
+    this.tlefService.openSleepEntry(sleepItem);
   }
 
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
@@ -103,8 +104,6 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
   private _buildTimelog() {
     this._buildGuideLineHours();
-
-    this._updateTimelog();
   }
 
   private _buildGuideLineHours() {
@@ -153,10 +152,5 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
     this._guideLineHours = guideLineHours;
   }
 
-  private _updateTimelog() {
-    let timelog: TimelogDisplayController = new TimelogDisplayController(this.startTime, this.endTime, this.activeDayController);
-
-    this._timelogDisplayController = timelog;
-  }
 
 }

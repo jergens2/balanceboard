@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
 import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
-import { TimelogEntryItem } from '../../timelog-large/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from '../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { SleepEntryItem } from '../sleep-entry-form/sleep-entry-item.class';
 
 
