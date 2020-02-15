@@ -28,7 +28,7 @@ export class TimelogEntryFormService {
   public get formChanged$(): Observable<TLEFFormCase> { return this._formChanged$.asObservable(); }
   public get toolIsOpen$(): Observable<boolean> { return this.toolBoxService.toolIsOpen$; }
 
-  public openNewCurrentTimelogEntry(){
+  public openNewCurrentTimelogEntry() {
     this._initiate();
     const formCase = TLEFFormCase.NEW_CURRENT;
     this._openedTimelogEntry = this.daybookControllerService.todayController.getNewCurrentTLE();
@@ -37,7 +37,7 @@ export class TimelogEntryFormService {
     this._openedSleepEntry = null;
   }
 
-  public openTimelogEntry(timelogEntry: TimelogEntryItem){
+  public openTimelogEntry(timelogEntry: TimelogEntryItem) {
     this._initiate();
     const formCase: TLEFFormCase = this._determineCase(timelogEntry);
     this._openedTimelogEntry = timelogEntry;
@@ -45,7 +45,7 @@ export class TimelogEntryFormService {
     this._formChanged$.next(formCase);
     this._openedSleepEntry = null;
   }
-  public openSleepEntry(sleepEntry: SleepEntryItem){
+  public openSleepEntry(sleepEntry: SleepEntryItem) {
     this._initiate();
     this._openedSleepEntry = sleepEntry;
     this.toolBoxService.openSleepEntryForm();
@@ -53,19 +53,19 @@ export class TimelogEntryFormService {
     this._openedTimelogEntry = null;
   }
 
-  private _initiate(){
-    if(!this._isInitiated){
+  private _initiate() {
+    if (!this._isInitiated) {
       this._isInitiated = true;
       this._toolIsOpenSub.unsubscribe();
-      this._toolIsOpenSub = this.toolBoxService.toolIsOpen$.subscribe((toolIsOpen: boolean)=>{
-        if(toolIsOpen === false){
+      this._toolIsOpenSub = this.toolBoxService.toolIsOpen$.subscribe((toolIsOpen: boolean) => {
+        if (toolIsOpen === false) {
           this._closeForm();
         }
       });
     }
   }
 
-  private _closeForm(){
+  private _closeForm() {
     this._openedSleepEntry = null;
     this._openedTimelogEntry = null;
     this._formChanged$.next(null);
@@ -81,42 +81,22 @@ export class TimelogEntryFormService {
     const isPrevious: boolean = endTime.isBefore(now);
     const isFuture: boolean = startTime.isAfter(now);
     if (isPrevious) {
-      if (entry.isSavedEntry) {
-        formCase = TLEFFormCase.EXISTING_PREVIOUS;
-      } else {
-        formCase = TLEFFormCase.NEW_PREVIOUS;
-      }
+      if (entry.isSavedEntry) { formCase = TLEFFormCase.EXISTING_PREVIOUS; }
+      else { formCase = TLEFFormCase.NEW_PREVIOUS; }
     } else if (isFuture) {
-      if (entry.isSavedEntry) {
-        formCase = TLEFFormCase.EXISTING_FUTURE;
-      } else {
-        formCase = TLEFFormCase.NEW_FUTURE;
-      }
+      if (entry.isSavedEntry) { formCase = TLEFFormCase.EXISTING_FUTURE; }
+      else { formCase = TLEFFormCase.NEW_FUTURE; }
     } else {
-      if (now.isSame(startTime)) {
-        if(entry.isSavedEntry){
-          formCase = TLEFFormCase.EXISTING_CURRENT;
-        }else{
-          formCase = TLEFFormCase.NEW_CURRENT_FUTURE;
-        }
-      } else if (now.isSame(endTime)) {
-        if(entry.isSavedEntry){
-          formCase = TLEFFormCase.EXISTING_PREVIOUS
-        }else{
-          formCase = TLEFFormCase.NEW_CURRENT;
-        }
-      }else{
-        if(entry.isSavedEntry){
-          formCase = TLEFFormCase.EXISTING_CURRENT;
-        }else{
-          formCase = TLEFFormCase.NEW_CURRENT;
-        }
+      if (entry.isSavedEntry) {
+        formCase = TLEFFormCase.EXISTING_CURRENT;
+      } else if (!entry.isSavedEntry) {
+        if (now.isSame(startTime)) { formCase = TLEFFormCase.NEW_CURRENT_FUTURE; }
+        else if (now.isAfter(startTime)) { formCase = TLEFFormCase.NEW_CURRENT; }
       }
     }
     console.log("CASE IS: " + formCase)
     return formCase;
   }
-
 
 
 }
