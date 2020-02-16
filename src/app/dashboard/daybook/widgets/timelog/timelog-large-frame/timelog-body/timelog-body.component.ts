@@ -51,7 +51,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
 
-  public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
+  // public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
   // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
   public onDrawNewTLE(drawTLE: TimelogEntryItem) {
     this.timelogDisplayGrid.drawTimelogEntry(drawTLE);
@@ -64,10 +64,10 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public onMouseLeave() { }
 
 
-  public drawTLEIsInGridItem(gridItem: TimelogDisplayGridItem): boolean {
-
-    return false;
-  }
+  // public drawTLEIsInGridItem(gridItem: TimelogDisplayGridItem): boolean {
+  //   console.log("fired when?")
+  //   return false;
+  // }
 
   private _updateDisplaySub: Subscription = new Subscription();
 
@@ -75,16 +75,23 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
     this._buildTimelog();
 
-    this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update)=>{
+    this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
       this._buildTimelog();
     });
 
+    this.tlefService.formChanged$.subscribe((formValue) => {
+      if (formValue) {
+        this._setActiveTLEFGridItem();
+      }else{
+        this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
+      }
+    })
     // console.log("Timelog body:");
     // this.gridItems.forEach((item)=>{
     //   console.log("   grid item " + item.startTime.format('hh:mm a') + " - " + item.availability)
     // });
   }
-  ngOnDestroy(){
+  ngOnDestroy() {
     this._updateDisplaySub.unsubscribe();
   }
 
@@ -104,6 +111,30 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
   private _buildTimelog() {
     this._buildGuideLineHours();
+    this._setActiveTLEFGridItem();
+  }
+
+  private _setActiveTLEFGridItem() {
+    this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
+    const activeBarItem = this.tlefService.activeGridBarItem;
+    if (activeBarItem) {
+      const foundItem = this.gridItems.find((gridItem) => {
+        const activeBarItem = this.tlefService.activeGridBarItem;
+        const isSame = gridItem.startTime.isSame(activeBarItem.startTime) && gridItem.endTime.isSame(activeBarItem.endTime);
+        const endsAfterStart = activeBarItem.startTime.isSame(gridItem.startTime) && activeBarItem.endTime.isAfter(gridItem.startTime);
+        const isBeforeEnd = activeBarItem.startTime.isAfter(gridItem.startTime) && activeBarItem.endTime.isBefore(gridItem.endTime);
+        const endsAtEnd = activeBarItem.endTime.isSame(gridItem.endTime) && activeBarItem.startTime.isBefore(gridItem.endTime);
+        return isSame || endsAtEnd || endsAfterStart || isBeforeEnd;
+      });
+      if (foundItem) {
+        foundItem.isActiveFormItem = true;
+        // console.log('Active bar item is set to: [' + this.gridItems.indexOf(foundItem) +']  : ' + foundItem.startTime.format('hh:mm a') + " - " + foundItem.endTime.format('hh:mm a'))
+      } else {
+        console.log("Error: could not find active timelog grid item")
+      }
+    }else{
+
+    }
   }
 
   private _buildGuideLineHours() {

@@ -54,16 +54,12 @@ export class TimelogEntryComponent implements OnInit {
   }
 
   public onClickOpenTimelogEntry() {
-    console.log("ASDF, " , this.timelogEntries.length)
+    console.log("Opening Timelog Entry grid item.  this.timelogEntries.length = " , this.timelogEntries.length)
     if(this.timelogEntries.length === 0){
-      console.log("this.tle is 0")
       this.tlefService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
-
     }else if(this.timelogEntries.length === 1){
-      console.log("this.tle is 1")
       this.tlefService.openTimelogEntry(this.timelogEntries[0]);
     }else if(this.timelogEntries.length > 1){
-      console.log("this.tle is > 1 ", this.timelogEntries.length)
       const totalMS = this.gridItem.endTime.diff(this.gridItem.startTime, 'milliseconds');
       const foundIndex = this.timelogEntries.findIndex(item => item.durationMilliseconds > (totalMS/2));
       if(foundIndex > -1){
@@ -72,17 +68,12 @@ export class TimelogEntryComponent implements OnInit {
         this.tlefService.openTimelogEntry(this.timelogEntries[0]);
       }
     }
-    
-
-
   }
 
 
   private _rebuild() {
-
     let displayEntry: TimelogEntryDisplayItem = new TimelogEntryDisplayItem(this.gridItem, this.activitiesService.activitiesTree);
     this._displayEntry = displayEntry;
-
   }
 
 

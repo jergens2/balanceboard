@@ -20,9 +20,9 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
 
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;
-  private _gridBarItems: DisplayGridBarItem[] = [];
 
-  public get items(): DisplayGridBarItem[] { return this._gridBarItems; }
+
+  public get items(): DisplayGridBarItem[] { return this.tlefService.gridBarItems; }
 
   public get startTime(): moment.Moment{ return this.daybookDisplayService.displayStartTime; }
   public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
@@ -35,18 +35,10 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this._buildBarItems();
-    this._daybookSub = this.daybookDisplayService.displayUpdated$.subscribe((update)=>{
-      this._buildBarItems();
-    });
+
   }
 
-  private _buildBarItems(){
-    let gridBarItems: DisplayGridBarItem[] = this.daybookDisplayService.activeDayController.fullScheduleItems
-      .filter(item => item.startTime.isSameOrAfter(this.startTime) && item.endTime.isSameOrBefore(this.endTime))
-      .map(item => new DisplayGridBarItem(item));
-    this._gridBarItems = gridBarItems;
-  }
+
 
   public ngOnDestroy(){
     this._daybookSub.unsubscribe();
@@ -65,55 +57,37 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
   }
 
   public onClickGoLeft(){
-    const activeItemIndex = this._gridBarItems.findIndex(item => item.isActive);
-    if(activeItemIndex >= 0 && activeItemIndex <= this._gridBarItems.length-1){
-      if(activeItemIndex === 0){
-        //first item
-      }else{
-        this.onClickItem(this._gridBarItems[activeItemIndex-1]);
-      }
-    }else{
-      console.log('error with index')
-    }
+    this.tlefService.gridBarGoLeft();
   }
   public onClickGoRight(){
-    const activeItemIndex = this._gridBarItems.findIndex(item => item.isActive);
-    if(activeItemIndex >= 0 && activeItemIndex <= this._gridBarItems.length-1){
-      if(activeItemIndex === this._gridBarItems.length-1){
-        //last item
-      }else{
-        this.onClickItem(this._gridBarItems[activeItemIndex+1]);
-      }
-    }else{
-      console.log('error with index')
-    }
+    this.tlefService.gridBarGoRight();
   }
 
 
   private _updateOnItemChange(toolChange: {startTime: moment.Moment, endTime: moment.Moment}){
-    if(toolChange){
-      // console.log("Tool change "  +  toolChange.startTime.format('YYYY-MM-DD hh:mm a') + " to " + toolChange.endTime.format('YYYY-MM-DD hh:mm a'))
+    // if(toolChange){
+    //   // console.log("Tool change "  +  toolChange.startTime.format('YYYY-MM-DD hh:mm a') + " to " + toolChange.endTime.format('YYYY-MM-DD hh:mm a'))
     
-      const foundItem = this._gridBarItems.find((item)=>{
-        const startsAfterStart = item.startTime.isSameOrAfter(toolChange.startTime);
-        const startsBeforeEnd = item.startTime.isSameOrBefore(toolChange.endTime);
-        const endsAfterStart = item.endTime.isSameOrAfter(toolChange.startTime);
-        const endsBeforeEnd = item.endTime.isSameOrBefore(toolChange.endTime);
-        return startsAfterStart && startsBeforeEnd && endsAfterStart && endsBeforeEnd;
-      });
-      if(foundItem){
-        this._gridBarItems.forEach((item)=>{
-          item.isActive = false;
-        });
-        foundItem.isActive = true;
-      }else{
-        console.log("Error: unable to find grid item from toolChange : " + toolChange.startTime.format('hh:mm a') + " to " + toolChange.endTime.format('hh:mm a') )
-      }
-    }else{
-      this._gridBarItems.forEach((item)=>{
-        item.isActive = false;
-      });
-    }
+    //   const foundItem = this._gridBarItems.find((item)=>{
+    //     const startsAfterStart = item.startTime.isSameOrAfter(toolChange.startTime);
+    //     const startsBeforeEnd = item.startTime.isSameOrBefore(toolChange.endTime);
+    //     const endsAfterStart = item.endTime.isSameOrAfter(toolChange.startTime);
+    //     const endsBeforeEnd = item.endTime.isSameOrBefore(toolChange.endTime);
+    //     return startsAfterStart && startsBeforeEnd && endsAfterStart && endsBeforeEnd;
+    //   });
+    //   if(foundItem){
+    //     this._gridBarItems.forEach((item)=>{
+    //       item.isActive = false;
+    //     });
+    //     foundItem.isActive = true;
+    //   }else{
+    //     console.log("Error: unable to find grid item from toolChange : " + toolChange.startTime.format('hh:mm a') + " to " + toolChange.endTime.format('hh:mm a') )
+    //   }
+    // }else{
+    //   this._gridBarItems.forEach((item)=>{
+    //     item.isActive = false;
+    //   });
+    // }
     
   }
 

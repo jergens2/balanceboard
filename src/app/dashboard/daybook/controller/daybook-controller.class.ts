@@ -40,7 +40,6 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     private _energyController: DaybookEnergyController;
     private _timeDelineatorController: DaybookTimeDelineatorController;
 
-    private _tlefGridDisplayItems: DisplayGridBarItem[] = [];
 
     private _dataChanged$: Subject<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> = new Subject();
     private _subscriptions: Subscription[] = [];
@@ -49,8 +48,6 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     private get sleepController(): DaybookSleepController { return this._sleepController; }
     private get energyController(): DaybookEnergyController { return this._energyController; }
     private get timeDelineatorController(): DaybookTimeDelineatorController { return this._timeDelineatorController; }
-
-    public get tlefGridDisplayItems(): DisplayGridBarItem[] { return this._tlefGridDisplayItems; }
 
     public reload(dayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) {
         // console.log("Reloading the controller: ", dayItem)
@@ -90,6 +87,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     public getSleepItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): SleepEntryItem {
         return this.sleepController.getSleepItem(gridItemStart, gridItemEnd);
+    }
+    public getTimelogEntryItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment ): TimelogEntryItem { 
+        return this.timelogEntryController.getTimelogEntryItem(gridItemStart, gridItemEnd);
     }
 
 

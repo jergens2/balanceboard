@@ -21,7 +21,6 @@ export class TimelogDisplayGridItem{
     public percent: number;
     public availability: DaybookAvailabilityType;
     public isSmallGridItem: boolean = false;
-
     public isActiveFormItem: boolean = false;
 
     public get drawTimelogEntry(): TimelogEntryItem { return this._drawTLE$.getValue(); }

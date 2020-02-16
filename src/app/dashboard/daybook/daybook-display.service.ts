@@ -30,6 +30,7 @@ export class DaybookDisplayService {
 
   public get dateYYYYMMDD(): string { return this.daybookControllerService.activeDayController.dateYYYYMMDD; }
   public get activeDayController(): DaybookController { return this.daybookControllerService.activeDayController; }
+  public get todayController(): DaybookController { return this.daybookControllerService.todayController; }
   public get activeDayController$(): Observable<DaybookController> { return this.daybookControllerService.activeDayController$; }
   public get clock(): moment.Moment { return this.daybookControllerService.clock; }
 

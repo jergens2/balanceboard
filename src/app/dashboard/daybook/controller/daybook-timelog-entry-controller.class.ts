@@ -40,6 +40,23 @@ export class DaybookTimelogEntryController {
         }
     }
 
+    public getTimelogEntryItem(gridItemStart, gridItemEnd): TimelogEntryItem{ 
+        const foundItem = this.timelogEntryItems.find((item)=>{
+            const startsAfterStart = gridItemStart.isSameOrAfter(item.startTime);
+            const startsBeforeEnd = gridItemStart.isSameOrBefore(item.endTime);
+            const endsAfterStart = gridItemEnd.isSameOrAfter(item.startTime);
+            const endsBeforeEnd = gridItemEnd.isSameOrBefore(item.endTime);
+            return startsAfterStart && startsBeforeEnd && endsAfterStart && endsBeforeEnd;
+        });
+        if (foundItem){
+            return foundItem;
+        }else{
+            console.log('Error: could not find sleep item from grid item.');
+            return null;
+        }
+
+    }
+
     public get prevDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
     public get thisDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).format('YYYY-MM-DD'); }
     public get nextDateYYYYMMDD(): string { return moment(this._dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'); }
