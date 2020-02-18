@@ -60,7 +60,7 @@ export class DaybookDayItem {
     public setIsToday() { this._isToday = true; }
 
     public set timelogEntryDataItems(items: DaybookTimelogEntryDataItem[]) {
-        console.log(this.dateYYYYMMDD + ": setting tle items: ", items)
+        // console.log(this.dateYYYYMMDD + ": setting tle items: ", items)
         this._httpShape.daybookTimelogEntryDataItems = items;
     }
 

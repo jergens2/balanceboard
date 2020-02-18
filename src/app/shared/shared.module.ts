@@ -34,6 +34,7 @@ import { HealthSymptomEntryInputComponent } from './data-entry-item-input/data-e
 import { DropdownListComponent } from './utilities/components/dropdown-list/dropdown-list.component';
 import { TimeInputComponent } from './utilities/components/time-input/time-input.component';
 import { ColorPickerModule } from "ngx-color-picker";
+import { DeleteConfirmButtonComponent } from './utilities/components/delete-confirm-button/delete-confirm-button.component';
 
 
 
@@ -79,6 +80,7 @@ import { ColorPickerModule } from "ngx-color-picker";
         HealthSymptomEntryInputComponent,
         DropdownListComponent,
         TimeInputComponent,
+        DeleteConfirmButtonComponent,
 
 
         
@@ -94,6 +96,7 @@ import { ColorPickerModule } from "ngx-color-picker";
         RecurringTaskFormComponent,
         ActivityInputDropdownComponent,
         DataEntryItemInputComponent,
+        DeleteConfirmButtonComponent,
 
         DropdownListComponent,
         TimeInputComponent,

@@ -26,13 +26,8 @@ export class TimelogEntryFormComponent implements OnInit {
   private _entryItem: TimelogEntryItem;
 
   private _changesMade: boolean = false;
-  private _confirmDelete: boolean = false;
 
   ngOnInit() {
-
-
-
-    
 
   }
 
@@ -40,18 +35,14 @@ export class TimelogEntryFormComponent implements OnInit {
   public get formCase(): TLEFFormCase { return this.timelogEntryFormService.formCase; }
 
   public get durationString(): string { return this.entryItem.durationString; }
-  public get confirmDelete(): boolean { return this._confirmDelete; }
 
 
   public onClickSave() {
     this.daybookControllerService.activeDayController.saveTimelogEntryItem$(this.entryItem);
     this.toolsService.closeTool();
   }
-  public onClickDelete() {
-    this._confirmDelete = true;
 
-  }
-  public onClickConfirmDelete() {
+  public onDelete() {
     this.daybookControllerService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
     this.toolsService.closeTool();
   }

@@ -66,6 +66,7 @@ export class TimelogEntryDisplayItem {
                         percentage: percentage,
                     }
                 });
+                // console.log("merged is  ", mergedTimelogEntry.timelogEntryActivities)
             }
 
 

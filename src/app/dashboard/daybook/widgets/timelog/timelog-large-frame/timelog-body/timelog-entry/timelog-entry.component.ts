@@ -54,7 +54,6 @@ export class TimelogEntryComponent implements OnInit {
   }
 
   public onClickOpenTimelogEntry() {
-    console.log("Opening Timelog Entry grid item.  this.timelogEntries.length = " , this.timelogEntries.length)
     if(this.timelogEntries.length === 0){
       this.tlefService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
     }else if(this.timelogEntries.length === 1){

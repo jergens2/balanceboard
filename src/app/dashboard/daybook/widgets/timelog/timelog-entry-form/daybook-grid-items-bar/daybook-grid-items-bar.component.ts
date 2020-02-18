@@ -35,7 +35,6 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-
   }
 
 
@@ -46,14 +45,7 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
   }
 
   public onClickItem(item: DisplayGridBarItem) {
-
-    // if (item.availabilityType === DaybookAvailabilityType.SLEEP) {
-    //   if(!item.sleepEntry){ console.log('Error:  no sleep entry value on item')}
-    //   this.toolboxService.openToolSleepInput(item.sleepEntry);
-    // } else {
-    //   if(!item.timelogEntry){ console.log('Error:  no sleep entry value on item')}
-    //   this.toolboxService.openTimelogEntry(item.timelogEntry);
-    // }
+    this.tlefService.onClickGridItem(item);
   }
 
   public onClickGoLeft(){

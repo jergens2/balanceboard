@@ -16,6 +16,7 @@ export class DaybookDayItemTimelog {
                 if (item.timelogEntryActivities) {
                     item.timelogEntryActivities.forEach((activity) => {
                         timelogEntry.timelogEntryActivities.push(activity);
+                        console.log("pushing " , activity)
                     });
                 } else {
                     console.log('No TLEAs ?', item);

@@ -20,6 +20,7 @@ export class TimelogEntryFormService {
 
   private _isInitiated: boolean = false;
   private _toolIsOpenSub: Subscription = new Subscription();
+  private _daybookSub: Subscription = new Subscription();
 
   private _formChanged$: BehaviorSubject<TLEFFormCase> = new BehaviorSubject(null);
 
@@ -29,20 +30,25 @@ export class TimelogEntryFormService {
   private _gridBarItems: DisplayGridBarItem[] = [];
   private _activeGridBarItem: DisplayGridBarItem;
 
+  private _timelogEntries: TimelogEntryItem[] = [];
+
   public get openedTimelogEntry(): TimelogEntryItem { return this._openedTimelogEntry; }
   public get openedSleepEntry(): SleepEntryItem { return this._openedSleepEntry; }
   public get formCase(): TLEFFormCase { return this._formChanged$.getValue(); }
   public get formChanged$(): Observable<TLEFFormCase> { return this._formChanged$.asObservable(); }
   public get toolIsOpen$(): Observable<boolean> { return this.toolBoxService.toolIsOpen$; }
+  public get toolIsOpen(): boolean { return this.toolBoxService.toolIsOpen; }
 
   public get gridBarItems(): DisplayGridBarItem[] { return this._gridBarItems; }
   public get activeGridBarItem(): DisplayGridBarItem { return this._activeGridBarItem; }
 
   public openNewCurrentTimelogEntry() {
+    // console.log("opening new current")
     this._initiate();
     const formCase = TLEFFormCase.NEW_CURRENT;
     this._buildGridBarItems(true);
     this._openedTimelogEntry = this.daybookService.todayController.getNewCurrentTLE();
+    // console.log("Opened timelog entry set to: " , this._openedTimelogEntry);
     this._setActiveItem(this.openedTimelogEntry.startTime, this.openedTimelogEntry.endTime);
     this.toolBoxService.openTimelogEntryForm();
     this._formChanged$.next(formCase);
@@ -51,10 +57,12 @@ export class TimelogEntryFormService {
   }
 
   public openTimelogEntry(timelogEntry: TimelogEntryItem) {
+    // console.log("opening tle")
     this._initiate();
     const formCase: TLEFFormCase = this._determineCase(timelogEntry);
     this._buildGridBarItems(formCase === TLEFFormCase.NEW_CURRENT);
     this._openedTimelogEntry = timelogEntry;
+    // console.log("Opened timelog entry set to: " , this._openedTimelogEntry);
     this._setActiveItem(timelogEntry.startTime, timelogEntry.endTime);
     this.toolBoxService.openTimelogEntryForm();
     this._formChanged$.next(formCase);
@@ -62,10 +70,12 @@ export class TimelogEntryFormService {
     
   }
   public openSleepEntry(sleepEntry: SleepEntryItem) {
+    // console.log("opening sleep")
     this._initiate();
     const formCase = TLEFFormCase.SLEEP;
     this._buildGridBarItems();
     this._openedSleepEntry = sleepEntry;
+
     this._setActiveItem(sleepEntry.startTime, sleepEntry.endTime);
     this.toolBoxService.openSleepEntryForm();
     this._formChanged$.next(formCase);
@@ -73,6 +83,14 @@ export class TimelogEntryFormService {
     
   }
 
+  public onClickGridItem(item: DisplayGridBarItem){
+    const setToItem = this.gridBarItems[this.gridBarItems.indexOf(item)];
+    if(setToItem.availabilityType === DaybookAvailabilityType.SLEEP){
+      this.openSleepEntry(setToItem.sleepEntry);
+    }else{
+      this.openTimelogEntry(setToItem.timelogEntry);
+    }
+  }
 
   public gridBarGoLeft(){
     const currentActiveIndex = this.gridBarItems.findIndex(item => item.isActive === true);
@@ -174,27 +192,29 @@ export class TimelogEntryFormService {
         return gridBarItem;
       });
     this._gridBarItems = gridBarItems;
-    console.log("GRID BAR ITEMS: ")
-    this._gridBarItems.forEach((item)=>{
-      console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " - " + item.endTime.format('YYYY-MM-DD hh:mm a') + " : " + item.availabilityType)
-    });
-
-    
+    // console.log("GRID BAR ITEMS: ")
+    // this._gridBarItems.forEach((item)=>{
+    //   console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " - " + item.endTime.format('YYYY-MM-DD hh:mm a') + " : " + item.availabilityType)
+    // });
   }
 
   private _closeForm() {
+    this.gridBarItems.forEach(item => item.isActive = false);
     this._openedSleepEntry = null;
     this._openedTimelogEntry = null;
     this._formChanged$.next(null);
     this._isInitiated = false;
+    this._activeGridBarItem = null;
     this._toolIsOpenSub.unsubscribe();
+    this._daybookSub.unsubscribe();
   }
 
   private _determineCase(entry: TimelogEntryItem): TLEFFormCase {
     let formCase: TLEFFormCase;
     const startTime: moment.Moment = entry.startTime;
     const endTime: moment.Moment = entry.endTime;
-    const now: moment.Moment = moment(this.daybookService.clock).startOf('minute');
+    const now: moment.Moment = moment(this.daybookService.clock);
+    const startOfNow = moment(now).startOf('minute');
     const isPrevious: boolean = endTime.isBefore(now);
     const isFuture: boolean = startTime.isAfter(now);
     if (isPrevious) {
@@ -211,7 +231,7 @@ export class TimelogEntryFormService {
         else if (now.isAfter(startTime)) { formCase = TLEFFormCase.NEW_CURRENT; }
       }
     }
-    console.log("CASE IS: " + formCase)
+    // console.log("CASE IS: " + formCase)
     return formCase;
   }
 

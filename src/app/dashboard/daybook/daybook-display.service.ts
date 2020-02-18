@@ -54,7 +54,7 @@ export class DaybookDisplayService {
   
 
   public onZoomChanged(newZoomValue: TimelogZoomControllerItem) {
-    console.log("to do:  set a new zoom level")
+    // console.log("to do:  set a new zoom level")
     this._updateDisplay();
   }
 
@@ -63,14 +63,14 @@ export class DaybookDisplayService {
 
 
     this.activeDayController$.subscribe((activeDayChanged) => {
-      console.log("DaybookDisplayService: ActiveController updated.  Updating display.")
+      // console.log("DaybookDisplayService: ActiveController updated.  Updating display.")
       this._updateDisplay();
     });
     this._updateDisplay();
   }
 
   private _updateDisplay(){
-    console.log(" Updating display")
+    // console.log(" Updating display")
     this._buildZoomItems();
     this._buildDisplayOutputItems();
     // this._setDefaultDayStructureTimes();

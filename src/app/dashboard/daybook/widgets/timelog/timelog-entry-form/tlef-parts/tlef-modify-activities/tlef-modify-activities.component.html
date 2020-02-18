@@ -1,0 +1,51 @@
+<div class="tlef-activities-root" *ngIf="timelogEntry">
+  <div style="margin-bottom:5px;font-weight:bold;color:rgb(0, 35, 100);">
+    Activities for time period
+  </div>
+
+  <div *ngFor="let activityItem of activityItems" class="new-activity no-select"
+    (mouseenter)="onMouseEnterActivity(activityItem)" (mouseleave)="onMouseLeaveActivity(activityItem)">
+    <div style="flex-grow:2;display:flex;flex-direction: column;">
+      <div style="display:flex;flex-direction: row; align-items: center;">
+
+        <div *ngIf="activityItem.colorPickerIsOpen" class="activity-color-circle" style="border: 1px solid black; font-size: 0.1em;" 
+          [(colorPicker)]="activityItem.color"
+          [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'"
+          [style.background]="activityItem.color" [cpPosition]="'left'" [cpOKButton]="true" [cpOKButtonText]="'Save'"
+          [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
+          [cpCancelButtonClass]="'small-button discard-button'"
+          (colorPickerClose)="activityItem.onClickCancelColorPicker()"
+          (colorPickerCancel)="activityItem.onClickCancelColorPicker()"
+          (colorPickerSelect)="activityItem.onClickSaveColorPicker($event)"
+          (colorPickerChange)="activityItem.onColorChanged($event)" ></div>
+
+        <div class="activity-color-circle" [style.background-color]="activityItem.color"
+          *ngIf="!activityItem.colorPickerIsOpen" (click)="activityItem.onClickOpenColorPicker()"></div>
+        <div class="new-activity-name">
+          {{ activityItem.activity.name }}
+        </div>
+
+        <div class="new-activity-duration">
+          : {{ activityItem.durationMinutes.toFixed(0) }} minutes
+        </div>
+      </div>
+
+      <div class="slider-bar-container">
+        <app-activity-slider-bar [activityItem]="activityItem"></app-activity-slider-bar>
+
+      </div>
+
+
+    </div>
+    <div class="delete-activity">
+      <fa-icon class="icon-button" [icon]="faTimes" (click)="onClickRemoveActivity(activityItem)"></fa-icon>
+    </div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <app-activity-input-dropdown (valueChanged)="onActivityValueChanged($event)"></app-activity-input-dropdown>
+  </div>
+</div>
+<div *ngIf="!timelogEntry" class="tlef-activities-root">
+  No Timelog Entry
+</div>

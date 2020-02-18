@@ -1,0 +1,6 @@
+<div style="display:flex;flex-direction: column;">
+    Current timelog entry.  Happening right now.
+    <div class="clock">{{ clock }}</div>
+    <app-tlef-view-only *ngIf="!isEditing" (onClickEdit)="onClickEdit()" ></app-tlef-view-only>
+    <app-tlef-new-or-modify *ngIf="isEditing" ></app-tlef-new-or-modify>
+</div>

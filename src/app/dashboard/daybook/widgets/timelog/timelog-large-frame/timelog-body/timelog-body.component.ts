@@ -85,6 +85,11 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
       }else{
         this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
       }
+    });
+    this.tlefService.toolIsOpen$.subscribe((isOpen)=>{
+      if(!(isOpen === true)){
+        this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
+      }
     })
     // console.log("Timelog body:");
     // this.gridItems.forEach((item)=>{
@@ -97,7 +102,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
   public onClickSleepItem(gridItem: TimelogDisplayGridItem) {
     const sleepItem = this.daybookDisplayService.activeDayController.getSleepItem(gridItem.startTime, gridItem.endTime);
-    console.log("Sleep item is ", sleepItem)
+    // console.log("Sleep item is ", sleepItem)
     this.tlefService.openSleepEntry(sleepItem);
   }
 

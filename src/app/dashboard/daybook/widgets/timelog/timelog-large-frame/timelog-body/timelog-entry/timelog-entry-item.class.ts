@@ -7,17 +7,20 @@ import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entr
 
 export class TimelogEntryItem {
     constructor(startTime: moment.Moment, endTime: moment.Moment) {
+        // console.log("constructing tle: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
         this._startTime = moment(startTime);
         this._utcOffsetMinutes = this._startTime.utcOffset();
         this._endTime = moment(endTime);
         this._itemState = new ItemState({ startTime: this._startTime, endTime: this._endTime });
+        this._timelogEntryActivities = [];
+        // console.log("this._timelogEntryActivities " , this._timelogEntryActivities)
     }
 
 
     // private _sleepState: 'SLEEP' | 'AWAKE' = 'AWAKE';
     private _isConfirmed = false;
     private _utcOffsetMinutes: number;
-    private _timelogEntryActivities: TimelogEntryActivity[] = [];
+    private _timelogEntryActivities: TimelogEntryActivity[];
     private _note = '';
 
     private _itemState: ItemState;
@@ -59,32 +62,32 @@ export class TimelogEntryItem {
         return (this.durationSeconds / totalSeconds) * 100;
     }
 
-
-    /**
-     * This property probably ultimately is not required, but it might be
-     */
-    // public get sleepState(): 'SLEEP' | 'AWAKE' { return this._sleepState; }
-
-
     public get isConfirmed(): boolean { return this._isConfirmed; }
-
 
     public get utcOffsetMinutes(): number { return this._utcOffsetMinutes; }
 
-    public set timelogEntryActivities(activities: TimelogEntryActivity[]) { this._timelogEntryActivities = activities; }
-    public get timelogEntryActivities(): TimelogEntryActivity[] { return this._timelogEntryActivities; }
+    public set timelogEntryActivities(activities: TimelogEntryActivity[]) {
+        // console.log("Setting to: " , activities)
+        this._timelogEntryActivities = activities;
+    }
+    public get timelogEntryActivities(): TimelogEntryActivity[] { 
+        // console.log(" returning value: " , this, this._timelogEntryActivities)
+        return this._timelogEntryActivities; 
+    }
 
 
     public get dataEntryItem(): DaybookTimelogEntryDataItem {
-        return {
+        const returnItem = {
             startTimeISO: this._startTime.toISOString(),
             startTimeUtcOffsetMinutes: this._startTime.utcOffset(),
             endTimeISO: this._endTime.toISOString(),
             endTimeUtcOffsetMinutes: this._endTime.utcOffset(),
-            timelogEntryActivities: this.timelogEntryActivities,
+            timelogEntryActivities: this._timelogEntryActivities,
             embeddedNote: this._note,
             noteIds: [],
-        }
+        };
+        // console.log("return item is ", returnItem)
+        return returnItem;
     }
 
 }

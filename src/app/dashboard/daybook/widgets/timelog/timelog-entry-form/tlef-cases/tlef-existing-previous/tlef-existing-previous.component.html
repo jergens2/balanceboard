@@ -1,0 +1,5 @@
+<div style="display:flex;flex-direction: column;">
+    Previously saved Timelog Entry
+    <app-tlef-view-only *ngIf="!isEditing" (onClickEdit)="onClickEdit()"></app-tlef-view-only>
+    <app-tlef-new-or-modify *ngIf="isEditing"></app-tlef-new-or-modify>
+</div>

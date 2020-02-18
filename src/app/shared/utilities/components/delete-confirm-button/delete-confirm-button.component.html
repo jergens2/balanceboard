@@ -1,0 +1,4 @@
+<div (mouseleave)="onMouseLeave()">
+    <button class="medium-button delete-button" *ngIf="!confirmDelete" (click)="onClickDelete()">Delete</button>
+    <button class="medium-button confirm-delete-button" *ngIf="confirmDelete" (click)="onClickConfirmDelete()">Confirm</button>
+</div>
