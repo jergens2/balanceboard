@@ -13,6 +13,10 @@ import { TimelogEntryFormService } from './timelog-entry-form.service';
   templateUrl: './timelog-entry-form.component.html',
   styleUrls: ['./timelog-entry-form.component.css']
 })
+
+/**
+ * The flow of this component is that the Service controlls everything.
+ */
 export class TimelogEntryFormComponent implements OnInit {
 
   constructor(

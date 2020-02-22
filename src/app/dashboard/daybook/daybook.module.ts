@@ -56,6 +56,7 @@ import { SleepInputFormComponent } from './widgets/timelog/timelog-entry-form/sl
 import { DaybookGridItemsBarComponent } from './widgets/timelog/timelog-entry-form/daybook-grid-items-bar/daybook-grid-items-bar.component';
 import { TlefNewCurrentFutureComponent } from './widgets/timelog/timelog-entry-form/tlef-cases/tlef-new-current-future/tlef-new-current-future.component';
 import { TlefExistingCurrentComponent } from './widgets/timelog/timelog-entry-form/tlef-cases/tlef-existing-current/tlef-existing-current.component';
+import { NewDayFormComponent } from './widgets/timelog/timelog-entry-form/new-day-form/new-day-form.component';
 
 
 @NgModule({
@@ -114,11 +115,13 @@ import { TlefExistingCurrentComponent } from './widgets/timelog/timelog-entry-fo
     DaybookGridItemsBarComponent,
     TlefNewCurrentFutureComponent,
     TlefExistingCurrentComponent,
+    NewDayFormComponent,
   ],
   exports: [
     // DaybookEntryFormComponent,
     TimelogEntryFormComponent,
     SleepInputFormComponent,
+    NewDayFormComponent,
     TlefModifyActivitiesComponent,
     ActivitySliderBarComponent,
   ]

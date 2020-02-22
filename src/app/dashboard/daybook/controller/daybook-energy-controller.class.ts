@@ -16,7 +16,7 @@ export class DaybookEnergyController {
 
     public getEnergyLevelAtTime(timeToCheck: moment.Moment): DaybookEnergyLevel {
         const foundItem = this._energyItems.find((item) => {
-            return timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isSameOrBefore(item.endTime);
+            return timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime);
         });
         if (foundItem) {
             return foundItem.getEnergyLevelAtTime(timeToCheck);
@@ -26,7 +26,7 @@ export class DaybookEnergyController {
     }
     public getEnergyAtTime(timeToCheck: moment.Moment): number {
         const foundItem = this._energyItems.find((item) => {
-            return timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isSameOrBefore(item.endTime);
+            return timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime);
         });
         if (foundItem) { return foundItem.getEnergyAtTime(timeToCheck); }
         else { console.log('Error: no energy item'); }

@@ -19,19 +19,23 @@ export class ToolboxService {
   private _toolIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public openTool(component: ToolType) {
-    if(component === ToolType.TimelogEntry){
+    if(component === ToolType.TIMELOG_ENTRY){
       this.openTimelogEntryForm();
     }
     this._currentTool$.next(component);
     this._toolIsOpen$.next(true);
   }
   public openTimelogEntryForm() {
-    this._currentTool$.next(ToolType.TimelogEntry);
+    this._currentTool$.next(ToolType.TIMELOG_ENTRY);
+    this._toolIsOpen$.next(true);
+  }
+  public openNewDayForm(){
+    this._currentTool$.next(ToolType.START_NEW_DAY);
     this._toolIsOpen$.next(true);
   }
 
   public openSleepEntryForm(){
-    this._currentTool$.next(ToolType.SleepInput);
+    this._currentTool$.next(ToolType.SLEEP_ENTRY);
     this._toolIsOpen$.next(true);
   }
 

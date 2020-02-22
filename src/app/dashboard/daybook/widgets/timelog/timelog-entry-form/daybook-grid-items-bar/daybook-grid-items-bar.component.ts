@@ -21,11 +21,12 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;
 
+  private _items: DisplayGridBarItem[] = [];
 
-  public get items(): DisplayGridBarItem[] { return this.tlefService.gridBarItems; }
+  public get items(): DisplayGridBarItem[] { return this._items; }
 
-  public get startTime(): moment.Moment{ return this.daybookDisplayService.displayStartTime; }
-  public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
+  public get startTime(): moment.Moment{ return this._startTime; }
+  public get endTime(): moment.Moment { return this._endTime; }
 
   public faArrowLeft = faArrowLeft;
   public faArrowRight = faArrowRight;
@@ -34,7 +35,17 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
   private _toolboxSub: Subscription = new Subscription();
 
   ngOnInit() {
+    this.reload();
+    this.daybookDisplayService.displayUpdated$.subscribe((change)=>{
+      this.reload();
+    });
+  }
 
+  private reload(){
+    this._startTime = this.daybookDisplayService.displayStartTime;
+    this._endTime = this.daybookDisplayService.displayEndTime;
+    this._items = this.tlefService.gridBarItems;
+    
   }
 
 

@@ -49,7 +49,9 @@ export class DaybookDisplayService {
 
   public get zoomItems(): TimelogZoomControllerItem[] { return this._zoomItems; }
 
-  public setDaybookWidget(widget: DaybookWidgetType) { this._widgetChanged$.next(widget); }
+  public setDaybookWidget(widget: DaybookWidgetType) { 
+    this._widgetChanged$.next(widget); 
+  }
 
   
 

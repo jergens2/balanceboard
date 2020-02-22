@@ -111,7 +111,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
                 return startTime;
             }
         } else {
-            console.log('error: couldnt find availability start time. Row start time:  ' + fromTime.format('hh:mm a'));
+            
         }
     }
     public getLatestAvailability(rowStartTime: moment.Moment): moment.Moment {
@@ -167,6 +167,20 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             return new TimelogEntryItem(endTime, endTime);
         }
 
+    }
+
+    public isFreshDay(): boolean{
+        let isFresh: boolean;
+        if(this.sleepController.wakeupTimeIsSet){
+            isFresh = false;
+        }else{
+            if(this.timelogEntryItems.length === 0){
+                isFresh = true;
+            }else{
+                isFresh = false;
+            }
+        }
+        return isFresh;
     }
 
     public isTimeAvailable(time: moment.Moment): boolean {

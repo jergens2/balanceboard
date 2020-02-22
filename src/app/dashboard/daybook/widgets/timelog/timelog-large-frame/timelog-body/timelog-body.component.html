@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        <div *ngIf="gridItems.length > 0" [ngStyle]="gridItemsNgStyle" class="grid-items">
+        <div *ngIf="gridItems.length > 0 " [ngStyle]="gridItemsNgStyle" class="grid-items">
             <div *ngFor="let gridItem of gridItems" class="grid-item"
                 [ngClass]="{'active-tlef': gridItem.isActiveFormItem}">
 
@@ -28,8 +28,12 @@
                 </div>
             </div>
         </div>
+<!-- 
+        <div class="center-message" *ngIf="isFresh">
+            <button class="medium-button" (click)="onClickStart()">Start</button>
+        </div> -->
 
-        <app-time-selection-column style="grid-row: 1 / -1; grid-column: 2 / span 1;"
+        <app-time-selection-column  style="grid-row: 1 / -1; grid-column: 2 / span 1;"
             [timeDelineators]="timeDelineators" (drawNewTLE)="onDrawNewTLE($event)"
             (createNewTLE)="onCreateNewTLE($event)"></app-time-selection-column>
 

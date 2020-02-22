@@ -34,8 +34,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
 
   private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
-  private _minutesPerTwentyPixels: number = 30;
-
+  private _isFresh: boolean = true;
 
   public faTimes = faTimes;
   public faClock = faClock;
@@ -50,6 +49,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public get timeDelineators(): TimelogDelineator[] { return this.daybookDisplayService.timelogDelineators; }
   public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
+  public get isFresh(): boolean { return this._isFresh; }
 
   // public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
   // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
@@ -100,6 +100,11 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
     this._updateDisplaySub.unsubscribe();
   }
 
+  public onClickStart(){
+    this.tlefService.openNewCurrentTimelogEntry();
+  }
+
+
   public onClickSleepItem(gridItem: TimelogDisplayGridItem) {
     const sleepItem = this.daybookDisplayService.activeDayController.getSleepItem(gridItem.startTime, gridItem.endTime);
     // console.log("Sleep item is ", sleepItem)
@@ -117,6 +122,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   private _buildTimelog() {
     this._buildGuideLineHours();
     this._setActiveTLEFGridItem();
+    this._setIsFresh();
   }
 
   private _setActiveTLEFGridItem() {
@@ -140,6 +146,10 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
     }else{
 
     }
+  }
+
+  private _setIsFresh(){
+    this._isFresh = this.daybookDisplayService.activeDayController.isFreshDay();
   }
 
   private _buildGuideLineHours() {

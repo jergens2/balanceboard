@@ -30,4 +30,9 @@ export class TlefExistingPreviousComponent implements OnInit {
     return this.activitiesService.findActivityByTreeId(treeId)
   }
 
+
+  public onClickEdit(){
+    this._isEditing = true;
+  }
+
 }

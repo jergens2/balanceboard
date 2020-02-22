@@ -53,6 +53,10 @@ export class ToolsComponent implements OnInit {
     return moment().format('MMMM Do');
   }
 
+  public get startNewDay(): string { 
+    return moment().format('MMMM Do, YYYY')
+  }
+
   onClickClose() {
     this.toolsService.closeTool();
   }

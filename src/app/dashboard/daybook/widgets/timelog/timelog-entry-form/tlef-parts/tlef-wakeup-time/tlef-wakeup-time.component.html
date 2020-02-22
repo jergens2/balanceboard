@@ -1,15 +1,20 @@
 <div class="set-wakeup-time-root">
-    <div style="display:flex;flex-direction: column;">
-        <div>What time did you wake up this morning?</div>
-        <div style="display:flex;flex-direction: row;">
-            <app-time-input [timeValue]="time" (timeChanged)="onTimeChanged($event)" [minValue]="minVal"
-                [maxValue]="maxVal">
-            </app-time-input>
+
+    <div>
+        What time did you wake up this morning?
+    </div>
+
+    <div style="display:flex;flex-direction: row; justify-content: space-between; align-items: flex-end;">
+        <app-time-input [timeValue]="time" (timeChanged)="onTimeChanged($event)" [minValue]="minVal"
+            [maxValue]="maxVal">
+        </app-time-input>
+        <div>
+            <button class="medium-button" (click)="onClickSave()">Save </button>
         </div>
+        
 
     </div>
 
-    <div style="display:flex;flex-direction: row-reverse;">
-        <button class="medium-button" (click)="onClickSave()">Save <span *ngIf="saveClicked" style="width:20px;"><fa-icon [icon]="faSpinner" [spin]="true"></fa-icon></span></button>
-    </div>
+
+
 </div>

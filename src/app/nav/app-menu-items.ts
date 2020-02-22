@@ -11,7 +11,7 @@ let menuItems: MenuItem[] = [];
 menuItems.push(new MenuItem('Home', '/home', faHome));
 
 let daybookMenu = new MenuItem('Daybook', '/daybook', faBookOpen);
-daybookMenu.sidebarToolComponent = ToolType.TimelogEntry;
+daybookMenu.sidebarToolComponent = ToolType.TIMELOG_ENTRY;
 let daybookMenuItems: MenuItem[] = [new MenuItem('Daily Task List', '/daily-task-list', faListUl)];
 daybookMenu.subMenu = new HeaderMenu('Daybook submenu', daybookMenuItems);
 menuItems.push(daybookMenu);
@@ -22,20 +22,20 @@ menuItems.push(daybookMenu);
 menuItems.push(new MenuItem('Social', '/social', faUsers));
 
 let notebookItem: MenuItem = new MenuItem('Notebooks', '/notebooks', faBook);
-notebookItem.sidebarToolComponent = ToolType.Notepad;
+notebookItem.sidebarToolComponent = ToolType.NOTEBOOK_ENTRY;
 menuItems.push(notebookItem);
 
 
 
 
 let tasksItem: MenuItem = new MenuItem('Tasks', '/tasks', faCheckCircle);
-tasksItem.sidebarToolComponent = ToolType.ActionItem;
+tasksItem.sidebarToolComponent = ToolType.ACTION_ITEM;
 menuItems.push(tasksItem);
 
 
 
 let schedulingMenu = new MenuItem('Scheduling', '/scheduling', faCalendar);
-schedulingMenu.sidebarToolComponent = ToolType.FutureEvent;
+schedulingMenu.sidebarToolComponent = ToolType.FUTURE_EVENT;
 let schedulingMenuItems: MenuItem[] = [
     new MenuItem('Schedule Rotations', '/schedule-rotations', faClock),
     new MenuItem('Day Templates', '/day-templates', faClock),

@@ -55,5 +55,6 @@ export enum DaybookWidgetType {
     TIMELOG = 'TIMELOG',
     DAILY_TASK_LIST = 'DAILY_TASK_LIST',
     CALENDAR = 'CALENDAR',
-    SLEEP_PROFILE = 'SLEEP_PROFILE'
+    SLEEP_PROFILE = 'SLEEP_PROFILE',
+    
 }

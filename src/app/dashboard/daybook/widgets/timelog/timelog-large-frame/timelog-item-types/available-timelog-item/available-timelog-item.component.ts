@@ -8,6 +8,7 @@ import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.servic
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 
 @Component({
@@ -17,7 +18,7 @@ import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-ent
 })
 export class AvailableTimelogItemComponent implements OnInit {
 
-  constructor(private tlefService: TimelogEntryFormService) { }
+  constructor(private tlefService: TimelogEntryFormService, private daybookService: DaybookDisplayService) { }
 
   private _drawTLE: TimelogEntryItem;
   private _drawTLENgStyle: any = {};
@@ -64,7 +65,12 @@ export class AvailableTimelogItemComponent implements OnInit {
   }
 
   public onClickCreateNewTLE(){
-    this.tlefService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
+    if(this.daybookService.activeDayController.isFreshDay){
+      this.tlefService.openStartNewDay();
+    }else{
+      this.tlefService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
+    }
+
     // this.toolsService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
     // this.toolsService.openTool(ToolType.TimelogEntry);
   }

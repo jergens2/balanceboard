@@ -22,8 +22,8 @@ export class TlefWakeupTimeComponent implements OnInit {
 
 
     this._time = moment(this.daybookControllerService.activeDayController.wakeupTime);
-    this.maxVal = moment();
-    this.minVal = this.daybookControllerService.todayController.prevDayFallAsleepTime;
+    this.maxVal = moment(this.daybookControllerService.clock).startOf("day");
+    this.minVal = moment(this.daybookControllerService.todayController.prevDayFallAsleepTime).add(1, 'minutes');
   }
 
   @Output() timeChanged: EventEmitter<moment.Moment> = new EventEmitter();
@@ -31,8 +31,8 @@ export class TlefWakeupTimeComponent implements OnInit {
   private _time: moment.Moment;
   public get time(): moment.Moment { return this._time; };
 
-  public minVal: moment.Moment = moment().startOf("day");
-  public maxVal: moment.Moment = moment();
+  public minVal: moment.Moment;
+  public maxVal: moment.Moment;
   public get saveClicked(): boolean { return this._saveClicked; }
 
   onTimeChanged(time: moment.Moment) {

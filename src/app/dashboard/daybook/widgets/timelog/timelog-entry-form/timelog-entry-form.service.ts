@@ -42,29 +42,50 @@ export class TimelogEntryFormService {
   public get gridBarItems(): DisplayGridBarItem[] { return this._gridBarItems; }
   public get activeGridBarItem(): DisplayGridBarItem { return this._activeGridBarItem; }
 
+
+  public openStartNewDay(){
+    this._closeForm();
+    this.toolBoxService.openNewDayForm();
+  }
+
   public openNewCurrentTimelogEntry() {
     // console.log("opening new current")
     this._initiate();
     const formCase = TLEFFormCase.NEW_CURRENT;
     this._buildGridBarItems(true);
     this._openedTimelogEntry = this.daybookService.todayController.getNewCurrentTLE();
-    // console.log("Opened timelog entry set to: " , this._openedTimelogEntry);
     this._setActiveItem(this.openedTimelogEntry.startTime, this.openedTimelogEntry.endTime);
-    this.toolBoxService.openTimelogEntryForm();
+
+    if(this.daybookService.todayController.isFreshDay){
+      this.toolBoxService.openNewDayForm();
+    }else{
+      this.toolBoxService.openTimelogEntryForm();
+    }
     this._formChanged$.next(formCase);
+
     this._openedSleepEntry = null;
-    
   }
 
   public openTimelogEntry(timelogEntry: TimelogEntryItem) {
     // console.log("opening tle")
     this._initiate();
     const formCase: TLEFFormCase = this._determineCase(timelogEntry);
-    this._buildGridBarItems(formCase === TLEFFormCase.NEW_CURRENT);
+    const isNewCurrent = formCase === TLEFFormCase.NEW_CURRENT;
+    this._buildGridBarItems(isNewCurrent);
     this._openedTimelogEntry = timelogEntry;
     // console.log("Opened timelog entry set to: " , this._openedTimelogEntry);
     this._setActiveItem(timelogEntry.startTime, timelogEntry.endTime);
-    this.toolBoxService.openTimelogEntryForm();
+
+    if(isNewCurrent){
+      if(this.daybookService.todayController.isFreshDay){
+        this.toolBoxService.openNewDayForm();
+      }else{
+        this.toolBoxService.openTimelogEntryForm();
+      }
+    }else{
+      this.toolBoxService.openTimelogEntryForm();
+    }
+
     this._formChanged$.next(formCase);
     this._openedSleepEntry = null;
     
@@ -84,12 +105,16 @@ export class TimelogEntryFormService {
   }
 
   public onClickGridItem(item: DisplayGridBarItem){
-    const setToItem = this.gridBarItems[this.gridBarItems.indexOf(item)];
-    if(setToItem.availabilityType === DaybookAvailabilityType.SLEEP){
-      this.openSleepEntry(setToItem.sleepEntry);
-    }else{
-      this.openTimelogEntry(setToItem.timelogEntry);
+    const foundIndex: number = this.gridBarItems.findIndex(checkItem => checkItem.startTime.isSame(item.startTime) && checkItem.endTime.isSame(item.endTime));
+    if(foundIndex > -1){
+      const setToItem = this.gridBarItems[foundIndex];
+      if(setToItem.availabilityType === DaybookAvailabilityType.SLEEP){
+        this.openSleepEntry(setToItem.sleepEntry);
+      }else{
+        this.openTimelogEntry(setToItem.timelogEntry);
+      }
     }
+
   }
 
   public gridBarGoLeft(){
@@ -160,6 +185,15 @@ export class TimelogEntryFormService {
       this._toolIsOpenSub = this.toolBoxService.toolIsOpen$.subscribe((toolIsOpen: boolean) => {
         if (toolIsOpen === false) {
           this._closeForm();
+        }
+      });
+      this._daybookSub.unsubscribe();
+      this._daybookSub = this.daybookService.displayUpdated$.subscribe((change)=>{
+        this._buildGridBarItems(this.formCase === TLEFFormCase.NEW_CURRENT);
+        if(this.openedTimelogEntry){
+          this._setActiveItem(this.openedTimelogEntry.startTime, this.openedTimelogEntry.endTime);
+        }else if(this.openedSleepEntry){
+          this._setActiveItem(this.openedSleepEntry.startTime, this.openedSleepEntry.endTime);
         }
       });
     }

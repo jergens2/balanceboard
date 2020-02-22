@@ -39,17 +39,20 @@ export class TlefNewOrModifyComponent implements OnInit {
   }
 
   private _setEntryItem(){
+    
     this._entryItem = this.tlefService.openedTimelogEntry;
+    this._initialActivities = [];
+    // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
     if(this._entryItem){
       if(this._entryItem.timelogEntryActivities){
         this._entryItem.timelogEntryActivities.forEach((item)=>{
+          // console.log("pushing")
           this._initialActivities.push(item);
         });
       }
-    }else{
-      this._initialActivities = [];
     }
 
+    // console.log("initial activities: " + this._initialActivities.length , this._initialActivities)
   }
 
   public onActivitiesChanged(activities: TimelogEntryActivity[]){

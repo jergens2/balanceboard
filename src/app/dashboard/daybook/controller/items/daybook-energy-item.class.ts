@@ -28,7 +28,7 @@ export class DaybookEnergyItem {
             // console.log("energyDiff, currentEnergyLevel", energyDiff, currentEnergyLevel)
             return currentEnergyLevel;
         } else {
-            console.log('Error:  timeToCheck is not in range ')
+            console.log('Error:  timeToCheck is not in range ' + timeToCheck.format('YYYY-MM-DD hh:mm a'))
         }
         return null;
     }

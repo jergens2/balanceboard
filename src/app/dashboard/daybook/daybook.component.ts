@@ -43,8 +43,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
 
   public get daybookHeader(): string {
-    return "daybook header.  insert date here";
-    // return moment(this.daybookControllerService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
+    return moment(this.daybookDisplayService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
   }
 
   public get appScreenSize(): AppScreenSize { return this._screenSize; }
@@ -76,14 +75,15 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this._buildWidgets();
 
     this.daybookIsLoading = false;
-    let currentValue: DaybookWidgetType = this.daybookDisplayService.widgetChanged;
+    let currentValue: DaybookWidgetType = Object.assign({}, this.daybookDisplayService.widgetChanged);
     this._setPrimaryWidget(currentValue);
-    // this._dbSub = this.daybookControllerService.widgetChanged$.subscribe((changedWidget: DaybookWidgetType) => {
-    //   if (changedWidget !== currentValue) {
-    //     currentValue = changedWidget;
-    //     this._setPrimaryWidget(changedWidget);
-    //   }
-    // });
+
+    this._dbSub = this.daybookDisplayService.widgetChanged$.subscribe((changedWidget: DaybookWidgetType) => {
+      // if (changedWidget !== currentValue) {
+        // currentValue = changedWidget;
+        this._setPrimaryWidget(changedWidget);
+      // }
+    });
   }
 
   private _buildWidgets() {

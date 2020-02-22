@@ -145,23 +145,23 @@ export class HeaderComponent implements OnInit {
 
     let notepadMenuItem: MenuItem = new MenuItem('Notebook Entry', null, faStickyNote);
     this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.Notepad);
+      this.toolsService.openTool(ToolType.NOTEBOOK_ENTRY);
     }));
     let actionItemMenuItem: MenuItem = new MenuItem("Action Item", null, faCheckCircle);
     this.activeSubscriptions.push(actionItemMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.ActionItem);
+      this.toolsService.openTool(ToolType.ACTION_ITEM);
     }));
     let timelogEntryMenuItem: MenuItem = new MenuItem("Timelog Entry", null, faTable);
     this.activeSubscriptions.push(timelogEntryMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.TimelogEntry);
+      this.toolsService.openTool(ToolType.TIMELOG_ENTRY);
     }));
     let futureEventMenuItem: MenuItem = new MenuItem("Appointment / Future Event", null, faCalendarAlt);
     this.activeSubscriptions.push(futureEventMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.FutureEvent);
+      this.toolsService.openTool(ToolType.FUTURE_EVENT);
     }));
     let dailyTaskListMenuItem: MenuItem = new MenuItem("Daily Task List", null, faTasks);
     this.activeSubscriptions.push(dailyTaskListMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.DailyTaskList);
+      this.toolsService.openTool(ToolType.DAILY_TASK_LIST);
     }));
 
     toolsMenuItems.push(notepadMenuItem);
