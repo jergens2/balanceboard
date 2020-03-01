@@ -41,14 +41,14 @@
 
   <div class="tool" *ngIf="toolName === 'START_NEW_DAY'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <div class="tool-header">
+    <!-- <div class="tool-header">
       <div class="tool-header-item font-family-open-sans">
         Starting a new day
       </div>
       <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
-    </div>
+    </div> -->
     <div class="tool-body">
-      <app-new-day-form></app-new-day-form>
+      <app-daybook-time-position-form></app-daybook-time-position-form>
     </div>
   </div>
 

@@ -32,8 +32,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private router: Router,
     private modalService: ModalService,
     private toolsService: ToolboxService,
-    private daybookService: DaybookDisplayService,
-    private tlefService: TimelogEntryFormService) { }
+    private daybookService: DaybookDisplayService) { }
 
 
   faPlus = faPlus;
@@ -68,7 +67,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         if (menuItem.sidebarToolComponent === ToolType.TIMELOG_ENTRY) {
           this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
           this.router.navigate(['/daybook']);
-          this.tlefService.openNewCurrentTimelogEntry();
+          this.daybookService.openNewCurrentTimelogEntry();
         } else {
           this.toolsService.openTool(menuItem.sidebarToolComponent);
         }

@@ -44,9 +44,9 @@ export class TimelogDelineator {
     public get icon(): IconDefinition { return this._icon; }
     public get delineatorType(): TimelogDelineatorType { return this._delineatorType; };
 
-    
+    public get isSleepDelineator(): boolean { return this._delineatorType === TimelogDelineatorType.WAKEUP_TIME || this._delineatorType === TimelogDelineatorType.FALLASLEEP_TIME; }
 
-
+    public get isSaved(): boolean { return this._delineatorType === TimelogDelineatorType.SAVED_DELINEATOR; }
     private _setIcon(){
         // todo:
         // if wakeupTime: sun, nowtime: clock, fallAsleeptime: moon.

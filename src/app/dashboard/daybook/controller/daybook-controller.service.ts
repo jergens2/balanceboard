@@ -78,12 +78,27 @@ export class DaybookControllerService implements ServiceAuthenticates {
     this._clockSubscriptions = [];
     this._clock = moment();
     this._todayYYYYMMDD = this.clock.format('YYYY-MM-DD');
+    
+    
+    // let currentTestTime = moment().startOf('day');
+    // const clockSub = timer(0, 2000).subscribe((second) => {
+    //   currentTestTime = moment(currentTestTime).add(31, 'minutes');
+    //   console.log(currentTestTime.format('YYYY-MM-DD hh:mm a') + " current test time.");
+    //   this._clock = moment(currentTestTime);
+    //   if (this._clock.format('YYYY-MM-DD') !== this.todayYYYYMMDD) {
+    //     console.log("CROSSING MIDNIGHT")
+    //     this._crossMidnight();
+    //   }
+    // });
+
     const clockSub = timer(0, 1000).subscribe((second) => {
+      
       this._clock = moment();
       if (this._clock.format('YYYY-MM-DD') !== this.todayYYYYMMDD) {
         this._crossMidnight();
       }
     });
+
     const msToNextMinute = moment(this._clock).startOf('minute').add(1, 'minute').diff(moment(this._clock), 'milliseconds');
     const minuteSub = timer(msToNextMinute, 60000).subscribe((minute) => {
 

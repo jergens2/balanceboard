@@ -1,27 +1,16 @@
-import { Component, OnInit, Input, HostListener, Type, OnDestroy } from '@angular/core';
-import { ItemState } from '../../../../../../shared/utilities/item-state.class';
-import { RelativeMousePosition } from '../../../../../../shared/utilities/relative-mouse-position.class';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { TimeUtilities } from '../../../../../../shared/utilities/time-utilities/time-utilities';
-import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
-import { TimelogZoomControllerItem } from '../timelog-zoom-controller/timelog-zoom-controller-item.class';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
-import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 import { TimelogDelineator } from '../../timelog-delineator.class';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { ScreenSizeService } from '../../../../../../shared/app-screen-size/screen-size.service';
 import { DaybookController } from '../../../../controller/daybook-controller.class';
-import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
-
 import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
 import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
-import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
-import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
-import { SleepEntryItem } from '../../timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
 import { TimelogEntryFormService } from '../../timelog-entry-form/timelog-entry-form.service';
+import { DisplayGridBarItem } from '../../timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
 
 @Component({
   selector: 'app-timelog-body',
@@ -78,37 +67,18 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
     this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
       this._buildTimelog();
     });
-
-    this.tlefService.formChanged$.subscribe((formValue) => {
-      if (formValue) {
-        this._setActiveTLEFGridItem();
-      }else{
-        this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
-      }
+    this.daybookDisplayService.activeGridBarItem$.subscribe((item: DisplayGridBarItem)=>{
+      this._setActiveTLEFGridItem();
     });
-    this.tlefService.toolIsOpen$.subscribe((isOpen)=>{
-      if(!(isOpen === true)){
-        this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
-      }
-    })
-    // console.log("Timelog body:");
-    // this.gridItems.forEach((item)=>{
-    //   console.log("   grid item " + item.startTime.format('hh:mm a') + " - " + item.availability)
-    // });
   }
   ngOnDestroy() {
     this._updateDisplaySub.unsubscribe();
   }
 
-  public onClickStart(){
-    this.tlefService.openNewCurrentTimelogEntry();
-  }
 
 
-  public onClickSleepItem(gridItem: TimelogDisplayGridItem) {
-    const sleepItem = this.daybookDisplayService.activeDayController.getSleepItem(gridItem.startTime, gridItem.endTime);
-    // console.log("Sleep item is ", sleepItem)
-    this.tlefService.openSleepEntry(sleepItem);
+  public onClickGridItem(gridItem: TimelogDisplayGridItem) {
+    this.daybookDisplayService.openTimelogGridItem(gridItem);
   }
 
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
@@ -127,10 +97,10 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
   private _setActiveTLEFGridItem() {
     this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
-    const activeBarItem = this.tlefService.activeGridBarItem;
+    const activeBarItem = this.daybookDisplayService.activeGridBarItem;
     if (activeBarItem) {
       const foundItem = this.gridItems.find((gridItem) => {
-        const activeBarItem = this.tlefService.activeGridBarItem;
+        const activeBarItem = this.daybookDisplayService.activeGridBarItem;
         const isSame = gridItem.startTime.isSame(activeBarItem.startTime) && gridItem.endTime.isSame(activeBarItem.endTime);
         const endsAfterStart = activeBarItem.startTime.isSame(gridItem.startTime) && activeBarItem.endTime.isAfter(gridItem.startTime);
         const isBeforeEnd = activeBarItem.startTime.isAfter(gridItem.startTime) && activeBarItem.endTime.isBefore(gridItem.endTime);
@@ -149,7 +119,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   }
 
   private _setIsFresh(){
-    this._isFresh = this.daybookDisplayService.activeDayController.isFreshDay();
+    this._isFresh = this.daybookDisplayService.activeDayController.isNewDay;
   }
 
   private _buildGuideLineHours() {

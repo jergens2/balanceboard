@@ -5,6 +5,7 @@ import { faEdit, faTrash, faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 @Component({
   selector: 'app-time-selection-row',
@@ -16,7 +17,7 @@ export class TimeSelectionRowComponent implements OnInit {
 
   @Input() row: TimeSelectionRow;
 
-  constructor(private tlefService: TimelogEntryFormService) { }
+  constructor(private daybookService: DaybookDisplayService) { }
 
   ngOnInit() {
     if(this.row.timelogDelineator){
@@ -48,7 +49,7 @@ export class TimeSelectionRowComponent implements OnInit {
   }
 
   public onClickNowDelineator(){
-    this.tlefService.openNewCurrentTimelogEntry();
+    this.daybookService.openNewCurrentTimelogEntry();
   }
 
 

@@ -194,19 +194,12 @@ export class TimeSelectionColumnComponent implements OnInit {
     }
     rows.forEach((row) => {
       if (row.isAvailable) {
-        row.earliestAvailability = this._getEarliestAvailability(row.startTime);
-        row.latestAvailability = this._getLatestAvailability(row.startTime);
+        row.earliestAvailability = this.daybookDisplayService.activeDayController.getEarliestAvailability(row.startTime);
+        row.latestAvailability = this.daybookDisplayService.activeDayController.getLatestAvailability(row.endTime);
       }
     })
     this._rows = rows;
     this._updateRowSubscriptions();
-  }
-
-  private _getEarliestAvailability(rowStart: moment.Moment): moment.Moment {
-    return this.daybookDisplayService.activeDayController.getEarliestAvailability(rowStart);
-  }
-  private _getLatestAvailability(rowStart: moment.Moment): moment.Moment {
-    return this.daybookDisplayService.activeDayController.getLatestAvailability(rowStart);
   }
 
 

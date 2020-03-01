@@ -2,3 +2,12 @@
     display: flex;
     flex-direction: column;
 }
+
+
+.edit-section{
+    cursor: pointer;
+    border-radius: 5px;
+}
+.edit-section:hover{
+    background-color: rgb(250, 250, 250);
+}

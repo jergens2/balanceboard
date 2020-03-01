@@ -14,6 +14,7 @@
 }
 .zoom-button{
     width:20px;
+    border-radius: 5px;
     background-color: rgb(252, 252, 252);
     color: gray;
 

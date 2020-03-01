@@ -110,7 +110,9 @@ export class TimelogDisplayGrid {
           if (gridItems[i - 1].availability === gridItems[i].availability) {
             let merge = false;
             if (gridItems[i].availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
-              // from 4.75 to 6 
+              /**
+               * This is the part where it is determined at which percentage to cut off small items and merge them into bigger items.
+               */
               const minPercent = 4.75;
               const smallPercent = 6;
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {

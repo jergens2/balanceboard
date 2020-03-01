@@ -23,7 +23,7 @@
                 <app-timelog-entry *ngIf="gridItem.availability === 'TIMELOG_ENTRY'" class='activity-item'
                     [gridItem]="gridItem"></app-timelog-entry>
 
-                <div *ngIf="gridItem.availability === 'SLEEP'" class='sleep-item' (click)="onClickSleepItem(gridItem)">
+                <div *ngIf="gridItem.availability === 'SLEEP'" class='sleep-item' (click)="onClickGridItem(gridItem)">
 
                 </div>
             </div>

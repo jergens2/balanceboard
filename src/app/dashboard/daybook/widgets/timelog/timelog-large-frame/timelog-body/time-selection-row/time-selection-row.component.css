@@ -53,8 +53,9 @@
 
 .timelog-delineator{
 
-    
+    border: 1px solid rgba(255, 255, 255, 0);
     background-color: rgba(255, 255, 255, 0);
+
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -114,6 +115,23 @@
 }
 
 
+.sleep-delineator{
+    color: orange;
+    cursor: pointer;
+}
+.sleep-delineator:hover{
+    background-color: rgb(255, 255, 255);
+    border: 1px solid orange;
+}
+
+.saved-delineator{
+    color: navy;
+    cursor: pointer;
+}
+.saved-delineator:hover{
+    background-color: rgb(255, 255, 255);
+    border: 1px solid navy;
+}
 
 
 .edit-time-container{

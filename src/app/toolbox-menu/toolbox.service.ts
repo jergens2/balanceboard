@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ToolType } from './tool-type.enum';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
-// tslint:disable-next-line: max-line-length
-import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { SleepEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
-import { TimelogEntryFormService } from '../dashboard/daybook/widgets/timelog/timelog-entry-form/timelog-entry-form.service';
-import * as moment from 'moment';
+import { Observable, BehaviorSubject } from 'rxjs';
+
 
 
 @Injectable({
@@ -20,12 +16,12 @@ export class ToolboxService {
 
   public openTool(component: ToolType) {
     if(component === ToolType.TIMELOG_ENTRY){
-      this.openTimelogEntryForm();
+      this.tlefServiceOpenTimelogEntryForm();
     }
     this._currentTool$.next(component);
     this._toolIsOpen$.next(true);
   }
-  public openTimelogEntryForm() {
+  public tlefServiceOpenTimelogEntryForm() {
     this._currentTool$.next(ToolType.TIMELOG_ENTRY);
     this._toolIsOpen$.next(true);
   }

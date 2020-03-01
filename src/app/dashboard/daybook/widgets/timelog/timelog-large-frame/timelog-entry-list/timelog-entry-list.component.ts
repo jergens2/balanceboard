@@ -5,6 +5,7 @@ import { TimelogEntryItem } from '../timelog-body/timelog-entry/timelog-entry-it
 import * as moment from 'moment';
 import { DurationString } from '../../../../../../shared/utilities/time-utilities/duration-string.class';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { DaybookDisplayService } from '../../../../daybook-display.service';
 
 @Component({
   selector: 'app-timelog-entry-list',
@@ -13,7 +14,7 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 })
 export class TimelogEntryListComponent implements OnInit {
 
-  constructor(private daybookControllerService: DaybookControllerService) { }
+  constructor(private daybookService: DaybookDisplayService) { }
 
   private _timelogEntryItems: TimelogEntryItem[] = [];
   public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
@@ -25,17 +26,28 @@ export class TimelogEntryListComponent implements OnInit {
   public faTrash = faTrash;
 
   ngOnInit() {
-    this._timelogEntryItems = this.daybookControllerService.activeDayController.timelogEntryItems;
-    this.daybookControllerService.activeDayController$.subscribe((updated)=>{
-      this._timelogEntryItems = this.daybookControllerService.activeDayController.timelogEntryItems;
+    // this._timelogEntryItems = this.daybookControllerService.activeDayController.timelogEntryItems;
+    // this.daybookControllerService.activeDayController$.subscribe((updated)=>{
+    //   this._timelogEntryItems = this.daybookControllerService.activeDayController.timelogEntryItems;
+    // });
+    this._update();
+    this.daybookService.displayUpdated$.subscribe((change)=>{
+      this._update();
     });
+  }
 
+  private _update(){
+    const startOfDay = moment(this.daybookService.clock).startOf('day');
+    const endOfDay = moment(startOfDay).add(24, 'hours');
+    this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryItems.filter((item)=>{
+      return item.startTime.isSameOrAfter(startOfDay) && item.endTime.isSameOrBefore(endOfDay);
+    });
   }
 
   public onClickEdit(entry: TimelogEntryItem){
   }
   public onClickDelete(entry: TimelogEntryItem){
-    this.daybookControllerService.activeDayController.deleteTimelogEntryItem$(entry);
+    this.daybookService.activeDayController.deleteTimelogEntryItem$(entry);
   }
 
 

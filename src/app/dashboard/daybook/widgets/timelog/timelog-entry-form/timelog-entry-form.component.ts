@@ -32,7 +32,12 @@ export class TimelogEntryFormComponent implements OnInit {
   private _changesMade: boolean = false;
 
   ngOnInit() {
-
+    // this._entryItem = this.timelogEntryFormService.openedTimelogEntry;
+    // this._formCase = this.timelogEntryFormService.formCase;
+    // this.timelogEntryFormService.formChanged$.subscribe((change) => {
+    //   this._entryItem = this.timelogEntryFormService.openedTimelogEntry;
+    //   this._formCase = this.timelogEntryFormService.formCase;
+    // });
   }
 
   public get entryItem(): TimelogEntryItem { return this.timelogEntryFormService.openedTimelogEntry; }
@@ -60,6 +65,6 @@ export class TimelogEntryFormComponent implements OnInit {
     }
   }
 
-  
+
 
 }

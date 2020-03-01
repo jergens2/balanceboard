@@ -78,7 +78,7 @@ export class DaybookSleepController extends TimeSchedule<SleepEntryItem> {
             if (foundItem) {
 
             } else {
-
+                console.log("Error: no item found.")
             }
             return foundItem.endTime;
         } else {
@@ -167,7 +167,7 @@ export class DaybookSleepController extends TimeSchedule<SleepEntryItem> {
         if (fallAsleepTime.isBefore(this.endOfThisDay)) {
             thisDayTimeSpanItems.push(new SleepEntryItem(fallAsleepTime, this.endOfThisDay));
         }
-        console.log("Updating sleep times for thisDay: ", thisDayTimeSpanItems)
+        // console.log("Updating sleep times for thisDay: ", thisDayTimeSpanItems)
         this._sleepTimesUpdated$.next(thisDayTimeSpanItems.map(item => item.saveToDB));
     }
 

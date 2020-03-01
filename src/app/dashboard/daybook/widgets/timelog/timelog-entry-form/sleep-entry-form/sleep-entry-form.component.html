@@ -1,10 +1,29 @@
 <div class="sleep-form-root">
-    <div>
+    <div style="font-size:0.9em;">
         <app-daybook-grid-items-bar></app-daybook-grid-items-bar>
     </div>
     <div>
         <span style="font-size: 0.9em; color: gray;">{{ previousDay }}</span> {{ sleepItem.startTime.format('h:mm a') }}
         to {{ sleepItem.endTime.format('h:mm a')}} <span
             style="font-size: 0.9em; color: gray;">{{ followingDay }}</span>
+    </div>
+    <div class="sleep-duration" >
+        <span style="color:gray; font-size:0.9em;">Sleep duration:</span>
+        {{ sleepDuration }}
+    </div>
+    <div>
+        <div *ngIf="isWakeupTime" class="wakeup-section">
+            <div>
+                
+            </div>
+            <div *ngIf="!isEditingWakeupTime" (click)="onClickEditWakeupTime()" class="edit-section">
+                Wakeup time: {{ wakeupTime.format('h:mm a') }} 
+            </div>
+            <div *ngIf="isEditingWakeupTime" style="display:flex;flex-direction: column;">
+                <app-tlef-wakeup-time (wakeupTimeChanged)="onWakeupTimeChanged($event)"></app-tlef-wakeup-time>
+                <button class="save-button medium-button" (click)="onClickSaveWakeupTime()">Save changes</button>
+            </div>
+        </div>
+        <div *ngIf="isFallAsleepTime">Fall asleep time: {{ fallAsleepTime.format('h:mm a') }} </div>
     </div>
 </div>

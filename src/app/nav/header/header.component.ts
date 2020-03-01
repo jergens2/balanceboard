@@ -33,8 +33,7 @@ export class HeaderComponent implements OnInit {
     private toolsService: ToolboxService,
     private modalService: ModalService,
     private daybookDisplayService: DaybookDisplayService,
-    private router: Router,
-    private tlefService: TimelogEntryFormService ) { }
+    private router: Router) { }
 
   faBars = faBars;
   faCogs = faCogs;
@@ -83,7 +82,7 @@ export class HeaderComponent implements OnInit {
     this._setBattery();
     this.daybookDisplayService.displayUpdated$.subscribe((item) => {
       this._setBattery();
-    })
+    });
 
     
   }
@@ -91,7 +90,7 @@ export class HeaderComponent implements OnInit {
   public onClickClock(){
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
     this.router.navigate(['/daybook']);
-    this.tlefService.openNewCurrentTimelogEntry();
+    this.daybookDisplayService.openNewCurrentTimelogEntry();
   }
   public onClickBattery(){
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);
@@ -187,7 +186,7 @@ export class HeaderComponent implements OnInit {
   }
 
   private _setBattery() {
-    const batteryLevel: number = this.daybookDisplayService.activeDayController.getEnergyAtTime(this.clock);
+    const batteryLevel: number = this.daybookDisplayService.todayController.getEnergyAtTime(this.clock);
     // console.log("Battery level is: " + batteryLevel);
     if (batteryLevel >= 0 && batteryLevel < 0.125) {
       this._batteryIcon = faBatteryEmpty;

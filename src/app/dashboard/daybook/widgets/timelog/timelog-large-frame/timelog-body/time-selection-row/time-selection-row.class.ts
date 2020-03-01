@@ -60,6 +60,7 @@ export class TimeSelectionRow {
     public get bodyStyle(): any { return this._bodyStyle; }
     public get diffMS(): number { return this.endTime.diff(this.startTime, 'milliseconds'); }
 
+
     public get drawDelineator(): TimelogDelineator { return this._drawDelineator; }
     public get showTimelogDelineator(): boolean {
         if (this.timelogDelineator) {
@@ -258,23 +259,23 @@ export class TimeSelectionRow {
             const thisType = this.timelogDelineator.delineatorType;
             const types = TimelogDelineatorType;
             if (thisType === types.WAKEUP_TIME || thisType === types.FALLASLEEP_TIME) {
-                this._delineatorNgStyle = {
-                    'color': 'orange',
-                };
+                // this._delineatorNgStyle = {
+                //     'color': 'navy',
+                //     'cursor':'pointer'
+                // };
             } else if (thisType === types.TIMELOG_ENTRY_START || thisType === types.TIMELOG_ENTRY_END) {
-                this._delineatorNgStyle = {
-                    // 'background-color': 'lime',
-                };
+                // this._delineatorNgStyle = {
+                // 'background-color': 'lime',
+                // };
             } else if (thisType === types.SAVED_DELINEATOR) {
                 this._delineatorNgStyle = {
                     'color': 'darkblue',
-                    'cursor':'pointer'
+                    'cursor': 'pointer'
                 };
             }
         }
 
         // console.log("Style is: (grid, body)" , this._gridStyle, this._bodyStyle);
     }
-
 
 }

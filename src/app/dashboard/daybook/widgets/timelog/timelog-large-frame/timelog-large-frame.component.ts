@@ -8,6 +8,8 @@ import { DaybookControllerService } from '../../../controller/daybook-controller
 import { TimelogZoomControllerItem } from './timelog-zoom-controller/timelog-zoom-controller-item.class';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 import { DaybookController } from '../../../controller/daybook-controller.class';
+import { DaybookDisplayService } from '../../../daybook-display.service';
+import { TimelogZoomType } from './timelog-zoom-controller/timelog-zoom-type.enum';
 
 @Component({
   selector: 'app-timelog-large-frame',
@@ -16,11 +18,9 @@ import { DaybookController } from '../../../controller/daybook-controller.class'
 })
 export class TimelogLargeFrameComponent implements OnInit {
 
-  constructor(private daybookControllerService: DaybookControllerService) { }
-
+  constructor(private daybookService: DaybookDisplayService) { }
 
   ngOnInit() {
-
   }
 
 
@@ -28,8 +28,8 @@ export class TimelogLargeFrameComponent implements OnInit {
     console.log("header item clicked: ", item);
   }
 
-  public showTimelogBody: boolean = true;
-  public showTimelogList: boolean = false;
+  public get showTimelogBody(): boolean { return this.daybookService.currentZoom.zoomType === TimelogZoomType.AWAKE; } 
+  public get showTimelogList(): boolean { return this.daybookService.currentZoom.zoomType === TimelogZoomType.LIST; }
 
   
   faCog = faCog;

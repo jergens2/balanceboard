@@ -14,6 +14,7 @@ import { DaybookAvailabilityType } from './items/daybook-availability-type.enum'
 import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 import { DisplayGridBarItem } from '../widgets/timelog/timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
+import { DaybookTimePosition } from '../daybook-time-position-form/daybook-time-position.enum';
 
 
 /** 
@@ -88,8 +89,24 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public getSleepItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): SleepEntryItem {
         return this.sleepController.getSleepItem(gridItemStart, gridItemEnd);
     }
-    public getTimelogEntryItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment ): TimelogEntryItem { 
+    public getTimelogEntryItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): TimelogEntryItem {
         return this.timelogEntryController.getTimelogEntryItem(gridItemStart, gridItemEnd);
+    }
+
+    public getDaybookAvailability(startTime: moment.Moment, endTime: moment.Moment): DaybookAvailabilityType{
+        
+        const foundItem = this.fullScheduleItems.find((item)=>{
+            const sameStart = item.startTime.isSame(startTime) && item.endTime.isAfter(startTime);
+            const sameEnd = item.endTime.isSame(endTime) && item.startTime.isBefore(endTime );
+            return sameStart || sameEnd;
+        });
+        if(foundItem){
+            // console.log("FInding items.  start: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a') + " -- : " + foundItem.value)
+            return foundItem.value;
+        }else{
+            console.log("Could not find availability");
+            return null;
+        }
     }
 
 
@@ -111,26 +128,28 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
                 return startTime;
             }
         } else {
-            
+            return fromTime;
         }
     }
-    public getLatestAvailability(rowStartTime: moment.Moment): moment.Moment {
+    public getLatestAvailability(fromTime: moment.Moment): moment.Moment {
         const availabileItems = this.fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
-        const foundIndex = availabileItems.findIndex(item => rowStartTime.isSameOrAfter(item.startTime) && rowStartTime.isSameOrBefore(item.endTime));
+        const foundIndex = availabileItems.findIndex(item => fromTime.isSameOrAfter(item.startTime) && fromTime.isSameOrBefore(item.endTime));
         if (foundIndex >= 0) {
-
             let endTime = availabileItems[foundIndex].endTime;
             for (let i = foundIndex; i < availabileItems.length; i++) {
-                if (availabileItems[i].endTime.isSame(availabileItems[i + 1].startTime)) {
-                    endTime = availabileItems[i + 1].endTime;
-                } else {
-                    i = availabileItems.length + 1;
+                if (i < availabileItems.length-1) {
+                    if (availabileItems[i].endTime.isSame(availabileItems[i + 1].startTime)) {
+                        endTime = availabileItems[i + 1].endTime;
+                    } else {
+                        i = availabileItems.length + 1;
+                    }
                 }
             }
             return endTime;
 
         } else {
             // console.log('error: couldnt find availability start time. Row start time:  ' + rowStartTime.format('hh:mm a'));
+            return fromTime;
         }
     }
 
@@ -169,18 +188,63 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     }
 
-    public isFreshDay(): boolean{
-        let isFresh: boolean;
-        if(this.sleepController.wakeupTimeIsSet){
-            isFresh = false;
-        }else{
-            if(this.timelogEntryItems.length === 0){
-                isFresh = true;
-            }else{
-                isFresh = false;
+
+    /**
+     * Determines the current time position, relative to the sleep cycle.
+     */
+    public getCurrentTimePosition(): DaybookTimePosition {
+        let timePosition: DaybookTimePosition;
+        const isBeforeWakeupTime: boolean = moment(this.clock).isBefore(this.wakeupTime);
+        const prevDayActivities: boolean = this.previousDay.timelogEntryDataItems.length > 0;
+        if (isBeforeWakeupTime) {
+            const sleepStartTime = moment(this.sleepController.prevDayFallAsleepTime);
+            const sleepMS = moment(this.wakeupTime).diff(sleepStartTime, 'milliseconds');
+            if (sleepMS <= 0) {
+                console.log('Error with sleep time calculations.');
+            } else {
+                const endOfFirstQuartile = moment(sleepStartTime).add((sleepMS / 4), 'milliseconds');
+                const startOfFourthQuartile = moment(this.wakeupTime).subtract((sleepMS) / 4, 'milliseconds');
+                const isFirstQuartile = moment(this.clock).isSameOrBefore(endOfFirstQuartile);
+                const isFourthQuartile = moment(this.clock).isSameOrAfter(startOfFourthQuartile);
+                const isMiddle = moment(this.clock).isSameOrAfter(endOfFirstQuartile) && moment(this.clock).isSameOrBefore(startOfFourthQuartile);
+                if (isFirstQuartile) {
+                    if (prevDayActivities) {
+                        timePosition = DaybookTimePosition.AWAKE_FROM_PREV_DAY;
+                    } else {
+                        timePosition = DaybookTimePosition.UNCLEAR;
+                    }
+                } else if (isFourthQuartile) {
+                    timePosition = DaybookTimePosition.NEW_DAY;
+                } else if (isMiddle) {
+                    timePosition = DaybookTimePosition.UNCLEAR;
+                } else {
+                    console.log('Error with time calculations');
+                }
+            }
+        } else {
+            if (!this.wakeupTimeIsSet) {
+                timePosition = DaybookTimePosition.NEW_DAY;
+            } else {
+                const awakeMS = moment(this.fallAsleepTime).diff(this.wakeupTime, 'milliseconds');
+                const startOfFourthQuartile = moment(this.fallAsleepTime).subtract((awakeMS) / 4, 'milliseconds');
+                const isAfterFourthQuartile = moment(this.clock).isSameOrAfter(startOfFourthQuartile);
+                if (isAfterFourthQuartile) {
+                    timePosition = DaybookTimePosition.APPROACHING_SLEEP;
+                } else {
+                    timePosition = DaybookTimePosition.NORMAL;
+                }
             }
         }
-        return isFresh;
+        if (!timePosition) {
+            console.log('Error with finding timePosition');
+        }
+        // console.log("Time Position is: " + timePosition);
+        return timePosition;
+    }
+
+
+    public get isNewDay(): boolean {
+        return this.getCurrentTimePosition() === DaybookTimePosition.NEW_DAY;
     }
 
     public isTimeAvailable(time: moment.Moment): boolean {
@@ -237,13 +301,13 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);
 
         this._sleepController = new DaybookSleepController(this._previousDay.sleepDataItems, this._thisDay.sleepDataItems, this._followingDay.sleepDataItems, this.dateYYYYMMDD);
-        
+
         const timeScheduleValueItems: TimeScheduleItem<DaybookAvailabilityType>[] = [
             ...timelogDataItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(moment(item.startTimeISO), moment(item.endTimeISO), true, DaybookAvailabilityType.TIMELOG_ENTRY)),
             ...this.sleepController.valueItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(item.startTime, item.endTime, true, DaybookAvailabilityType.SLEEP)),
         ];
         this.addScheduleValueItems(timeScheduleValueItems);
-        
+
         this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
         this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems, allSleepSpanItems);
         this._energyController = new DaybookEnergyController(this.fullScheduleItems, this.awakeToAsleepRatio);

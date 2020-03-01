@@ -64,15 +64,16 @@ export class AvailableTimelogItemComponent implements OnInit {
     this._mouseIsOver = false;
   }
 
-  public onClickCreateNewTLE(){
-    if(this.daybookService.activeDayController.isFreshDay){
-      this.tlefService.openStartNewDay();
-    }else{
-      this.tlefService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
-    }
+  public onClickItem(){
+    this.daybookService.openTimelogGridItem(this.gridItem);
+    // if(this.daybookService.activeDayController.isNewDay){
+    //   this.tlefService.openStartNewDay();
+    // }else{
+    //   this.tlefService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
+    // }
 
-    // this.toolsService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
-    // this.toolsService.openTool(ToolType.TimelogEntry);
+    // // this.toolsService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
+    // // this.toolsService.openTool(ToolType.TimelogEntry);
   }
 
 

@@ -3,6 +3,7 @@ import { DaybookAvailabilityType } from '../../../../controller/items/daybook-av
 import { TimeScheduleItem } from '../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimelogEntryItem } from '../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { SleepEntryItem } from '../sleep-entry-form/sleep-entry-item.class';
+import { Subject } from 'rxjs';
 
 
 export class DisplayGridBarItem {
@@ -15,19 +16,14 @@ export class DisplayGridBarItem {
      * 
      * The grid bar items are for the timelog entry form.
      */
-    constructor(timeScheduleItem: TimeScheduleItem<DaybookAvailabilityType>) {
-        this._startTime = timeScheduleItem.startTime;
-        this._endTime = timeScheduleItem.endTime;
-        this._daybookAvailabilty = timeScheduleItem.value;
+    constructor(startTime: moment.Moment, endTime: moment.Moment, availability: DaybookAvailabilityType) {
+        this._startTime = startTime;
+        this._endTime = endTime;
+        this._daybookAvailabilty = availability;
     }
 
     private _mouseIsOver: boolean = false;
-    onMouseEnter() {
-        this._mouseIsOver = true;
-    }
-    onMouseLeave() {
-        this._mouseIsOver = false;
-    }
+
     public get mouseIsOver(): boolean { return this._mouseIsOver; }
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
@@ -35,6 +31,8 @@ export class DisplayGridBarItem {
 
     public isCurrent = false;
     public isActive = false;
+
+    public index = -1;
 
     public timelogEntry: TimelogEntryItem;
     public sleepEntry: SleepEntryItem;
@@ -48,4 +46,20 @@ export class DisplayGridBarItem {
     public get isAvailable(): boolean { 
         return this._daybookAvailabilty === DaybookAvailabilityType.AVAILABLE;
     }
+
+
+    onMouseEnter() {
+        this._mouseIsOver = true;
+    }
+    onMouseLeave() {
+        this._mouseIsOver = false;
+    }
+
+    // private _click$: Subject<DisplayGridBarItem> = new Subject();
+    // public onClick(){
+    //     this._click$.next(this);
+    // }
+    // public get click$(){ return this._click$.asObservable();}
+
+
 }

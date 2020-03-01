@@ -49,6 +49,7 @@ export class TimeInputComponent implements OnInit {
     //     this.emitNewValue();
     //   }
     // });
+
   }
   
   // private emitNewValue(){
@@ -86,7 +87,6 @@ export class TimeInputComponent implements OnInit {
 
 
   public onChangeTimeValueInput() {
-    console.log("on change")
     let formInputValue = this.parseFormTimeInput(this.timeInputForm.controls['timeValue'].value);
     this._timeValue = moment(this.timeValue).hour(formInputValue.hour).minute(formInputValue.minute).second(0).millisecond(0);
 
@@ -99,8 +99,7 @@ export class TimeInputComponent implements OnInit {
       if (this._timeValue.isBefore(this.minValue)) {
         this._timeValue = moment(this.minValue);
       }
-    } 
-    console.log("Emitting new value: " + this._timeValue.format('YYYY-MM-DD hh:mm a'))
+    }
     this.timeInputForm.patchValue({ "timeValue": this.timeValue.format("HH:mm") });
     this.timeChanged.emit(this.timeValue);
   }

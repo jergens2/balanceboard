@@ -16,17 +16,17 @@ import { DaybookDisplayService } from '../../../../../daybook/daybook-display.se
 })
 export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookDisplayService: DaybookDisplayService, private tlefService: TimelogEntryFormService ) { }
+  constructor(private daybookDisplayService: DaybookDisplayService ) { }
 
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;
 
   private _items: DisplayGridBarItem[] = [];
 
-  public get items(): DisplayGridBarItem[] { return this._items; }
+  public get items(): DisplayGridBarItem[] { return this.daybookDisplayService.gridBarItems; }
 
-  public get startTime(): moment.Moment{ return this._startTime; }
-  public get endTime(): moment.Moment { return this._endTime; }
+  public get startTime(): moment.Moment{ return this.daybookDisplayService.displayStartTime; }
+  public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
 
   public faArrowLeft = faArrowLeft;
   public faArrowRight = faArrowRight;
@@ -35,35 +35,31 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
   private _toolboxSub: Subscription = new Subscription();
 
   ngOnInit() {
-    this.reload();
-    this.daybookDisplayService.displayUpdated$.subscribe((change)=>{
-      this.reload();
-    });
   }
 
-  private reload(){
-    this._startTime = this.daybookDisplayService.displayStartTime;
-    this._endTime = this.daybookDisplayService.displayEndTime;
-    this._items = this.tlefService.gridBarItems;
-    
-  }
+  // private reload(){
+    // this._startTime = this.daybookDisplayService.displayStartTime;
+    // this._endTime = this.daybookDisplayService.displayEndTime;
+    // this._items = this.daybookDisplayService.gridBarItems;
+  // }
 
 
 
   public ngOnDestroy(){
-    this._daybookSub.unsubscribe();
-    this._toolboxSub.unsubscribe();
+    // this._daybookSub.unsubscribe();
+    // this._toolboxSub.unsubscribe();
   }
 
   public onClickItem(item: DisplayGridBarItem) {
-    this.tlefService.onClickGridItem(item);
+    this.daybookDisplayService.onClickGridItem(item);
+
   }
 
   public onClickGoLeft(){
-    this.tlefService.gridBarGoLeft();
+    this.daybookDisplayService.gridBarGoLeft();
   }
   public onClickGoRight(){
-    this.tlefService.gridBarGoRight();
+    this.daybookDisplayService.gridBarGoRight();
   }
 
 
