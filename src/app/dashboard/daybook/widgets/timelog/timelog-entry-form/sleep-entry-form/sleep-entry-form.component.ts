@@ -51,29 +51,53 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
   private _wakeupTime: moment.Moment;
   private _fallAsleepTime: moment.Moment;
 
-  private _update() {
-    this._sleepItem = this.tlefService.openedSleepEntry;
-    this._wakeupTime = moment(this.daybookService.wakeupTime);
-    this._fallAsleepTime = moment(this.daybookService.fallAsleepTime);
-    this._setNewWakeupTime = this._wakeupTime;
-  }
+  private _setNewWakeupTime: moment.Moment;
+  private _setNewFallAsleepTime: moment.Moment;
 
   private _isEditingWakeupTime: boolean = false;
+  private _isEditingFallAsleepTime: boolean = false;
+
+  private _update() {
+
+    this._sleepItem = this.tlefService.openedSleepEntry;
+    
+    this._wakeupTime = moment(this.daybookService.wakeupTime);
+    this._fallAsleepTime = moment(this.daybookService.fallAsleepTime);
+
+    this._setNewWakeupTime = moment(this._wakeupTime);
+    this._setNewFallAsleepTime = moment(this._fallAsleepTime);
+  }
+
+
 
   public onClickEditWakeupTime() {
+    this._isEditingFallAsleepTime = false;
     this._isEditingWakeupTime = true;
   }
+  public onClickEditFallAsleepTime() { 
+    this._isEditingWakeupTime = false;
+    this._isEditingFallAsleepTime = true;
+  }
   public get isEditingWakeupTime(): boolean { return this._isEditingWakeupTime; }
+  public get isEditingFallAsleepTime(): boolean { return this._isEditingFallAsleepTime; }
 
-  private _setNewWakeupTime: moment.Moment;
   public onWakeupTimeChanged(newTime: moment.Moment) {
     this._setNewWakeupTime = newTime;
   }
   public onClickSaveWakeupTime() {
     if (!this._setNewWakeupTime.isSame(this._wakeupTime)) {
-      this.daybookService.activeDayController.setWakeupTimeForDay(this._setNewWakeupTime);
+      this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
     }
     this._isEditingWakeupTime = false;
+    this._isEditingFallAsleepTime = false;
+  }
+
+  public onClickSaveFallAsleepTime() {
+    if (!this._setNewWakeupTime.isSame(this._wakeupTime)) {
+      this.daybookService.activeDayController.setFallAsleepTime(this._setNewWakeupTime);
+    }
+    this._isEditingWakeupTime = false;
+    this._isEditingFallAsleepTime = false;
   }
 
   public get previousDay(): string {

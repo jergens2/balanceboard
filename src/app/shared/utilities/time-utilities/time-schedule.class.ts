@@ -151,7 +151,7 @@ export class TimeSchedule<T>{
         }
     }
     public getNextOccurrenceOfNotValue(timeToCheck: moment.Moment, findNotValue: T) {
-        let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isSameOrBefore(item.endTime));
+        let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime));
         if (startIndex >= 0) {
             for (let i = startIndex; i < this.fullScheduleItems.length; i++) {
                 if (this.fullScheduleItems[i].value !== findNotValue) {
@@ -393,6 +393,7 @@ export class TimeSchedule<T>{
             this._reOrganizeSchedule();
         } else {
             console.log('Error: Item was not added to time schedule because it was not in range')
+            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a'))
         }
     }
 
@@ -417,7 +418,7 @@ export class TimeSchedule<T>{
     public logFullScheduleItems() {
         console.log("Full Schedule Items: ")
         this._fullScheduleItems.forEach((item) => {
-            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " hasValue? " + item.hasValue + " -- " + item.value)
+            console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " hasValue? " , item.hasValue, " -- " + item.value)
         });
     }
 

@@ -55,7 +55,7 @@ export class DaybookTimePositionFormComponent implements OnInit {
 
     if (this.isNewDay) {
       if (this._wakeupTime) {
-        this.daybookService.activeDayController.setWakeupTimeForDay(this._wakeupTime);
+        this.daybookService.activeDayController.setWakeupTime(this._wakeupTime);
         this.daybookService.openNewCurrentTimelogEntry();
       } else {
         this.toolboxService.closeTool();

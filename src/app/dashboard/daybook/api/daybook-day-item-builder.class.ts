@@ -79,24 +79,23 @@ export class DaybookDayItemBuilder {
             }
         }
 
-        let sleepInputItems: DaybookSleepInputDataItem[] = [];
-        if (dayItemHttpData.sleepInputItems) {
-            if (dayItemHttpData.sleepInputItems.length > 0) {
-                sleepInputItems = dayItemHttpData.sleepInputItems.map((dbTime: any) => {
-                    const startTimeISO: string = dbTime.startTimeISO;
-                    const startTimeUtcOffset: number = dbTime.startTimeUtcOffset;
-                    const endTimeISO: number = dbTime.endTimeISO;
-                    const endTimeUtcOffset: number = dbTime.endTimeUtcOffset;
-                    return {
-                        startTimeISO: startTimeISO,
-                        startTimeUtcOffset: startTimeUtcOffset,
-                        endTimeISO: endTimeISO,
-                        endTimeUtcOffset: endTimeUtcOffset,
-                    };
-                });
-            }
+        let sleepInputItem: DaybookSleepInputDataItem;
+        if (dayItemHttpData.sleepInputItem) {
+            const data = dayItemHttpData.sleepInputItem;
+            sleepInputItem = {
+                startSleepTimeISO: data.startSleepTimeISO,
+                startSleepTimeUtcOffsetMinutes: data.startSleepTimeUtcOffsetMinutes,
+                endSleepTimeISO: data.endSleepTimeISO,
+                endSleepTimeUtcOffsetMinutes: data.endSleepTimeUtcOffsetMinutes,
+                energyAtStartUserInput: data.energyAtStartUserInput,
+                energyAtEndUserInput: data.energyAtEndUserInput,
+                percentAsleep: data.percentAsleep,
+                embeddedNote: data.embeddedNote,
+                noteIds: data.noteIds,
+                customSleepProfile: data.customSleepProfile,
+            };
         } else {
-            console.log('No sleepInputItems property on DB item');
+            console.log('No sleepInputItem property on DB item');
         }
 
         let sleepEnergyLevelInputs: SleepEnergyLevelInput[] = [];
@@ -146,7 +145,7 @@ export class DaybookDayItemBuilder {
             dateYYYYMMDD: dateYYYYMMDD,
             daybookTimelogEntryDataItems: daybookTimelogEntryDataItems,
             timeDelineators: timeDelineators,
-            sleepInputItems: sleepInputItems,
+            sleepInputItem: sleepInputItem,
             sleepEnergyLevelInputs: sleepEnergyLevelInputs,
             daybookActivityDataItems: daybookActivityDataItems,
             dailyTaskListDataItems: dailyTaskListDataItems,

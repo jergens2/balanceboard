@@ -59,22 +59,31 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   // }
 
   private _updateDisplaySub: Subscription = new Subscription();
+  private _gridItemSub: Subscription = new Subscription();
+
 
   ngOnInit() {
 
-    this._buildTimelog();
+    this._update();
 
     this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
-      this._buildTimelog();
+      this._update();
+      
     });
-    this.daybookDisplayService.activeGridBarItem$.subscribe((item: DisplayGridBarItem)=>{
-      this._setActiveTLEFGridItem();
-    });
+    
   }
   ngOnDestroy() {
     this._updateDisplaySub.unsubscribe();
+    this._gridItemSub.unsubscribe();
   }
 
+  private _update(){
+    this._buildTimelog();
+    this._gridItemSub.unsubscribe();
+    this._gridItemSub = this.daybookDisplayService.activeGridBarItem$.subscribe((item: DisplayGridBarItem)=>{
+      this._setActiveTLEFGridItem();
+    });
+  }
 
 
   public onClickGridItem(gridItem: TimelogDisplayGridItem) {
@@ -96,7 +105,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   }
 
   private _setActiveTLEFGridItem() {
-    this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
+
     const activeBarItem = this.daybookDisplayService.activeGridBarItem;
     if (activeBarItem) {
       const foundItem = this.gridItems.find((gridItem) => {
@@ -108,13 +117,14 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
         return isSame || endsAtEnd || endsAfterStart || isBeforeEnd;
       });
       if (foundItem) {
+        this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
         foundItem.isActiveFormItem = true;
         // console.log('Active bar item is set to: [' + this.gridItems.indexOf(foundItem) +']  : ' + foundItem.startTime.format('hh:mm a') + " - " + foundItem.endTime.format('hh:mm a'))
       } else {
-        console.log("Error: could not find active timelog grid item")
+        this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
       }
     }else{
-
+      this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
     }
   }
 

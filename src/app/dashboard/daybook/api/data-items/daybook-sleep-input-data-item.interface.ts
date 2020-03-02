@@ -1,14 +1,18 @@
 export interface DaybookSleepInputDataItem{ 
-    startTimeISO: string;
-    startTimeUtcOffsetMinutes: number;
-    endTimeISO: string;
-    endTimeUtcOffsetMinutes: number;
+
+    startSleepTimeISO: string;
+    startSleepTimeUtcOffsetMinutes: number;
     
-    energyAtStartUserInput: number,
-    energyAtEndUserInput: number,
+    endSleepTimeISO: string;
+    endSleepTimeUtcOffsetMinutes: number;
+    
+    energyAtStartUserInput: number;
+    energyAtEndUserInput: number;
 
-    percentAsleep: number,
+    percentAsleep: number;
 
-    embeddedNote: string,
-    noteIds: string[],
+    embeddedNote: string;
+    noteIds: string[];
+
+    customSleepProfile: any;
 }

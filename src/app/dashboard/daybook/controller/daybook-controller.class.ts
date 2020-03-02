@@ -153,14 +153,24 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         }
     }
 
-    public get wakeupTime(): moment.Moment { return this.sleepController.firstWakeupTime; }
+    public getWakeupTimeMaxVal(): moment.Moment { 
+        const maxVal = this.getNextOccurrenceOfNotValue(this.wakeupTime, DaybookAvailabilityType.AVAILABLE);
+        return maxVal;
+    }
+    public getWakeupTimeMinVal(): moment.Moment { 
+        let minVal = moment(this.prevDayFallAsleepTime).add(1, 'minute');
+        return minVal;
+    }
+
+    public get wakeupTime(): moment.Moment { return this.sleepController.thisDayWakeupTime; }
     public get wakeupTimeIsSet(): boolean { return this.sleepController.wakeupTimeIsSet; }
-    public get fallAsleepTime(): moment.Moment { return this.sleepController.fallAsleepTime; }
+    public get fallAsleepTime(): moment.Moment { return this.sleepController.thisDayFallAsleepTime; }
     public get prevDayFallAsleepTime(): moment.Moment { return this.sleepController.prevDayFallAsleepTime; }
     public get awakeToAsleepRatio(): number { return this.sleepController.awakeToAsleepRatio; }
 
     public getEnergyAtTime(time: moment.Moment): number { return this.energyController.getEnergyAtTime(time); }
-    public setWakeupTimeForDay(time: moment.Moment) { this.sleepController.setWakeupTimeForDay(time); }
+    public setWakeupTime(time: moment.Moment) { this.sleepController.setWakeupTime(time); }
+    public setFallAsleepTime(time: moment.Moment) { this.sleepController.setFallAsleepTime(time); }
 
     public get timelogEntryItems(): TimelogEntryItem[] { return this.timelogEntryController.timelogEntryItems; }
     public saveTimelogEntryItem$(saveTimelogEntry: TimelogEntryItem): Observable<boolean> {
@@ -191,6 +201,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     /**
      * Determines the current time position, relative to the sleep cycle.
+     * Only should be used by TodayController, not ActiveDayController
      */
     public getCurrentTimePosition(): DaybookTimePosition {
         let timePosition: DaybookTimePosition;
@@ -297,19 +308,21 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     private _buildController() {
         const timelogDataItems: DaybookTimelogEntryDataItem[] = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
             .concat(this._followingDay.timelogEntryDataItems);
-        const allSleepSpanItems = this._previousDay.sleepDataItems.concat(this._thisDay.sleepDataItems).concat(this._followingDay.sleepDataItems);
+
         const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);
 
-        this._sleepController = new DaybookSleepController(this._previousDay.sleepDataItems, this._thisDay.sleepDataItems, this._followingDay.sleepDataItems, this.dateYYYYMMDD);
+
+
+        this._sleepController = new DaybookSleepController(this._previousDay.sleepInputItem, this._thisDay.sleepInputItem, this._followingDay.sleepInputItem, this.clock);
 
         const timeScheduleValueItems: TimeScheduleItem<DaybookAvailabilityType>[] = [
             ...timelogDataItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(moment(item.startTimeISO), moment(item.endTimeISO), true, DaybookAvailabilityType.TIMELOG_ENTRY)),
-            ...this.sleepController.valueItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(item.startTime, item.endTime, true, DaybookAvailabilityType.SLEEP)),
+            ...this.sleepController.getDaybookTimeScheduleItems(),
         ];
         this.addScheduleValueItems(timeScheduleValueItems);
 
         this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
-        this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems, allSleepSpanItems);
+        this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems);
         this._energyController = new DaybookEnergyController(this.fullScheduleItems, this.awakeToAsleepRatio);
 
         allTimeDelineations.push(this.clock.startOf('minute'));
@@ -318,6 +331,10 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
 
         this._updateSubscriptions();
+        
+        console.log("Controller built.")
+        this.logFullScheduleItems();
+    
     }
 
     private _setAvailabilitySections(allTimeDelineations: moment.Moment[]) {
@@ -346,8 +363,8 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             // console.log("Received an update from timelog.  Updating.")
             this._updateTimelog(update);
         });
-        const sleepSub = this.sleepController.sleepTimesUpdated$.subscribe((sleepInputDataItems: DaybookSleepInputDataItem[]) => {
-            this._updateThisDaySleepInputItems(sleepInputDataItems);
+        const sleepSub = this.sleepController.sleepTimesUpdated$.subscribe((update) => {
+            this._updateSleepItems(update)
         });
         const delineatorSub = this.timeDelineatorController.saveChanges$.subscribe((delineators: moment.Moment[]) => {
             this._updateTimeDelineators(delineators);
@@ -364,34 +381,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         });
     }
 
-    private _updateThisDaySleepInputItems(sleepInputDataItems: DaybookSleepInputDataItem[]) {
-        let prevDayChanged = false, thisDayChanged = false, nextDayChanged = false;
-        let thisDayTimes = sleepInputDataItems
-            .filter(dataItem => moment(dataItem.startTimeISO).isSameOrAfter(this.startOfThisDay) && moment(dataItem.endTimeISO).isSameOrBefore(this.endOfThisDay));
-        let prevDayTimes = sleepInputDataItems
-            .filter(dataItem => moment(dataItem.startTimeISO).isSameOrAfter(this.startOfPrevDay) && moment(dataItem.endTimeISO).isSameOrBefore(this.endOfPrevDay));
-        let nextDayTimes = sleepInputDataItems
-            .filter(dataItem => moment(dataItem.startTimeISO).isSameOrAfter(this.startOfNextDay) && moment(dataItem.endTimeISO).isSameOrBefore(this.endOfNextDay));
-        if (thisDayTimes.length > 0) {
-            thisDayChanged = true;
-            this._thisDay.sleepDataItems = thisDayTimes;
-        }
-        if (prevDayTimes.length > 0) {
-            prevDayChanged = true;
-            this._previousDay.sleepDataItems = prevDayTimes;
-        }
-        if (nextDayTimes.length > 0) {
-            nextDayChanged = true;
-            this._followingDay.sleepDataItems = nextDayTimes;
-        }
-        const daysChanged = {
-            prevDayChanged: prevDayChanged,
-            thisDayChanged: thisDayChanged,
-            nextDayChanged: nextDayChanged,
-        };
-        this._dataChanged$.next(daysChanged);
+    private _updateSleepItems(update){
+        console.log("To do:  update sleep items.", update)
     }
-
     private _updateTimelog(update: { prevDayItems: DaybookTimelogEntryDataItem[], thisDayItems: DaybookTimelogEntryDataItem[], nextDayItems: DaybookTimelogEntryDataItem[] }) {
         // console.log("Updating timelog: ", update);
         let prevDayChanged = false, thisDayChanged = false, nextDayChanged = false;

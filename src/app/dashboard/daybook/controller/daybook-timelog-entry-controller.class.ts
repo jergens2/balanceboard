@@ -7,12 +7,20 @@ import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 
 export class DaybookTimelogEntryController {
-    constructor(dateYYYYMMDD: string, timelogEntryDataItems: DaybookTimelogEntryDataItem[], sleepTimes?: DaybookSleepInputDataItem[]) {
+    constructor(dateYYYYMMDD: string, timelogEntryDataItems: DaybookTimelogEntryDataItem[]) {
         // console.log("Rebuilding Timelog Controller")
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._timelogEntryItems = timelogEntryDataItems.map((item) => {
             return this._buildTimelogEntryFromDataItem(item);
-        });
+        }).sort((item1, item2) => {
+            if (item1.startTime.isBefore(item2.startTime)) {
+                return -1;
+            } else if (item1.startTime.isAfter(item2.startTime)) {
+                return 1;
+            } else { 
+                return 0; 
+            }
+        })
         this._buildSchedule();
 
     }
@@ -40,17 +48,17 @@ export class DaybookTimelogEntryController {
         }
     }
 
-    public getTimelogEntryItem(gridItemStart, gridItemEnd): TimelogEntryItem{ 
-        const foundItem = this.timelogEntryItems.find((item)=>{
+    public getTimelogEntryItem(gridItemStart, gridItemEnd): TimelogEntryItem {
+        const foundItem = this.timelogEntryItems.find((item) => {
             const startsAfterStart = gridItemStart.isSameOrAfter(item.startTime);
             const startsBeforeEnd = gridItemStart.isSameOrBefore(item.endTime);
             const endsAfterStart = gridItemEnd.isSameOrAfter(item.startTime);
             const endsBeforeEnd = gridItemEnd.isSameOrBefore(item.endTime);
             return startsAfterStart && startsBeforeEnd && endsAfterStart && endsBeforeEnd;
         });
-        if (foundItem){
+        if (foundItem) {
             return foundItem;
-        }else{
+        } else {
             console.log('Error: could not find sleep item from grid item.');
             return null;
         }
@@ -70,9 +78,9 @@ export class DaybookTimelogEntryController {
 
     public isActiveAtTime(timeToCheck: moment.Moment): boolean { return this.timelogSchedule.hasValueAtTime(timeToCheck); }
 
-    public getItemAtTime(startTime: moment.Moment): TimelogEntryItem{
+    public getItemAtTime(startTime: moment.Moment): TimelogEntryItem {
         const foundItem = this.timelogEntryItems.find(item => item.startTime.isSame(startTime));
-        if(!foundItem){
+        if (!foundItem) {
             console.log('Error: could not find timelog entry at time: ' + startTime.format('YYYY-MM-DD hh:mm a'))
         }
         return foundItem
@@ -119,9 +127,9 @@ export class DaybookTimelogEntryController {
         }
         dataItemsToSave = this._timelogEntryItems
             .filter(item => item.startTime.isSameOrAfter(startOfDay) && item.endTime.isSameOrBefore(endOfDay))
-            .sort((item1, item2)=>{
-                if(item1.startTime.isBefore(item2.startTime)){ return -1; }
-                else if(item1.startTime.isAfter(item2.startTime)){ return 1; }
+            .sort((item1, item2) => {
+                if (item1.startTime.isBefore(item2.startTime)) { return -1; }
+                else if (item1.startTime.isAfter(item2.startTime)) { return 1; }
                 else { return 0; }
             })
             .map(item => item.dataEntryItem);

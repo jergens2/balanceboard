@@ -42,7 +42,7 @@ import { SleepProfileFormComponent } from './widgets/sleep-profile-widget/sleep-
 import { SleepProfileDisplayComponent } from './widgets/sleep-profile-widget/sleep-profile-display/sleep-profile-display.component';
 import { TimeSelectionColumnComponent } from './widgets/timelog/timelog-large-frame/timelog-body/time-selection-column/time-selection-column.component';
 import { TlefViewOnlyComponent } from './widgets/timelog/timelog-entry-form/tlef-parts/tlef-view-only/tlef-view-only.component';
-import { TlefBedTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-parts/tlef-bed-time/tlef-bed-time.component';
+import { TlefFallAsleepTimeComponent } from './widgets/timelog/timelog-entry-form/tlef-parts/tlef-fall-asleep-time/tlef-fall-asleep-time.component';
 import { AvailableTimelogItemComponent } from './widgets/timelog/timelog-large-frame/timelog-item-types/available-timelog-item/available-timelog-item.component';
 import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep-profile-large/sleep-profile-large.component';
 import { TimeSelectionRowComponent } from './widgets/timelog/timelog-large-frame/timelog-body/time-selection-row/time-selection-row.component';
@@ -101,7 +101,7 @@ import { DaybookTimePositionFormComponent } from './daybook-time-position-form/d
     SleepProfileDisplayComponent,
     TimeSelectionColumnComponent,
     TlefViewOnlyComponent,
-    TlefBedTimeComponent,
+    TlefFallAsleepTimeComponent,
     AvailableTimelogItemComponent,
     SleepProfileLargeComponent,
     TimeSelectionRowComponent,
@@ -125,6 +125,6 @@ import { DaybookTimePositionFormComponent } from './daybook-time-position-form/d
     TlefModifyActivitiesComponent,
     ActivitySliderBarComponent,
   ]
-  
+
 })
 export class DaybookModule { }

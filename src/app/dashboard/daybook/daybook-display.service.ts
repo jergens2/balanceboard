@@ -16,6 +16,7 @@ import { faSun, faList } from '@fortawesome/free-solid-svg-icons';
 import { TimelogDisplayGridItem } from './widgets/timelog/timelog-display-grid-item.class';
 import { TimelogEntryFormService } from './widgets/timelog/timelog-entry-form/timelog-entry-form.service';
 import { ToolboxService } from '../../toolbox-menu/toolbox.service';
+import { DisplayGridItemsBar } from './widgets/timelog/timelog-entry-form/daybook-grid-items-bar/daybook-grid-items-bar.class';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ import { ToolboxService } from '../../toolbox-menu/toolbox.service';
 export class DaybookDisplayService {
 
   constructor(
-    private daybookControllerService: DaybookControllerService, 
+    private daybookControllerService: DaybookControllerService,
     private tlefService: TimelogEntryFormService,
     private toolBoxService: ToolboxService) { }
 
@@ -38,8 +39,7 @@ export class DaybookDisplayService {
   private _timeDelineators: TimelogDelineator[] = [];
   private _timelogDisplayGrid: TimelogDisplayGrid;
 
-  private _gridBarItems: DisplayGridBarItem[] = [];
-  private _activeGridBarItem$: BehaviorSubject<DisplayGridBarItem> = new BehaviorSubject(null);
+  private _gridBar: DisplayGridItemsBar;
 
   public get dateYYYYMMDD(): string { return this.daybookControllerService.activeDayController.dateYYYYMMDD; }
   public get activeDayController(): DaybookController { return this.daybookControllerService.activeDayController; }
@@ -60,9 +60,10 @@ export class DaybookDisplayService {
   public get timelogDisplayGrid(): TimelogDisplayGrid { return this._timelogDisplayGrid; }
   public get timelogDelineators(): TimelogDelineator[] { return this._timeDelineators; }
 
-  public get gridBarItems(): DisplayGridBarItem[] { return this._gridBarItems; }
-  public get activeGridBarItem$(): Observable<DisplayGridBarItem> { return this._activeGridBarItem$.asObservable(); }
-  public get activeGridBarItem(): DisplayGridBarItem { return this._activeGridBarItem$.getValue(); }
+  public get gridBar(): DisplayGridItemsBar { return this._gridBar; }
+  public get gridBarItems(): DisplayGridBarItem[] { return this.gridBar.gridBarItems; }
+  public get activeGridBarItem$(): Observable<DisplayGridBarItem> { return this.gridBar.activeGridBarItem$; }
+  public get activeGridBarItem(): DisplayGridBarItem { return this.gridBar.activeGridBarItem; }
 
   public get zoomItems(): TimelogZoomControllerItem[] { return this._zoomItems; }
   public get currentZoom(): TimelogZoomControllerItem { return this._currentZoom; }
@@ -83,12 +84,11 @@ export class DaybookDisplayService {
     });
     this._updateDisplay();
     this._currentZoom = this.zoomItems[0];
-
-    this.toolBoxService.toolIsOpen$.subscribe((toolIsOpen: boolean)=>{
-      if(toolIsOpen === false){
+    this.toolBoxService.toolIsOpen$.subscribe((toolIsOpen: boolean) => {
+      if (toolIsOpen === false) {
         this._closeGridItem();
       }
-    })
+    });
   }
 
   private _updateDisplay() {
@@ -103,135 +103,100 @@ export class DaybookDisplayService {
 
 
   private _buildGridBarItems() {
-    let gridBarItems: DisplayGridBarItem[] = [];
 
-    let currentActiveIndex = -1;
-    if(this.activeGridBarItem){
-      currentActiveIndex = this._gridBarItems.indexOf(this.activeGridBarItem);
-    }
-
-    if (this._timeDelineators.length > 0) {
-      let currentTime: moment.Moment = this._timeDelineators[0].time;
-      for (let i = 1; i < this._timeDelineators.length; i++) {
-        let endTime: moment.Moment = this._timeDelineators[i].time;
-        let availability: DaybookAvailabilityType = this.daybookControllerService.activeDayController.getDaybookAvailability(currentTime, endTime);
-        let newItem = new DisplayGridBarItem(currentTime, endTime, availability);
-        if (availability === DaybookAvailabilityType.SLEEP) {
-          newItem.sleepEntry = this.daybookControllerService.activeDayController.getSleepItem(currentTime, endTime);
-        } else if (availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
-          newItem.timelogEntry = this.daybookControllerService.activeDayController.timelogEntryItems.find((tle) => {
-            return tle.startTime.isSame(currentTime) && tle.endTime.isSame(endTime);
-          });
-        } else if (availability === DaybookAvailabilityType.AVAILABLE) {
-          newItem.timelogEntry = this.findAvailableEntry(currentTime, endTime);
-        }
-        gridBarItems.push(newItem);
-        currentTime = moment(endTime);
+    let currentActiveItem;
+    if (this.gridBar) {
+      if (this.activeGridBarItem) {
+        currentActiveItem = this.activeGridBarItem;
       }
-    } else {
-      console.log("Error with timeDelineators.");
+
     }
-
-    this._gridBarItems = gridBarItems;
-    this._gridBarItems.forEach(item => item.index = this._gridBarItems.indexOf(item));
-
-    if(currentActiveIndex > -1 && currentActiveIndex < this._gridBarItems.length){
-      this._openDisplayGridItem(this._gridBarItems[currentActiveIndex]);
-    }
-
-    // console.log("Updating Grid bar items:")
-    // this._gridBarItems.forEach(item => {
-    //   console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.endTime.format("YYYY-MM-DD hh:mm:ss a") + "  : " + item.availabilityType)
-    // })
+    let gridBar: DisplayGridItemsBar = new DisplayGridItemsBar(this._timeDelineators, this.activeDayController, this.clock, this.tlefService, currentActiveItem);
+    this._gridBar = gridBar;
   }
 
-  public findAvailableEntry(openedEntryStart: moment.Moment, openedEntryEnd: moment.Moment): TimelogEntryItem {
-    const items = this.timelogDisplayGrid.gridItems.filter(item => item.availability !== DaybookAvailabilityType.SLEEP);
-    const foundDirectItem = items.find((gridItem) => {
-      return openedEntryStart.isSameOrAfter(gridItem.startTime) && openedEntryEnd.isSameOrBefore(gridItem.endTime);
-    });
-    if (foundDirectItem) {
-      return new TimelogEntryItem(foundDirectItem.startTime, foundDirectItem.endTime);
-    } else {
-      const foundSimilarItem = items.find((gridItem) => {
-        return openedEntryStart.isSame(gridItem.startTime) || openedEntryEnd.isSame(gridItem.endTime);
-      });
-      if (foundSimilarItem) {
-        return new TimelogEntryItem(foundSimilarItem.startTime, foundSimilarItem.endTime);;
-      } else {
-        return null;
-      }
-    }
+  public openWakeupTime() {
+    this._openDisplayGridItem(this.gridBarItems[0]);
   }
 
-  public openNewCurrentTimelogEntry(){
+  public openFallAsleepTime() {
+    this._openDisplayGridItem(this.gridBarItems[this.gridBarItems.length-1]);
+  }
+
+  public openNewCurrentTimelogEntry() {
     const newCurrentTLE = this.daybookControllerService.todayController.getNewCurrentTLE();
     const foundGridItem = this.gridBarItems.find(item => {
       return item.availabilityType === DaybookAvailabilityType.AVAILABLE
         && item.startTime.isSame(newCurrentTLE.startTime) && item.endTime.isSame(newCurrentTLE.endTime);
     });
-    if(foundGridItem){
+    if (foundGridItem) {
       this._openDisplayGridItem(foundGridItem);
-    }else{
+    } else {
       console.log("Error: could not find new current tlef")
     }
   }
 
   public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
-    const foundItem = this.gridBarItems.find(item => {
-      return item.availabilityType === gridItem.availability
-        && item.startTime.isSame(gridItem.startTime) && item.endTime.isSame(gridItem.endTime);
-    });
-    if (foundItem) {
-      this._openDisplayGridItem(foundItem);
+    if (gridItem.isMerged) {
+      if (gridItem.timelogEntries.length >= 2) {
+        let biggest = gridItem.timelogEntries[0];
+        gridItem.timelogEntries.forEach((item) => {
+          if (item.durationMilliseconds > biggest.durationMilliseconds) {
+            biggest = item;
+          }
+        });
+        const foundItem = this.gridBarItems.find(gridBarItem => {
+          return gridBarItem.availabilityType === DaybookAvailabilityType.TIMELOG_ENTRY
+            && gridBarItem.startTime.isSameOrAfter(biggest.startTime) && gridBarItem.endTime.isSame(biggest.endTime);
+        });
+        if (foundItem) {
+          this._openDisplayGridItem(foundItem);
+        } else {
+          console.log("error finding item");
+        }
+      } else {
+        console.log("Error with timelog entries")
+      }
     } else {
-      console.log("Error finding grid item");
+      const foundItem = this.gridBarItems.find(item => {
+        return item.availabilityType === gridItem.availability
+          && item.startTime.isSame(gridItem.startTime) && item.endTime.isSame(gridItem.endTime);
+      });
+      if (foundItem) {
+        this._openDisplayGridItem(foundItem);
+      } else {
+        console.log("Error finding grid item");
+      }
     }
+
+  }
+
+  private _openDisplayGridItem(item: DisplayGridBarItem) {
+    this.gridBar.openDisplayGridItem(item);
   }
 
   public onClickGridItem(gridItem: DisplayGridBarItem) {
-    this._openDisplayGridItem(gridItem);
+    this.gridBar.openDisplayGridItem(gridItem);
   }
 
-  public gridBarGoRight(){
-    const currentIndex = this.gridBarItems.indexOf(this.activeGridBarItem);
-    if(currentIndex < this.gridBarItems.length-1){
-      this._openDisplayGridItem(this.gridBarItems[currentIndex +1]);
-    }
+  public gridBarGoRight() {
+    this.gridBar.goRight();
   }
-  public gridBarGoLeft(){
-    const currentIndex = this.gridBarItems.indexOf(this.activeGridBarItem);
-    if(currentIndex > 0){
-      this._openDisplayGridItem(this.gridBarItems[currentIndex - 1]);
-    }
+  public gridBarGoLeft() {
+    this.gridBar.goLeft();
   }
 
 
-  private _openDisplayGridItem(item: DisplayGridBarItem) {
-    if (item.availabilityType === DaybookAvailabilityType.SLEEP) {
-      this.tlefService.openSleepEntry(item.sleepEntry);
-    } else {
-      this.tlefService.openTimelogEntry(item.timelogEntry);
-    }
-    this.gridBarItems.forEach(item => item.isActive = false);
-    item.isActive = true;
-    this._activeGridBarItem$.next(item);
-  }
-
-  private _closeGridItem(){
-    this.gridBarItems.forEach(item => item.isActive = false);
-    this._activeGridBarItem$.next(null);
+  private _closeGridItem() {
+    this.gridBar.closeGridItem();
   }
 
   private _buildZoomItems() {
-    if (this._zoomItems.length > 0) {
-      //re-set the existing zoom level
-    } else {
-
-    }
     let zoomItems: TimelogZoomControllerItem[] = [];
+
     let startTime = moment(this.daybookControllerService.activeDayController.wakeupTime);
     let endTime = moment(this.daybookControllerService.activeDayController.fallAsleepTime);
+
     const wakeItem = new TimelogZoomControllerItem(startTime, endTime, TimelogZoomType.AWAKE);
     wakeItem.icon = faSun;
 

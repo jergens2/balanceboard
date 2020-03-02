@@ -13,9 +13,6 @@
     </div>
     <div>
         <div *ngIf="isWakeupTime" class="wakeup-section">
-            <div>
-                
-            </div>
             <div *ngIf="!isEditingWakeupTime" (click)="onClickEditWakeupTime()" class="edit-section">
                 Wakeup time: {{ wakeupTime.format('h:mm a') }} 
             </div>
@@ -24,6 +21,14 @@
                 <button class="save-button medium-button" (click)="onClickSaveWakeupTime()">Save changes</button>
             </div>
         </div>
-        <div *ngIf="isFallAsleepTime">Fall asleep time: {{ fallAsleepTime.format('h:mm a') }} </div>
+        <div *ngIf="isFallAsleepTime">
+            <div *ngIf="!isEditingFallAsleepTime" (click)="onClickEditFallAsleepTime()" class="edit-section">
+                Fall asleep time: {{ fallAsleepTime.format('h:mm a') }} 
+            </div>
+            <div *ngIf="isEditingFallAsleepTime" style="display:flex;flex-direction: column;">
+                <app-tlef-fall-asleep-time (fallAsleepTimeChanged)="onFallAsleepTimeChanged($event)"></app-tlef-fall-asleep-time>
+                <button class="save-button medium-button" (click)="onClickSaveFallAsleepTime()">Save changes</button>
+            </div>
+        </div>
     </div>
 </div>

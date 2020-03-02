@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
+import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 
 @Component({
   selector: 'app-time-selection-row',
@@ -38,6 +39,14 @@ export class TimeSelectionRowComponent implements OnInit {
 
   public onEditTimeChanged(time: moment.Moment){
     this._editTime = time;  
+  }
+
+  public onClickDelineator(delineator: TimelogDelineator){
+    if(delineator.delineatorType === TimelogDelineatorType.WAKEUP_TIME){
+      this.daybookService.openWakeupTime();
+    }else if(delineator.delineatorType === TimelogDelineatorType.FALLASLEEP_TIME){
+      this.daybookService.openFallAsleepTime();
+    }
   }
 
   public onClickSaveEdit(){

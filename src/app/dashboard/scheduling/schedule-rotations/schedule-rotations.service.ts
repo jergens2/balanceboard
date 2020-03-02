@@ -11,7 +11,6 @@ import { DayTemplatesService } from '../day-templates/day-templates.service';
 import { DayTemplate } from '../day-templates/day-template.class'
 import { DayStructureDataItem } from '../../daybook/api/data-items/day-structure-data-item.interface';
 import buildDefaultDataItems  from '../../daybook/api/data-items/default-day-structure-data-items';
-import buildDefaultSleepItems from '../../daybook/api/data-items/default-sleep-cycle-items';
 
 
 @Injectable({

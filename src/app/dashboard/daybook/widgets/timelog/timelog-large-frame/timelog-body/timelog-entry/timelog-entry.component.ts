@@ -56,23 +56,7 @@ export class TimelogEntryComponent implements OnInit {
   }
 
   public onClickOpenTimelogEntry() {
-    // console.log("Clickety clack, is it fresh? ", this.daybookService.activeDayController.isFreshDay);
-
-    if (this.timelogEntries.length === 0) {
-      this.tlefService.openTimelogEntry(new TimelogEntryItem(this.gridItem.startTime, this.gridItem.endTime));
-    } else if (this.timelogEntries.length === 1) {
-      this.tlefService.openTimelogEntry(this.timelogEntries[0]);
-    } else if (this.timelogEntries.length > 1) {
-      const totalMS = this.gridItem.endTime.diff(this.gridItem.startTime, 'milliseconds');
-      const foundIndex = this.timelogEntries.findIndex(item => item.durationMilliseconds > (totalMS / 2));
-      if (foundIndex > -1) {
-        this.tlefService.openTimelogEntry(this.timelogEntries[foundIndex]);
-      } else {
-        this.tlefService.openTimelogEntry(this.timelogEntries[0]);
-      }
-    }
-
-
+    this.daybookService.openTimelogGridItem(this.gridItem);
   }
 
 

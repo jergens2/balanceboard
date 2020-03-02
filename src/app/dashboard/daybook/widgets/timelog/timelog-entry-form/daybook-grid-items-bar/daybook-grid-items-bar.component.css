@@ -29,8 +29,7 @@
 }
 
 .current-item{
-    background-color: rgb(190, 213, 255);
-    border: 1px solid rgb(0, 89, 255);
+    border: 1px solid rgba(255, 0, 0, 0.50);
 }
 
 

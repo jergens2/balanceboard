@@ -126,9 +126,10 @@ export class TimelogDisplayGrid {
               merge = true;
             }
             if (merge) {
-              gridItems[i - 1].timelogEntries.push(...gridItems[i].timelogEntries);
+              gridItems[i].timelogEntries.forEach((tle)=> gridItems[i - 1].timelogEntries.push(tle));
               gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
               gridItems[i - 1].endTime = gridItems[i].endTime;
+              gridItems[i - 1].isMerged = true;
               gridItems.splice(i, 1);
               length = gridItems.length;
               i--;

@@ -4,27 +4,45 @@ import { DaybookSleepInputDataItem } from '../../../../api/data-items/daybook-sl
 
 export class SleepEntryItem{
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment, dbItem?: DaybookSleepInputDataItem){
+    constructor(startTime: moment.Moment, endTime: moment.Moment, inputItem?: DaybookSleepInputDataItem){
         this._startTime = startTime;
         this._endTime = endTime;
-        if(dbItem){
-            this._startTime = moment(dbItem.startTimeISO);
-            this._endTime = moment(dbItem.endTimeISO);
-            this.note = dbItem.embeddedNote;
-            if(dbItem.noteIds.length > 0){
+        if(inputItem){
+            this._isSavedEntry = true;
+            if(inputItem.startSleepTimeISO){
+                this._startTimeIsSaved = true;
+            }
+            if(inputItem.endSleepTimeISO){
+                this._endTimeIsSaved = true;
+            }
+
+            this.note = inputItem.embeddedNote;
+            if(inputItem.noteIds.length > 0){
                 console.log("Do something with the note IDs")
             }
-            this.percentAsleep = dbItem.percentAsleep;
+            this.percentAsleep = inputItem.percentAsleep;
         }
     }
 
+    private _isSavedEntry: boolean = false;
+
+    public unsavedChanges: boolean = false;
+
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
+    private _startTimeIsSaved: boolean = false;
+    private _endTimeIsSaved: boolean = false;
 
 
+    public get isSavedEntry(): boolean { return this._isSavedEntry; }
 
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
+    
+
+    public get startTimeIsSaved(): boolean { return this._startTimeIsSaved; }
+    public get endTimeIsSaved(): boolean { return this._endTimeIsSaved; }
+
 
     public setEndTime(endTime: moment.Moment){
         this._endTime = moment(endTime);
@@ -33,16 +51,19 @@ export class SleepEntryItem{
         this._startTime = startTime;
     }
     public note: string = "";
-
     public percentAsleep: number = 100;
 
+    public timeIsIn(timeToCheck: moment.Moment){
+        return timeToCheck.isSameOrAfter(this.startTime) && timeToCheck.isBefore(this.endTime);
+    }
 
     public get saveToDB(): DaybookSleepInputDataItem{
         return {
-            startTimeISO: this.startTime.toISOString(),
-            startTimeUtcOffsetMinutes: this.startTime.utcOffset(),
-            endTimeISO: this.endTime.toISOString(),
-            endTimeUtcOffsetMinutes: this.endTime.utcOffset(),
+
+            startSleepTimeISO: this.startTime.toISOString(),
+            startSleepTimeUtcOffsetMinutes: this.startTime.utcOffset(),
+            endSleepTimeISO: this.endTime.toISOString(),
+            endSleepTimeUtcOffsetMinutes: this.endTime.utcOffset(),
 
             energyAtStartUserInput: 0,
             energyAtEndUserInput: 0,
@@ -51,6 +72,8 @@ export class SleepEntryItem{
         
             embeddedNote: this.note,
             noteIds: [],
+
+            customSleepProfile: {},
         }
     }
 }
