@@ -11,6 +11,9 @@ export class DaybookEnergyItem {
     public endTime: moment.Moment;
 
 
+    /**
+     * Energy level is a number from 0 to 1
+     */
     constructor(startTime: moment.Moment, endTime: moment.Moment, energyLevelStart: number, energyLevelRateOfChangePerHour: number, ) {
         // console.log("Constructing daybookEnergyItem: " + startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + endTime.format('YYYY-MM-DD hh:mm:ss a') + " : energy level start : " + energyLevelStart + " - energyRateofChange : " + energyLevelRateOfChangePerHour)
         this.startTime = startTime;
@@ -18,6 +21,16 @@ export class DaybookEnergyItem {
         this.energyLevelStart = energyLevelStart;
         this.energyLevelRateOfChangePerHour = energyLevelRateOfChangePerHour;
     }
+
+    
+    public get energyLevelEnd(): number { 
+        return this.getEnergyAtTime(this.endTime);
+    }
+    
+    public get isGainItem(): boolean { 
+        return this.energyLevelEnd > this.energyLevelStart;
+    }
+    
 
     public getEnergyAtTime(timeToCheck: moment.Moment): number {
         if (timeToCheck.isSameOrAfter(this.startTime) && timeToCheck.isSameOrBefore(this.endTime)) {
@@ -30,7 +43,7 @@ export class DaybookEnergyItem {
         } else {
             console.log('Error:  timeToCheck is not in range ' + timeToCheck.format('YYYY-MM-DD hh:mm a'))
         }
-        return null;
+        return -1;
     }
 
     public getEnergyLevelAtTime(timeToCheck: moment.Moment): DaybookEnergyLevel {

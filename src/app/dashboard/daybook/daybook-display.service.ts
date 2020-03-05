@@ -57,6 +57,8 @@ export class DaybookDisplayService {
   public get wakeupTime(): moment.Moment { return this.activeDayController.wakeupTime; }
   public get fallAsleepTime(): moment.Moment { return this.activeDayController.fallAsleepTime; }
 
+  public get batteryLevel(): number { return this.todayController.batteryLevel; }
+
   public get timelogDisplayGrid(): TimelogDisplayGrid { return this._timelogDisplayGrid; }
   public get timelogDelineators(): TimelogDelineator[] { return this._timeDelineators; }
 

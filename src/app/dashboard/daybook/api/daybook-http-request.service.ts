@@ -81,67 +81,74 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
    * @param thisDateYYYYMMDD the date of the DaybookDayItem to get
    */
   public getDaybookDayItemByDate$(thisDateYYYYMMDD: string)
-    : Observable<{ prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }> {
+    : Observable<DaybookDayItem[]> {
 
-    const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'day').format('YYYY-MM-DD');
-    const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'day').format('YYYY-MM-DD');
-    const getUrl = serverUrl + '/api/daybook-day-item/' + this._authStatus.user.id + '/' + prevDateYYYYMMDD + '/' + nextDateYYYYMMDD;
+    const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
+    const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+
+    const prevWeekYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(7, 'days').format('YYYY-MM-DD');
+    const nextWeekYYYYMMDD: string = moment(thisDateYYYYMMDD).add(7, 'days').format('YYYY-MM-DD');
+
+    const getUrl = serverUrl + '/api/daybook-day-item/' + this._authStatus.user.id + '/' + prevWeekYYYYMMDD + '/' + nextWeekYYYYMMDD;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
-    const responseItem: Subject<{ prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }> = new Subject();
+    const dayItems$: Subject<DaybookDayItem[]> = new Subject();
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<DaybookDayItem[]>(map((response) => {
         return this.buildDaybookDayItemsFromResponse(response.data as any[]);
       })).subscribe((responseItems: DaybookDayItem[]) => {
-        const prevItem = responseItems.find(i => i.dateYYYYMMDD === prevDateYYYYMMDD);
-        const nextItem = responseItems.find(i => i.dateYYYYMMDD === nextDateYYYYMMDD);
-        const thisItem = responseItems.find(i => i.dateYYYYMMDD === thisDateYYYYMMDD);
-        if (prevItem && nextItem && thisItem) {
-          const response = { prevDay: prevItem, thisDay: thisItem, nextDay: nextItem };
-          // console.log("response is ", response);
-          responseItem.next(response);
+        const prevDayItem = responseItems.find(i => i.dateYYYYMMDD === prevDateYYYYMMDD);
+        const nextDayItem = responseItems.find(i => i.dateYYYYMMDD === nextDateYYYYMMDD);
+        const thisDayItem = responseItems.find(i => i.dateYYYYMMDD === thisDateYYYYMMDD);
+        const saveItems: DaybookDayItem[] = [];
+        if (!prevDayItem) { saveItems.push(new DaybookDayItem(prevDateYYYYMMDD)); }
+        if (!nextDayItem) { saveItems.push(new DaybookDayItem(nextDateYYYYMMDD)); }
+        if (!thisDayItem) { saveItems.push(new DaybookDayItem(thisDateYYYYMMDD)); }
+        if (saveItems.length > 0) {
+          this._saveMultipleItems$(saveItems).subscribe(savedItems => {
+            dayItems$.next(this._populateRemainder(prevWeekYYYYMMDD, nextWeekYYYYMMDD, responseItems.concat(savedItems)));
+          });
         } else {
-          // console.log("Missing some items, so creating them, saving them, returning them.")
-          this._createMissingItemsForDate$(thisDateYYYYMMDD, responseItems).subscribe(dayItem => responseItem.next(dayItem));
+          dayItems$.next(this._populateRemainder(prevWeekYYYYMMDD, nextWeekYYYYMMDD, responseItems.concat(responseItems)))
         }
       });
-    return responseItem.asObservable();
+    return dayItems$.asObservable();
   }
 
-  private _createMissingItemsForDate$(thisDateYYYYMMDD: string, responseItems: DaybookDayItem[])
-    : Observable<{ prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }> {
+  private _populateRemainder(startDateYYYYMMDD: string, endDateYYYYMMDD: string, currentItems: DaybookDayItem[]): DaybookDayItem[] {
+    const allItems: DaybookDayItem[] = [];
+    for (let currentDateYYYYMMDD = startDateYYYYMMDD;
+      currentDateYYYYMMDD <= endDateYYYYMMDD;
+      currentDateYYYYMMDD = moment(currentDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD')) {
+      const foundItem = currentItems.find(item => item.dateYYYYMMDD === currentDateYYYYMMDD);
+      if (foundItem) {
+        allItems.push(foundItem);
+      } else {
+        allItems.push(new DaybookDayItem(currentDateYYYYMMDD))
+      }
+    }
+    return allItems.sort((item1, item2) => {
+      if (item1.dateYYYYMMDD < item2.dateYYYYMMDD) { return -1; }
+      else if (item1.dateYYYYMMDD > item2.dateYYYYMMDD) { return 1; }
+      else { return 0; }
+    });
+  }
 
-    const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'day').format('YYYY-MM-DD');
-    const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'day').format('YYYY-MM-DD');
-
-    let prevItem = responseItems.find(i => i.dateYYYYMMDD === prevDateYYYYMMDD);
-    let nextItem = responseItems.find(i => i.dateYYYYMMDD === nextDateYYYYMMDD);
-    let thisItem = responseItems.find(i => i.dateYYYYMMDD === thisDateYYYYMMDD);
-
-    const saveItems: DaybookDayItem[] = [];
-
-    if (!prevItem) { saveItems.push(new DaybookDayItem(prevDateYYYYMMDD)); }
-    if (!nextItem) { saveItems.push(new DaybookDayItem(nextDateYYYYMMDD)); }
-    if (!thisItem) { saveItems.push(new DaybookDayItem(thisDateYYYYMMDD)); }
-
-    const responseItem$: Subject<{ prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }> = new Subject();
-
-    forkJoin(saveItems.map<Observable<DaybookDayItem>>((item: DaybookDayItem) => this.saveDaybookDayItem$(item)))
-      .subscribe((savedItems: DaybookDayItem[]) => {
-        // console.log("Saved items:", savedItems)
-        if (!prevItem) { prevItem = savedItems.find(i => i.dateYYYYMMDD === prevDateYYYYMMDD); }
-        if (!nextItem) { nextItem = savedItems.find(i => i.dateYYYYMMDD === nextDateYYYYMMDD); }
-        if (!thisItem) { thisItem = savedItems.find(i => i.dateYYYYMMDD === thisDateYYYYMMDD); }
-
-        const responseItem = { prevDay: prevItem, thisDay: thisItem, nextDay: nextItem };
-        // console.log("forkjoin: responseItem: ", responseItem);
-        responseItem$.next(responseItem);
-      });
-    return responseItem$.asObservable();
+  private _saveMultipleItems$(saveItems: DaybookDayItem[]): Observable<DaybookDayItem[]> {
+    /**
+     * https://www.learnrxjs.io/learn-rxjs/operators/combination/forkjoin
+     * forkJoin: This operator is best used when you have a group of observables and only care about the final emitted value of each. 
+     * 
+     * The following takes each item in the savedItems array and saves them to the database.
+     * Each of these save actions returns an observable, and is mapped to an array of observables which is the input variable for forkJoin
+     * forkJoin joins each observable and subscribes to the final output of all completed values.
+     * 
+     */
+    return forkJoin(saveItems.map<Observable<DaybookDayItem>>(item => this.saveDaybookDayItem$(item)));
   }
 
   private buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[] {

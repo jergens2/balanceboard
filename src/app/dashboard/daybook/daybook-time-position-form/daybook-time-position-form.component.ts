@@ -24,12 +24,12 @@ export class DaybookTimePositionFormComponent implements OnInit {
 
     const lastDayOfYear = moment(this.daybookService.clock).endOf('year').dayOfYear();
     this._dayOfTheYear = this.daybookService.clock.dayOfYear() + "/" + lastDayOfYear;
-    this._currentTimePosition = this.daybookService.todayController.getCurrentTimePosition();
+    this._currentTimePosition = this.daybookService.todayController.timePosition;
 
     this.daybookService.activeDayController$.subscribe((changed) => {
       const lastDayOfYear = moment(this.daybookService.clock).endOf('year').dayOfYear();
       this._dayOfTheYear = this.daybookService.clock.dayOfYear() + "/" + lastDayOfYear;
-      this._currentTimePosition = this.daybookService.todayController.getCurrentTimePosition();
+      this._currentTimePosition = this.daybookService.todayController.timePosition;
     });
   }
 

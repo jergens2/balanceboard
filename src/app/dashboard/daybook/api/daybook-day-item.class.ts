@@ -54,7 +54,7 @@ export class DaybookDayItem {
     public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
 
     public get sleepInputItem(): DaybookSleepInputDataItem { return this.httpShape.sleepInputItem }
-
+    public set sleepInputItem(item: DaybookSleepInputDataItem) { this._httpShape.sleepInputItem = item; }
 
     public get isToday(): boolean { return this._isToday; }
     public setIsToday() { this._isToday = true; }

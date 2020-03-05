@@ -186,8 +186,8 @@ export class HeaderComponent implements OnInit {
   }
 
   private _setBattery() {
-    const batteryLevel: number = this.daybookDisplayService.todayController.getEnergyAtTime(this.clock);
-    // console.log("Battery level is: " + batteryLevel);
+    const batteryLevel: number = this.daybookDisplayService.batteryLevel
+    console.log("Battery level is: " + batteryLevel);
     if (batteryLevel >= 0 && batteryLevel < 0.125) {
       this._batteryIcon = faBatteryEmpty;
       this._batteryNgClass = 'battery-empty';

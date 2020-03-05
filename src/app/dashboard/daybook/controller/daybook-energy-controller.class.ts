@@ -3,95 +3,101 @@ import { DaybookEnergyItem } from './items/daybook-energy-item.class';
 import { DaybookEnergyLevel } from './daybook-energy-level.enum';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { DaybookAvailabilityType } from './items/daybook-availability-type.enum';
+import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 
 export class DaybookEnergyController {
 
     private _energyItems: DaybookEnergyItem[] = [];
+    private _clock: moment.Moment;
+    private _awakeToAsleepRatio: number;
 
-    constructor(daybookScheduleItems: TimeScheduleItem<DaybookAvailabilityType>[], awakeToAsleepRatio: number) {
-        this._calculateSchedule(daybookScheduleItems, awakeToAsleepRatio);    
-
+    constructor(sleepEntryItems: SleepEntryItem[], awakeToAsleepRatio: number, clock: moment.Moment) {
+        this._clock = moment(clock);
+        this._awakeToAsleepRatio = awakeToAsleepRatio;
+        this._buildEnergyItems(sleepEntryItems, awakeToAsleepRatio);
+        this._runTest();
     }
 
+    private _runTest(){
+        let currentTime = moment(this._clock).startOf('day').subtract(24, 'hours');
+        const endTime = moment(currentTime).add(3, 'days');
+        while(currentTime.isSameOrBefore(endTime)){
 
-    public getEnergyLevelAtTime(timeToCheck: moment.Moment): DaybookEnergyLevel {
-        const foundItem = this._energyItems.find((item) => {
-            return timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime);
-        });
-        if (foundItem) {
-            return foundItem.getEnergyLevelAtTime(timeToCheck);
-        } else {
-            console.log('Error: no energy item');
-        }
-    }
+            console.log("Energy at " + currentTime.format('YYYY-MM-DD hh:mm a') + " : " + this.getEnergyAtTime(currentTime))
+
+            currentTime = moment(currentTime).add(30, 'minutes');
+        }    }
+
+    public get startTime(): moment.Moment { return moment(this._clock).startOf('day').subtract(24, 'hours'); }
+    public get endTime(): moment.Moment { return moment(this._clock).startOf('day').add(48, 'hours'); }
+
     public getEnergyAtTime(timeToCheck: moment.Moment): number {
-        const foundItem = this._energyItems.find((item) => {
-            return timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime);
-        });
-        if (foundItem) { return foundItem.getEnergyAtTime(timeToCheck); }
-        else { console.log('Error: no energy item'); }
+        // let energy: number;
+        // const awakeHoursPerDay: number = (this._awakeToAsleepRatio * 24) / (this._awakeToAsleepRatio + 1);
+        // const asleepHoursPerDay: number = 24 - awakeHoursPerDay;
+
+        // const energyDecayPerHourAwake: number = 1 / awakeHoursPerDay;
+        // const energyGainPerHourAsleep: number = 1 / asleepHoursPerDay;
+
+        // const finalPoint = this._energyValuePoints[this._energyValuePoints.length - 1]
+
+        // if (timeToCheck.isBefore(this._energyValuePoints[0].time)) {
+        //     const flipTime: moment.Moment = moment(this._energyValuePoints[0].time).subtract(awakeHoursPerDay, 'hours');
+        //     if (timeToCheck.isSameOrAfter(flipTime)) {
+        //         const hoursDiff = moment(timeToCheck).diff(this._energyValuePoints[0].time, 'milliseconds') / (1000 * 60 * 60);
+        //         energy = this._energyValuePoints[0].energyLevel - (hoursDiff * energyDecayPerHourAwake);
+        //     } else if (timeToCheck.isBefore(flipTime)) {
+        //         const hoursDiff = moment(timeToCheck).diff(flipTime, 'milliseconds') / (1000 * 60 * 60);
+        //         energy = 0 + (hoursDiff * energyGainPerHourAsleep);
+        //     }
+        // } else if (timeToCheck.isAfter(finalPoint.time)) {
+        //     const flipTime: moment.Moment = moment(finalPoint.time).add(asleepHoursPerDay, 'hours');
+        //     if (timeToCheck.isSameOrBefore(flipTime)) {
+        //         const hoursDiff = moment(timeToCheck).diff(finalPoint.time, 'milliseconds') / (1000 * 60 * 60);
+        //         energy = finalPoint.energyLevel + (hoursDiff * energyGainPerHourAsleep);
+        //     } else if (timeToCheck.isAfter(flipTime)) {
+        //         const hoursDiff = moment(timeToCheck).diff(flipTime, 'milliseconds') / (1000 * 60 * 60);
+        //         energy = 1 - (hoursDiff * energyDecayPerHourAwake);
+        //     }
+        // } else {
+        //     let startIndex = 0;
+        //     for (let i = 0; i < this._energyValuePoints.length; i++) {
+        //         if(i < this._energyValuePoints.length-1){
+        //             if (timeToCheck.isSameOrAfter(this._energyValuePoints[i].time) && timeToCheck.isBefore(this._energyValuePoints[i + 1].time)) {
+        //                 startIndex = i;
+        //                 i = this._energyValuePoints.length + 1;
+        //             }
+        //         }
+        //     }
+        //     const startItem = this._energyValuePoints[startIndex];
+        //     let endItem: {time: moment.Moment, energyLevel: number};
+        //     if(this._energyValuePoints.length >= startIndex+1){
+        //         endItem = this._energyValuePoints[startIndex + 1];
+        //     }else{
+        //         console.log('Error calculating energy')
+        //     }
+            
+
+        //     const gapHours = moment(endItem.time).diff(startItem.time, 'milliseconds') / (1000 * 60 * 60);
+        //     const hoursDiff = moment(timeToCheck).diff(startItem.time, 'milliseconds') / (1000 * 60 * 60);
+        //     const startEnergy = startItem.energyLevel;
+        //     const endEnergy = endItem.energyLevel;
+        //     const diffEnergy = endEnergy - startEnergy;
+        //     let rateOfChange = (diffEnergy / gapHours);
+        //     if(endEnergy > startEnergy){
+        //         rateOfChange = rateOfChange * -1;
+        //     }
+        //     const energyAtTime = startEnergy + (hoursDiff * rateOfChange);
+        //     energy = energyAtTime;
+        // }
+        return 0;
+        // return energy;
     }
 
 
-
-    private _calculateSchedule(daybookScheduleItems: TimeScheduleItem<DaybookAvailabilityType>[], awakeToAsleepRatio: number) {
-        let sleepValueItems = daybookScheduleItems.filter(item => item.value === DaybookAvailabilityType.SLEEP);
-        const awakeHoursPerDay: number = (awakeToAsleepRatio * 24) / (awakeToAsleepRatio + 1);
-        const asleepHoursPerDay: number = 24 - awakeHoursPerDay;
-
-        const energyDecayPerHourAwake: number = 1 / awakeHoursPerDay;
-        const energyGainPerHourAsleep: number = 1 / asleepHoursPerDay;
-
-        // console.log("Energy decay per hour, gain per hour: " , energyDecayPerHourAwake, energyGainPerHourAsleep)
-
+    private _buildEnergyItems(sleepEntryItems: SleepEntryItem[], awakeToAsleepRatio: number) {
         let energyItems: DaybookEnergyItem[] = [];
-        let currentEnergy = 0;
-
-        let topValue: number = 0;
-        let bottomValue: number = 0;
-
-        daybookScheduleItems.forEach((item) => {
-            let rate: number;
-            if (item.value === DaybookAvailabilityType.SLEEP) {
-                rate = energyGainPerHourAsleep;
-            } else {
-                rate = energyDecayPerHourAwake * -1;
-            }
-            if (currentEnergy < bottomValue) { bottomValue = currentEnergy; }
-            if (currentEnergy > topValue) { topValue = currentEnergy; }
-            
-            const energyItem = new DaybookEnergyItem(item.startTime, item.endTime, currentEnergy, rate);
-            energyItems.push(energyItem);
-
-            currentEnergy = energyItem.getEnergyAtTime(item.endTime);
-            // console.log("Rate is " + rate + " , current energy is : " + currentEnergy)
-        });
-
-        if (bottomValue < 0) {
-            const offset = Math.abs(bottomValue);
-            energyItems = energyItems.map((item) => {
-                let newEnergy: number = item.energyLevelStart + offset;
-                if(newEnergy > 1){
-                    newEnergy = 1;
-                }
-                // if(item.energyLevelStart > 1){
-                //     newEnergy = item.energyLevelStart - offset;
-                // }else if(item.energyLevelStart < 0){
-                //     newEnergy = item.energyLevelStart + offset;
-                // }
-                return new DaybookEnergyItem(item.startTime, item.endTime, newEnergy, item.energyLevelRateOfChangePerHour);
-            });
-        }else if(bottomValue > 0){
-            console.log('Error with calculation: bottom value (' + bottomValue + ') is greater than 0');
-        }
-
-
-        // console.log(" ** Energy Items: ")
-        // energyItems.forEach((item)=>{
-        //     console.log("     "+ item.startTime.format("YYYY-MM-DD hh:mm a") + " - " + item.endTime.format('YYYY-MM-DD hh:mm a') + " --:   " + item.energyLevelStart);
-        // })
-
-
+        energyItems = sleepEntryItems.map(item => item.getEnergyItem());
         this._energyItems = energyItems;
     }
 

@@ -39,6 +39,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
   public get todayController$(): Observable<DaybookController> { return this._todayController$.asObservable(); }
   public get todayController(): DaybookController { return this._todayController$.getValue(); }
 
+  public get batteryLevel(): number { return this.todayController.batteryLevel; }
 
   public get activeDayController$(): Observable<DaybookController> { return this._activeDayController$.asObservable(); }
   public get activeDayController(): DaybookController { return this._activeDayController$.getValue(); }
@@ -78,9 +79,9 @@ export class DaybookControllerService implements ServiceAuthenticates {
     this._clockSubscriptions = [];
     this._clock = moment();
     this._todayYYYYMMDD = this.clock.format('YYYY-MM-DD');
-    
-    
-    // let currentTestTime = moment().startOf('day');
+
+
+    let currentTestTime = moment().startOf('day');
     // const clockSub = timer(0, 2000).subscribe((second) => {
     //   currentTestTime = moment(currentTestTime).add(31, 'minutes');
     //   console.log(currentTestTime.format('YYYY-MM-DD hh:mm a') + " current test time.");
@@ -89,10 +90,11 @@ export class DaybookControllerService implements ServiceAuthenticates {
     //     console.log("CROSSING MIDNIGHT")
     //     this._crossMidnight();
     //   }
+    //   this._updateTodayFromDatabase();
     // });
 
     const clockSub = timer(0, 1000).subscribe((second) => {
-      
+
       this._clock = moment();
       if (this._clock.format('YYYY-MM-DD') !== this.todayYYYYMMDD) {
         this._crossMidnight();
@@ -108,36 +110,30 @@ export class DaybookControllerService implements ServiceAuthenticates {
     this._clockSubscriptions = [clockSub, minuteSub];
   }
 
+
   private _updateTodayFromDatabase(crossedMidnight?: boolean) {
     // console.log(this.clock.format('YYYY-MM-DD') + " :getting daybook item for date");
     this.daybookHttpRequestService.getDaybookDayItemByDate$(this.clock.format('YYYY-MM-DD'))
-      .subscribe((todayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) => {
-        // console.log("todayItem from DB: ", todayItem);
-        this._setTodayItem(todayItem, crossedMidnight);
+      .subscribe((items: DaybookDayItem[]) => {
+        this._setTodayItem(items, crossedMidnight);
         this._loginComplete$.next(true);
       });
   }
 
-  private _setTodayItem(todayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem },
+  private _setTodayItem(items: DaybookDayItem[],
     crossedMidnight?: boolean) {
 
-    // console.log("today controller: ");
-    // console.log("  prevDay: " + todayItem.prevDay.dateYYYYMMDD);
-    // console.log(" *thisDay: " + todayItem.thisDay.dateYYYYMMDD + " *");
-    // console.log("  nextDay: " + todayItem.nextDay.dateYYYYMMDD);
-    const todayController: DaybookController = new DaybookController(todayItem, this.clock);
+    const startTime = items[0].startOfThisDay;
+    const endTime = items[items.length - 1].endOfThisDay;
 
-
-    // todayItem.setIsToday();
+    const todayController: DaybookController = new DaybookController(this.todayYYYYMMDD, items, startTime, endTime, this.clock);
     if (!this._todayController$) {
       this._todayController$ = new BehaviorSubject(todayController);
     } else {
-
       this._todayController$.next(todayController);
     }
 
     if (!this._activeDayController$) {
-
       this._updateActiveDay(todayController);
     } else if (this.activeDayController.dateYYYYMMDD === todayController.dateYYYYMMDD) {
       this._updateActiveDay(todayController);
@@ -213,9 +209,10 @@ export class DaybookControllerService implements ServiceAuthenticates {
   }
   private getActiveDateFromDatabase(dateYYYYMMDD: string) {
     this.daybookHttpRequestService.getDaybookDayItemByDate$(dateYYYYMMDD)
-      .subscribe((activeDayItem: { prevDay: DaybookDayItem, thisDay: DaybookDayItem, nextDay: DaybookDayItem }) => {
-        console.log("getting active date item: ", activeDayItem);
-        const newController = new DaybookController(activeDayItem, this.clock);
+      .subscribe((items: DaybookDayItem[]) => {
+        const startTime = moment(items[0].startOfThisDay);
+        const endTime = moment(items[items.length - 1].endOfThisDay);
+        const newController = new DaybookController(dateYYYYMMDD, items, startTime, endTime, this.clock);
         this._updateActiveDay(newController);
       });
   }
@@ -253,7 +250,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
         if (!prevDay) { prevDay = controller.previousDay; }
         if (!thisDay) { thisDay = controller.thisDay; }
         if (!nextDay) { nextDay = controller.followingDay; }
-        const reloadItem = { prevDay: prevDay, thisDay: thisDay, nextDay: nextDay };
+        const reloadItem = [prevDay, thisDay, nextDay];
 
 
         // console.log("Reloading with reload item: ", reloadItem)
