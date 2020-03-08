@@ -10,9 +10,9 @@ import { DaybookAvailabilityType } from './items/daybook-availability-type.enum'
 
 export class DaybookSleepController {
 
-    private _awakeToAsleepRatio: number = 2
+    private _awakeToAsleepRatio: number;
 
-    private _sleepEntryUpdated$: Subject<{entryItem: SleepEntryItem, dateYYYYMMDD: string}> = new Subject();
+    private _sleepEntryUpdated$: Subject<{ entryItem: SleepEntryItem, dateYYYYMMDD: string }> = new Subject();
 
     private _prevDaySleepItem: SleepEntryItem;
     private _thisDaySleepItem: SleepEntryItem;
@@ -20,24 +20,41 @@ export class DaybookSleepController {
 
     private _clock: moment.Moment;
 
-    constructor(prevDaySleepItem: DaybookSleepInputDataItem, thisDaySleepItem: DaybookSleepInputDataItem, nextDaySleepItem: DaybookSleepInputDataItem, clock: moment.Moment) {
-        // console.log("BUILDING CONTORLLER:")
+    constructor(prevDaySleepItem: DaybookSleepInputDataItem, thisDaySleepItem: DaybookSleepInputDataItem, nextDaySleepItem: DaybookSleepInputDataItem, clock: moment.Moment, allSleepInputItems: DaybookSleepInputDataItem[]) {
+        console.log("BUILDING CONTORLLER:")
         // console.log("PREV DAY: ", prevDaySleepItem)
         // console.log("THIS DAY: ", thisDaySleepItem)
         // console.log("NEXT DAY: ", nextDaySleepItem)
-
-        this._buildSleepController(prevDaySleepItem, thisDaySleepItem, nextDaySleepItem);
         this._clock = moment(clock);
+        this._awakeToAsleepRatio = this._calculateRatio(allSleepInputItems)
+        this._buildSleepController(prevDaySleepItem, thisDaySleepItem, nextDaySleepItem);
+        // console.log(" " + this.prevDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - prevDayWakeupTime")
+        // console.log(" " + this.prevDayFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - prevDayFallAsleepTime")
+        // console.log(" " + this.thisDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - thisDayWakeupTime")
+        // console.log(" " + this.thisDayFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - thisDayFallAsleepTime")
+        // console.log(" " + this.nextDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - nextDayWakeupTime")
 
-
-        console.log(" " + this.prevDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - prevDayWakeupTime")
-        console.log(" " + this.prevDayFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - prevDayFallAsleepTime")
-        console.log(" " + this.thisDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - thisDayWakeupTime")
-        console.log(" " + this.thisDayFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - thisDayFallAsleepTime")
-        console.log(" " + this.nextDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - nextDayWakeupTime")
+        this._runTests();
     }
 
-    public get sleepEntryUpdated$(): Observable<{entryItem: SleepEntryItem, dateYYYYMMDD: string}> { return this._sleepEntryUpdated$.asObservable(); }
+
+    private _runTests() {
+        let currentTime = moment(this._clock).startOf('day').subtract(24, 'hours');
+        const endTime = moment(currentTime).add(3, 'days');
+        while (currentTime.isSameOrBefore(endTime)) {
+            const energy = this.getEnergyAtTime(currentTime);
+            if (energy >= 0 && energy <= 1) {
+                // console.log(energy.toFixed(2) + " - " + currentTime.format('hh:mm a YYYY-MM-DD '))
+            } else {
+                console.log('Error with energy value: ', energy);
+            }
+            currentTime = moment(currentTime).add(7, 'minutes');
+        }
+    }
+
+
+    public get sleepEntryUpdated$(): Observable<{ entryItem: SleepEntryItem, dateYYYYMMDD: string }> { return this._sleepEntryUpdated$.asObservable(); }
+
 
     public getDaybookTimeScheduleItems(): TimeScheduleItem<DaybookAvailabilityType>[] {
         const sleepItems: SleepEntryItem[] = [
@@ -56,8 +73,71 @@ export class DaybookSleepController {
             }
             return new TimeScheduleItem(startTime, endTime, true, DaybookAvailabilityType.SLEEP)
         });
-        console.log("ITEMS: ", items)
         return items;
+    }
+
+    public getEnergyAtTime(timeToCheck: moment.Moment): number {
+        /**
+         * 2020-03-07
+         * as of now, we will just use the linear function which will be mostly accurate.
+         * sleeping == energy increasing
+         * not sleeping == energy decreasing
+         * 
+         * eventually we will also need to consider 2 additional cases:
+         * -case where user inputs sleep item but was awake at some point while they were supposed to be sleeping (aka insomnia or restlessness)
+         * -case where user sleeps/naps during the day when they would normally be awake.
+         * currently neither of these cases are considered.  
+         */
+
+        if (this.isAsleepAtTime(timeToCheck)) {
+            if (this._prevDaySleepItem.timeIsIn(timeToCheck)) {
+                return this._prevDaySleepItem.getEnergyAtTime(timeToCheck);
+            } else if (this._thisDaySleepItem.timeIsIn(timeToCheck)) {
+                return this._thisDaySleepItem.getEnergyAtTime(timeToCheck);
+            } else if (this._nextDaySleepItem.timeIsIn(timeToCheck)) {
+                return this._nextDaySleepItem.getEnergyAtTime(timeToCheck);
+            } else {
+                console.log('Error with time to check: ' + timeToCheck.format('YYYY-MM-DD hh:mm a'));
+            }
+        } else if (this.isAwakeAtTime(timeToCheck)) {
+            let startEnergy: number, endEnergy: number;
+            let startTime: moment.Moment, endTime: moment.Moment;
+            if (timeToCheck.isAfter(this.prevDayWakeupTime) && timeToCheck.isBefore(this.prevDayFallAsleepTime)) {
+
+                startTime = moment(this.prevDayWakeupTime);
+                endTime = moment(this.prevDayFallAsleepTime);
+                startEnergy = this._prevDaySleepItem.energyAtEnd;
+                endEnergy = this._thisDaySleepItem.energyAtStart;
+            } else if (timeToCheck.isAfter(this.thisDayWakeupTime) && timeToCheck.isBefore(this.thisDayFallAsleepTime)) {
+                startTime = moment(this.thisDayWakeupTime);
+                endTime = moment(this.thisDayFallAsleepTime);
+                startEnergy = this._thisDaySleepItem.energyAtEnd;
+                endEnergy = this._nextDaySleepItem.energyAtStart;
+            } else if (timeToCheck.isAfter(this.nextDayWakeupTime) && timeToCheck.isBefore(this.nextDayFallAsleepTime)) {
+                startTime = moment(this.nextDayWakeupTime);
+                endTime = moment(this.nextDayFallAsleepTime);
+                startEnergy = this._nextDaySleepItem.energyAtEnd;
+                endEnergy = 0;
+            } else {
+                return 0;
+            }
+            return this._calculateEnergy(startTime, endTime, startEnergy, endEnergy, timeToCheck);
+        } else {
+            console.log('Error with time to check: ' + timeToCheck.format('YYYY-MM-DD hh:mm a'));
+        }
+
+        return 0;
+    }
+
+    private _calculateEnergy(startTime: moment.Moment, endTime: moment.Moment, startEnergy: number, endEnergy: number, timeToCheck: moment.Moment): number {
+        // console.log(startEnergy +": energy at start - " + startTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log(endEnergy + ": energy at end - " + endTime.format('YYYY-MM-DD hh:mm a'));
+        const diffHours = moment(timeToCheck).diff(startTime, 'milliseconds') / (1000 * 60 * 60);
+        const totalHours = moment(endTime).diff(startTime, 'milliseconds') / (1000 * 60 * 60);
+        const energyRateOfChange = (endEnergy - startEnergy) / totalHours;
+        const currentEnergy = startEnergy + (diffHours * energyRateOfChange);
+        // console.log("Returning calculated energy: " + currentEnergy);
+        return currentEnergy;
     }
 
     private _buildSleepController(prevDaySleepItem: DaybookSleepInputDataItem, thisDaySleepItem: DaybookSleepInputDataItem, nextDaySleepItem: DaybookSleepInputDataItem) {
@@ -67,34 +147,34 @@ export class DaybookSleepController {
             let startTime: moment.Moment = moment(endTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
             if (thisDaySleepItem.startSleepTimeISO) {
                 startTime = moment(thisDaySleepItem.startSleepTimeISO);
-            } 
-            thisDaySleepEntry = new SleepEntryItem(startTime, endTime, thisDaySleepItem);
+            }
+            thisDaySleepEntry = new SleepEntryItem(this.thisDateYYYYMMDD, startTime, endTime, thisDaySleepItem);
         }
         if (prevDaySleepItem.endSleepTimeISO) {
             const endTime = moment(prevDaySleepItem.endSleepTimeISO);
             let startTime: moment.Moment = moment(endTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
             if (prevDaySleepItem.startSleepTimeISO) {
                 startTime = moment(prevDaySleepItem.startSleepTimeISO);
-            } 
-            prevDaySleepEntry = new SleepEntryItem(startTime, endTime, prevDaySleepItem);
+            }
+            prevDaySleepEntry = new SleepEntryItem(this.prevDateYYYYMMDD, startTime, endTime, prevDaySleepItem);
         }
         if (nextDaySleepItem.endSleepTimeISO) {
             const endTime = moment(nextDaySleepItem.endSleepTimeISO);
             let startTime: moment.Moment = moment(endTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
             if (nextDaySleepItem.startSleepTimeISO) {
                 startTime = moment(nextDaySleepItem.startSleepTimeISO);
-            } 
-            nextDaySleepEntry = new SleepEntryItem(startTime, endTime, nextDaySleepItem);
+            }
+            nextDaySleepEntry = new SleepEntryItem(this.nextDateYYYYMMDD, startTime, endTime, nextDaySleepItem);
         }
         if (!thisDaySleepEntry) {
             if (prevDaySleepEntry) {
                 const start = (prevDaySleepEntry.startTime).add(24, 'hours');
                 const end = (prevDaySleepEntry.endTime).add(24, 'hours');
-                thisDaySleepEntry = new SleepEntryItem(start, end)
+                thisDaySleepEntry = new SleepEntryItem(this.thisDateYYYYMMDD, start, end)
             } else if (nextDaySleepEntry) {
                 const start = (nextDaySleepEntry.startTime).subtract(24, 'hours');
                 const end = (nextDaySleepEntry.endTime).subtract(24, 'hours');
-                thisDaySleepEntry = new SleepEntryItem(start, end)
+                thisDaySleepEntry = new SleepEntryItem(this.thisDateYYYYMMDD, start, end)
             } else {
                 thisDaySleepEntry = this._buildDefaultSleepEntry();
             }
@@ -103,12 +183,12 @@ export class DaybookSleepController {
         if (!prevDaySleepEntry) {
             const start = moment(thisDaySleepEntry.startTime).subtract(24, 'hours');
             const end = moment(thisDaySleepEntry.endTime).subtract(24, 'hours');
-            prevDaySleepEntry = new SleepEntryItem(start, end)
+            prevDaySleepEntry = new SleepEntryItem(this.prevDateYYYYMMDD, start, end)
         }
         if (!nextDaySleepEntry) {
             const start = moment(thisDaySleepEntry.startTime).add(24, 'hours');
             const end = moment(thisDaySleepEntry.endTime).add(24, 'hours');
-            nextDaySleepEntry = new SleepEntryItem(start, end)
+            nextDaySleepEntry = new SleepEntryItem(this.nextDateYYYYMMDD, start, end)
         }
 
         this._prevDaySleepItem = prevDaySleepEntry;
@@ -118,15 +198,44 @@ export class DaybookSleepController {
         // console.log("Setting items:", this._prevDaySleepItem, this._thisDaySleepItem, this._nextDaySleepItem)
     }
 
+    private _calculateRatio(allSleepInputItems: DaybookSleepInputDataItem[]): number {
+        const sleepEntryItems: SleepEntryItem[] = [];
+        allSleepInputItems.forEach((item) => {
+            if (item.startSleepTimeISO && item.endSleepTimeISO) {
+                const startTime = moment(item.startSleepTimeISO);
+                const endTime = moment(item.endSleepTimeISO);
+                const date = moment(endTime).format('YYYY-MM-DD');
+                sleepEntryItems.push(new SleepEntryItem(date, startTime, endTime, item));
+            }
+        });
+        let ratio: number = 2;
+        if (sleepEntryItems.length > 0) {
+            let ratioVals: number[] = [];
+            let sum = 0;
+            if (sleepEntryItems.length < 3) {
+                const diff = 3 - sleepEntryItems.length;
+                for (let i = 0; i < diff; i++) {
+                    ratioVals.push(2);
+                }
+                sleepEntryItems.forEach(item => ratioVals.push(item.getAwakeToAsleepRatio()));
+                ratioVals.forEach(item => sum += item);
+                ratio = sum / ratioVals.length;
+            } else if (sleepEntryItems.length >= 3) {
+                sleepEntryItems.forEach(item => ratioVals.push(item.getAwakeToAsleepRatio()));
+                ratioVals.forEach(item => sum += item);
+                ratio = sum / ratioVals.length;
+            }
+        }
+        return ratio;
+    }
+
     private _buildDefaultSleepEntry(): SleepEntryItem {
         let wakeupTime = moment(this._clock).startOf('day').add(7, 'hours').add(30, 'minutes');
         const startTime = moment(wakeupTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
-
-        if(wakeupTime.isBefore(this._clock)){
-            
-        }
-
-        const defaultEntry = new SleepEntryItem(startTime, wakeupTime);
+        // if (wakeupTime.isAfter(this._clock)) {
+            // wakeupTime = moment(this._clock);
+        // }
+        const defaultEntry = new SleepEntryItem(this.thisDateYYYYMMDD, startTime, wakeupTime);
         return defaultEntry;
     }
 
@@ -165,7 +274,7 @@ export class DaybookSleepController {
     public get thisDayFallAsleepTime(): moment.Moment { return this._nextDaySleepItem.startTime; }
 
     public get nextDayWakeupTime(): moment.Moment { return this._nextDaySleepItem.endTime; }
-
+    public get nextDayFallAsleepTime(): moment.Moment { return moment(this._nextDaySleepItem.endTime).add(this.ratioAwakeHoursPerDay, 'hours'); }
 
     public isAwakeAtTime(timeToCheck: moment.Moment): boolean {
         return !this.isAsleepAtTime(timeToCheck);

@@ -14,13 +14,9 @@ import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data
 
 export class DaybookDayItemBuilder {
 
-    constructor() {
-
+    constructor() { 
+        
     }
-
-    // public buildNewItem(dateYYYYMMDD: string): DaybookDayItem {
-    //     return new DaybookDayItem(dateYYYYMMDD);
-    // }
 
     public buildItemFromResponse(dayItemHttpData: any): DaybookDayItem {
         // console.log("Building item with data: " , dayItemHttpData)
@@ -133,11 +129,17 @@ export class DaybookDayItemBuilder {
             }
         }
 
+        let sevenDayAwakeToAsleepRatio: number = -1;
+        if(dayItemHttpData.sevenDayAwakeToAsleepRatio){
+            sevenDayAwakeToAsleepRatio = dayItemHttpData.sevenDayAwakeToAsleepRatio;
+        }
+
         const dailyWeightLogEntryKg: number = dayItemHttpData.dailyWeightLogEntryKg;
         const dayTemplateId: string = dayItemHttpData.dayTemplateId;
         const scheduledEventIds: string[] = dayItemHttpData.scheduledEventIds;
         const notebookEntryIds: string[] = dayItemHttpData.notebookEntryIds;
         const taskItemIds: string[] = dayItemHttpData.taskItemIds;
+
 
         const httpShape: DaybookDayItemHttpShape = {
             _id: id,
@@ -147,6 +149,7 @@ export class DaybookDayItemBuilder {
             timeDelineators: timeDelineators,
             sleepInputItem: sleepInputItem,
             sleepEnergyLevelInputs: sleepEnergyLevelInputs,
+            sevenDayAwakeToAsleepRatio: sevenDayAwakeToAsleepRatio,
             daybookActivityDataItems: daybookActivityDataItems,
             dailyTaskListDataItems: dailyTaskListDataItems,
             dayStructureDataItems: dayStructureDataItems,

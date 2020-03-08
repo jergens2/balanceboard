@@ -17,6 +17,7 @@ import { TimelogDisplayGridItem } from './widgets/timelog/timelog-display-grid-i
 import { TimelogEntryFormService } from './widgets/timelog/timelog-entry-form/timelog-entry-form.service';
 import { ToolboxService } from '../../toolbox-menu/toolbox.service';
 import { DisplayGridItemsBar } from './widgets/timelog/timelog-entry-form/daybook-grid-items-bar/daybook-grid-items-bar.class';
+import { DaybookTimePosition } from './daybook-time-position-form/daybook-time-position.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -126,15 +127,22 @@ export class DaybookDisplayService {
   }
 
   public openNewCurrentTimelogEntry() {
-    const newCurrentTLE = this.daybookControllerService.todayController.getNewCurrentTLE();
-    const foundGridItem = this.gridBarItems.find(item => {
-      return item.availabilityType === DaybookAvailabilityType.AVAILABLE
-        && item.startTime.isSame(newCurrentTLE.startTime) && item.endTime.isSame(newCurrentTLE.endTime);
-    });
-    if (foundGridItem) {
-      this._openDisplayGridItem(foundGridItem);
-    } else {
-      console.log("Error: could not find new current tlef")
+    const currentTimePosition = this.daybookControllerService.todayController.timePosition;
+    console.log("currentTimePosition is " + currentTimePosition);
+    if(currentTimePosition === DaybookTimePosition.NORMAL){
+      
+      const newCurrentTLE = this.daybookControllerService.todayController.getNewCurrentTLE();
+      const foundGridItem = this.gridBarItems.find(item => {
+        return item.availabilityType === DaybookAvailabilityType.AVAILABLE
+          && item.startTime.isSame(newCurrentTLE.startTime) && item.endTime.isSame(newCurrentTLE.endTime);
+      });
+      if (foundGridItem) {
+        this._openDisplayGridItem(foundGridItem);
+      } else {
+        console.log("Error: could not find new current tlef")
+      }
+    }else {
+      this.toolBoxService.openNewDayForm();
     }
   }
 

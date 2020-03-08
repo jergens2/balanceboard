@@ -42,6 +42,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     //   this._entryItem = this.timelogEntryFormService.openedTimelogEntry;
     //   this._formCase = this.timelogEntryFormService.formCase;
     // });
+    console.log("TLEF case is: " + this.formCase)
 
     this._dbSubs = [
       this.daybookService.displayUpdated$.subscribe(change => this._update()),

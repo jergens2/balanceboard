@@ -13,6 +13,7 @@ import blankDaybookItemHttpShape from './data-items/blank-http-shape';
 import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
 import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
 import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data-item.interface';
+import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 
 
 export class DaybookDayItem {
@@ -55,6 +56,17 @@ export class DaybookDayItem {
 
     public get sleepInputItem(): DaybookSleepInputDataItem { return this.httpShape.sleepInputItem }
     public set sleepInputItem(item: DaybookSleepInputDataItem) { this._httpShape.sleepInputItem = item; }
+
+    public getSleepEntryItem(): SleepEntryItem { 
+        if(this.sleepInputItem.startSleepTimeISO && this.sleepInputItem.endSleepTimeISO){
+            const startTime = moment(this.sleepInputItem.startSleepTimeISO);
+            const endTime = moment(this.sleepInputItem.endSleepTimeISO);
+            return new SleepEntryItem(this.dateYYYYMMDD, startTime, endTime, this.sleepInputItem);
+        }else{
+            return null;
+        }
+        
+    }
 
     public get isToday(): boolean { return this._isToday; }
     public setIsToday() { this._isToday = true; }

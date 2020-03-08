@@ -5,7 +5,10 @@ import { DaybookEnergyItem } from '../../../../controller/items/daybook-energy-i
 
 export class SleepEntryItem {
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment, inputItem?: DaybookSleepInputDataItem) {
+    private _dateYYYYMMDD: string
+    constructor(dateYYYYMMDD: string, startTime: moment.Moment, endTime: moment.Moment, inputItem?: DaybookSleepInputDataItem) {
+        // console.log("Constructing sleep entry item: ", dateYYYYMMDD, startTime.format('YYYY-MM-DD hh:mm a') + " to " + endTime.format("YYYY-MM-DD hh:mm a"), inputItem )
+        this._dateYYYYMMDD = dateYYYYMMDD;
         this._startTime = startTime;
         this._endTime = endTime;
         if (inputItem) {
@@ -34,27 +37,6 @@ export class SleepEntryItem {
     private _energyAtStart: number = 0;
     private _energyAtEnd: number = 1;
 
-    /**
-     * 
-    startSleepTimeISO: string;
-    startSleepTimeUtcOffsetMinutes: number;
-    
-    endSleepTimeISO: string;
-    endSleepTimeUtcOffsetMinutes: number;
-    
-    energyAtStartUserInput: number;
-    energyAtEndUserInput: number;
-
-    percentAsleep: number;
-
-    embeddedNote: string;
-    noteIds: string[];
-
-    customSleepProfile: any;
-     */
-
-
-
 
     private _isSavedEntry: boolean = false;
 
@@ -74,12 +56,28 @@ export class SleepEntryItem {
     public get energyAtStart(): number { return this._energyAtStart; }
     public get energyAtEnd(): number { return this._energyAtEnd; }
     public get energyDifference(): number { return this.energyAtEnd - this.energyAtStart; }
-    public get durationHours(): number { return (moment(this.endTime).diff(this.startTime, 'milliseconds') / (1000 * 60 * 60)); }
+
+    public get durationHours(): number { return (moment(this._endTime).diff(this._startTime, 'milliseconds') / (1000 * 60 * 60)); }
+    public get durationMs(): number { return (moment(this._endTime).diff(this._startTime, 'milliseconds')); }
+
 
     public get startTimeIsSaved(): boolean { return this._startTimeIsSaved; }
     public get endTimeIsSaved(): boolean { return this._endTimeIsSaved; }
 
     public get energyRateOfChangePerHour(): number { return this.energyDifference / this.durationHours; }
+
+    public getAwakeToAsleepRatio(): number {
+        const awakeHours = 24 - this.durationHours;
+        return awakeHours / this.durationHours;
+    }
+
+    public getEnergyAtTime(timeToCheck: moment.Moment): number {
+        const diffHours = moment(timeToCheck).diff(this.startTime, 'milliseconds') / (1000 * 60 * 60);
+        const diffEnergy = diffHours * this.energyRateOfChangePerHour;
+        return this.energyAtStart + diffEnergy;
+    }
+
+
 
 
     public setEndTime(endTime: moment.Moment) {

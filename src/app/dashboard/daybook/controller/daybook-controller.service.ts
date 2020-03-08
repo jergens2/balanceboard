@@ -82,8 +82,8 @@ export class DaybookControllerService implements ServiceAuthenticates {
 
 
     let currentTestTime = moment().startOf('day');
-    // const clockSub = timer(0, 2000).subscribe((second) => {
-    //   currentTestTime = moment(currentTestTime).add(31, 'minutes');
+    // const clockSub = timer(0, 4000).subscribe((second) => {
+    //   currentTestTime = moment(currentTestTime).add(29, 'minutes');
     //   console.log(currentTestTime.format('YYYY-MM-DD hh:mm a') + " current test time.");
     //   this._clock = moment(currentTestTime);
     //   if (this._clock.format('YYYY-MM-DD') !== this.todayYYYYMMDD) {
