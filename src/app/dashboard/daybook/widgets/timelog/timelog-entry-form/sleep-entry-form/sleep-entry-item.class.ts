@@ -80,11 +80,25 @@ export class SleepEntryItem {
 
 
 
-    public setEndTime(endTime: moment.Moment) {
+    public setEndTime(endTime: moment.Moment, asleepHoursPerDay: number) {
+        // AKA setWakeupTime
         this._endTime = moment(endTime);
+        this._endTimeIsSaved = true;
+        if(!this._startTimeIsSaved){ 
+            // if there was no fall asleep time set.
+            this._startTime = moment(this._endTime).subtract(asleepHoursPerDay, 'hours');
+            this._startTimeIsSaved = true;
+        }
     }
-    public setStartTime(startTime: moment.Moment) {
+    public setStartTime(startTime: moment.Moment, asleepHoursPerDay?: number, saveFollowingEndTime = false) {
+        // AKA setFallAsleepTime
         this._startTime = startTime;
+        this._startTimeIsSaved = true;
+
+        if(saveFollowingEndTime){
+            this._endTime = moment(this._startTime).add(asleepHoursPerDay, 'hours');
+            this._endTimeIsSaved = true;
+        }
     }
     public note: string = "";
     public percentAsleep: number = 100;
@@ -129,7 +143,7 @@ export class SleepEntryItem {
             embeddedNote: this.note,
             noteIds: [],
 
-            customSleepProfile: {},
+            customSleepProfile: null,
         }
     }
 }

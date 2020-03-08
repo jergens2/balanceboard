@@ -36,7 +36,7 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     this._dbSubs = [
       this.daybookService.displayUpdated$.subscribe(change => this._update()),
       this.daybookService.activeGridBarItem$.subscribe(change => this._update())
-    ]
+    ];
 
   }
 
@@ -84,8 +84,15 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
   public onWakeupTimeChanged(newTime: moment.Moment) {
     this._setNewWakeupTime = newTime;
   }
+  public onFallAsleepTimeChanged(newTime: moment.Moment){
+    this._setNewFallAsleepTime = newTime;
+  }
   public onClickSaveWakeupTime() {
-    if (!this._setNewWakeupTime.isSame(this._wakeupTime)) {
+    if(this.daybookService.activeDayController.wakeupTimeIsSet){
+      if (!this._setNewWakeupTime.isSame(this._wakeupTime)) {
+        this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
+      }
+    }else{
       this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
     }
     this._isEditingWakeupTime = false;
@@ -93,9 +100,15 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
   }
 
   public onClickSaveFallAsleepTime() {
-    if (!this._setNewWakeupTime.isSame(this._wakeupTime)) {
-      this.daybookService.activeDayController.setFallAsleepTime(this._setNewWakeupTime);
+    console.log("SAVING FALL ASLEEP TIME")
+    if(this.daybookService.activeDayController.fallAsleepTimeIsSet){
+      if (!this._setNewFallAsleepTime.isSame(this._fallAsleepTime)) {
+        this.daybookService.activeDayController.setFallAsleepTime(this._setNewFallAsleepTime);
+      }
+    }else{
+      this.daybookService.activeDayController.setFallAsleepTime(this._setNewFallAsleepTime);
     }
+
     this._isEditingWakeupTime = false;
     this._isEditingFallAsleepTime = false;
   }

@@ -81,66 +81,12 @@ export class TimeSchedule<T>{
         }
     }
 
-    // public getPreviousValueChangeTime(startTime: moment.Moment, currentValue: boolean = false): moment.Moment {
-    //     let foundIndex = this.fullScheduleItems.findIndex((item) => {
-    //         return startTime.isSameOrAfter(item.startTime) && startTime.isSameOrBefore(item.endTime);
-    //     });
-    //     if (foundIndex >= 0) {
-    //         let foundTime: moment.Moment;
-    //         for (let i = foundIndex; i > 0; i--) {
-
-    //             if (this.fullScheduleItems[i].hasValue !== currentValue) {
-    //                 foundTime = this.fullScheduleItems[i].startTime;
-    //                 i = 0;
-    //             } else if (i > 0) {
-    //                 if (this.fullScheduleItems[i - 1].hasValue !== currentValue) {
-    //                     foundTime = this.fullScheduleItems[i - 1].endTime;
-    //                     i = 0;
-    //                 }
-    //             }
-    //         }
-    //         if (foundTime) {
-    //             return foundTime
-    //         } else {
-    //             return this.scheduleStartTime;
-    //         }
-    //     } else {
-    //         console.log('Error: could not find item')
-    //         return startTime;
-    //     }
-    // }
-
-    // public getNextValueChangeTime(currentTime: moment.Moment): moment.Moment {
-    //     if (this.fullScheduleItems.length > 0) {
-    //         let foundItems = this.fullScheduleItems.filter((item) => {
-    //             const crosses = item.startTime.isSameOrBefore(currentTime) && item.endTime.isSameOrAfter(currentTime);
-    //             return crosses || item.startTime.isSameOrAfter(currentTime);
-    //         });
-    //         if (foundItems.length > 0) {
-    //             /**
-    //              * It is implied that the next item has the opposite value for hasValue (therefore ValueChange)
-    //              * the next item's startTime is the same as foundItems[0].endTime
-    //              */
-    //             return foundItems[0].endTime;
-    //         } else {
-    //             return this.scheduleEndTime;
-    //         }
-    //     } else {
-    //         return this.scheduleEndTime;
-    //     }
-    // }
-
-
-    public getNextOccurrenceOfValue(timeToCheck: moment.Moment, findValue: T): moment.Moment {
-        let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isSameOrBefore(item.endTime));
+    public getNextOccurrenceOfValue(timeToCheck: moment.Moment, findValue: T): TimeScheduleItem<T>{
+        let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime));
         if (startIndex >= 0) {
             for (let i = startIndex; i < this.fullScheduleItems.length; i++) {
                 if (this.fullScheduleItems[i].value === findValue) {
-                    if (this.fullScheduleItems[i].startTime.isBefore(timeToCheck)) {
-                        return timeToCheck;
-                    } else {
-                        return this.fullScheduleItems[i].startTime;
-                    }
+                    return this.fullScheduleItems[i];
                 }
 
             }
@@ -150,16 +96,24 @@ export class TimeSchedule<T>{
             return null;
         }
     }
-    public getNextOccurrenceOfNotValue(timeToCheck: moment.Moment, findNotValue: T) {
+    public getNextOccurrenceOfNotValue(timeToCheck: moment.Moment, findNotValue: T): TimeScheduleItem<T>{
         let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime));
         if (startIndex >= 0) {
             for (let i = startIndex; i < this.fullScheduleItems.length; i++) {
                 if (this.fullScheduleItems[i].value !== findNotValue) {
-                    if (this.fullScheduleItems[i].startTime.isBefore(timeToCheck)) {
-                        return timeToCheck;
-                    } else {
-                        return this.fullScheduleItems[i].startTime;
-                    }
+                    return this.fullScheduleItems[i];
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+    public getPrevOccurrenceOfValue(timeToCheck: moment.Moment, findValue: T): TimeScheduleItem<T>{
+        let startIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime));
+        if (startIndex >= 0) {
+            for (let i = startIndex; i > 0; i--) {
+                if (this.fullScheduleItems[i].value === findValue) {
+                    return this.fullScheduleItems[i];
                 }
             }
         } else {
@@ -380,18 +334,6 @@ export class TimeSchedule<T>{
         const endsAfter = item.startTime.isSameOrAfter(this.scheduleStartTime) && item.endTime.isAfter(this.scheduleEndTime);
         const encompasses = item.startTime.isSameOrBefore(this.scheduleStartTime) && item.endTime.isSameOrAfter(this.scheduleEndTime);
         if (isInside || startsBefore || endsAfter || encompasses) {
-            // let itemStart: moment.Moment = item.startTime;
-            // let itemEnd: moment.Moment = item.endTime;
-            // if (startsBefore || encompasses) { itemStart = this.scheduleStartTime; }
-            // if (endsAfter || encompasses) { itemEnd = this.scheduleEndTime; }
-
-            // if (this.hasValueAtTime(moment(itemStart).add(1, 'millisecond')) || this.hasValueAtTime(moment(itemEnd).subtract(1, 'millisecond'))) {
-            //     if (overRide === true) {
-            //         this._setOverridePriority(item);
-            //     } else {
-            //         this._setLowPriority(item);
-            //     }
-            // }
             this._valueItems.push(item);
             this._reOrganizeSchedule();
         } else {
@@ -399,24 +341,6 @@ export class TimeSchedule<T>{
             console.log("   " + item.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a'))
         }
     }
-
-    // private _setLowPriority(item: TimeScheduleItem<T>) {
-    //     this._valueItems.forEach((item) => {
-    //         item.priority++;
-    //     });
-    //     item.priority = 0;
-    // }
-
-    // private _setOverridePriority(item: TimeScheduleItem<T>) {
-    //     let maxPriority: number = 0;
-    //     this._valueItems.forEach((item) => {
-    //         if (item.priority > maxPriority) {
-    //             maxPriority = item.priority;
-    //         }
-    //     });
-    //     item.priority = maxPriority + 1;
-    // }
-
 
     public logFullScheduleItems() {
         console.log("Full Schedule Items: ")

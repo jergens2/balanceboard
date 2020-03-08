@@ -147,7 +147,7 @@ export class DaybookDisplayService {
   }
 
   public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
-    // console.log("opening grid item: " , gridItem)
+    console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
     const currentTimePosition = this.daybookControllerService.todayController.timePosition;
     if(currentTimePosition === DaybookTimePosition.NORMAL){
       if (gridItem.isMerged) {
@@ -208,11 +208,11 @@ export class DaybookDisplayService {
 
   private _buildZoomItems() {
     let zoomItems: TimelogZoomControllerItem[] = [];
-    console.log("Active Day controller: " , this.daybookControllerService.activeDayController.dateYYYYMMDD);
+    // console.log("Active Day controller: " , this.daybookControllerService.activeDayController.dateYYYYMMDD);
     let startTime = moment(this.daybookControllerService.activeDayController.wakeupTime);
     let endTime = moment(this.daybookControllerService.activeDayController.fallAsleepTime);
-    console.log("Start time is: " + startTime.format('YYYY-MM-DD hh:mm a'))
-    console.log("End time is : " + endTime.format('YYYY-MM-DD hh:mm a'))
+    // console.log("Start time is: " + startTime.format('YYYY-MM-DD hh:mm a'))
+    // console.log("***End time is : " + endTime.format('YYYY-MM-DD hh:mm a'))
 
     const wakeItem = new TimelogZoomControllerItem(startTime, endTime, TimelogZoomType.AWAKE);
     wakeItem.icon = faSun;
@@ -227,8 +227,8 @@ export class DaybookDisplayService {
     this._displayStartTime = TimeUtilities.roundDownToFloor(moment(startTime).subtract(15, 'minutes'), 30);
     this._displayEndTime = TimeUtilities.roundUpToCeiling(moment(endTime).add(15, 'minutes'), 30);
 
-    console.log("Updating times: displayStartTime = " + this._displayStartTime.format('YYYY-MM-DD hh:mm a') )
-    console.log("Updating times: displayEndTime = " + this._displayEndTime.format('YYYY-MM-DD hh:mm a'))
+    // console.log("Updating times: displayStartTime = " + this._displayStartTime.format('YYYY-MM-DD hh:mm a') )
+    // console.log("Updating times: displayEndTime = " + this._displayEndTime.format('YYYY-MM-DD hh:mm a'))
   }
 
   private _loadTimelogDelineators() {
@@ -237,8 +237,10 @@ export class DaybookDisplayService {
     const fameEndDelineator = new TimelogDelineator(this.displayEndTime, TimelogDelineatorType.FRAME_END);
     const wakeupDelineator = new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME);
     const fallAsleepDelineator = new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME);
-    console.log("Frame start is : " + this.displayStartTime.format('YYYY-MM-DD hh:mm a'))
-    console.log("Frame end is : " + this.displayEndTime.format('YYYY-MM-DD hh:mm a'));
+    // console.log("   Frame start is : " + this.displayStartTime.format('YYYY-MM-DD hh:mm a'))
+    // console.log("   Frame end is : " + this.displayEndTime.format('YYYY-MM-DD hh:mm a'));
+    // console.log("   wake up time  is : " + this.wakeupTime.format('YYYY-MM-DD hh:mm a'))
+    // console.log("   fall asleep time is : " + this.fallAsleepTime.format('YYYY-MM-DD hh:mm a'));
     timelogDelineators.push(frameStartDelineator);
     timelogDelineators.push(wakeupDelineator);
     timelogDelineators.push(fallAsleepDelineator);
@@ -247,11 +249,12 @@ export class DaybookDisplayService {
       const nowTime = moment(this.clock).startOf('minute');
       timelogDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
     }
-    // console.log("current: " , this._activeDayController.savedTimeDelineators.length)
+    // console.log("   current: " , timelogDelineators.length)
     this.activeDayController.savedTimeDelineators.forEach((timeDelineation) => {
       // console.log("a saved delineator: " + timeDelineation.format('hh:mm a'))
       timelogDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
     });
+    // console.log("   current: " , timelogDelineators.length)
     this.activeDayController.timelogEntryItems.forEach((timelogEntryItem) => {
       const timeDelineatorStart = new TimelogDelineator(timelogEntryItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
       const timeDelineatorEnd = new TimelogDelineator(timelogEntryItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
@@ -262,16 +265,20 @@ export class DaybookDisplayService {
       timelogDelineators.push(timeDelineatorStart);
       timelogDelineators.push(timeDelineatorEnd);
     });
+    // console.log("   current: " , timelogDelineators.length)
     const sortedDelineators = this._sortDelineators(timelogDelineators);
-    
+    // console.log("   current: " , sortedDelineators.length)
     this._timeDelineators = sortedDelineators;
-    console.log("This._timeDelineators = " , this._timeDelineators);
+    // console.log("   This._timeDelineators = " , this._timeDelineators);
     // let logItems: string[] = [];
     // sortedDelineators.forEach(sd => logItems.push("  Sorted Delineator: " + sd.time.format('YYYY-MM-DD hh:mm a') + " : " + sd.delineatorType))
     // this._log = this._log.concat(logItems);
   }
 
   private _sortDelineators(timelogDelineators: TimelogDelineator[]): TimelogDelineator[] {
+    // console.log("   Display start time is: " + this.displayStartTime.format('YYYY-MM-DD hh:mm a'));
+    // console.log("   Display end time is: " + this.displayEndTime.format('YYYY-MM-DD hh:mm a'))
+    // console.log("   current: " , timelogDelineators.length)
     let sortedDelineators = timelogDelineators
       .filter((delineator) => { return delineator.time.isSameOrAfter(this.displayStartTime) && delineator.time.isSameOrBefore(this.displayEndTime); })
       .sort((td1, td2) => {
@@ -281,6 +288,7 @@ export class DaybookDisplayService {
           return 0;
         }
       });
+      // console.log("   current: " , sortedDelineators.length)
     const priority = [
       TimelogDelineatorType.FRAME_START,
       TimelogDelineatorType.FRAME_END,

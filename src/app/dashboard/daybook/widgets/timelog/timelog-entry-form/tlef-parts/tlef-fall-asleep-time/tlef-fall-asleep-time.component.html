@@ -1,1 +1,10 @@
-<p>tlef-bed-time works!</p>
+<div class="set-wakeup-time-root">
+    <div>
+        Fall asleep time
+    </div>
+    <div style="display:flex;flex-direction: row; justify-content: center;">
+        <app-time-input [timeValue]="time" (timeChanged)="onTimeChanged($event)" [minValue]="minVal"
+            [maxValue]="maxVal">
+        </app-time-input>
+    </div>
+</div>
