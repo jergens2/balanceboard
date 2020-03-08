@@ -163,21 +163,30 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     
     public getFallAsleepTimeMaxVal(): moment.Moment {
-        const maxVal = this.getNextOccurrenceOfValue(this.fallAsleepTime, DaybookAvailabilityType.AVAILABLE);
-        return moment(maxVal.endTime).subtract(10, 'minutes');
+        return moment(this.sleepController.nextDayWakeupTime).subtract(10, 'minutes');
     }
     public getFallAsleepTimeMinVal(): moment.Moment {
-        let minVal = this.getPrevOccurrenceOfValue(this.fallAsleepTime, DaybookAvailabilityType.AVAILABLE);
-        return minVal.startTime;
+        let minVal: moment.Moment = moment(this.fallAsleepTime);
+        const thisIndex = this.findItemIndex(this.fallAsleepTime);
+        if(thisIndex > 0){
+            if(this.fullScheduleItems[thisIndex-1].value === DaybookAvailabilityType.AVAILABLE){
+                minVal = moment(this.fullScheduleItems[thisIndex-1].startTime);
+            }
+        }
+        return minVal;
     }
-
     public getWakeupTimeMaxVal(): moment.Moment {
-        const maxVal = this.getNextOccurrenceOfValue(this.wakeupTime, DaybookAvailabilityType.AVAILABLE);
-        return maxVal.endTime;
+        let maxVal: moment.Moment = moment(this.wakeupTime);
+        const thisIndex = this.findItemIndex(this.wakeupTime);
+        if(thisIndex > -1 && thisIndex < this.fullScheduleItems.length-1){
+            if(this.fullScheduleItems[thisIndex].value === DaybookAvailabilityType.AVAILABLE){
+                maxVal = moment(this.fullScheduleItems[thisIndex].endTime);
+            }
+        }
+        return maxVal;
     }
     public getWakeupTimeMinVal(): moment.Moment {
-        let minVal = moment(this.prevDayFallAsleepTime).add(10, 'minute');
-        return minVal;
+        return moment(this.prevDayFallAsleepTime).add(10, 'minutes');
     }
 
     public get wakeupTime(): moment.Moment { return this.sleepController.thisDayWakeupTime; }

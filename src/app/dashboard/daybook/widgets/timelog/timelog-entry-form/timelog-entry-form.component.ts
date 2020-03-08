@@ -71,6 +71,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   }
 
   public onDelete() {
+    console.log("Deleting: ", this.entryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.entryItem.endTime.format('YYYY-MM-DD hh:mm a') )
     this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
     this.toolsService.closeTool();
   }

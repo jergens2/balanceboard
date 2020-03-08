@@ -1,6 +1,6 @@
 import { DisplayGridBarItem } from "./display-grid-bar-item.class";
 import { BehaviorSubject, Observable } from "rxjs";
-import { TimelogDelineator } from "../../timelog-delineator.class";
+import { TimelogDelineator, TimelogDelineatorType } from "../../timelog-delineator.class";
 import * as moment from 'moment';
 import { DaybookAvailabilityType } from "../../../../controller/items/daybook-availability-type.enum";
 import { DaybookController } from "../../../../controller/daybook-controller.class";
@@ -14,30 +14,30 @@ export class DisplayGridItemsBar {
     private _clock: moment.Moment;
     private _tlefService: TimelogEntryFormService;
 
-    constructor(timeDelineators: TimelogDelineator[], activeDayController: DaybookController, 
+    constructor(timeDelineators: TimelogDelineator[], activeDayController: DaybookController,
         clock: moment.Moment, tlefService: TimelogEntryFormService, activeItem?: DisplayGridBarItem) {
         this._tlefService = tlefService;
         this._clock = clock;
         this._timeDelineators = timeDelineators;
         this._activeDayController = activeDayController;
         this._update();
-        if(activeItem){
+        if (activeItem) {
             // console.log("There was already an active item.  Re-opening it.", activeItem)
             const foundExistingIndex = this._findActiveIndex(activeItem);
-            if(foundExistingIndex > -1 && foundExistingIndex < this.gridBarItems.length){
+            if (foundExistingIndex > -1 && foundExistingIndex < this.gridBarItems.length) {
                 this.openDisplayGridItem(this.gridBarItems[foundExistingIndex]);
-            }else{
-                if(activeItem.availabilityType === DaybookAvailabilityType.SLEEP){
-                    if(activeItem.index === 0){
+            } else {
+                if (activeItem.availabilityType === DaybookAvailabilityType.SLEEP) {
+                    if (activeItem.index === 0) {
                         this.openDisplayGridItem(this.gridBarItems[0]);
-                    }else{
-                        this.openDisplayGridItem(this.gridBarItems[this.gridBarItems.length-1]);
+                    } else {
+                        this.openDisplayGridItem(this.gridBarItems[this.gridBarItems.length - 1]);
                     }
-                }else{
+                } else {
                     console.log("Error: could not determine which grid item")
                 }
             }
-        }else{
+        } else {
             // console.log("No active item")
         }
     }
@@ -66,9 +66,9 @@ export class DisplayGridItemsBar {
     public openDisplayGridItem(item: DisplayGridBarItem) {
         if (item.availabilityType === DaybookAvailabilityType.SLEEP) {
             this._tlefService.openSleepEntry(item.sleepEntry);
-          } else {
+        } else {
             this._tlefService.openTimelogEntry(item.timelogEntry);
-          }
+        }
         this.gridBarItems.forEach((item) => {
             item.isActive = false;
             item.isCurrent = false;
@@ -106,8 +106,8 @@ export class DisplayGridItemsBar {
         }
     }
 
-    private _findActiveIndex(activeItem: DisplayGridBarItem): number{
-        const foundActiveIndex = this.gridBarItems.findIndex((gridBarItem)=>{
+    private _findActiveIndex(activeItem: DisplayGridBarItem): number {
+        const foundActiveIndex = this.gridBarItems.findIndex((gridBarItem) => {
             const sameStart = activeItem.startTime.isSame(gridBarItem.startTime);
             const sameEnd = activeItem.endTime.isSame(gridBarItem.endTime);
             return sameStart || sameEnd;
@@ -128,20 +128,39 @@ export class DisplayGridItemsBar {
         if (this._timeDelineators.length > 0) {
             let currentTime: moment.Moment = this._timeDelineators[0].time;
             for (let i = 1; i < this._timeDelineators.length; i++) {
-                let endTime: moment.Moment = this._timeDelineators[i].time;
-                let availability: DaybookAvailabilityType = this._activeDayController.getDaybookAvailability(currentTime, endTime);
-                let newItem = new DisplayGridBarItem(currentTime, endTime, availability);
-                if (availability === DaybookAvailabilityType.SLEEP) {
-                    newItem.sleepEntry = this._activeDayController.getSleepItem(currentTime, endTime);
-                } else if (availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
-                    newItem.timelogEntry = this._activeDayController.timelogEntryItems.find((tle) => {
-                        return tle.startTime.isSame(currentTime) && tle.endTime.isSame(endTime);
-                    });
-                } else if (availability === DaybookAvailabilityType.AVAILABLE) {
-                    newItem.timelogEntry = this._findAvailableEntry(currentTime, endTime);
+                let skip: boolean = false;
+                if (this._timeDelineators[i].delineatorType === TimelogDelineatorType.NOW) {
+
+                    if (i > 0 && i < this._timeDelineators.length - 1) {
+                        const prev = this._timeDelineators[i - 1].delineatorType;
+                        const next = this._timeDelineators[i + 1].delineatorType;
+                        const tleStart = TimelogDelineatorType.TIMELOG_ENTRY_START;
+                        const tleEnd = TimelogDelineatorType.TIMELOG_ENTRY_END;
+                        const faTime = TimelogDelineatorType.FALLASLEEP_TIME;
+                        const wuTime = TimelogDelineatorType.WAKEUP_TIME;
+                        if (prev === tleStart && (next === tleStart || next === tleEnd || next === faTime)) {
+                            skip = true;
+                        }
+                    }
                 }
-                gridBarItems.push(newItem);
-                currentTime = moment(endTime);
+
+                if (!skip) {
+                    let endTime: moment.Moment = this._timeDelineators[i].time;
+                    let availability: DaybookAvailabilityType = this._activeDayController.getDaybookAvailability(currentTime, endTime);
+                    let newItem = new DisplayGridBarItem(currentTime, endTime, availability);
+                    if (availability === DaybookAvailabilityType.SLEEP) {
+                        newItem.sleepEntry = this._activeDayController.getSleepItem(currentTime, endTime);
+                    } else if (availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
+                        newItem.timelogEntry = this._activeDayController.timelogEntryItems.find((tle) => {
+                            return tle.startTime.isSame(currentTime) && tle.endTime.isSame(endTime);
+                        });
+                    } else if (availability === DaybookAvailabilityType.AVAILABLE) {
+                        newItem.timelogEntry = this._findAvailableEntry(currentTime, endTime);
+                    }
+                    gridBarItems.push(newItem);
+                    currentTime = moment(endTime);
+                }
+
             }
         } else {
             console.log("Error with timeDelineators.");

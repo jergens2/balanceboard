@@ -123,14 +123,14 @@ export class DaybookDisplayService {
   }
 
   public openFallAsleepTime() {
-    this._openDisplayGridItem(this.gridBarItems[this.gridBarItems.length-1]);
+    this._openDisplayGridItem(this.gridBarItems[this.gridBarItems.length - 1]);
   }
 
   public openNewCurrentTimelogEntry() {
     const currentTimePosition = this.daybookControllerService.todayController.timePosition;
     console.log("currentTimePosition is " + currentTimePosition);
-    if(currentTimePosition === DaybookTimePosition.NORMAL){
-      
+    if (currentTimePosition === DaybookTimePosition.NORMAL) {
+
       const newCurrentTLE = this.daybookControllerService.todayController.getNewCurrentTLE();
       const foundGridItem = this.gridBarItems.find(item => {
         return item.availabilityType === DaybookAvailabilityType.AVAILABLE
@@ -141,15 +141,18 @@ export class DaybookDisplayService {
       } else {
         console.log("Error: could not find new current tlef")
       }
-    }else {
+    } else {
       this.toolBoxService.openNewDayForm();
     }
   }
 
   public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
     console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
+    this.gridBarItems.forEach((item) => {
+      console.log("   Grid bar item: " + item.startTime.format("YYYY-MM-DD hh:mm a") + " to " + item.endTime.format('YYYY-MM-DD hh:mm a'))
+    });
     const currentTimePosition = this.daybookControllerService.todayController.timePosition;
-    if(currentTimePosition === DaybookTimePosition.NORMAL){
+    if (currentTimePosition === DaybookTimePosition.NORMAL) {
       if (gridItem.isMerged) {
         if (gridItem.timelogEntries.length >= 2) {
           let biggest = gridItem.timelogEntries[0];
@@ -181,7 +184,7 @@ export class DaybookDisplayService {
           console.log("Error finding grid item");
         }
       }
-    }else{
+    } else {
       this.toolBoxService.openNewDayForm();
     }
   }
@@ -288,7 +291,7 @@ export class DaybookDisplayService {
           return 0;
         }
       });
-      // console.log("   current: " , sortedDelineators.length)
+    // console.log("   current: " , sortedDelineators.length)
     const priority = [
       TimelogDelineatorType.FRAME_START,
       TimelogDelineatorType.FRAME_END,
@@ -320,7 +323,7 @@ export class DaybookDisplayService {
             //   console.log("   " + item.time.format('hh:mm a') + "  Type:" + item.delineatorType)
             // })
           }
-        }
+        } 
       }
     }
     // console.log("SORTED DELINEATORS: ")

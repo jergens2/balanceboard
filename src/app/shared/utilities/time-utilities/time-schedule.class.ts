@@ -29,6 +29,25 @@ export class TimeSchedule<T>{
     public get valueItems(): TimeScheduleItem<T>[] { return this._valueItems; }
     public get fullScheduleItems(): TimeScheduleItem<T>[] { return this._fullScheduleItems; }
 
+    protected findItemIndex(timeToCheck: moment.Moment, usePrevious = false): number {
+        let foundIndex: number = -1;
+        this.fullScheduleItems.forEach((item)=>{
+            if(timeToCheck.isSame(item.startTime)){
+                foundIndex = this.fullScheduleItems.indexOf(item);
+                if(usePrevious && foundIndex > 0){
+                    foundIndex --;
+                }
+            }else if(timeToCheck.isSame(item.endTime)){
+                foundIndex = this.fullScheduleItems.indexOf(item);
+            }
+        });
+        if(foundIndex > -1){
+            return foundIndex;
+        }else{
+            foundIndex = this.fullScheduleItems.findIndex(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime));
+            return foundIndex;
+        }
+    }   
 
     public getScheduleSlice(startTime: moment.Moment, endTime: moment.Moment): TimeScheduleItem<T>[] {
         // console.log("   Finding slice: " + startTime.format('YYYY-MM-DD hh:mm a') + " to " + endTime.format('YYYY-MM-DD hh:mm a') ) 
