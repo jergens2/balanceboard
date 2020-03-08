@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { TimeSpanItem } from '../../../../../../shared/utilities/time-utilities/time-span-item.interface';
 import { DaybookSleepInputDataItem } from '../../../../api/data-items/daybook-sleep-input-data-item.interface';
-import { DaybookEnergyItem } from '../../../../controller/items/daybook-energy-item.class';
+// import { DaybookEnergyItem } from '../../../../controller/items/daybook-energy-item.class';
 
 export class SleepEntryItem {
 
@@ -109,9 +109,9 @@ export class SleepEntryItem {
     //     return energyItem;
     // }
 
-    public getEnergyItem(): DaybookEnergyItem {
-        return new DaybookEnergyItem(this.startTime, this.endTime, this._energyAtStart, this.energyRateOfChangePerHour);
-    }
+    // public getEnergyItem(): DaybookEnergyItem {
+    //     return new DaybookEnergyItem(this.startTime, this.endTime, this._energyAtStart, this.energyRateOfChangePerHour);
+    // }
 
     public exportToDataItem(): DaybookSleepInputDataItem {
         return {

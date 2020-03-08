@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 
-import { DaybookEnergyController } from './daybook-energy-controller.class';
+
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
@@ -15,6 +15,7 @@ import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entr
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 import { DisplayGridBarItem } from '../widgets/timelog/timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
 import { DaybookTimePosition } from '../daybook-time-position-form/daybook-time-position.enum';
+import { DetermineDaybookTimePosition } from './items/determine-daybook-time-position.class';
 
 
 /** 
@@ -27,6 +28,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     constructor(thisDayYYYYMMDD: string, daybookDayItems: DaybookDayItem[], startTime: moment.Moment, endTime: moment.Moment, clock: moment.Moment) {
         super(startTime, endTime);
+        console.log("*Constructing Daybook Controller")
         this._thisDayYYYYMMDD = thisDayYYYYMMDD;
         this._clock = clock;
         this._reload(daybookDayItems);
@@ -208,65 +210,8 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     public get timePosition$(): Observable<DaybookTimePosition> { return this._timePosition$.asObservable(); }
     public get timePosition(): DaybookTimePosition { return this._timePosition$.getValue(); }
 
-    /**
-     * 
-     * Method to run to determine the current time position, relative to the sleep cycle.
-     * Only should be used by TodayController, not ActiveDayController
-     */
-    private _determineCurrentTimePosition(): DaybookTimePosition {
-        let timePosition: DaybookTimePosition;
-        
-        // console.log("Clock is: " + this._clock.format('YYYY-MM-DD hh:mm a'))
-        // console.log("Wakeup is: " + this.wakeupTime.format('YYYY-MM-DD hh:mm a') + " isSet? " , this.wakeupTimeIsSet);
-        const isBeforeWakeupTime: boolean = moment(this._clock).isBefore(this.wakeupTime);
-        // console.log("now is before wakeupTime? " , isBeforeWakeupTime)
-        const prevDayActivities: boolean = this.previousDay.timelogEntryDataItems.length > 0;
-        if (isBeforeWakeupTime) {
-            const sleepStartTime = moment(this.sleepController.prevDayFallAsleepTime);
-            const sleepMS = moment(this.wakeupTime).diff(sleepStartTime, 'milliseconds');
-            if (sleepMS <= 0) {
-                console.log('Error with sleep time calculations.');
-            } else {
-                const endOfFirstQuartile = moment(sleepStartTime).add((sleepMS / 4), 'milliseconds');
-                const startOfFourthQuartile = moment(this.wakeupTime).subtract((sleepMS) / 4, 'milliseconds');
-                const isFirstQuartile = moment(this.clock).isSameOrBefore(endOfFirstQuartile);
-                const isFourthQuartile = moment(this.clock).isSameOrAfter(startOfFourthQuartile);
-                const isMiddle = moment(this.clock).isSameOrAfter(endOfFirstQuartile) && moment(this.clock).isSameOrBefore(startOfFourthQuartile);
-                if (isFirstQuartile) {
-                    if (prevDayActivities) {
-                        timePosition = DaybookTimePosition.AWAKE_FROM_PREV_DAY;
-                    } else {
-                        timePosition = DaybookTimePosition.UNCLEAR;
-                    }
-                } else if (isFourthQuartile) {
-                    timePosition = DaybookTimePosition.NEW_DAY;
-                } else if (isMiddle) {
-                    timePosition = DaybookTimePosition.UNCLEAR;
-                } else {
-                    console.log('Error with time calculations');
-                }
-            }
-        } else {
-            if (!this.wakeupTimeIsSet) {
-                timePosition = DaybookTimePosition.NEW_DAY;
-            } else {
-                const awakeMS = moment(this.fallAsleepTime).diff(this.wakeupTime, 'milliseconds');
-                const startOfFourthQuartile = moment(this.fallAsleepTime).subtract((awakeMS) / 4, 'milliseconds');
-                const isAfterFourthQuartile = moment(this.clock).isSameOrAfter(startOfFourthQuartile);
-                if (isAfterFourthQuartile) {
-                    timePosition = DaybookTimePosition.APPROACHING_SLEEP;
-                } else {
-                    timePosition = DaybookTimePosition.NORMAL;
-                }
-            }
-        }
-        if (!timePosition) {
-            console.log('Error with finding timePosition');
-        }
-        this._timePosition$.next(timePosition);
-        console.log("Time position is: " + timePosition);
-        return timePosition;
-    }
+
+    
 
 
     public get isNewDay(): boolean {
@@ -314,10 +259,14 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     private _reload(dayItems: DaybookDayItem[]) {
         this._dayItems = dayItems;
-        // console.log("Reloading.  DayItems count: " + this._dayItems.length)
+        console.log("*Reloading.  DayItems count: " + this._dayItems.length)
         const thisDateYYYYMMDD: string = this.dateYYYYMMDD;
         const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'day').format('YYYY-MM-DD');
         const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'day').format('YYYY-MM-DD');
+
+        // console.log("Prev date: " + prevDateYYYYMMDD)
+        // console.log("This date: " + thisDateYYYYMMDD)
+        // console.log("Next date: " + nextDateYYYYMMDD)
         this._previousDay = dayItems.find(i => i.dateYYYYMMDD === prevDateYYYYMMDD);
         this._thisDay = dayItems.find(i => i.dateYYYYMMDD === thisDateYYYYMMDD);
         this._followingDay = dayItems.find(i => i.dateYYYYMMDD === nextDateYYYYMMDD);
@@ -330,9 +279,8 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         const timelogDataItems: DaybookTimelogEntryDataItem[] = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
             .concat(this._followingDay.timelogEntryDataItems);
 
-        const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);
-
-        this._sleepController = new DaybookSleepController(this._previousDay.sleepInputItem,
+        const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);        
+        this._sleepController = new DaybookSleepController(this.dateYYYYMMDD, this._previousDay.sleepInputItem,
             this._thisDay.sleepInputItem,
             this._followingDay.sleepInputItem,
             this.clock, this._dayItems.map(item => item.sleepInputItem));
@@ -354,31 +302,16 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
         this._setAvailabilitySections(allTimeDelineations);
         this._updateSubscriptions();
-        this._determineCurrentTimePosition();
+        const timePosition = this._determineCurrentTimePosition();
+        this._timePosition$.next(timePosition);
         this._batteryLevel = this.getEnergyAtTime(this.clock);
     }
 
-    // private _buildEnergyController() {
-    //     let prevSleepInputItem: SleepEntryItem, thisSleepInputItem: SleepEntryItem, nextSleepInputItem: SleepEntryItem;
-    //     this._dayItems.forEach((item) => {
-    //         if (item.dateYYYYMMDD === this.dateYYYYMMDD) {
-    //             thisSleepInputItem = item.getSleepEntryItem();
-    //         }
-    //         if (item.dateYYYYMMDD === this.previousDay.dateYYYYMMDD) {
-    //             prevSleepInputItem = item.getSleepEntryItem();
-    //         }
-    //         if (item.dateYYYYMMDD === this.followingDay.dateYYYYMMDD) {
-    //             nextSleepInputItem = item.getSleepEntryItem();
-    //         }
-    //     });
-
-    //     const relevantSleepInputItems = {
-    //         prevItem: prevSleepInputItem,
-    //         thisItem: thisSleepInputItem,
-    //         nextItem: nextSleepInputItem,
-    //     };
-    //     this._energyController = new DaybookEnergyController(this.dateYYYYMMDD, this._dayItems.map(item => item.getSleepEntryItem()), relevantSleepInputItems);
-    // }
+    private _determineCurrentTimePosition(): DaybookTimePosition{
+        const prevDayActivities: boolean = this.previousDay.timelogEntryDataItems.length > 0;
+        const determiner: DetermineDaybookTimePosition = new DetermineDaybookTimePosition(this.clock, this.wakeupTime, this.prevDayFallAsleepTime, this.fallAsleepTime, prevDayActivities, this.wakeupTimeIsSet);
+        return determiner.currentTimePosition;
+    }
 
     private _setAvailabilitySections(allTimeDelineations: moment.Moment[]) {
         allTimeDelineations = allTimeDelineations.sort((t1, t2) => {

@@ -9,6 +9,7 @@ import { TimeScheduleItem } from '../../../../shared/utilities/time-utilities/ti
 export class TimelogDisplayGrid {
 
   constructor(startTime: moment.Moment, endTime: moment.Moment, delineators: TimelogDelineator[], activeDayController: DaybookController) {
+    console.log("Constructing timelogDisplayGrid: delineators: ", delineators);
     this._startTime = moment(startTime);
     this._endTime = moment(endTime);
     this._timeDelineators = delineators;
@@ -78,7 +79,7 @@ export class TimelogDisplayGrid {
     // console.log("Building grid.")
     // this._activeController.logFullScheduleItems();
 
-
+    console.log("Time delineators: ", this._timeDelineators)
     const checkValues = this.totalViewMilliseconds - (this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'));
     if (checkValues !== 0) {
       console.log("Error:  mismatching times:")

@@ -19,24 +19,29 @@ export class DaybookSleepController {
     private _nextDaySleepItem: SleepEntryItem;
 
     private _clock: moment.Moment;
+    private _dateYYYYMMDD: string;
 
-    constructor(prevDaySleepItem: DaybookSleepInputDataItem, thisDaySleepItem: DaybookSleepInputDataItem, nextDaySleepItem: DaybookSleepInputDataItem, clock: moment.Moment, allSleepInputItems: DaybookSleepInputDataItem[]) {
-        console.log("BUILDING CONTORLLER:")
-        // console.log("PREV DAY: ", prevDaySleepItem)
-        // console.log("THIS DAY: ", thisDaySleepItem)
-        // console.log("NEXT DAY: ", nextDaySleepItem)
+    private get dayIsToday(): boolean { return this._clock.format('YYYY-MM-DD') === this._dateYYYYMMDD; }
+
+    constructor(dateYYYYMMDD: string, prevDaySleepItem: DaybookSleepInputDataItem, 
+        thisDaySleepItem: DaybookSleepInputDataItem, nextDaySleepItem: DaybookSleepInputDataItem, 
+        clock: moment.Moment, allSleepInputItems: DaybookSleepInputDataItem[]) {
+        this._dateYYYYMMDD = dateYYYYMMDD; 
         this._clock = moment(clock);
         this._awakeToAsleepRatio = this._calculateRatio(allSleepInputItems)
         this._buildSleepController(prevDaySleepItem, thisDaySleepItem, nextDaySleepItem);
+        console.log("***Building Sleep Controller: " + dateYYYYMMDD)
         // console.log(" " + this.prevDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - prevDayWakeupTime")
         // console.log(" " + this.prevDayFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - prevDayFallAsleepTime")
-        // console.log(" " + this.thisDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - thisDayWakeupTime")
-        // console.log(" " + this.thisDayFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - thisDayFallAsleepTime")
+        console.log("   " + this.thisDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - thisDayWakeupTime")
+        console.log("   " + this.thisDayFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - thisDayFallAsleepTime")
         // console.log(" " + this.nextDayWakeupTime.format('YYYY-MM-DD hh:mm a') + " - nextDayWakeupTime")
 
-        this._runTests();
+        if(this.dayIsToday){
+            this._runTests();
+        }
+        
     }
-
 
     private _runTests() {
         let currentTime = moment(this._clock).startOf('day').subtract(24, 'hours');
@@ -142,6 +147,11 @@ export class DaybookSleepController {
 
     private _buildSleepController(prevDaySleepItem: DaybookSleepInputDataItem, thisDaySleepItem: DaybookSleepInputDataItem, nextDaySleepItem: DaybookSleepInputDataItem) {
         let prevDaySleepEntry: SleepEntryItem, thisDaySleepEntry: SleepEntryItem, nextDaySleepEntry: SleepEntryItem;
+        console.log("The problem lies here.")
+        /**
+         * The problem is this:  the problem is that when you save the wakeup time, then navigate to the previous date, problems happen.
+         * the cause of those problems are rooted in this method.
+         */
         if (thisDaySleepItem.endSleepTimeISO) {
             const endTime = moment(thisDaySleepItem.endSleepTimeISO);
             let startTime: moment.Moment = moment(endTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
@@ -230,16 +240,13 @@ export class DaybookSleepController {
     }
 
     private _buildDefaultSleepEntry(): SleepEntryItem {
-        let wakeupTime = moment(this._clock).startOf('day').add(7, 'hours').add(30, 'minutes');
+        let wakeupTime = moment(this.dateYYYYMMDD).startOf('day').add(7, 'hours').add(30, 'minutes');
         const startTime = moment(wakeupTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
-        // if (wakeupTime.isAfter(this._clock)) {
-            // wakeupTime = moment(this._clock);
-        // }
         const defaultEntry = new SleepEntryItem(this.thisDateYYYYMMDD, startTime, wakeupTime);
         return defaultEntry;
     }
 
-    public get dateYYYYMMDD(): string { return this._clock.format('YYYY-MM-DD'); }
+    public get dateYYYYMMDD(): string { return this._dateYYYYMMDD; }
     private get prevDateYYYYMMDD(): string { return moment(this.dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
     public get thisDateYYYYMMDD(): string { return moment(this.dateYYYYMMDD).format('YYYY-MM-DD'); }
     private get nextDateYYYYMMDD(): string { return moment(this.dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'); }

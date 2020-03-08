@@ -147,38 +147,43 @@ export class DaybookDisplayService {
   }
 
   public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
-    if (gridItem.isMerged) {
-      if (gridItem.timelogEntries.length >= 2) {
-        let biggest = gridItem.timelogEntries[0];
-        gridItem.timelogEntries.forEach((item) => {
-          if (item.durationMilliseconds > biggest.durationMilliseconds) {
-            biggest = item;
+    // console.log("opening grid item: " , gridItem)
+    const currentTimePosition = this.daybookControllerService.todayController.timePosition;
+    if(currentTimePosition === DaybookTimePosition.NORMAL){
+      if (gridItem.isMerged) {
+        if (gridItem.timelogEntries.length >= 2) {
+          let biggest = gridItem.timelogEntries[0];
+          gridItem.timelogEntries.forEach((item) => {
+            if (item.durationMilliseconds > biggest.durationMilliseconds) {
+              biggest = item;
+            }
+          });
+          const foundItem = this.gridBarItems.find(gridBarItem => {
+            return gridBarItem.availabilityType === DaybookAvailabilityType.TIMELOG_ENTRY
+              && gridBarItem.startTime.isSameOrAfter(biggest.startTime) && gridBarItem.endTime.isSame(biggest.endTime);
+          });
+          if (foundItem) {
+            this._openDisplayGridItem(foundItem);
+          } else {
+            console.log("error finding item");
           }
-        });
-        const foundItem = this.gridBarItems.find(gridBarItem => {
-          return gridBarItem.availabilityType === DaybookAvailabilityType.TIMELOG_ENTRY
-            && gridBarItem.startTime.isSameOrAfter(biggest.startTime) && gridBarItem.endTime.isSame(biggest.endTime);
+        } else {
+          console.log("Error with timelog entries")
+        }
+      } else {
+        const foundItem = this.gridBarItems.find(item => {
+          return item.availabilityType === gridItem.availability
+            && item.startTime.isSame(gridItem.startTime) && item.endTime.isSame(gridItem.endTime);
         });
         if (foundItem) {
           this._openDisplayGridItem(foundItem);
         } else {
-          console.log("error finding item");
+          console.log("Error finding grid item");
         }
-      } else {
-        console.log("Error with timelog entries")
       }
-    } else {
-      const foundItem = this.gridBarItems.find(item => {
-        return item.availabilityType === gridItem.availability
-          && item.startTime.isSame(gridItem.startTime) && item.endTime.isSame(gridItem.endTime);
-      });
-      if (foundItem) {
-        this._openDisplayGridItem(foundItem);
-      } else {
-        console.log("Error finding grid item");
-      }
+    }else{
+      this.toolBoxService.openNewDayForm();
     }
-
   }
 
   private _openDisplayGridItem(item: DisplayGridBarItem) {
@@ -203,9 +208,11 @@ export class DaybookDisplayService {
 
   private _buildZoomItems() {
     let zoomItems: TimelogZoomControllerItem[] = [];
-
+    console.log("Active Day controller: " , this.daybookControllerService.activeDayController.dateYYYYMMDD);
     let startTime = moment(this.daybookControllerService.activeDayController.wakeupTime);
     let endTime = moment(this.daybookControllerService.activeDayController.fallAsleepTime);
+    console.log("Start time is: " + startTime.format('YYYY-MM-DD hh:mm a'))
+    console.log("End time is : " + endTime.format('YYYY-MM-DD hh:mm a'))
 
     const wakeItem = new TimelogZoomControllerItem(startTime, endTime, TimelogZoomType.AWAKE);
     wakeItem.icon = faSun;
@@ -219,6 +226,9 @@ export class DaybookDisplayService {
 
     this._displayStartTime = TimeUtilities.roundDownToFloor(moment(startTime).subtract(15, 'minutes'), 30);
     this._displayEndTime = TimeUtilities.roundUpToCeiling(moment(endTime).add(15, 'minutes'), 30);
+
+    console.log("Updating times: displayStartTime = " + this._displayStartTime.format('YYYY-MM-DD hh:mm a') )
+    console.log("Updating times: displayEndTime = " + this._displayEndTime.format('YYYY-MM-DD hh:mm a'))
   }
 
   private _loadTimelogDelineators() {
@@ -227,6 +237,8 @@ export class DaybookDisplayService {
     const fameEndDelineator = new TimelogDelineator(this.displayEndTime, TimelogDelineatorType.FRAME_END);
     const wakeupDelineator = new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME);
     const fallAsleepDelineator = new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME);
+    console.log("Frame start is : " + this.displayStartTime.format('YYYY-MM-DD hh:mm a'))
+    console.log("Frame end is : " + this.displayEndTime.format('YYYY-MM-DD hh:mm a'));
     timelogDelineators.push(frameStartDelineator);
     timelogDelineators.push(wakeupDelineator);
     timelogDelineators.push(fallAsleepDelineator);
@@ -251,7 +263,9 @@ export class DaybookDisplayService {
       timelogDelineators.push(timeDelineatorEnd);
     });
     const sortedDelineators = this._sortDelineators(timelogDelineators);
+    
     this._timeDelineators = sortedDelineators;
+    console.log("This._timeDelineators = " , this._timeDelineators);
     // let logItems: string[] = [];
     // sortedDelineators.forEach(sd => logItems.push("  Sorted Delineator: " + sd.time.format('YYYY-MM-DD hh:mm a') + " : " + sd.delineatorType))
     // this._log = this._log.concat(logItems);
