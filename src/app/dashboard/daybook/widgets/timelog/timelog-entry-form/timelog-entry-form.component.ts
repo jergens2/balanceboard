@@ -43,7 +43,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     //   this._formCase = this.timelogEntryFormService.formCase;
     // });
     // console.log("TLEF case is: " + this.formCase)
-
+    this._update();
     this._dbSubs = [
       this.daybookService.displayUpdated$.subscribe(change => this._update()),
       this.daybookService.activeGridBarItem$.subscribe(change => this._update())
@@ -65,25 +65,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   public get durationString(): string { return this.entryItem.durationString; }
 
 
-  public onClickSave() {
-    this.daybookService.activeDayController.saveTimelogEntryItem$(this.entryItem);
-    this.toolsService.closeTool();
-  }
-
-  public onDelete() {
-    console.log("Deleting: ", this.entryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.entryItem.endTime.format('YYYY-MM-DD hh:mm a') )
-    this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
-    this.toolsService.closeTool();
-  }
-
-  public onClickDiscard() {
-    if (!this._changesMade) {
-      this.toolsService.closeTool();
-    } else {
-      console.log("Warning: need to implement a confirmation here")
-      this.toolsService.closeTool();
-    }
-  }
+  
 
 
 

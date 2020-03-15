@@ -6,6 +6,11 @@ import * as moment from 'moment';
 import { DurationString } from '../../../../../../shared/utilities/time-utilities/duration-string.class';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
+import { TimelogEntryActivity } from '../../../../api/data-items/timelog-entry-activity.interface';
+import { ActivityCategoryDefinition } from '../../../../../activities/api/activity-category-definition.class';
+import { ActivityCategoryDefinitionService } from '../../../../../activities/api/activity-category-definition.service';
+
+
 
 @Component({
   selector: 'app-timelog-entry-list',
@@ -14,7 +19,7 @@ import { DaybookDisplayService } from '../../../../daybook-display.service';
 })
 export class TimelogEntryListComponent implements OnInit {
 
-  constructor(private daybookService: DaybookDisplayService) { }
+  constructor(private daybookService: DaybookDisplayService, private activityService: ActivityCategoryDefinitionService) { }
 
   private _timelogEntryItems: TimelogEntryItem[] = [];
   public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
@@ -37,10 +42,8 @@ export class TimelogEntryListComponent implements OnInit {
   }
 
   private _update(){
-    const startOfDay = moment(this.daybookService.clock).startOf('day');
-    const endOfDay = moment(startOfDay).add(24, 'hours');
     this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryItems.filter((item)=>{
-      return item.startTime.isSameOrAfter(startOfDay) && item.endTime.isSameOrBefore(endOfDay);
+      return item.startTime.isSameOrAfter(this.daybookService.displayStartTime) && item.endTime.isSameOrBefore(this.daybookService.displayEndTime);
     });
   }
 
@@ -50,5 +53,9 @@ export class TimelogEntryListComponent implements OnInit {
     this.daybookService.activeDayController.deleteTimelogEntryItem$(entry);
   }
 
+
+  public getActivity(activity: TimelogEntryActivity): ActivityCategoryDefinition{
+    return this.activityService.findActivityByTreeId(activity.activityTreeId);
+  }
 
 }

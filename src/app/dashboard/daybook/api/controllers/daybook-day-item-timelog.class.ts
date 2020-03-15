@@ -53,53 +53,53 @@ export class DaybookDayItemTimelog {
     private sendUpdate() { this._timelogUpdated$.next(this.exportDataItems()); }
     private exportDataItems(): { timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] } {
         const exportObject: { timelogDataItems: DaybookTimelogEntryDataItem[], delineators: string[] } = {
-            timelogDataItems: this.sortTimelogEntries(this.timelogEntryItems).map((entry) => entry.dataEntryItem),
+            timelogDataItems: this.sortTimelogEntries(this.timelogEntryItems).map((entry) => entry.exportDataEntryItem()),
             delineators: this.timeDelineators,
         };
         return exportObject;
     }
 
-    public addTimelogEntryItem(timelogEntry: TimelogEntryItem) {
-        const timelogEntries = this.timelogEntryItems;
-        timelogEntries.push(timelogEntry);
-        this._timelogEntryItems = timelogEntries;
-        this._updateActivityTimes();
-        this.sendUpdate();
-    }
-    public updateTimelogEntry(timelogEntry: TimelogEntryItem) {
-        let foundIndex = -1;
-        this._timelogEntryItems.forEach((item) => {
-            if (moment(item.startTime).isSame(moment(timelogEntry.startTime))
-                && moment(item.endTime).isSame(moment(timelogEntry.endTime))) {
-                foundIndex = this._timelogEntryItems.indexOf(item);
-            }
-        });
-        if (foundIndex >= 0) {
-            // console.log("Successfully updated timelog entry at index: " + foundIndex);
-            this._timelogEntryItems.splice(foundIndex, 1, timelogEntry);
-            this._updateActivityTimes();
-            this.sendUpdate();
-        } else {
-            // console.log("Error: can't modify timelogEntry", timelogEntry)
-        }
-    }
-    public deleteTimelogEntry(timelogEntry: TimelogEntryItem) {
-        let foundIndex = -1;
-        this._timelogEntryItems.forEach((item) => {
-            if (moment(item.startTime).isSame(moment(timelogEntry.startTime))
-                && moment(item.endTime).isSame(moment(timelogEntry.endTime))) {
-                foundIndex = this._timelogEntryItems.indexOf(item);
-            }
-        });
-        if (foundIndex >= 0) {
-            // console.log("Successfully deleting timelog entry at index: " + foundIndex);
-            this._timelogEntryItems.splice(foundIndex, 1);
-            this._updateActivityTimes();
-            this.sendUpdate();
-        } else {
-            // console.log("Error: can't delete timelogEntry", timelogEntry)
-        }
-    }
+    // public addTimelogEntryItem(timelogEntry: TimelogEntryItem) {
+    //     const timelogEntries = this.timelogEntryItems;
+    //     timelogEntries.push(timelogEntry);
+    //     this._timelogEntryItems = timelogEntries;
+    //     this._updateActivityTimes();
+    //     this.sendUpdate();
+    // }
+    // public updateTimelogEntry(timelogEntry: TimelogEntryItem) {
+    //     let foundIndex = -1;
+    //     this._timelogEntryItems.forEach((item) => {
+    //         if (moment(item.startTime).isSame(moment(timelogEntry.startTime))
+    //             && moment(item.endTime).isSame(moment(timelogEntry.endTime))) {
+    //             foundIndex = this._timelogEntryItems.indexOf(item);
+    //         }
+    //     });
+    //     if (foundIndex >= 0) {
+    //         // console.log("Successfully updated timelog entry at index: " + foundIndex);
+    //         this._timelogEntryItems.splice(foundIndex, 1, timelogEntry);
+    //         this._updateActivityTimes();
+    //         this.sendUpdate();
+    //     } else {
+    //         // console.log("Error: can't modify timelogEntry", timelogEntry)
+    //     }
+    // }
+    // public deleteTimelogEntry(timelogEntry: TimelogEntryItem) {
+    //     let foundIndex = -1;
+    //     this._timelogEntryItems.forEach((item) => {
+    //         if (moment(item.startTime).isSame(moment(timelogEntry.startTime))
+    //             && moment(item.endTime).isSame(moment(timelogEntry.endTime))) {
+    //             foundIndex = this._timelogEntryItems.indexOf(item);
+    //         }
+    //     });
+    //     if (foundIndex >= 0) {
+    //         // console.log("Successfully deleting timelog entry at index: " + foundIndex);
+    //         this._timelogEntryItems.splice(foundIndex, 1);
+    //         this._updateActivityTimes();
+    //         this.sendUpdate();
+    //     } else {
+    //         // console.log("Error: can't delete timelogEntry", timelogEntry)
+    //     }
+    // }
 
 
     public get activityTimes(): { start: moment.Moment, end: moment.Moment, isActive: boolean }[] {

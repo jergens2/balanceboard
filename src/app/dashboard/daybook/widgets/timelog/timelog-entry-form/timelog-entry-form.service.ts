@@ -11,6 +11,7 @@ import { DaybookDisplayService } from '../../../daybook-display.service';
 import { DaybookController } from '../../../controller/daybook-controller.class';
 import { DaybookAvailabilityType } from '../../../controller/items/daybook-availability-type.enum';
 import { DaybookTimePosition } from '../../../daybook-time-position-form/daybook-time-position.enum';
+import { TLEFFooterMode } from './tlef-footer-mode.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -24,19 +25,34 @@ export class TimelogEntryFormService {
   // private _daybookSub: Subscription = new Subscription();
 
   private _formChanged$: BehaviorSubject<TLEFFormCase> = new BehaviorSubject(null);
+  private _footerMode$: BehaviorSubject<TLEFFooterMode> = new BehaviorSubject(null);
 
   private _openedTimelogEntry: TimelogEntryItem;
   private _openedSleepEntry: SleepEntryItem;
 
+  private _showDeleteButton: boolean = false;
+  private _showSaveButton: boolean = false;
+  private _showCloseButton: boolean = false;
+  
+
   public get openedTimelogEntry(): TimelogEntryItem { return this._openedTimelogEntry; }
   public get openedSleepEntry(): SleepEntryItem { return this._openedSleepEntry; }
   public get formCase(): TLEFFormCase { return this._formChanged$.getValue(); }
+
   public get formChanged$(): Observable<TLEFFormCase> { return this._formChanged$.asObservable(); }
   public get toolIsOpen$(): Observable<boolean> { return this.toolBoxService.toolIsOpen$; }
   public get toolIsOpen(): boolean { return this.toolBoxService.toolIsOpen; }
 
-  // public get gridBarItems(): DisplayGridBarItem[] { return this.daybookService.gridBarItems; }
+  public get footerMode(): TLEFFooterMode { return this._footerMode$.getValue(); }
 
+  public get showDeleteButton(): boolean { return this._showDeleteButton; }
+  public get showSaveButton(): boolean { return this._showSaveButton; }
+  public get showCloseButton(): boolean { return this._showCloseButton; }
+
+  // public get gridBarItems(): DisplayGridBarItem[] { return this.daybookService.gridBarItems; }
+  // public setFooterMode(mode: TLEFFooterMode){
+  //   this._footerMode$.next(mode);
+  // }
 
   public openStartNewDay() {
     this._closeForm();
@@ -55,7 +71,7 @@ export class TimelogEntryFormService {
     } else {
       this.toolBoxService.tlefServiceOpenTimelogEntryForm();
     }
-
+    this._setFooterMode(formCase);
     this._formChanged$.next(formCase);
     this._openedSleepEntry = null;
 
@@ -87,6 +103,20 @@ export class TimelogEntryFormService {
     }
   }
 
+  // public changesMade(){
+  //   this._footerMode$.next(TLEFFooterMode.MODIFY_EXISTING);
+  // }
+
+  private _setFooterMode(formCase:TLEFFormCase){
+    const isNew = (formCase === TLEFFormCase.NEW_CURRENT || formCase === TLEFFormCase.NEW_CURRENT_FUTURE || formCase === TLEFFormCase.NEW_FUTURE || formCase === TLEFFormCase.NEW_PREVIOUS);
+    if(isNew){
+      this._showDeleteButton = false;
+      this._footerMode$.next(TLEFFooterMode.NEW);
+    }else{
+      this._showDeleteButton = true;
+      this._footerMode$.next(TLEFFooterMode.VIEW_EXISTING);
+    }
+  }
 
   private _closeForm() {
     // this.gridBarItems.forEach(item => item.isActive = false);

@@ -11,6 +11,7 @@ import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
 import { TimelogEntryFormService } from '../../timelog-entry-form/timelog-entry-form.service';
 import { DisplayGridBarItem } from '../../timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
+import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
 
 @Component({
   selector: 'app-timelog-body',
@@ -93,7 +94,9 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
     const now = moment();
     if (now.isSameOrAfter(gridItem.startTime) && now.isSameOrBefore(gridItem.endTime)) {
-      return true;
+      if(gridItem.availability === DaybookAvailabilityType.AVAILABLE){
+        return true;
+      }
     }
     return false;
   }

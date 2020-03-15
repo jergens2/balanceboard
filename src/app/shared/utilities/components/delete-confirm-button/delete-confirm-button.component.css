@@ -1,0 +1,6 @@
+.delete-confirm-button-root{
+    display:flex;
+    flex-direction: row;
+    height: 23px;
+    
+}

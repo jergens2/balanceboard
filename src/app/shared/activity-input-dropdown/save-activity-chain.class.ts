@@ -77,7 +77,7 @@ export class ActivityChainLink{
             
         }
         this.activitiesService.saveActivity$(this.activity).subscribe((savedActivity: ActivityCategoryDefinition)=>{
-            console.log("Activity saved : " + savedActivity);
+            // console.log("Activity saved : " + savedActivity);
             let treeId: string = savedActivity.treeId;
             if(this.nextChainLink != null){
                 this.nextChainLink.updateParentTreeId(treeId);
@@ -86,7 +86,7 @@ export class ActivityChainLink{
                 });
                 this.nextChainLink.saveChainLink();
             }else{ 
-                console.log("finished at the bottom.  NEXT");
+                // console.log("finished at the bottom.  NEXT");
                 this._linkSaved$.next(this.activity);
             }
         });

@@ -132,25 +132,33 @@ export class DaybookDisplayService {
     if (currentTimePosition === DaybookTimePosition.NORMAL) {
 
       const newCurrentTLE = this.daybookControllerService.todayController.getNewCurrentTLE();
-      const foundGridItem = this.gridBarItems.find(item => {
-        return item.availabilityType === DaybookAvailabilityType.AVAILABLE
-          && item.startTime.isSame(newCurrentTLE.startTime) && item.endTime.isSame(newCurrentTLE.endTime);
-      });
-      if (foundGridItem) {
-        this._openDisplayGridItem(foundGridItem);
-      } else {
-        console.log("Error: could not find new current tlef")
+      if(newCurrentTLE){
+        const foundGridItem = this.gridBarItems.find(item => {
+          return item.availabilityType === DaybookAvailabilityType.AVAILABLE
+            && item.startTime.isSame(newCurrentTLE.startTime) && item.endTime.isSame(newCurrentTLE.endTime);
+        });
+        if (foundGridItem) {
+          this._openDisplayGridItem(foundGridItem);
+        } else {
+          console.log("Error: could not find new current tlef")
+        }
+      }else{
+        const foundGridItem = this.gridBar.getItemAtTime(this.clock);
+        if(foundGridItem){
+          this._openDisplayGridItem(foundGridItem);
+        }else{
+          console.log("Error: could not find an item to open");
+        }
       }
+
     } else {
       this.toolBoxService.openNewDayForm();
     }
   }
 
   public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
-    console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
-    this.gridBarItems.forEach((item) => {
-      console.log("   Grid bar item: " + item.startTime.format("YYYY-MM-DD hh:mm a") + " to " + item.endTime.format('YYYY-MM-DD hh:mm a'))
-    });
+    // console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
+
     const currentTimePosition = this.daybookControllerService.todayController.timePosition;
     if (currentTimePosition === DaybookTimePosition.NORMAL) {
       if (gridItem.isMerged) {
@@ -168,12 +176,16 @@ export class DaybookDisplayService {
           if (foundItem) {
             this._openDisplayGridItem(foundItem);
           } else {
-            console.log("error finding item");
+            console.log("error finding item -- " + gridItem.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm:ss a'));
+            this.gridBarItems.forEach((item) => {
+              console.log("   Grid bar item: " + item.startTime.format("YYYY-MM-DD hh:mm:ss a") + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a'))
+            });
           }
         } else {
           console.log("Error with timelog entries")
         }
       } else {
+        // non merged item.
         const foundItem = this.gridBarItems.find(item => {
           return item.availabilityType === gridItem.availability
             && item.startTime.isSame(gridItem.startTime) && item.endTime.isSame(gridItem.endTime);
@@ -181,7 +193,10 @@ export class DaybookDisplayService {
         if (foundItem) {
           this._openDisplayGridItem(foundItem);
         } else {
-          console.log("Error finding grid item");
+          console.log("Error finding grid item -- " + gridItem.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm:ss a'));
+          this.gridBarItems.forEach((item) => {
+            console.log("   Grid bar item: " + item.startTime.format("YYYY-MM-DD hh:mm:ss a") + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a'))
+          });
         }
       }
     } else {

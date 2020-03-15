@@ -48,6 +48,18 @@ export class DisplayGridItemsBar {
     public get activeGridBarItem$(): Observable<DisplayGridBarItem> { return this._activeGridBarItem$.asObservable(); }
     public get activeGridBarItem(): DisplayGridBarItem { return this._activeGridBarItem$.getValue(); }
 
+    public getItemAtTime(timeToCheck: moment.Moment): DisplayGridBarItem {
+        const foundItem = this.gridBarItems.find(item =>{
+            return timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime);
+        });
+        if(foundItem){
+            return foundItem;
+        }else{
+            console.log("Error finding grid item at time: " + timeToCheck.format('YYYY-MM-DD hh:mm a'));
+            return null;
+        }
+
+    }
 
     public goRight() {
         const currentIndex = this.gridBarItems.indexOf(this.activeGridBarItem);

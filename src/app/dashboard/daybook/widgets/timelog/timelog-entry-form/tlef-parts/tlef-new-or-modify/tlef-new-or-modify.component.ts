@@ -26,7 +26,7 @@ export class TlefNewOrModifyComponent implements OnInit {
     // console.log("from service: " )
     // console.log("thing 1: " , this.tlefService.openedTimelogEntry)
     // console.log("thing 2: " , this.tlefService.openedTimelogEntry.timelogEntryActivities);
-    this._setEntryItem();
+   this._setEntryItem();
     this.tlefService.formChanged$.subscribe((formChange)=>{
       if(this.tlefService.toolIsOpen){
         this._setEntryItem();
@@ -34,19 +34,18 @@ export class TlefNewOrModifyComponent implements OnInit {
         this._entryItem = null;
       }
       
-    });
+    }); 
     
   }
 
   private _setEntryItem(){
-    
     this._entryItem = this.tlefService.openedTimelogEntry;
     this._initialActivities = [];
     // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
     if(this._entryItem){
+      console.log("Entry item is " , this._entryItem.timelogEntryActivities.length)
       if(this._entryItem.timelogEntryActivities){
         this._entryItem.timelogEntryActivities.forEach((item)=>{
-          // console.log("pushing")
           this._initialActivities.push(item);
         });
       }

@@ -19,31 +19,33 @@ import { TimelogEntryFormService } from '../../timelog-entry-form.service';
   styleUrls: ['./tlef-modify-activities.component.css']
 })
 export class TlefModifyActivitiesComponent implements OnInit {
-  
+
   constructor(private tlefService: TimelogEntryFormService, private activitiesService: ActivityCategoryDefinitionService) { }
 
-  // private _timelogEntry: TimelogEntryItem;
+  private _timelogEntry: TimelogEntryItem;
   private _timelogEntryActivities: TimelogEntryActivity[] = [];
   private _activityItems: TLEFActivityListItem[] = [];
 
   public faTimes = faTimes;
 
-  @Input() public initialActivities: TimelogEntryActivity[];
+  @Input() public set initialActivities(activities: TimelogEntryActivity[]) {
+    this._timelogEntryActivities = Object.assign([], activities);
+  }
 
   @Output() public tlefActivitiesChanged: EventEmitter<TimelogEntryActivity[]> = new EventEmitter();
 
   public get activityItems(): TLEFActivityListItem[] { return this._activityItems; }
-  public get timelogEntry(): TimelogEntryItem { return this.tlefService.openedTimelogEntry; }
+  public get timelogEntry(): TimelogEntryItem { return this._timelogEntry; }
   public get timelogEntryMinutes(): number {
-    return this.timelogEntry.durationSeconds/60;
+    return this._timelogEntry.durationSeconds / 60;
   }
   public get currentTimelogEntryDuration(): string {
-    return DurationString.calculateDurationString(moment(this.timelogEntry.startTime), moment(this.timelogEntry.endTime));
+    return DurationString.calculateDurationString(moment(this._timelogEntry.startTime), moment(this._timelogEntry.endTime));
   }
 
   ngOnInit() {
     this._reload();
-    this.tlefActivitiesChanged.emit(this.activityItems.map(item => item.toEntryActivity())); 
+    this.tlefActivitiesChanged.emit(this.activityItems.map(item => item.toEntryActivity()));
   }
 
   public onMouseEnterActivity(activityItem: TLEFActivityListItem) {
@@ -81,8 +83,9 @@ export class TlefModifyActivitiesComponent implements OnInit {
 
   private _reload() {
     // console.log("tlef-activities.reload()", this.timelogEntry)
-    // 
-    // if(this._timelogEntry){
+    this._timelogEntry = this.tlefService.openedTimelogEntry;
+    if (this._timelogEntry) {
+      // console.log("Start, end: " + this._timelogEntry.startTime.format('hh:mm a ') + " to " + this._timelogEntry.endTime.format('hh:mm a'))
       let maxPercent: number = 100;
       // console.log("this.timelog entry: " , this.timelogEntry, this._timelogEntryActivities)
       if (this._timelogEntryActivities.length > 1) {
@@ -90,11 +93,10 @@ export class TlefModifyActivitiesComponent implements OnInit {
       }
       let activityItems: TLEFActivityListItem[] = [];
       this._timelogEntryActivities.forEach((tleActivity: TimelogEntryActivity) => {
-        let totalDuration: number = moment(this.timelogEntry.endTime).diff(this.timelogEntry.endTime, "minutes");
-        let durationMinutes = ((tleActivity.percentage / 100) * totalDuration);
+        let durationMinutes = ((tleActivity.percentage / 100) * this.timelogEntryMinutes);
         let durationPercent = tleActivity.percentage;
         let activity = this.activitiesService.findActivityByTreeId(tleActivity.activityTreeId);
-        activityItems.push(new TLEFActivityListItem(activity, durationMinutes, durationPercent, totalDuration, maxPercent))
+        activityItems.push(new TLEFActivityListItem(activity, durationMinutes, durationPercent, this.timelogEntryMinutes, maxPercent))
       });
       this._activityItems = activityItems;
       this._updateChangeSubscriptions();
@@ -102,7 +104,9 @@ export class TlefModifyActivitiesComponent implements OnInit {
         activityItem.updatePercentage(activityItem.durationPercent, maxPercent, true);
       });
       this.updateActivityChangedSubscriptions();
-    // }
+    }else{
+      console.log('Error:  no timelog entry in the tlef service')
+    }
     // 
   }
 

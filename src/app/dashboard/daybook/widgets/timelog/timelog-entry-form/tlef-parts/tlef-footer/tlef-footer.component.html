@@ -1,0 +1,15 @@
+<div class="tlef-footer-root">
+    <div style="flex-grow: 2;">
+        <app-delete-confirm-button *ngIf="showDeleteButton" (delete)="onDelete()" [smallMode]="true"
+            style="justify-self: flex-start; flex-grow: 2;">
+        </app-delete-confirm-button>
+    </div>
+
+
+    <div style="display:flex;flex-direction: row; flex-shrink: 2;">
+        <button class="medium-button save-button" (click)="onClickSave()">Save</button>
+        <button class="medium-button discard-button" style="margin-left: 5px;"
+            (click)="onClickDiscard()">Discard</button>
+    </div>
+
+</div>

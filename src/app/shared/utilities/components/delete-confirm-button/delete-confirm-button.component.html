@@ -1,4 +1,7 @@
-<div (mouseleave)="onMouseLeave()">
-    <button class="medium-button delete-button" *ngIf="!confirmDelete" (click)="onClickDelete()">Delete</button>
+<div (mouseleave)="onMouseLeave()" class="delete-confirm-button-root">
+    <button class="icon-delete-button" style="width: 40px;" *ngIf="!confirmDelete && smallMode" (click)="onClickDelete()">
+        <fa-icon [icon]="faTrash" ></fa-icon>
+    </button>
+    <button class="medium-button delete-button" *ngIf="!confirmDelete && !smallMode" (click)="onClickDelete()">Delete</button>
     <button class="medium-button confirm-delete-button" *ngIf="confirmDelete" (click)="onClickConfirmDelete()">Confirm</button>
 </div>

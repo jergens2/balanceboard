@@ -27,12 +27,9 @@
         </app-tlef-existing-current>
     </div>
 
-    <div class="tlef-form-footer">
-        <button class="medium-button save-button" (click)="onClickSave()">Save</button>
-        <app-delete-confirm-button *ngIf="entryItem.isSavedEntry" (delete)="onDelete()" style="margin-left: 5px;">
-        </app-delete-confirm-button>
-        <button class="medium-button discard-button" (click)="onClickDiscard()">Discard</button>
-    </div>
+
+    <app-tlef-footer class="tlef-form-footer"></app-tlef-footer>
+
 </div>
 
 <div *ngIf="!entryItem">

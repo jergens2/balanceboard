@@ -146,8 +146,8 @@ export class ActivityInputDropdownComponent implements OnInit {
   }
   private arrowRight() {
     if (this.arrowCursorIndex >= 0 && this.arrowCursorIndex < this.searchResults.length) {
-      console.log("index is " + this.arrowCursorIndex)
-      console.log("Search results is ", this.searchResults);
+      // console.log("index is " + this.arrowCursorIndex)
+      // console.log("Search results is ", this.searchResults);
       this.activityTextInputValue = this.searchResults[this.arrowCursorIndex].activity.name;
       this.arrowCursorIndex = -1;
     }

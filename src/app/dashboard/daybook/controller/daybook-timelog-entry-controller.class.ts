@@ -4,26 +4,35 @@ import { Subject, Observable } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
-import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 
 export class DaybookTimelogEntryController {
-    constructor(dateYYYYMMDD: string, timelogEntryDataItems: DaybookTimelogEntryDataItem[]) {
+    constructor(dateYYYYMMDD: string, relevantItems: {
+        prevItems: DaybookTimelogEntryDataItem[],
+        thisItems: DaybookTimelogEntryDataItem[],
+        nextItems: DaybookTimelogEntryDataItem[],
+    }) {
         // console.log("Rebuilding Timelog Controller")
         this._dateYYYYMMDD = dateYYYYMMDD;
-        this._timelogEntryItems = timelogEntryDataItems.map((item) => {
-            return this._buildTimelogEntryFromDataItem(item);
-        }).sort((item1, item2) => {
+        this._prevDayItems = relevantItems.prevItems.map(item => this._buildTimelogEntryFromDataItem(item));
+        this._thisDayItems = relevantItems.thisItems.map(item => this._buildTimelogEntryFromDataItem(item));
+        this._nextDayItems = relevantItems.nextItems.map(item => this._buildTimelogEntryFromDataItem(item));
+        this._timelogEntryItems = [...this._prevDayItems, ...this._thisDayItems, ...this._nextDayItems].sort((item1, item2) => {
             if (item1.startTime.isBefore(item2.startTime)) {
                 return -1;
             } else if (item1.startTime.isAfter(item2.startTime)) {
                 return 1;
-            } else { 
-                return 0; 
+            } else {
+                return 0;
             }
         })
         this._buildSchedule();
 
     }
+
+
+    private _prevDayItems: TimelogEntryItem[] = [];
+    private _thisDayItems: TimelogEntryItem[] = [];
+    private _nextDayItems: TimelogEntryItem[] = [];
 
     private _dateYYYYMMDD: string;
     private _timelogEntryItems: TimelogEntryItem[];
@@ -31,12 +40,7 @@ export class DaybookTimelogEntryController {
 
     private _timelogSchedule: TimeSchedule<TimelogEntryItem>;
 
-    private _timelogUpdated$: Subject<
-        {
-            prevDayItems: DaybookTimelogEntryDataItem[],
-            thisDayItems: DaybookTimelogEntryDataItem[],
-            nextDayItems: DaybookTimelogEntryDataItem[],
-        }> = new Subject();
+    private _timelogUpdated$: Subject<{ dateYYYYMMDD: string, items: DaybookTimelogEntryDataItem[] }> = new Subject();
 
     public get timelogSchedule(): TimeSchedule<TimelogEntryItem> { return this._timelogSchedule; }
 
@@ -98,178 +102,57 @@ export class DaybookTimelogEntryController {
     }
 
 
-    public get timelogUpdated$(): Observable<
-        {
-            prevDayItems: DaybookTimelogEntryDataItem[],
-            thisDayItems: DaybookTimelogEntryDataItem[],
-            nextDayItems: DaybookTimelogEntryDataItem[],
-        }> {
+    public get timelogUpdated$(): Observable<{ dateYYYYMMDD: string, items: DaybookTimelogEntryDataItem[] }> {
         return this._timelogUpdated$.asObservable();
     }
 
 
-    public saveTimelogEntryItem$(saveTimelogEntry: TimelogEntryItem): Observable<boolean> {
-        const timelogEntryDateYYYYMMDD: string = saveTimelogEntry.startTime.format('YYYY-MM-DD');
-        let dataItemsToSave: DaybookTimelogEntryDataItem[] = [];
-        let startOfDay: moment.Moment;
-        let endOfDay: moment.Moment;
-        if (timelogEntryDateYYYYMMDD === this.prevDateYYYYMMDD) {
-            startOfDay = moment(this.prevDateYYYYMMDD).startOf('day');
-            endOfDay = moment(this.prevDateYYYYMMDD).startOf('day').add(1, 'days');
-        } else if (timelogEntryDateYYYYMMDD === this.thisDateYYYYMMDD) {
-            startOfDay = moment(this.thisDateYYYYMMDD).startOf('day');
-            endOfDay = moment(this.thisDateYYYYMMDD).startOf('day').add(1, 'days');
-        } else if (timelogEntryDateYYYYMMDD === this.nextDateYYYYMMDD) {
-            startOfDay = moment(this.nextDateYYYYMMDD).startOf('day');
-            endOfDay = moment(this.nextDateYYYYMMDD).startOf('day').add(1, 'days');
-        } else {
-            console.log('Error with timelogEntryDateYYYYMMDD: ' + timelogEntryDateYYYYMMDD);
-        }
-        dataItemsToSave = this._timelogEntryItems
-            .filter(item => item.startTime.isSameOrAfter(startOfDay) && item.endTime.isSameOrBefore(endOfDay))
-            .sort((item1, item2) => {
-                if (item1.startTime.isBefore(item2.startTime)) { return -1; }
-                else if (item1.startTime.isAfter(item2.startTime)) { return 1; }
-                else { return 0; }
-            })
-            .map(item => item.dataEntryItem);
-        dataItemsToSave.push(saveTimelogEntry.dataEntryItem);
-
-        let prevDayItems, thisDayItems, nextDayItems: DaybookTimelogEntryDataItem[];
-        if (timelogEntryDateYYYYMMDD === this.prevDateYYYYMMDD) { prevDayItems = dataItemsToSave; } else
-            if (timelogEntryDateYYYYMMDD === this.thisDateYYYYMMDD) { thisDayItems = dataItemsToSave; } else
-                if (timelogEntryDateYYYYMMDD === this.nextDateYYYYMMDD) { nextDayItems = dataItemsToSave; }
-
+    public saveTimelogEntryItem$(dateYYYYMMDD: string, saveTimelogEntry: TimelogEntryItem): Observable<boolean> {
+        let items = this._getDateItem(dateYYYYMMDD);
+        items.push(saveTimelogEntry);
         this._sendUpdate({
-            prevDayItems: prevDayItems,
-            thisDayItems: thisDayItems,
-            nextDayItems: nextDayItems,
-        });
-        return this._timelogActionComplete$.asObservable();
-    }
-    public saveTimelogEntryItemAcrossMidnight$(timelogEntryBefore: TimelogEntryItem, timelogEntryAfter: TimelogEntryItem)
-        : Observable<boolean> {
-
-        const firstDateYYYYMMDD: string = timelogEntryBefore.startTime.format('YYYY-MM-DD');
-        const secondDateYYYYMMDD: string = timelogEntryAfter.startTime.format('YYYY-MM-DD');
-        const startOfFirstDay: moment.Moment = moment(firstDateYYYYMMDD).startOf('day');
-        const startOfSecondDay: moment.Moment = moment(secondDateYYYYMMDD).startOf('day');
-        const endOfSecondDay: moment.Moment = moment(secondDateYYYYMMDD).startOf('day').add(1, 'days');
-
-        const firstDayItems: DaybookTimelogEntryDataItem[] = this._timelogEntryItems
-            .filter(item => item.startTime.isSameOrAfter(startOfFirstDay) && item.endTime.isSameOrBefore(startOfSecondDay))
-            .map(item => item.dataEntryItem)
-        firstDayItems.push(timelogEntryBefore.dataEntryItem);
-
-        const secondDayItems: DaybookTimelogEntryDataItem[] = this._timelogEntryItems
-            .filter(item => item.startTime.isSameOrAfter(startOfSecondDay) && item.endTime.isSameOrBefore(endOfSecondDay))
-            .map(item => item.dataEntryItem);
-        secondDayItems.push(timelogEntryAfter.dataEntryItem);
-
-        let prevDayItems, thisDayItems, nextDayItems: DaybookTimelogEntryDataItem[];
-        if (firstDateYYYYMMDD === this.prevDateYYYYMMDD && secondDateYYYYMMDD === this.thisDateYYYYMMDD) {
-            prevDayItems = firstDayItems;
-            thisDayItems = secondDayItems;
-        } else if (firstDateYYYYMMDD === this.thisDateYYYYMMDD && secondDateYYYYMMDD === this.nextDateYYYYMMDD) {
-            thisDayItems = firstDayItems;
-            nextDayItems = secondDayItems;
-        } else {
-            console.log('Error with dates');
-        }
-        this._sendUpdate({
-            prevDayItems: prevDayItems,
-            thisDayItems: thisDayItems,
-            nextDayItems: nextDayItems,
+            dateYYYYMMDD: dateYYYYMMDD,
+            items: this._sortItems(items).map(item => item.exportDataEntryItem()),
         });
         return this._timelogActionComplete$.asObservable();
     }
 
-    public updateTimelogEntryItem$(updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
-        const updateDateYYYYMMDD: string = moment(updateTimelogEntry.startTime).format('YYYY-MM-DD');
-        const startOfDay: moment.Moment = moment(updateTimelogEntry.startTime).startOf('day');
-        const endOfDay: moment.Moment = moment(startOfDay).add(1, 'days');
-        const dateEntries: DaybookTimelogEntryDataItem[] = this._timelogEntryItems.filter(item =>
-            item.startTime.isSameOrAfter(startOfDay) && item.endTime.isSameOrBefore(endOfDay))
-            .map(item => item.dataEntryItem);
-        let foundIndex = -1;
-        dateEntries.forEach((item) => {
-            if (moment(item.startTimeISO).isSame(moment(updateTimelogEntry.startTime))
-                && moment(item.endTimeISO).isSame(moment(updateTimelogEntry.endTime))) {
-                foundIndex = dateEntries.indexOf(item);
-            }
+    public updateTimelogEntryItem$(dateYYYYMMDD: string, updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
+        let items = this._getDateItem(dateYYYYMMDD);
+        const foundIndex = items.findIndex((item)=>{
+            return item.startTime.isSame(updateTimelogEntry.startTime) && item.endTime.isSame(updateTimelogEntry.endTime);
         });
-
-        if (foundIndex >= 0) {
-            // console.log("Successfully updated timelog entry at index: " + foundIndex);
-            dateEntries.splice(foundIndex, 1, updateTimelogEntry.dataEntryItem);
-            let prevDayItems, thisDayItems, nextDayItems: DaybookTimelogEntryDataItem[];
-            if (updateDateYYYYMMDD === this.prevDateYYYYMMDD) {
-                prevDayItems = dateEntries;
-            } else if (updateDateYYYYMMDD === this.thisDateYYYYMMDD) {
-                thisDayItems = dateEntries;
-            } else if (updateDateYYYYMMDD === this.nextDateYYYYMMDD) {
-                nextDayItems = dateEntries;
-            } else {
-                console.log('Error with date: ' + updateDateYYYYMMDD);
-            }
+        if(foundIndex > -1){
+            items.splice(foundIndex, 1, updateTimelogEntry);
             this._sendUpdate({
-                prevDayItems: prevDayItems,
-                thisDayItems: thisDayItems,
-                nextDayItems: nextDayItems,
+                dateYYYYMMDD: dateYYYYMMDD,
+                items: this._sortItems(items).map(item => item.exportDataEntryItem()),
             });
-            return this._timelogActionComplete$.asObservable();
-        } else {
-            // console.log("Error: can't modify timelogEntry", timelogEntry)
-            return null;
+        }else{
+            console.log('Error updating timelog entry: could not find item.')
         }
+        return this._timelogActionComplete$.asObservable();
     }
-    public deleteTimelogEntryItem$(deleteTimelogEntry: TimelogEntryItem): Observable<boolean> {
-        const deleteDateYYYYMMDD: string = moment(deleteTimelogEntry.startTime).format('YYYY-MM-DD');
-        const startOfDay: moment.Moment = moment(deleteTimelogEntry.startTime).startOf('day');
-        const endOfDay: moment.Moment = moment(startOfDay).add(1, 'days');
-        const dateEntries: DaybookTimelogEntryDataItem[] = this._timelogEntryItems.filter(item =>
-            item.startTime.isSameOrAfter(startOfDay) && item.endTime.isSameOrBefore(endOfDay))
-            .map(item => item.dataEntryItem);
-        let foundIndex = -1;
-        dateEntries.forEach((item) => {
-            if (moment(item.startTimeISO).isSame(moment(deleteTimelogEntry.startTime))
-                && moment(item.endTimeISO).isSame(moment(deleteTimelogEntry.endTime))) {
-                foundIndex = dateEntries.indexOf(item);
-            }
+    public deleteTimelogEntryItem$(dateYYYYMMDD: string, deleteTimelogEntry: TimelogEntryItem): Observable<boolean> {
+        let items = this._getDateItem(dateYYYYMMDD);
+        const foundIndex = items.findIndex((item)=>{
+            return item.startTime.isSame(deleteTimelogEntry.startTime) && item.endTime.isSame(deleteTimelogEntry.endTime);
         });
-
-        if (foundIndex >= 0) {
-            // console.log("Successfully updated timelog entry at index: " + foundIndex);
-            dateEntries.splice(foundIndex, 1);
-            let prevDayItems, thisDayItems, nextDayItems: DaybookTimelogEntryDataItem[];
-            if (deleteDateYYYYMMDD === this.prevDateYYYYMMDD) {
-                prevDayItems = dateEntries;
-            } else if (deleteDateYYYYMMDD === this.thisDateYYYYMMDD) {
-                thisDayItems = dateEntries;
-            } else if (deleteDateYYYYMMDD === this.nextDateYYYYMMDD) {
-                nextDayItems = dateEntries;
-            } else {
-                console.log('Error with date: ' + deleteDateYYYYMMDD);
-            }
+        if(foundIndex > -1){
+            items.splice(foundIndex, 1);
             this._sendUpdate({
-                prevDayItems: prevDayItems,
-                thisDayItems: thisDayItems,
-                nextDayItems: nextDayItems,
+                dateYYYYMMDD: dateYYYYMMDD,
+                items: this._sortItems(items).map(item => item.exportDataEntryItem()),
             });
-            return this._timelogActionComplete$.asObservable();
-        } else {
-            // console.log("Error: can't modify timelogEntry", timelogEntry)
-            return null;
+        }else{
+            console.log('Error updating timelog entry: could not find item.')
         }
+        return this._timelogActionComplete$.asObservable();
     }
 
 
 
-    private _sendUpdate(updateItem: {
-        prevDayItems: DaybookTimelogEntryDataItem[],
-        thisDayItems: DaybookTimelogEntryDataItem[],
-        nextDayItems: DaybookTimelogEntryDataItem[],
-    }) {
+    private _sendUpdate(updateItem: { dateYYYYMMDD: string, items: DaybookTimelogEntryDataItem[] }) {
         this._timelogUpdated$.next(updateItem);
     }
 
@@ -291,4 +174,25 @@ export class DaybookTimelogEntryController {
         return timelogEntry;
     }
 
+    private _getDateItem(dateYYYYMMDD: string): TimelogEntryItem[] {
+        if (dateYYYYMMDD === this.thisDateYYYYMMDD) {
+            return this._thisDayItems;
+        } else if (dateYYYYMMDD === this.nextDateYYYYMMDD) {
+            return this._nextDayItems;
+        } else if (dateYYYYMMDD === this.prevDateYYYYMMDD) {
+            return this._prevDayItems;
+        }
+    }
+
+    private _sortItems(items: TimelogEntryItem[]): TimelogEntryItem[] {
+        return items.sort((item1, item2) => {
+            if (item1.startTime.isBefore(item2.startTime)) {
+                return -1;
+            } else if (item1.startTime.isAfter(item2.startTime)) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+    }
 }

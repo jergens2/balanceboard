@@ -1,4 +1,6 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-delete-confirm-button',
@@ -8,6 +10,10 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class DeleteConfirmButtonComponent implements OnInit {
 
   constructor() { }
+
+  public faTrash: IconDefinition = faTrash;
+
+  @Input() smallMode: boolean = false;
 
   private _confirmDelete = false;
   public get confirmDelete(): boolean { return this._confirmDelete; }

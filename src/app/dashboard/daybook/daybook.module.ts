@@ -57,6 +57,7 @@ import { DaybookGridItemsBarComponent } from './widgets/timelog/timelog-entry-fo
 import { TlefNewCurrentFutureComponent } from './widgets/timelog/timelog-entry-form/tlef-cases/tlef-new-current-future/tlef-new-current-future.component';
 import { TlefExistingCurrentComponent } from './widgets/timelog/timelog-entry-form/tlef-cases/tlef-existing-current/tlef-existing-current.component';
 import { DaybookTimePositionFormComponent } from './daybook-time-position-form/daybook-time-position-form.component';
+import { TlefFooterComponent } from './widgets/timelog/timelog-entry-form/tlef-parts/tlef-footer/tlef-footer.component';
 
 
 @NgModule({
@@ -116,6 +117,7 @@ import { DaybookTimePositionFormComponent } from './daybook-time-position-form/d
     TlefNewCurrentFutureComponent,
     TlefExistingCurrentComponent,
     DaybookTimePositionFormComponent,
+    TlefFooterComponent,
   ],
   exports: [
     // DaybookEntryFormComponent,

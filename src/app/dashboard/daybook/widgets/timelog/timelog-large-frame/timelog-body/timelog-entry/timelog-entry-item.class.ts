@@ -76,7 +76,7 @@ export class TimelogEntryItem {
     }
 
 
-    public get dataEntryItem(): DaybookTimelogEntryDataItem {
+    public exportDataEntryItem(): DaybookTimelogEntryDataItem {
         const returnItem = {
             startTimeISO: this._startTime.toISOString(),
             startTimeUtcOffsetMinutes: this._startTime.utcOffset(),

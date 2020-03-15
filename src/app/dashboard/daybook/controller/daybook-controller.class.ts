@@ -202,26 +202,27 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     public get timelogEntryItems(): TimelogEntryItem[] { return this.timelogEntryController.timelogEntryItems; }
     public saveTimelogEntryItem$(saveTimelogEntry: TimelogEntryItem): Observable<boolean> {
-        return this.timelogEntryController.saveTimelogEntryItem$(saveTimelogEntry);
+        return this.timelogEntryController.saveTimelogEntryItem$(this.dateYYYYMMDD, saveTimelogEntry);
     }
     public updateTimelogEntryItem$(updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
-        return this.timelogEntryController.updateTimelogEntryItem$(updateTimelogEntry);
+        return this.timelogEntryController.updateTimelogEntryItem$(this.dateYYYYMMDD, updateTimelogEntry);
     }
-    public deleteTimelogEntryItem$(updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
-        return this.timelogEntryController.deleteTimelogEntryItem$(updateTimelogEntry);
+    public deleteTimelogEntryItem$(deleteItem: TimelogEntryItem): Observable<boolean> {
+        return this.timelogEntryController.deleteTimelogEntryItem$(this.dateYYYYMMDD, deleteItem);
     }
 
     public getNewCurrentTLE(): TimelogEntryItem {
         const endTime: moment.Moment = this.clock;
-        const foundItem = this.fullScheduleItems.find((item) => {
+        const foundItem = this.fullScheduleItems
+            .filter(item => item.value === DaybookAvailabilityType.AVAILABLE)
+            .find((item) => {
             return endTime.isSameOrBefore(item.endTime) && endTime.isAfter(item.startTime)
         });
         if (foundItem) {
             const startTime = foundItem.startTime;
             return new TimelogEntryItem(startTime, endTime);
         } else {
-            console.log('Error: could not find schedule item');
-            return new TimelogEntryItem(endTime, endTime);
+            return null;
         }
 
     }
@@ -296,7 +297,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
     }
 
     private _buildController() {
-        const timelogDataItems: DaybookTimelogEntryDataItem[] = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
+        const allTimelogDataItems: DaybookTimelogEntryDataItem[] = this._previousDay.timelogEntryDataItems.concat(this._thisDay.timelogEntryDataItems)
             .concat(this._followingDay.timelogEntryDataItems);
 
         const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);        
@@ -306,14 +307,19 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             this.clock, this._dayItems.map(item => item.sleepInputItem));
 
         const timeScheduleValueItems: TimeScheduleItem<DaybookAvailabilityType>[] = [
-            ...timelogDataItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(moment(item.startTimeISO), moment(item.endTimeISO), true, DaybookAvailabilityType.TIMELOG_ENTRY)),
+            ...allTimelogDataItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(moment(item.startTimeISO), moment(item.endTimeISO), true, DaybookAvailabilityType.TIMELOG_ENTRY)),
             ...this.sleepController.getDaybookTimeScheduleItems(),
         ];
 
         this.addScheduleValueItems(timeScheduleValueItems);
 
+        const relevantTimelogItems = {
+            prevItems: this._previousDay.timelogEntryDataItems,
+            thisItems: this._thisDay.timelogEntryDataItems,
+            nextItems: this._followingDay.timelogEntryDataItems,
+        }
         this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
-        this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, timelogDataItems);
+        this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, relevantTimelogItems);
 
         // this._buildEnergyController();
 
@@ -398,26 +404,19 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         });
         this._dataChanged$.next(daysChanged)
     }
-    private _updateTimelog(update: { prevDayItems: DaybookTimelogEntryDataItem[], thisDayItems: DaybookTimelogEntryDataItem[], nextDayItems: DaybookTimelogEntryDataItem[] }) {
-        // console.log("Updating timelog: ", update);
-        let prevDayChanged = false, thisDayChanged = false, nextDayChanged = false;
-        if (update.prevDayItems) {
-            this._previousDay.timelogEntryDataItems = update.prevDayItems;
-            prevDayChanged = true;
-        }
-        if (update.thisDayItems) {
-            this._thisDay.timelogEntryDataItems = update.thisDayItems;
-            thisDayChanged = true;
-        }
-        if (update.nextDayItems) {
-            this._followingDay.timelogEntryDataItems = update.nextDayItems;
-            nextDayChanged = true;
-        }
+    private _updateTimelog(updateItem: { dateYYYYMMDD: string, items: DaybookTimelogEntryDataItem[] }) {
         const daysChanged = {
-            prevDayChanged: prevDayChanged,
-            thisDayChanged: thisDayChanged,
-            nextDayChanged: nextDayChanged,
+            prevDayChanged: updateItem.dateYYYYMMDD === this.previousDay.dateYYYYMMDD,
+            thisDayChanged: updateItem.dateYYYYMMDD === this.thisDay.dateYYYYMMDD,
+            nextDayChanged: updateItem.dateYYYYMMDD === this.followingDay.dateYYYYMMDD,
         };
+        if(daysChanged.prevDayChanged){
+            this._previousDay.timelogEntryDataItems = updateItem.items;
+        }else if(daysChanged.thisDayChanged){
+            this._thisDay.timelogEntryDataItems = updateItem.items;
+        }else if(daysChanged.nextDayChanged){
+            this._followingDay.timelogEntryDataItems = updateItem.items;
+        }
         // console.log("Next: ", daysChanged);
         this._dataChanged$.next(daysChanged);
     }

@@ -50,7 +50,22 @@
   cursor: pointer;
 }
 
-
+.icon-delete-button{
+  cursor: pointer;
+  color: gray;
+  border: 1px solid rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.icon-delete-button:hover{
+  color: white;
+  background-color:rgb(255, 67, 67);
+  border: 1px solid rgb(255, 67, 67);
+}
 
 .small-button{
 

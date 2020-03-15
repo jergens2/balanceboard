@@ -7,7 +7,12 @@
             <div>
                 {{ durationString(entry) }}
             </div>
-
+            <div style="display:flex;flex-direction: column;">
+                <div>Activities:  {{ entry.timelogEntryActivities.length }} </div>
+                <div *ngFor="let activity of entry.timelogEntryActivities" style="margin: 2px;" [style.background-color]="getActivity(activity).color">
+                    {{ getActivity(activity).name }}
+                </div>
+            </div>
         </div>
         <div class="controls">
             <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEdit(entry)"></fa-icon>
