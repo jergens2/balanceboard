@@ -7,9 +7,13 @@
 
 
     <div style="display:flex;flex-direction: row; flex-shrink: 2;">
-        <button class="medium-button save-button" (click)="onClickSave()">Save</button>
-        <button class="medium-button discard-button" style="margin-left: 5px;"
+        <button class="medium-button save-button" (click)="onClickSave()" *ngIf="changesMade && isNew">Save</button>
+        <button class="medium-button save-button" (click)="onClickSaveChanges()" *ngIf="changesMade && !isNew">Save changes</button>
+
+        <button class="medium-button discard-button" style="margin-left: 5px;" *ngIf="changesMade"
             (click)="onClickDiscard()">Discard</button>
+        <button class="medium-button discard-button" style="margin-left: 5px;" *ngIf="!changesMade"
+            (click)="onClickDiscard()">Close</button>
     </div>
 
 </div>

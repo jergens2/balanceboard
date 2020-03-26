@@ -18,7 +18,6 @@ import { DaybookControllerService } from '../../dashboard/daybook/controller/day
 import * as moment from 'moment';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
 import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
-import { TimelogEntryFormService } from '../../dashboard/daybook/widgets/timelog/timelog-entry-form/timelog-entry-form.service';
 
 @Component({
   selector: 'app-header',

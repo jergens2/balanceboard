@@ -4,7 +4,6 @@ import * as moment from 'moment';
 import { ToolboxService } from '../../../toolbox-menu/toolbox.service';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCog, faArrowRight, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { TimelogEntryFormService } from '../widgets/timelog/timelog-entry-form/timelog-entry-form.service';
 import { DaybookTimePosition } from './daybook-time-position.enum';
 
 @Component({
@@ -14,7 +13,7 @@ import { DaybookTimePosition } from './daybook-time-position.enum';
 })
 export class DaybookTimePositionFormComponent implements OnInit {
 
-  constructor(private daybookService: DaybookDisplayService, private toolboxService: ToolboxService, private tlefService: TimelogEntryFormService) { }
+  constructor(private daybookService: DaybookDisplayService, private toolboxService: ToolboxService) { }
 
   private _dayOfTheYear: string = "";
   private _wakeupTime: moment.Moment;
@@ -26,7 +25,7 @@ export class DaybookTimePositionFormComponent implements OnInit {
     this._dayOfTheYear = this.daybookService.clock.dayOfYear() + "/" + lastDayOfYear;
     this._currentTimePosition = this.daybookService.todayController.timePosition;
 
-    this.daybookService.activeDayController$.subscribe((changed) => {
+    this.daybookService.displayUpdated$.subscribe((update) => {
       const lastDayOfYear = moment(this.daybookService.clock).endOf('year').dayOfYear();
       this._dayOfTheYear = this.daybookService.clock.dayOfYear() + "/" + lastDayOfYear;
       this._currentTimePosition = this.daybookService.todayController.timePosition;

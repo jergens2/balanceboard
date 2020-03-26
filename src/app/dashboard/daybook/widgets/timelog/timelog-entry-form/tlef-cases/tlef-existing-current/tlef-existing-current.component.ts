@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
 import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
-import { TimelogEntryFormService } from '../../timelog-entry-form.service';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
 import { timer } from 'rxjs';
+import { TLEFController } from '../../TLEF-controller.class';
 
 @Component({
   selector: 'app-tlef-existing-current',
@@ -13,7 +13,7 @@ import { timer } from 'rxjs';
 })
 export class TlefExistingCurrentComponent implements OnInit {
 
-  constructor(private daybookService: DaybookDisplayService, private tlefService: TimelogEntryFormService) { }
+  constructor(private daybookService: DaybookDisplayService) { }
 
   ngOnInit() {
     this._clock = moment();
@@ -26,7 +26,11 @@ export class TlefExistingCurrentComponent implements OnInit {
   private _isEditing: boolean = false;
   public get isEditing(): boolean { return this._isEditing; }
 
-  public get entryItem(): TimelogEntryItem { return this.tlefService.openedTimelogEntry; }
+  private _controller: TLEFController;
+  @Input() public set controller(controller: TLEFController) { this._controller = controller; }
+  public get controller(): TLEFController { return this._controller; }
+
+  public get entryItem(): TimelogEntryItem { return this._controller.initialTimelogEntry; }
 
   public get clock(): string{
     return this._clock.format('h:mm:ss a');

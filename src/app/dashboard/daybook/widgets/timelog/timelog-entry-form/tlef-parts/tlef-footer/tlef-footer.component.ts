@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimelogEntryFormService } from '../../timelog-entry-form.service';
+
 import { TLEFFooterMode } from '../../tlef-footer-mode.enum';
+import { TLEFFormCase } from '../../tlef-form-case.enum';
+import { TLEFController } from '../../TLEF-controller.class';
 
 @Component({
   selector: 'app-tlef-footer',
@@ -12,57 +14,32 @@ import { TLEFFooterMode } from '../../tlef-footer-mode.enum';
 })
 export class TlefFooterComponent implements OnInit {
 
-  constructor(private toolboxService: ToolboxService, private daybookService: DaybookDisplayService, private tlefService: TimelogEntryFormService) { }
+  constructor(private toolboxService: ToolboxService, private daybookService: DaybookDisplayService) { }
 
-  private _entryItem: TimelogEntryItem;
-  
-  private _saveNewButton: boolean = false;
-  private _saveChangesButton: boolean = false;
-  private _closeButton: boolean = false;
-  private _discardChangesButton: boolean = false;
-  private _deleteButton: boolean = false;
+  private _controller: TLEFController;
+  @Input() public set controller(controller: TLEFController) { this._controller = controller; }
+  public get controller(): TLEFController { return this._controller; }
 
-  public get entryItem(): TimelogEntryItem { return this._entryItem; }
-  public get showDeleteButton(): boolean { return this.tlefService.showDeleteButton; }
+  public get entryItem(): TimelogEntryItem { return this._controller.initialTimelogEntry; }
+  // public get showDeleteButton(): boolean { return this._controller.showDeleteButton; }
+  public get changesMade(): boolean { return this._controller.changesMade; }
+  // public get isNew(): boolean { return !this._controller.isNew; }
+
+
 
   ngOnInit() {
     console.log("footer")
-    this._rebuild();
-    this.tlefService.formChanged$.subscribe((formChange)=>{
-      if(this.tlefService.toolIsOpen){
-        this._rebuild();
-        
-      }else{
-        this._entryItem = null;
-      }
-      
-    }); 
-    // this.tlefService.footerMode$.subscribe((mode)=>{
-    //   this._rebuild();
-    // })
-    
+    this._rebuild();    
   }
 
   private _rebuild(){
-    this._entryItem = this.tlefService.openedTimelogEntry;
-    const mode = this.tlefService.footerMode;
-    if(mode === TLEFFooterMode.NEW){
-      this._saveNewButton = true;
-      this._saveChangesButton = false;
-      this._closeButton = false;
-      this._discardChangesButton = false;
-      this._deleteButton = false;
-    }else if(mode === TLEFFooterMode.MODIFY_EXISTING){
 
-    }else if(mode === TLEFFooterMode.VIEW_EXISTING){
-
-    }
   }
 
   public onClickSaveNew() {
     console.log("Click saved")
     // this.daybookService.activeDayController.saveTimelogEntryItem$(this.entryItem);
-    this.toolboxService.closeTool();
+    this._close();
   }
 
   public onClickSaveChanges(){
@@ -72,7 +49,7 @@ export class TlefFooterComponent implements OnInit {
   public onDelete() {
     // console.log("Deleting: ", this.entryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.entryItem.endTime.format('YYYY-MM-DD hh:mm a') )
     // this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
-    this.toolboxService.closeTool();
+    this._close();
   }
 
   public onClickDiscard() {
@@ -83,6 +60,11 @@ export class TlefFooterComponent implements OnInit {
     //   console.log("Warning: need to implement a confirmation here")
     //   this.toolboxService.closeTool();
     // }
+    this._close();
+  }
+
+  private _close(){
+    this.toolboxService.closeTool();
   }
 
 

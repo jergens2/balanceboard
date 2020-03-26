@@ -7,8 +7,8 @@ import * as moment from 'moment';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
-import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
+import { DaybookDisplayUpdateType } from '../../../../../controller/items/daybook-display-update.interface';
 
 
 @Component({
@@ -18,7 +18,7 @@ import { DaybookDisplayService } from '../../../../../daybook-display.service';
 })
 export class AvailableTimelogItemComponent implements OnInit {
 
-  constructor(private tlefService: TimelogEntryFormService, private daybookService: DaybookDisplayService) { }
+  constructor(private daybookService: DaybookDisplayService) { }
 
   private _drawTLE: TimelogEntryItem;
   private _drawTLENgStyle: any = {};
@@ -36,35 +36,32 @@ export class AvailableTimelogItemComponent implements OnInit {
   public faPlusCircle = faPlusCircle;
 
   ngOnInit() {
-    this.gridItem.drawTLE$.subscribe((drawTimelogEntry: TimelogEntryItem) =>{
+    this.gridItem.drawTLE$.subscribe((drawTimelogEntry: TimelogEntryItem) => {
       this._drawTLE = drawTimelogEntry;
-      if(drawTimelogEntry){
+      if (drawTimelogEntry) {
         this._update(drawTimelogEntry);
-      }else{
+      } else {
         this._stopDrawing();
       }
     });
-    this.tlefService.toolIsOpen$.subscribe(toolIsOpen =>{
-      if(toolIsOpen === false){
+
+    this.daybookService.displayUpdated$.subscribe((update) => {
+      if (update.type !== DaybookDisplayUpdateType.CLOCK) {
         this.gridItem.stopCreating();
       }
     });
-    this.tlefService.formChanged$.subscribe((changed)=>{
-      if(changed){
-        this.gridItem.stopCreating();
-      }
-    })
-    
+
+
   }
 
-  public onMouseEnter(){
+  public onMouseEnter() {
     this._mouseIsOver = true;
-  } 
-  public onMouseLeave(){
+  }
+  public onMouseLeave() {
     this._mouseIsOver = false;
   }
 
-  public onClickItem(){
+  public onClickItem() {
     this.daybookService.openTimelogGridItem(this.gridItem);
     // if(this.daybookService.activeDayController.isNewDay){
     //   this.tlefService.openStartNewDay();

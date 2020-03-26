@@ -46,6 +46,6 @@
     <app-activity-input-dropdown (valueChanged)="onActivityValueChanged($event)"></app-activity-input-dropdown>
   </div>
 </div>
-<div *ngIf="!timelogEntry" class="tlef-activities-root">
-  No Timelog Entry
+<div *ngIf="!timelogEntry" style="color:red;" class="tlef-activities-root">
+  Error: no Timelog Entry
 </div>

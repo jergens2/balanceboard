@@ -7,11 +7,11 @@ import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entr
 
 export class TimelogEntryItem {
     constructor(startTime: moment.Moment, endTime: moment.Moment) {
-        // console.log("constructing tle: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
+        console.log("constructing tle: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
         this._startTime = moment(startTime);
-        this._utcOffsetMinutes = this._startTime.utcOffset();
+        this._utcOffsetMinutes = moment(this._startTime).utcOffset();
         this._endTime = moment(endTime);
-        this._itemState = new ItemState({ startTime: this._startTime, endTime: this._endTime });
+        // this._itemState = new ItemState({ startTime: this._startTime, endTime: this._endTime });
         this._timelogEntryActivities = [];
         // console.log("this._timelogEntryActivities " , this._timelogEntryActivities)
     }

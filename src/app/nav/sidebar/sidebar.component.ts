@@ -18,7 +18,6 @@ import { ToolboxService } from '../../toolbox-menu/toolbox.service';
 import { ToolType } from '../../toolbox-menu/tool-type.enum';
 import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
-import { TimelogEntryFormService } from '../../dashboard/daybook/widgets/timelog/timelog-entry-form/timelog-entry-form.service';
 
 @Component({
   selector: 'app-sidebar',

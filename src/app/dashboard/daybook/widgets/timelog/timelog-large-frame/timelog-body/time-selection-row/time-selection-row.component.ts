@@ -3,8 +3,6 @@ import { TimeSelectionRow } from './time-selection-row.class';
 
 import { faEdit, faTrash, faCheck } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
-import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
-import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 

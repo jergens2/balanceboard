@@ -11,7 +11,6 @@ import { TimelogEntryDisplayItem } from './timelog-entry-display-item.class';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
-import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 @Component({
@@ -24,7 +23,6 @@ export class TimelogEntryComponent implements OnInit {
   constructor(
     private activitiesService: ActivityCategoryDefinitionService,
     private screenSizeService: ScreenSizeService,
-    private tlefService: TimelogEntryFormService,
     private daybookService: DaybookDisplayService) { }
 
   private _displayEntry: TimelogEntryDisplayItem;
@@ -36,7 +34,7 @@ export class TimelogEntryComponent implements OnInit {
   @Input() public gridItem: TimelogDisplayGridItem;
 
 
-  public get timelogEntries(): TimelogEntryItem[] { return this.gridItem.timelogEntries; }
+  // public get timelogEntries(): TimelogEntryItem[] { return this.gridItem.timelogEntries; }
   public get displayEntry(): TimelogEntryDisplayItem { return this._displayEntry; }
   public get activityDisplayEntries(): { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] { return this._activityDisplayEntries; }
   public get backgroundColor(): string { return this.displayEntry.backgroundColor; };

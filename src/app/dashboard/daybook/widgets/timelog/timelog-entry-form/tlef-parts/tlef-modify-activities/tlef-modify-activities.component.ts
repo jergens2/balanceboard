@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { TLEFActivityListItem } from './tlef-activity-slider-bar/tlef-activity-list-item.class';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
@@ -10,7 +10,7 @@ import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybo
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimelogEntryFormService } from '../../timelog-entry-form.service';
+import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
 
 
 @Component({
@@ -18,9 +18,9 @@ import { TimelogEntryFormService } from '../../timelog-entry-form.service';
   templateUrl: './tlef-modify-activities.component.html',
   styleUrls: ['./tlef-modify-activities.component.css']
 })
-export class TlefModifyActivitiesComponent implements OnInit {
+export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
 
-  constructor(private tlefService: TimelogEntryFormService, private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private activitiesService: ActivityCategoryDefinitionService, private daybookService: DaybookDisplayService) { }
 
   private _timelogEntry: TimelogEntryItem;
   private _timelogEntryActivities: TimelogEntryActivity[] = [];
@@ -44,8 +44,18 @@ export class TlefModifyActivitiesComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("ON INIT ACTIVITIES ")
     this._reload();
     this.tlefActivitiesChanged.emit(this.activityItems.map(item => item.toEntryActivity()));
+  }
+
+  ngOnDestroy() {
+    console.log("DESTROYING ACTIVITIES")
+    this._timelogEntryActivities = [];
+    this._activityItems = [];
+    this._changeSubscriptions.forEach(s => s.unsubscribe());
+    this._changeSubscriptions = [];
+    this._timelogEntry = null;
   }
 
   public onMouseEnterActivity(activityItem: TLEFActivityListItem) {
@@ -83,30 +93,27 @@ export class TlefModifyActivitiesComponent implements OnInit {
 
   private _reload() {
     // console.log("tlef-activities.reload()", this.timelogEntry)
-    this._timelogEntry = this.tlefService.openedTimelogEntry;
-    if (this._timelogEntry) {
-      // console.log("Start, end: " + this._timelogEntry.startTime.format('hh:mm a ') + " to " + this._timelogEntry.endTime.format('hh:mm a'))
-      let maxPercent: number = 100;
-      // console.log("this.timelog entry: " , this.timelogEntry, this._timelogEntryActivities)
-      if (this._timelogEntryActivities.length > 1) {
-        maxPercent = 100 - ((this._timelogEntryActivities.length - 1) * 2);
-      }
-      let activityItems: TLEFActivityListItem[] = [];
-      this._timelogEntryActivities.forEach((tleActivity: TimelogEntryActivity) => {
-        let durationMinutes = ((tleActivity.percentage / 100) * this.timelogEntryMinutes);
-        let durationPercent = tleActivity.percentage;
-        let activity = this.activitiesService.findActivityByTreeId(tleActivity.activityTreeId);
-        activityItems.push(new TLEFActivityListItem(activity, durationMinutes, durationPercent, this.timelogEntryMinutes, maxPercent))
-      });
-      this._activityItems = activityItems;
-      this._updateChangeSubscriptions();
-      this.activityItems.forEach((activityItem) => {
-        activityItem.updatePercentage(activityItem.durationPercent, maxPercent, true);
-      });
-      this.updateActivityChangedSubscriptions();
-    }else{
-      console.log('Error:  no timelog entry in the tlef service')
+    this._timelogEntry = this.daybookService.tlefController.initialTimelogEntry;
+    // console.log("Start, end: " + this._timelogEntry.startTime.format('hh:mm a ') + " to " + this._timelogEntry.endTime.format('hh:mm a'))
+    let maxPercent: number = 100;
+    // console.log("this.timelog entry: " , this.timelogEntry, this._timelogEntryActivities)
+    if (this._timelogEntryActivities.length > 1) {
+      maxPercent = 100 - ((this._timelogEntryActivities.length - 1) * 2);
     }
+    let activityItems: TLEFActivityListItem[] = [];
+    this._timelogEntryActivities.forEach((tleActivity: TimelogEntryActivity) => {
+      let durationMinutes = ((tleActivity.percentage / 100) * this.timelogEntryMinutes);
+      let durationPercent = tleActivity.percentage;
+      let activity = this.activitiesService.findActivityByTreeId(tleActivity.activityTreeId);
+      activityItems.push(new TLEFActivityListItem(activity, durationMinutes, durationPercent, this.timelogEntryMinutes, maxPercent))
+    });
+    this._activityItems = activityItems;
+    this._updateChangeSubscriptions();
+    this.activityItems.forEach((activityItem) => {
+      activityItem.updatePercentage(activityItem.durationPercent, maxPercent, true);
+    });
+    this.updateActivityChangedSubscriptions();
+
     // 
   }
 

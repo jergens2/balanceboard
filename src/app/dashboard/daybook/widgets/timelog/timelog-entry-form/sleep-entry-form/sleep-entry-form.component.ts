@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
 import { SleepEntryItem } from './sleep-entry-item.class';
-import { TimelogEntryFormService } from '../timelog-entry-form.service';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { DurationString } from '../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from '../../../../controller/items/daybook-display-update.interface';
 
 @Component({
   selector: 'app-sleep-entry-form',
@@ -14,7 +14,7 @@ import { DurationString } from '../../../../../../shared/utilities/time-utilitie
 })
 export class SleepInputFormComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookService: DaybookDisplayService, private tlefService: TimelogEntryFormService) { }
+  constructor(private daybookService: DaybookDisplayService) { }
 
   public get sleepItem(): SleepEntryItem { return this._sleepItem; }
 
@@ -24,7 +24,7 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
   public get wakeupTime(): moment.Moment { return this._wakeupTime; }
   public get fallAsleepTime(): moment.Moment { return this._fallAsleepTime; }
 
-  public get sleepDuration(): string { 
+  public get sleepDuration(): string {
     return DurationString.calculateDurationString(this.sleepItem.startTime, this.sleepItem.endTime);
   }
 
@@ -34,10 +34,15 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     this._update();
     // this.tlefService.formChanged$.subscribe(change => this._update());
     this._dbSubs = [
-      this.daybookService.displayUpdated$.subscribe(change => this._update()),
-      this.daybookService.activeGridBarItem$.subscribe(change => this._update())
-    ];
+      this.daybookService.displayUpdated$.subscribe((change: DaybookDisplayUpdate) => {
+        if (change.type !== DaybookDisplayUpdateType.CLOCK) {
+          this._update();
+        }
 
+      }),
+      // this.daybookService.tlefController.gridBar.activeGridBarItem$.subscribe(change => this._update())
+    ];
+    
   }
 
   ngOnDestroy() {
@@ -58,9 +63,9 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
   private _isEditingFallAsleepTime: boolean = false;
 
   private _update() {
+    console.log("WARNING:  INCOMPLETE.  finish this")
+    // this._sleepItem = this.daybookService.
 
-    this._sleepItem = this.tlefService.openedSleepEntry;
-    
     this._wakeupTime = moment(this.daybookService.wakeupTime);
     this._fallAsleepTime = moment(this.daybookService.fallAsleepTime);
 
@@ -74,7 +79,7 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     this._isEditingFallAsleepTime = false;
     this._isEditingWakeupTime = true;
   }
-  public onClickEditFallAsleepTime() { 
+  public onClickEditFallAsleepTime() {
     this._isEditingWakeupTime = false;
     this._isEditingFallAsleepTime = true;
   }
@@ -84,15 +89,15 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
   public onWakeupTimeChanged(newTime: moment.Moment) {
     this._setNewWakeupTime = newTime;
   }
-  public onFallAsleepTimeChanged(newTime: moment.Moment){
+  public onFallAsleepTimeChanged(newTime: moment.Moment) {
     this._setNewFallAsleepTime = newTime;
   }
   public onClickSaveWakeupTime() {
-    if(this.daybookService.activeDayController.wakeupTimeIsSet){
+    if (this.daybookService.activeDayController.wakeupTimeIsSet) {
       if (!this._setNewWakeupTime.isSame(this._wakeupTime)) {
         this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
       }
-    }else{
+    } else {
       this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
     }
     this._isEditingWakeupTime = false;
@@ -101,11 +106,11 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
 
   public onClickSaveFallAsleepTime() {
     console.log("SAVING FALL ASLEEP TIME")
-    if(this.daybookService.activeDayController.fallAsleepTimeIsSet){
+    if (this.daybookService.activeDayController.fallAsleepTimeIsSet) {
       if (!this._setNewFallAsleepTime.isSame(this._fallAsleepTime)) {
         this.daybookService.activeDayController.setFallAsleepTime(this._setNewFallAsleepTime);
       }
-    }else{
+    } else {
       this.daybookService.activeDayController.setFallAsleepTime(this._setNewFallAsleepTime);
     }
 

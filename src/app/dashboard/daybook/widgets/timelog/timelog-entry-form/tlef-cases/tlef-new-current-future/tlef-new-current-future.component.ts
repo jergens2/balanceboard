@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { TimelogEntryFormService } from '../../timelog-entry-form.service';
+import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TLEFController } from '../../TLEF-controller.class';
 
 @Component({
   selector: 'app-tlef-new-current-future',
@@ -9,9 +9,13 @@ import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/time
 })
 export class TlefNewCurrentFutureComponent implements OnInit {
 
-  constructor(private tlefService: TimelogEntryFormService) { }
+  constructor() { }
 
-  public get entryItem(): TimelogEntryItem { return this.tlefService.openedTimelogEntry; }
+  private _controller: TLEFController;
+  @Input() public set controller(controller: TLEFController) { this._controller = controller; }
+  public get controller(): TLEFController { return this._controller; }
+
+  public get entryItem(): TimelogEntryItem { return this._controller.initialTimelogEntry; }
 
   ngOnInit() {
   }

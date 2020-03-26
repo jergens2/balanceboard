@@ -9,7 +9,6 @@ import { DaybookController } from '../../../../controller/daybook-controller.cla
 import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
 import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
-import { TimelogEntryFormService } from '../../timelog-entry-form/timelog-entry-form.service';
 import { DisplayGridBarItem } from '../../timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
 import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
 
@@ -20,7 +19,7 @@ import { DaybookAvailabilityType } from '../../../../controller/items/daybook-av
 })
 export class TimelogBodyComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookDisplayService: DaybookDisplayService, private tlefService: TimelogEntryFormService) { }
+  constructor(private daybookDisplayService: DaybookDisplayService) { }
 
 
   private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
@@ -81,7 +80,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   private _update(){
     this._buildTimelog();
     this._gridItemSub.unsubscribe();
-    this._gridItemSub = this.daybookDisplayService.activeGridBarItem$.subscribe((item: DisplayGridBarItem)=>{
+    this._gridItemSub = this.daybookDisplayService.tlefController.changes$.subscribe((changed)=>{
       this._setActiveTLEFGridItem();
     });
   }
@@ -108,11 +107,12 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   }
 
   private _setActiveTLEFGridItem() {
+    const controller = this.daybookDisplayService.tlefController;
+    console.log("Controller is: ", controller);
+    let activeBarItem;
 
-    const activeBarItem = this.daybookDisplayService.activeGridBarItem;
     if (activeBarItem) {
       const foundItem = this.gridItems.find((gridItem) => {
-        const activeBarItem = this.daybookDisplayService.activeGridBarItem;
         const isSame = gridItem.startTime.isSame(activeBarItem.startTime) && gridItem.endTime.isSame(activeBarItem.endTime);
         const endsAfterStart = activeBarItem.startTime.isSame(gridItem.startTime) && activeBarItem.endTime.isAfter(gridItem.startTime);
         const isBeforeEnd = activeBarItem.startTime.isAfter(gridItem.startTime) && activeBarItem.endTime.isBefore(gridItem.endTime);

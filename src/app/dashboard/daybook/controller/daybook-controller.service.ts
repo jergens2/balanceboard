@@ -7,6 +7,7 @@ import { AuthStatus } from '../../../authentication/auth-status.class';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 import { ActivityCategoryDefinitionService } from '../../activities/api/activity-category-definition.service';
 import { DaybookController } from './daybook-controller.class';
+import { DaybookDisplayUpdateType, DaybookDisplayUpdate } from './items/daybook-display-update.interface';
 
 
 
@@ -30,6 +31,8 @@ export class DaybookControllerService implements ServiceAuthenticates {
   private _todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
   private _activeDayController$: BehaviorSubject<DaybookController>;
 
+  private _displayUpdated$: Subject<DaybookDisplayUpdate> = new Subject();
+
   private _clockSubscriptions: Subscription[] = [];
   private _daybookItemSubs: Subscription[] = [];
 
@@ -44,6 +47,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
   public get activeDayController$(): Observable<DaybookController> { return this._activeDayController$.asObservable(); }
   public get activeDayController(): DaybookController { return this._activeDayController$.getValue(); }
 
+  public get displayUpdated$(): Observable<DaybookDisplayUpdate> { return this._displayUpdated$.asObservable(); }
   public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock) }
 
 
@@ -71,7 +75,6 @@ export class DaybookControllerService implements ServiceAuthenticates {
 
   private _initiate() {
     this._startClock();
-    this._updateTodayFromDatabase();
   }
 
   private _startClock() {
@@ -105,23 +108,23 @@ export class DaybookControllerService implements ServiceAuthenticates {
     const minuteSub = timer(msToNextMinute, 60000).subscribe((minute) => {
 
       this._clock = moment();
-      this._updateTodayFromDatabase();
+      this._updateTodayFromDatabase(DaybookDisplayUpdateType.CLOCK);
     });
     this._clockSubscriptions = [clockSub, minuteSub];
+    this._updateTodayFromDatabase(DaybookDisplayUpdateType.DEFAULT);
   }
 
 
-  private _updateTodayFromDatabase(crossedMidnight?: boolean) {
+  private _updateTodayFromDatabase(updateType: DaybookDisplayUpdateType) {
     // console.log(this.clock.format('YYYY-MM-DD') + " :getting daybook item for date");
     this.daybookHttpRequestService.getDaybookDayItemByDate$(this.clock.format('YYYY-MM-DD'))
       .subscribe((items: DaybookDayItem[]) => {
-        this._setTodayItem(items, crossedMidnight);
+        this._setTodayItem(items, updateType);
         this._loginComplete$.next(true);
       });
   }
 
-  private _setTodayItem(items: DaybookDayItem[],
-    crossedMidnight?: boolean) {
+  private _setTodayItem(items: DaybookDayItem[], updateType: DaybookDisplayUpdateType) {
 
     const startTime = items[0].startOfThisDay;
     const endTime = items[items.length - 1].endOfThisDay;
@@ -133,43 +136,42 @@ export class DaybookControllerService implements ServiceAuthenticates {
       this._todayController$.next(todayController);
     }
 
+
     if (!this._activeDayController$) {
-      this._updateActiveDay(todayController);
+      this._updateActiveDay(updateType, todayController);
     } else if (this.activeDayController.dateYYYYMMDD === todayController.dateYYYYMMDD) {
-      this._updateActiveDay(todayController);
-    } else if (crossedMidnight === true) {
-      if (this.activeDayController.dateYYYYMMDD === moment(todayController.dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD')) {
-        console.log("Crossed midnight, active day was "
-          + this.activeDayController.dateYYYYMMDD + " , updating to today: " + todayController.dateYYYYMMDD);
-        this._updateActiveDay(todayController);
-      }
+      this._updateActiveDay(updateType, todayController);
     }
+
+
     this._updateChangeSubscriptions();
   }
 
-  private _updateTodayItem(todayItem: DaybookController) {
+  private _updateTodayItem(updateType: DaybookDisplayUpdateType, todayItem: DaybookController) {
     // it is implied that the todayContoller has already been established.
     this._todayController$.next(todayItem);
     if (this.activeDayController.dateYYYYMMDD === todayItem.dateYYYYMMDD) {
-      this._updateActiveDay(todayItem);
+      this._updateActiveDay(updateType, todayItem);
     }
     this._updateChangeSubscriptions();
   }
 
   private _crossMidnight() {
-    console.log('Crossing midnight')
+    console.log('Crossing midnight.  method disabled.');
     this._todayYYYYMMDD = this.clock.format('YYYY-MM-DD');
-    this._updateTodayFromDatabase(true);
   }
 
 
-  private _updateActiveDay(newController: DaybookController) {
+  private _updateActiveDay(updateType: DaybookDisplayUpdateType, newController: DaybookController) {
     if (!this._activeDayController$) {
       this._activeDayController$ = new BehaviorSubject(newController);
     } else {
       this._activeDayController$.next(newController);
     }
-
+    this._displayUpdated$.next({
+      type: updateType,
+      controller: newController,
+    });
     this._updateChangeSubscriptions();
   }
 
@@ -198,9 +200,9 @@ export class DaybookControllerService implements ServiceAuthenticates {
     // console.log('Daybook service: changing the active date to: ' + changedDayYYYYMMDD);
     if (changedDayYYYYMMDD === this.todayYYYYMMDD) {
       // console.log("   active day was today, so updating TODAY item")
-      this._updateTodayFromDatabase();
+      this._updateTodayFromDatabase(DaybookDisplayUpdateType.CALENDAR);
       // console.log("  today item was updated, now setting active day item");
-      this._updateActiveDay(this.todayController);
+      this._updateActiveDay(DaybookDisplayUpdateType.CALENDAR, this.todayController);
     } else {
       // console.log("   active day was NOT today so updating active day only")
       this.getActiveDateFromDatabase(changedDayYYYYMMDD);
@@ -213,7 +215,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
         const startTime = moment(items[0].startOfThisDay);
         const endTime = moment(items[items.length - 1].endOfThisDay);
         const newController = new DaybookController(dateYYYYMMDD, items, startTime, endTime, this.clock);
-        this._updateActiveDay(newController);
+        this._updateActiveDay(DaybookDisplayUpdateType.CALENDAR, newController);
       });
   }
 
@@ -256,9 +258,9 @@ export class DaybookControllerService implements ServiceAuthenticates {
         // console.log("Reloading with reload item: ", reloadItem)
         controller.reload(reloadItem);
         if (controller.isToday) {
-          this._updateTodayItem(controller);
+          this._updateTodayItem(DaybookDisplayUpdateType.DATABASE_ACTION, controller);
         } else {
-          this._updateActiveDay(controller);
+          this._updateActiveDay(DaybookDisplayUpdateType.DATABASE_ACTION, controller);
         }
       });
   }

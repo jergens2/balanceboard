@@ -6,9 +6,11 @@ import * as moment from 'moment';
 import { LoggingService } from '../../../../../shared/logging/logging.service';
 import { TLEFFormCase } from './tlef-form-case.enum';
 import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
-import { TimelogEntryFormService } from './timelog-entry-form.service';
+
 import { DaybookDisplayService } from '../../../daybook-display.service';
 import { Subscription } from 'rxjs';
+import { TLEFController } from './TLEF-controller.class';
+import { DaybookDisplayUpdateType } from '../../../controller/items/daybook-display-update.interface';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -25,47 +27,47 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     private toolsService: ToolboxService,
     private daybookService: DaybookDisplayService,
     private loggingService: LoggingService,
-    private tlefService: TimelogEntryFormService,
   ) { }
 
   private _formCase: TLEFFormCase;
   private _entryItem: TimelogEntryItem;
-
   private _changesMade: boolean = false;
 
   private _dbSubs: Subscription[] = [];
 
+  public get controller(): TLEFController { return this.daybookService.tlefController; }
+
   ngOnInit() {
-    // this._entryItem = this.timelogEntryFormService.openedTimelogEntry;
-    // this._formCase = this.timelogEntryFormService.formCase;
-    // this.timelogEntryFormService.formChanged$.subscribe((change) => {
-    //   this._entryItem = this.timelogEntryFormService.openedTimelogEntry;
-    //   this._formCase = this.timelogEntryFormService.formCase;
-    // });
-    // console.log("TLEF case is: " + this.formCase)
-    this._update();
+    console.log("Opening component")
+    this._reload();
     this._dbSubs = [
-      this.daybookService.displayUpdated$.subscribe(change => this._update()),
-      this.daybookService.activeGridBarItem$.subscribe(change => this._update())
+      this.daybookService.displayUpdated$.subscribe(change => {
+        if (change.type !== DaybookDisplayUpdateType.CLOCK) {
+          this._reload()
+        }
+      }),
+      this.controller.changes$.subscribe(s => this._reload())
     ]
   }
 
-  private _update() {
-    this._entryItem = this.tlefService.openedTimelogEntry;
+  private _reload() {
+    this._entryItem = Object.assign({}, this.controller.initialTimelogEntry);
+    console.log("Entry item is DUN.", this._entryItem);
+    console.log(this._entryItem.startTime.format('YYYY-MM-DD hh:mm a'))
   }
 
-  ngOnDestroy(){ 
+  ngOnDestroy() {
     this._dbSubs.forEach(sub => sub.unsubscribe());
     this._dbSubs = [];
   }
 
-  public get entryItem(): TimelogEntryItem { return this.tlefService.openedTimelogEntry; }
-  public get formCase(): TLEFFormCase { return this.tlefService.formCase; }
+  public get entryItem(): TimelogEntryItem { return this._entryItem; }
+  public get formCase(): TLEFFormCase { return this.controller.formCase; }
 
   public get durationString(): string { return this.entryItem.durationString; }
 
 
-  
+
 
 
 

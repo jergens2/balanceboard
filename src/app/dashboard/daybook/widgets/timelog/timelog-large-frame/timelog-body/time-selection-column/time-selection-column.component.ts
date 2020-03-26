@@ -5,7 +5,6 @@ import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
-import { TimelogEntryFormService } from '../../../timelog-entry-form/timelog-entry-form.service';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 @Component({
@@ -15,7 +14,7 @@ import { DaybookDisplayService } from '../../../../../daybook-display.service';
 })
 export class TimeSelectionColumnComponent implements OnInit {
 
-  constructor(private daybookDisplayService: DaybookDisplayService, private tlefService: TimelogEntryFormService) { }
+  constructor(private daybookDisplayService: DaybookDisplayService) { }
 
   private _rows: TimeSelectionRow[] = [];
   private _mouseIsInComponent: boolean;
@@ -122,7 +121,7 @@ export class TimeSelectionColumnComponent implements OnInit {
       const dragTimes = this._buildSection();
       const startTime = dragTimes.startTime;
       const endTime = dragTimes.endTime;
-      this._saveNewTimelogEntry(startTime, endTime);
+      this._createNewTimelogEntry(startTime, endTime);
     } else {
       if (stopRow.startTime.isSame(this.startRow.startTime)) {
         this._saveNewTimeDelineator(this.startRow);
@@ -371,9 +370,9 @@ export class TimeSelectionColumnComponent implements OnInit {
     this._buildRows(this._calculateDivisor());
   }
 
-  private _saveNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
+  private _createNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
     const saveNewTLE = new TimelogEntryItem(startTime, endTime);
-    this.tlefService.openTimelogEntry(saveNewTLE);
+    this.daybookDisplayService.drawNewTimelogEntry(saveNewTLE);
     // console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
 
     this._reset();

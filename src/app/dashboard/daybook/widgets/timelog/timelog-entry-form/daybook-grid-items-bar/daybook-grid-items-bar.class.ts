@@ -5,18 +5,19 @@ import * as moment from 'moment';
 import { DaybookAvailabilityType } from "../../../../controller/items/daybook-availability-type.enum";
 import { DaybookController } from "../../../../controller/daybook-controller.class";
 import { TimelogEntryItem } from "../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class";
-import { TimelogEntryFormService } from "../timelog-entry-form.service";
+import { ToolboxService } from "../../../../../../toolbox-menu/toolbox.service";
+
 
 export class DisplayGridItemsBar {
 
     private _timeDelineators: TimelogDelineator[] = [];
     private _activeDayController: DaybookController;
     private _clock: moment.Moment;
-    private _tlefService: TimelogEntryFormService;
+    private toolboxService: ToolboxService;
 
     constructor(timeDelineators: TimelogDelineator[], activeDayController: DaybookController,
-        clock: moment.Moment, tlefService: TimelogEntryFormService, activeItem?: DisplayGridBarItem) {
-        this._tlefService = tlefService;
+        clock: moment.Moment, toolboxService: ToolboxService, activeItem?: DisplayGridBarItem) {
+        this.toolboxService = toolboxService;
         this._clock = clock;
         this._timeDelineators = timeDelineators;
         this._activeDayController = activeDayController;
@@ -77,9 +78,9 @@ export class DisplayGridItemsBar {
 
     public openDisplayGridItem(item: DisplayGridBarItem) {
         if (item.availabilityType === DaybookAvailabilityType.SLEEP) {
-            this._tlefService.openSleepEntry(item.sleepEntry);
+            this.toolboxService.openSleepEntryForm();
         } else {
-            this._tlefService.openTimelogEntry(item.timelogEntry);
+            this.toolboxService.openTimelogEntryForm();
         }
         this.gridBarItems.forEach((item) => {
             item.isActive = false;
@@ -160,15 +161,15 @@ export class DisplayGridItemsBar {
                     let endTime: moment.Moment = this._timeDelineators[i].time;
                     let availability: DaybookAvailabilityType = this._activeDayController.getDaybookAvailability(currentTime, endTime);
                     let newItem = new DisplayGridBarItem(currentTime, endTime, availability);
-                    if (availability === DaybookAvailabilityType.SLEEP) {
-                        newItem.sleepEntry = this._activeDayController.getSleepItem(currentTime, endTime);
-                    } else if (availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
-                        newItem.timelogEntry = this._activeDayController.timelogEntryItems.find((tle) => {
-                            return tle.startTime.isSame(currentTime) && tle.endTime.isSame(endTime);
-                        });
-                    } else if (availability === DaybookAvailabilityType.AVAILABLE) {
-                        newItem.timelogEntry = this._findAvailableEntry(currentTime, endTime);
-                    }
+                    // if (availability === DaybookAvailabilityType.SLEEP) {
+                    //     newItem.sleepEntry = this._activeDayController.getSleepItem(currentTime, endTime);
+                    // } else if (availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
+                    //     newItem.timelogEntry = this._activeDayController.timelogEntryItems.find((tle) => {
+                    //         return tle.startTime.isSame(currentTime) && tle.endTime.isSame(endTime);
+                    //     });
+                    // } else if (availability === DaybookAvailabilityType.AVAILABLE) {
+                    //     newItem.timelogEntry = this._findAvailableEntry(currentTime, endTime);
+                    // }
                     gridBarItems.push(newItem);
                     currentTime = moment(endTime);
                 }

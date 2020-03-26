@@ -34,9 +34,6 @@ export class DisplayGridBarItem {
 
     public index = -1;
 
-    public timelogEntry: TimelogEntryItem;
-    public sleepEntry: SleepEntryItem;
-
     public get isSleepItem(): boolean { 
         return this._daybookAvailabilty === DaybookAvailabilityType.SLEEP;
     }
@@ -45,6 +42,10 @@ export class DisplayGridBarItem {
     }
     public get isAvailable(): boolean { 
         return this._daybookAvailabilty === DaybookAvailabilityType.AVAILABLE;
+    }
+
+    public buildTLE(): TimelogEntryItem{
+        return new TimelogEntryItem(this.startTime, this.endTime);
     }
 
 

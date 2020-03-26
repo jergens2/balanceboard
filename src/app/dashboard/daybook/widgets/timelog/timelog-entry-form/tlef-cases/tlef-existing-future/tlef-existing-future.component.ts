@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
-import { TimelogEntryFormService } from '../../timelog-entry-form.service';
+import { TLEFController } from '../../TLEF-controller.class';
 
 @Component({
   selector: 'app-tlef-existing-future',
@@ -11,9 +11,13 @@ import { TimelogEntryFormService } from '../../timelog-entry-form.service';
 })
 export class TlefExistingFutureComponent implements OnInit {
 
-  public get entryItem(): TimelogEntryItem { return this.tlefService.openedTimelogEntry; }
+  private _controller: TLEFController;
+  @Input() public set controller(controller: TLEFController) { this._controller = controller; }
+  public get controller(): TLEFController { return this._controller; }
 
-  constructor(private tlefService: TimelogEntryFormService, private daybookDisplayService: DaybookDisplayService) { }
+  public get entryItem(): TimelogEntryItem { return this._controller.initialTimelogEntry; }
+
+  constructor( private daybookDisplayService: DaybookDisplayService) { }
 
   private _isEditing: boolean = false;
   public get isEditing(): boolean { return this._isEditing; }

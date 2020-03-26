@@ -1,17 +1,22 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
-import { TimelogEntryFormService } from '../../timelog-entry-form.service';
+import { TLEFController } from '../../TLEF-controller.class';
 
 @Component({
   selector: 'app-tlef-new-or-modify',
   templateUrl: './tlef-new-or-modify.component.html',
   styleUrls: ['./tlef-new-or-modify.component.css']
 })
-export class TlefNewOrModifyComponent implements OnInit {
+export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
 
-  constructor(private tlefService: TimelogEntryFormService) { }
+  constructor() { }
+
+  private _controller: TLEFController;
+  @Input() public set controller(controller: TLEFController) { this._controller = controller; }
+  public get controller(): TLEFController { return this._controller; }
+
 
   private _initialActivities: TimelogEntryActivity[] = [];
   private _entryItem: TimelogEntryItem;
@@ -23,27 +28,23 @@ export class TlefNewOrModifyComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("ONINIT")
     // console.log("from service: " )
     // console.log("thing 1: " , this.tlefService.openedTimelogEntry)
     // console.log("thing 2: " , this.tlefService.openedTimelogEntry.timelogEntryActivities);
-   this._setEntryItem();
-    this.tlefService.formChanged$.subscribe((formChange)=>{
-      if(this.tlefService.toolIsOpen){
-        this._setEntryItem();
-      }else{
-        this._entryItem = null;
-      }
-      
-    }); 
-    
+   this._setEntryItem();    
+  }
+  ngOnDestroy(){
+    console.log("DESTROY")
+    this._entryItem = null;
+    this._initialActivities = [];
   }
 
   private _setEntryItem(){
-    this._entryItem = this.tlefService.openedTimelogEntry;
+    this._entryItem = Object.assign({}, this._controller.initialTimelogEntry);
     this._initialActivities = [];
     // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
     if(this._entryItem){
-      console.log("Entry item is " , this._entryItem.timelogEntryActivities.length)
       if(this._entryItem.timelogEntryActivities){
         this._entryItem.timelogEntryActivities.forEach((item)=>{
           this._initialActivities.push(item);
@@ -55,7 +56,14 @@ export class TlefNewOrModifyComponent implements OnInit {
   }
 
   public onActivitiesChanged(activities: TimelogEntryActivity[]){
-    this._entryItem.timelogEntryActivities = activities;
+    if(this._initialActivities === activities){
+
+    }else{
+      this._entryItem.timelogEntryActivities = activities;
+      this._controller.makeChanges();
+    }
+    
+    console.log("Update some changes here:  not implemented");
   }
 
 }

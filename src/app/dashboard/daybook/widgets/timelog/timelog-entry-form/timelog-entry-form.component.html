@@ -15,20 +15,21 @@
 
 
     <div class="tlef-form-body">
-        <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'"></app-tlef-new-current>
-        <app-tlef-new-current-future *ngIf="formCase === 'NEW_CURRENT_FUTURE'"></app-tlef-new-current-future>
-        <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'"></app-tlef-new-future>
-        <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'"></app-tlef-new-previous>
-        <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'">
+        <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [controller]="controller"></app-tlef-new-current>
+        <app-tlef-new-current-future *ngIf="formCase === 'NEW_CURRENT_FUTURE'" [controller]="controller">
+        </app-tlef-new-current-future>
+        <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'" [controller]="controller"></app-tlef-new-future>
+        <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'" [controller]="controller"></app-tlef-new-previous>
+        <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'" [controller]="controller">
         </app-tlef-existing-future>
-        <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'">
+        <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'" [controller]="controller">
         </app-tlef-existing-previous>
-        <app-tlef-existing-current *ngIf="formCase === 'EXISTING_CURRENT'">
+        <app-tlef-existing-current *ngIf="formCase === 'EXISTING_CURRENT'" [controller]="controller">
         </app-tlef-existing-current>
     </div>
 
 
-    <app-tlef-footer class="tlef-form-footer"></app-tlef-footer>
+    <app-tlef-footer class="tlef-form-footer" [controller]="controller"></app-tlef-footer>
 
 </div>
 

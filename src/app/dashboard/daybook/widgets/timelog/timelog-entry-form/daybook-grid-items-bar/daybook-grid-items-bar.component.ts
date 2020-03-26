@@ -6,7 +6,6 @@ import { DaybookAvailabilityType } from '../../../../controller/items/daybook-av
 import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
-import { TimelogEntryFormService } from '../timelog-entry-form.service';
 import { DaybookDisplayService } from '../../../../../daybook/daybook-display.service';
 
 @Component({
@@ -23,7 +22,7 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
 
   private _items: DisplayGridBarItem[] = [];
 
-  public get items(): DisplayGridBarItem[] { return this.daybookDisplayService.gridBarItems; }
+  public get items(): DisplayGridBarItem[] { return this.daybookDisplayService.tlefController.gridBarItems; }
 
   public get startTime(): moment.Moment{ return this.daybookDisplayService.displayStartTime; }
   public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
@@ -51,15 +50,15 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
   }
 
   public onClickItem(item: DisplayGridBarItem) {
-    this.daybookDisplayService.onClickGridItem(item);
+    this.daybookDisplayService.tlefController.onClickGridBarItem(item);
 
   }
 
   public onClickGoLeft(){
-    this.daybookDisplayService.gridBarGoLeft();
+    this.daybookDisplayService.tlefController.goLeft();
   }
   public onClickGoRight(){
-    this.daybookDisplayService.gridBarGoRight();
+    this.daybookDisplayService.tlefController.goRight();
   }
 
 
