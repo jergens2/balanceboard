@@ -25,32 +25,33 @@ export class TimelogDelineator {
         this._setIcon();
     }
 
-    
-    
+
+
     private _time: moment.Moment;
     private _icon: IconDefinition;
     private _delineatorType: TimelogDelineatorType;
-    
+
     public ngStyle: any = {};
     public timelogEntryStart: TimelogEntryItem;
     public timelogEntryEnd: TimelogEntryItem;
-    
+
     public isVisible = false;
     public label = '';
     public nextDelineator: TimelogDelineator;
     public previousDelineator: TimelogDelineator;
 
     public get time(): moment.Moment { return this._time; }
+    public set time(time: moment.Moment) { this._time = moment(time); }
     public get icon(): IconDefinition { return this._icon; }
     public get delineatorType(): TimelogDelineatorType { return this._delineatorType; };
 
     public get isSleepDelineator(): boolean { return this._delineatorType === TimelogDelineatorType.WAKEUP_TIME || this._delineatorType === TimelogDelineatorType.FALLASLEEP_TIME; }
 
     public get isSaved(): boolean { return this._delineatorType === TimelogDelineatorType.SAVED_DELINEATOR; }
-    private _setIcon(){
+    private _setIcon() {
         // todo:
         // if wakeupTime: sun, nowtime: clock, fallAsleeptime: moon.
-        
+
     }
 }
 

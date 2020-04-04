@@ -23,7 +23,7 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
 
   public get timelogEntry(): TimelogEntryItem { return this._entryItem; }
 
-  public get initialActivities(): TimelogEntryActivity[] { 
+  public get initialActivities(): TimelogEntryActivity[] {
     return this._initialActivities;
   }
 
@@ -32,21 +32,21 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
     // console.log("from service: " )
     // console.log("thing 1: " , this.tlefService.openedTimelogEntry)
     // console.log("thing 2: " , this.tlefService.openedTimelogEntry.timelogEntryActivities);
-   this._setEntryItem();    
+    this._setEntryItem();
   }
-  ngOnDestroy(){
+  ngOnDestroy() {
     console.log("DESTROY")
     this._entryItem = null;
     this._initialActivities = [];
   }
 
-  private _setEntryItem(){
-    this._entryItem = Object.assign({}, this._controller.initialTimelogEntry);
+  private _setEntryItem() {
+    this._entryItem = Object.assign({}, this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
     this._initialActivities = [];
     // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
-    if(this._entryItem){
-      if(this._entryItem.timelogEntryActivities){
-        this._entryItem.timelogEntryActivities.forEach((item)=>{
+    if (this._entryItem) {
+      if (this._entryItem.timelogEntryActivities) {
+        this._entryItem.timelogEntryActivities.forEach((item) => {
           this._initialActivities.push(item);
         });
       }
@@ -55,14 +55,14 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
     // console.log("initial activities: " + this._initialActivities.length , this._initialActivities)
   }
 
-  public onActivitiesChanged(activities: TimelogEntryActivity[]){
-    if(this._initialActivities === activities){
+  public onActivitiesChanged(activities: TimelogEntryActivity[]) {
+    if (this._initialActivities === activities) {
 
-    }else{
+    } else {
       this._entryItem.timelogEntryActivities = activities;
       this._controller.makeChanges();
     }
-    
+
     console.log("Update some changes here:  not implemented");
   }
 

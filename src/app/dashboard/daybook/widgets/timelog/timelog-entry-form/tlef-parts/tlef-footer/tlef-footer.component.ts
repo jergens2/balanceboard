@@ -20,7 +20,7 @@ export class TlefFooterComponent implements OnInit {
   @Input() public set controller(controller: TLEFController) { this._controller = controller; }
   public get controller(): TLEFController { return this._controller; }
 
-  public get entryItem(): TimelogEntryItem { return this._controller.initialTimelogEntry; }
+  public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.getInitialTLEValue(); }
   // public get showDeleteButton(): boolean { return this._controller.showDeleteButton; }
   public get changesMade(): boolean { return this._controller.changesMade; }
   // public get isNew(): boolean { return !this._controller.isNew; }

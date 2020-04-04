@@ -5,8 +5,8 @@
             <app-daybook-grid-items-bar></app-daybook-grid-items-bar>
         </div>
         <div>
-            <span class="entry-time">{{ entryItem.startTime.format('h:mm a') }}</span> -
-            <span class="entry-time">{{ entryItem.endTime.format('h:mm a') }}</span>
+            <span class="entry-time">{{ entryStartTime }}</span> -
+            <span class="entry-time">{{ entryEndTime  }}</span>
         </div>
         <div style="font-size:0.75em; color:gray; font-weight: bold; margin-bottom: 10px;">
             {{ durationString }}

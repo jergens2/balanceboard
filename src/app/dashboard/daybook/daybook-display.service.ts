@@ -103,19 +103,15 @@ export class DaybookDisplayService {
   private _updateDisplay(update: DaybookDisplayUpdate) {
     console.log("Daybook Display update: ", update.type);
     this._buildZoomItems();
-    this._loadTimelogDelineators();
+    this._updateTimelogDelineators();
     let newGrid: TimelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._timeDelineators, this.activeDayController);
     this._timelogDisplayGrid = newGrid;
-    if(update.type !== DaybookDisplayUpdateType.CLOCK){
+
+    if (!this._tlefController) {
       this._tlefController = new TLEFController(this._timeDelineators, this.activeDayController, this.clock, this.toolBoxService);
-    }else{
-      if(!this._tlefController){
-        this._tlefController = new TLEFController(this._timeDelineators, this.activeDayController, this.clock, this.toolBoxService);
-      }else{
-        this._tlefController.updateClock(this.clock);
-      }
+    } else {
+      this._tlefController.update(this._timeDelineators, this.activeDayController, this.clock, update);
     }
-    
     this._displayUpdated$.next(update);
   }
 
@@ -153,7 +149,7 @@ export class DaybookDisplayService {
     // console.log("Updating times: displayEndTime = " + this._displayEndTime.format('YYYY-MM-DD hh:mm a'))
   }
 
-  private _loadTimelogDelineators() {
+  private _updateTimelogDelineators() {
     const timelogDelineators: TimelogDelineator[] = [];
     const frameStartDelineator = new TimelogDelineator(this.displayStartTime, TimelogDelineatorType.FRAME_START);
     const fameEndDelineator = new TimelogDelineator(this.displayEndTime, TimelogDelineatorType.FRAME_END);

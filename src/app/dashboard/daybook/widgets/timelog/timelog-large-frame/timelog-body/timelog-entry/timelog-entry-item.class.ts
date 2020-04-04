@@ -90,4 +90,10 @@ export class TimelogEntryItem {
         return returnItem;
     }
 
+    public logToConsole(){
+        console.log("Timelog Entry Item: ")
+        console.log("   Start:" + this.startTime.format('YYYY-MM-DD hh:mm a'))
+        console.log("     End:" + this.endTime.format('YYYY-MM-DD hh:mm a'))
+    }
+
 }

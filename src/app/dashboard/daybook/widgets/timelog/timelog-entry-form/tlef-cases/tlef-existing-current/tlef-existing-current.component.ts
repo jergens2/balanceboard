@@ -30,7 +30,7 @@ export class TlefExistingCurrentComponent implements OnInit {
   @Input() public set controller(controller: TLEFController) { this._controller = controller; }
   public get controller(): TLEFController { return this._controller; }
 
-  public get entryItem(): TimelogEntryItem { return this._controller.initialTimelogEntry; }
+  public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.getInitialTLEValue(); }
 
   public get clock(): string{
     return this._clock.format('h:mm:ss a');
