@@ -50,7 +50,11 @@ export class AvailableTimelogItemComponent implements OnInit {
         this.gridItem.stopCreating();
       }
     });
-
+    this.daybookService.tlefController.formIsOpen$.subscribe(isOpen => {
+      if(isOpen === false){
+        this._stopDrawing();
+      }
+    })
 
   }
 
@@ -114,6 +118,7 @@ export class AvailableTimelogItemComponent implements OnInit {
   }
 
   private _stopDrawing() {
+    this._drawTLE = null;
     this._rootNgStyle = null;
     this._drawTLENgStyle = null;
   }

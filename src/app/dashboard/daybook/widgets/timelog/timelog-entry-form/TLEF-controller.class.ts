@@ -23,7 +23,7 @@ export class TLEFController {
     private _changesMade$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
 
-    private _tlefIsOpen: boolean = false;
+    private _tlefIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     private _tlefItems: TLEFControllerItem[] = [];
 
     private _timeDelineators: TimelogDelineator[] = [];
@@ -45,7 +45,8 @@ export class TLEFController {
 
     }
 
-    public get formIsOpen(): boolean { return this._tlefIsOpen; }
+    public get formIsOpen(): boolean { return this._tlefIsOpen$.getValue(); }
+    public get formIsOpen$(): Observable<boolean> { return this._tlefIsOpen$.asObservable(); }
 
     public get changesMade(): boolean { return this._changesMade$.getValue(); }
     // public get showDeleteButton(): boolean { return this._initialValue.isSavedEntry; }
@@ -73,12 +74,12 @@ export class TLEFController {
 
         if (update.type === DaybookDisplayUpdateType.CLOCK) {
             if (this.formIsOpen) {
-               
+
             } else {
-                
+
             }
         } else {
-            
+
         }
     }
 
@@ -103,15 +104,15 @@ export class TLEFController {
     public drawNewTimelogEntry(openTLE: TimelogEntryItem) {
 
         console.log("DRAWING TLE:", openTLE);
-        openTLE.logToConsole();
+        // openTLE.logToConsole();
         const formCase = this._determineCase(openTLE);
-        this._currentlyOpenTLEFItem = new TLEFControllerItem(openTLE.startTime, openTLE.endTime, 
-            DaybookAvailabilityType.AVAILABLE, formCase, openTLE, null, 
+        this._currentlyOpenTLEFItem = new TLEFControllerItem(openTLE.startTime, openTLE.endTime,
+            DaybookAvailabilityType.AVAILABLE, formCase, openTLE, null,
             new TimelogDelineator(openTLE.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START),
             new TimelogDelineator(openTLE.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END));
 
         const item = this._currentlyOpenTLEFItem.getInitialTLEValue();
-        item.logToConsole();
+        // item.logToConsole();
         this.toolboxService.openTool(ToolType.TIMELOG_ENTRY);
     }
 
@@ -150,7 +151,7 @@ export class TLEFController {
          * the TimelogDisplayGridItems should always be up to date / synched with the clock.
          */
 
-        
+
 
         console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
         if (currentTimePosition === DaybookTimePosition.NORMAL) {
@@ -196,7 +197,7 @@ export class TLEFController {
             }
         } else {
 
-                //to do:  more stuff here.
+            //to do:  more stuff here.
 
             console.log("TIME POSITION WAS NOT NORMAL, so therefore opening the Daybook form by the toolservice.")
             this.toolboxService.openNewDayForm();
@@ -204,6 +205,7 @@ export class TLEFController {
     }
 
     private _openTLEFItem(item: TLEFControllerItem) {
+        this._currentlyOpenTLEFItem = item; 
         if (item.formCase === TLEFFormCase.SLEEP) {
             this.toolboxService.openSleepEntryForm();
         } else {
@@ -219,30 +221,17 @@ export class TLEFController {
 
 
     private _buildItems() {
-
         let items: TLEFControllerItem[] = [];
-
         if (this._timeDelineators.length > 0) {
             let currentTime: moment.Moment = this._timeDelineators[0].time;
             for (let i = 1; i < this._timeDelineators.length; i++) {
                 const startDelineator: TimelogDelineator = this._timeDelineators[i - 1];
                 const endDelineator: TimelogDelineator = this._timeDelineators[i];
-                let skip: boolean = false;
-                if (endDelineator.delineatorType === TimelogDelineatorType.NOW) {
-
-                    if (i > 0 && i < this._timeDelineators.length - 1) {
-                        const prev = startDelineator.delineatorType;
-                        const next = this._timeDelineators[i + 1].delineatorType;
-                        const tleStart = TimelogDelineatorType.TIMELOG_ENTRY_START;
-                        const tleEnd = TimelogDelineatorType.TIMELOG_ENTRY_END;
-                        const faTime = TimelogDelineatorType.FALLASLEEP_TIME;
-                        const wuTime = TimelogDelineatorType.WAKEUP_TIME;
-                        if (prev === tleStart && (next === tleStart || next === tleEnd || next === faTime)) {
-                            skip = true;
-                        }
-                    }
+                let intersects: boolean = false;
+                if (i < this._timeDelineators.length - 1) {
+                    intersects = this._nowLineIntersects(startDelineator, endDelineator, this._timeDelineators[i + 1].delineatorType);
                 }
-                if (!skip) {
+                if (!intersects) {
                     let endTime: moment.Moment = endDelineator.time;
                     const availability: DaybookAvailabilityType = this._activeDayController.getDaybookAvailability(currentTime, endTime);
                     let timelogEntry: TimelogEntryItem = new TimelogEntryItem(currentTime, endTime);
@@ -257,21 +246,31 @@ export class TLEFController {
                     items.push(newItem);
                     currentTime = moment(endDelineator.time);
                 }
-
             }
         } else {
             console.log("Error with timeDelineators.");
         }
-
         this._tlefItems = items;
-        // this._gridBarItems.forEach(item => item.index = this._gridBarItems.indexOf(item));
-
-        // if (currentActiveIndex > -1 && currentActiveIndex < this._gridBarItems.length) {
-        //     this.openDisplayGridItem(this._gridBarItems[currentActiveIndex]);
-        // }
     }
 
+    /**
+     * Checks to see if the NOW line is between the start and end of an existing TLE.
+     */
+    private _nowLineIntersects(startDelineator: TimelogDelineator, endDelineator: TimelogDelineator, nextDelineatorType: TimelogDelineatorType): boolean {
+        let intersects: boolean = false;
+        if (endDelineator.delineatorType === TimelogDelineatorType.NOW) {
 
+            const prev = startDelineator.delineatorType;
+            const tleStart = TimelogDelineatorType.TIMELOG_ENTRY_START;
+            const tleEnd = TimelogDelineatorType.TIMELOG_ENTRY_END;
+            const faTime = TimelogDelineatorType.FALLASLEEP_TIME;
+            const wuTime = TimelogDelineatorType.WAKEUP_TIME;
+            if (prev === tleStart && (nextDelineatorType === tleStart || nextDelineatorType === tleEnd || nextDelineatorType === faTime)) {
+                intersects = true;
+            }
+        }
+        return intersects;
+    }
 
 
     private _determineCase(entry: TimelogEntryItem): TLEFFormCase {
@@ -303,7 +302,7 @@ export class TLEFController {
         this._changesMade$.next(false);
         this._currentlyOpenTLEFItem = null;
         // this._formCase = null;
-        this._tlefIsOpen = false;
+        this._tlefIsOpen$.next(false);
     }
 
     /**

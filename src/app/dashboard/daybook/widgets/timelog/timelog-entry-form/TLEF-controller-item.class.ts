@@ -43,8 +43,6 @@ export class TLEFControllerItem {
 
         this._initialSleepValue = sleepEntry;
         this._initialTLEValue = timelogEntry;
-
-        this._initialTLEValue.logToConsole();
     }
 
     public get gridBarItem(): DisplayGridBarItem { return this._gridBarItem; }
