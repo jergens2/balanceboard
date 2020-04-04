@@ -65,21 +65,23 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     console.log("Opening component")
     this._reload();
     this._dbSubs = [
-      this.daybookService.displayUpdated$.subscribe(change => {
-        // if (change.type !== DaybookDisplayUpdateType.CLOCK) {
-          this._reload();
-        // }
-      }),
-      this.controller.changes$.subscribe(s => this._reload())
+      // this.daybookService.displayUpdated$.subscribe(change => {
+      //   // if (change.type !== DaybookDisplayUpdateType.CLOCK) {
+      //     this._reload();
+      //   // }
+      // }),
+      this.controller.currentlyOpenTLEFItem$.subscribe(s => this._reload())
     ];
   }
 
   private _reload() {
-    this._entryItem = this.controller.currentlyOpenTLEFItem.getInitialTLEValue();
-    this._entryItem.logToConsole();
-    this._formCase = this.controller.currentlyOpenTLEFItem.formCase;
-    console.log("Entry item is DUN.", this._entryItem);
-    console.log(this._entryItem.startTime.format('YYYY-MM-DD hh:mm a'))
+    if(this.controller.currentlyOpenTLEFItem){
+      this._entryItem = this.controller.currentlyOpenTLEFItem.getInitialTLEValue();
+      this._entryItem.logToConsole();
+      this._formCase = this.controller.currentlyOpenTLEFItem.formCase;
+    }else{
+      this._entryItem = null;
+    }
   }
 
   ngOnDestroy() {

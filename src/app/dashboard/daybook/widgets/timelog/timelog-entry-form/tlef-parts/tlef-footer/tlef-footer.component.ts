@@ -25,7 +25,7 @@ export class TlefFooterComponent implements OnInit {
   public get changesMade(): boolean { return this._controller.changesMade; }
   // public get isNew(): boolean { return !this._controller.isNew; }
 
-
+  public get isNew(): boolean { return !this.entryItem.isSavedEntry; }
 
   ngOnInit() {
     console.log("footer")

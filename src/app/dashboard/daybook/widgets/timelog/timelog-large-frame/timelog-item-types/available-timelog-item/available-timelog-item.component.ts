@@ -50,8 +50,8 @@ export class AvailableTimelogItemComponent implements OnInit {
         this.gridItem.stopCreating();
       }
     });
-    this.daybookService.tlefController.formIsOpen$.subscribe(isOpen => {
-      if(isOpen === false){
+    this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe(isOpen => {
+      if(!isOpen){
         this._stopDrawing();
       }
     })

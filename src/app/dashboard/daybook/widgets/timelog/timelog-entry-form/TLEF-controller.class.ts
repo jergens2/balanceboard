@@ -23,12 +23,12 @@ export class TLEFController {
     private _changesMade$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
 
-    private _tlefIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
     private _tlefItems: TLEFControllerItem[] = [];
 
     private _timeDelineators: TimelogDelineator[] = [];
     private _activeDayController: DaybookController;
-    private _currentlyOpenTLEFItem: TLEFControllerItem;
+    private _currentlyOpenTLEFItem$: BehaviorSubject<TLEFControllerItem> = new BehaviorSubject(null);
     private toolboxService: ToolboxService;
 
     constructor(timeDelineators: TimelogDelineator[], activeDayController: DaybookController,
@@ -45,8 +45,8 @@ export class TLEFController {
 
     }
 
-    public get formIsOpen(): boolean { return this._tlefIsOpen$.getValue(); }
-    public get formIsOpen$(): Observable<boolean> { return this._tlefIsOpen$.asObservable(); }
+    public get formIsOpen(): boolean { return this._currentlyOpenTLEFItem$.getValue() !== null; }
+    public get currentlyOpenTLEFItem$(): Observable<TLEFControllerItem> { return this._currentlyOpenTLEFItem$.asObservable(); }
 
     public get changesMade(): boolean { return this._changesMade$.getValue(); }
     // public get showDeleteButton(): boolean { return this._initialValue.isSavedEntry; }
@@ -55,21 +55,18 @@ export class TLEFController {
     public get tlefItems(): TLEFControllerItem[] { return this._tlefItems; }
     public get gridBarItems(): DisplayGridBarItem[] { return this.tlefItems.map(item => item.gridBarItem); }
 
+    public get changes$(): Observable<boolean> { return this._changesMade$.asObservable(); }
 
+    public get currentlyOpenTLEFItem(): TLEFControllerItem { return this._currentlyOpenTLEFItem$.getValue(); }
+
+    public get activeItem(): TLEFControllerItem { return this._tlefItems.find(item => item.isActive); }
 
     public update(timeDelineators: TimelogDelineator[], activeDayController: DaybookController, clock: moment.Moment, update: DaybookDisplayUpdate) {
-        console.log("Updating the TLEF Controller by CLOCK: " + clock.format('hh:mm:ss a'))
+        console.log("Updating the TLEF Controller by " + update.type + "   - " + clock.format('hh:mm:ss a'))
         this._clock = moment(clock);
         this._timeDelineators = timeDelineators;
         this._activeDayController = activeDayController;
 
-        // this._tlefItems.forEach((tlefItem) => {
-        //     if (tlefItem.startDelineator.delineatorType === TimelogDelineatorType.NOW) {
-        //         tlefItem.startDelineator.time = moment(this._clock);
-        //     } else if (tlefItem.endDelineator.delineatorType === TimelogDelineatorType.NOW) {
-        //         tlefItem.endDelineator.time = moment(this._clock);
-        //     }
-        // });
 
 
         if (update.type === DaybookDisplayUpdateType.CLOCK) {
@@ -83,13 +80,39 @@ export class TLEFController {
         }
     }
 
-    public goLeft() { }
-    public goRight() { }
-    public onClickGridBarItem(gridItem: DisplayGridBarItem) { }
+    public goLeft() {
+        console.log("Go left clicked")
+        const activeItem = this.activeItem;
+        let currentIndex = -1;
+        if (activeItem) {
+            currentIndex = this._tlefItems.indexOf(activeItem);
+        }
+        if (currentIndex > 0) {
+            const openItem = this._tlefItems[currentIndex - 1];
+            this._openTLEFItem(openItem);
+        }
+    }
+    public goRight() {
+        console.log("Go right clicked")
+        const activeItem = this.activeItem;
+        let currentIndex = -1;
+        if (activeItem) {
+            currentIndex = this._tlefItems.indexOf(activeItem);
+        }
+        if (currentIndex < this._tlefItems.length - 1) {
+            const openItem = this._tlefItems[currentIndex + 1];
+            this._openTLEFItem(openItem);
+        }
+    }
+    public onClickGridBarItem(gridItem: DisplayGridBarItem) {
+        console.log("Grid bar item clicked: ", gridItem)
+        this._tlefItems.forEach((item) => {
+            if (item.gridBarItem.startTime.isSame(gridItem.startTime) && item.gridBarItem.endTime.isSame(gridItem.endTime)) {
+                this._openTLEFItem(item);
+            }
+        });
+    }
 
-    public get changes$(): Observable<boolean> { return this._changesMade$.asObservable(); }
-
-    public get currentlyOpenTLEFItem(): TLEFControllerItem { return this._currentlyOpenTLEFItem; }
 
     public openWakeupTime() {
         this._openTLEFItem(this._tlefItems[0]);
@@ -106,13 +129,11 @@ export class TLEFController {
         console.log("DRAWING TLE:", openTLE);
         // openTLE.logToConsole();
         const formCase = this._determineCase(openTLE);
-        this._currentlyOpenTLEFItem = new TLEFControllerItem(openTLE.startTime, openTLE.endTime,
+        const newItem = new TLEFControllerItem(openTLE.startTime, openTLE.endTime,
             DaybookAvailabilityType.AVAILABLE, formCase, openTLE, null,
             new TimelogDelineator(openTLE.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START),
             new TimelogDelineator(openTLE.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END));
-
-        const item = this._currentlyOpenTLEFItem.getInitialTLEValue();
-        // item.logToConsole();
+        this._currentlyOpenTLEFItem$.next(newItem);
         this.toolboxService.openTool(ToolType.TIMELOG_ENTRY);
     }
 
@@ -205,7 +226,16 @@ export class TLEFController {
     }
 
     private _openTLEFItem(item: TLEFControllerItem) {
-        this._currentlyOpenTLEFItem = item; 
+        console.log("Opening TLEF Item", item);
+        this._tlefItems.forEach(existingItem => {
+            if (existingItem.isSame(item)) {
+                existingItem.setAsActive();
+            } else {
+                existingItem.setAsNotActive();
+            }
+        })
+        this._currentlyOpenTLEFItem$.next(item);
+
         if (item.formCase === TLEFFormCase.SLEEP) {
             this.toolboxService.openSleepEntryForm();
         } else {
@@ -300,9 +330,9 @@ export class TLEFController {
 
     private _closeForm() {
         this._changesMade$.next(false);
-        this._currentlyOpenTLEFItem = null;
+        this._currentlyOpenTLEFItem$.next(null);
         // this._formCase = null;
-        this._tlefIsOpen$.next(false);
+        // this._tlefIsOpen$.next(false);
     }
 
     /**

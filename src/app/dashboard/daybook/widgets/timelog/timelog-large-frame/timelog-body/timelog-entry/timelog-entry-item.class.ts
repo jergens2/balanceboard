@@ -7,7 +7,7 @@ import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entr
 
 export class TimelogEntryItem {
     constructor(startTime: moment.Moment, endTime: moment.Moment) {
-        console.log("constructing tle: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
+        // console.log("constructing tle: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
         this._startTime = moment(startTime);
         this._utcOffsetMinutes = moment(this._startTime).utcOffset();
         this._endTime = moment(endTime);
@@ -18,7 +18,7 @@ export class TimelogEntryItem {
 
 
     // private _sleepState: 'SLEEP' | 'AWAKE' = 'AWAKE';
-    private _isConfirmed = false;
+    // private _isConfirmed = false;
     private _utcOffsetMinutes: number;
     private _timelogEntryActivities: TimelogEntryActivity[];
     private _note = '';
@@ -62,7 +62,7 @@ export class TimelogEntryItem {
         return (this.durationSeconds / totalSeconds) * 100;
     }
 
-    public get isConfirmed(): boolean { return this._isConfirmed; }
+    // public get isConfirmed(): boolean { return this._isConfirmed; }
 
     public get utcOffsetMinutes(): number { return this._utcOffsetMinutes; }
 

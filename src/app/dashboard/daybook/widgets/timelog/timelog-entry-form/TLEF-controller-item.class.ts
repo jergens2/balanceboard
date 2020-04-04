@@ -53,6 +53,8 @@ export class TLEFControllerItem {
     public get startDelineator(): TimelogDelineator { return this._startDelineator; }
     public get endDelineator(): TimelogDelineator { return this._endDelineator; }
 
+    public get isActive(): boolean { return this._isActive; }
+
     public getInitialTLEValue(): TimelogEntryItem {
         return this._initialTLEValue;
     }
@@ -61,7 +63,25 @@ export class TLEFControllerItem {
     }
 
 
+    private _isActive: boolean = false;
+    private _isCurrent: boolean = false;
 
+    public setAsActive() {
+        this._isActive = true;
+        this._gridBarItem.isActive = true;
+    }
 
+    public setAsNotActive() {
+        this._isActive = false;
+        this._gridBarItem.isActive = false;
+    }
+
+    public isSame(otherItem: TLEFControllerItem): boolean {
+        const sameStart = this.startTime.isSame(otherItem.startTime);
+        const sameEnd = this.endTime.isSame(otherItem.endTime);
+        const sameCase = this.formCase === otherItem.formCase;
+        const sameAvailability = this.availability === otherItem.availability;
+        return (sameStart && sameEnd && sameCase && sameAvailability);
+    }
 
 }

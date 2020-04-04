@@ -68,20 +68,25 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
     this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
       this._update();
-      
+
     });
-    
+
   }
   ngOnDestroy() {
     this._updateDisplaySub.unsubscribe();
     this._gridItemSub.unsubscribe();
   }
 
-  private _update(){
+  private _update() {
     this._buildTimelog();
     this._gridItemSub.unsubscribe();
-    this._gridItemSub = this.daybookDisplayService.tlefController.changes$.subscribe((changed)=>{
-      this._setActiveTLEFGridItem();
+    this._gridItemSub = this.daybookDisplayService.tlefController.currentlyOpenTLEFItem$.subscribe((tlef) => {
+      if (tlef !== null) {
+        this._setActiveTLEFGridItem();
+      } else {
+        this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
+      }
+
     });
   }
 
@@ -93,7 +98,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
     const now = moment();
     if (now.isSameOrAfter(gridItem.startTime) && now.isSameOrBefore(gridItem.endTime)) {
-      if(gridItem.availability === DaybookAvailabilityType.AVAILABLE){
+      if (gridItem.availability === DaybookAvailabilityType.AVAILABLE) {
         return true;
       }
     }
@@ -103,14 +108,13 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   private _buildTimelog() {
     this._buildGuideLineHours();
     this._setActiveTLEFGridItem();
-    this._setIsFresh();
+    // this._setIsFresh();
   }
 
   private _setActiveTLEFGridItem() {
     const controller = this.daybookDisplayService.tlefController;
-    console.log("Controller is: ", controller);
-    let activeBarItem;
-
+    // console.log("Controller is: ", controller);
+    let activeBarItem = controller.activeItem;
     if (activeBarItem) {
       const foundItem = this.gridItems.find((gridItem) => {
         const isSame = gridItem.startTime.isSame(activeBarItem.startTime) && gridItem.endTime.isSame(activeBarItem.endTime);
@@ -126,14 +130,14 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
       } else {
         this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
       }
-    }else{
+    } else {
       this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
     }
   }
 
-  private _setIsFresh(){
-    this._isFresh = this.daybookDisplayService.activeDayController.isNewDay;
-  }
+  // private _setIsFresh(){
+  //   this._isFresh = this.daybookDisplayService.activeDayController.isNewDay;
+  // }
 
   private _buildGuideLineHours() {
     let guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
