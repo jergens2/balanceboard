@@ -120,7 +120,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     public getEarliestAvailability(fromTime: moment.Moment): moment.Moment {
         const availabileItems = this.fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
-        const foundIndex = availabileItems.findIndex(item => fromTime.isSameOrAfter(item.startTime) && fromTime.isBefore(item.endTime));
+        const foundIndex = availabileItems.findIndex(item => fromTime.isSameOrAfter(item.startTime) && fromTime.isAfter(item.startTime));
         if (foundIndex >= 0) {
             if (foundIndex === 0) {
                 return availabileItems[foundIndex].startTime;

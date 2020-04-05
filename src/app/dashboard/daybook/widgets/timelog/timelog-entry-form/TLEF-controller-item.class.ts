@@ -56,7 +56,10 @@ export class TLEFControllerItem {
     public get isActive(): boolean { return this._isActive; }
 
     public getInitialTLEValue(): TimelogEntryItem {
-        return this._initialTLEValue;
+        const newTLE = new TimelogEntryItem(this._initialTLEValue.startTime, this._initialTLEValue.endTime);
+        newTLE.timelogEntryActivities = this._initialTLEValue.timelogEntryActivities;
+        newTLE.note = this._initialTLEValue.note;
+        return newTLE;
     }
     public getInitialSleepValue(): SleepEntryItem {
         return this._initialSleepValue;
@@ -83,5 +86,7 @@ export class TLEFControllerItem {
         const sameAvailability = this.availability === otherItem.availability;
         return (sameStart && sameEnd && sameCase && sameAvailability);
     }
+    
+
 
 }

@@ -7,6 +7,8 @@ import { TLEFFooterMode } from '../../tlef-footer-mode.enum';
 import { TLEFFormCase } from '../../tlef-form-case.enum';
 import { TLEFController } from '../../TLEF-controller.class';
 
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-tlef-footer',
   templateUrl: './tlef-footer.component.html',
@@ -21,34 +23,38 @@ export class TlefFooterComponent implements OnInit {
   public get controller(): TLEFController { return this._controller; }
 
   public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.getInitialTLEValue(); }
-  // public get showDeleteButton(): boolean { return this._controller.showDeleteButton; }
+  public get showDeleteButton(): boolean { return this.entryItem.isSavedEntry; }
   public get changesMade(): boolean { return this._controller.changesMade; }
   // public get isNew(): boolean { return !this._controller.isNew; }
 
-  public get isNew(): boolean { return !this.entryItem.isSavedEntry; }
+  public get isNew(): boolean { return this._controller.isNew; }
+
+  private _changedTimelogEntryItem: TimelogEntryItem;
 
   ngOnInit() {
-    console.log("footer")
-    this._rebuild();    
   }
 
-  private _rebuild(){
+  // private _rebuild(){
 
-  }
+  // }
 
   public onClickSaveNew() {
-    console.log("Click saved")
-    // this.daybookService.activeDayController.saveTimelogEntryItem$(this.entryItem);
+    console.log("Saving new")
+    this.daybookService.activeDayController.saveTimelogEntryItem$(this.controller.changesMadeTLE);
     this._close();
   }
 
-  public onClickSaveChanges(){
-    console.log("Saving changes")
+  public onClickSaveChanges() {
+    console.log("Saving changes to item: ",  this._changedTimelogEntryItem);
+    // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
+    this.daybookService.activeDayController.updateTimelogEntryItem$(this.controller.changesMadeTLE);
+    // console.log("Saving changes")
+    this._close();
   }
 
   public onDelete() {
     // console.log("Deleting: ", this.entryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.entryItem.endTime.format('YYYY-MM-DD hh:mm a') )
-    // this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
+    this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
     this._close();
   }
 
@@ -63,7 +69,7 @@ export class TlefFooterComponent implements OnInit {
     this._close();
   }
 
-  private _close(){
+  private _close() {
     this.toolboxService.closeTool();
   }
 

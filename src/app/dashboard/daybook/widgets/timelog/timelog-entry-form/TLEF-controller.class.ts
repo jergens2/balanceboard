@@ -20,7 +20,7 @@ export class TLEFController {
     private _clock: moment.Moment;
 
 
-    private _changesMade$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    private _changesMadeTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
 
 
 
@@ -48,18 +48,29 @@ export class TLEFController {
     public get formIsOpen(): boolean { return this._currentlyOpenTLEFItem$.getValue() !== null; }
     public get currentlyOpenTLEFItem$(): Observable<TLEFControllerItem> { return this._currentlyOpenTLEFItem$.asObservable(); }
 
-    public get changesMade(): boolean { return this._changesMade$.getValue(); }
+    public get changesMade(): boolean { return this._changesMadeTLE$.getValue() !== null; }
     // public get showDeleteButton(): boolean { return this._initialValue.isSavedEntry; }
     // public get formCase(): TLEFFormCase { return this._formCase; }
 
     public get tlefItems(): TLEFControllerItem[] { return this._tlefItems; }
     public get gridBarItems(): DisplayGridBarItem[] { return this.tlefItems.map(item => item.gridBarItem); }
 
-    public get changes$(): Observable<boolean> { return this._changesMade$.asObservable(); }
+    public get changesMadeTLE$(): Observable<TimelogEntryItem> { return this._changesMadeTLE$.asObservable(); }
+    public get changesMadeTLE(): TimelogEntryItem { return this._changesMadeTLE$.getValue(); }
 
     public get currentlyOpenTLEFItem(): TLEFControllerItem { return this._currentlyOpenTLEFItem$.getValue(); }
 
     public get activeItem(): TLEFControllerItem { return this._tlefItems.find(item => item.isActive); }
+
+    public get isNew(): boolean {
+        const isNew = [
+            TLEFFormCase.NEW_CURRENT,
+            TLEFFormCase.NEW_CURRENT_FUTURE,
+            TLEFFormCase.NEW_FUTURE,
+            TLEFFormCase.NEW_PREVIOUS
+        ].indexOf(this.currentlyOpenTLEFItem.formCase) > -1;
+        return isNew;
+    }
 
     public update(timeDelineators: TimelogDelineator[], activeDayController: DaybookController, clock: moment.Moment, update: DaybookDisplayUpdate) {
         console.log("Updating the TLEF Controller by " + update.type + "   - " + clock.format('hh:mm:ss a'))
@@ -68,16 +79,57 @@ export class TLEFController {
         this._activeDayController = activeDayController;
 
 
-
-        if (update.type === DaybookDisplayUpdateType.CLOCK) {
-            if (this.formIsOpen) {
-
-            } else {
-
-            }
-        } else {
-
+        let currentItem: TLEFControllerItem;
+        let currentIndex = -1;
+        if (this.currentlyOpenTLEFItem) {
+            currentItem = this.currentlyOpenTLEFItem;
+            currentIndex = this.tlefItems.indexOf(currentItem);
         }
+        this._buildItems();
+        if (currentItem) {
+
+            if (currentItem.formCase === TLEFFormCase.NEW_CURRENT) {
+
+                this._updateNewCurrentTLEF();
+            } else if (currentItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
+
+                this._updateNewCurrentFutureTLEF();
+            } else {
+                let foundItem;
+                foundItem = this._tlefItems.find(item => {
+                    return item.isSame(currentItem);
+                })
+                if (!foundItem) {
+                    foundItem = this.tlefItems[currentIndex];
+                }
+                this._openTLEFItem(foundItem);
+            }
+        }
+        // if (update.type === DaybookDisplayUpdateType.CLOCK) {
+        //     if (this.formIsOpen) {
+        //     } else {
+        //     }
+        // } else {
+        // }
+    }
+
+    private _updateNewCurrentTLEF() {
+        const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+        this._setActiveItem(activeItem);
+    }
+    private _updateNewCurrentFutureTLEF() {
+        const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+        this._setActiveItem(activeItem);
+    }
+
+    private _setActiveItem(activeItem) {
+        this._tlefItems.forEach(tlefItem => {
+            if (tlefItem.isSame(activeItem)) {
+                tlefItem.setAsActive();
+            } else {
+                tlefItem.setAsNotActive();
+            }
+        });
     }
 
     public goLeft() {
@@ -227,13 +279,7 @@ export class TLEFController {
 
     private _openTLEFItem(item: TLEFControllerItem) {
         console.log("Opening TLEF Item", item);
-        this._tlefItems.forEach(existingItem => {
-            if (existingItem.isSame(item)) {
-                existingItem.setAsActive();
-            } else {
-                existingItem.setAsNotActive();
-            }
-        })
+        this._setActiveItem(item);
         this._currentlyOpenTLEFItem$.next(item);
 
         if (item.formCase === TLEFFormCase.SLEEP) {
@@ -244,8 +290,9 @@ export class TLEFController {
     }
 
 
-    public makeChanges() {
-        this._changesMade$.next(true);
+    public makeChangesTLE(changedItem: TimelogEntryItem) {
+        console.log("Changes made: ", changedItem)
+        this._changesMadeTLE$.next(changedItem);
     }
 
 
@@ -329,7 +376,7 @@ export class TLEFController {
     }
 
     private _closeForm() {
-        this._changesMade$.next(false);
+        this._changesMadeTLE$.next(null);
         this._currentlyOpenTLEFItem$.next(null);
         // this._formCase = null;
         // this._tlefIsOpen$.next(false);

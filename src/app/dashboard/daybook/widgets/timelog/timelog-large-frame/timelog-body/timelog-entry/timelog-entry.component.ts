@@ -36,6 +36,7 @@ export class TimelogEntryComponent implements OnInit {
 
   // public get timelogEntries(): TimelogEntryItem[] { return this.gridItem.timelogEntries; }
   public get displayEntry(): TimelogEntryDisplayItem { return this._displayEntry; }
+  public get isSmallEntry(): boolean { return this.displayEntry.isSmallGridItem; }
   public get activityDisplayEntries(): { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] { return this._activityDisplayEntries; }
   public get backgroundColor(): string { return this.displayEntry.backgroundColor; };
   public get units(): { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] { return this.displayEntry.units; };

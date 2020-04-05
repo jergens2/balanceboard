@@ -16,9 +16,9 @@
 .timelog-entry-display-root:hover{
     border: 1px solid gray;
 }
-.small-timelog-entry{
+.small-entry{
     flex-direction: row;
-    /* Todo:  set it so that it is a slim pencil and not a fat hamburger. */
+    font-size: 0.6em;    
 }
 
 .hour-unit{

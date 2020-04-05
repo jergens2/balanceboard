@@ -20,9 +20,10 @@ export class TlefViewOnlyComponent implements OnInit {
 
   // public get isEditing(): boolean { return this._isEditing; }
 
-  ngOnInit() {
 
+  ngOnInit() {
   }
+
 
   public get activitiesCount(): string {
     if (this.entryItem.timelogEntryActivities.length === 1) {

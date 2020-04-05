@@ -108,16 +108,15 @@ export class TimelogDisplayGrid {
         });
         let length = gridItems.length;
         for (let i = 1; i < length; i++) {
+          const minPercent = 2.0;
+          const smallPercent = 6;
           if (gridItems[i - 1].availability === gridItems[i].availability) {
             let merge = false;
             if (gridItems[i].availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
-              /**
-               * This is the part where it is determined at which percentage to cut off small items and merge them into bigger items.
-               */
-              const minPercent = 4.75;
-              const smallPercent = 6;
+              console.log(gridItems[i].percent, gridItems[i - 1].percent)
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
                 merge = true;
+                gridItems[i].isSmallGridItem = true;
               } else if (gridItems[i].percent < smallPercent) {
                 gridItems[i].isSmallGridItem = true;
               }
@@ -127,13 +126,17 @@ export class TimelogDisplayGrid {
               merge = true;
             }
             if (merge) {
-              gridItems[i].timelogEntries.forEach((tle)=> gridItems[i - 1].timelogEntries.push(tle));
+              gridItems[i].timelogEntries.forEach((tle) => gridItems[i - 1].timelogEntries.push(tle));
               gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
               gridItems[i - 1].endTime = gridItems[i].endTime;
               gridItems[i - 1].isMerged = true;
               gridItems.splice(i, 1);
               length = gridItems.length;
               i--;
+            }
+          } else {
+            if ((gridItems[i].percent < minPercent)) {
+              gridItems[i].isSmallGridItem = true;
             }
           }
         }

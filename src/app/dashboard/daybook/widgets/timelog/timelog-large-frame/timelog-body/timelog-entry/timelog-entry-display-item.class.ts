@@ -13,9 +13,9 @@ export class TimelogEntryDisplayItem {
         this._gridItem = gridItem;
         this._activityTree = activityTree;
         this._buildEntry();
-        if(this._gridItem.isSmallGridItem){
-            console.log("It's a small grid item.", gridItem)
-        }
+        // if(this._gridItem.isSmallGridItem){
+        //     console.log("It's a small grid item.", gridItem)
+        // }
     }
 
 
@@ -33,13 +33,16 @@ export class TimelogEntryDisplayItem {
     public get backgroundColor(): string { return this._backgroundColor; }
     public get units(): { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] { return this._units; };
     public get gridItem(): TimelogDisplayGridItem { return this._gridItem; }
-
+    public get isSmallGridItem(): boolean { return this._gridItem.isSmallGridItem; }
 
     private _buildEntry() {
 
-        let displayString: string = "No timelog entries";
+        let displayString: string = "display string";
+
         let units: { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] = [];
+
         if (this.timelogEntries.length > 0) {
+            console.log("we gooch")
             let mergedTimelogEntry = this.timelogEntries[0];
             if (this.timelogEntries.length > 1) {
                 
@@ -130,6 +133,8 @@ export class TimelogEntryDisplayItem {
                 displayString += " +" + (mergedTimelogEntry.timelogEntryActivities.length - 1) + " more";
             }
 
+        }else{
+            // console.log('we not gooch')
         }
         this._displayString = displayString;
         this._units = units;

@@ -13,11 +13,13 @@
 
         </div>
         <div [ngClass]="{'small-text': screenSize === 0}">
-            {{ displayEntry.displayString }}
+            {{ displayString }}
         </div>
     </div>
 
- 
+    <div *ngIf="isSmallEntry" class='small-entry'>
+        {{ displayString }}
+    </div>
 
 </div>
 

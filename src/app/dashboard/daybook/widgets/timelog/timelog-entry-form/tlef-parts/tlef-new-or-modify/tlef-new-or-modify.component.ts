@@ -41,7 +41,7 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
   }
 
   private _setEntryItem() {
-    this._entryItem = Object.assign({}, this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
+    this._entryItem = this._controller.currentlyOpenTLEFItem.getInitialTLEValue();
     this._initialActivities = [];
     // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
     if (this._entryItem) {
@@ -56,14 +56,10 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
   }
 
   public onActivitiesChanged(activities: TimelogEntryActivity[]) {
-    if (this._initialActivities === activities) {
-
-    } else {
-      this._entryItem.timelogEntryActivities = activities;
-      this._controller.makeChanges();
-    }
-
-    console.log("Update some changes here:  not implemented");
+    console.log("Changela : " + activities.length, activities)
+    this._entryItem.timelogEntryActivities = activities;
+    console.log("entry item activities: ", this._entryItem.timelogEntryActivities)
+    this.controller.makeChangesTLE(this._entryItem);
   }
 
 }

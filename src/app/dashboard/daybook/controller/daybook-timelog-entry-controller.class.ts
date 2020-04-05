@@ -119,10 +119,13 @@ export class DaybookTimelogEntryController {
 
     public updateTimelogEntryItem$(dateYYYYMMDD: string, updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
         let items = this._getDateItem(dateYYYYMMDD);
+        console.log("updating from ITEMS:")
+        items.forEach(item=> console.log(item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a')))
         const foundIndex = items.findIndex((item)=>{
             return item.startTime.isSame(updateTimelogEntry.startTime) && item.endTime.isSame(updateTimelogEntry.endTime);
         });
         if(foundIndex > -1){
+            console.log("Found index is " + foundIndex)
             items.splice(foundIndex, 1, updateTimelogEntry);
             this._sendUpdate({
                 dateYYYYMMDD: dateYYYYMMDD,

@@ -45,8 +45,8 @@ export class TimelogEntryItem {
 
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
-    public set startTime(startTime: moment.Moment) { this._startTime = moment(startTime); }
-    public set endTime(endTime: moment.Moment) { this._endTime = moment(endTime); }
+    // public set startTime(startTime: moment.Moment) { this._startTime = moment(startTime); }
+    // public set endTime(endTime: moment.Moment) { this._endTime = moment(endTime); }
 
     public get durationMilliseconds(): number {
         return moment(this.endTime).diff(moment(this.startTime), 'milliseconds');
