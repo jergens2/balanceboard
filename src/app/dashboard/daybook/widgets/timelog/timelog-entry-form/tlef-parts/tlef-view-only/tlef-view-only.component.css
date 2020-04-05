@@ -2,3 +2,24 @@
     display:flex;
     flex-direction: column;
 }
+.activities-header{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 2;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+.activities-count{
+    margin-left: 10px;
+    font-size:0.7em;
+}
+
+.display-activities{
+    display:flex;
+    flex-direction: column;
+}
+
+.display-activity{
+    
+}

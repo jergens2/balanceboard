@@ -1,6 +1,12 @@
 import * as moment from 'moment';
 
 export class DurationString {
+  public static getDurationStringFromMS(milliseconds: number, abbreviate?: boolean, onlyShowHours?: boolean): string {
+    const startTime = moment();
+    const endTime = moment(startTime).add(milliseconds, 'milliseconds');
+    return this.calculateDurationString(startTime, endTime, abbreviate, onlyShowHours);
+  }
+
   public static calculateDurationString(startTime: moment.Moment, endTime: moment.Moment, abbreviate?: boolean, onlyShowHours?: boolean): string {
     let minutes: number = moment(endTime).diff(startTime, "minutes");
 
