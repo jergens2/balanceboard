@@ -6,6 +6,7 @@ import { ColorType } from "../../../../../../../shared/utilities/color-type.enum
 import { TimelogEntryActivity } from "../../../../../api/data-items/timelog-entry-activity.interface";
 import * as moment from 'moment';
 import { TimelogDisplayGridItem } from "../../../timelog-display-grid-item.class";
+import { TimelogEntryDisplayItemUnit } from "./tle-display-item-unit.class";
 
 export class TimelogEntryDisplayItem {
 
@@ -24,30 +25,28 @@ export class TimelogEntryDisplayItem {
     private _activityTree: ActivityTree;
     private _backgroundColor: string = "";
     private _displayString: string = "";
-    private _units: { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] = [];
+    private _units: TimelogEntryDisplayItemUnit[] = [];
 
-    
+
 
     public get timelogEntries(): TimelogEntryItem[] { return this._gridItem.timelogEntries; }
     public get displayString(): string { return this._displayString; }
     public get backgroundColor(): string { return this._backgroundColor; }
-    public get units(): { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] { return this._units; };
+    public get units(): TimelogEntryDisplayItemUnit[] { return this._units; };
     public get gridItem(): TimelogDisplayGridItem { return this._gridItem; }
     public get isSmallGridItem(): boolean { return this._gridItem.isSmallGridItem; }
 
+    public get isVerySmallGridItem(): boolean { return this._gridItem.isVerySmallItem; }
+    public get isNormalEntry(): boolean { return !this.isSmallGridItem && !this.isVerySmallGridItem; }
+
+
     private _buildEntry() {
-
         let displayString: string = "display string";
-
-        let units: { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] = [];
-
+        let allEntryUnits: TimelogEntryDisplayItemUnit[] = [];
         if (this.timelogEntries.length > 0) {
-            console.log("we gooch")
             let mergedTimelogEntry = this.timelogEntries[0];
             if (this.timelogEntries.length > 1) {
-                
                 const startTime = moment(this.timelogEntries[0].startTime);
-                
                 const endTime = moment(this.timelogEntries[this.timelogEntries.length - 1].endTime);
                 const totalMS = endTime.diff(startTime, 'milliseconds');
                 let activities: { activityTreeId: string, milliseconds: number }[] = [];
@@ -62,7 +61,7 @@ export class TimelogEntryDisplayItem {
                     }));
                 });
                 mergedTimelogEntry = new TimelogEntryItem(startTime, endTime);
-                mergedTimelogEntry.timelogEntryActivities = activities.map((activity)=>{
+                mergedTimelogEntry.timelogEntryActivities = activities.map((activity) => {
                     const percentage = (activity.milliseconds / totalMS) * 100;
                     return {
                         activityTreeId: activity.activityTreeId,
@@ -72,8 +71,7 @@ export class TimelogEntryDisplayItem {
                 // console.log("merged is  ", mergedTimelogEntry.timelogEntryActivities)
             }
 
-
-            const entryDuration: number = mergedTimelogEntry.durationSeconds / 60;
+            const entryDurationMS: number = mergedTimelogEntry.durationMilliseconds;
             let topActivitySet: boolean = false;
             mergedTimelogEntry.timelogEntryActivities.sort((a1, a2) => {
                 if (a1.percentage > a2.percentage) return -1;
@@ -81,8 +79,10 @@ export class TimelogEntryDisplayItem {
                 else return 0;
             }).forEach((activityEntry) => {
                 let foundActivity: ActivityCategoryDefinition = this._activityTree.findActivityByTreeId(activityEntry.activityTreeId);
-                let durationMinutes: number = (activityEntry.percentage * entryDuration) / 100;
+                let durationMS: number = (activityEntry.percentage * entryDurationMS) / 100;
+                let durationMinutes: number = durationMS / (60 * 1000);
 
+                let activityUnits: TimelogEntryDisplayItemUnit[] = [];
                 if (!topActivitySet) {
                     topActivitySet = true;
                     const alpha = 0.06;
@@ -94,50 +94,35 @@ export class TimelogEntryDisplayItem {
                     }
                 }
 
-                let color: string = "";
-                if (foundActivity) {
-                    color = foundActivity.color;
-                } else {
-                    color = "rgba(0,0,0,0.1)";
+                let remainingMinutes: number = durationMinutes;
+                const maxMinutes = 60;
+                while (remainingMinutes >= maxMinutes) {
+                    const newUnit: TimelogEntryDisplayItemUnit = new TimelogEntryDisplayItemUnit(foundActivity, (maxMinutes * 60 * 1000));
+                    activityUnits.push(newUnit);
+                    remainingMinutes = remainingMinutes - maxMinutes;
                 }
-
-                let unitCount: number = Math.ceil(durationMinutes / 15);
-
-                let remainingUnitCount: number = unitCount;
-                while (remainingUnitCount > 0) {
-                    if (remainingUnitCount >= 4) {
-                        let fill: any[] = [1, 2, 3, 4];
-                        units.push({
-                            color: color,
-                            unitType: "HOUR",
-                            fill: fill,
-                        });
-                        remainingUnitCount -= 4;
-                    } else {
-                        let fill: any[] = [];
-                        for (let i = 1; i <= remainingUnitCount; i++) {
-                            fill.push(i);
-                        }
-                        units.push({
-                            color: color,
-                            unitType: "HOUR",
-                            fill: fill,
-                        });
-                        remainingUnitCount = 0;
-                    }
+                if (remainingMinutes > 0) {
+                    const newUnit: TimelogEntryDisplayItemUnit = new TimelogEntryDisplayItemUnit(foundActivity, (remainingMinutes * 60 * 1000));
+                    activityUnits.push(newUnit);
                 }
-
+                allEntryUnits = allEntryUnits.concat(activityUnits);
             });
 
             if (mergedTimelogEntry.timelogEntryActivities.length > 1) {
                 displayString += " +" + (mergedTimelogEntry.timelogEntryActivities.length - 1) + " more";
             }
 
-        }else{
+        } else {
             // console.log('we not gooch')
         }
         this._displayString = displayString;
-        this._units = units;
+        this._units = allEntryUnits;
+
+        console.log("Units: ", allEntryUnits);
 
     }
+
+
+
+
 }

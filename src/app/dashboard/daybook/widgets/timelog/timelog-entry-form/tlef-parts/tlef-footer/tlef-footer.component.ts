@@ -22,8 +22,8 @@ export class TlefFooterComponent implements OnInit {
   @Input() public set controller(controller: TLEFController) { this._controller = controller; }
   public get controller(): TLEFController { return this._controller; }
 
-  public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.getInitialTLEValue(); }
-  public get showDeleteButton(): boolean { return this.entryItem.isSavedEntry; }
+  // public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.getInitialTLEValue(); }
+  public get showDeleteButton(): boolean { return this._controller.showDeleteButton; }
   public get changesMade(): boolean { return this._controller.changesMade; }
   // public get isNew(): boolean { return !this._controller.isNew; }
 
@@ -54,7 +54,7 @@ export class TlefFooterComponent implements OnInit {
 
   public onDelete() {
     // console.log("Deleting: ", this.entryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.entryItem.endTime.format('YYYY-MM-DD hh:mm a') )
-    this.daybookService.activeDayController.deleteTimelogEntryItem$(this.entryItem);
+    this.daybookService.activeDayController.deleteTimelogEntryItem$(this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
     this._close();
   }
 

@@ -12,6 +12,7 @@ import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.servic
 import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
+import { TimelogEntryDisplayItemUnit } from './tle-display-item-unit.class';
 
 @Component({
   selector: 'app-timelog-entry',
@@ -37,9 +38,11 @@ export class TimelogEntryComponent implements OnInit {
   // public get timelogEntries(): TimelogEntryItem[] { return this.gridItem.timelogEntries; }
   public get displayEntry(): TimelogEntryDisplayItem { return this._displayEntry; }
   public get isSmallEntry(): boolean { return this.displayEntry.isSmallGridItem; }
+  public get isNormalSize(): boolean { return this.displayEntry.isNormalEntry; }
+  public get isVerySmall(): boolean { return this.displayEntry.isVerySmallGridItem; }
   public get activityDisplayEntries(): { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] { return this._activityDisplayEntries; }
   public get backgroundColor(): string { return this.displayEntry.backgroundColor; };
-  public get units(): { color: string, unitType: "HOUR" | "FIFTEEN", fill: any[] }[] { return this.displayEntry.units; };
+  public get units(): TimelogEntryDisplayItemUnit[] { return this.displayEntry.units; };
   public get displayString(): string { return this.displayEntry.displayString; };
 
   ngOnInit() {

@@ -108,7 +108,7 @@ export class TimelogDisplayGrid {
         });
         let length = gridItems.length;
         for (let i = 1; i < length; i++) {
-          const minPercent = 2.0;
+          const minPercent = 2.5;
           const smallPercent = 6;
           if (gridItems[i - 1].availability === gridItems[i].availability) {
             let merge = false;
@@ -116,26 +116,34 @@ export class TimelogDisplayGrid {
               console.log(gridItems[i].percent, gridItems[i - 1].percent)
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
                 merge = true;
-                gridItems[i].isSmallGridItem = true;
-              } else if (gridItems[i].percent < smallPercent) {
+                // gridItems[i].isSmallGridItem = true;
+              } else if (gridItems[i].percent > minPercent && gridItems[i].percent < smallPercent) {
                 gridItems[i].isSmallGridItem = true;
               }
-            } else if (gridItems[i].availability === DaybookAvailabilityType.AVAILABLE) {
-              merge = false;
-            } else {
-              merge = true;
             }
             if (merge) {
+              console.log("WE MERGING BOYO")
               gridItems[i].timelogEntries.forEach((tle) => gridItems[i - 1].timelogEntries.push(tle));
               gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
               gridItems[i - 1].endTime = gridItems[i].endTime;
               gridItems[i - 1].isMerged = true;
+              if (gridItems[i - 1].percent > smallPercent) {
+                gridItems[i - 1].isSmallGridItem = false;
+                gridItems[i - 1].isVerySmallItem = false;
+              } else if (gridItems[i-1].percent > minPercent){
+                gridItems[i - 1].isSmallGridItem = true;
+                gridItems[i - 1].isVerySmallItem = false;
+              }else{
+                gridItems[i - 1].isVerySmallItem = true;
+              }
               gridItems.splice(i, 1);
               length = gridItems.length;
               i--;
             }
           } else {
             if ((gridItems[i].percent < minPercent)) {
+              gridItems[i].isVerySmallItem = true;
+            } else if ((gridItems[i].percent < smallPercent)) {
               gridItems[i].isSmallGridItem = true;
             }
           }

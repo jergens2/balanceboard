@@ -46,15 +46,15 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
   public get durationString(): string { return this.entryItem.durationString; }
 
-  public get entryStartTime(): string { 
-    if(this._entryItem){
+  public get entryStartTime(): string {
+    if (this._entryItem) {
       // console.log("Entry item start t ime is ", this._entryItem)
       return moment(this._entryItem.startTime).format('h:mm a');
     }
     return "entry start time";
   }
-  public get entryEndTime(): string { 
-    if(this._entryItem){
+  public get entryEndTime(): string {
+    if (this._entryItem) {
       // console.log("Entry item endTime is " + this._entryItem.endTime.format('h:mm a'))
       return moment(this._entryItem.endTime).format('h:mm a');
     }
@@ -65,21 +65,16 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
     console.log("Opening component")
     this._reload();
     this._dbSubs = [
-      // this.daybookService.displayUpdated$.subscribe(change => {
-      //   // if (change.type !== DaybookDisplayUpdateType.CLOCK) {
-      //     this._reload();
-      //   // }
-      // }),
       this.controller.currentlyOpenTLEFItem$.subscribe(s => this._reload())
     ];
   }
 
   private _reload() {
-    if(this.controller.currentlyOpenTLEFItem){
+    if (this.controller.currentlyOpenTLEFItem) {
       this._entryItem = this.controller.currentlyOpenTLEFItem.getInitialTLEValue();
       this._entryItem.logToConsole();
       this._formCase = this.controller.currentlyOpenTLEFItem.formCase;
-    }else{
+    } else {
       this._entryItem = null;
     }
   }

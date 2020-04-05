@@ -21,6 +21,7 @@ export class TimelogDisplayGridItem{
     public percent: number;
     public availability: DaybookAvailabilityType;
     public isSmallGridItem: boolean = false;
+    public isVerySmallItem: boolean = false;
     public isActiveFormItem: boolean = false;
     public isMerged: boolean = false;
 

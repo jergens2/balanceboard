@@ -41,7 +41,6 @@ export class TlefViewOnlyComponent implements OnInit {
       };
 
     });
-    console.log(this._displayActivities)
   }
 
   public get displayActivities(): { activity: ActivityCategoryDefinition, durationMS: number }[] { return this._displayActivities; }

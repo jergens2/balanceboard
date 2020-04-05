@@ -61,6 +61,7 @@ export class TLEFController {
     public get currentlyOpenTLEFItem(): TLEFControllerItem { return this._currentlyOpenTLEFItem$.getValue(); }
 
     public get activeItem(): TLEFControllerItem { return this._tlefItems.find(item => item.isActive); }
+    public get showDeleteButton(): boolean { return this.currentlyOpenTLEFItem.getInitialTLEValue().isSavedEntry; }
 
     public get isNew(): boolean {
         const isNew = [
@@ -89,11 +90,11 @@ export class TLEFController {
         if (currentItem) {
 
             if (currentItem.formCase === TLEFFormCase.NEW_CURRENT) {
-
-                this._updateNewCurrentTLEF();
+                const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+                this._setActiveItem(activeItem);
             } else if (currentItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
-
-                this._updateNewCurrentFutureTLEF();
+                const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+                this._setActiveItem(activeItem);
             } else {
                 let foundItem;
                 foundItem = this._tlefItems.find(item => {
@@ -113,14 +114,6 @@ export class TLEFController {
         // }
     }
 
-    private _updateNewCurrentTLEF() {
-        const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
-        this._setActiveItem(activeItem);
-    }
-    private _updateNewCurrentFutureTLEF() {
-        const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
-        this._setActiveItem(activeItem);
-    }
 
     private _setActiveItem(activeItem) {
         this._tlefItems.forEach(tlefItem => {

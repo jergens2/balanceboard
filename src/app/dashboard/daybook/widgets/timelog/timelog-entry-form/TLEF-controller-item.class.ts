@@ -59,6 +59,7 @@ export class TLEFControllerItem {
         const newTLE = new TimelogEntryItem(this._initialTLEValue.startTime, this._initialTLEValue.endTime);
         newTLE.timelogEntryActivities = this._initialTLEValue.timelogEntryActivities;
         newTLE.note = this._initialTLEValue.note;
+        newTLE.isSavedEntry = this._initialTLEValue.isSavedEntry;
         return newTLE;
     }
     public getInitialSleepValue(): SleepEntryItem {
