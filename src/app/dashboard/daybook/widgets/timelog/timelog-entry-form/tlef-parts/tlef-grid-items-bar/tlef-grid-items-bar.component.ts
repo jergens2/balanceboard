@@ -1,28 +1,28 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
-import { DisplayGridBarItem } from './display-grid-bar-item.class';
-import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
-import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
+import { DaybookControllerService } from '../../../../../controller/daybook-controller.service';
+import { TLEFGridBarItem } from './tlef-grid-bar-item.class';
+import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
+import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
-import { DaybookDisplayService } from '../../../../../daybook/daybook-display.service';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 @Component({
-  selector: 'app-daybook-grid-items-bar',
-  templateUrl: './daybook-grid-items-bar.component.html',
-  styleUrls: ['./daybook-grid-items-bar.component.css']
+  selector: 'app-tlef-grid-items-bar',
+  templateUrl: './tlef-grid-items-bar.component.html',
+  styleUrls: ['./tlef-grid-items-bar.component.css']
 })
-export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
+export class TLEFGridItemsBarComponent implements OnInit, OnDestroy {
 
   constructor(private daybookDisplayService: DaybookDisplayService ) { }
 
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;
 
-  private _items: DisplayGridBarItem[] = [];
+  private _items: TLEFGridBarItem[] = [];
 
-  public get items(): DisplayGridBarItem[] { return this.daybookDisplayService.tlefController.gridBarItems; }
+  public get items(): TLEFGridBarItem[] { return this.daybookDisplayService.tlefController.gridBarItems; }
 
   public get startTime(): moment.Moment{ return this.daybookDisplayService.displayStartTime; }
   public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
@@ -49,7 +49,7 @@ export class DaybookGridItemsBarComponent implements OnInit, OnDestroy {
     // this._toolboxSub.unsubscribe();
   }
 
-  public onClickItem(item: DisplayGridBarItem) {
+  public onClickItem(item: TLEFGridBarItem) {
     this.daybookDisplayService.tlefController.onClickGridBarItem(item);
 
   }

@@ -2,11 +2,10 @@
 
     <div class="tlef-form-header">
         <div>
-            <app-daybook-grid-items-bar></app-daybook-grid-items-bar>
+            <app-tlef-grid-items-bar></app-tlef-grid-items-bar>
         </div>
         <div>
-            <span class="entry-time">{{ entryStartTime }}</span> -
-            <span class="entry-time">{{ entryEndTime  }}</span>
+            <app-tlef-times></app-tlef-times>
         </div>
         <div style="font-size:0.75em; color:gray; font-weight: bold; margin-bottom: 10px;">
             {{ durationString }}

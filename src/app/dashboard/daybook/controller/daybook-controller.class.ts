@@ -12,8 +12,6 @@ import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-
 import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
 import { DaybookAvailabilityType } from './items/daybook-availability-type.enum';
 import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
-import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
-import { DisplayGridBarItem } from '../widgets/timelog/timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
 import { DaybookTimePosition } from '../daybook-time-position-form/daybook-time-position.enum';
 import { DetermineDaybookTimePosition } from './items/determine-daybook-time-position.class';
 

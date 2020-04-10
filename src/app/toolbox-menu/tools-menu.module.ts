@@ -10,6 +10,7 @@ import { NotebookEntryFormComponent } from './tools/tool-components/notebook-ent
 import { SharedModule } from '../shared/shared.module';
 import { FutureEventFormComponent } from './tools/tool-components/future-event-form/future-event-form.component';
 import { DaybookModule } from '../dashboard/daybook/daybook.module';
+import { TLEFModule } from '../dashboard/daybook/widgets/timelog/timelog-entry-form/tlef.module';
 
 
 
@@ -36,6 +37,7 @@ import { DaybookModule } from '../dashboard/daybook/daybook.module';
     BrowserAnimationsModule,
     SharedModule,
     DaybookModule,
+    TLEFModule,
   ]
 })
 export class ToolsMenuModule { }

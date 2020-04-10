@@ -46,23 +46,8 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
   public get durationString(): string { return this.entryItem.durationString; }
 
-  public get entryStartTime(): string {
-    if (this._entryItem) {
-      // console.log("Entry item start t ime is ", this._entryItem)
-      return moment(this._entryItem.startTime).format('h:mm a');
-    }
-    return "entry start time";
-  }
-  public get entryEndTime(): string {
-    if (this._entryItem) {
-      // console.log("Entry item endTime is " + this._entryItem.endTime.format('h:mm a'))
-      return moment(this._entryItem.endTime).format('h:mm a');
-    }
-    return "entry end time";
-  }
-
   ngOnInit() {
-    console.log("Opening component")
+    // console.log("Opening component")
     this._reload();
     this._dbSubs = [
       this.controller.currentlyOpenTLEFItem$.subscribe(s => this._reload())
@@ -72,7 +57,7 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   private _reload() {
     if (this.controller.currentlyOpenTLEFItem) {
       this._entryItem = this.controller.currentlyOpenTLEFItem.getInitialTLEValue();
-      this._entryItem.logToConsole();
+      // console.log(this._entryItem.toString);
       this._formCase = this.controller.currentlyOpenTLEFItem.formCase;
     } else {
       this._entryItem = null;

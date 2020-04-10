@@ -1,11 +1,18 @@
 <div class="tools-root" *ngIf="toolName != ''">
+
+
   <div class="tool" *ngIf="toolName == 'ACTION_ITEM'"
     [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
     <div class="tool-header ">
       <div class="tool-header-item">
         New action item
       </div>
-      <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      <div class="header-close-button">
+        <div *ngIf="queueCount > 1" class="queue-count">
+          {{ queueCount }}
+        </div>
+        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      </div>
     </div>
     <div class="tool-body">
       <app-action-item-form></app-action-item-form>
@@ -18,7 +25,12 @@
       <div class="tool-header-item font-family-open-sans">
         New Notebook Entry
       </div>
-      <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      <div class="header-close-button">
+        <div *ngIf="queueCount > 1" class="queue-count">
+          {{ queueCount }}
+        </div>
+        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      </div>
     </div>
     <div class="tool-body">
       <app-notebook-entry-form></app-notebook-entry-form>
@@ -31,7 +43,12 @@
       <div class="tool-header-item font-family-open-sans">
         Timelog Entry
       </div>
-      <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      <div class="header-close-button">
+        <div *ngIf="queueCount > 1" class="queue-count">
+          {{ queueCount }}
+        </div>
+        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      </div>
     </div>
     <div class="tool-body">
       <app-timelog-entry-form></app-timelog-entry-form>
@@ -58,7 +75,12 @@
       <div class="tool-header-item font-family-open-sans">
         Sleep Input
       </div>
-      <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      <div class="header-close-button">
+        <div *ngIf="queueCount > 1" class="queue-count">
+          {{ queueCount }}
+        </div>
+        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      </div>
     </div>
     <div class="tool-body">
       <app-sleep-entry-form></app-sleep-entry-form>
@@ -71,7 +93,12 @@
       <div class="tool-header-item">
         New Future Event
       </div>
-      <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      <div class="header-close-button">
+        <div *ngIf="queueCount > 1" class="queue-count">
+          {{ queueCount }}
+        </div>
+        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      </div>
     </div>
     <div class="tool-body">
       <app-future-event-form></app-future-event-form>
@@ -84,7 +111,13 @@
       <div class="tool-header-item">
         Daily Task List: {{ currentDate }}
       </div>
-      <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      <div class="header-close-button">
+        <div *ngIf="queueCount > 1" class="queue-count">
+          {{ queueCount }}
+        </div>
+        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
+      </div>
+
     </div>
     <div class="tool-body">
       <app-dtl-tool></app-dtl-tool>

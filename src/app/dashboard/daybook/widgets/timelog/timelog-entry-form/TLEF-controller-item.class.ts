@@ -1,10 +1,10 @@
 import * as moment from 'moment';
 import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { TLEFFormCase } from './tlef-form-case.enum';
-import { DisplayGridBarItem } from './daybook-grid-items-bar/display-grid-bar-item.class';
 import { DaybookAvailabilityType } from '../../../controller/items/daybook-availability-type.enum';
 import { SleepEntryItem } from './sleep-entry-form/sleep-entry-item.class';
 import { TimelogDelineator } from '../timelog-delineator.class';
+import { TLEFGridBarItem } from './tlef-parts/tlef-grid-items-bar/tlef-grid-bar-item.class';
 
 export class TLEFControllerItem {
 
@@ -21,7 +21,7 @@ export class TLEFControllerItem {
     private _startDelineator: TimelogDelineator;
     private _endDelineator: TimelogDelineator;
 
-    private _gridBarItem: DisplayGridBarItem;
+    private _gridBarItem: TLEFGridBarItem;
 
     constructor(
         startTime: moment.Moment,
@@ -37,7 +37,7 @@ export class TLEFControllerItem {
         this._endTime = moment(endTime);
         this._formCase = formCase;
         this._availability = availability;
-        this._gridBarItem = new DisplayGridBarItem(startTime, endTime, availability);
+        this._gridBarItem = new TLEFGridBarItem(startTime, endTime, availability);
         this._startDelineator = startDelineator;
         this._endDelineator = endDelineator;
 
@@ -45,7 +45,7 @@ export class TLEFControllerItem {
         this._initialTLEValue = timelogEntry;
     }
 
-    public get gridBarItem(): DisplayGridBarItem { return this._gridBarItem; }
+    public get gridBarItem(): TLEFGridBarItem { return this._gridBarItem; }
     public get availability(): DaybookAvailabilityType { return this._availability; }
     public get formCase(): TLEFFormCase { return this._formCase; }
     public get startTime(): moment.Moment { return this._startTime; }

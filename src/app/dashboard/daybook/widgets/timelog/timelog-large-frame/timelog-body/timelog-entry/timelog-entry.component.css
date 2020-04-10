@@ -68,15 +68,15 @@
 }
 
 .units-container{
+    flex-grow: 2;
     position: absolute;
     align-self: center;
     display:flex;
     flex-direction: row; 
     align-items: center;
     flex-wrap: wrap; 
-    max-width: 250px; 
     margin-right :10px;
-
+    margin-left: 25px;
     background-color: none;
 }
 

@@ -9,7 +9,7 @@ import { DaybookController } from '../../../../controller/daybook-controller.cla
 import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
 import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
-import { DisplayGridBarItem } from '../../timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
+import { TLEFGridBarItem } from '../../timelog-entry-form/tlef-parts/tlef-grid-items-bar/tlef-grid-bar-item.class';
 import { DaybookAvailabilityType } from '../../../../controller/items/daybook-availability-type.enum';
 
 @Component({

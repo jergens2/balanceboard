@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ToolType } from './tool-type.enum';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 
 
 
@@ -11,41 +11,81 @@ export class ToolboxService {
 
   constructor() { }
 
-  private _currentTool$: BehaviorSubject<ToolType> = new BehaviorSubject(null);
-  private _toolIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private _toolQueue$: BehaviorSubject<ToolType[]> = new BehaviorSubject([]);
 
-  public openTool(component: ToolType) {
-    this._currentTool$.next(component);
-    this._toolIsOpen$.next(true);
+  public openTool(tool: ToolType) {
+    if (this.currentToolQueue.length > 0) {
+      if (this.currentToolQueue.indexOf(tool) > -1) {
+        const remainingItems = [];
+        this.currentToolQueue.forEach(item => {
+          if(item !== tool){
+            remainingItems.push(item);
+          }
+        });
+        const newQueue = [tool].concat(remainingItems);
+        this._toolQueue$.next(newQueue)
+      } else {
+        const newQueue = [tool].concat(this.currentToolQueue);
+        this._toolQueue$.next(newQueue);
+      }
+
+    } else {
+      console.log("current length is 0")
+      this._toolQueue$.next([tool]);
+    }
+  }
+  public openTools(tools: ToolType[]) {
+    this._toolQueue$.next(tools);
   }
 
-  public openNewDayForm(){
-    this._currentTool$.next(ToolType.START_NEW_DAY);
-    this._toolIsOpen$.next(true);
+  public openNewDayForm() {
+
+    this._toolQueue$.next([ToolType.START_NEW_DAY]);
+
+
   }
 
-  public openSleepEntryForm(){
-    this._currentTool$.next(ToolType.SLEEP_ENTRY);
-    this._toolIsOpen$.next(true);
-  }
-
-  public openTimelogEntryForm(){
-    this._currentTool$.next(ToolType.TIMELOG_ENTRY);
-    this._toolIsOpen$.next(true);
-  }
+  public openSleepEntryForm() { this.openTool(ToolType.SLEEP_ENTRY); }
+  public openTimelogEntryForm() { this.openTool(ToolType.TIMELOG_ENTRY); }
 
 
   public closeTool() {
-    this._currentTool$.next(null);
-    this._toolIsOpen$.next(false);
+    const currentToolQueue = this.currentToolQueue;
+    if (currentToolQueue.length <= 1) {
+      this._toolQueue$.next([]);
+    } else if (currentToolQueue.length > 1) {
+      const newQueue = [];
+      for (let i = 1; i < currentToolQueue.length; i++) {
+        newQueue.push(currentToolQueue[i]);
+      }
+      this._toolQueue$.next(newQueue);
+    }
   }
 
+  public get toolIsOpen$(): Observable<boolean> {
+    const isOpen$: Subject<boolean> = new Subject();
+    this._toolQueue$.subscribe((toolQueue) => {
+      console.log("Subscribed")
+      if (toolQueue.length > 0) {
+        isOpen$.next(true);
+      } else {
+        isOpen$.next(false);
+      }
+    });
+    return isOpen$;
+  }
 
-  public get toolIsOpen(): boolean { return this._toolIsOpen$.getValue(); }
-  public get toolIsOpen$(): Observable<boolean> { return this._toolIsOpen$.asObservable(); }
+  public get currentToolQueue$(): Observable<ToolType[]> { return this._toolQueue$.asObservable(); }
+  public get currentToolQueue(): ToolType[] { return this._toolQueue$.getValue(); }
+  public get queueCount(): number { return this.currentToolQueue.length; }
+  public get toolIsOpen(): boolean { return this.queueCount > 0; }
 
-  public get currentTool$(): Observable<ToolType> { return this._currentTool$.asObservable(); }
-  public get currentTool(): ToolType { return this._currentTool$.getValue(); }
-
+  public get currentTool(): ToolType {
+    if (this.toolIsOpen) {
+      return this.currentToolQueue[0];
+    } else {
+      return null;
+    }
+  }
 
 }

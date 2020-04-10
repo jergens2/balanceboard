@@ -2,8 +2,6 @@ import { TimelogEntryItem } from "../timelog-large-frame/timelog-body/timelog-en
 import { TLEFFormCase } from "./tlef-form-case.enum";
 import * as moment from 'moment';
 import { Observable, BehaviorSubject } from "rxjs";
-import { DisplayGridItemsBar } from "./daybook-grid-items-bar/daybook-grid-items-bar.class";
-import { DisplayGridBarItem } from "./daybook-grid-items-bar/display-grid-bar-item.class";
 import { DaybookController } from "../../../controller/daybook-controller.class";
 import { TimelogDelineator, TimelogDelineatorType } from "../timelog-delineator.class";
 import { ToolboxService } from "../../../../../toolbox-menu/toolbox.service";
@@ -14,6 +12,7 @@ import { ToolType } from "../../../../../toolbox-menu/tool-type.enum";
 import { TLEFControllerItem } from "./TLEF-controller-item.class";
 import { SleepEntryItem } from "./sleep-entry-form/sleep-entry-item.class";
 import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from "../../../controller/items/daybook-display-update.interface";
+import { TLEFGridBarItem } from "./tlef-parts/tlef-grid-items-bar/tlef-grid-bar-item.class";
 
 export class TLEFController {
 
@@ -53,7 +52,7 @@ export class TLEFController {
     // public get formCase(): TLEFFormCase { return this._formCase; }
 
     public get tlefItems(): TLEFControllerItem[] { return this._tlefItems; }
-    public get gridBarItems(): DisplayGridBarItem[] { return this.tlefItems.map(item => item.gridBarItem); }
+    public get gridBarItems(): TLEFGridBarItem[] { return this.tlefItems.map(item => item.gridBarItem); }
 
     public get changesMadeTLE$(): Observable<TimelogEntryItem> { return this._changesMadeTLE$.asObservable(); }
     public get changesMadeTLE(): TimelogEntryItem { return this._changesMadeTLE$.getValue(); }
@@ -91,15 +90,17 @@ export class TLEFController {
 
             if (currentItem.formCase === TLEFFormCase.NEW_CURRENT) {
                 const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
-                this._setActiveItem(activeItem);
+                this._openTLEFItem(activeItem);
+
             } else if (currentItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
-                const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
-                this._setActiveItem(activeItem);
+                const activeItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+
+                this._openTLEFItem(activeItem);
             } else {
                 let foundItem;
                 foundItem = this._tlefItems.find(item => {
                     return item.isSame(currentItem);
-                })
+                });
                 if (!foundItem) {
                     foundItem = this.tlefItems[currentIndex];
                 }
@@ -149,7 +150,7 @@ export class TLEFController {
             this._openTLEFItem(openItem);
         }
     }
-    public onClickGridBarItem(gridItem: DisplayGridBarItem) {
+    public onClickGridBarItem(gridItem: TLEFGridBarItem) {
         console.log("Grid bar item clicked: ", gridItem)
         this._tlefItems.forEach((item) => {
             if (item.gridBarItem.startTime.isSame(gridItem.startTime) && item.gridBarItem.endTime.isSame(gridItem.endTime)) {
@@ -185,43 +186,37 @@ export class TLEFController {
     public openNewCurrentTimelogEntry(currentTimePosition: DaybookTimePosition, newCurrentTLE: TimelogEntryItem) {
         console.log("NEW CURRENT TLE:  method incomplete")
         console.log("currentTimePosition is " + currentTimePosition);
-        // if (currentTimePosition === DaybookTimePosition.NORMAL) {
-        //     if (newCurrentTLE) {
-        //         // const foundGridItem = this.gridBarItems.find(item => {
-        //         //     return item.availabilityType === DaybookAvailabilityType.AVAILABLE
-        //         //         && item.startTime.isSame(newCurrentTLE.startTime) && item.endTime.isSame(newCurrentTLE.endTime);
-        //         // });
-        //         // if (foundGridItem) {
-        //         //     this._openDisplayGridItem(foundGridItem);
-        //         // } else {
-        //         //     console.log("Error: could not find new current tlef")
-        //         // }
-        //     } else {
-        //         // const foundGridItem = this.gridBar.getItemAtTime(this._clock);
-        //         // if (foundGridItem) {
-        //         //     this._openDisplayGridItem(foundGridItem);
-        //         // } else {
-        //         //     console.log("Error: could not find an item to open");
-        //         // }
-        //     }
+        if (currentTimePosition === DaybookTimePosition.NORMAL) {
+            if (newCurrentTLE) {
+                // const foundGridItem = this.gridBarItems.find(item => {
+                //     return item.availabilityType === DaybookAvailabilityType.AVAILABLE
+                //         && item.startTime.isSame(newCurrentTLE.startTime) && item.endTime.isSame(newCurrentTLE.endTime);
+                // });
+                // if (foundGridItem) {
+                //     this._openDisplayGridItem(foundGridItem);
+                // } else {
+                //     console.log("Error: could not find new current tlef")
+                // }
+            } else {
+                // const foundGridItem = this.gridBar.getItemAtTime(this._clock);
+                // if (foundGridItem) {
+                //     this._openDisplayGridItem(foundGridItem);
+                // } else {
+                //     console.log("Error: could not find an item to open");
+                // }
+            }
 
-        // } else {
-        //     this.toolboxService.openNewDayForm();
-        // }
+        } else {
+            this.toolboxService.openNewDayForm();
+        }
     }
-
-
 
     public openTimelogGridItem(gridItem: TimelogDisplayGridItem, currentTimePosition: DaybookTimePosition) {
         /**
          * the TimelogDisplayGridItems should always be up to date / synched with the clock.
          */
-
-
-
         console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
         if (currentTimePosition === DaybookTimePosition.NORMAL) {
-
 
             if (gridItem.isMerged) {
                 if (gridItem.timelogEntries.length >= 2) {
@@ -280,6 +275,10 @@ export class TLEFController {
         } else {
             this.toolboxService.openTimelogEntryForm();
         }
+    }
+
+    private _updateExistingOpenItem(){
+
     }
 
 

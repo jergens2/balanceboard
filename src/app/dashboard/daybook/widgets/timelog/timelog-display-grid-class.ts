@@ -116,13 +116,12 @@ export class TimelogDisplayGrid {
               console.log(gridItems[i].percent, gridItems[i - 1].percent)
               if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
                 merge = true;
-                // gridItems[i].isSmallGridItem = true;
+                gridItems[i].isVerySmallItem = true;
               } else if (gridItems[i].percent > minPercent && gridItems[i].percent < smallPercent) {
                 gridItems[i].isSmallGridItem = true;
               }
             }
             if (merge) {
-              console.log("WE MERGING BOYO")
               gridItems[i].timelogEntries.forEach((tle) => gridItems[i - 1].timelogEntries.push(tle));
               gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
               gridItems[i - 1].endTime = gridItems[i].endTime;

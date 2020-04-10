@@ -51,12 +51,14 @@
 .tool-body{
     padding: 15px;
 }
-.icon-button{
-    margin-top:0;
-    color:gray;
 
+.header-close-button{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
 }
-.icon-button:hover{
-    color:black;
-    cursor: pointer;
+.queue-count{
+    font-size: 0.8em;
+    color: gray;
+    margin-right:5px;
 }

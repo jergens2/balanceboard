@@ -10,13 +10,10 @@ import { DaybookAvailabilityType } from './controller/items/daybook-availability
 import { TimeUtilities } from '../../shared/utilities/time-utilities/time-utilities';
 import { TimelogDisplayGrid } from './widgets/timelog/timelog-display-grid-class';
 import { TimelogDelineator, TimelogDelineatorType } from './widgets/timelog/timelog-delineator.class';
-import { DisplayGridBarItem } from './widgets/timelog/timelog-entry-form/daybook-grid-items-bar/display-grid-bar-item.class';
 import { TimelogEntryItem } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { faSun, faList } from '@fortawesome/free-solid-svg-icons';
 import { TimelogDisplayGridItem } from './widgets/timelog/timelog-display-grid-item.class';
 import { ToolboxService } from '../../toolbox-menu/toolbox.service';
-import { DisplayGridItemsBar } from './widgets/timelog/timelog-entry-form/daybook-grid-items-bar/daybook-grid-items-bar.class';
-import { DaybookTimePosition } from './daybook-time-position-form/daybook-time-position.enum';
 import { TLEFController } from './widgets/timelog/timelog-entry-form/TLEF-controller.class';
 import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from './controller/items/daybook-display-update.interface';
 import { ToolType } from '../../toolbox-menu/tool-type.enum';
@@ -66,9 +63,9 @@ export class DaybookDisplayService {
   public get timelogDelineators(): TimelogDelineator[] { return this._timeDelineators; }
 
   // public get gridBar(): DisplayGridItemsBar { return this._tlefController.gridBar; }
-  // public get gridBarItems(): DisplayGridBarItem[] { return this._tlefController.gridBar.gridBarItems; }
-  // public get activeGridBarItem$(): Observable<DisplayGridBarItem> { return this._tlefController.gridBar.activeGridBarItem$; }
-  // public get activeGridBarItem(): DisplayGridBarItem { return this._tlefController.gridBar.activeGridBarItem; }
+  // public get gridBarItems(): TLEFGridBarItem[] { return this._tlefController.gridBar.gridBarItems; }
+  // public get activeGridBarItem$(): Observable<TLEFGridBarItem> { return this._tlefController.gridBar.activeGridBarItem$; }
+  // public get activeGridBarItem(): TLEFGridBarItem { return this._tlefController.gridBar.activeGridBarItem; }
 
   public get zoomItems(): TimelogZoomControllerItem[] { return this._zoomItems; }
   public get currentZoom(): TimelogZoomControllerItem { return this._currentZoom; }

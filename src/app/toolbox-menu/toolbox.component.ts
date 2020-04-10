@@ -14,22 +14,16 @@ import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-l
 })
 export class ToolsComponent implements OnInit {
 
-  faTimes = faTimes;
+  public faTimes = faTimes;
 
   constructor(private toolsService: ToolboxService, private sizeService: ScreenSizeService) { }
 
-  ifNotepad: boolean = false;
-  ifActionItem: boolean = false;
-  ifTimelogEntry: boolean = false;
-  // ifAppointment: boolean = 
+  // public ifNotepad: boolean = false;
+  // public ifActionItem: boolean = false;
+  // public ifTimelogEntry: boolean = false;
 
-  toolName: string = "";
-
-  screenSize: AppScreenSize;
-
-
-  private _timelogEntryItem: TimelogEntryItem = null;
-  public get timelogEntryItem(): TimelogEntryItem { return this._timelogEntryItem; }
+  public toolName: string = "";
+  public screenSize: AppScreenSize;
 
   ngOnInit() {
     // console.log("Tools component init");
@@ -38,24 +32,22 @@ export class ToolsComponent implements OnInit {
     })
     this.screenSize = this.sizeService.appScreenSize;
 
-    this.toolsService.currentTool$.subscribe((tool: ToolType) => {
-      if (tool !== null) {
-        this.toolName = tool.toString();
+    this.toolsService.currentToolQueue$.subscribe((tools: ToolType[]) => {
+      console.log("Tool queue subscription: ", tools)
+      if (tools.length > 0) {
+        this.toolName = tools[0].toString();
       } else {
         this.toolName = "";
-        this._timelogEntryItem = null;
       }
     });
     // console.log("Tools component init COMPLETE");
   }
 
-  public get currentDate(): string {
-    return moment().format('MMMM Do');
-  }
+  public get currentDate(): string { return moment().format('MMMM Do'); }
+  public get startNewDay(): string { return moment().format('MMMM Do, YYYY'); }
 
-  public get startNewDay(): string { 
-    return moment().format('MMMM Do, YYYY')
-  }
+  public get queueCount(): number { return this.toolsService.queueCount; }
+
 
   onClickClose() {
     this.toolsService.closeTool();

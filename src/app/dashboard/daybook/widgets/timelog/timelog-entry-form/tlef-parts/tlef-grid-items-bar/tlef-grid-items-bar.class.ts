@@ -1,14 +1,15 @@
-import { DisplayGridBarItem } from "./display-grid-bar-item.class";
+
 import { BehaviorSubject, Observable } from "rxjs";
-import { TimelogDelineator, TimelogDelineatorType } from "../../timelog-delineator.class";
+import { TimelogDelineator, TimelogDelineatorType } from "../../../timelog-delineator.class";
 import * as moment from 'moment';
-import { DaybookAvailabilityType } from "../../../../controller/items/daybook-availability-type.enum";
-import { DaybookController } from "../../../../controller/daybook-controller.class";
-import { TimelogEntryItem } from "../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class";
-import { ToolboxService } from "../../../../../../toolbox-menu/toolbox.service";
+import { DaybookAvailabilityType } from "../../../../../controller/items/daybook-availability-type.enum";
+import { DaybookController } from "../../../../../controller/daybook-controller.class";
+import { TimelogEntryItem } from "../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class";
+import { ToolboxService } from "../../../../../../../toolbox-menu/toolbox.service";
+import { TLEFGridBarItem } from "./tlef-grid-bar-item.class";
 
 
-export class DisplayGridItemsBar {
+export class TLEFGridItemsBar {
 
     private _timeDelineators: TimelogDelineator[] = [];
     private _activeDayController: DaybookController;
@@ -16,7 +17,7 @@ export class DisplayGridItemsBar {
     private toolboxService: ToolboxService;
 
     constructor(timeDelineators: TimelogDelineator[], activeDayController: DaybookController,
-        clock: moment.Moment, toolboxService: ToolboxService, activeItem?: DisplayGridBarItem) {
+        clock: moment.Moment, toolboxService: ToolboxService, activeItem?: TLEFGridBarItem) {
         this.toolboxService = toolboxService;
         this._clock = clock;
         this._timeDelineators = timeDelineators;
@@ -43,13 +44,13 @@ export class DisplayGridItemsBar {
         }
     }
 
-    private _gridBarItems: DisplayGridBarItem[] = [];
-    private _activeGridBarItem$: BehaviorSubject<DisplayGridBarItem> = new BehaviorSubject(null);
-    public get gridBarItems(): DisplayGridBarItem[] { return this._gridBarItems; }
-    public get activeGridBarItem$(): Observable<DisplayGridBarItem> { return this._activeGridBarItem$.asObservable(); }
-    public get activeGridBarItem(): DisplayGridBarItem { return this._activeGridBarItem$.getValue(); }
+    private _gridBarItems: TLEFGridBarItem[] = [];
+    private _activeGridBarItem$: BehaviorSubject<TLEFGridBarItem> = new BehaviorSubject(null);
+    public get gridBarItems(): TLEFGridBarItem[] { return this._gridBarItems; }
+    public get activeGridBarItem$(): Observable<TLEFGridBarItem> { return this._activeGridBarItem$.asObservable(); }
+    public get activeGridBarItem(): TLEFGridBarItem { return this._activeGridBarItem$.getValue(); }
 
-    public getItemAtTime(timeToCheck: moment.Moment): DisplayGridBarItem {
+    public getItemAtTime(timeToCheck: moment.Moment): TLEFGridBarItem {
         const foundItem = this.gridBarItems.find(item =>{
             return timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime);
         });
@@ -76,7 +77,7 @@ export class DisplayGridItemsBar {
     }
 
 
-    public openDisplayGridItem(item: DisplayGridBarItem) {
+    public openDisplayGridItem(item: TLEFGridBarItem) {
         if (item.availabilityType === DaybookAvailabilityType.SLEEP) {
             this.toolboxService.openSleepEntryForm();
         } else {
@@ -119,7 +120,7 @@ export class DisplayGridItemsBar {
         }
     }
 
-    private _findActiveIndex(activeItem: DisplayGridBarItem): number {
+    private _findActiveIndex(activeItem: TLEFGridBarItem): number {
         const foundActiveIndex = this.gridBarItems.findIndex((gridBarItem) => {
             const sameStart = activeItem.startTime.isSame(gridBarItem.startTime);
             const sameEnd = activeItem.endTime.isSame(gridBarItem.endTime);
@@ -131,7 +132,7 @@ export class DisplayGridItemsBar {
 
     private _update() {
 
-        let gridBarItems: DisplayGridBarItem[] = [];
+        let gridBarItems: TLEFGridBarItem[] = [];
 
         let currentActiveIndex = -1;
         if (this.activeGridBarItem) {
@@ -160,7 +161,7 @@ export class DisplayGridItemsBar {
                 if (!skip) {
                     let endTime: moment.Moment = this._timeDelineators[i].time;
                     let availability: DaybookAvailabilityType = this._activeDayController.getDaybookAvailability(currentTime, endTime);
-                    let newItem = new DisplayGridBarItem(currentTime, endTime, availability);
+                    let newItem = new TLEFGridBarItem(currentTime, endTime, availability);
                     // if (availability === DaybookAvailabilityType.SLEEP) {
                     //     newItem.sleepEntry = this._activeDayController.getSleepItem(currentTime, endTime);
                     // } else if (availability === DaybookAvailabilityType.TIMELOG_ENTRY) {

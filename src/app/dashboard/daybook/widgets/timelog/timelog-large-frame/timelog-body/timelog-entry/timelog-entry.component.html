@@ -1,29 +1,32 @@
 <div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="displayEntry"
     (click)="onClickOpenTimelogEntry()">
 
-    <div *ngIf="isNormalSize" class="normal-size-entry">
-        <div class="units-container">
-            <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
-            </div>
+    <!-- <div *ngIf="isNormalSize" class="normal-size-entry"> -->
+    <div class="units-container">
+        <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
         </div>
-
-
-        <div [ngClass]="{'small-text': screenSize === 0}">
+        <div>
             {{ displayString }}
         </div>
-
     </div>
 
-    <div *ngIf="isSmallEntry" class='small-entry'>
+    <!-- </div> -->
+
+    <!-- <div *ngIf="isSmallEntry" class='small-entry'>
         <div class="units-container">
             <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
             </div>
+            {{ displayString }}
         </div>
     </div>
 
     <div *ngIf="isVerySmall" class='very-small-entry'>
-        <div class="very-small-entry-circle"></div>
-    </div>
+        <div class="units-container">
+            <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
+            </div>
+            {{ displayString }}
+        </div>
+    </div> -->
 
 </div>
 
