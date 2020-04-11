@@ -12,6 +12,7 @@ export class ToolboxService {
   constructor() { }
 
   private _toolQueue$: BehaviorSubject<ToolType[]> = new BehaviorSubject([]);
+  private _onFormClosed$: Subject<boolean> = new Subject();
 
   public openTool(tool: ToolType) {
     if (this.currentToolQueue.length > 0) {
@@ -48,11 +49,13 @@ export class ToolboxService {
   public openSleepEntryForm() { this.openTool(ToolType.SLEEP_ENTRY); }
   public openTimelogEntryForm() { this.openTool(ToolType.TIMELOG_ENTRY); }
 
+  public get onFormClosed$(): Observable<boolean> { return this._onFormClosed$.asObservable(); }
 
   public closeTool() {
     const currentToolQueue = this.currentToolQueue;
     if (currentToolQueue.length <= 1) {
       this._toolQueue$.next([]);
+      this._onFormClosed$.next(true);
     } else if (currentToolQueue.length > 1) {
       const newQueue = [];
       for (let i = 1; i < currentToolQueue.length; i++) {
@@ -62,18 +65,18 @@ export class ToolboxService {
     }
   }
 
-  public get toolIsOpen$(): Observable<boolean> {
-    const isOpen$: Subject<boolean> = new Subject();
-    this._toolQueue$.subscribe((toolQueue) => {
-      console.log("Subscribed")
-      if (toolQueue.length > 0) {
-        isOpen$.next(true);
-      } else {
-        isOpen$.next(false);
-      }
-    });
-    return isOpen$;
-  }
+  // public get toolIsOpen$(): Observable<boolean> {
+  //   const isOpen$: Subject<boolean> = new Subject();
+  //   this._toolQueue$.subscribe((toolQueue) => {
+  //     console.log("Subscribed")
+  //     if (toolQueue.length > 0) {
+  //       isOpen$.next(true);
+  //     } else {
+  //       isOpen$.next(false);
+  //     }
+  //   });
+  //   return isOpen$;
+  // }
 
   public get currentToolQueue$(): Observable<ToolType[]> { return this._toolQueue$.asObservable(); }
   public get currentToolQueue(): ToolType[] { return this._toolQueue$.getValue(); }

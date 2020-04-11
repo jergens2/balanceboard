@@ -5,15 +5,18 @@ import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-ent
 import { DaybookController } from '../../controller/daybook-controller.class';
 import { DaybookAvailabilityType } from '../../controller/items/daybook-availability-type.enum';
 import { TimeScheduleItem } from '../../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { TLEFController } from './timelog-entry-form/TLEF-controller.class';
+import { TLEFControllerItem } from './timelog-entry-form/TLEF-controller-item.class';
 
 export class TimelogDisplayGrid {
 
-  constructor(startTime: moment.Moment, endTime: moment.Moment, delineators: TimelogDelineator[], activeDayController: DaybookController) {
+  constructor(startTime: moment.Moment, endTime: moment.Moment, delineators: TimelogDelineator[], activeDayController: DaybookController, tlefController: TLEFController) {
     // console.log("Constructing timelogDisplayGrid: delineators: ", delineators);
     this._startTime = moment(startTime);
     this._endTime = moment(endTime);
     this._timeDelineators = delineators;
     this._activeController = activeDayController;
+    this._tlefController = tlefController;
     this._buildGrid();
   }
 
@@ -21,6 +24,7 @@ export class TimelogDisplayGrid {
   private _endTime: moment.Moment
   private _timeDelineators: TimelogDelineator[];
   private _activeController: DaybookController;
+  private _tlefController: TLEFController;
 
 
   private _gridItems: TimelogDisplayGridItem[] = [];
@@ -34,6 +38,9 @@ export class TimelogDisplayGrid {
   public ngStyle: any = {};
 
 
+  /**
+   * This method is for DRAWING the item, as in, user is actively dragging and drawing
+   */
   public drawTimelogEntry(drawTLE: TimelogEntryItem) {
     if (drawTLE) {
       const foundItem = this.gridItems.find((gridItem) => {
@@ -51,6 +58,9 @@ export class TimelogDisplayGrid {
     }
   }
 
+  /** 
+   *  This method is to create the item after user stops dragging.
+   */
   public createTimelogEntry(drawTLE: TimelogEntryItem) {
     if (drawTLE) {
       const foundItem = this.gridItems.find((gridItem) => {
@@ -75,89 +85,83 @@ export class TimelogDisplayGrid {
   }
 
   private _buildGrid() {
+    // this._tlefController.tlefItems.forEach((item) => {
+    //   console.log(item.toString())
+    // })
+    let displayGridNgStyle: any = {};
+    const gridItems: TimelogDisplayGridItem[] = [];
+    this._tlefController.tlefItems.forEach((item: TLEFControllerItem) => {
 
-    // console.log("Building grid.")
-    // this._activeController.logFullScheduleItems();
+      const itemMs = moment(item.endTime).diff(moment(item.startTime), 'milliseconds');
+      const percent: number = (itemMs / this.totalViewMilliseconds) * 100;
+      const availability: DaybookAvailabilityType = this._activeController.getDaybookAvailability(item.startTime, item.endTime);
+      const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, availability);
+      gridItems.push(newGridItem);
+    });
+    gridItems.forEach((gridItem) => {
+      this._activeController.timelogEntryItems.forEach((timelogEntry) => {
+        if (timelogEntry.startTime.isSameOrAfter(gridItem.startTime) && timelogEntry.endTime.isSameOrBefore(gridItem.endTime)) {
+          gridItem.timelogEntries.push(timelogEntry);
+        } else {
 
-    // console.log("Time delineators: ", this._timeDelineators)
-    const checkValues = this.totalViewMilliseconds - (this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'));
-    if (checkValues !== 0) {
-      console.log("Error:  mismatching times:")
-      console.log("  ZoomControl ms: " + this.totalViewMilliseconds);
-      console.log("   Calculated ms: " + this._timeDelineators[this._timeDelineators.length - 1].time.diff(this._timeDelineators[0].time, 'milliseconds'))
-    } else {
-      // at the very minimum there will be 2:  FRAME_START and FRAME_END delineators.
-      if (this.timeDelineators.length >= 2) {
-
-        let displayGridNgStyle: any = {};
-        let currentTime: moment.Moment = this.timeDelineators[0].time;
-        let gridItems: TimelogDisplayGridItem[] = [];
-        gridItems = this._activeController.getScheduleSlice(this.startTime, this.endTime).map((scheduleItem: TimeScheduleItem<DaybookAvailabilityType>) => {
-          const diff: number = scheduleItem.endTime.diff(scheduleItem.startTime, 'milliseconds');
-          const percent = (diff / this.totalViewMilliseconds) * 100;
-          return new TimelogDisplayGridItem(scheduleItem.startTime, scheduleItem.endTime, percent, scheduleItem.value);
-        });
-        gridItems.forEach((gridItem) => {
-          this._activeController.timelogEntryItems.forEach((timelogEntry) => {
-            if (timelogEntry.startTime.isSameOrAfter(gridItem.startTime) && timelogEntry.endTime.isSameOrBefore(gridItem.endTime)) {
-              gridItem.timelogEntries.push(timelogEntry);
-            } else {
-
-            }
-          })
-        });
-        let length = gridItems.length;
-        for (let i = 1; i < length; i++) {
-          const minPercent = 2.5;
-          const smallPercent = 6;
-          if (gridItems[i - 1].availability === gridItems[i].availability) {
-            let merge = false;
-            if (gridItems[i].availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
-              console.log(gridItems[i].percent, gridItems[i - 1].percent)
-              if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
-                merge = true;
-                gridItems[i].isVerySmallItem = true;
-              } else if (gridItems[i].percent > minPercent && gridItems[i].percent < smallPercent) {
-                gridItems[i].isSmallGridItem = true;
-              }
-            }
-            if (merge) {
-              gridItems[i].timelogEntries.forEach((tle) => gridItems[i - 1].timelogEntries.push(tle));
-              gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
-              gridItems[i - 1].endTime = gridItems[i].endTime;
-              gridItems[i - 1].isMerged = true;
-              if (gridItems[i - 1].percent > smallPercent) {
-                gridItems[i - 1].isSmallGridItem = false;
-                gridItems[i - 1].isVerySmallItem = false;
-              } else if (gridItems[i-1].percent > minPercent){
-                gridItems[i - 1].isSmallGridItem = true;
-                gridItems[i - 1].isVerySmallItem = false;
-              }else{
-                gridItems[i - 1].isVerySmallItem = true;
-              }
-              gridItems.splice(i, 1);
-              length = gridItems.length;
-              i--;
-            }
-          } else {
-            if ((gridItems[i].percent < minPercent)) {
-              gridItems[i].isVerySmallItem = true;
-            } else if ((gridItems[i].percent < smallPercent)) {
-              gridItems[i].isSmallGridItem = true;
-            }
+        }
+      })
+    });
+    for(let i=0; i<gridItems.length; i++){
+      gridItems[i].setItemIndex(i);
+    }
+    let length = gridItems.length;
+    for (let i = 1; i < length; i++) {
+      const minPercent = 2.5;
+      const smallPercent = 6;
+      if (gridItems[i - 1].availabilityType === gridItems[i].availabilityType) {
+        let merge = false;
+        if (gridItems[i].isTimelogEntry) {
+          // console.log(gridItems[i].percent, gridItems[i - 1].percent)
+          if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
+            merge = true;
+            gridItems[i].isVerySmallItem = true;
+          } else if (gridItems[i].percent > minPercent && gridItems[i].percent < smallPercent) {
+            gridItems[i].isSmallGridItem = true;
           }
         }
-        let gridTemplateRows: string = "";
-        gridItems.forEach((gridItem) => {
-          gridTemplateRows += "" + gridItem.percent.toFixed(3) + "% ";
-        });
-        displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
-        this.ngStyle = displayGridNgStyle;
-        this._gridItems = gridItems;
+        if (merge) {
+          gridItems[i].timelogEntries.forEach((tle) => gridItems[i - 1].timelogEntries.push(tle));
+          gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
+          gridItems[i - 1].endTime = gridItems[i].endTime;
+          gridItems[i - 1].isMerged = true;
+          if (gridItems[i - 1].percent > smallPercent) {
+            gridItems[i - 1].isSmallGridItem = false;
+            gridItems[i - 1].isVerySmallItem = false;
+          } else if (gridItems[i - 1].percent > minPercent) {
+            gridItems[i - 1].isSmallGridItem = true;
+            gridItems[i - 1].isVerySmallItem = false;
+          } else {
+            gridItems[i - 1].isVerySmallItem = true;
+          }
+          gridItems.splice(i, 1);
+          length = gridItems.length;
+          i--;
+        }
       } else {
-        console.log("Bigtime error: No Time Delineators.  ")
+        if ((gridItems[i].percent < minPercent)) {
+          gridItems[i].isVerySmallItem = true;
+        } else if ((gridItems[i].percent < smallPercent)) {
+          gridItems[i].isSmallGridItem = true;
+        }
       }
     }
+    let gridTemplateRows: string = "";
+    gridItems.forEach((gridItem) => {
+      gridTemplateRows += "" + gridItem.percent.toFixed(3) + "% ";
+    });
+    displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
+    this.ngStyle = displayGridNgStyle;
+    this._gridItems = gridItems;
+
+    // console.log("Grid items:")
+    // this._gridItems.forEach(item => console.log(item.toString()))
+
   }
 
   public updateOnToolChange(toolChange: { startTime: moment.Moment, endTime: moment.Moment }) {

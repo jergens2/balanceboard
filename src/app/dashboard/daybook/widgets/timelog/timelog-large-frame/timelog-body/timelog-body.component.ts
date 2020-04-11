@@ -98,9 +98,8 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
     const now = moment();
     if (now.isSameOrAfter(gridItem.startTime) && now.isSameOrBefore(gridItem.endTime)) {
-      if (gridItem.availability === DaybookAvailabilityType.AVAILABLE) {
-        return true;
-      }
+      return gridItem.isAvailable;
+
     }
     return false;
   }
@@ -114,7 +113,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   private _setActiveTLEFGridItem() {
     const controller = this.daybookDisplayService.tlefController;
     // console.log("Controller is: ", controller);
-    let activeBarItem = controller.activeItem;
+    let activeBarItem = controller.currentlyOpenTLEFItem;
     if (activeBarItem) {
       const foundItem = this.gridItems.find((gridItem) => {
         const isSame = gridItem.startTime.isSame(activeBarItem.startTime) && gridItem.endTime.isSame(activeBarItem.endTime);

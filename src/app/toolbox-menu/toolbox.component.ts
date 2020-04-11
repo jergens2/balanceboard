@@ -33,7 +33,7 @@ export class ToolsComponent implements OnInit {
     this.screenSize = this.sizeService.appScreenSize;
 
     this.toolsService.currentToolQueue$.subscribe((tools: ToolType[]) => {
-      console.log("Tool queue subscription: ", tools)
+      // console.log("Tool queue subscription: ", tools)
       if (tools.length > 0) {
         this.toolName = tools[0].toString();
       } else {

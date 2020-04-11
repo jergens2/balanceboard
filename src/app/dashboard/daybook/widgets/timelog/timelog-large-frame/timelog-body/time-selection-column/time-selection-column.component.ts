@@ -351,7 +351,6 @@ export class TimeSelectionColumnComponent implements OnInit {
     const maxDelineators = 16;
     let saveAllDelineators: moment.Moment[] = [];
     const existingValues = this.daybookDisplayService.activeDayController.savedTimeDelineators;
-    5
     existingValues.forEach((existingValue) => {
       if (this.daybookDisplayService.activeDayController.isTimeAvailable(existingValue)) {
         saveAllDelineators.push(moment(existingValue));
@@ -376,7 +375,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     // console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
 
     this._reset();
-    this.createNewTLE.emit(saveNewTLE);
+    // this.createNewTLE.emit(saveNewTLE);
   }
 
 

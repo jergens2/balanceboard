@@ -15,6 +15,8 @@ export enum TimelogDelineatorType {
     SAVED_DELINEATOR = 'SAVED_DELINEATOR',
     DAY_STRUCTURE = 'DAY_STRUCTURE',
     CUSTOM = 'CUSTOM',
+    DRAWING_TLE_START = 'DRAWING_TLE_START',
+    DRAWING_TLE_END = 'DRAWING_TLE_END'
 }
 
 export class TimelogDelineator {
@@ -25,11 +27,15 @@ export class TimelogDelineator {
         this._setIcon();
     }
 
-
+    public toString(): string {
+        return this._time.format('hh:mm a') + " : " + this.delineatorType
+    }
 
     private _time: moment.Moment;
     private _icon: IconDefinition;
     private _delineatorType: TimelogDelineatorType;
+
+    private _nowLineCrossesTLE: boolean = false;
 
     public ngStyle: any = {};
     public timelogEntryStart: TimelogEntryItem;
@@ -40,10 +46,16 @@ export class TimelogDelineator {
     public nextDelineator: TimelogDelineator;
     public previousDelineator: TimelogDelineator;
 
+    /** Used for when drawing TimelogEntry  */
+    public isTemporary: boolean = false;
+
     public get time(): moment.Moment { return this._time; }
     public set time(time: moment.Moment) { this._time = moment(time); }
     public get icon(): IconDefinition { return this._icon; }
     public get delineatorType(): TimelogDelineatorType { return this._delineatorType; };
+
+    public setNowLineCrossesTLE(){ this._nowLineCrossesTLE = true; }
+    public get nowLineCrossesTLE(): boolean { return this._nowLineCrossesTLE; }
 
     public get isSleepDelineator(): boolean { return this._delineatorType === TimelogDelineatorType.WAKEUP_TIME || this._delineatorType === TimelogDelineatorType.FALLASLEEP_TIME; }
 

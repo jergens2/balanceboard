@@ -1,4 +1,8 @@
-<div class="tlef-times-root">
+<div class="tlef-times-root" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
     <span class="entry-time">{{ entryStartTime }}</span> -
     <span class="entry-time">{{ entryEndTime  }}</span>
+
+    <div class="duration-string">
+        {{ durationString }}
+    </div>
 </div>

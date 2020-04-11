@@ -1,33 +1,43 @@
 import * as moment from 'moment';
-import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
-import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { SleepEntryItem } from '../../sleep-entry-form/sleep-entry-item.class';
-import { Subject } from 'rxjs';
+import { TLEFFormCase } from '../../tlef-form-case.enum';
 
 
 export class TLEFGridBarItem {
 
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
-    private _daybookAvailabilty: DaybookAvailabilityType;
+    private _isAvailable: boolean;
+
+    private _formCase: TLEFFormCase;
     /**
      * An alternative name might be TimelogEntryFormDisplayGridBarItem or TLEFDisplayGridBarItem
      * 
      * The grid bar items are for the timelog entry form.
      */
-    constructor(startTime: moment.Moment, endTime: moment.Moment, availability: DaybookAvailabilityType) {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, isAvailable: boolean, formCase: TLEFFormCase, backgroundColor: string) {
         this._startTime = startTime;
         this._endTime = endTime;
-        this._daybookAvailabilty = availability;
+        this._isAvailable = isAvailable;
+        this._formCase = formCase;
+        this._backgroundColor = backgroundColor;
     }
 
     private _mouseIsOver: boolean = false;
 
+    private _itemIndex: number = -1;
+    public setItemIndex(index: number) { this._itemIndex = index; }
+    public get itemIndex(): number { return this._itemIndex; }
+    
+
     public get mouseIsOver(): boolean { return this._mouseIsOver; }
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
-    public get availabilityType(): DaybookAvailabilityType { return this._daybookAvailabilty; }
+
+    public get formCase(): TLEFFormCase { return this._formCase; }
+
+    private _backgroundColor: string = "";
+    public get backgroundColor(): string { return this._backgroundColor; }
 
     public isCurrent = false;
     public isActive = false;
@@ -35,13 +45,13 @@ export class TLEFGridBarItem {
     public index = -1;
 
     public get isSleepItem(): boolean { 
-        return this._daybookAvailabilty === DaybookAvailabilityType.SLEEP;
+        return this.formCase === TLEFFormCase.SLEEP;
     }
     public get isTimelogEntryItem(): boolean { 
-        return this._daybookAvailabilty === DaybookAvailabilityType.TIMELOG_ENTRY;
+        return this.formCase !== TLEFFormCase.SLEEP;
     }
     public get isAvailable(): boolean { 
-        return this._daybookAvailabilty === DaybookAvailabilityType.AVAILABLE;
+        return this._isAvailable;
     }
 
     public buildTLE(): TimelogEntryItem{

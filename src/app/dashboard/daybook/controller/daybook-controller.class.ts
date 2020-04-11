@@ -110,9 +110,17 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             // console.log("FInding items.  start: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a') + " -- : " + foundItem.value)
             return foundItem.value;
         } else {
-            console.log("Could not find availability");
-            return null;
+            const foundInnerItem = this.fullScheduleItems.find((item) => {
+                return item.startTime.isSameOrBefore(startTime) && item.endTime.isSameOrAfter(endTime);
+            });
+            if(foundInnerItem){
+                return foundInnerItem.value;
+            }else{
+                
+            }
         }
+        console.log("Could not find an item;");
+        return null;
     }
 
 

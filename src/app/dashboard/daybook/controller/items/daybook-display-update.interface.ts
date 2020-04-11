@@ -5,7 +5,8 @@ export enum DaybookDisplayUpdateType{
     CLOCK = 'CLOCK',
     ZOOM = 'ZOOM',
     CALENDAR = 'CALENDAR',
-    DATABASE_ACTION = 'DATABASE_ACTION'
+    DATABASE_ACTION = 'DATABASE_ACTION',
+    DRAW_TIMELOG_ENTRY = 'DRAW_TIMELOG_ENTRY'
 }
 export interface DaybookDisplayUpdate{
     type: DaybookDisplayUpdateType;

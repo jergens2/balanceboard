@@ -6,6 +6,7 @@
                 {{ row.drawDelineator.time.format('h:mm a') }}
             </div>
         </div>
+        
         <div class="timelog-delineator" *ngIf="row.showTimelogDelineator"
             [ngClass]="{'sleep-delineator':row.timelogDelineator.isSleepDelineator, 'saved-delineator':row.timelogDelineator.isSaved ,'push-backwards': row.isDragging, 'is-drawing':row.ngClassIsDrawing}"
             [ngStyle]="row.delineatorNgStyle" (mouseenter)="row.onMouseEnterSavedDelineator()"

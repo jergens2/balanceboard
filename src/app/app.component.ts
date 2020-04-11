@@ -30,8 +30,11 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
   nightMode: UserSetting = null;
   sideBarOpen: boolean = true;
 
-  ifModal: boolean = false;
-  ifTools: boolean = false;
+  private _showModal: boolean = false;
+  private _showTools: boolean = false;
+
+  public get showModal(): boolean { return this._showModal; }
+  public get showTools(): boolean { return this._showTools; }
 
   constructor(
     private authService: AuthenticationService,
@@ -62,19 +65,22 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
 
     this.modalService.activeModal$.subscribe((modal: Modal) => {
       if (modal) {
-        this.ifModal = true;
+        this._showModal = true;
       } else {
-        this.ifModal = false;
+        this._showModal = false;
       }
     });
 
-    this.toolsService.toolIsOpen$.subscribe((open: boolean) => {
-      if (open === true) {
-        this.ifTools = true;
-      } else {
-        this.ifTools = false;
+    this.toolsService.currentToolQueue$.subscribe((queue)=>{
+      if(queue.length > 0){
+        this._showTools = true;
       }
     })
+    this.toolsService.onFormClosed$.subscribe((formClosed: boolean) => {
+      if (formClosed === true) {
+        this._showTools = false;
+      }
+    });
 
 
     // this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[]) => {

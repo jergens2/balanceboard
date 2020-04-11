@@ -7,6 +7,8 @@ import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.servic
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
+import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
+import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 
 @Component({
   selector: 'app-tlef-grid-items-bar',
@@ -15,7 +17,7 @@ import { DaybookDisplayService } from '../../../../../daybook-display.service';
 })
 export class TLEFGridItemsBarComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookDisplayService: DaybookDisplayService ) { }
+  constructor(private daybookDisplayService: DaybookDisplayService, private activitiesService: ActivityCategoryDefinitionService ) { }
 
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;
@@ -41,7 +43,6 @@ export class TLEFGridItemsBarComponent implements OnInit, OnDestroy {
     // this._endTime = this.daybookDisplayService.displayEndTime;
     // this._items = this.daybookDisplayService.gridBarItems;
   // }
-
 
 
   public ngOnDestroy(){

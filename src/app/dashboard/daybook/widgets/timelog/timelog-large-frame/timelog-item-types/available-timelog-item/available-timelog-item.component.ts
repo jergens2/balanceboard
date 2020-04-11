@@ -35,6 +35,10 @@ export class AvailableTimelogItemComponent implements OnInit {
 
   public faPlusCircle = faPlusCircle;
 
+
+  /**
+   * Under current setup, every time DaybookDisplayService updates, it rebuilds the entire timelog, and each of these components re-initializes here.
+   */
   ngOnInit() {
     this.gridItem.drawTLE$.subscribe((drawTimelogEntry: TimelogEntryItem) => {
       this._drawTLE = drawTimelogEntry;
@@ -44,12 +48,15 @@ export class AvailableTimelogItemComponent implements OnInit {
         this._stopDrawing();
       }
     });
+    if(this.gridItem)
 
-    this.daybookService.displayUpdated$.subscribe((update) => {
-      if (update.type !== DaybookDisplayUpdateType.CLOCK) {
-        this.gridItem.stopCreating();
-      }
-    });
+    // this.daybookService.displayUpdated$.subscribe((update) => {
+    //   console.log("DISPLAY UPDATED: ", update.type)
+    //   if (update.type !== DaybookDisplayUpdateType.CLOCK) {
+    //     console.log("Stopping creating")
+    //     this.gridItem.stopCreating();
+    //   }
+    // });
     this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe(isOpen => {
       if(!isOpen){
         this._stopDrawing();

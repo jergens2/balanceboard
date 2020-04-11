@@ -118,7 +118,7 @@ export class TimelogEntryDisplayItem {
         this._displayString = displayString;
         this._units = allEntryUnits;
 
-        console.log("Units: ", allEntryUnits);
+        // console.log("Units: ", allEntryUnits);
 
     }
 

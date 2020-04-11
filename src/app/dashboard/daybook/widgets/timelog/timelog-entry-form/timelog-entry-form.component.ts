@@ -44,7 +44,6 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
   public get controller(): TLEFController { return this.daybookService.tlefController; }
   public get formCase(): TLEFFormCase { return this._formCase; }
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
-  public get durationString(): string { return this.entryItem.durationString; }
 
   ngOnInit() {
     // console.log("Opening component")

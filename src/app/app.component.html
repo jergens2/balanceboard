@@ -20,17 +20,17 @@
             <app-sidebar></app-sidebar>
         </div>
         <div class="content"
-            *ngIf="!(ifTools && (appScreenSize == 0 || appScreenSize == 1))"
+            *ngIf="!(showTools && (appScreenSize == 0 || appScreenSize == 1))"
             [ngClass]="{'content-mobile': appScreenSize == 0, 'content-tablet': appScreenSize == 1, 'content-normal': appScreenSize == 2, 'content-large': appScreenSize == 3}">
             <router-outlet></router-outlet>
         </div>
         <div class="app-tools-container"
             [ngClass]="{'app-tools-container-mobile': appScreenSize == 0, 'app-tools-container-tablet': appScreenSize == 1, 'app-tools-container-normal': appScreenSize == 2, 'app-tools-container-large': appScreenSize == 3}"
-            *ngIf="ifTools">
+            *ngIf="showTools">
             <app-toolbox></app-toolbox>
         </div>
     </div>
 </div>
-<div class="app-modal-container" *ngIf="ifModal">
+<div class="app-modal-container" *ngIf="showModal">
     <app-modal></app-modal>
 </div>

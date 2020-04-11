@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { TimelogZoomControllerItem } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-controller-item.class';
 import { DaybookControllerService } from './controller/daybook-controller.service';
 import { DaybookController } from './controller/daybook-controller.class';
 import { DaybookWidgetType } from './widgets/daybook-widget.class';
 import { TimelogZoomType } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-type.enum';
 import * as moment from 'moment';
-import { DaybookAvailabilityType } from './controller/items/daybook-availability-type.enum';
 import { TimeUtilities } from '../../shared/utilities/time-utilities/time-utilities';
 import { TimelogDisplayGrid } from './widgets/timelog/timelog-display-grid-class';
 import { TimelogDelineator, TimelogDelineatorType } from './widgets/timelog/timelog-delineator.class';
@@ -17,6 +16,8 @@ import { ToolboxService } from '../../toolbox-menu/toolbox.service';
 import { TLEFController } from './widgets/timelog/timelog-entry-form/TLEF-controller.class';
 import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from './controller/items/daybook-display-update.interface';
 import { ToolType } from '../../toolbox-menu/tool-type.enum';
+import { TLEFFormCase } from './widgets/timelog/timelog-entry-form/tlef-form-case.enum';
+import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,7 @@ export class DaybookDisplayService {
 
   constructor(
     private daybookControllerService: DaybookControllerService,
+    private activitiesService: ActivityCategoryDefinitionService,
     private toolBoxService: ToolboxService) { }
 
   private _widgetChanged$: BehaviorSubject<DaybookWidgetType> = new BehaviorSubject(DaybookWidgetType.TIMELOG);
@@ -39,8 +41,6 @@ export class DaybookDisplayService {
   private _timelogDisplayGrid: TimelogDisplayGrid;
 
   private _tlefController: TLEFController;
-
-
 
   public get dateYYYYMMDD(): string { return this.daybookControllerService.activeDayController.dateYYYYMMDD; }
   public get activeDayController(): DaybookController { return this.daybookControllerService.activeDayController; }
@@ -62,11 +62,6 @@ export class DaybookDisplayService {
   public get timelogDisplayGrid(): TimelogDisplayGrid { return this._timelogDisplayGrid; }
   public get timelogDelineators(): TimelogDelineator[] { return this._timeDelineators; }
 
-  // public get gridBar(): DisplayGridItemsBar { return this._tlefController.gridBar; }
-  // public get gridBarItems(): TLEFGridBarItem[] { return this._tlefController.gridBar.gridBarItems; }
-  // public get activeGridBarItem$(): Observable<TLEFGridBarItem> { return this._tlefController.gridBar.activeGridBarItem$; }
-  // public get activeGridBarItem(): TLEFGridBarItem { return this._tlefController.gridBar.activeGridBarItem; }
-
   public get zoomItems(): TimelogZoomControllerItem[] { return this._zoomItems; }
   public get currentZoom(): TimelogZoomControllerItem { return this._currentZoom; }
 
@@ -76,7 +71,25 @@ export class DaybookDisplayService {
 
   public openWakeupTime() { this.tlefController.openWakeupTime(); }
   public openFallAsleepTime() { this.tlefController.openFallAsleepTime(); }
-  public drawNewTimelogEntry(drawTLE: TimelogEntryItem) { this.tlefController.drawNewTimelogEntry(drawTLE); }
+
+
+  private _drawDelineators: { start: TimelogDelineator, end: TimelogDelineator };
+
+  public drawNewTimelogEntry(drawTLE: TimelogEntryItem) {
+
+    const startDelineator = new TimelogDelineator(drawTLE.startTime, TimelogDelineatorType.DRAWING_TLE_START);
+    const endDelineator = new TimelogDelineator(drawTLE.endTime, TimelogDelineatorType.DRAWING_TLE_END);
+    this._drawDelineators = {
+      start: startDelineator,
+      end: endDelineator,
+    }
+    this._updateDisplay({
+      type: DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY,
+      controller: this.activeDayController,
+    });
+
+    // this.tlefController.drawNewTimelogEntry(drawTLE);
+  }
 
   public onZoomChanged(newZoomValue: TimelogZoomControllerItem) {
     this._currentZoom = newZoomValue;
@@ -101,15 +114,41 @@ export class DaybookDisplayService {
     console.log("Daybook Display update: ", update.type);
     this._buildZoomItems();
     this._updateTimelogDelineators();
-    let newGrid: TimelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._timeDelineators, this.activeDayController);
-    this._timelogDisplayGrid = newGrid;
+
 
     if (!this._tlefController) {
-      this._tlefController = new TLEFController(this._timeDelineators, this.activeDayController, this.clock, this.toolBoxService);
+      this._tlefController = new TLEFController(this._timeDelineators, this.activeDayController, this.clock, this.toolBoxService, this.activitiesService);
     } else {
       this._tlefController.update(this._timeDelineators, this.activeDayController, this.clock, update);
     }
+    this._updateTLEFSubscription();
+    let newGrid: TimelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._timeDelineators, this.activeDayController, this._tlefController);
+    this._timelogDisplayGrid = newGrid;
+    // this._updateDrawingTLE(update);
     this._displayUpdated$.next(update);
+  }
+
+  // private _updateDrawingTLE(update: DaybookDisplayUpdate) {
+    
+  //   if (this.tlefController.formIsOpen && update.type === DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY) {
+  //     console.log("Warning disabled")
+  //     // this._timelogDisplayGrid.items
+  //     // this._timelogDisplayGrid.createTimelogEntry(openItem.getInitialTLEValue());
+      
+  //   }
+  // }
+
+  private _tlefSubscription: Subscription = new Subscription();
+  private _updateTLEFSubscription() {
+    this._tlefSubscription.unsubscribe();
+    this._tlefSubscription = this._tlefController.onFormClosed$.subscribe((formIsClosed: boolean) => {
+      if (formIsClosed) {
+        this._updateDisplay({
+          type: DaybookDisplayUpdateType.DEFAULT,
+          controller: this.daybookControllerService.activeDayController,
+        });
+      }
+    });
   }
 
   public openNewCurrentTimelogEntry() {
@@ -147,23 +186,25 @@ export class DaybookDisplayService {
   }
 
   private _updateTimelogDelineators() {
+    let nowLineCrossesTLE: boolean = false;
+    const nowTime = moment(this.clock).startOf('minute');
     const timelogDelineators: TimelogDelineator[] = [];
     const frameStartDelineator = new TimelogDelineator(this.displayStartTime, TimelogDelineatorType.FRAME_START);
     const fameEndDelineator = new TimelogDelineator(this.displayEndTime, TimelogDelineatorType.FRAME_END);
     const wakeupDelineator = new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME);
     const fallAsleepDelineator = new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME);
-    // console.log("   Frame start is : " + this.displayStartTime.format('YYYY-MM-DD hh:mm a'))
-    // console.log("   Frame end is : " + this.displayEndTime.format('YYYY-MM-DD hh:mm a'));
-    // console.log("   wake up time  is : " + this.wakeupTime.format('YYYY-MM-DD hh:mm a'))
-    // console.log("   fall asleep time is : " + this.fallAsleepTime.format('YYYY-MM-DD hh:mm a'));
     timelogDelineators.push(frameStartDelineator);
     timelogDelineators.push(wakeupDelineator);
     timelogDelineators.push(fallAsleepDelineator);
     timelogDelineators.push(fameEndDelineator);
-    if (this.activeDayController.isToday) {
-      const nowTime = moment(this.clock).startOf('minute');
-      timelogDelineators.push(new TimelogDelineator(nowTime, TimelogDelineatorType.NOW));
+
+    if (this._drawDelineators) {
+      timelogDelineators.push(this._drawDelineators.start);
+      timelogDelineators.push(this._drawDelineators.end);
+      this._drawDelineators = null;
     }
+
+
     // console.log("   current: " , timelogDelineators.length)
     this.activeDayController.savedTimeDelineators.forEach((timeDelineation) => {
       // console.log("a saved delineator: " + timeDelineation.format('hh:mm a'))
@@ -179,9 +220,44 @@ export class DaybookDisplayService {
       timeDelineatorEnd.timelogEntryEnd = timelogEntryItem;
       timelogDelineators.push(timeDelineatorStart);
       timelogDelineators.push(timeDelineatorEnd);
+      if (nowTime.isSameOrAfter(timelogEntryItem.startTime) && nowTime.isSameOrBefore(timelogEntryItem.endTime)) {
+        nowLineCrossesTLE = true;
+      }
     });
-    // console.log("   current: " , timelogDelineators.length)
+
+    if (this.tlefController) {
+      if (this.tlefController.formIsOpen) {
+        const openItem = this.tlefController.currentlyOpenTLEFItem;
+        if (openItem.formCase === TLEFFormCase.NEW_CURRENT){
+          const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.DRAWING_TLE_START);
+          const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.DRAWING_TLE_END);
+          timelogDelineators.push(newStartDelineator);
+          timelogDelineators.push(newEndDelineator);
+        } else if(openItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
+          const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.DRAWING_TLE_START);
+          const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.DRAWING_TLE_END);
+          timelogDelineators.push(newStartDelineator);
+          timelogDelineators.push(newEndDelineator);
+          if (nowTime.isSameOrAfter(newStartDelineator.time) && nowTime.isSameOrBefore(openItem.endTime)) {
+            nowLineCrossesTLE = true;
+          }
+        } 
+        // else if (openItem.isDrawing) {
+
+        //   timelogDelineators.push(openItem.startDelineator);
+        //   timelogDelineators.push(openItem.endDelineator);
+        // }
+      }
+    }
+    if (this.activeDayController.isToday) {
+      const nowDelineator = new TimelogDelineator(nowTime, TimelogDelineatorType.NOW)
+      if (nowLineCrossesTLE) {
+        nowDelineator.setNowLineCrossesTLE();
+      }
+      timelogDelineators.push(nowDelineator);
+    }
     const sortedDelineators = this._sortDelineators(timelogDelineators);
+
     // console.log("   current: " , sortedDelineators.length)
     this._timeDelineators = sortedDelineators;
     // console.log("   This._timeDelineators = " , this._timeDelineators);
@@ -207,6 +283,8 @@ export class DaybookDisplayService {
     const priority = [
       TimelogDelineatorType.FRAME_START,
       TimelogDelineatorType.FRAME_END,
+      TimelogDelineatorType.DRAWING_TLE_END,
+      TimelogDelineatorType.DRAWING_TLE_START,
       TimelogDelineatorType.NOW,
       TimelogDelineatorType.WAKEUP_TIME,
       TimelogDelineatorType.FALLASLEEP_TIME,
@@ -214,6 +292,7 @@ export class DaybookDisplayService {
       TimelogDelineatorType.TIMELOG_ENTRY_END,
       TimelogDelineatorType.SAVED_DELINEATOR,
       TimelogDelineatorType.DAY_STRUCTURE,
+
     ];
     if (sortedDelineators.length > 0) {
       for (let i = 1; i < sortedDelineators.length; i++) {
@@ -228,8 +307,8 @@ export class DaybookDisplayService {
             sortedDelineators.splice(i, 1);
             i--;
           } else {
-            console.log('Same? ', priority[thisPriorityIndex], priority[prevPriorityIndex])
-            console.log('Error somehow with delineators.' + thisPriorityIndex + " ,  " + prevPriorityIndex)
+            // console.log('Same? ', priority[thisPriorityIndex], priority[prevPriorityIndex])
+            // console.log('Error somehow with delineators.' + thisPriorityIndex + " ,  " + prevPriorityIndex)
             // console.log(priority[thisPriorityIndex])
             // sortedDelineators.forEach((item)=>{
             //   console.log("   " + item.time.format('hh:mm a') + "  Type:" + item.delineatorType)
