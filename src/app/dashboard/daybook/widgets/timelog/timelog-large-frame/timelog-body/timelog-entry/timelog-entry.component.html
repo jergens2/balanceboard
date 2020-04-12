@@ -1,13 +1,11 @@
 <div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="displayEntry"
-    (click)="onClickOpenTimelogEntry()">
+    (click)="onClickOpenTimelogEntry()" [ngClass]="{'normal-size-entry':isNormalSize, 'small-entry': isSmallEntry, 'very-small-entry': isVerySmall}">
 
     <!-- <div *ngIf="isNormalSize" class="normal-size-entry"> -->
     <div class="units-container">
         <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
         </div>
-        <div>
-            {{ displayString }}
-        </div>
+        {{ displayString }}
     </div>
 
     <!-- </div> -->

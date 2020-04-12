@@ -22,6 +22,7 @@ import { TLEFGridItemsBarComponent } from './tlef-parts/tlef-grid-items-bar/tlef
 import { SharedModule } from '../../../../../shared/shared.module';
 import { TlefTimesComponent } from './tlef-parts/tlef-times/tlef-times.component';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { TlefPromptComponent } from './tlef-parts/tlef-prompt/tlef-prompt.component';
 
 
 
@@ -46,6 +47,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
     TlefExistingCurrentComponent,
     TLEFGridItemsBarComponent,
     TlefTimesComponent,
+    TlefPromptComponent,
   ],
   imports: [
     CommonModule,

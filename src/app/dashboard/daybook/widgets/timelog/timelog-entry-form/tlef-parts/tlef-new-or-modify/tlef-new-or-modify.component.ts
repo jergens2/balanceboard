@@ -56,10 +56,33 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
   }
 
   public onActivitiesChanged(activities: TimelogEntryActivity[]) {
-    console.log("Changela : " + activities.length, activities)
-    this._entryItem.timelogEntryActivities = activities;
-    console.log("entry item activities: ", this._entryItem.timelogEntryActivities)
-    this.controller.makeChangesTLE(this._entryItem);
+    console.log("Activities changed: " + activities.length)
+    const isSame = this._isSame(activities, this._initialActivities)
+    if (isSame) {
+      console.log("They are the same.")
+    } else {
+      console.log("They are NOT the same")
+      this._entryItem.timelogEntryActivities = activities;
+      this.controller.makeChangesTLE(this._entryItem);
+    }
+  }
+
+  private _isSame(array1: TimelogEntryActivity[], array2: TimelogEntryActivity[]): boolean {
+    let isSame: boolean = false;
+    if (array1.length === array2.length) {
+      if (array1.length === 0) {
+        isSame = true;
+      } else {
+        let allMatch: boolean = true
+        array1.forEach(arrayItem => {
+          if (array2.indexOf(arrayItem) === -1) {
+            allMatch = false;
+          }
+        });
+        isSame = allMatch;
+      }
+    }
+    return isSame;
   }
 
 }

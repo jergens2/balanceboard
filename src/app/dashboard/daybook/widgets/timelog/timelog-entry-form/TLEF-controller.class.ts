@@ -23,20 +23,16 @@ export class TLEFController {
 
     private _clock: moment.Moment;
 
-
     private _changesMadeTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
-
-
-
+    private _promptToSaveChanges: boolean = false;
     private _tlefItems: TLEFControllerItem[] = [];
-
     private _timeDelineators: TimelogDelineator[] = [];
-    
     private _activeDayController: DaybookController;
     private _currentlyOpenTLEFItem$: BehaviorSubject<TLEFControllerItem> = new BehaviorSubject(null);
+
     private toolboxService: ToolboxService;
 
-    private _activitiesService: ActivityCategoryDefinitionService; 
+    private _activitiesService: ActivityCategoryDefinitionService;
 
     constructor(timeDelineators: TimelogDelineator[], activeDayController: DaybookController,
         clock: moment.Moment, toolboxService: ToolboxService, activitiesService: ActivityCategoryDefinitionService) {
@@ -70,6 +66,8 @@ export class TLEFController {
     public get activeIndex(): number { return this.currentlyOpenTLEFItem.itemIndex; }
     public get showDeleteButton(): boolean { return this.currentlyOpenTLEFItem.getInitialTLEValue().isSavedEntry; }
 
+    public get promptToSaveChanges(): boolean { return this._promptToSaveChanges; }
+
     public get isNew(): boolean {
         const isNew = [
             TLEFFormCase.NEW_CURRENT,
@@ -90,7 +88,7 @@ export class TLEFController {
         let currentItem: TLEFControllerItem = this.currentlyOpenTLEFItem;
         this._buildItems();
         if (update.type === DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY) {
-            this.drawTimelogEntry();
+            this._drawTimelogEntry();
         } else {
             if (currentItem) {
                 this._setActiveItem(currentItem);
@@ -161,18 +159,20 @@ export class TLEFController {
     }
 
 
-    /**
-     * This method naturally assumes that any TimelogEntry that is being drawn is done so in an available area (no existing TLEs or SleepEntrys),
-     * In other words, it is up to the TimeSelectionColumn to accurately output TLEs that are being drawn.
-     * @param drawTLE 
-     */
-    public drawTimelogEntry() {
-
+    private _drawTimelogEntry() {
         const foundItem = this.tlefItems.find(item => item.startDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START)
         if (foundItem) {
-            console.log("FOUND THE ITEM, ", foundItem)
             this._openTLEFItem(foundItem);
             this.toolboxService.openTool(ToolType.TIMELOG_ENTRY);
+
+            // if (this.currentlyOpenTLEFItem) {
+            //     this._setActiveItem(foundItem);
+            // } else {
+            //     this._openTLEFItem(foundItem);
+            //     this.toolboxService.openTool(ToolType.TIMELOG_ENTRY);
+            // }
+
+
         } else {
             console.log("Error finding item to draw")
         }
@@ -248,19 +248,29 @@ export class TLEFController {
 
     private _openTLEFItem(item: TLEFControllerItem) {
         // console.log("Opening TLEF Item", item);
-        this._setActiveItem(item);
-        this._currentlyOpenTLEFItem$.next(item);
-
-        if (item.formCase === TLEFFormCase.SLEEP) {
-            this.toolboxService.openSleepEntryForm();
-        } else {
-            this.toolboxService.openTimelogEntryForm();
+        let openItem: boolean = true;
+        if (this.currentlyOpenTLEFItem) {
+            if (this.changesMade) {
+                this._promptToSaveChanges = true;
+                openItem = false;
+            }
         }
+        if (openItem) {
+            this._setActiveItem(item);
+            this._currentlyOpenTLEFItem$.next(item);
+
+            if (item.formCase === TLEFFormCase.SLEEP) {
+                this.toolboxService.openSleepEntryForm();
+            } else {
+                this.toolboxService.openTimelogEntryForm();
+            }
+        }
+
     }
 
 
     public makeChangesTLE(changedItem: TimelogEntryItem) {
-        console.log("Changes made: ", changedItem)
+        console.log("**** Changes made ")
         this._changesMadeTLE$.next(changedItem);
     }
 
@@ -276,10 +286,10 @@ export class TLEFController {
                 const startDelineator: TimelogDelineator = this._timeDelineators[i - 1];
                 let endDelineator: TimelogDelineator = this._timeDelineators[i];
                 let intersects: boolean = this._nowLineIntersects(startDelineator, endDelineator);
-                    if (intersects) {
-                        i++;
-                        endDelineator = this._timeDelineators[i];
-                    }
+                if (intersects) {
+                    i++;
+                    endDelineator = this._timeDelineators[i];
+                }
 
 
                 let endTime: moment.Moment = endDelineator.time;
@@ -316,6 +326,22 @@ export class TLEFController {
         for (let i = 0; i < items.length; i++) {
             items[i].setItemIndex(i);
         }
+
+        let currentItem = items.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+        if (currentItem) {
+            currentItem.setIsCurrent();
+        } else {
+            currentItem = items.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+            if (currentItem) {
+                currentItem.setIsCurrent();
+            } else {
+                currentItem = items.find(item => item.formCase === TLEFFormCase.EXISTING_CURRENT);
+                if (currentItem) {
+                    currentItem.setIsCurrent();
+                }
+            }
+        }
+
         this._tlefItems = items;
         // console.log("TLEF ITEMS REBUILT:")
         // this._tlefItems.forEach(item => console.log(item.toString()))
@@ -416,7 +442,7 @@ export class TLEFController {
 
                 });
             }
-        } 
+        }
         return backgroundColor;
     }
 

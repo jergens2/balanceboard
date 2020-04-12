@@ -46,7 +46,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     console.log("ON INIT ACTIVITIES ")
     this._reload();
-    this.tlefActivitiesChanged.emit(this.activityItems.map(item => item.toEntryActivity()));
+    // this.tlefActivitiesChanged.emit(this.activityItems.map(item => item.toEntryActivity()));
   }
 
   ngOnDestroy() {

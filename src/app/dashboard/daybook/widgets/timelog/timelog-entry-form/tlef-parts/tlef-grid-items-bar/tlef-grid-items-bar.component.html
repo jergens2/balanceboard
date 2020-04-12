@@ -6,7 +6,7 @@
 
     <div class="items">
         <div *ngFor="let item of items" class="item" [style.background-color]="item.backgroundColor"
-            [ngClass]="{'sleep-item': item.isSleepItem, 'active-item': item.isActive, 'current-item': item.isCurrent }"
+            [ngClass]="{'sleep-item': item.isSleepItem, 'active-item': item.isActive, 'current-item': item.isCurrent, 'is-drawing': item.isDrawing }"
             (mouseenter)="item.onMouseEnter()" (mouseleave)="item.onMouseLeave()" (click)="onClickItem(item)">
         </div>
     </div>

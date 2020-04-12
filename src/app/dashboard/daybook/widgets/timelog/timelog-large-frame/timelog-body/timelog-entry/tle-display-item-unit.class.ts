@@ -5,7 +5,8 @@ export class TimelogEntryDisplayItemUnit {
         this._activity = activity;
         this._setColor();
         this.durationMS = milliseconds;
-        if (milliseconds > (1000 * 60 * 60)) {
+
+        if (milliseconds > (this.maxMS)) {
             console.log('Error: Unit should not exceed 60 minutes');
         }
         
@@ -14,6 +15,7 @@ export class TimelogEntryDisplayItemUnit {
         this._setStyle();
     }
 
+    private maxMS = 1000 * 60 * 60
     private _activity: ActivityCategoryDefinition;
     private _radius: number;
     private _color: string;
@@ -41,12 +43,23 @@ export class TimelogEntryDisplayItemUnit {
     }
     private _setStyle(){
         const px: string = (this._radius*2) + "px";
-        this._ngStyle = {
-            'width': px,
-            'height': px,
-            'border-radius': px,
-            'background-color': this.color,
-        };
+        if(this.durationMS === this.maxMS){
+            this._ngStyle = {
+                'width': px,
+                'height': px,
+                'border-radius': this._radius/2 + "px",
+                'background-color': this.color,
+            };
+        }else{
+            
+            this._ngStyle = {
+                'width': px,
+                'height': px,
+                'border-radius': px,
+                'background-color': this.color,
+            };
+        }
+        
     }
 
 

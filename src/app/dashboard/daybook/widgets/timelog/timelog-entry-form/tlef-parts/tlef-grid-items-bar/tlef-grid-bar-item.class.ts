@@ -41,6 +41,7 @@ export class TLEFGridBarItem {
 
     public isCurrent = false;
     public isActive = false;
+    public isDrawing: boolean = false;
 
     public index = -1;
 

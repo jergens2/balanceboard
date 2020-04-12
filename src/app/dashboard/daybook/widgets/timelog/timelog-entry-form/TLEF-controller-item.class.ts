@@ -40,7 +40,6 @@ export class TLEFControllerItem {
         this._formCase = formCase;
         this._isAvailable = isAvailable;
         this._gridBarItem = new TLEFGridBarItem(startTime, endTime, isAvailable, formCase, backgroundColor);
-        this._gridBarItem.isCurrent = this._formCase === TLEFFormCase.NEW_CURRENT;
 
         this._startDelineator = startDelineator;
         this._endDelineator = endDelineator;
@@ -52,6 +51,7 @@ export class TLEFControllerItem {
         if (this.startDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
             console.log("TLEF controller item: isDrawing === true")
             this._isDrawing = true;
+            this._gridBarItem.isDrawing = true;
         }
     }
 
@@ -103,6 +103,10 @@ export class TLEFControllerItem {
     }
 
 
+    public setIsCurrent(){ 
+        this._isCurrent = true; 
+        this._gridBarItem.isCurrent = true;
+    }
 
     private _isActive: boolean = false;
     private _isCurrent: boolean = false;

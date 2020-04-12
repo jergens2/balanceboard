@@ -1,34 +1,46 @@
-<div class="timelog-entry-form-root" *ngIf="entryItem">
+<div class="timelog-entry-form-root">
+    <div *ngIf="entryItem" class="entry-item-grid">
+        <div class="entry-item">
+            <div class="tlef-form-header">
+                <div>
+                    <app-tlef-grid-items-bar></app-tlef-grid-items-bar>
+                </div>
+                <div>
+                    <app-tlef-times></app-tlef-times>
+                </div>
+            </div>
 
-    <div class="tlef-form-header">
-        <div>
-            <app-tlef-grid-items-bar></app-tlef-grid-items-bar>
+
+            <div class="tlef-form-body">
+                <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [controller]="controller">
+                </app-tlef-new-current>
+                <app-tlef-new-current-future *ngIf="formCase === 'NEW_CURRENT_FUTURE'" [controller]="controller">
+                </app-tlef-new-current-future>
+                <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'" [controller]="controller"></app-tlef-new-future>
+                <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'" [controller]="controller">
+                </app-tlef-new-previous>
+                <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'" [controller]="controller">
+                </app-tlef-existing-future>
+                <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'" [controller]="controller">
+                </app-tlef-existing-previous>
+                <app-tlef-existing-current *ngIf="formCase === 'EXISTING_CURRENT'" [controller]="controller">
+                </app-tlef-existing-current>
+            </div>
+
+
+            <app-tlef-footer class="tlef-form-footer" [controller]="controller"></app-tlef-footer>
         </div>
-        <div>
-            <app-tlef-times></app-tlef-times>
+
+
+        <div *ngIf="promptToSaveChanges" class="save-changes-prompt">
+            <app-tlef-prompt></app-tlef-prompt>
         </div>
+
+    </div>
+    <div *ngIf="!entryItem">
+        <div style="color: red; font-weight: bold;">Error: no timelog entry item</div>
     </div>
 
 
-    <div class="tlef-form-body">
-        <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [controller]="controller"></app-tlef-new-current>
-        <app-tlef-new-current-future *ngIf="formCase === 'NEW_CURRENT_FUTURE'" [controller]="controller">
-        </app-tlef-new-current-future>
-        <app-tlef-new-future *ngIf="formCase === 'NEW_FUTURE'" [controller]="controller"></app-tlef-new-future>
-        <app-tlef-new-previous *ngIf="formCase === 'NEW_PREVIOUS'" [controller]="controller"></app-tlef-new-previous>
-        <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'" [controller]="controller">
-        </app-tlef-existing-future>
-        <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'" [controller]="controller">
-        </app-tlef-existing-previous>
-        <app-tlef-existing-current *ngIf="formCase === 'EXISTING_CURRENT'" [controller]="controller">
-        </app-tlef-existing-current>
-    </div>
 
-
-    <app-tlef-footer class="tlef-form-footer" [controller]="controller"></app-tlef-footer>
-
-</div>
-
-<div *ngIf="!entryItem">
-    <div style="color: red; font-weight: bold;">Error: no timelog entry item</div>
 </div>

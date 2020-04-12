@@ -11,3 +11,10 @@
     color:gray; 
     font-weight: bold;
 }
+
+.entry-time{
+    color: rgb(0, 89, 255);
+    font-size: 0.9em;
+    font-weight: bold;
+}
+

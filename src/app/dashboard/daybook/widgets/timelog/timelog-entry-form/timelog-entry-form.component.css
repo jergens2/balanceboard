@@ -1,6 +1,8 @@
 .timelog-entry-form-root{
     display:flex;
     flex-direction: column;
+    width:100%;
+    height:100%;
 }
 
 .tlef-form-header{
@@ -10,16 +12,26 @@
     flex-direction: column;
 }
 
-.entry-time{
-    color: rgb(0, 89, 255);
-    font-size: 0.9em;
-    font-weight: bold;
+
+.entry-item-grid{
+    display:grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
+
 }
-
-
-
-
-
+.entry-item{
+    grid-row: 1 / -1;
+    grid-column: 1 / -1;
+}
+.save-changes-prompt{
+    grid-row: 1 / -1;
+    grid-column: 1 / -1;
+    width:100%;
+    height:100%;
+    /* position: relative;
+    z-index: 5; */
+    background-color: rgba(241, 241, 241, 0.92);
+}
 
 
 .tlef-form-footer{
@@ -32,3 +44,5 @@
 .medium-button{
     margin-left: 5px;
 }
+
+

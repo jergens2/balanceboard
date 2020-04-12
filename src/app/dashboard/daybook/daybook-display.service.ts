@@ -87,7 +87,6 @@ export class DaybookDisplayService {
       type: DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY,
       controller: this.activeDayController,
     });
-
     // this.tlefController.drawNewTimelogEntry(drawTLE);
   }
 
@@ -198,9 +197,12 @@ export class DaybookDisplayService {
     timelogDelineators.push(fallAsleepDelineator);
     timelogDelineators.push(fameEndDelineator);
 
+    let drawDelineatorStart: TimelogDelineator;
+    let drawDelineatorEnd: TimelogDelineator;
+    let drawItemsPushed: boolean = false;
     if (this._drawDelineators) {
-      timelogDelineators.push(this._drawDelineators.start);
-      timelogDelineators.push(this._drawDelineators.end);
+      drawDelineatorStart = this._drawDelineators.start;
+      drawDelineatorEnd = this._drawDelineators.end;
       this._drawDelineators = null;
     }
 
@@ -228,25 +230,39 @@ export class DaybookDisplayService {
     if (this.tlefController) {
       if (this.tlefController.formIsOpen) {
         const openItem = this.tlefController.currentlyOpenTLEFItem;
-        if (openItem.formCase === TLEFFormCase.NEW_CURRENT){
-          const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.DRAWING_TLE_START);
-          const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.DRAWING_TLE_END);
-          timelogDelineators.push(newStartDelineator);
-          timelogDelineators.push(newEndDelineator);
-        } else if(openItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
-          const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.DRAWING_TLE_START);
-          const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.DRAWING_TLE_END);
-          timelogDelineators.push(newStartDelineator);
-          timelogDelineators.push(newEndDelineator);
-          if (nowTime.isSameOrAfter(newStartDelineator.time) && nowTime.isSameOrBefore(openItem.endTime)) {
-            nowLineCrossesTLE = true;
-          }
-        } 
-        // else if (openItem.isDrawing) {
+        // if (openItem.formCase === TLEFFormCase.NEW_CURRENT){
+        //   const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
+        //   const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
+        //   timelogDelineators.push(newStartDelineator);
+        //   timelogDelineators.push(newEndDelineator);
+        // } else if(openItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
 
-        //   timelogDelineators.push(openItem.startDelineator);
-        //   timelogDelineators.push(openItem.endDelineator);
-        // }
+
+        // } 
+        const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
+        const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
+        // timelogDelineators.push(newStartDelineator);
+        // timelogDelineators.push(newEndDelineator);
+        if (nowTime.isSameOrAfter(newStartDelineator.time) && nowTime.isSameOrBefore(openItem.endTime)) {
+          nowLineCrossesTLE = true;
+        }
+        if (openItem.isDrawing) {
+          if(drawDelineatorStart && drawDelineatorEnd){
+            timelogDelineators.push(drawDelineatorStart);
+            timelogDelineators.push(drawDelineatorEnd);
+            
+          }else{
+            timelogDelineators.push(openItem.startDelineator);
+            timelogDelineators.push(openItem.endDelineator);
+          }
+          drawItemsPushed = true;
+        }
+      }
+    }
+    if(!drawItemsPushed){
+      if(drawDelineatorStart && drawDelineatorEnd){
+        timelogDelineators.push(drawDelineatorStart);
+        timelogDelineators.push(drawDelineatorEnd);
       }
     }
     if (this.activeDayController.isToday) {
@@ -285,11 +301,11 @@ export class DaybookDisplayService {
       TimelogDelineatorType.FRAME_END,
       TimelogDelineatorType.DRAWING_TLE_END,
       TimelogDelineatorType.DRAWING_TLE_START,
-      TimelogDelineatorType.NOW,
       TimelogDelineatorType.WAKEUP_TIME,
       TimelogDelineatorType.FALLASLEEP_TIME,
       TimelogDelineatorType.TIMELOG_ENTRY_START,
       TimelogDelineatorType.TIMELOG_ENTRY_END,
+      TimelogDelineatorType.NOW,
       TimelogDelineatorType.SAVED_DELINEATOR,
       TimelogDelineatorType.DAY_STRUCTURE,
 

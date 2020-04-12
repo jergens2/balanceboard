@@ -23,3 +23,17 @@
 .display-activity{
     
 }
+
+
+.note-container{
+
+    
+
+}
+
+
+.activities-container{
+    margin-top: 5px;
+    display:flex;
+    flex-direction: column;
+}

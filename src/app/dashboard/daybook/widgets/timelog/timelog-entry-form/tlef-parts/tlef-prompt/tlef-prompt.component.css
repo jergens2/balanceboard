@@ -1,0 +1,26 @@
+.prompt-root{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.message{
+    width:75%;
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.2em;
+}
+.buttons{
+    width: 100%;
+    margin-top:15px;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
