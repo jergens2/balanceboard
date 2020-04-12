@@ -246,16 +246,33 @@ export class TLEFController {
         }
     }
 
+    private _stachedItem: TLEFControllerItem;
+
+    public closeTLEFPrompt(){
+        console.log("Closing prompt");
+        this._promptToSaveChanges = false;
+        this._changesMadeTLE$.next(null);
+        if(this._stachedItem){
+            this._openTLEFItem(this._stachedItem);
+        }else{
+            console.log("Error: no stached item");
+        }
+        
+        this._stachedItem = null;
+    }
+
     private _openTLEFItem(item: TLEFControllerItem) {
         // console.log("Opening TLEF Item", item);
         let openItem: boolean = true;
         if (this.currentlyOpenTLEFItem) {
             if (this.changesMade) {
                 this._promptToSaveChanges = true;
+                this._stachedItem = item;
                 openItem = false;
             }
         }
         if (openItem) {
+            this._changesMadeTLE$.next(null);
             this._setActiveItem(item);
             this._currentlyOpenTLEFItem$.next(item);
 
@@ -267,6 +284,7 @@ export class TLEFController {
         }
 
     }
+
 
 
     public makeChangesTLE(changedItem: TimelogEntryItem) {

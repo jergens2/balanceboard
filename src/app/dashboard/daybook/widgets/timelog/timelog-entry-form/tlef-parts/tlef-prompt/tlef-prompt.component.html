@@ -1,10 +1,13 @@
 <div class="prompt-root">
-    <div class="message">
-        You made changes to this timelog entry.
+    <div class="container">
+        <div class="message">
+            You made changes to this timelog entry.
+        </div>
+        <div class="buttons">
+            <div class="large-button save-button" (click)="onClickSave()">Save Changes</div>
+            <div class="large-button discard-button" (click)="onClickDiscard()">Discard Changes</div>
+        </div>
     </div>
-    <div class="buttons">
-        <div class="large-button">Save Changes</div>
-        <div class="large-button">Discard Changes</div>
-    </div>
+    
 
 </div>
