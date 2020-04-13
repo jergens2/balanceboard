@@ -21,16 +21,31 @@
 }
 
 .display-activity{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     
 }
 
 
 .note-container{
 
-    
+
 
 }
 
+.units-container{
+    display:flex;
+    min-width: 25px;
+    margin-right: 5px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.unit{
+    margin: 2px;
+}
 
 .activities-container{
     margin-top: 5px;

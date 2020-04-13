@@ -16,8 +16,13 @@
         </div>
         <div class="display-activities">
             <div *ngFor="let item of displayActivities" class="display-activity">
+                <div class="units-container">
+                    <div *ngFor="let unit of item.units" class="unit" [ngStyle]="unit.ngStyle"></div>
+                </div>
+                
                 {{ item.activity.name }}
                 {{ durationString(item.durationMS)}}
+
             </div>
         </div>
     </div>

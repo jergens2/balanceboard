@@ -1,6 +1,6 @@
 <div style="display:flex;flex-direction: column;">
     Future saved Timelog Entry
     <div>{{ timeFromNow }}</div>
-    <app-tlef-view-only *ngIf="!isEditing" (editing)="onClickEdit()" [entryItem]="entryItem"></app-tlef-view-only>
+    <app-tlef-view-only *ngIf="!isEditing" (editing)="onClickEdit()" ></app-tlef-view-only>
     <app-tlef-new-or-modify *ngIf="isEditing"  [controller]="controller"></app-tlef-new-or-modify>
 </div>

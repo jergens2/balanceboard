@@ -5,6 +5,9 @@ import { ActivityCategoryDefinitionService } from '../../../../../../activities/
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { TimelogEntryDecorator } from '../timelog-entry-decorator.class';
+import { TimelogEntryDisplayItemUnit } from '../../../timelog-large-frame/timelog-body/timelog-entry/tle-display-item-unit.class';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 @Component({
   selector: 'app-tlef-view-only',
@@ -14,30 +17,35 @@ import { DurationString } from '../../../../../../../shared/utilities/time-utili
 export class TlefViewOnlyComponent implements OnInit {
 
   private _entryItem: TimelogEntryItem;
-  @Input() public set entryItem(item: TimelogEntryItem) { 
-    this._entryItem = item; 
-    this._updateDisplayActivities();
-  }
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
 
   // private _isEditing: boolean = false;
 
   @Output() public editing: EventEmitter<boolean> = new EventEmitter();
-  constructor(private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private daybookService: DaybookDisplayService, private activitiesService: ActivityCategoryDefinitionService) { }
 
   // public get isEditing(): boolean { return this._isEditing; }
 
-  private _displayActivities: { activity: ActivityCategoryDefinition, durationMS: number }[] = [];
+  private _displayActivities: { activity: ActivityCategoryDefinition, durationMS: number, units: TimelogEntryDisplayItemUnit[] }[] = [];
 
   ngOnInit() {
     this._updateDisplayActivities();
+    this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((change)=>{
+      this._updateDisplayActivities();
+    })
   }
 
   private _updateDisplayActivities(){
+    this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+    const decorator: TimelogEntryDecorator = new TimelogEntryDecorator(this.activitiesService);
     this._displayActivities = this.entryItem.timelogEntryActivities.map(item => {
+      const activity = this.activitiesService.findActivityByTreeId(item.activityTreeId);
+      const durationMS = this.entryItem.durationMilliseconds * (item.percentage / 100);
+      let units = decorator.getActivityUnits(item, (durationMS/(1000*60)));
       return {
-        activity: this.activitiesService.findActivityByTreeId(item.activityTreeId),
-        durationMS: this.entryItem.durationMilliseconds * (item.percentage / 100),
+        activity: activity,
+        durationMS: durationMS,
+        units: units,
       };
 
     });

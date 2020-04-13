@@ -157,8 +157,8 @@ export class DaybookDisplayService {
   }
 
   public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
-    console.log("Opener method:  in the daybook display service")
-    console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
+    // console.log("Opener method:  in the daybook display service")
+    // console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
     const currentTimePosition = this.daybookControllerService.todayController.timePosition;
     this.tlefController.openTimelogGridItem(gridItem, currentTimePosition);
   }
@@ -230,19 +230,8 @@ export class DaybookDisplayService {
     if (this.tlefController) {
       if (this.tlefController.formIsOpen) {
         const openItem = this.tlefController.currentlyOpenTLEFItem;
-        // if (openItem.formCase === TLEFFormCase.NEW_CURRENT){
-        //   const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
-        //   const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
-        //   timelogDelineators.push(newStartDelineator);
-        //   timelogDelineators.push(newEndDelineator);
-        // } else if(openItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
-
-
-        // } 
         const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
         const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
-        // timelogDelineators.push(newStartDelineator);
-        // timelogDelineators.push(newEndDelineator);
         if (nowTime.isSameOrAfter(newStartDelineator.time) && nowTime.isSameOrBefore(openItem.endTime)) {
           nowLineCrossesTLE = true;
         }
@@ -250,7 +239,6 @@ export class DaybookDisplayService {
           if(drawDelineatorStart && drawDelineatorEnd){
             timelogDelineators.push(drawDelineatorStart);
             timelogDelineators.push(drawDelineatorEnd);
-            
           }else{
             timelogDelineators.push(openItem.startDelineator);
             timelogDelineators.push(openItem.endDelineator);
@@ -273,13 +261,7 @@ export class DaybookDisplayService {
       timelogDelineators.push(nowDelineator);
     }
     const sortedDelineators = this._sortDelineators(timelogDelineators);
-
-    // console.log("   current: " , sortedDelineators.length)
     this._timeDelineators = sortedDelineators;
-    // console.log("   This._timeDelineators = " , this._timeDelineators);
-    // let logItems: string[] = [];
-    // sortedDelineators.forEach(sd => logItems.push("  Sorted Delineator: " + sd.time.format('YYYY-MM-DD hh:mm a') + " : " + sd.delineatorType))
-    // this._log = this._log.concat(logItems);
   }
 
   private _sortDelineators(timelogDelineators: TimelogDelineator[]): TimelogDelineator[] {
