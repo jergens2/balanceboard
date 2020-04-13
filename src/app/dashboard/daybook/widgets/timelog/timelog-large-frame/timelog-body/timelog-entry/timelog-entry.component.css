@@ -55,7 +55,7 @@
 
 .unit{
     margin: 2px;
-
+    border: 1px solid black;
 }
 
 .small-text{

@@ -14,7 +14,7 @@
         </div>
         <div *ngIf="remainingItems.length > 0" class="remaining-items">
             <div *ngFor="let item of remainingItems" style="display:flex;flex-direction: row; align-items: center;">
-                <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;"></div>
+                <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;" class="unit"></div>
             </div>
         </div>
     </div>
@@ -22,7 +22,7 @@
     <div *ngIf="isSmallSize || isVerySmallSize" [ngClass]="{'small-container':isSmallSize, 'very-small-container': isVerySmallSize}">
         <div *ngFor="let activityItem of activityItems" style="display:flex;flex-direction: row; align-items: center; margin-right:10px;">
             <div style="display:flex;flex-direction: row; align-items: flex-start;">
-                <div *ngFor="let unit of activityItem.units" [ngStyle]="unit.ngStyle">
+                <div *ngFor="let unit of activityItem.units" [ngStyle]="unit.ngStyle" class="unit">
                 </div>
             </div>
             <div class="activity-name" style="margin-left: 5px;">
@@ -31,7 +31,7 @@
         </div>
         <div *ngIf="remainingItems.length > 0" class="remaining-items">
             <div *ngFor="let item of remainingItems" style="display:flex;flex-direction: row; align-items: center;">
-                <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;"></div>
+                <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;" class="unit"></div>
             </div>
         </div>
     </div>

@@ -91,11 +91,11 @@ export class TimelogEntryComponent implements OnInit {
       { screenSize: ScreenSizes.NORMAL, itemSize: 'LARGE', maxItems: 4 },
       { screenSize: ScreenSizes.LARGE, itemSize: 'VERY_SMALL', maxItems: 4 },
       { screenSize: ScreenSizes.LARGE, itemSize: 'SMALL', maxItems: 4 },
-      { screenSize: ScreenSizes.LARGE, itemSize: 'NORMAL', maxItems: 5 },
+      { screenSize: ScreenSizes.LARGE, itemSize: 'NORMAL', maxItems: 4 },
       { screenSize: ScreenSizes.LARGE, itemSize: 'LARGE', maxItems: 6 },
-      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'VERY_SMALL', maxItems: 5 },
-      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'SMALL', maxItems: 5 },
-      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'NORMAL', maxItems: 5 },
+      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'VERY_SMALL', maxItems: 6 },
+      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'SMALL', maxItems: 6 },
+      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'NORMAL', maxItems: 6 },
       { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'LARGE', maxItems: 8 },
     ];
 
@@ -176,10 +176,11 @@ export class TimelogEntryComponent implements OnInit {
 
         if(itemsRemainingCount > 0){
           activityItems.push(activityDisplayItem);
+          itemsRemainingCount -= 1;
         }else{
           remainingItems.push(activityDisplayItem);
         }
-        itemsRemainingCount -= 1;
+        
         
       });
     }
