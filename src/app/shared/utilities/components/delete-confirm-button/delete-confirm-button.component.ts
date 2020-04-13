@@ -14,6 +14,7 @@ export class DeleteConfirmButtonComponent implements OnInit {
   public faTrash: IconDefinition = faTrash;
 
   @Input() smallMode: boolean = false;
+  @Input() isDiscard: boolean = false;
 
   private _confirmDelete = false;
   public get confirmDelete(): boolean { return this._confirmDelete; }

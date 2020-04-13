@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ScreenSizeService } from '../../../shared/app-screen-size/screen-size.service';
-import { AppScreenSize } from '../../../shared/app-screen-size/app-screen-size.enum';
+import { ScreenSizeService } from '../../../shared/screen-size/screen-size.service';
+import { ScreenSizes } from '../../../shared/screen-size/screen-sizes-enum';
 import * as moment from 'moment';
 import { ITimeBlock } from './time-block.interface';
 import { ScheduleItem } from './schedule-item.class';
@@ -20,7 +20,7 @@ export class SchedulePlannerComponent implements OnInit {
 
   faSpinner = faSpinner;
 
-  size: AppScreenSize;
+  size: ScreenSizes;
   scheduleItems: ScheduleItem[] = [];
 
   plannerGraphic: {
@@ -35,7 +35,7 @@ export class SchedulePlannerComponent implements OnInit {
 
   ngOnInit() {
     this.size = this.sizeService.appScreenSize;
-    this.sizeService.appScreenSize$.subscribe((size: AppScreenSize) => {
+    this.sizeService.appScreenSize$.subscribe((size: ScreenSizes) => {
       this.size = size;
     });
     

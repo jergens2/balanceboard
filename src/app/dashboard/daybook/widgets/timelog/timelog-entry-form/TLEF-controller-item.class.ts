@@ -49,7 +49,7 @@ export class TLEFControllerItem {
 
 
         if (this.startDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
-            console.log("TLEF controller item: isDrawing === true")
+            // console.log("TLEF controller item: isDrawing === true")
             this._isDrawing = true;
             this._gridBarItem.isDrawing = true;
         }

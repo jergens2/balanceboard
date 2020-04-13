@@ -1,43 +1,42 @@
-<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="displayEntry"
-    (click)="onClickOpenTimelogEntry()" [ngClass]="{'normal-size-entry':isNormalSize, 'small-entry': isSmallEntry, 'very-small-entry': isVerySmall}">
+<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="gridItem"
+    (click)="onClickOpenTimelogEntry()">
 
-    <!-- <div *ngIf="isNormalSize" class="normal-size-entry"> -->
-    <div class="units-container" *ngIf="!isLargeSize">
-        <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
-        </div>
-        {{ displayString }}
-    </div>
-
-    <div *ngIf="isLargeSize">
-        <div *ngFor="">
-
-        </div>
-        <div class="units-container" >
-            <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
+    <div *ngIf="isLargeSize || isNormalSize" class="large-container">
+        <div *ngFor="let activityItem of activityItems" class="activity-item">
+            <div class="activity-name">
+                {{ activityItem.name }}
             </div>
-            {{ displayString }}
-        </div>
-    </div>
-
-    <!-- </div> -->
-
-    <!-- <div *ngIf="isSmallEntry" class='small-entry'>
-        <div class="units-container">
-            <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
+            <div style="display:flex;flex-direction: row; align-items: flex-start;">
+                <div *ngFor="let unit of activityItem.units" [ngStyle]="unit.ngStyle" class="unit">
+                </div>
+                <div class="duration-string">{{ activityItem.durationString }}</div>
             </div>
-            {{ displayString }}
+        </div>
+        <div *ngIf="remainingItems.length > 0" class="remaining-items">
+            <div *ngFor="let item of remainingItems" style="display:flex;flex-direction: row; align-items: center;">
+                <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;"></div>
+            </div>
         </div>
     </div>
 
-    <div *ngIf="isVerySmall" class='very-small-entry'>
-        <div class="units-container">
-            <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
+    <div *ngIf="isSmallSize || isVerySmallSize" [ngClass]="{'small-container':isSmallSize, 'very-small-container': isVerySmallSize}">
+        <div *ngFor="let activityItem of activityItems" style="display:flex;flex-direction: row; align-items: center; margin-right:10px;">
+            <div style="display:flex;flex-direction: row; align-items: flex-start;">
+                <div *ngFor="let unit of activityItem.units" [ngStyle]="unit.ngStyle">
+                </div>
             </div>
-            {{ displayString }}
+            <div class="activity-name" style="margin-left: 5px;">
+                {{ activityItem.name }}
+            </div>
         </div>
-    </div> -->
+        <div *ngIf="remainingItems.length > 0" class="remaining-items">
+            <div *ngFor="let item of remainingItems" style="display:flex;flex-direction: row; align-items: center;">
+                <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;"></div>
+            </div>
+        </div>
+    </div>
 
 </div>
 
 
-<div *ngIf="!displayEntry" class="error-message">Error: No timelog entry</div>
+<div *ngIf="!gridItem" class="error-message">Error: No grid item</div>

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ToolboxService } from './toolbox.service';
 import { ToolType } from './tool-type.enum';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ScreenSizeService } from '../shared/app-screen-size/screen-size.service';
-import { AppScreenSize } from '../shared/app-screen-size/app-screen-size.enum';
+import { ScreenSizeService } from '../shared/screen-size/screen-size.service';
+import { ScreenSizes } from '../shared/screen-size/screen-sizes-enum';
 import * as moment from 'moment';
 import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
@@ -23,11 +23,11 @@ export class ToolsComponent implements OnInit {
   // public ifTimelogEntry: boolean = false;
 
   public toolName: string = "";
-  public screenSize: AppScreenSize;
+  public screenSize: ScreenSizes;
 
   ngOnInit() {
     // console.log("Tools component init");
-    this.sizeService.appScreenSize$.subscribe((size: AppScreenSize) => {
+    this.sizeService.appScreenSize$.subscribe((size: ScreenSizes) => {
       this.screenSize = size;
     })
     this.screenSize = this.sizeService.appScreenSize;

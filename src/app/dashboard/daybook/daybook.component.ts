@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, Observable } from 'rxjs';
-import { ScreenSizeService } from '../../shared/app-screen-size/screen-size.service';
-import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.enum';
+import { ScreenSizeService } from '../../shared/screen-size/screen-size.service';
+import { ScreenSizes } from '../../shared/screen-size/screen-sizes-enum';
 import { DaybookControllerService } from './controller/daybook-controller.service';
 import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
 import { DaybookDayItem } from './api/daybook-day-item.class';
@@ -26,7 +26,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
   private _widgets: DaybookWidget[] = [];
 
   private _widgetSubscriptions: Subscription[] = [];
-  private _screenSize: AppScreenSize;
+  private _screenSize: ScreenSizes;
   private _screenSizeSubscription: Subscription = new Subscription();
 
   public faSpinner = faSpinner;
@@ -46,7 +46,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
     return moment(this.daybookDisplayService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
   }
 
-  public get appScreenSize(): AppScreenSize { return this._screenSize; }
+  public get appScreenSize(): ScreenSizes { return this._screenSize; }
 
   public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AppScreenSize } from './app-screen-size.enum';
+import { ScreenSizes } from './screen-sizes-enum';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
@@ -13,31 +13,34 @@ export class ScreenSizeService {
   public get dimensions$(): Observable<{width:number, height:number}> {
     return this._dimensions.asObservable();
   }
-  public get dimensions(): {width:number, height:number} {
+  public get dimensions(): {width:number, height:number} {1
     return this._dimensions.getValue();
   }
 
-  private _appScreenSize$: BehaviorSubject<AppScreenSize> = new BehaviorSubject(AppScreenSize.Normal);
-  public get appScreenSize$(): Observable<AppScreenSize> {
+  private _appScreenSize$: BehaviorSubject<ScreenSizes> = new BehaviorSubject(ScreenSizes.NORMAL);
+  public get appScreenSize$(): Observable<ScreenSizes> {
     return this._appScreenSize$.asObservable();
   }
-  public get appScreenSize(): AppScreenSize {
+  public get appScreenSize(): ScreenSizes {
     return this._appScreenSize$.getValue();
   }
-  public updateSize(innerWidth: number, innerHeight:number): AppScreenSize{
+  public updateSize(innerWidth: number, innerHeight:number): ScreenSizes{
     this._dimensions.next({width:innerWidth,height:innerHeight});
-    let appScreenSize: AppScreenSize;
+    let appScreenSize: ScreenSizes;
     if(innerWidth <= 400){
-      appScreenSize = AppScreenSize.Mobile;
+      appScreenSize = ScreenSizes.MOBILE;
     };
     if(innerWidth > 400 && innerWidth <= 768){
-      appScreenSize = AppScreenSize.Tablet;
+      appScreenSize = ScreenSizes.TABLET;
     } 
     if(innerWidth > 768 && innerWidth <= 1024){
-      appScreenSize = AppScreenSize.Normal;
+      appScreenSize = ScreenSizes.NORMAL;
     }
-    if(innerWidth > 1024){
-      appScreenSize = AppScreenSize.Large;
+    if(innerWidth > 1024 && innerWidth <= 1400){
+      appScreenSize = ScreenSizes.LARGE;
+    }
+    if(innerWidth > 1400){
+      appScreenSize = ScreenSizes.VERY_LARGE;
     }
     this._appScreenSize$.next(appScreenSize);
     return appScreenSize;

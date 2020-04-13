@@ -28,14 +28,14 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log("ONINIT")
+    // console.log("ONINIT")
     // console.log("from service: " )
     // console.log("thing 1: " , this.tlefService.openedTimelogEntry)
     // console.log("thing 2: " , this.tlefService.openedTimelogEntry.timelogEntryActivities);
     this._setEntryItem();
   }
   ngOnDestroy() {
-    console.log("DESTROY")
+    // console.log("DESTROY")
     this._entryItem = null;
     this._initialActivities = [];
   }
@@ -56,12 +56,11 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
   }
 
   public onActivitiesChanged(activities: TimelogEntryActivity[]) {
-    console.log("Activities changed: " + activities.length)
+    // console.log("Activities changed: " + activities.length)
     const isSame = this._isSame(activities, this._initialActivities)
     if (isSame) {
-      console.log("They are the same.")
+
     } else {
-      console.log("They are NOT the same")
       this._entryItem.timelogEntryActivities = activities;
       this.controller.makeChangesTLE(this._entryItem);
     }

@@ -8,47 +8,42 @@
     display:flex;
     flex-direction: row;
     align-items: center;
-    /* padding: 5px; */
+    
 
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius: 2px;
+
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .timelog-entry-display-root:hover{
     border: 1px solid gray;
 }
 
-.normal-size-entry{
+.large-container{
     display:flex;
     flex-direction: row;
-    align-items: center;
-
-    padding-left: 10px;
-    padding-right: 10px;
+    flex-wrap: wrap;
 }
-.small-entry{
+
+
+.small-container{
     display:flex;
     flex-direction: row;
-    align-items: center;
     font-size: 0.7em;    
     /* border: 1px solid orange; */
     width:100%;
     height: 100%;
 
-    padding-left: 10px;
-    padding-right: 10px;
 }
-.very-small-entry{
+.very-small-container{
+    height: 1px;
     display:flex;
     flex-direction: row;
     align-items: center;
-    font-size: 0.7em;    
-    /* border: 1px solid red; */
-    width:100%;
-    height: 100%;
-
-    padding-left: 10px;
-    padding-right: 10px;
+    font-size: 0.7em;
 }
+
 
 .very-small-entry-circle{
     width: 4px;
@@ -58,35 +53,6 @@
 
 }
 
-.hour-unit{
-    display:grid;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
-    margin-right: 3px;
-    margin-bottom: 3px;
-}
-.slim-hour-unit{
-    grid-template-columns: 1fr;
-}
-
-.units-container{
-    flex-grow: 2;
-    position: absolute;
-    align-self: center;
-    display:flex;
-    flex-direction: row; 
-    align-items: flex-start;
-    flex-wrap: wrap; 
-    margin-right :10px;
-    margin-left: 25px;
-    background-color: none;
-    max-height: 100%;
-}
-
-.unit-container{
-    height: 30px;
-}
-
 .unit{
     margin: 2px;
 
@@ -94,4 +60,26 @@
 
 .small-text{
     font-size: 0.7em;
+}
+
+
+.activity-item{
+    display:flex;
+    flex-direction: column;
+    margin-right: 10px;
+    padding: 5px;
+}
+.activity-name{
+    font-weight: 600;
+}
+.duration-string{
+    font-size: 0.8em; 
+    color: gray;
+    margin-left: 5px;
+}
+
+.remaining-items{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
 }

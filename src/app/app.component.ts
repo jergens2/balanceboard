@@ -8,9 +8,9 @@ import { ModalService } from './modal/modal.service';
 import { Modal } from './modal/modal.class';
 import { ToolboxService } from './toolbox-menu/toolbox.service';
 import { ToolType } from './toolbox-menu/tool-type.enum';
-import { ScreenSizeService } from './shared/app-screen-size/screen-size.service';
-import { AppScreenSize } from './shared/app-screen-size/app-screen-size.enum';
-import { OnScreenSizeChanged } from './shared/app-screen-size/on-screen-size-changed.interface';
+import { ScreenSizeService } from './shared/screen-size/screen-size.service';
+import { ScreenSizes } from './shared/screen-size/screen-sizes-enum';
+import { OnScreenSizeChanged } from './shared/screen-size/on-screen-size-changed.interface';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -50,7 +50,7 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
     this.sizeService.updateSize(innerWidth, innerHeight);
   }
 
-  private appScreenSize: AppScreenSize;
+  private appScreenSize: ScreenSizes;
 
   private authLoginSubscription: Subscription = new Subscription();
   private authLogoutSubscription: Subscription = new Subscription();
@@ -58,7 +58,7 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
   ngOnInit() {
     this._authenticated = false;
     this.onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
-    this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize) => {
+    this.sizeService.appScreenSize$.subscribe((appScreenSize: ScreenSizes) => {
       this.onScreenSizeChanged(appScreenSize);
     })
 
@@ -124,7 +124,7 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
 
   }
 
-  onScreenSizeChanged(appScreenSize: AppScreenSize) {
+  onScreenSizeChanged(appScreenSize: ScreenSizes) {
     this.appScreenSize = appScreenSize;
     if (this.appScreenSize < 2) {
       this.sideBarOpen = false;

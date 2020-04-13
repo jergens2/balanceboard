@@ -37,7 +37,7 @@ export class TimelogEntryDisplayItem {
     public get isSmallGridItem(): boolean { return this._gridItem.isSmallGridItem; }
     public get isLargeGridItem(): boolean { return this._gridItem.isLargeGridItem; }
     public get isVerySmallGridItem(): boolean { return this._gridItem.isVerySmallItem; }
-    public get isNormalEntry(): boolean { return !this.isSmallGridItem && !this.isVerySmallGridItem; }
+    public get isNormalEntry(): boolean { return !this.isSmallGridItem && !this.isVerySmallGridItem && !this.isLargeGridItem; }
 
 
     private _buildEntry() {

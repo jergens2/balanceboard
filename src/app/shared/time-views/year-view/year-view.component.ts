@@ -4,9 +4,9 @@ import * as moment from 'moment';
 import { ActivityCategoryDefinitionService } from '../../../dashboard/activities/api/activity-category-definition.service';
 import { ActivityCategoryDefinition } from '../../../dashboard/activities/api/activity-category-definition.class';
 import { Router } from '@angular/router';
-import { ScreenSizeService } from '../../app-screen-size/screen-size.service';
-import { AppScreenSize } from '../../app-screen-size/app-screen-size.enum';
-import { OnScreenSizeChanged } from '../../app-screen-size/on-screen-size-changed.interface';
+import { ScreenSizeService } from '../../screen-size/screen-size.service';
+import { ScreenSizes } from '../../screen-size/screen-sizes-enum';
+import { OnScreenSizeChanged } from '../../screen-size/on-screen-size-changed.interface';
 import { YearViewData } from './year-view-data.interface';
 import { TimeViewsService } from '../time-views.service';
 import { TimeViewDayData } from '../time-view-day-data-interface';
@@ -36,14 +36,14 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   toolTip: { style: any, value: string };
 
-  appScreenSize: AppScreenSize;
+  appScreenSize: ScreenSizes;
 
   @Output() dateClicked: EventEmitter<any> = new EventEmitter();
   @Input() configuration: TimeViewConfiguration;
 
   ngOnInit() {
     this.appScreenSize = this.sizeService.appScreenSize;
-    this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize) => {
+    this.sizeService.appScreenSize$.subscribe((appScreenSize: ScreenSizes) => {
       this.onScreenSizeChanged(appScreenSize);
     });
 
@@ -58,7 +58,7 @@ export class YearViewComponent implements OnInit, OnScreenSizeChanged {
 
   }
 
-  onScreenSizeChanged(appScreenSize: AppScreenSize) {
+  onScreenSizeChanged(appScreenSize: ScreenSizes) {
     this.appScreenSize = appScreenSize;
   }
 

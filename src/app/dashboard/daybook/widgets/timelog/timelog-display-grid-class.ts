@@ -122,7 +122,7 @@ export class TimelogDisplayGrid {
           if ((gridItems[i].percent < minPercent) || (gridItems[i - 1].percent < minPercent)) {
             merge = true;
             gridItems[i].isVerySmallItem = true;
-          } else if (gridItems[i].percent > minPercent && gridItems[i].percent < smallPercent) {
+          } else if (gridItems[i].percent >= minPercent && gridItems[i].percent < smallPercent) {
             gridItems[i].isSmallGridItem = true;
           }else if(gridItems[i].percent >= largePercent){
             gridItems[i].isLargeGridItem = true;
@@ -147,10 +147,12 @@ export class TimelogDisplayGrid {
           i--;
         }
       } else {
-        if ((gridItems[i].percent < minPercent)) {
+        if (gridItems[i].percent < minPercent) {
           gridItems[i].isVerySmallItem = true;
-        } else if ((gridItems[i].percent < smallPercent)) {
+        } else if (gridItems[i].percent >= minPercent && gridItems[i].percent < smallPercent) {
           gridItems[i].isSmallGridItem = true;
+        }else if(gridItems[i].percent >= largePercent){
+          gridItems[i].isLargeGridItem = true;
         }
       }
     }

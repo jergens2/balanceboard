@@ -3,8 +3,7 @@ import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.servic
 import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
-import { TLEFFooterMode } from '../../tlef-footer-mode.enum';
-import { TLEFFormCase } from '../../tlef-form-case.enum';
+
 import { TLEFController } from '../../TLEF-controller.class';
 
 import * as moment from 'moment';
@@ -57,6 +56,8 @@ export class TlefFooterComponent implements OnInit {
     this.daybookService.activeDayController.deleteTimelogEntryItem$(this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
     this._close();
   }
+
+
 
   public onClickDiscard() {
     console.log("Discarding changes")

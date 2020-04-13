@@ -22,8 +22,12 @@ export class TlefPromptComponent implements OnInit {
     
     // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
     const changesMadeTLE = this._controller.changesMadeTLE;
-    console.log("Saving changes to item: ", changesMadeTLE );
-    this.daybookService.activeDayController.updateTimelogEntryItem$(changesMadeTLE);
+    if(changesMadeTLE.isSavedEntry){
+      this.daybookService.activeDayController.updateTimelogEntryItem$(changesMadeTLE);
+    }else{
+      this.daybookService.activeDayController.saveTimelogEntryItem$(changesMadeTLE);
+    }
+    
     this._controller.closeTLEFPrompt();
     // console.log("Saving changes")
     

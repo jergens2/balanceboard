@@ -28,6 +28,7 @@ export class TimelogDisplayGridItem {
     public isActiveFormItem: boolean = false;
     public isMerged: boolean = false;
 
+    public get durationMS(): number { return moment(this.endTime).diff(moment(this.startTime), 'milliseconds'); }
 
     public get itemIndex(): number { return this._itemIndex; }
 
