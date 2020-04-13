@@ -22,6 +22,7 @@ export class TimelogDisplayGridItem {
     public startTime: moment.Moment;
     public endTime: moment.Moment;
     public percent: number;
+    public isLargeGridItem: boolean = false;
     public isSmallGridItem: boolean = false;
     public isVerySmallItem: boolean = false;
     public isActiveFormItem: boolean = false;

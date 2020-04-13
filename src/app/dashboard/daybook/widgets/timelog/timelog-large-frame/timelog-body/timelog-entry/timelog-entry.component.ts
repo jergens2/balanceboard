@@ -13,6 +13,7 @@ import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogEntryDisplayItemUnit } from './tle-display-item-unit.class';
+import { TimelogEntryActivityDisplay } from './timelog-entry-activity-display.class';
 
 @Component({
   selector: 'app-timelog-entry',
@@ -27,8 +28,7 @@ export class TimelogEntryComponent implements OnInit {
     private daybookService: DaybookDisplayService) { }
 
   private _displayEntry: TimelogEntryDisplayItem;
-  private _entries: TimelogEntryItem[] = [];
-  private _activityDisplayEntries: { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] = [];
+  private _activityItems: TimelogEntryActivityDisplay[] = [];
 
   public screenSize: AppScreenSize;
 
@@ -38,12 +38,14 @@ export class TimelogEntryComponent implements OnInit {
   // public get timelogEntries(): TimelogEntryItem[] { return this.gridItem.timelogEntries; }
   public get displayEntry(): TimelogEntryDisplayItem { return this._displayEntry; }
   public get isSmallEntry(): boolean { return this.displayEntry.isSmallGridItem; }
+  public get isLargeSize(): boolean { return this.displayEntry.isLargeGridItem; }
   public get isNormalSize(): boolean { return this.displayEntry.isNormalEntry; }
   public get isVerySmall(): boolean { return this.displayEntry.isVerySmallGridItem; }
-  public get activityDisplayEntries(): { activity: ActivityCategoryDefinition, name: string, color: string, durationMinutes: number }[] { return this._activityDisplayEntries; }
   public get backgroundColor(): string { return this.displayEntry.backgroundColor; };
   public get units(): TimelogEntryDisplayItemUnit[] { return this.displayEntry.units; };
   public get displayString(): string { return this.displayEntry.displayString; };
+
+  public get activityItems(): TimelogEntryActivityDisplay[] { return this._activityItems; }
 
   ngOnInit() {
     this._rebuild();
@@ -65,6 +67,8 @@ export class TimelogEntryComponent implements OnInit {
   private _rebuild() {
     let displayEntry: TimelogEntryDisplayItem = new TimelogEntryDisplayItem(this.gridItem, this.activitiesService.activitiesTree);
     this._displayEntry = displayEntry;
+
+    
   }
 
 

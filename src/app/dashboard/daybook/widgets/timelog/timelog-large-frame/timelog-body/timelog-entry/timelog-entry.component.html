@@ -2,10 +2,21 @@
     (click)="onClickOpenTimelogEntry()" [ngClass]="{'normal-size-entry':isNormalSize, 'small-entry': isSmallEntry, 'very-small-entry': isVerySmall}">
 
     <!-- <div *ngIf="isNormalSize" class="normal-size-entry"> -->
-    <div class="units-container">
+    <div class="units-container" *ngIf="!isLargeSize">
         <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
         </div>
         {{ displayString }}
+    </div>
+
+    <div *ngIf="isLargeSize">
+        <div *ngFor="">
+
+        </div>
+        <div class="units-container" >
+            <div *ngFor="let unit of units" class="unit" [ngStyle]="unit.ngStyle">
+            </div>
+            {{ displayString }}
+        </div>
     </div>
 
     <!-- </div> -->

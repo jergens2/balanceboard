@@ -51,11 +51,14 @@ export class TimelogEntryDisplayItemUnit {
                 'background-color': this.color,
             };
         }else{
-            
+            let borderRadius = this._radius/2;
+            if(borderRadius < 3){
+                borderRadius = 3;
+            }
             this._ngStyle = {
                 'width': px,
                 'height': px,
-                'border-radius': px,
+                'border-radius': borderRadius + "px",
                 'background-color': this.color,
             };
         }

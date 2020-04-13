@@ -17,14 +17,23 @@
 
 .display-activities{
     display:flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    /* flex-direction: column; */
+
 }
 
 .display-activity{
-    width: 100%;
+    padding: 8px;
+    background-color: rgb(247, 247, 247);
+    border-radius: 5px;
+    margin: 2px;
+    min-width: 70px;
+    min-height: 70px;
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+    /* justify-content: space-between; */
     
 }
 
@@ -37,18 +46,26 @@
 
 .units-container{
     display:flex;
-    min-width: 25px;
     margin-right: 5px;
+    min-width: 50px;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
 }
 .unit{
-    margin: 2px;
+    margin-left: 2px;
 }
 
 .activities-container{
     margin-top: 5px;
     display:flex;
     flex-direction: column;
+}
+
+.item-duration{
+    font-size: 0.8em; 
+    color: gray;
+    margin-left: 5px;
+}
+.item-name{
+    font-weight: 600;
 }

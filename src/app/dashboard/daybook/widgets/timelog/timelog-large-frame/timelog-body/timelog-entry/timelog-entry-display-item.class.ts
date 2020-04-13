@@ -35,7 +35,7 @@ export class TimelogEntryDisplayItem {
     public get units(): TimelogEntryDisplayItemUnit[] { return this._units; };
     public get gridItem(): TimelogDisplayGridItem { return this._gridItem; }
     public get isSmallGridItem(): boolean { return this._gridItem.isSmallGridItem; }
-
+    public get isLargeGridItem(): boolean { return this._gridItem.isLargeGridItem; }
     public get isVerySmallGridItem(): boolean { return this._gridItem.isVerySmallItem; }
     public get isNormalEntry(): boolean { return !this.isSmallGridItem && !this.isVerySmallGridItem; }
 

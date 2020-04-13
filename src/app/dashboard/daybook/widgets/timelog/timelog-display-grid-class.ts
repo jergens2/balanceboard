@@ -114,6 +114,7 @@ export class TimelogDisplayGrid {
     for (let i = 1; i < length; i++) {
       const minPercent = 2.5;
       const smallPercent = 6;
+      const largePercent = 15;
       if (gridItems[i - 1].availabilityType === gridItems[i].availabilityType) {
         let merge = false;
         if (gridItems[i].isTimelogEntry) {
@@ -123,6 +124,8 @@ export class TimelogDisplayGrid {
             gridItems[i].isVerySmallItem = true;
           } else if (gridItems[i].percent > minPercent && gridItems[i].percent < smallPercent) {
             gridItems[i].isSmallGridItem = true;
+          }else if(gridItems[i].percent >= largePercent){
+            gridItems[i].isLargeGridItem = true;
           }
         }
         if (merge) {

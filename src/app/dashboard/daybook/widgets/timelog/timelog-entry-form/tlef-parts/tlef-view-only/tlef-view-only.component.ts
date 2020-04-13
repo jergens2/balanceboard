@@ -26,12 +26,20 @@ export class TlefViewOnlyComponent implements OnInit {
 
   // public get isEditing(): boolean { return this._isEditing; }
 
-  private _displayActivities: { activity: ActivityCategoryDefinition, durationMS: number, units: TimelogEntryDisplayItemUnit[] }[] = [];
+  private _displayActivities: { 
+    activity: ActivityCategoryDefinition, 
+    durationMS: number, 
+    units: TimelogEntryDisplayItemUnit[],
+    durationString: string,
+    }[] = [];
 
   ngOnInit() {
     this._updateDisplayActivities();
     this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((change)=>{
-      this._updateDisplayActivities();
+      if(change){
+        this._updateDisplayActivities();
+      }
+      
     })
   }
 
@@ -41,11 +49,13 @@ export class TlefViewOnlyComponent implements OnInit {
     this._displayActivities = this.entryItem.timelogEntryActivities.map(item => {
       const activity = this.activitiesService.findActivityByTreeId(item.activityTreeId);
       const durationMS = this.entryItem.durationMilliseconds * (item.percentage / 100);
-      let units = decorator.getActivityUnits(item, (durationMS/(1000*60)));
+      const units = decorator.getActivityUnits(item, (durationMS/(1000*60)));
+      const durationString = DurationString.getDurationStringFromMS(durationMS, true);
       return {
         activity: activity,
         durationMS: durationMS,
         units: units,
+        durationString: durationString,
       };
 
     });
