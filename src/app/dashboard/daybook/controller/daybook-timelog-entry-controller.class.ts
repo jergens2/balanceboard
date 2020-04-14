@@ -170,7 +170,7 @@ export class DaybookTimelogEntryController {
 
     private _buildTimelogEntryFromDataItem(dataItem: DaybookTimelogEntryDataItem): TimelogEntryItem {
         const timelogEntry: TimelogEntryItem = new TimelogEntryItem(moment(dataItem.startTimeISO), moment(dataItem.endTimeISO));
-        timelogEntry.note = dataItem.embeddedNote;
+        timelogEntry.embeddedNote = dataItem.embeddedNote;
         timelogEntry.timelogEntryActivities = dataItem.timelogEntryActivities;
         // console.log("activities set to: " , timelogEntry.timelogEntryActivities)
         timelogEntry.isSavedEntry = true;

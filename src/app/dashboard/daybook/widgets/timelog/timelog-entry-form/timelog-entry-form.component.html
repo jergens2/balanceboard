@@ -1,17 +1,22 @@
 <div class="timelog-entry-form-root">
     <div *ngIf="entryItem" class="entry-item-grid">
-        <div class="entry-item">
-            <div class="tlef-form-header">
-                <div>
-                    <app-tlef-grid-items-bar></app-tlef-grid-items-bar>
-                </div>
-                <div>
-                    <app-tlef-times></app-tlef-times>
-                </div>
+        <div class="timelog-entry-form">
+
+            <div class="tlef-part">
+                <app-tlef-grid-items-bar></app-tlef-grid-items-bar>
             </div>
 
 
-            <div class="tlef-form-body">
+
+            <div class="tlef-part">
+                <app-tlef-times></app-tlef-times>
+            </div>
+
+            <div class="tlef-part">
+                <app-tlef-embedded-note></app-tlef-embedded-note>
+            </div>
+
+            <div class="tlef-part">
                 <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [controller]="controller">
                 </app-tlef-new-current>
                 <app-tlef-new-current-future *ngIf="formCase === 'NEW_CURRENT_FUTURE'" [controller]="controller">

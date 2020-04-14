@@ -1,0 +1,31 @@
+.note-root{
+    display:flex;
+    flex-direction: column;
+}
+
+.view-note{
+    border-radius: 4px;    
+}
+.view-note:hover{
+    background-color :rgb(253, 253, 253);
+    cursor: pointer;
+}
+
+
+.edit-note-container{
+    font-size: 1.0em;
+    background-color :rgb(253, 253, 253);
+}
+.edit-note{
+    
+}
+
+.saved-note{
+    font-size: 9.0em;
+    font-weight: 500;
+}
+.add-a-note{
+    font-style: italic;
+    font-size: 0.8em;
+    color: gray;
+}

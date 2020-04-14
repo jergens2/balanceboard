@@ -1,5 +1,6 @@
 import { DaybookTimePosition } from "../../daybook-time-position-form/daybook-time-position.enum";
 import * as moment from 'moment';
+import { TimelogEntryItem } from "../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class";
 
 export class DetermineDaybookTimePosition {
     
@@ -22,6 +23,13 @@ export class DetermineDaybookTimePosition {
     }
 
     private _currentTimePosition: DaybookTimePosition;
+
+    private _caseMethod(){
+        let wakeupTimeIsSet: boolean;
+        let prevDayActivities: TimelogEntryItem[];
+        let nowTime: moment.Moment;
+        
+    }
 
     private _determineCurrentTimePosition() {
         let timePosition: DaybookTimePosition;

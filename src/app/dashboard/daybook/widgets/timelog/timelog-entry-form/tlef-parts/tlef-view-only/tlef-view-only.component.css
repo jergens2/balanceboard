@@ -20,11 +20,11 @@
     flex-direction: row;
     flex-wrap: wrap;
     /* flex-direction: column; */
-
+    justify-content: center;
 }
 
 .display-activity{
-    padding: 8px;
+    padding: 5px;
     background-color: rgb(247, 247, 247);
     border-radius: 5px;
     margin: 2px;
@@ -53,6 +53,7 @@
 }
 .unit{
     margin-left: 2px;
+    border: 1px solid black;
 }
 
 .activities-container{

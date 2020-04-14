@@ -200,7 +200,7 @@ export class TLEFController {
          * the TimelogDisplayGridItems should always be up to date / synched with the clock.
          */
         // console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
-        // if (currentTimePosition === DaybookTimePosition.NORMAL) {
+        if (currentTimePosition === DaybookTimePosition.NORMAL) {
 
             if (gridItem.isMerged) {
                 if (gridItem.timelogEntries.length >= 2) {
@@ -239,11 +239,11 @@ export class TLEFController {
                     });
                 }
             }
-        // } else {
-        //     //to do:  more stuff here.
-        //     console.log("TIME POSITION WAS NOT NORMAL, so therefore opening the Daybook form by the toolservice.")
-        //     this.toolboxService.openNewDayForm();
-        // }
+        } else {
+            //to do:  more stuff here.
+            console.log("TIME POSITION WAS NOT NORMAL: " + currentTimePosition);
+            this.toolboxService.openNewDayForm();
+        }
     }
 
     private _stachedItem: TLEFControllerItem;

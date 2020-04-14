@@ -78,7 +78,7 @@ export class TLEFControllerItem {
     public getInitialTLEValue(): TimelogEntryItem {
         const newTLE = new TimelogEntryItem(this._initialTLEValue.startTime, this._initialTLEValue.endTime);
         newTLE.timelogEntryActivities = this._initialTLEValue.timelogEntryActivities;
-        newTLE.note = this._initialTLEValue.note;
+        newTLE.embeddedNote = this._initialTLEValue.embeddedNote;
         newTLE.isSavedEntry = this._initialTLEValue.isSavedEntry;
         return newTLE;
     }
@@ -91,7 +91,7 @@ export class TLEFControllerItem {
         this._unsavedChanges = true;
         const newTLE = new TimelogEntryItem(tle.startTime, tle.endTime);
         newTLE.timelogEntryActivities = tle.timelogEntryActivities;
-        newTLE.note = tle.note;
+        newTLE.embeddedNote = tle.embeddedNote;
         newTLE.isSavedEntry = tle.isSavedEntry;
         this._unsavedTLEChanges = newTLE;
     }

@@ -23,6 +23,8 @@ import { SharedModule } from '../../../../../shared/shared.module';
 import { TlefTimesComponent } from './tlef-parts/tlef-times/tlef-times.component';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { TlefPromptComponent } from './tlef-parts/tlef-prompt/tlef-prompt.component';
+import { TlefEmbeddedNoteComponent } from './tlef-parts/tlef-embedded-note/tlef-embedded-note.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -48,12 +50,15 @@ import { TlefPromptComponent } from './tlef-parts/tlef-prompt/tlef-prompt.compon
     TLEFGridItemsBarComponent,
     TlefTimesComponent,
     TlefPromptComponent,
+    TlefEmbeddedNoteComponent,
   ],
   imports: [
     CommonModule,
     FontAwesomeModule,
     SharedModule,
     ColorPickerModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   exports: [
     // DaybookEntryFormComponent,

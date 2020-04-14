@@ -1,17 +1,75 @@
 <div class="sleep-form-root">
-    <div style="font-size:0.9em;">
+    <div style="margin-bottom: 10px;">
         <app-tlef-grid-items-bar></app-tlef-grid-items-bar>
     </div>
-    <div>
-        <span style="font-size: 0.9em; color: gray;">{{ previousDay }}</span> {{ sleepItem.startTime.format('h:mm a') }}
-        to {{ sleepItem.endTime.format('h:mm a')}} <span
-            style="font-size: 0.9em; color: gray;">{{ followingDay }}</span>
+    <div class="form-item">
+
+        <div class="time-container">
+            <div style="font-size: 0.75em; color: gray; min-width: 50px">
+                From
+            </div>
+            <div class="time-body">
+                <div style="font-size: 1.1em; font-weight: 600; min-width: 75px;">{{ sleepItem.startTime.format('h:mm a') }}</div>
+                <div style="font-size: 0.8em; font-weight: 500; margin-left: 5px;">
+                    fell asleep
+                </div>
+            </div>
+        </div>
+
+        <div class="time-container">
+            <div style="font-size: 0.75em; color: gray; min-width: 50px">
+                To
+            </div>
+            <div class="time-body">
+                <div style="font-size: 1.1em; font-weight: 600; min-width: 75px;">{{ sleepItem.endTime.format('h:mm a') }}</div>
+                <div style="font-size: 0.8em; font-weight: 500; margin-left: 5px;">
+                    woke up
+                </div>
+            </div>
+        </div>
+
     </div>
-    <div class="sleep-duration" >
-        <span style="color:gray; font-size:0.9em;">Sleep duration:</span>
-        {{ sleepDuration }}
+    <div class="form-item" style="flex-direction: row; align-items: center; margin-bottom: 5px;">
+
+        <div style="font-size: 0.75em; color: gray; min-width: 50px">
+            Duration
+        </div>
+        <div class="sleep-duration">{{ sleepDuration }}</div>
+        
     </div>
-    <div>
+
+    <div style="width: 100%; height: 1px; border-top: 1px solid rgb(221, 221, 221);"></div>
+
+    <div class="form-item" style="margin-top: 10px;">
+        <span style="color:rgb(44, 44, 44); font-size:0.8em;">Restedness</span>
+        <div style="display:flex;flex-direction: row;">
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+            <fa-icon [icon]="faBed" style="color: rgb(0, 43, 134); margin: 2px;" ></fa-icon>
+        </div>
+    </div>
+
+
+    
+    <div class="form-item">
+
+        <span style="color:rgb(44, 44, 44); font-size:0.8em;">Dreams</span>
+        <div style="font-style: italic; font-size: 0.9em; color: gray;">
+            Describe a dream you had
+        </div>
+        
+    </div>
+
+    <!-- <div>
+        Edit wakeup time section
+
         <div *ngIf="isWakeupTime" class="wakeup-section">
             <div *ngIf="!isEditingWakeupTime" (click)="onClickEditWakeupTime()" class="edit-section">
                 Wakeup time: {{ wakeupTime.format('h:mm a') }} 
@@ -30,5 +88,9 @@
                 <button class="save-button medium-button" (click)="onClickSaveFallAsleepTime()">Save changes</button>
             </div>
         </div>
-    </div>
+    </div> -->
+
+
+
+
 </div>

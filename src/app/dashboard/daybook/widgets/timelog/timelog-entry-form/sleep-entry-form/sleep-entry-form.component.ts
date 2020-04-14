@@ -3,9 +3,11 @@ import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
 import { SleepEntryItem } from './sleep-entry-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
 import * as moment from 'moment';
-import { Subscription } from 'rxjs';
+import { Subscription, from } from 'rxjs';
 import { DurationString } from '../../../../../../shared/utilities/time-utilities/duration-string.class';
 import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from '../../../../controller/items/daybook-display-update.interface';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faBed } from '@fortawesome/free-solid-svg-icons'; 
 
 @Component({
   selector: 'app-sleep-entry-form',
@@ -15,6 +17,9 @@ import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from '../../../../cont
 export class SleepInputFormComponent implements OnInit, OnDestroy {
 
   constructor(private daybookService: DaybookDisplayService) { }
+
+
+  public faBed: IconDefinition = faBed;
 
   public get sleepItem(): SleepEntryItem { return this._sleepItem; }
 
@@ -35,9 +40,9 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     // this.tlefService.formChanged$.subscribe(change => this._update());
     this._dbSubs = [
       this.daybookService.displayUpdated$.subscribe((change: DaybookDisplayUpdate) => {
-        if (change.type !== DaybookDisplayUpdateType.CLOCK) {
+
           this._update();
-        }
+        
 
       }),
       // this.daybookService.tlefController.gridBar.activeGridBarItem$.subscribe(change => this._update())
@@ -63,8 +68,7 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
   private _isEditingFallAsleepTime: boolean = false;
 
   private _update() {
-    console.log("WARNING:  INCOMPLETE.  finish this")
-    // this._sleepItem = this.daybookService.
+    this._sleepItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialSleepValue();
 
     this._wakeupTime = moment(this.daybookService.wakeupTime);
     this._fallAsleepTime = moment(this.daybookService.fallAsleepTime);

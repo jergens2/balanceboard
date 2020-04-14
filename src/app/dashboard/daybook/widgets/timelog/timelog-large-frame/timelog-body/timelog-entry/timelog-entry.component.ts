@@ -164,7 +164,7 @@ export class TimelogEntryComponent implements OnInit {
 
         let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
         if(!backgroundColorSet){
-          const alpha = 0.06;
+          const alpha = 0.04;
           this._backgroundColor = ColorConverter.convert(foundActivity.color, ColorType.RGBA, alpha);
           backgroundColorSet  = true;
         }

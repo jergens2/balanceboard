@@ -57,6 +57,10 @@
     display:flex;
     flex-direction: column;
     border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+.grid-item:hover{
+    border: 1px solid rgb(168, 168, 196);
 }
 
 .guide-line-hours{
@@ -116,9 +120,7 @@
 .available-item:hover{
     background-color: rgba(0, 89, 255, 0.05);
 }
-.activity-item{
-    flex-grow: 2;
-}
+
 .sleep-item{
     background-color: rgba(0, 89, 255, 0.05);
     border: 1px solid rgba(0, 0, 0, 0);
@@ -143,6 +145,9 @@
     -webkit-box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);
     -moz-box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);
     box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);
+    border: 1px solid rgba(79,77,158,0.57);
+}
+.active-tlef:hover{
     border: 1px solid rgb(0, 89, 255);
 }
 

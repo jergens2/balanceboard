@@ -22,9 +22,7 @@
     flex-direction: column-reverse;
     align-items: flex-end;
 }
-.create-new-tle:hover{
-    border: 1px solid blue;
-}
+
 
 
 .icon-button:hover{
