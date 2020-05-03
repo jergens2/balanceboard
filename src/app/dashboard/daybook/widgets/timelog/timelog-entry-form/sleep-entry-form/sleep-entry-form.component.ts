@@ -18,6 +18,15 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
 
   constructor(private daybookService: DaybookDisplayService) { }
 
+  private _sleepItem: SleepEntryItem;
+  private _wakeupTime: moment.Moment;
+  private _fallAsleepTime: moment.Moment;
+
+  private _setNewWakeupTime: moment.Moment;
+  private _setNewFallAsleepTime: moment.Moment;
+
+  private _isEditingWakeupTime: boolean = false;
+  private _isEditingFallAsleepTime: boolean = false;
 
   public faBed: IconDefinition = faBed;
 
@@ -28,6 +37,9 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
 
   public get wakeupTime(): moment.Moment { return this._wakeupTime; }
   public get fallAsleepTime(): moment.Moment { return this._fallAsleepTime; }
+
+  public get isEditingFallAsleepTime(): boolean { return this._isEditingFallAsleepTime; }
+  public get isEditingWakeupTime(): boolean { return this._isEditingWakeupTime; }
 
   public get sleepDuration(): string {
     return DurationString.calculateDurationString(this.sleepItem.startTime, this.sleepItem.endTime);
@@ -40,14 +52,19 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     // this.tlefService.formChanged$.subscribe(change => this._update());
     this._dbSubs = [
       this.daybookService.displayUpdated$.subscribe((change: DaybookDisplayUpdate) => {
-
+        if(change){
           this._update();
-        
-
+        }
       }),
+      this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((item)=>{
+        if(item){
+          if(item.isSleepItem){
+            this._update();
+          }
+        }
+      })
       // this.daybookService.tlefController.gridBar.activeGridBarItem$.subscribe(change => this._update())
     ];
-    
   }
 
   ngOnDestroy() {
@@ -57,24 +74,19 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     this._fallAsleepTime = null;
   }
 
-  private _sleepItem: SleepEntryItem;
-  private _wakeupTime: moment.Moment;
-  private _fallAsleepTime: moment.Moment;
 
-  private _setNewWakeupTime: moment.Moment;
-  private _setNewFallAsleepTime: moment.Moment;
-
-  private _isEditingWakeupTime: boolean = false;
-  private _isEditingFallAsleepTime: boolean = false;
 
   private _update() {
-    this._sleepItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialSleepValue();
+    if(this.daybookService.tlefController.formIsOpen){
+      this._sleepItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialSleepValue();
 
-    this._wakeupTime = moment(this.daybookService.wakeupTime);
-    this._fallAsleepTime = moment(this.daybookService.fallAsleepTime);
-
-    this._setNewWakeupTime = moment(this._wakeupTime);
-    this._setNewFallAsleepTime = moment(this._fallAsleepTime);
+      this._wakeupTime = moment(this.daybookService.wakeupTime);
+      this._fallAsleepTime = moment(this.daybookService.fallAsleepTime);
+  
+      this._setNewWakeupTime = moment(this._wakeupTime);
+      this._setNewFallAsleepTime = moment(this._fallAsleepTime);
+    }
+    
   }
 
 
@@ -87,8 +99,7 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     this._isEditingWakeupTime = false;
     this._isEditingFallAsleepTime = true;
   }
-  public get isEditingWakeupTime(): boolean { return this._isEditingWakeupTime; }
-  public get isEditingFallAsleepTime(): boolean { return this._isEditingFallAsleepTime; }
+
 
   public onWakeupTimeChanged(newTime: moment.Moment) {
     this._setNewWakeupTime = newTime;
@@ -128,6 +139,14 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
 
   public get followingDay(): string {
     return '(' + this.sleepItem.endTime.format('MMM Do') + ')';
+  }
+
+
+  public onClickFallAsleepTime(){
+    this._isEditingFallAsleepTime = true;
+  }
+  public onCloseFallAsleepTime(){
+    this._isEditingFallAsleepTime = false;
   }
 
 }

@@ -79,7 +79,7 @@ export class TLEFController {
     }
 
     public update(timeDelineators: TimelogDelineator[], activeDayController: DaybookController, clock: moment.Moment, update: DaybookDisplayUpdate) {
-        // console.log("Updating the TLEF Controller by " + update.type + "   - " + clock.format('hh:mm:ss a'))
+        console.log("Updating the TLEF Controller by " + update.type + "   - " + clock.format('hh:mm:ss a'))
         this._clock = moment(clock);
         this._timeDelineators = timeDelineators;
         this._activeDayController = activeDayController;
@@ -90,33 +90,47 @@ export class TLEFController {
         if (update.type === DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY) {
             this._drawTimelogEntry();
         } else {
-            if (currentItem) {
-                this._setActiveItem(currentItem);
+            if(currentItem){
+                if(currentItem.isDrawing){
+                    if(update.type !== DaybookDisplayUpdateType.CLOCK){
+                        this.toolboxService.closeTool();    
+                    }else{
+                        this._setActiveItem(currentItem);
+                    }
+                }else{
+                    this._setActiveItem(currentItem);
+                }
             }
         }
-
-        // if (update.type === DaybookDisplayUpdateType.CLOCK) {
-        //     if (this.formIsOpen) {
-        //     } else {
-        //     }
-        // } else {
-        // }
     }
 
 
     private _setActiveItem(activeItem: TLEFControllerItem) {
         if (activeItem) {
+            let similarItemFound = false;
             this._tlefItems.forEach(tlefItem => {
                 if (tlefItem.isSame(activeItem)) {
                     tlefItem.setAsActive();
                 } else {
-                    tlefItem.setAsNotActive();
+                    if (tlefItem.isSimilar(activeItem) && !similarItemFound) {
+                        tlefItem.setAsActive();
+                        similarItemFound = true;
+                    } else {
+                        tlefItem.setAsNotActive();
+                    }
                 }
             });
         } else {
             console.log("error: null activeItem provided")
         }
 
+    }
+
+    public clearChanges() {
+        // const activeItem = this.currentlyOpenTLEFItem;
+        this._changesMadeTLE$.next(null);
+        // this._setActiveItem(activeItem);
+        // this._currentlyOpenTLEFItem$.next(activeItem);
     }
 
     public goLeft() {
@@ -248,18 +262,20 @@ export class TLEFController {
 
     private _stachedItem: TLEFControllerItem;
 
-    public closeTLEFPrompt(){
+    public closeTLEFPrompt() {
         console.log("Closing prompt");
         this._promptToSaveChanges = false;
         this._changesMadeTLE$.next(null);
-        if(this._stachedItem){
+        if (this._stachedItem) {
             this._openTLEFItem(this._stachedItem);
-        }else{
+        } else {
             console.log("Error: no stached item");
         }
-        
+
         this._stachedItem = null;
     }
+
+
 
     private _openTLEFItem(item: TLEFControllerItem) {
         // console.log("Opening TLEF Item", item);

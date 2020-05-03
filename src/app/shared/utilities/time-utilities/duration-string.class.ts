@@ -25,15 +25,15 @@ export class DurationString {
 
     let durationString: string = "";
     function plurality(value: number, label: string, abbreviated: boolean): string {
-      if (value == 1) {
-        durationString = "1" + label + "";
-      } else {
+      // if (value == 1) {
+      //   durationString = "1 " + label + "";
+      // } else {
         if (abbreviated) {
           durationString = "" + value + "" + label;
         } else {
           durationString = "" + value + " " + label + "s";
         }
-      }
+      // }
       return durationString;
     }
 

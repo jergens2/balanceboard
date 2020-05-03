@@ -19,6 +19,10 @@ export class TlefViewOnlyComponent implements OnInit {
   private _entryItem: TimelogEntryItem;
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
 
+  private _noteText: string = "";
+
+  public get noteText(): string { return this._noteText; }
+
   // private _isEditing: boolean = false;
 
   @Output() public editing: EventEmitter<boolean> = new EventEmitter();
@@ -34,17 +38,22 @@ export class TlefViewOnlyComponent implements OnInit {
     }[] = [];
 
   ngOnInit() {
-    this._updateDisplayActivities();
+    this._update();
     this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((change)=>{
       if(change){
-        this._updateDisplayActivities();
+        this._update();
       }
       
     })
   }
 
-  private _updateDisplayActivities(){
+  private _update(){
     this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+    if(this._entryItem.embeddedNote){
+      this._noteText = this._entryItem.embeddedNote;
+    }else{
+      this._noteText = "No note";
+    }
     const decorator: TimelogEntryDecorator = new TimelogEntryDecorator(this.activitiesService);
     this._displayActivities = this.entryItem.timelogEntryActivities.map(item => {
       const activity = this.activitiesService.findActivityByTreeId(item.activityTreeId);

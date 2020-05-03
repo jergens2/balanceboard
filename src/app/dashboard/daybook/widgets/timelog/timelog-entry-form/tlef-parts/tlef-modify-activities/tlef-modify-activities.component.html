@@ -43,7 +43,7 @@
   </div>
 
   <div style="margin-top:10px;">
-    <app-activity-input-dropdown (valueChanged)="onActivityValueChanged($event)"></app-activity-input-dropdown>
+    <app-activity-input-dropdown (valueChanged)="onActivityValueChanged($event)" [placeHolder]="bookgy"></app-activity-input-dropdown>
   </div>
 </div>
 <div *ngIf="!timelogEntry" style="color:red;" class="tlef-activities-root">

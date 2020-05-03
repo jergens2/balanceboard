@@ -15,29 +15,30 @@ export class ToolboxService {
   private _onFormClosed$: Subject<boolean> = new Subject();
 
   public openTool(tool: ToolType) {
-    if (this.currentToolQueue.length > 0) {
-      if (this.currentToolQueue.indexOf(tool) > -1) {
-        const remainingItems = [];
-        this.currentToolQueue.forEach(item => {
-          if(item !== tool){
-            remainingItems.push(item);
-          }
-        });
-        const newQueue = [tool].concat(remainingItems);
-        this._toolQueue$.next(newQueue)
-      } else {
-        const newQueue = [tool].concat(this.currentToolQueue);
-        this._toolQueue$.next(newQueue);
-      }
+    this._toolQueue$.next([tool]);
+    // if (this.currentToolQueue.length > 0) {
+    //   if (this.currentToolQueue.indexOf(tool) > -1) {
+    //     const remainingItems = [];
+    //     this.currentToolQueue.forEach(item => {
+    //       if(item !== tool){
+    //         remainingItems.push(item);
+    //       }
+    //     });
+    //     const newQueue = [tool].concat(remainingItems);
+    //     this._toolQueue$.next(newQueue)
+    //   } else {
+    //     const newQueue = [tool].concat(this.currentToolQueue);
+    //     this._toolQueue$.next(newQueue);
+    //   }
 
-    } else {
-      console.log("current length is 0")
-      this._toolQueue$.next([tool]);
-    }
+    // } else {
+    //   console.log("current length is 0")
+    //   this._toolQueue$.next([tool]);
+    // }
   }
-  public openTools(tools: ToolType[]) {
-    this._toolQueue$.next(tools);
-  }
+  // public openTools(tools: ToolType[]) {
+  //   this._toolQueue$.next(tools);
+  // }
 
   public openNewDayForm() {
 
@@ -52,17 +53,20 @@ export class ToolboxService {
   public get onFormClosed$(): Observable<boolean> { return this._onFormClosed$.asObservable(); }
 
   public closeTool() {
-    const currentToolQueue = this.currentToolQueue;
-    if (currentToolQueue.length <= 1) {
-      this._toolQueue$.next([]);
-      this._onFormClosed$.next(true);
-    } else if (currentToolQueue.length > 1) {
-      const newQueue = [];
-      for (let i = 1; i < currentToolQueue.length; i++) {
-        newQueue.push(currentToolQueue[i]);
-      }
-      this._toolQueue$.next(newQueue);
-    }
+    // const currentToolQueue = this.currentToolQueue;
+    // if (currentToolQueue.length <= 1) {
+    //   this._toolQueue$.next([]);
+    //   this._onFormClosed$.next(true);
+    // } else if (currentToolQueue.length > 1) {
+    //   const newQueue = [];
+    //   for (let i = 1; i < currentToolQueue.length; i++) {
+    //     newQueue.push(currentToolQueue[i]);
+    //   }
+    //   this._toolQueue$.next(newQueue);
+    // }
+    this._onFormClosed$.next(true);
+    this._toolQueue$.next([]);
+
   }
 
   // public get toolIsOpen$(): Observable<boolean> {

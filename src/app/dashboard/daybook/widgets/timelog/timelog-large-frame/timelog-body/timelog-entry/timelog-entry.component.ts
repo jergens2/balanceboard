@@ -31,6 +31,7 @@ export class TimelogEntryComponent implements OnInit {
   private _displayEntry: TimelogEntryDisplayItem;
   private _activityItems: TimelogEntryActivityDisplay[] = [];
   private _remainingItems: TimelogEntryActivityDisplay[] = [];
+  private _noteText: string = "";
 
   public screenSize: ScreenSizes;
 
@@ -47,6 +48,8 @@ export class TimelogEntryComponent implements OnInit {
 
   public get activityItems(): TimelogEntryActivityDisplay[] { return this._activityItems; }
   public get remainingItems(): TimelogEntryActivityDisplay[] { return this._remainingItems; }
+
+  public get noteText(): string { return this._noteText; }
 
   
   ngOnInit() {
@@ -121,9 +124,12 @@ export class TimelogEntryComponent implements OnInit {
 
     let activityItems: TimelogEntryActivityDisplay[] = [];
     let remainingItems: TimelogEntryActivityDisplay[] = [];
+    this._noteText = this._getNoteText();
 
     if (this.gridItem.timelogEntries.length > 0) {
       let mergedTimelogEntry = this.gridItem.timelogEntries[0];
+      
+
       if (this.gridItem.timelogEntries.length > 1) {
         const startTime = moment(this.gridItem.timelogEntries[0].startTime);
         const endTime = moment(this.gridItem.timelogEntries[this.gridItem.timelogEntries.length - 1].endTime);
@@ -191,5 +197,27 @@ export class TimelogEntryComponent implements OnInit {
   }
 
 
+  private _getNoteText(): string{
+    let noteText: string = "";
+    let textFound: boolean = false;
+    this.gridItem.timelogEntries.sort((tle1, tle2)=>{
+      if(tle1.durationMilliseconds > tle2.durationMilliseconds){
+        return -1;
+      }else if(tle1.durationMilliseconds < tle2.durationMilliseconds){
+        return 1;
+      }else{ 
+        return 0;
+      }
+    }).forEach((tle)=>{
+      if(!textFound){
+        if(tle.embeddedNote){
+          noteText = tle.embeddedNote;
+          textFound = true;
+        }
+      }
+    });
+    console.log("Note text is: " , noteText)
+    return noteText;
+  }
 
 }

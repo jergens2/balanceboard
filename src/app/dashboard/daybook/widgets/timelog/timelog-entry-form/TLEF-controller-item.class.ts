@@ -136,6 +136,11 @@ export class TLEFControllerItem {
         // return (sameStart && sameEnd && sameCase && sameAvailability);
         return (sameStart && sameEnd);
     }
+    public isSimilar(otherItem: TLEFControllerItem): boolean{
+        const sameStart = this.startTime.isSame(otherItem.startTime);
+        const sameEnd = this.endTime.isSame(otherItem.endTime);
+        return sameStart || sameEnd;
+    }
 
 
     public toString(): string {

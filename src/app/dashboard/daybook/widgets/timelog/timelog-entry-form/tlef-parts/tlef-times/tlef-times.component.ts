@@ -5,6 +5,7 @@ import { TLEFController } from '../../TLEF-controller.class';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
 import { TLEFFormCase } from '../../tlef-form-case.enum';
+import { DaybookDisplayUpdateType } from '../../../../../controller/items/daybook-display-update.interface';
 
 @Component({
   selector: 'app-tlef-times',
@@ -16,42 +17,52 @@ export class TlefTimesComponent implements OnInit {
   constructor(private daybookService: DaybookDisplayService) { }
 
 
-  private _sub: Subscription = new Subscription();
+  private _subs: Subscription[] = [];
   private _entryItem: TimelogEntryItem;
   private _entryStartTime: moment.Moment;
   private _entryEndTime: moment.Moment;
 
   private _mouseIsOver: boolean = false;
 
-  public get controller(): TLEFController { return this.daybookService.tlefController; }
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
   public get durationString(): string { return this.entryItem.durationString; }
 
   ngOnInit() {
     // console.log("Opening component")
     this._reload();
-    this._sub = this.controller.currentlyOpenTLEFItem$.subscribe(s => this._reload());
+    this._subs = [
+      this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe(s => this._reload()),
+      // this.daybookService.displayUpdated$.subscribe((update)=>{
+      //   this._reload();
+      // })
+    ];
   }
 
   private _reload() {
 
-    if (this.controller.currentlyOpenTLEFItem) {
-      this._entryItem = this.controller.currentlyOpenTLEFItem.getInitialTLEValue();
+    if (this.daybookService.tlefController.currentlyOpenTLEFItem) {
+      if (this.daybookService.tlefController.currentlyOpenTLEFItem.isTLEItem) {
+        console.log("Reloading")
+        this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
 
-      // if (!this._entryStartTime) {
-      //   this._entryStartTime = moment(this.entryItem.startTime);
-      // }
-      // if (!this._entryEndTime) {
-      //   this._entryEndTime = moment(this.entryItem.endTime);
-      // }
-      // const tlefCase = this.controller.currentlyOpenTLEFItem.formCase;
+        // if (!this._entryStartTime) {
+        //   this._entryStartTime = moment(this.entryItem.startTime);
+        // }
+        // if (!this._entryEndTime) {
+        //   this._entryEndTime = moment(this.entryItem.endTime);
+        // }
+        // const tlefCase = this.controller.currentlyOpenTLEFItem.formCase;
 
-      this._entryStartTime = moment(this.entryItem.startTime);
-      this._entryEndTime = moment(this.entryItem.endTime);
-
-
+        this._entryStartTime = moment(this.entryItem.startTime);
+        this._entryEndTime = moment(this.entryItem.endTime);
+      } else {
+        this._entryStartTime = moment();
+        this._entryEndTime = moment();
+      }
     } else {
       this._entryItem = null;
+      this._entryStartTime = moment();
+      this._entryEndTime = moment();
     }
   }
 

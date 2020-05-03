@@ -34,6 +34,9 @@ export class TlefExistingFutureComponent implements OnInit {
   ngOnInit() { 
     this._updateClock()
     timer(0, 1000).subscribe(tick => this._updateClock());
+    this.daybookDisplayService.tlefController.currentlyOpenTLEFItem$.subscribe((change)=>{
+      this._isEditing = false;
+    });
   }
 
   private _timeFromNow: string = "";

@@ -21,7 +21,7 @@
 .large-container{
     display:flex;
     flex-direction: row;
-    align-items: center;
+    /* align-items: center; */
     flex-wrap: wrap;
     width:100%;
 }
@@ -82,4 +82,17 @@
     display:flex;
     flex-direction: row;
     align-items: center;
+}
+
+
+.note-text-small{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 2;
+    max-width: 200px;
+    max-height: 20px;
+
+    overflow-x: hidden;
+    white-space:nowrap;
+    background-color: rgba(96, 96, 228, 0.336);
 }

@@ -1,13 +1,16 @@
 <div class="note-root">
-    <div *ngIf="!isEditing" class="view-note" (mouseenter)="onMouseEnterView()" (mouseleave)="onMouseLeaveView()">
-        <div *ngIf="isSavedNote" class="saved-note">{{ savedNote }}</div>
-        <div *ngIf="!isSavedNote" class="add-a-note">
-            Add a note
-        </div>
-    </div>
-    <div *ngIf="isEditing" class="edit-note-container" >
-        <input type="text" class="edit-note" [formControl]="noteFormControl">
 
-    </div>
+
+    <p *ngIf="!isEditing && isSavedNote" class="view-note" (click)="onClickEdit()">
+        {{ noteText }}
+    </p>
+
+
+
+    <textarea *ngIf="isEditing" type="text" class="note-input" [ngClass]="inputNgClass" [formControl]="noteFormControl"
+        (click)="onClickEdit()" placeholder="Add a note">
+        </textarea>
+
+
 
 </div>

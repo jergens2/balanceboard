@@ -28,8 +28,6 @@ export class TlefFooterComponent implements OnInit {
 
   public get isNew(): boolean { return this._controller.isNew; }
 
-  private _changedTimelogEntryItem: TimelogEntryItem;
-
   ngOnInit() {
   }
 
@@ -44,11 +42,12 @@ export class TlefFooterComponent implements OnInit {
   }
 
   public onClickSaveChanges() {
-    console.log("Saving changes to item: ",  this._changedTimelogEntryItem);
+
     // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
     this.daybookService.activeDayController.updateTimelogEntryItem$(this.controller.changesMadeTLE);
     // console.log("Saving changes")
-    this._close();
+    // this._close();
+    this.controller.clearChanges();
   }
 
   public onDelete() {

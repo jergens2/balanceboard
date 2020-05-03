@@ -4,7 +4,7 @@
   <div class="search-box" [ngClass]="{'search-box-expanded': searchBoxExpanded, 'search-box-active': searchBoxActive}">
     <div class="action-search">
       <fa-icon [icon]="faSearch" class="search-icon" (click)="onClickSearchButton()"></fa-icon>
-      <input type="text" class="search-input" placeholder="Search for activity" [value]="activityTextInputValue" (focus)="itemState.startEditing()"
+      <input type="text" class="search-input" [placeholder]="placeHolder" [value]="activityTextInputValue" (focus)="itemState.startEditing()"
         (keyup)="onActivityInputKeyUp($event)" (keydown)="onActivityInputKeyDown($event)">
       <!-- [value]="activityTextInputValue" -->
     </div>

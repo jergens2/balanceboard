@@ -37,6 +37,21 @@
     
 }
 
+.embedded-note{
+    font-size: 0.9em;
+    font-weight: 500;
+
+    max-width: 328px;
+    max-height: 150px;
+    display:flex;
+    flex-direction: row;
+    /* flex-wrap: wrap; */
+    word-wrap: break-word;
+    text-overflow: clip;
+
+    overflow-x: hidden;
+}
+
 
 .note-container{
 

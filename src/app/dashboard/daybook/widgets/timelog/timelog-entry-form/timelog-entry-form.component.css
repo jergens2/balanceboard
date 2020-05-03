@@ -37,6 +37,11 @@
     background-color: rgba(241, 241, 241, 0.85);
 }
 
+.tlef-part{
+    max-width: 100%;
+    margin-bottom: 10px;
+}
+
 
 .tlef-form-footer{
     margin-top: 15px;

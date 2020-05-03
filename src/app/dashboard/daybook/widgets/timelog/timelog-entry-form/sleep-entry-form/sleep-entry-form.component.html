@@ -4,16 +4,20 @@
     </div>
     <div class="form-item">
 
-        <div class="time-container">
+        <div class="time-container" *ngIf="!isEditingFallAsleepTime" (click)="onClickFallAsleepTime()">
             <div style="font-size: 0.75em; color: gray; min-width: 50px">
                 From
             </div>
             <div class="time-body">
+                <div class="sleep-item-date">{{ sleepItem.startTime.format('MMM Do') }} </div>
                 <div style="font-size: 1.1em; font-weight: 600; min-width: 75px;">{{ sleepItem.startTime.format('h:mm a') }}</div>
                 <div style="font-size: 0.8em; font-weight: 500; margin-left: 5px;">
                     fell asleep
                 </div>
             </div>
+        </div>
+        <div *ngIf="isEditingFallAsleepTime">
+            <app-fall-asleep-time (close)="onCloseFallAsleepTime()"></app-fall-asleep-time>
         </div>
 
         <div class="time-container">
@@ -21,6 +25,7 @@
                 To
             </div>
             <div class="time-body">
+                <div class="sleep-item-date">{{ sleepItem.endTime.format('MMM Do') }} </div>
                 <div style="font-size: 1.1em; font-weight: 600; min-width: 75px;">{{ sleepItem.endTime.format('h:mm a') }}</div>
                 <div style="font-size: 0.8em; font-weight: 500; margin-left: 5px;">
                     woke up

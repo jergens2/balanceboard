@@ -1,10 +1,11 @@
 <div style="display:flex;flex-direction: column;">
 
-    <!-- <div class="form-section" *ngIf="modifyingTimes">
-        <app-tlef-modify-times [entryItem]="entryItem" [startTimeBoundary]="startTimeBoundary"
-            [endTimeBoundary]="endTimeBoundary" (timesModified)="onTimesModified($event)">
-        </app-tlef-modify-times>
-    </div> -->
+    <div class="form-section" >
+        <textarea type="text" class="note-input" [ngClass]="inputNgClass" [formControl]="noteFormControl" [rows]="rows"
+        placeholder="Add a note">
+        </textarea>
+
+    </div>
 
     <div class="form-section" style="background-color: rgb(252, 252, 252);">
         <app-tlef-modify-activities (tlefActivitiesChanged)="onActivitiesChanged($event)" [initialActivities]="initialActivities">

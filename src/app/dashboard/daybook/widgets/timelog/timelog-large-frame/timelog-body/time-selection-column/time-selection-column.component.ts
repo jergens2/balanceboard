@@ -6,6 +6,7 @@ import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
+import { DaybookDisplayUpdateType } from '../../../../../controller/items/daybook-display-update.interface';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -46,7 +47,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   ngOnInit() {
     this._buildRows(this._calculateDivisor());
-    this.daybookDisplayService.displayUpdated$.subscribe((changed) => {
+    this.daybookDisplayService.displayUpdated$.subscribe((update) => {
       this._buildRows(this._calculateDivisor());
     });
   }

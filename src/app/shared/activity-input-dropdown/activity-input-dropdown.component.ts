@@ -42,8 +42,11 @@ export class ActivityInputDropdownComponent implements OnInit {
   faCaretRight = faCaretRight;
 
 
+  public placeHolder: string = "Search for activity";
 
-
+  @Input('placeHolder') setPlaceHolderValue(value: string){
+    this.placeHolder = value;
+  }
 
   @Output() valueChanged: EventEmitter<ActivityCategoryDefinition> = new EventEmitter<ActivityCategoryDefinition>();
   @Input('initialValue') set initialValue(providedParent: ActivityCategoryDefinition) {

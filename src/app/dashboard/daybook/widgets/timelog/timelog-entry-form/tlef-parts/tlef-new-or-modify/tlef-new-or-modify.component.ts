@@ -3,6 +3,9 @@ import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/time
 import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { TLEFController } from '../../TLEF-controller.class';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 @Component({
   selector: 'app-tlef-new-or-modify',
@@ -11,7 +14,7 @@ import { TLEFController } from '../../TLEF-controller.class';
 })
 export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
 
-  constructor() { }
+  constructor(private daybookService: DaybookDisplayService) { }
 
   private _controller: TLEFController;
   @Input() public set controller(controller: TLEFController) { this._controller = controller; }
@@ -19,13 +22,24 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
 
 
   private _initialActivities: TimelogEntryActivity[] = [];
+  private _initialText: string;
+  private _textValueChangeSub: Subscription = new Subscription();
   private _entryItem: TimelogEntryItem;
+  private _noteText: string = "";
+  private _hasSavedNote: boolean = false;
+  private _rows: number = 1;
 
+  public get rows(): number { return this._rows; }
   public get timelogEntry(): TimelogEntryItem { return this._entryItem; }
+
+  public get noteText(): string { return this._noteText; }
 
   public get initialActivities(): TimelogEntryActivity[] {
     return this._initialActivities;
   }
+
+  private _noteFormControl: FormControl;
+  public get noteFormControl(): FormControl { return this._noteFormControl; }
 
   ngOnInit() {
     // console.log("ONINIT")
@@ -33,6 +47,13 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
     // console.log("thing 1: " , this.tlefService.openedTimelogEntry)
     // console.log("thing 2: " , this.tlefService.openedTimelogEntry.timelogEntryActivities);
     this._setEntryItem();
+    this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((tlefItem)=>{
+      if(tlefItem){
+        if(tlefItem.isTLEItem){
+          this._setEntryItem();
+        }
+      }
+    });
   }
   ngOnDestroy() {
     // console.log("DESTROY")
@@ -45,6 +66,17 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
     this._initialActivities = [];
     // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
     if (this._entryItem) {
+      if(this._entryItem.embeddedNote){
+        this._noteText = this._entryItem.embeddedNote;
+        this._initialText = this._entryItem.embeddedNote;
+        
+        this._hasSavedNote = true;
+      }else{
+        // this._noteText = "No note";
+        this._initialText = "";
+        this._hasSavedNote = false;
+      }
+      
       if (this._entryItem.timelogEntryActivities) {
         this._entryItem.timelogEntryActivities.forEach((item) => {
           this._initialActivities.push(item);
@@ -52,13 +84,23 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
       }
     }
 
+    this._noteFormControl = new FormControl(this._noteText);
+    this._textValueChangeSub.unsubscribe();
+    this._textValueChangeSub = this._noteFormControl.valueChanges.subscribe((value: any)=>{
+      this._checkForTextChanges(value);
+    });
+    let length = this._noteText.length;
+    const charsPerRow = 43;
+    let rows = Math.ceil(length/charsPerRow);
+    this._rows = rows;
     // console.log("initial activities: " + this._initialActivities.length , this._initialActivities)
   }
 
   public onActivitiesChanged(activities: TimelogEntryActivity[]) {
     // console.log("Activities changed: " + activities.length)
-    const isSame = this._isSame(activities, this._initialActivities)
-    if (isSame) {
+    const isSameActivities = this._sameActivities(activities, this._initialActivities);
+    // const isSameText = this._initialText === this._noteFormControl.
+    if (isSameActivities) {
 
     } else {
       this._entryItem.timelogEntryActivities = activities;
@@ -66,7 +108,20 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _isSame(array1: TimelogEntryActivity[], array2: TimelogEntryActivity[]): boolean {
+
+  private _checkForTextChanges(formValue: string){
+    let changesMade: boolean = false;
+    if(this._noteText === formValue){
+
+    }else{
+      changesMade = true;
+      this._entryItem.embeddedNote = formValue;
+      this._controller.makeChangesTLE(this._entryItem);
+    }
+
+  }
+
+  private _sameActivities(array1: TimelogEntryActivity[], array2: TimelogEntryActivity[]): boolean {
     let isSame: boolean = false;
     if (array1.length === array2.length) {
       if (array1.length === 0) {

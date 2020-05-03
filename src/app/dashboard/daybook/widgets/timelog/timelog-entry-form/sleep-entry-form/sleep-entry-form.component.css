@@ -26,6 +26,10 @@
     flex-direction: row;
     align-items: center;
 }
+.time-container:hover{
+    cursor: pointer;
+    background-color: rgb(247, 247, 247);
+}
 .time-body{
     display:flex;
     flex-direction: row;
@@ -41,4 +45,12 @@
     font-weight: bold; 
     color: rgb(0, 48, 138); font-size: 1.2em;
     margin: 5px;
+}
+
+.sleep-item-date{
+    font-size: 0.9em; 
+    font-weight: 400; 
+    color: gray; 
+    min-width: 60px; 
+    margin-right:5px;
 }

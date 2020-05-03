@@ -25,6 +25,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
 import { TlefPromptComponent } from './tlef-parts/tlef-prompt/tlef-prompt.component';
 import { TlefEmbeddedNoteComponent } from './tlef-parts/tlef-embedded-note/tlef-embedded-note.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FallAsleepTimeComponent } from './sleep-entry-form/fall-asleep-time/fall-asleep-time.component';
 
 
 
@@ -51,6 +52,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     TlefTimesComponent,
     TlefPromptComponent,
     TlefEmbeddedNoteComponent,
+    FallAsleepTimeComponent,
   ],
   imports: [
     CommonModule,

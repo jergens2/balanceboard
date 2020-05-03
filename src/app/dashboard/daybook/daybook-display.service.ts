@@ -110,7 +110,7 @@ export class DaybookDisplayService {
   }
 
   private _updateDisplay(update: DaybookDisplayUpdate) {
-    // console.log("Daybook Display update: ", update.type);
+    console.log("Daybook Display update: ", update.type);
     this._buildZoomItems();
     this._updateTimelogDelineators();
 

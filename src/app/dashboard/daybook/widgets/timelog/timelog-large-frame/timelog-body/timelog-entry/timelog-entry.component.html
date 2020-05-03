@@ -23,6 +23,10 @@
 
         <div *ngIf="isSmallSize || isVerySmallSize"
             [ngClass]="{'small-container':isSmallSize, 'very-small-container': isVerySmallSize}">
+            <div class="note-text-small">
+                <p>{{ noteText }}</p>
+                
+            </div>
             <div *ngFor="let activityItem of activityItems"
                 style="display:flex;flex-direction: row; align-items: center; margin-right:10px;">
                 <div style="display:flex;flex-direction: row; align-items: flex-start;">
