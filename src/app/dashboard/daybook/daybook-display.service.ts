@@ -98,10 +98,16 @@ export class DaybookDisplayService {
     });
   }
 
-  public initiate() {
-    this.daybookControllerService.displayUpdated$.subscribe((update: DaybookDisplayUpdate) => {
-      this._updateDisplay(update);
-    });
+  private _subs: Subscription[] = [];
+  public reinitiate() {
+    this._subs.forEach(sub => sub.unsubscribe());
+    this._subs = [];
+    this._subs = [
+      this.daybookControllerService.displayUpdated$.subscribe((update: DaybookDisplayUpdate) => {
+        this._updateDisplay(update);
+      }),
+    ];
+    
     this._updateDisplay({
       type: DaybookDisplayUpdateType.DEFAULT,
       controller: this.daybookControllerService.activeDayController,

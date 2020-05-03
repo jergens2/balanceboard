@@ -10,6 +10,7 @@ export class TimelogEntryActivityDisplay {
     private _units: TimelogEntryDisplayItemUnit[] = [];
     private _durationMS: number;
     private _durationString: string;
+    private _name: string;
 
     constructor(totalDurationMS: number, activity: ActivityCategoryDefinition) {
         this._durationMS = totalDurationMS;
@@ -21,6 +22,10 @@ export class TimelogEntryActivityDisplay {
             console.log("Error building timelog display item: no activity provided.")
         }
 
+        this._name = this._activity.name;
+        if(this._name.length > 16){
+            this._name = this._name.substr(0, 16) + "...";
+        }
     }
 
     private _buildUnits() {
@@ -41,7 +46,7 @@ export class TimelogEntryActivityDisplay {
         this._durationString = DurationString.getDurationStringFromMS(this._durationMS, true);
     }
 
-    public get name(): string { return this._activity.name; }
+    public get name(): string { return this._name; }
     public get units(): TimelogEntryDisplayItemUnit[] { return this._units; }
     public get durationString(): string { return this._durationString; }
 }

@@ -1,11 +1,11 @@
 .timelog-entry-display-root{
     width:100%;
     height:100%;
-    flex-grow: 2;
-
+    max-height: 100%;
     display:flex;
     flex-direction: row;
     align-items: center;
+
     
 
     border: 1px solid rgba(0, 0, 0, 0);
@@ -18,39 +18,29 @@
     border: 1px solid rgba(0, 0, 0, 2);
 } */
 
-.large-container{
-    display:flex;
-    flex-direction: row;
-    /* align-items: center; */
-    flex-wrap: wrap;
-    width:100%;
-}
-
-
-.small-container{
-    display:flex;
-    flex-direction: row;
-    font-size: 0.7em;    
-    /* border: 1px solid orange; */
-    width:100%;
-    height: 100%;
-
-}
-.very-small-container{
+.items-frame{
+    width: 100%;
     height: 1px;
     display:flex;
     flex-direction: row;
     align-items: center;
-    font-size: 0.7em;
+    /* justify-content: space-between; */
+}
+.activity-items-container{
+    flex-grow: 2;
+    display:flex;
+    flex-direction: row; 
+    align-items: center;
+    width: 100%;
+    margin-right: 20px;
+    flex-wrap: wrap;
 }
 
 
-.very-small-entry-circle{
-    width: 4px;
-    height: 4px;
-    border-radius: 4px;
-    border: none;
-
+.units{
+    display:flex;
+    flex-direction: row; 
+    align-items: flex-start;
 }
 
 .unit{
@@ -67,10 +57,20 @@
     display:flex;
     flex-direction: column;
     margin-right: 10px;
-    padding: 5px;
+    position: relative;
+}
+.small-activity-item{
+    flex-direction: row;
+    align-items: center;
+
 }
 .activity-name{
-    font-weight: 600;
+    font-weight: 550;
+}
+.small-activity-name{
+    margin-left: 5px;
+    font-weight: 500;
+    order: 2;
 }
 .duration-string{
     font-size: 0.8em; 
@@ -85,14 +85,30 @@
 }
 
 
-.note-text-small{
-    display: flex;
-    flex-direction: row;
+.note-text{
+
     flex-grow: 2;
-    max-width: 200px;
-    max-height: 20px;
+    width: 100%;
+    max-width: 170px;
+    min-width: 80px;
 
     overflow-x: hidden;
+    /* background-color: rgba(96, 96, 228, 0.336); */
+
+    color: gray;
+    font-style: italic;
+    font-size: 0.8em;
+}
+
+.note-text-small{
+
+    max-width: 170px;
+    flex-grow: 2;
+
     white-space:nowrap;
-    background-color: rgba(96, 96, 228, 0.336);
+    /* background-color: rgba(228, 101, 27, 0.336); */
+
+    color: gray;
+    font-style: italic;
+    font-size: 0.8em;
 }

@@ -81,14 +81,14 @@ export class TlefEmbeddedNoteComponent implements OnInit {
 
   private _checkForChanges(formValue: string){
     let changesMade: boolean = false;
-    if(this._noteText === formValue){
-
-    }else{
+    // if(this._noteText === formValue){
+// 
+    // }else{
       changesMade = true;
       let entryItem: TimelogEntryItem = this._originalTLEValue;
       entryItem.embeddedNote = formValue;
       this._controller.makeChangesTLE(entryItem);
-    }
+    // }
 
   }
 

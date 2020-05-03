@@ -60,7 +60,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
     });
 
 
-    this.daybookDisplayService.initiate();
+    this.daybookDisplayService.reinitiate();
 
 
     // this._activeDay = this.daybookControllerService.activeDayController;

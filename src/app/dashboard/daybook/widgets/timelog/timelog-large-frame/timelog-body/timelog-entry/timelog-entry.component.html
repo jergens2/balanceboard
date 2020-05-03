@@ -1,50 +1,77 @@
 <div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="gridItem"
     (click)="onClickOpenTimelogEntry()">
 
-    <div style="height: 1px; display:flex;flex-direction: row; align-items: center;">
-        <div *ngIf="isLargeSize || isNormalSize" class="large-container">
-            <div *ngFor="let activityItem of activityItems" class="activity-item">
-                <div class="activity-name">
-                    {{ activityItem.name }}
-                </div>
-                <div style="display:flex;flex-direction: row; align-items: flex-start;">
-                    <div *ngFor="let unit of activityItem.units" [ngStyle]="unit.ngStyle" class="unit">
-                    </div>
-                    <div class="duration-string">{{ activityItem.durationString }}</div>
-                </div>
-            </div>
-            <div *ngIf="remainingItems.length > 0" class="remaining-items">
-                <div *ngFor="let item of remainingItems" style="display:flex;flex-direction: row; align-items: center;">
-                    <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;"
-                        class="unit"></div>
-                </div>
-            </div>
-        </div>
+    <!-- <div *ngIf="isLargeSize || isNormalSize">
+        <div class="note-text-large">
+            <p>{{ noteText }}</p>
 
-        <div *ngIf="isSmallSize || isVerySmallSize"
-            [ngClass]="{'small-container':isSmallSize, 'very-small-container': isVerySmallSize}">
-            <div class="note-text-small">
-                <p>{{ noteText }}</p>
-                
-            </div>
-            <div *ngFor="let activityItem of activityItems"
-                style="display:flex;flex-direction: row; align-items: center; margin-right:10px;">
-                <div style="display:flex;flex-direction: row; align-items: flex-start;">
-                    <div *ngFor="let unit of activityItem.units" [ngStyle]="unit.ngStyle" class="unit">
-                    </div>
-                </div>
-                <div class="activity-name" style="margin-left: 5px;">
+        </div>
+    </div> -->
+
+    <div class="items-frame">
+        <div class="activity-items-container">
+
+
+
+            <div *ngFor="let activityItem of activityItems" class="activity-item" [ngClass]="{'small-activity-item':(isSmallSize || isVerySmallSize) }">
+
+                <div class="activity-name" [ngClass]="{'small-activity-name':(isSmallSize || isVerySmallSize) }"> 
                     {{ activityItem.name }}
                 </div>
+
+                <div class="units">
+                    <div *ngFor="let unit of activityItem.units" [ngStyle]="unit.ngStyle" class="unit">
+                    </div>
+                    <div class="duration-string" *ngIf="isLargeSize || isNormalSize">{{ activityItem.durationString }}</div>
+                </div>
+
             </div>
+
             <div *ngIf="remainingItems.length > 0" class="remaining-items">
                 <div *ngFor="let item of remainingItems" style="display:flex;flex-direction: row; align-items: center;">
                     <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;"
                         class="unit"></div>
                 </div>
             </div>
+
+
+
+            <!-- <div *ngIf="isSmallSize || isVerySmallSize" class="container"
+                [ngClass]="{'small-container':isSmallSize, 'very-small-container': isVerySmallSize}">
+                <div *ngFor="let activityItem of activityItems"
+                    style="display:flex;flex-direction: row; align-items: center; margin-right:10px;">
+                    <div style="display:flex;flex-direction: row; align-items: flex-start;">
+                        <div *ngFor="let unit of activityItem.units" [ngStyle]="unit.ngStyle" class="unit">
+                        </div>
+                    </div>
+                    <div class="activity-name" style="margin-left: 5px;">
+                        {{ activityItem.name }}
+                    </div>
+                </div>
+                <div *ngIf="remainingItems.length > 0" class="remaining-items">
+                    <div *ngFor="let item of remainingItems"
+                        style="display:flex;flex-direction: row; align-items: center;">
+                        <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;"
+                            class="unit"></div>
+                    </div>
+                </div>
+             <div class="note-text-small">
+                    <p>{{ noteText }}</p>
+                </div> -->
+            <!-- </div> --> 
+
+
+
+
+        </div>
+        <div class="note-text" *ngIf="!noteTextSmall">
+            {{ noteText }}
+        </div>
+        <div class="note-text-small" *ngIf="noteTextSmall">
+            {{ noteTextSmall }}
         </div>
     </div>
+
 
 
 </div>

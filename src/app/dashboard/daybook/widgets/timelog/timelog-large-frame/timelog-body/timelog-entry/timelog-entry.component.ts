@@ -7,7 +7,6 @@ import { ScreenSizes } from '../../../../../../../shared/screen-size/screen-size
 import { ColorConverter } from '../../../../../../../shared/utilities/color-converter.class';
 import { ColorType } from '../../../../../../../shared/utilities/color-type.enum';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
-import { TimelogEntryDisplayItem } from './timelog-entry-display-item.class';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
@@ -28,10 +27,10 @@ export class TimelogEntryComponent implements OnInit {
     private screenSizeService: ScreenSizeService,
     private daybookService: DaybookDisplayService) { }
 
-  private _displayEntry: TimelogEntryDisplayItem;
   private _activityItems: TimelogEntryActivityDisplay[] = [];
   private _remainingItems: TimelogEntryActivityDisplay[] = [];
   private _noteText: string = "";
+  private _noteTextSmall: string = "";
 
   public screenSize: ScreenSizes;
 
@@ -50,6 +49,7 @@ export class TimelogEntryComponent implements OnInit {
   public get remainingItems(): TimelogEntryActivityDisplay[] { return this._remainingItems; }
 
   public get noteText(): string { return this._noteText; }
+  public get noteTextSmall(): string { return this._noteTextSmall;}
 
   
   ngOnInit() {
@@ -84,20 +84,20 @@ export class TimelogEntryComponent implements OnInit {
       { screenSize: ScreenSizes.MOBILE, itemSize: 'SMALL', maxItems: 2 },
       { screenSize: ScreenSizes.MOBILE, itemSize: 'NORMAL', maxItems: 2 },
       { screenSize: ScreenSizes.MOBILE, itemSize: 'LARGE', maxItems: 4 },
-      { screenSize: ScreenSizes.TABLET, itemSize: 'VERY_SMALL', maxItems: 4 },
-      { screenSize: ScreenSizes.TABLET, itemSize: 'SMALL', maxItems: 4 },
-      { screenSize: ScreenSizes.TABLET, itemSize: 'NORMAL', maxItems: 5 },
-      { screenSize: ScreenSizes.TABLET, itemSize: 'LARGE', maxItems: 6 },
+      { screenSize: ScreenSizes.TABLET, itemSize: 'VERY_SMALL', maxItems: 3 },
+      { screenSize: ScreenSizes.TABLET, itemSize: 'SMALL', maxItems: 3 },
+      { screenSize: ScreenSizes.TABLET, itemSize: 'NORMAL', maxItems: 4 },
+      { screenSize: ScreenSizes.TABLET, itemSize: 'LARGE', maxItems: 5 },
       { screenSize: ScreenSizes.NORMAL, itemSize: 'VERY_SMALL', maxItems: 2 },
       { screenSize: ScreenSizes.NORMAL, itemSize: 'SMALL', maxItems: 2 },
       { screenSize: ScreenSizes.NORMAL, itemSize: 'NORMAL', maxItems: 2 },
       { screenSize: ScreenSizes.NORMAL, itemSize: 'LARGE', maxItems: 4 },
-      { screenSize: ScreenSizes.LARGE, itemSize: 'VERY_SMALL', maxItems: 4 },
-      { screenSize: ScreenSizes.LARGE, itemSize: 'SMALL', maxItems: 4 },
+      { screenSize: ScreenSizes.LARGE, itemSize: 'VERY_SMALL', maxItems: 3 },
+      { screenSize: ScreenSizes.LARGE, itemSize: 'SMALL', maxItems: 3 },
       { screenSize: ScreenSizes.LARGE, itemSize: 'NORMAL', maxItems: 4 },
       { screenSize: ScreenSizes.LARGE, itemSize: 'LARGE', maxItems: 6 },
-      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'VERY_SMALL', maxItems: 6 },
-      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'SMALL', maxItems: 6 },
+      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'VERY_SMALL', maxItems: 3 },
+      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'SMALL', maxItems: 3 },
       { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'NORMAL', maxItems: 6 },
       { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'LARGE', maxItems: 8 },
     ];
@@ -124,7 +124,8 @@ export class TimelogEntryComponent implements OnInit {
 
     let activityItems: TimelogEntryActivityDisplay[] = [];
     let remainingItems: TimelogEntryActivityDisplay[] = [];
-    this._noteText = this._getNoteText();
+
+    this._setNoteText();
 
     if (this.gridItem.timelogEntries.length > 0) {
       let mergedTimelogEntry = this.gridItem.timelogEntries[0];
@@ -197,7 +198,7 @@ export class TimelogEntryComponent implements OnInit {
   }
 
 
-  private _getNoteText(): string{
+  private _setNoteText(){
     let noteText: string = "";
     let textFound: boolean = false;
     this.gridItem.timelogEntries.sort((tle1, tle2)=>{
@@ -216,8 +217,24 @@ export class TimelogEntryComponent implements OnInit {
         }
       }
     });
-    console.log("Note text is: " , noteText)
-    return noteText;
+
+
+    if(this.isNormalSize || this.isLargeSize){
+      if(noteText.length > 80){
+        this._noteText = noteText.substring(0, 80) + "...";
+      }else{
+        this._noteText = noteText;
+      }
+      this._noteTextSmall = "";
+    }else{
+      if(noteText.length > 30){
+        this._noteTextSmall = noteText.substring(0, 30) + "...";
+      }else{
+        this._noteTextSmall = noteText;
+      }
+      this._noteText = "";
+    }
+
   }
 
 }

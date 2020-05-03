@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TLEFController } from '../../TLEF-controller.class';
@@ -12,7 +12,7 @@ import { DaybookDisplayUpdateType } from '../../../../../controller/items/dayboo
   templateUrl: './tlef-times.component.html',
   styleUrls: ['./tlef-times.component.css']
 })
-export class TlefTimesComponent implements OnInit {
+export class TlefTimesComponent implements OnInit, OnDestroy {
 
   constructor(private daybookService: DaybookDisplayService) { }
 
@@ -36,6 +36,11 @@ export class TlefTimesComponent implements OnInit {
       //   this._reload();
       // })
     ];
+  }
+
+  ngOnDestroy(){
+    this._subs.forEach(sub => sub.unsubscribe());
+    this._subs = [];
   }
 
   private _reload() {
