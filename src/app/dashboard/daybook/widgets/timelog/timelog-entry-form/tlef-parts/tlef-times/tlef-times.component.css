@@ -1,20 +1,38 @@
 .tlef-times-root{
     border-radius: 5px;
+    display:flex;
+    flex-direction: column;
+    width: 100%;
 }
 .tlef-times-root:hover{
     cursor: pointer;
     background-color: rgb(248, 248, 248);
 }
 
+.times-container{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+}
 .duration-string{
     font-size:0.75em; 
     color:gray; 
     font-weight: bold;
+    align-self: flex-end;
 }
 
 .entry-time{
-    color: rgb(0, 89, 255);
-    font-size: 0.9em;
-    font-weight: bold;
+    color: rgb(7, 33, 80);
+    font-size: 1.5em;
+    font-weight: 550;
 }
 
+
+.from-to{
+    color:gray;
+    font-size: 0.8em;
+    margin-right: 6px;
+}
