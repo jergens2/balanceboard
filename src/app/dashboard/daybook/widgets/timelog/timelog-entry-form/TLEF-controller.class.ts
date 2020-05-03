@@ -208,7 +208,7 @@ export class TLEFController {
     }
 
     public makeChangesTLE(changedItem: TimelogEntryItem) {
-        console.log("**** Changes made ")
+        // console.log("**** Changes made ")
         this._changesMadeTLE$.next(changedItem);
     }
     public clearChanges() {
@@ -216,7 +216,7 @@ export class TLEFController {
     }
 
     public closeTLEFPrompt() {
-        console.log("Closing prompt");
+        // console.log("Closing prompt");
         this._promptToSaveChanges = false;
         this._changesMadeTLE$.next(null);
         if (this._stachedItem) {
