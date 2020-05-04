@@ -60,10 +60,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     this.confirmRegistrationForm = new FormGroup({
       'password': new FormControl(null, Validators.required),
     });
-    this.loginForm = new FormGroup({
-      'emailAddress': new FormControl(null, [Validators.required, Validators.email]),
-      'password': new FormControl(null, Validators.required)
-    })
+
 
   }
 

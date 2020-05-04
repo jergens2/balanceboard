@@ -13,7 +13,7 @@ export class UserAccount{
 
 
     public id: string;
-    public name: string
+    public username: string
     public email: string;
     public socialId: string;
 

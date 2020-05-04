@@ -31,6 +31,7 @@ import { SearchBarComponent } from './nav/search-bar/search-bar.component';
 import { ToolsMenuModule } from './toolbox-menu/tools-menu.module';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { RegistrationComponent } from './authentication/registration/registration.component';
+import { LoginComponent } from './authentication/login/login.component';
 
 
 
@@ -49,6 +50,7 @@ import { RegistrationComponent } from './authentication/registration/registratio
     NotepadModalComponent,
     SearchBarComponent,
     RegistrationComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,10 +1,5 @@
 <div *ngIf="loading" class="loading">
-    <div>
-        <svg viewBox="25 25 50 50">
-            <circle cx="50" cy="50" r="20"></circle>
-        </svg>
-
-    </div>
+    <app-spinner []></app-spinner>
 </div>
 <div *ngIf="!loading">
     <div *ngIf="!authenticated">

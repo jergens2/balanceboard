@@ -31,10 +31,12 @@ import { WeightlogEntryInputComponent } from './data-entry-item-input/data-entry
 import { CountEntryInputComponent } from './data-entry-item-input/data-entry-input-components/count-entry-input/count-entry-input.component';
 import { RuleConditionEntryInputComponent } from './data-entry-item-input/data-entry-input-components/rule-condition-entry-input/rule-condition-entry-input.component';
 import { HealthSymptomEntryInputComponent } from './data-entry-item-input/data-entry-input-components/health-symptom-entry-input/health-symptom-entry-input.component';
-import { DropdownListComponent } from './utilities/components/dropdown-list/dropdown-list.component';
-import { TimeInputComponent } from './utilities/components/time-input/time-input.component';
+
 import { ColorPickerModule } from "ngx-color-picker";
-import { DeleteConfirmButtonComponent } from './utilities/components/delete-confirm-button/delete-confirm-button.component';
+import { SpinnerComponent } from './components/spinner/spinner.component';
+import { DropdownListComponent } from "./components/dropdown-list/dropdown-list.component";
+import { DeleteConfirmButtonComponent } from "./components/delete-confirm-button/delete-confirm-button.component";
+import { TimeInputComponent } from "./components/time-input/time-input.component";
 
 
 
@@ -81,6 +83,7 @@ import { DeleteConfirmButtonComponent } from './utilities/components/delete-conf
         DropdownListComponent,
         TimeInputComponent,
         DeleteConfirmButtonComponent,
+        SpinnerComponent,
 
 
         
@@ -100,6 +103,7 @@ import { DeleteConfirmButtonComponent } from './utilities/components/delete-conf
 
         DropdownListComponent,
         TimeInputComponent,
+        SpinnerComponent,
     ]
 })
 

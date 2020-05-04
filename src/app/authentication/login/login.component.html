@@ -1,0 +1,41 @@
+<div class="login-root" [formGroup]="loginForm">
+    <!-- 
+    <div class="login-title">
+        Login
+    </div> -->
+
+    <div class="login-form-row">
+        <input formControlName="username" type="text" class="login-form-control" placeholder="username or email"
+            tabindex="0">
+        <fa-icon [icon]="faUser" class="auth-icon"></fa-icon>
+    </div>
+
+    <div class="login-form-row">
+        <input formControlName="password" type="password" class="login-form-control" placeholder="password"
+            tabindex="0">
+        <fa-icon [icon]="faKey" class="auth-icon"></fa-icon>
+    </div>
+
+    <div class="button-container">
+
+        <button *ngIf="!loggingIn" class="large-button save-button login-button" (click)="onClickLogin()" tabindex="0">
+            Login <fa-icon [icon]="faSignInAlt" class="login-icon"></fa-icon>
+        </button>
+        <button *ngIf="loggingIn" disabled class="large-button save-button login-button">Logging in... <app-spinner
+                class="app-spinner">
+            </app-spinner></button>
+    </div>
+    <!-- </div>
+
+    <div class="action-buttons-container"> -->
+
+    <!-- 
+        <button class="medium-button save-button" (click)="onClickLogin()" [disabled]="loginDisabled">Login
+            <fa-icon [icon]="faUnlock" class="auth-icon"></fa-icon>
+        </button>
+        <button class="medium-button discard-button" (click)="this.action  = 'welcome'">Cancel</button>
+
+
+    </div> -->
+
+</div>

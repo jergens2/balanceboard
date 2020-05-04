@@ -1,4 +1,4 @@
-<div class="root background-image font-family-ubuntu">
+<div class="authentication-root background-image font-family-ubuntu">
 
   <div class="authentication" >
     <div class="title">
@@ -29,23 +29,11 @@
 
 
       <!-- LOGIN -->
-      <div *ngIf="action == 'login'" [formGroup]="loginForm">
-        <div class="input-container">
-          <input formControlName="emailAddress" type="email" class="form-control" placeholder="email"
-            style="grid-row:1 / span 1; grid-column: 1 / -1;">
-          <fa-icon [icon]="faUser" class="auth-icon" style="grid-row:1 / span 1; grid-column: 2 / span 1;"></fa-icon>
-          <input formControlName="password" type="password" class="form-control" placeholder="password"
-            style="grid-row:2 / span 1; grid-column: 1 / -1;">
-          <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
-        </div>
-
-        <div class="action-buttons-container">
-          <button class="btn btn-sm btn-primary mx-1" (click)="onClickLogin()" [disabled]="loginDisabled">Login <fa-icon [icon]="faUnlock"
-              class="auth-icon"></fa-icon>
-          </button>
-          <button class="btn btn-sm btn-secondary mx-1" (click)="this.action  = 'welcome'">Cancel</button>
-        </div>
+      <div *ngIf="action == 'login'" >
+        <app-login></app-login>
       </div>
+      
+
       <!-- end of LOGIN -->
 
 
