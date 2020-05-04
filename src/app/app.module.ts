@@ -30,6 +30,7 @@ import { SharedModule } from './shared/shared.module';
 import { SearchBarComponent } from './nav/search-bar/search-bar.component';
 import { ToolsMenuModule } from './toolbox-menu/tools-menu.module';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { RegistrationComponent } from './authentication/registration/registration.component';
 
 
 
@@ -47,6 +48,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
     ConfirmModalComponent,
     NotepadModalComponent,
     SearchBarComponent,
+    RegistrationComponent,
   ],
   imports: [
     BrowserModule,
