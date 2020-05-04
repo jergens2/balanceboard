@@ -149,7 +149,7 @@ export class DaybookDayItemBuilder {
             timeDelineators: timeDelineators,
             sleepInputItem: sleepInputItem,
             sleepEnergyLevelInputs: sleepEnergyLevelInputs,
-            sevenDayAwakeToAsleepRatio: sevenDayAwakeToAsleepRatio,
+            // sevenDayAwakeToAsleepRatio: sevenDayAwakeToAsleepRatio,
             daybookActivityDataItems: daybookActivityDataItems,
             dailyTaskListDataItems: dailyTaskListDataItems,
             dayStructureDataItems: dayStructureDataItems,

@@ -37,6 +37,11 @@ export class TlefExistingFutureComponent implements OnInit {
     this.daybookDisplayService.tlefController.currentlyOpenTLEFItem$.subscribe((change)=>{
       this._isEditing = false;
     });
+    // this._controller.changesMadeTLE$.subscribe((change)=>{
+    //   if(change === null){
+    //     this._isEditing = false;
+    //   }
+    // });
   }
 
   private _timeFromNow: string = "";

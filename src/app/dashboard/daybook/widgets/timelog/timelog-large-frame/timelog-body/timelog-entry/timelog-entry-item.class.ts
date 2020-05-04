@@ -70,8 +70,10 @@ export class TimelogEntryItem {
         return returnItem;
     }
 
-    public get toString(): string{
-        return "Timelog Entry Item: start: " + this.startTime.format('YYYY-MM-DD hh:mm a') + " to end:  " + this.endTime.format('YYYY-MM-DD hh:mm a');
+    public toString(): string{
+        let string = "Timelog Entry Item: start: " + this.startTime.format('YYYY-MM-DD hh:mm a') + " to end:  " + this.endTime.format('YYYY-MM-DD hh:mm a');
+        string += "\n   "+this.timelogEntryActivities.length + " activities";
+        return string;
     }
 
 }

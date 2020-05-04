@@ -22,7 +22,7 @@ export interface DaybookDayItemHttpShape {
     sleepInputItem: DaybookSleepInputDataItem;
     sleepEnergyLevelInputs: SleepEnergyLevelInput[];
     
-    sevenDayAwakeToAsleepRatio: number;
+    // sevenDayAwakeToAsleepRatio: number;
 
     daybookActivityDataItems: DaybookActivityDataItem[];
     dailyTaskListDataItems: DailyTaskListDataItem[];

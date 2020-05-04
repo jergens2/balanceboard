@@ -22,7 +22,7 @@ let blankDaybookItemHttpShape: DaybookDayItemHttpShape = {
         customSleepProfile: null,
     },
     sleepEnergyLevelInputs: [],
-    sevenDayAwakeToAsleepRatio: -1,
+    // sevenDayAwakeToAsleepRatio: -1,
 
     dailyWeightLogEntryKg: -1,
     scheduledActivityItems: [],  // this includes activities and routines.: [],

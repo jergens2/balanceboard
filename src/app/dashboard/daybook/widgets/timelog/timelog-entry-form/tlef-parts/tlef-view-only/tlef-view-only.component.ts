@@ -23,6 +23,16 @@ export class TlefViewOnlyComponent implements OnInit {
 
   public get noteText(): string { return this._noteText; }
 
+  private _pencilStyle: any = {'color':'rgb(211, 211, 211)'};
+  public get pencilStyle(): any { return this._pencilStyle; }
+
+  public onMouseEnter(){
+    this._pencilStyle = {'color':'gray'};
+  }
+  public onMouseLeave(){
+    this._pencilStyle = {'color':'rgb(211, 211, 211)'};
+  }
+
   // private _isEditing: boolean = false;
 
   @Output() public editing: EventEmitter<boolean> = new EventEmitter();
@@ -40,7 +50,7 @@ export class TlefViewOnlyComponent implements OnInit {
   ngOnInit() {
     this._update();
     this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((change)=>{
-      if(change){
+      if(change && change.isTLEItem){
         this._update();
       }
       
@@ -48,26 +58,29 @@ export class TlefViewOnlyComponent implements OnInit {
   }
 
   private _update(){
-    this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
-    if(this._entryItem.embeddedNote){
-      this._noteText = this._entryItem.embeddedNote;
-    }else{
-      this._noteText = "No note";
+    if(this.daybookService.tlefController.currentlyOpenTLEFItem){
+      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+      if(this._entryItem.embeddedNote){
+        this._noteText = this._entryItem.embeddedNote;
+      }else{
+        this._noteText = "No note";
+      }
+      const decorator: TimelogEntryDecorator = new TimelogEntryDecorator(this.activitiesService);
+      this._displayActivities = this.entryItem.timelogEntryActivities.map(item => {
+        const activity = this.activitiesService.findActivityByTreeId(item.activityTreeId);
+        const durationMS = this.entryItem.durationMilliseconds * (item.percentage / 100);
+        const units = decorator.getActivityUnits(item, (durationMS/(1000*60)));
+        const durationString = DurationString.getDurationStringFromMS(durationMS, true);
+        return {
+          activity: activity,
+          durationMS: durationMS,
+          units: units,
+          durationString: durationString,
+        };
+  
+      });
     }
-    const decorator: TimelogEntryDecorator = new TimelogEntryDecorator(this.activitiesService);
-    this._displayActivities = this.entryItem.timelogEntryActivities.map(item => {
-      const activity = this.activitiesService.findActivityByTreeId(item.activityTreeId);
-      const durationMS = this.entryItem.durationMilliseconds * (item.percentage / 100);
-      const units = decorator.getActivityUnits(item, (durationMS/(1000*60)));
-      const durationString = DurationString.getDurationStringFromMS(durationMS, true);
-      return {
-        activity: activity,
-        durationMS: durationMS,
-        units: units,
-        durationString: durationString,
-      };
-
-    });
+    
   }
 
   public get displayActivities(): { activity: ActivityCategoryDefinition, durationMS: number }[] { return this._displayActivities; }

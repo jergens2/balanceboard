@@ -6,13 +6,9 @@
                 <app-tlef-grid-items-bar></app-tlef-grid-items-bar>
             </div>
 
-            <div class="tlef-part">
+            <div class="tlef-part" style="border-bottom: 1px solid rgb(224, 224, 224); padding-bottom: 10px;">
                 <app-tlef-times></app-tlef-times>
             </div>
-
-            <!-- <div class="tlef-part">
-                <app-tlef-embedded-note></app-tlef-embedded-note>
-            </div> -->
 
             <div class="tlef-part">
                 <app-tlef-new-current *ngIf="formCase === 'NEW_CURRENT'" [controller]="controller">
@@ -24,7 +20,7 @@
                 </app-tlef-new-previous>
                 <app-tlef-existing-future *ngIf="formCase === 'EXISTING_FUTURE'" [controller]="controller">
                 </app-tlef-existing-future>
-                <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'" [controller]="controller">
+                <app-tlef-existing-previous *ngIf="formCase === 'EXISTING_PREVIOUS'">
                 </app-tlef-existing-previous>
                 <app-tlef-existing-current *ngIf="formCase === 'EXISTING_CURRENT'" [controller]="controller">
                 </app-tlef-existing-current>

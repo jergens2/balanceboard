@@ -1,9 +1,4 @@
-<div class="view-only-root">
-    <div style="display:flex;flex-direction: row-reverse;">
-        <!-- <div class="activities-header">Activities <div class="activities-count">{{ activitiesCount }}</div>
-        </div> -->
-        <fa-icon [icon]="faPencil" class="icon-button" (click)="onClickEdit()"></fa-icon>
-    </div>
+<div class="view-only-root" (click)="onClickEdit()">
     <div class="embedded-note">
         {{ noteText }}
     </div>

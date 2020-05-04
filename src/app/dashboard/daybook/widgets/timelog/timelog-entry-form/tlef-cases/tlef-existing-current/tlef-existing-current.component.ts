@@ -20,6 +20,12 @@ export class TlefExistingCurrentComponent implements OnInit {
     timer(0, 1000).subscribe((tick)=>{
       this._clock = moment();
     });
+
+    // this._controller.changesMadeTLE$.subscribe((change)=>{
+    //   if(change === null){
+    //     this._isEditing = false;
+    //   }
+    // });
   }
 
   private _clock: moment.Moment;

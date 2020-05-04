@@ -134,12 +134,11 @@ export class TimelogEntryComponent implements OnInit {
       if (this.gridItem.timelogEntries.length > 1) {
         const startTime = moment(this.gridItem.timelogEntries[0].startTime);
         const endTime = moment(this.gridItem.timelogEntries[this.gridItem.timelogEntries.length - 1].endTime);
-        const totalMS = endTime.diff(startTime, 'milliseconds');
         let activities: { activityTreeId: string, milliseconds: number }[] = [];
         this.gridItem.timelogEntries.forEach((timelogEntry) => {
           activities = activities.concat(timelogEntry.timelogEntryActivities.map((tlea) => {
-            const tleMS = timelogEntry.endTime.diff(timelogEntry.startTime, 'milliseconds');
-            const milliseconds: number = (100 / tlea.percentage) * tleMS;
+            const tleMS = timelogEntry.durationMilliseconds;
+            const milliseconds: number = (tlea.percentage / 100) * tleMS;
             return {
               activityTreeId: tlea.activityTreeId,
               milliseconds: milliseconds,
@@ -147,14 +146,17 @@ export class TimelogEntryComponent implements OnInit {
           }));
         });
         mergedTimelogEntry = new TimelogEntryItem(startTime, endTime);
+        const totalMS = mergedTimelogEntry.durationMilliseconds;
         mergedTimelogEntry.timelogEntryActivities = activities.map((activity) => {
           const percentage = (activity.milliseconds / totalMS) * 100;
+          // console.log("Percentage: " + percentage)
           return {
             activityTreeId: activity.activityTreeId,
             percentage: percentage,
           }
         });
       }
+      // console.log(mergedTimelogEntry.toString())
 
       const entryDurationMS: number = mergedTimelogEntry.durationMilliseconds;
 

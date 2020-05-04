@@ -4,6 +4,8 @@ import { ActivityCategoryDefinition } from '../../../../../../activities/api/act
 import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { TLEFController } from '../../TLEF-controller.class';
+import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -13,24 +15,44 @@ import { TLEFController } from '../../TLEF-controller.class';
 })
 export class TlefExistingPreviousComponent implements OnInit {
 
-
+  private _activities: ActivityCategoryDefinition[] = [];
   public get activities(): ActivityCategoryDefinition[] {
-    return this.entryItem.timelogEntryActivities.map(item => this._convertToActivity(item.activityTreeId));
+    return this._activities;
   }
 
   private _isEditing: boolean = false;
   public get isEditing(): boolean { return this._isEditing; }
 
-  private _controller: TLEFController;
-  @Input() public set controller(controller: TLEFController) { this._controller = controller; }
-  public get controller(): TLEFController { return this._controller; }
+  private _entryItem: TimelogEntryItem;
+  public get entryItem(): TimelogEntryItem { return this._entryItem; }
 
-  public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.getInitialTLEValue(); }
-
-  constructor(private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private activitiesService: ActivityCategoryDefinitionService, private daybookService: DaybookDisplayService) { }
+  private _subs: Subscription[] = [];
 
   ngOnInit() {
+    this._reload();
+    this._subs = [
+      this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((item)=>{
+        if(item){
+          this._reload();
+        }
+      }),
+      this.daybookService.tlefController.changesMadeTLE$.subscribe((change)=>{
+        if(change === null){
+          this._isEditing = false;
+        }
+      }),
+    ];
+    
   }
+
+  private _reload(){
+    if(this.daybookService.tlefController.currentlyOpenTLEFItem.isTLEItem){
+      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+      this._activities = this.entryItem.timelogEntryActivities.map(item => this._convertToActivity(item.activityTreeId));
+    }
+    
+  }   
 
   private _convertToActivity(treeId: string) {
     return this.activitiesService.findActivityByTreeId(treeId)

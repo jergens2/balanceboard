@@ -79,7 +79,7 @@ export class TLEFController {
     }
 
     public update(timeDelineators: TimelogDelineator[], activeDayController: DaybookController, clock: moment.Moment, update: DaybookDisplayUpdate) {
-        console.log("Updating the TLEF Controller by " + update.type + "   - " + clock.format('hh:mm:ss a'))
+        // console.log("Updating the TLEF Controller by " + update.type + "   - " + clock.format('hh:mm:ss a'))
         this._clock = moment(clock);
         this._timeDelineators = timeDelineators;
         this._activeDayController = activeDayController;
