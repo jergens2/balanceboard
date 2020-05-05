@@ -56,63 +56,65 @@ export class SocialService implements ServiceAuthenticates{
   }
 
   private getFriendRequests() {
-    let getUrl = serverUrl + "/api/social/get-requests/" + this._authStatus.user.socialId;
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'  
-      })
-    };
+    // let getUrl = serverUrl + "/api/social/get-requests/" + this._authStatus.user.socialId;
+    // const httpOptions = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json'
+    //     // 'Authorization': 'my-auth-token'  
+    //   })
+    // };
 
-    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
-      .pipe<FriendRequest[]>(map((response) => {
-        return response.data;
-      }))
-      .subscribe((friendRequests: FriendRequest[]) => {
-        let incomingRequests: FriendRequest[] = [];
-        let outgoingRequests: FriendRequest[] = [];
-        friendRequests.forEach((friendRequest: FriendRequest)=>{
-          if(friendRequest.recipientId == this._authStatus.user.socialId){
-            incomingRequests.push(friendRequest);
-          }
-          else if(friendRequest.requesterId == this._authStatus.user.socialId){
-            outgoingRequests.push(friendRequest);
-          }
-        });
-        // console.log("Requests, incoming, outgoing:", incomingRequests, outgoingRequests)
-        this._incomingRequests$.next(incomingRequests);
-        this._outgoingRequests$.next(outgoingRequests);
+    // this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+    //   .pipe<FriendRequest[]>(map((response) => {
+    //     return response.data;
+    //   }))
+    //   .subscribe((friendRequests: FriendRequest[]) => {
+        // let incomingRequests: FriendRequest[] = [];
+        // let outgoingRequests: FriendRequest[] = [];
+        // friendRequests.forEach((friendRequest: FriendRequest)=>{
+        //   if(friendRequest.recipientId == this._authStatus.user.socialId){
+        //     incomingRequests.push(friendRequest);
+        //   }
+        //   else if(friendRequest.requesterId == this._authStatus.user.socialId){
+        //     outgoingRequests.push(friendRequest);
+        //   }
+        // });
+        // // console.log("Requests, incoming, outgoing:", incomingRequests, outgoingRequests)
+        // this._incomingRequests$.next(incomingRequests);
+        // this._outgoingRequests$.next(outgoingRequests);
 
-        this._loginComplete$.next(true);
-      });
+        // this._loginComplete$.next(true);
+      // });
+      console.log("Warning, method disabled")
+      this._loginComplete$.next(true);
   }
 
 
   public sendFriendRequest(friendId: string) {
 
-    let postUrl = serverUrl + "/api/social/new-friend-request";
-    let friendRequestBody: FriendRequest = {
-      requesterId: this._authStatus.user.socialId,
-      recipientId: friendId,
-      dateISO: moment().toISOString(),
-    }
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'  
-      })
-    };
-    this.httpClient.post
+    // let postUrl = serverUrl + "/api/social/new-friend-request";
+    // let friendRequestBody: FriendRequest = {
+    //   requesterId: this._authStatus.user.socialId,
+    //   recipientId: friendId,
+    //   dateISO: moment().toISOString(),
+    // }
+    // const httpOptions = {
+    //   headers: new HttpHeaders({
+    //     'Content-Type': 'application/json'
+    //     // 'Authorization': 'my-auth-token'  
+    //   })
+    // };
+    // this.httpClient.post
 
-    this.httpClient.post<{ message: string, data: any }>(postUrl, friendRequestBody, httpOptions)
-      .pipe<FriendRequest>(map((response) => {
-        return response.data;
-      }))
-      .subscribe((friendRequest: FriendRequest) => {
-        let outgoingRequests = this._outgoingRequests$.getValue();
-        outgoingRequests.push(friendRequest);
-        this._outgoingRequests$.next(outgoingRequests);
-      });
+    // this.httpClient.post<{ message: string, data: any }>(postUrl, friendRequestBody, httpOptions)
+    //   .pipe<FriendRequest>(map((response) => {
+    //     return response.data;
+    //   }))
+    //   .subscribe((friendRequest: FriendRequest) => {
+    //     let outgoingRequests = this._outgoingRequests$.getValue();
+    //     outgoingRequests.push(friendRequest);
+    //     this._outgoingRequests$.next(outgoingRequests);
+    //   });
 
   }
 }

@@ -22,9 +22,8 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
 
   faSpinner = faSpinner;
 
-  private _authenticated: boolean = false;
   public get authenticated(): boolean {
-    return this._authenticated;
+    return this.authService.isAuthenticated;
   }
   loading: boolean = true;
   nightMode: UserSetting = null;
@@ -52,77 +51,58 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
 
   private appScreenSize: ScreenSizes;
 
-  private authLoginSubscription: Subscription = new Subscription();
-  private authLogoutSubscription: Subscription = new Subscription();
+
+  private _allSubs: Subscription[] = [];
 
   ngOnInit() {
-    this._authenticated = false;
-    this.onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
-    this.sizeService.appScreenSize$.subscribe((appScreenSize: ScreenSizes) => {
-      this.onScreenSizeChanged(appScreenSize);
-    })
-
-
-    this.modalService.activeModal$.subscribe((modal: Modal) => {
-      if (modal) {
-        this._showModal = true;
-      } else {
-        this._showModal = false;
-      }
-    });
-
-    this.toolsService.currentToolQueue$.subscribe((queue)=>{
-      if(queue.length > 0){
-        this._showTools = true;
-      }
-    })
-    this.toolsService.onFormClosed$.subscribe((formClosed: boolean) => {
-      if (formClosed === true) {
-        this._showTools = false;
-      }
-    });
-
-
-    // this.userSettingsService.userSettings$.subscribe((userSettings: UserSetting[]) => {
-    //   for (let setting of userSettings) {
-    //     if (setting.name == "night_mode") {
-    //       this.nightMode = setting;
-    //     }
-    //   }
-    // });
-
-    // this.authSubscription = this.authService.authStatus$.subscribe((authStatus: AuthStatus) => {
-    //   console.log("Auth subscription: " , authStatus);
-    //   if (authStatus) {
-    //     if (authStatus.isAuthenticated) {
-    //       this.loading = false;
-    //       this.authenticated = true;
-    //     }
-    //   }
-    // });
-
-    this.authLoginSubscription = this.authService.appComponentLogin$.subscribe((onLogin)=>{
-      if(onLogin === true){
-        this._authenticated = true;
-        this.loading = false;
-      }
-    })
-
-    this.authLogoutSubscription = this.authService.logout$.subscribe((onLogout)=>{
-      this.logout();
-    })
-    this.authService.checkLocalStorage$.subscribe((isPresent: boolean) => {
-      if (isPresent) {
-        this._authenticated = true;
-      } else {
-        this.loading = false;
-        this._authenticated = false;
-      }
-    });
-    this.authService.checkLocalStorage();
-
-
+    this._reload();
   }
+
+  private _reload(){
+    this.onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
+    this._allSubs.forEach(sub => sub.unsubscribe());
+    this._allSubs = [
+      this.sizeService.appScreenSize$.subscribe((appScreenSize: ScreenSizes) => {
+        this.onScreenSizeChanged(appScreenSize);
+      }),
+      this.modalService.activeModal$.subscribe((modal: Modal) => {
+        if (modal) {
+          this._showModal = true;
+        } else {
+          this._showModal = false;
+        }
+      }),
+      this.toolsService.currentToolQueue$.subscribe((queue)=>{
+        if(queue.length > 0){
+          this._showTools = true;
+        }
+      }),
+      this.toolsService.onFormClosed$.subscribe((formClosed: boolean) => {
+        if (formClosed === true) {
+          this._showTools = false;
+        }
+      }),
+      this.authService.appComponentLogin$.subscribe((onLogin)=>{
+        if(onLogin === true){
+          this.loading = false;
+        }
+      }),
+      this.authService.logout$.subscribe((onLogout)=>{
+        this.logout();
+      }),
+      this.authService.checkLocalStorage$.subscribe((isPresent: boolean) => {
+        if (isPresent) {
+          console.log("local storage was present, setting authenticated to TRUE");
+
+          this.loading = false;
+        } else {
+          this.loading = false;
+        }
+      }),
+    ];
+    this.authService.checkLocalStorage();
+  }
+  
 
   onScreenSizeChanged(appScreenSize: ScreenSizes) {
     this.appScreenSize = appScreenSize;
@@ -141,10 +121,7 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
   }
 
   private logout() {
-    console.log("logging out of app component.");
-    this._authenticated = false;
-    // this.authSubscription.unsubscribe();
-    // this.authLogoutSubscription.unsubscribe();
+    this._reload();
   }
 
 

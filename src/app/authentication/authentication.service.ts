@@ -19,13 +19,19 @@ export class AuthenticationService {
     return this._authStatusSubject$.asObservable();
   }
 
+  public get isAuthenticated(): boolean { 
+    const authStatus: AuthStatus = this._authStatusSubject$.getValue();
+    if(authStatus){
+      return authStatus.isAuthenticated;
+    }
+    return false;
+  }
 
   constructor(
     private http: HttpClient,
     private serviceAuthenticationService: ServiceAuthenticationService,
   ) { }
 
-  private serverUrl = serverUrl;
 
   public get token(): string {
     if(this._authStatusSubject$.getValue()){
@@ -56,16 +62,12 @@ export class AuthenticationService {
     }
   }
   public get userSocialId(): string{
-    if(this._authStatusSubject$.getValue()){
-      return this._authStatusSubject$.getValue().user.socialId;
-    }else{
-      return "";
-    }
+    return "warning: social id disabled.";
   }
 
 
   registerNewUserAccount$(authData: AuthData): Observable<Object> {
-    return this.http.post(this.serverUrl + "/api/authentication/register", authData)
+    return this.http.post(serverUrl + "/api/authentication/register", authData)
   }
 
   private _loginAttempt$: Subject<boolean> = new Subject();
@@ -73,17 +75,18 @@ export class AuthenticationService {
     return this._loginAttempt$.asObservable();
   } 
 
-  loginAttempt(authData: AuthData) {
+  attemptLogin(authData: AuthData) {
     // console.log("Login attempt:", authData);
-    this.http.post<{ message: string, data: any }>(this.serverUrl + "/api/authentication/authenticate", authData)
+    this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/authenticate", authData)
+      
       .pipe<AuthStatus>(map((response) => {
-        let settings: any[] = Object.assign([], response.data.userAccount.userSettings);
-        let userSettings: UserSetting[] = [];
-        for (let setting of settings) {
-          let userSetting: UserSetting = new UserSetting(setting.name, setting.booleanValue, setting.numericValue, setting.stringValue);
-          userSettings.push(userSetting);
-        }
-        let responseAuthStatus = new AuthStatus(response.data.token, new UserAccount(response.data.userAccount._id, response.data.userAccount.email, response.data.userAccount.socialId, userSettings), true);
+        console.log("Login attempt response: ", response)
+        const token: string = response.data.token;
+        const userId: string = response.data.userAccount.id;
+        const username: string = response.data.userAccount.username;
+        const email: string = response.data.userAccount.email;
+        const userAccount = new UserAccount(userId, username, email);
+        let responseAuthStatus = new AuthStatus(token, userAccount, true);
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
@@ -97,6 +100,7 @@ export class AuthenticationService {
   }
 
   private loginRoutine(authStatus: AuthStatus) {
+    console.log("loginRoutine")
     /*
       This is where we can execute things that need to be loaded for the user before displaying the app.
       This mostly includes async tasks like fetching data from the server.
@@ -111,7 +115,7 @@ export class AuthenticationService {
         }
       });
     }else{
-      this.completeLogin(authStatus);
+      this.logout();
     }
 
   }
@@ -125,12 +129,13 @@ export class AuthenticationService {
       this._appComponentLogin$.next(true);
     } else {
       this._authStatusSubject$.next(null);
+      this._appComponentLogin$.next(false);
     }
 
   }
 
   getUserById$(userId: string): Observable<UserAccount> {
-    return this.http.get<{ message: string, data: any }>(this.serverUrl + "/api/authentication/getUserById/" + userId)
+    return this.http.get<{ message: string, data: any }>(serverUrl + "/api/authentication/getUserById/" + userId)
       .pipe(map((response) => {
         let settings: any[] = Object.assign([], response.data.userSettings);
         let userSettings: UserSetting[] = [];
@@ -138,17 +143,18 @@ export class AuthenticationService {
           let userSetting: UserSetting = new UserSetting(setting.name, setting.booleanValue, setting.numericValue, setting.stringValue);
           userSettings.push(userSetting);
         }
-        return new UserAccount(response.data._id, response.data.email, response.data.socialId, userSettings);
+        return new UserAccount(response.data.id, response.data.username, response.data.email);
       }))
   }
 
   checkForExistingAccount$(email: string): Observable<Object> {
-    return this.http.get(this.serverUrl + "/api/authentication/validateNewEmail/" + email)
+    return this.http.get(serverUrl + "/api/authentication/validateNewEmail/" + email)
   }
 
   checkLocalStorage$: Subject<boolean> = new Subject();
 
   checkLocalStorage() {
+    console.log("Checking local storage")
     if (!localStorage.getItem("token") || !localStorage.getItem("user")) {
       this._authStatusSubject$.next(null);
       this.checkLocalStorage$.next(false);
@@ -173,6 +179,7 @@ export class AuthenticationService {
     this.serviceAuthenticationService.logout();
 
     this._authStatusSubject$.next(null);
+    this._appComponentLogin$.next(false);
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));
     // this._authStatusSubject$.next(null);
     this._logout$.next();

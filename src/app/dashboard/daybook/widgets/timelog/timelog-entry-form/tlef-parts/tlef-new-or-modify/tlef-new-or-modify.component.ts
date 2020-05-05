@@ -16,11 +16,6 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
 
   constructor(private daybookService: DaybookDisplayService) { }
 
-  private _controller: TLEFController;
-  @Input() public set controller(controller: TLEFController) { this._controller = controller; }
-  public get controller(): TLEFController { return this._controller; }
-
-
   private _initialActivities: TimelogEntryActivity[] = [];
   private _initialText: string;
   private _textValueChangeSub: Subscription = new Subscription();
@@ -62,38 +57,41 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
   }
 
   private _setEntryItem() {
-    this._entryItem = this._controller.currentlyOpenTLEFItem.getInitialTLEValue();
-    this._initialActivities = [];
-    // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
-    if (this._entryItem) {
-      if(this._entryItem.embeddedNote){
-        this._noteText = this._entryItem.embeddedNote;
-        this._initialText = this._entryItem.embeddedNote;
+    if(this.daybookService.tlefController.currentlyOpenTLEFItem){
+      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+      this._initialActivities = [];
+      // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
+      if (this._entryItem) {
+        if(this._entryItem.embeddedNote){
+          this._noteText = this._entryItem.embeddedNote;
+          this._initialText = this._entryItem.embeddedNote;
+          
+          this._hasSavedNote = true;
+        }else{
+          // this._noteText = "No note";
+          this._initialText = "";
+          this._hasSavedNote = false;
+        }
         
-        this._hasSavedNote = true;
-      }else{
-        // this._noteText = "No note";
-        this._initialText = "";
-        this._hasSavedNote = false;
+        if (this._entryItem.timelogEntryActivities) {
+          this._entryItem.timelogEntryActivities.forEach((item) => {
+            this._initialActivities.push(item);
+          });
+        }
       }
-      
-      if (this._entryItem.timelogEntryActivities) {
-        this._entryItem.timelogEntryActivities.forEach((item) => {
-          this._initialActivities.push(item);
-        });
-      }
+  
+      this._noteFormControl = new FormControl(this._noteText);
+      this._textValueChangeSub.unsubscribe();
+      this._textValueChangeSub = this._noteFormControl.valueChanges.subscribe((value: any)=>{
+        this._checkForTextChanges(value);
+      });
+      let length = this._noteText.length;
+      const charsPerRow = 43;
+      let rows = Math.ceil(length/charsPerRow);
+      this._rows = rows;
+      // console.log("initial activities: " + this._initialActivities.length , this._initialActivities)
     }
-
-    this._noteFormControl = new FormControl(this._noteText);
-    this._textValueChangeSub.unsubscribe();
-    this._textValueChangeSub = this._noteFormControl.valueChanges.subscribe((value: any)=>{
-      this._checkForTextChanges(value);
-    });
-    let length = this._noteText.length;
-    const charsPerRow = 43;
-    let rows = Math.ceil(length/charsPerRow);
-    this._rows = rows;
-    // console.log("initial activities: " + this._initialActivities.length , this._initialActivities)
+    
   }
 
   public onActivitiesChanged(activities: TimelogEntryActivity[]) {
@@ -104,7 +102,7 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
 
     } else {
       this._entryItem.timelogEntryActivities = activities;
-      this.controller.makeChangesTLE(this._entryItem);
+      this.daybookService.tlefController.makeChangesTLE(this._entryItem);
     }
   }
 
@@ -116,7 +114,7 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
     }else{
       changesMade = true;
       this._entryItem.embeddedNote = formValue;
-      this._controller.makeChangesTLE(this._entryItem);
+      this.daybookService.tlefController.makeChangesTLE(this._entryItem);
     }
 
   }

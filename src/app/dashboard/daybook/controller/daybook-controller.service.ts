@@ -5,7 +5,6 @@ import * as moment from 'moment';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { AuthStatus } from '../../../authentication/auth-status.class';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
-import { ActivityCategoryDefinitionService } from '../../activities/api/activity-category-definition.service';
 import { DaybookController } from './daybook-controller.class';
 import { DaybookDisplayUpdateType, DaybookDisplayUpdate } from './items/daybook-display-update.interface';
 
@@ -18,7 +17,6 @@ export class DaybookControllerService implements ServiceAuthenticates {
 
   constructor(
     private daybookHttpRequestService: DaybookHttpRequestService,
-    private activitiesService: ActivityCategoryDefinitionService,
   ) { }
 
   private _authStatus: AuthStatus;
@@ -52,6 +50,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
 
 
   public login$(authStatus: AuthStatus): Observable<boolean> {
+    console.log("Logging in to daybook controller")
     this._authStatus = authStatus;
     this._initiate();
     // this._allSubscriptions.push(this.activitiesService.activitiesTree$.subscribe((changedTree) => {
@@ -61,9 +60,12 @@ export class DaybookControllerService implements ServiceAuthenticates {
   }
 
   public logout() {
+    console.log("Logging out of daybook controller service")
     this._authStatus = null;
     this._activeDayController$.next(null);
+    this._activeDayController$ = null;
     this._todayController$.next(null);
+    this._todayController$ = null;
     this._todayYYYYMMDD = moment().format('YYYY-MM-DD');
     this._daybookDayItems$.next([]);
     this._clock = null;
@@ -78,6 +80,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
   }
 
   private _startClock() {
+    console.log("Starting clock");
     this._clockSubscriptions.forEach(s => s.unsubscribe());
     this._clockSubscriptions = [];
     this._clock = moment();
@@ -116,7 +119,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
 
 
   private _updateTodayFromDatabase(updateType: DaybookDisplayUpdateType) {
-    // console.log(this.clock.format('YYYY-MM-DD') + " :getting daybook item for date");
+    console.log("_updateTodayFromDatabase" , updateType, this.clock.format('YYYY-MM-DD') + " :getting daybook item for date");
     this.daybookHttpRequestService.getDaybookDayItemByDate$(this.clock.format('YYYY-MM-DD'))
       .subscribe((items: DaybookDayItem[]) => {
         this._setTodayItem(items, updateType);

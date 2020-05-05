@@ -8,7 +8,6 @@ import { DaybookDayItem } from './daybook-day-item.class';
 import { map } from 'rxjs/operators';
 import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
-import { ActivityCategoryDefinitionService } from '../../activities/api/activity-category-definition.service';
 import { DaybookDayItemBuilder } from './daybook-day-item-builder.class';
 
 
@@ -17,7 +16,7 @@ import { DaybookDayItemBuilder } from './daybook-day-item-builder.class';
 })
 export class DaybookHttpRequestService implements ServiceAuthenticates {
 
-  constructor(private httpClient: HttpClient, private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private httpClient: HttpClient) { }
   private _authStatus: AuthStatus = null;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private _changeSubscriptions: Subscription[] = [];
@@ -31,6 +30,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
   }
 
   logout() {
+
+    console.log("Logging out of daybook http service")
     this._authStatus = null;
     this._daybookDayItems$.next([]);
     this._changeSubscriptions.forEach((sub) => sub.unsubscribe());

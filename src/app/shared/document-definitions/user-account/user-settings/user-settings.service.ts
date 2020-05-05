@@ -45,7 +45,8 @@ export class UserSettingsService implements ServiceAuthenticates{
   login$(authStatus: AuthStatus): Observable<boolean>{
     this._authStatus = authStatus;
     // console.log("login(): setting user settings to ", this._authStatus.user.userSettings);
-    this.userSettings = this._authStatus.user.userSettings;
+    // this.userSettings = this._authStatus.user.userSettings;
+    this.userSettings = null;
     this._loginComplete$.next(true);
     return this._loginComplete$.asObservable();
   }
@@ -86,16 +87,16 @@ export class UserSettingsService implements ServiceAuthenticates{
     };
 
     let user = this._authStatus.user;
-    user.userSettings = currentSettings;
+    // user.userSettings = currentSettings;
 
-    this.httpClient.post<{ message: string, data: any }>(settingsPostUrl, user, httpOptions)
-      .pipe<UserAccount>(map((response) => {
-        let updatedUser = new UserAccount(response.data._id, response.data.email, response.data.socialId, response.data.userSettings);
-        return updatedUser;
-      }))
-      .subscribe((updatedUser: UserAccount)=>{
-        this.userSettings = updatedUser.userSettings;
-      })
+    // this.httpClient.post<{ message: string, data: any }>(settingsPostUrl, user, httpOptions)
+    //   .pipe<UserAccount>(map((response) => {
+    //     let updatedUser = new UserAccount(response.data._id, response.data.email, response.data.socialId, response.data.userSettings);
+    //     return updatedUser;
+    //   }))
+    //   .subscribe((updatedUser: UserAccount)=>{
+    //     // this.userSettings = updatedUser.userSettings;
+    //   })
 
   }
 

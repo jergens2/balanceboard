@@ -1,1 +1,56 @@
-<p>registration works!</p>
+<div class="registration-root">
+   
+    <div [formGroup]="registrationForm">
+        <div class="input-container">
+            <input formControlName="emailAddress" type="email" class="form-control" placeholder="email"
+                style="grid-row:1 / span 1; grid-column: 1 / -1;">
+            <fa-icon [icon]="faUser" class="auth-icon" style="grid-row:1 / span 1; grid-column: 2 / span 1;"></fa-icon>
+            <input formControlName="password" type="password" class="form-control" placeholder="password"
+                style="grid-row:2 / span 1; grid-column: 1 / -1;">
+            <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
+        </div>
+
+
+        <div class="action-buttons-container">
+            <button class="btn btn-sm btn-primary mx-1" (click)="onClickContinueRegistration()">Continue
+            </button>
+            <button class="btn btn-sm btn-secondary mx-1" (click)="onClickCancelRegistration()">Cancel</button>
+        </div>
+    </div>
+
+
+</div>
+
+
+<!-- CONFIRMATION -->
+<div *ngIf="action == 'confirm_registration'" [formGroup]="confirmRegistrationForm">
+    <div class="input-container">
+        <div style="grid-row:1 / span 1; grid-column: 1 / -1;">
+            {{ registrationForm.controls['emailAddress'].value.toLowerCase() }}
+        </div>
+        <input formControlName="password" type="password" class="form-control" placeholder="confirm password"
+            style="grid-row:2 / span 1; grid-column: 1 / -1;">
+        <fa-icon [icon]="faKey" class="auth-icon" style="grid-row:2 / span 1; grid-column: 2 / span 1;"></fa-icon>
+    </div>
+    <div class="action-buttons-container">
+        <button class="btn btn-sm btn-primary mx-1" (click)="onClickFinishRegistration()">Finish
+        </button>
+        <button class="btn btn-sm btn-secondary mx-1" (click)="this.action  = 'register'">Back</button>
+    </div>
+</div>
+<!-- end of CONFIRMATION -->
+
+
+<!-- SUCCESS -->
+<div *ngIf="action == 'successful_registration'">
+    <div class="successful-registration">
+        Woohoo! <br>
+        {{ authData.userAccount.email }} has been successfully registered.
+    </div>
+    <div class="action-buttons-container">
+        <button class="btn btn-sm btn-primary mx-1" (click)="onClickContinuePostRegistration()">Login <fa-icon
+                [icon]="faUnlock" class="auth-icon"></fa-icon>
+        </button>
+    </div>
+</div>
+<!-- end of SUCCESS -->

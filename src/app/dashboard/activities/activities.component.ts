@@ -48,10 +48,13 @@ export class ActivitiesComponent implements OnInit {
     this._openActivity = null;
 
     this.activityCategoryDefinitionService.activitiesTree$.subscribe((changedTree) => {
-      this.activityTree = changedTree;
-      this._activityRoutines = this.activityTree.activityRoutines;
-      this.buildTimeViewConfiguration();
-      this.findScheduledItems();
+      if(changedTree){
+        this.activityTree = changedTree;
+        this._activityRoutines = this.activityTree.activityRoutines;
+        this.buildTimeViewConfiguration();
+        this.findScheduledItems();
+      }
+      
     });
 
     this.buildTimeViewConfiguration();

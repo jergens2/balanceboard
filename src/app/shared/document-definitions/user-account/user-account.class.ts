@@ -5,9 +5,8 @@ export class UserAccount{
     public get httpBody(): any{
         return {
             id: this.id,
+            username: this.username,
             email: this.email,
-            socialId: this.socialId,
-            userSettings: this.userSettings,
         }
     }
 
@@ -15,14 +14,11 @@ export class UserAccount{
     public id: string;
     public username: string
     public email: string;
-    public socialId: string;
 
-    public userSettings: UserSetting[] = [];
 
-    constructor(id: string, email: string, socialId: string, userSettings: UserSetting[]){
+    constructor(id: string, username: string, email: string, ){
         this.id = id;
         this.email = email;
-        this.socialId = socialId;
-        this.userSettings = userSettings;
+        this.username = username;
     }
 }

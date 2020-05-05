@@ -64,32 +64,26 @@ export class ServiceAuthenticationService {
     let dayTemplatesSA: ServiceAuthentication = new ServiceAuthentication("DayTemplates", this.dayTemplatesService);
     let scheduleRotationSA: ServiceAuthentication = new ServiceAuthentication("ScheduleRotation", this.scheduleRotationService);
     let daybookHttpSA: ServiceAuthentication = new ServiceAuthentication("DaybookHttp", this.daybookHttpRequestService);
-
-
-    daybookHttpSA.setChild(new ServiceAuthentication("Daybook", this.daybookControllerService));
-    scheduleRotationSA.setChild(daybookHttpSA);
-    dayTemplatesSA.setChild(scheduleRotationSA);
-    routineDefinitionSA.setChild(dayTemplatesSA)
-    activityCategoryDefinitionSA.setChild(routineDefinitionSA);
-
     serviceAuthentications.push(activityCategoryDefinitionSA);
+    serviceAuthentications = [
+      activityCategoryDefinitionSA,
+      routineDefinitionSA, 
+      dayTemplatesSA, 
+      scheduleRotationSA,
+      daybookHttpSA,
+      new ServiceAuthentication("Daybook", this.daybookControllerService),
+      new ServiceAuthentication("Notes", this.notebooksService),
+      new ServiceAuthentication("Tasks", this.taskService),
+      new ServiceAuthentication("Social", this.socialService),
+      new ServiceAuthentication("UserSettings", this.userSettingsService)
+    ]
 
-
-    serviceAuthentications.push(new ServiceAuthentication("Notes", this.notebooksService));
-    serviceAuthentications.push(new ServiceAuthentication("Tasks", this.taskService));
-    serviceAuthentications.push(new ServiceAuthentication("Social", this.socialService));
-
-    serviceAuthentications.push(new ServiceAuthentication("UserSettings", this.userSettingsService));
 
 
     let loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-
     serviceAuthentications.forEach((sa) => {
       sa.login$(authStatus);
     });
-
-
-
     let timerSubscription: Subscription = new Subscription();
     timerSubscription = timer(0, 300).subscribe((val) => {
       let loginComplete: boolean = true;

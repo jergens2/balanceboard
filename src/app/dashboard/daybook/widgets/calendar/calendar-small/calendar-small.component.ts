@@ -40,8 +40,11 @@ export class CalendarSmallComponent implements OnInit {
       this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
 
       this.daybookControllerService.activeDayController$.subscribe((activeDayChanged) => {
-        this.activeDayController = activeDayChanged;
-        this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
+        if(activeDayChanged){
+          this.activeDayController = activeDayChanged;
+          this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
+        }
+
       });
     }
 

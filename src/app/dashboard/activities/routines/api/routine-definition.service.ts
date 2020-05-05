@@ -13,7 +13,6 @@ import { ServiceAuthenticates } from '../../../../authentication/service-authent
 import { RoutineDefinition } from './routine-definition.class';
 import { RoutineDefinitionHttpShape } from './routine-definition-http-shape.interface';
 import { DefaultRoutineDefinitions } from './default-routine-definitions.class';
-import { ActivityCategoryDefinitionService } from '../../api/activity-category-definition.service';
 
 
 @Injectable({
@@ -21,7 +20,7 @@ import { ActivityCategoryDefinitionService } from '../../api/activity-category-d
 })
 export class RoutineDefinitionService implements ServiceAuthenticates {
 
-  constructor(private httpClient: HttpClient, private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private httpClient: HttpClient) { }
 
   private _authStatus: AuthStatus;
   private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);

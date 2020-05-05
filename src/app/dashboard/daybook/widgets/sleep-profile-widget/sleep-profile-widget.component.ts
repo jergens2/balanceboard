@@ -49,7 +49,10 @@ export class SleepProfileWidgetComponent implements OnInit {
   ngOnInit() {
     this.reInitiate();
     this.daybookControllerService.activeDayController$.subscribe((dayChanged) => {
-      this.reInitiate();
+      if(dayChanged){
+        this.reInitiate();
+      }
+
     });
   }
 

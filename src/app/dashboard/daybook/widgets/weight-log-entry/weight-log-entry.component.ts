@@ -18,8 +18,11 @@ export class WeightLogEntryComponent implements OnInit {
     this.activeDayController = this.daybookControllerService.activeDayController;
     this.updateWeightInfo()
     this.daybookControllerService.activeDayController$.subscribe((activeDayChanged)=>{
-      this.activeDayController = activeDayChanged;
-      this.updateWeightInfo();
+      if(activeDayChanged){
+        this.activeDayController = activeDayChanged;
+        this.updateWeightInfo();
+      }
+
     });
   }
 

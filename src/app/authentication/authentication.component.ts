@@ -28,154 +28,23 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   faSignInAlt = faSignInAlt;
   faUserPlus = faUserPlus;
 
-  action: string = "welcome";
-
-  formMessage: string = "";
-  errorMessage: string = "";
-
-  authData: AuthData = { userAccount: null, password: '' };
-
-
-  registrationForm: FormGroup;
-  confirmRegistrationForm: FormGroup;
-  loginForm: FormGroup;
-  continueDisabled: boolean = true;
-
-
   constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private socialService: SocialService) { }
 
-  attemptLogin() {
-    console.log("log in attempt")
-    this.setAction("waiting");
-    this.authService.loginAttempt(this.authData);
-  }
 
-
+  public action: 'INITIAL' | 'LOGIN' | 'REGISTER' = 'INITIAL';
+  public get actionIsInitial() { return this.action === 'INITIAL'; }
+  public get actionIsLogin() { return this.action === 'LOGIN'; }
+  public get actionIsRegister() { return this.action === 'REGISTER'; }
 
   ngOnInit() {
-    this.registrationForm = new FormGroup({
-      'emailAddress': new FormControl(null, [Validators.required, Validators.email]),
-      'password': new FormControl(null, Validators.required)
-    });
-    this.confirmRegistrationForm = new FormGroup({
-      'password': new FormControl(null, Validators.required),
-    });
 
-
-  }
-
-  setAction(action: string) {
-    this.formMessage = "";
-    this.errorMessage = "";
-    this.action = action;
-  }
-
-  onClickLogin() {
-    this.setAction("waiting");
-
-    if (this.loginForm.valid) {
-      let loginUser = new UserAccount('', this.loginForm.controls['emailAddress'].value, '', []);
-      this.authData = { userAccount: loginUser, password: this.loginForm.controls['password'].value }
-      this.authService.loginAttempt$.subscribe((successful: boolean) => {
-        if(successful){
-          this.setAction("waiting");
-          this.formMessage = "Logging in...";
-        }else{
-          this.setAction("login");
-          this.formMessage = "Bad username or password";
-        }
-      });
-      this.attemptLogin();
-    } else {
-      this.formMessage = "Form is invalid";
-    }
-
-  }
-
-
-
-  onClickContinueRegistration() {
-    if (this.registrationForm.valid) {
-      this.setAction("waiting");
-      this.authService.checkForExistingAccount$(this.registrationForm.controls['emailAddress'].value).subscribe((response: any) => {
-        if (response.data == null) {
-          this.setAction("confirm_registration");
-        } else {
-          this.setAction("register");
-          this.formMessage = "An account with this email address already exists"
-        }
-      }, error => {
-        this.setAction("error");
-        this.errorMessage = error.message;
-      })
-    } else {
-      this.formMessage = "Form is invalid";
-    }
-
-  }
-
-  onClickCancelRegistration() {
-    this.setAction("welcome");
-  }
-
-  onClickFinishRegistration() {
-
-    /*
-      2019-01-28
-
-      What is the proper way to do authentication?  checking in the front end, or make another request with the newly typed password to check with the server?
-      is it safe to have that information in the front end at all ?
-
-    */
-
-    if (this.registrationForm.controls['password'].value == this.confirmRegistrationForm.controls['password'].value) {
-      this.setAction("waiting");
-      let defaultSettings: UserSetting[] = this.userSettingsService.createDefaultSettings();
-      let newUser = new UserAccount(null, this.registrationForm.controls['emailAddress'].value, this.socialService.generateSocialId(), defaultSettings);
-      console.log("Registering new user:", newUser);
-      this.authData = { userAccount: newUser.httpBody, password: this.registrationForm.controls['password'].value };
-      console.log("Auth data is", this.authData);
-      this.authService.registerNewUserAccount$(this.authData).subscribe((response: { data: any, message: string }) => {
-        if (response != null) {
-          this.setAction("successful_registration");
-        } else {
-          this.setAction("error");
-          this.errorMessage = "No response from server.";2
-        }
-      }, error => {
-        console.log(error);
-        this.setAction("error");
-        this.errorMessage = error.message;
-      });
-
-    } else {
-      this.setAction("confirm_registration");
-      this.formMessage = "Passwords do not match";
-    }
 
 
   }
 
 
-  // authenticationFocused: boolean = false;
-  // onMouseEnterAuthenticationBox(){
-  //   this.authenticationFocused = true;
-  //   console.log("We ")
-  // }
-
-  get loginDisabled(): string{
-    return this.loginForm.valid ? "" : "disabled";
-  }
-
-
-  onClickContinuePostRegistration() {
-    this.attemptLogin();
-  }
 
   ngOnDestroy() {
-    this.authData = null;
-    this.registrationForm.reset();
-    this.confirmRegistrationForm.reset();
   }
 
 }

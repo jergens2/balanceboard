@@ -52,6 +52,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public get userId(): string {
     return this.authService.userId;
   }
+  public get username(): string { 
+    return this.authService.user.username;
+  }
 
   ngOnInit() {
     this.menuItems = appMenuItems;

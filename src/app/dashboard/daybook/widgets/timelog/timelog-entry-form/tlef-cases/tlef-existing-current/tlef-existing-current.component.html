@@ -2,5 +2,5 @@
     Current timelog entry.  Happening right now.
     <div class="clock">{{ clock }}</div>
     <app-tlef-view-only *ngIf="!isEditing" (editing)="onClickEdit()"></app-tlef-view-only>
-    <app-tlef-new-or-modify *ngIf="isEditing"  [controller]="controller"></app-tlef-new-or-modify>
+    <app-tlef-new-or-modify *ngIf="isEditing"></app-tlef-new-or-modify>
 </div>

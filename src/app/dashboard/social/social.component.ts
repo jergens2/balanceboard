@@ -33,7 +33,7 @@ export class SocialComponent implements OnInit {
   }
 
   public get socialId(): string{
-    return this.socialService.userAccount.socialId;
+    return "warning no social id";
   }
 
   onClickSendFriendRequest(){
