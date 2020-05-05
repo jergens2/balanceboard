@@ -88,14 +88,13 @@ export class AppComponent implements OnInit, OnScreenSizeChanged {
         }
       }),
       this.authService.logout$.subscribe((onLogout)=>{
+        console.log("Auth service told me to log out.")
         this.logout();
       }),
       this.authService.checkLocalStorage$.subscribe((isPresent: boolean) => {
         if (isPresent) {
-          console.log("local storage was present, setting authenticated to TRUE");
-
-          this.loading = false;
-        } else {
+          
+        } else {;
           this.loading = false;
         }
       }),

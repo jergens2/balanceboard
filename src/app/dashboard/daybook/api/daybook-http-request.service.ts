@@ -42,10 +42,10 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     const postUrl = serverUrl + '/api/daybook-day-item/create';
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'
-      })
+      // headers: new HttpHeaders({
+      //   'Content-Type': 'application/json'
+      //   // 'Authorization': 'my-auth-token'
+      // })
     };
     // console.log("Notice:  saveDaybookItem() method is disabled (no HTTP request)")
     return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
@@ -62,10 +62,10 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     const postUrl = serverUrl + '/api/daybook-day-item/update';
     daybookDayItem.userId = this._authStatus.user.id;
     const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'
-      })
+      // headers: new HttpHeaders({
+      //   'Content-Type': 'application/json'
+      //   // 'Authorization': 'my-auth-token'
+      // })
     };
     return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
       .pipe<DaybookDayItem>(map((response) => {
@@ -92,10 +92,10 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
 
     const getUrl = serverUrl + '/api/daybook-day-item/' + this._authStatus.user.id + '/' + prevWeekYYYYMMDD + '/' + nextWeekYYYYMMDD;
     const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-        // 'Authorization': 'my-auth-token'
-      })
+      // headers: new HttpHeaders({
+      //   'Content-Type': 'application/json'
+      //   // 'Authorization': 'my-auth-token'
+      // })
     };
     const dayItems$: Subject<DaybookDayItem[]> = new Subject();
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
