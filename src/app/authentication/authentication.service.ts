@@ -9,6 +9,7 @@ import { serverUrl } from '../serverurl';
 import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
 import { ServiceAuthenticationService } from './service-authentication/service-authentication.service';
 import * as moment from 'moment';
+import { ServiceAuthenticationAttempt } from './service-authentication/service-authentication-attempt.interface';
 
 
 @Injectable()
@@ -29,50 +30,36 @@ export class AuthenticationService {
   private _isAuthenticated: boolean = false;
   private _authStatus: AuthStatus;
 
-  public get isAuthenticated(): boolean {
-    return this._isAuthenticated;
-  }
+  public get isAuthenticated(): boolean { return this._isAuthenticated; }
   public get token(): string {
-    if(this._authStatus){
+    if (this._authStatus) {
       return this._authStatus.token;
     }
     return "";
   }
   public get user(): UserAccount {
-    if(this._authStatus){
+    if (this._authStatus) {
       return this._authStatus.user;
     }
     return null;
   }
   public get userId(): string {
-    if(this._authStatus){
+    if (this._authStatus) {
       return this._authStatus.user.id;
     }
     return "";
   }
   public get userEmail(): string {
-    if(this._authStatus){
+    if (this._authStatus) {
       return this._authStatus.user.email;
     }
     return "";
+  }
+  public get loginAttempt$(): Observable<boolean> { return this._loginAttempt$.asObservable(); }
 
-  }
-  public get userSocialId(): string {
-    return "warning: social id disabled.";
-  }
-  public get loginAttempt$(): Observable<boolean> {
-    return this._loginAttempt$.asObservable();
-  }
-
-  public registerNewUserAccount$(authData: AuthData): Observable<Object> {
-    return this.http.post(serverUrl + "/api/authentication/register", authData)
-  }
-  public get logout$(): Observable<boolean> {
-    return this._logout$.asObservable();
-  }
-  public get appComponentLogin$(): Observable<boolean> {
-    return this._appComponentLogin$.asObservable();
-  }
+  public get logout$(): Observable<boolean> { return this._logout$.asObservable(); }
+  public get appComponentLogin$(): Observable<boolean> { return this._appComponentLogin$.asObservable(); }
+ 
 
   public attemptLogin(authData: AuthData) {
     console.log("Login attempt:", authData);
@@ -80,13 +67,13 @@ export class AuthenticationService {
 
       .pipe<AuthStatus>(map((response) => {
         console.log("Login attempt response: ", response)
-        console.log("Expires in: " , response.data.expiresIn)
+        console.log("Expires in: ", response.data.expiresIn)
         const token: string = response.data.token;
         const userId: string = response.data.userAccount.id;
         const username: string = response.data.userAccount.username;
         const email: string = response.data.userAccount.email;
         const expiresAt = moment().add(response.data.expiresIn, 'seconds');
-        console.log("Login attempt:  expiration is "  + expiresAt.format('YYYY-MM-DD hh:mm a'))
+        console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
         const userAccount = new UserAccount(userId, username, email);
         let responseAuthStatus = new AuthStatus(token, userAccount, moment(expiresAt));
         return responseAuthStatus;
@@ -128,47 +115,17 @@ export class AuthenticationService {
    */
   public checkLocalStorage$: Subject<boolean> = new Subject();
 
-  public checkLocalStorage() {
-    console.log("Checking local storage");
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    const expirationString = localStorage.getItem('expiration');
-    if (!token || !user || !expirationString) {
-      localStorage.clear();
-      this._authStatus = null;
-      this.checkLocalStorage$.next(false);
-    } else {
-      const milliseconds = Number(expirationString);
-      const expiration: moment.Moment = moment(milliseconds);
-      if(moment().isAfter(expiration)){
-        localStorage.clear();
-        this._authStatus = null;
-        this.checkLocalStorage$.next(false);
-      }else{
-        const parse = JSON.parse(localStorage.getItem("user"));
-        let user: UserAccount = new UserAccount(parse.id, parse.username, parse.email);
-        this._loginRoutine(new AuthStatus(localStorage.getItem("token"), user, expiration));
-        this.checkLocalStorage$.next(true);
-      }
-      
-    }
+  public registerNewUserAccount$(authData: AuthData): Observable<Object> {
+    return this.http.post(serverUrl + "/api/authentication/register", authData)
   }
-
-
-  // public updateUserSettings(user: UserAccount) {
-  //   localStorage.removeItem("user");
-  //   localStorage.setItem("user", JSON.stringify(user));
-  //   this._authStatusSubject$.next(new AuthStatus(localStorage.getItem("token"), user, true));
-  // }
-
 
   public logout() {
     localStorage.clear();
     this._isAuthenticated = false;
-    this.serviceAuthenticationService.logout();
+    // this.serviceAuthenticationService.logout();
 
     this._authStatus = null;
-    
+
     this._appComponentLogin$.next(false);
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));
     // this._authStatusSubject$.next(null);
@@ -179,9 +136,9 @@ export class AuthenticationService {
 
 
   private _loginRoutine(authStatus: AuthStatus) {
-    console.log("loginRoutine: " , authStatus)
+    console.log("loginRoutine: ", authStatus)
     console.log("expires at: " + authStatus.expiresAt.format('YYYY-MM-DD hh:mm:ss a'))
-    /*
+    /*0
       This is where we can execute things that need to be loaded for the user before displaying the app.
       This mostly includes async tasks like fetching data from the server.
 
@@ -190,11 +147,15 @@ export class AuthenticationService {
 
     if (authStatus.isValid()) {
       this._authStatus = authStatus;
-      this.serviceAuthenticationService.loginServices$(authStatus).subscribe((serviceLoginsComplete: boolean) => {
-        if (serviceLoginsComplete === true) {
-          this._completeLogin(authStatus);
-        }
-      });
+      console.log("We have arrived at an impasse.");
+      // this.serviceAuthenticationService.loginServices$(authStatus).subscribe((serviceLoginsComplete: ServiceAuthenticationAttempt) => {
+      //   if (serviceLoginsComplete.authenticated === true) {
+      //     console.log("Completing login")
+      //     this._completeLogin(authStatus);
+      //   } else {
+      //     console.log("Error attempting to log in to the services.")
+      //   }
+      // });
     } else {
       localStorage.clear();
       this._authStatus = null;
@@ -214,8 +175,8 @@ export class AuthenticationService {
       const expiresAt = moment(authStatus.expiresAt);
       const now = moment();
       const dueTime = expiresAt.diff(now, 'milliseconds');
-      console.log("In " + dueTime + " milliseconds") 
-      timer(dueTime).subscribe((tokenHasExpired)=>{
+      console.log("In " + dueTime + " milliseconds")
+      timer(dueTime).subscribe((tokenHasExpired) => {
         console.log("WARNING: THE TOKEN IS EXPIRED.")
         this._isAuthenticated = false;
       })

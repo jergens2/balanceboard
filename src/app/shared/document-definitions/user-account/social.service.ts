@@ -8,27 +8,29 @@ import { serverUrl } from '../../../serverurl';
 import { FriendRequest } from './friend-request.interface';
 import { map } from 'rxjs/operators';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocialService implements ServiceAuthenticates{
 
-  private _authStatus: AuthStatus;
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(true);
-  public login$(authStatus: AuthStatus): Observable<boolean> {
-    this._authStatus = authStatus;
+  private _userId: string;
+  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
+    authenticated: false, message: '',
+  });
+  public synchronousLogin(user: string) { return false;}
+  public login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+    this._userId = userId;
     this.getFriendRequests();
     return this._loginComplete$.asObservable();
   }
   public logout(){
-    this._authStatus = null;
+    this._userId = '';
     this._incomingRequests$.next([]);
     this._outgoingRequests$.next([]);
   }
-  public get userAccount(): UserAccount {
-    return this._authStatus.user;
-  }
+
 
   constructor(private httpClient: HttpClient) { }
 
@@ -85,8 +87,10 @@ export class SocialService implements ServiceAuthenticates{
 
         // this._loginComplete$.next(true);
       // });
-      console.log("Warning, method disabled")
-      this._loginComplete$.next(true);
+      this._loginComplete$.next({
+        authenticated: true,
+        message: 'Social service logged in, but disabled.'
+      });
   }
 
 

@@ -8,6 +8,7 @@ import { AuthStatus } from '../../authentication/auth-status.class';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticationAttempt } from '../../authentication/service-authentication/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -17,17 +18,18 @@ export class TaskService implements ServiceAuthenticates{
   constructor(private httpClient: HttpClient) { }
 
   private _serverUrl = serverUrl;
-  private _authStatus: AuthStatus;
-  login$(authStatus: AuthStatus): Observable<boolean> {
-    this._authStatus = authStatus;
+  private _userId: string;
+  synchronousLogin(userId: string){ return false;}
+  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+    this._userId = userId;
     this.getTasksHTTP();
     return this._loginComplete$.asObservable();
   }
 
-  private _loginComplete$: Subject<boolean> = new Subject();
+  private _loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
 
   logout() {
-    this._authStatus = null;
+    this._userId = null;
     this._tasks$.next([]);
   }
   /*
@@ -39,7 +41,7 @@ export class TaskService implements ServiceAuthenticates{
   */
 
   public get userId(): string{
-    return this._authStatus.user.id;
+    return this._userId;
   }
 
   private _tasks$: BehaviorSubject<Task[]> = new BehaviorSubject([]);
@@ -90,7 +92,7 @@ export class TaskService implements ServiceAuthenticates{
 
   
   private getTasksHTTP(){
-    const getUrl = this._serverUrl + "/api/task/" + this._authStatus.user.id;
+    const getUrl = this._serverUrl + "/api/task/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -109,12 +111,15 @@ export class TaskService implements ServiceAuthenticates{
       .subscribe((tasks: Task[])=>{
         this.updateTaskQueue(tasks);
         this._tasks$.next(this.sortTasksByDate(tasks));
-        this._loginComplete$.next(true);
+        this._loginComplete$.next({
+          authenticated: true,
+          message: 'Successfully logged in to TaskService'
+        });
       })
   }
 
   public getTaskByIdHTTP$(id: string): Observable<Task> {
-    const getUrl = this._serverUrl + "/api/task/" + this._authStatus.user.id + "/" + id;
+    const getUrl = this._serverUrl + "/api/task/" + this._userId + "/" + id;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

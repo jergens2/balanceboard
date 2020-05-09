@@ -6,20 +6,25 @@
       balanceboard
     </div>
 
+    <div *ngIf="isLoading">
+      <app-spinner style="width: 200px;"></app-spinner>
+    </div>
+    <div *ngIf="!isLoading">
+      <div *ngIf="actionIsInitial" class="buttons-container">
+        <button class="medium-button login-button" (click)="this.action = 'LOGIN'">
+          Login
+          <fa-icon [icon]="faSignInAlt" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
+        </button>
+        <button class="medium-button register-button" (click)="this.action = 'REGISTER'">
+          Sign Up
+          <fa-icon [icon]="faUserPlus" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
+        </button>
+      </div>
 
-    <div *ngIf="actionIsInitial" class="buttons-container">
-      <button class="medium-button login-button" (click)="this.action = 'LOGIN'">
-        Login
-        <fa-icon [icon]="faSignInAlt" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
-      </button>
-      <button class="medium-button register-button" (click)="this.action = 'REGISTER'">
-        Sign Up
-        <fa-icon [icon]="faUserPlus" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
-      </button>
+      <app-login *ngIf="actionIsLogin"></app-login>
+      <app-registration *ngIf="actionIsRegister"></app-registration>
     </div>
 
-    <app-login *ngIf="actionIsLogin"></app-login>
-    <app-registration *ngIf="actionIsRegister"></app-registration>
 
 
   </div>

@@ -9,6 +9,7 @@ import { serverUrl } from '../../../../serverurl';
 import { map } from 'rxjs/operators';
 import { RoutineDefinitionService } from '../../../../dashboard/activities/routines/api/routine-definition.service';
 import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication/service-authentication-attempt.interface';
 
 
 @Injectable({
@@ -20,12 +21,14 @@ export class DailyTaskListService implements ServiceAuthenticates{
 
   constructor(private httpClient: HttpClient, private routineDefinitionService: RoutineDefinitionService) { }
 
-  private _authStatus: AuthStatus;
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private _userId: string;
+  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({authenticated: false, message: ''});
   private _today: moment.Moment;
   private _clockSubscription: Subscription = new Subscription();
-  public login$(authStatus: AuthStatus): Observable<boolean>{
+  public synchronousLogin(userId: string) { return false; }
+  public login$(userId: string): Observable<ServiceAuthenticationAttempt>{
     this._today = moment();
+    this._userId = userId;
     
     this._clockSubscription = timer(1, 30000).subscribe(()=>{
       if(moment().format('YYYY-MM-DD') != moment(this._today).format('YYYY-MM-DD')){
@@ -33,13 +36,12 @@ export class DailyTaskListService implements ServiceAuthenticates{
       }
       this.httpGetDailyTaskListDataInRange(moment().subtract(1, "year"), moment().add(1, "year"));
     })
-    this._authStatus = authStatus;
     this.httpGetDailyTaskListDataInRange(moment().subtract(1, "year"), moment().add(1, "year"));
     return this._loginComplete$.asObservable();
   }
   public logout(){
     this._clockSubscription.unsubscribe();
-    this._authStatus = null;
+    this._userId = "";
     this._dailyTaskLists$.next([]);
   }
 
@@ -62,7 +64,7 @@ export class DailyTaskListService implements ServiceAuthenticates{
 
 
   private httpGetDailyTaskListDataInRange(startDate: moment.Moment, endDate: moment.Moment) {
-    const getUrl = this.serverUrl + "/api/daily-task-list/" + this._authStatus.user.id + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
+    const getUrl = this.serverUrl + "/api/daily-task-list/" + this._userId + "/" + startDate.format('YYYY-MM-DD') + "/" + endDate.format('YYYY-MM-DD');
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -81,7 +83,10 @@ export class DailyTaskListService implements ServiceAuthenticates{
         //   this.httpSaveDailyTaskList(this.recurringTaskService.generateDailyTaskListItemsForDate(this._today.format("YYYY-MM-DD")) );
         // }
         this.updateSubscriptions();
-        this._loginComplete$.next(true);
+        this._loginComplete$.next({
+          authenticated: true,
+          message: 'Successfully logged in to DailyTaskListService'
+        });
       });
 
   }

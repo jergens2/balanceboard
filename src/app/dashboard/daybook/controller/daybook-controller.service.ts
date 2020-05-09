@@ -7,6 +7,7 @@ import { AuthStatus } from '../../../authentication/auth-status.class';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 import { DaybookController } from './daybook-controller.class';
 import { DaybookDisplayUpdateType, DaybookDisplayUpdate } from './items/daybook-display-update.interface';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
 
 
 
@@ -19,9 +20,11 @@ export class DaybookControllerService implements ServiceAuthenticates {
     private daybookHttpRequestService: DaybookHttpRequestService,
   ) { }
 
-  private _authStatus: AuthStatus;
+  private _userId: string;
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
+    authenticated: false, message: '',
+  });
 
   private _clock: moment.Moment = moment();
   // private _clockMinuteTicker$: Subject<moment.Moment>;
@@ -49,9 +52,12 @@ export class DaybookControllerService implements ServiceAuthenticates {
   public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock) }
 
 
-  public login$(authStatus: AuthStatus): Observable<boolean> {
+  public synchronousLogin(userId: string): boolean { 
+    return false;
+  }
+  public login$(userId: string): Observable<ServiceAuthenticationAttempt> {
     console.log("Logging in to daybook controller")
-    this._authStatus = authStatus;
+    this._userId = userId;
     this._initiate();
     // this._allSubscriptions.push(this.activitiesService.activitiesTree$.subscribe((changedTree) => {
     //   // this.updateActivityItems(changedTree);
@@ -61,7 +67,6 @@ export class DaybookControllerService implements ServiceAuthenticates {
 
   public logout() {
     console.log("Logging out of daybook controller service")
-    this._authStatus = null;
     this._activeDayController$.next(null);
     this._activeDayController$ = null;
     this._todayController$.next(null);
@@ -123,7 +128,10 @@ export class DaybookControllerService implements ServiceAuthenticates {
     this.daybookHttpRequestService.getDaybookDayItemByDate$(this.clock.format('YYYY-MM-DD'))
       .subscribe((items: DaybookDayItem[]) => {
         this._setTodayItem(items, updateType);
-        this._loginComplete$.next(true);
+        this._loginComplete$.next({
+          authenticated: true,
+          message: 'Successfully logged in to DaybookControllerService'
+        });
       });
   }
 

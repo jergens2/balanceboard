@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AuthStatus } from '../../../authentication/auth-status.class';
 import { BehaviorSubject, Observable, Subscription, forkJoin, Subject } from 'rxjs';
 import * as moment from 'moment';
 import { serverUrl } from '../../../serverurl';
@@ -9,6 +8,7 @@ import { map } from 'rxjs/operators';
 import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 import { DaybookDayItemBuilder } from './daybook-day-item-builder.class';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
 
 
 @Injectable({
@@ -17,22 +17,24 @@ import { DaybookDayItemBuilder } from './daybook-day-item-builder.class';
 export class DaybookHttpRequestService implements ServiceAuthenticates {
 
   constructor(private httpClient: HttpClient) { }
-  private _authStatus: AuthStatus = null;
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  private _loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
   private _changeSubscriptions: Subscription[] = [];
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
   private _itemBuilder: DaybookDayItemBuilder = new DaybookDayItemBuilder();
+  private _userId: string ;
 
-  login$(authStatus: AuthStatus): Observable<boolean> {
-    this._authStatus = authStatus;
-    this._loginComplete$.next(true);
-    return this._loginComplete$.asObservable();
+  public synchronousLogin(userId: string): boolean { 
+    this._userId = userId;
+    return true;
+  }
+  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+      return null;
   }
 
   logout() {
 
     console.log("Logging out of daybook http service")
-    this._authStatus = null;
+    this._userId = null;
     this._daybookDayItems$.next([]);
     this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -40,7 +42,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
   private saveDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
     // console.log(' $ Saving daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
     const postUrl = serverUrl + '/api/daybook-day-item/create';
-    daybookDayItem.userId = this._authStatus.user.id;
+    daybookDayItem.userId = this._userId;
     const httpOptions = {
       // headers: new HttpHeaders({
       //   'Content-Type': 'application/json'
@@ -60,7 +62,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     // console.log(' $ updating daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
     // console.log(daybookDayItem)
     const postUrl = serverUrl + '/api/daybook-day-item/update';
-    daybookDayItem.userId = this._authStatus.user.id;
+    daybookDayItem.userId = this._userId;
     const httpOptions = {
       // headers: new HttpHeaders({
       //   'Content-Type': 'application/json'
@@ -90,7 +92,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     const prevWeekYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(7, 'days').format('YYYY-MM-DD');
     const nextWeekYYYYMMDD: string = moment(thisDateYYYYMMDD).add(7, 'days').format('YYYY-MM-DD');
 
-    const getUrl = serverUrl + '/api/daybook-day-item/' + this._authStatus.user.id + '/' + prevWeekYYYYMMDD + '/' + nextWeekYYYYMMDD;
+    const getUrl = serverUrl + '/api/daybook-day-item/' + this._userId + '/' + prevWeekYYYYMMDD + '/' + nextWeekYYYYMMDD;
     const httpOptions = {
       // headers: new HttpHeaders({
       //   'Content-Type': 'application/json'

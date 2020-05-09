@@ -10,6 +10,7 @@ import * as moment from 'moment';
 
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 import { Delineation } from './delineation.interface';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -21,16 +22,21 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
 
 
-  private _authStatus: AuthStatus;
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  login$(authStatus: AuthStatus): Observable<boolean>{
-    this._authStatus = authStatus;
+  private _loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
+
+  private _userId: string = "";
+  public synchronousLogin(userId: string) { return false;   
+  }
+
+  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+    
+    this._userId = userId;
     this.getTemplatesHTTP();
     return this._loginComplete$.asObservable();
   }
 
   logout(){
-    this._authStatus = null;
+    this._userId = null;
     this._dayTemplates$.next([]);
   }
 
@@ -46,7 +52,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
 
   private getTemplatesHTTP(){
-    const getUrl = this.serverUrl + "/api/schedule-day-template/" + this._authStatus.user.id;
+    const getUrl = this.serverUrl + "/api/schedule-day-template/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -67,7 +73,10 @@ export class DayTemplatesService implements ServiceAuthenticates {
       .subscribe((dayTemplates: DayTemplate[]) => {
         if(dayTemplates.length > 0){
           this._dayTemplates$.next(dayTemplates);
-          this._loginComplete$.next(true);
+          this._loginComplete$.next({
+            authenticated: true,
+            message: 'Successfully logged in to DayTemplatesService'
+          });
         }else{
           this.generateDefaultDayTemplate();
         }       
@@ -119,7 +128,10 @@ export class DayTemplatesService implements ServiceAuthenticates {
         let templates = this.dayTemplates;
         templates.push(dayTemplate);
         this._dayTemplates$.next(templates);
-        this._loginComplete$.next(true);
+        this._loginComplete$.next({
+          authenticated: true,
+          message: 'Successfully logged in to DayTemplatesService'
+        });
       });
   }
 
@@ -151,7 +163,7 @@ export class DayTemplatesService implements ServiceAuthenticates {
 
   private generateDefaultDayTemplate(): DayTemplate{
     console.log("*** DayTemplatesService: Generating default day template");
-    let defaultDayTemplate: DayTemplate = new DayTemplate("", this._authStatus.user.id, "Default Day");
+    let defaultDayTemplate: DayTemplate = new DayTemplate("", this._userId, "Default Day");
     defaultDayTemplate.delineations = [
       {
         name: "Wake up",

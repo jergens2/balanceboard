@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { NotebookEntry } from './notebook-entry/notebook-entry.model';
 import { serverUrl } from '../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../authentication/auth-status.class';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
 import { ServiceAuthenticates } from '../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticationAttempt } from '../../authentication/service-authentication/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,16 +15,19 @@ export class NotebooksService implements ServiceAuthenticates {
 
   constructor(private httpClient: HttpClient) { }
 
-  private _authStatus: AuthStatus;
-  private _loginComplete: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  login$(authStatus: AuthStatus): Observable<boolean> {
-    this._authStatus = authStatus;
-
+  private _userId: string;
+  private _loginComplete: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
+    authenticated: false, message: '',
+  });
+  
+  synchronousLogin(userId: string) { return false; }
+  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+    this._userId = userId;
     this.fetchNotebookEntries();
     return this._loginComplete.asObservable();
   }
   logout() {
-    this._authStatus = null;
+    this._userId = null;
     this._notebookEntries$.next([]);
     this._tags$.next([]);
   }
@@ -59,7 +62,7 @@ export class NotebooksService implements ServiceAuthenticates {
 
 
   private fetchNotebookEntries() {
-    let requestUrl: string = this.serverUrl + "/api/notebook/" + this._authStatus.user.id;
+    let requestUrl: string = this.serverUrl + "/api/notebook/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -91,7 +94,10 @@ export class NotebooksService implements ServiceAuthenticates {
       .subscribe((notebookEntries: NotebookEntry[]) => {
         this.getTags(notebookEntries);
         this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
-        this._loginComplete.next(true);
+        this._loginComplete.next({
+          authenticated: true,
+          message: 'Successfully logged in to NotebookService',
+        });
       });
 
   }
@@ -99,7 +105,7 @@ export class NotebooksService implements ServiceAuthenticates {
 
   private saveNotebookEntryHttp(notebookEntry: NotebookEntry) {
 
-    notebookEntry.userId = this._authStatus.user.id;
+    notebookEntry.userId = this._userId;
 
     let requestUrl: string = this.serverUrl + "/api/notebook/create";
     const httpOptions = {

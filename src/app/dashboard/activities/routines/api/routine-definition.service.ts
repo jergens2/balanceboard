@@ -13,6 +13,7 @@ import { ServiceAuthenticates } from '../../../../authentication/service-authent
 import { RoutineDefinition } from './routine-definition.class';
 import { RoutineDefinitionHttpShape } from './routine-definition-http-shape.interface';
 import { DefaultRoutineDefinitions } from './default-routine-definitions.class';
+import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication/service-authentication-attempt.interface';
 
 
 @Injectable({
@@ -22,26 +23,32 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
 
   constructor(private httpClient: HttpClient) { }
 
-  private _authStatus: AuthStatus;
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  public loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
 
+  private _userId: string;
 
-  login$(authStatus: AuthStatus): Observable<boolean> {
+  synchronousLogin(userId: string): boolean {
+    this._userId = userId;
+    return true;
+  }
+  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
     // console.log("RoutineDefinitionService: Logging in - ")
     // console.log("I don't think we need this CRUD any more.  Perhpas Cannibalize this method for another CRUD.")
     // this._authStatus = authStatus;
 
     // this.httpGetRoutineDefinitions();
-    this._loginComplete$.next(true);
-    return this._loginComplete$.asObservable();
+    this.loginComplete$.next({
+      authenticated: true, message: 'Successfully logged in to RoutineDefinitionService',
+    });
+    return null;
   }
   logout() {
-    this._authStatus = null;
+    this._userId = null;
     this._routineDefinitions$.next(null);
   }
   public get userId(): string {
-    return this._authStatus.user.id;
+    return this._userId;
   }
 
   private _routineDefinitions$: BehaviorSubject<RoutineDefinition[]> = new BehaviorSubject([]);
@@ -86,7 +93,10 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
           this.saveDefaultRoutineDefinitions();
         } else {
           this._routineDefinitions$.next(routineDefinitions);
-          this._loginComplete$.next(true);
+          this.loginComplete$.next({
+            authenticated: true,
+            message: 'Successfully logged in to RoutineDefinitionService'
+          });
         }
         
       });
@@ -185,7 +195,10 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
     //   console.log("Default routine definitions saved. ", routineDefinitions);
     //   this._loginComplete$.next(true);
     // })
-    this._loginComplete$.next(true);
+    this.loginComplete$.next({
+      authenticated: true,
+      message: 'Successfully logged in to RoutineDefinitionService'
+    });
   }
 
 

@@ -6,7 +6,6 @@ import { ActivityCategoryDefinition } from '../../../dashboard/activities/api/ac
 import { Router } from '@angular/router';
 import { ScreenSizeService } from '../../screen-size/screen-size.service';
 import { ScreenSizes } from '../../screen-size/screen-sizes-enum';
-import { OnScreenSizeChanged } from '../../screen-size/on-screen-size-changed.interface';
 import { YearViewData } from './year-view-data.interface';
 import { TimeViewsService } from '../time-views.service';
 import { TimeViewDayData } from '../time-view-day-data-interface';
@@ -18,7 +17,7 @@ import { DaybookControllerService } from '../../../dashboard/daybook/controller/
   templateUrl: './year-view.component.html',
   styleUrls: ['./year-view.component.css']
 })
-export class YearViewComponent implements OnInit, OnScreenSizeChanged {
+export class YearViewComponent implements OnInit {
 
   constructor(
     private daybookControllerService: DaybookControllerService,

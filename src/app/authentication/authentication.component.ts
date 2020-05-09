@@ -1,15 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthenticationService } from './authentication.service';
-import { AuthData } from './auth-data.interface';
+import * as moment from 'moment';
 
 import { faKey, faUser, faUnlock, faSpinner, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { UserAccount } from '../shared/document-definitions/user-account/user-account.class';
-import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
-import { UserSettingsService } from '../shared/document-definitions/user-account/user-settings/user-settings.service';
-
-import { SocialService } from '../shared/document-definitions/user-account/social.service';
 
 
 @Component({
@@ -20,7 +13,6 @@ import { SocialService } from '../shared/document-definitions/user-account/socia
 export class AuthenticationComponent implements OnInit, OnDestroy {
 
   
-  faGithub = faGithub;
   faKey = faKey; 
   faUser = faUser;
   faUnlock = faUnlock;
@@ -28,20 +20,69 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   faSignInAlt = faSignInAlt;
   faUserPlus = faUserPlus;
 
-  constructor(private authService: AuthenticationService, private userSettingsService: UserSettingsService, private socialService: SocialService) { }
+  constructor(private authService: AuthenticationService) { }
+
+  private _isLoading: boolean = true;
+  public get isLoading(): boolean { return this._isLoading; }
 
 
-  public action: 'INITIAL' | 'LOGIN' | 'REGISTER' = 'INITIAL';
-  public get actionIsInitial() { return this.action === 'INITIAL'; }
-  public get actionIsLogin() { return this.action === 'LOGIN'; }
-  public get actionIsRegister() { return this.action === 'REGISTER'; }
+  private _action: 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' = 'INITIAL';
+  public get action(): 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' { return this._action; }
+  public get actionIsInitial() { return this._action === 'INITIAL'; }
+  public get actionIsLogin() { return this._action === 'LOGIN'; }
+  public get actionIsRegister() { return this._action === 'REGISTER'; }
+  public get actionIsPin(){ return this._action === 'PIN'; }
 
   ngOnInit() {
-
-
-
+    console.log("Auth component init.")
+    this._reload();
   }
 
+  /**
+   * see auth_process.jpg
+   * 
+   * Process starts here in _reload()
+   * 
+   * 
+   */
+  private _reload(){
+    console.log("auth component .reload()")
+    const currentAuthData: 'NOT_PRESENT' | 'EXPIRED' | 'VALID' = this._checkLocalStorage();
+    if(currentAuthData === 'NOT_PRESENT'){
+      this._action = 'INITIAL';
+      this._isLoading = false;
+    }else if(currentAuthData === 'EXPIRED'){
+      this._action = 'PIN';
+      this._isLoading = false;
+    }else if(currentAuthData === 'VALID'){
+      this._refreshToken()
+    }
+  }
+
+  private _refreshToken(){
+    console.log("Refresh token not complete")
+  }
+
+  private _checkLocalStorage(): 'NOT_PRESENT' | 'EXPIRED' | 'VALID' {
+    console.log("Checking local storage");
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    const expirationString = localStorage.getItem('expiration');
+    const isPresent: boolean = (token !== null) && (user !== null) && (expirationString !== null);
+    if(isPresent){
+      const milliseconds = Number(expirationString);
+      const expiration: moment.Moment = moment(milliseconds);
+      const cutoff = moment().subtract(10, 'minutes');
+      const isExpired: boolean = expiration.isBefore(cutoff);
+      if(!isExpired){
+        return 'VALID';
+      }else if(isExpired){
+        return 'EXPIRED';
+      }
+    }else{
+      return 'NOT_PRESENT';
+    }
+  }
 
 
   ngOnDestroy() {

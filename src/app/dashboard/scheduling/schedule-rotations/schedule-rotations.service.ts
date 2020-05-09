@@ -11,6 +11,7 @@ import { DayTemplatesService } from '../day-templates/day-templates.service';
 import { DayTemplate } from '../day-templates/day-template.class'
 import { DayStructureDataItem } from '../../daybook/api/data-items/day-structure-data-item.interface';
 import buildDefaultDataItems  from '../../daybook/api/data-items/default-day-structure-data-items';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
 
 
 @Injectable({
@@ -18,23 +19,29 @@ import buildDefaultDataItems  from '../../daybook/api/data-items/default-day-str
 })
 export class ScheduleRotationsService implements ServiceAuthenticates {
 
+
+  private _userId: string;
   constructor(private httpClient: HttpClient, private dayTemplatesService: DayTemplatesService) { }
-  private _authStatus: AuthStatus;
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  login$(authStatus: AuthStatus): Observable<boolean> {
-    this._authStatus = authStatus;
+  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
+    authenticated: false, message: '',
+  });
+  public synchronousLogin(userId: string) { return false;}
+  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+    this._userId = userId;
     /**
      * first we check if any objects exist in DB with getScheduleRotationsHTTP().  If not, (for example, new user) then we generate a new one.
      * generating a new one implements method saveScheduleRotationHTTP() which will complete the login.
      * if there is already at least 1 in the DB, then login complete will also next true.
      */
     // this.getScheduleRotationsHTTP();
-    this._loginComplete$.next(true);
+    this._loginComplete$.next({
+      authenticated: true, message: 'Successfully logged in to ScheduleRotationService'
+    });
     return this._loginComplete$.asObservable();
   }
 
   logout() {
-    this._authStatus = null;
+    this._userId = null;
     this._scheduleRotations$.next([]);
   }
 
@@ -72,7 +79,7 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
   public getDayTemplateForDate(dateYYYYMMDD: string): DayTemplate {
     if (this.activeScheduleRotation.startDateYYYYMMDD > dateYYYYMMDD) {
       console.log("Date is from prior to earliest ScheduleRotation date.  Returning placeholder.")
-      let placeHolder: DayTemplate = new DayTemplate('no_day_template', this._authStatus.user.id, 'Placeholder Day Template');
+      let placeHolder: DayTemplate = new DayTemplate('no_day_template', this._userId, 'Placeholder Day Template');
       return placeHolder;
     } else {
       let itemsLength: number = this.activeScheduleRotation.dayTemplateItems.length;
@@ -87,7 +94,7 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
   }
 
   private getScheduleRotationsHTTP() {
-    const getUrl = serverUrl + "/api/schedule-rotation/" + this._authStatus.user.id;
+    const getUrl = serverUrl + "/api/schedule-rotation/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -111,7 +118,9 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
           this.generateDefaultScheduleRotation();
         }else{
           this._scheduleRotations$.next(scheduleRotations);
-          this._loginComplete$.next(true);
+          this._loginComplete$.next({
+            authenticated: true, message: 'Successfully logged in to ScheduleRotationService'
+          });
         }
       });
   }
@@ -146,7 +155,7 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
   }
 
   private saveScheduleRotationHTTP(scheduleRotation: ScheduleRotation) {
-    scheduleRotation.userId = this._authStatus.user.id;
+    scheduleRotation.userId = this._userId;
     const postUrl = serverUrl + "/api/schedule-rotation/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -162,7 +171,9 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
         let scheduleRotations = this.scheduleRotations;
         scheduleRotations.push(scheduleRotation);
         this._scheduleRotations$.next(scheduleRotations);
-        this._loginComplete$.next(true);
+        this._loginComplete$.next({
+          authenticated: true, message: 'Successfully logged in to ScheduleRotationService',
+        });
       });
   }
 
@@ -188,7 +199,7 @@ export class ScheduleRotationsService implements ServiceAuthenticates {
     // console.log("*****Building scheduleRotation from response: " , responseData);
     let scheduleRotation: ScheduleRotation = new ScheduleRotation(responseData.startDateYYYYMMDD, responseData.dayTemplateItems);
     scheduleRotation.id = responseData._id;
-    scheduleRotation.userId = this._authStatus.user.id;
+    scheduleRotation.userId = this._userId;
     return scheduleRotation;
   }
 

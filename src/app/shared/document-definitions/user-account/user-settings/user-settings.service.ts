@@ -3,12 +3,11 @@ import { UserSetting } from './user-setting.model';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { serverUrl } from '../../../../serverurl';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthenticationService } from '../../../../authentication/authentication.service';
 import { UserAccount } from '../user-account.class';
 import { map } from 'rxjs/operators';
 import { defaultUserSettings } from './default-user-settings';
-import { AuthStatus } from '../../../../authentication/auth-status.class';
 import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication/service-authentication-attempt.interface';
 
 
 @Injectable({
@@ -25,8 +24,7 @@ export class UserSettingsService implements ServiceAuthenticates{
 
   */
 
-  private _authStatus: AuthStatus;
-  // private _userSettings: UserSetting[] = [];
+  private _userId: string;
   private _userSettings$: BehaviorSubject<UserSetting[]> = new BehaviorSubject<UserSetting[]>([]);
   get userSettings$(): Observable<UserSetting[]> {
     return this._userSettings$.asObservable();
@@ -41,17 +39,18 @@ export class UserSettingsService implements ServiceAuthenticates{
 
 
 
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  login$(authStatus: AuthStatus): Observable<boolean>{
-    this._authStatus = authStatus;
-    // console.log("login(): setting user settings to ", this._authStatus.user.userSettings);
-    // this.userSettings = this._authStatus.user.userSettings;
-    this.userSettings = null;
-    this._loginComplete$.next(true);
-    return this._loginComplete$.asObservable();
+  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
+    authenticated: false, message: '',
+  });
+  public synchronousLogin(userId: string): boolean { 
+    this._userId = userId;
+    return true;
+  }
+  login$(userId: string): Observable<ServiceAuthenticationAttempt>{
+    return null;
   }
   logout(){
-    this._authStatus = null;
+    this._userId = null;
     this._userSettings$.next([]);
   }
 
@@ -86,8 +85,7 @@ export class UserSettingsService implements ServiceAuthenticates{
       })
     };
 
-    let user = this._authStatus.user;
-    // user.userSettings = currentSettings;
+  // user.userSettings = currentSettings;
 
     // this.httpClient.post<{ message: string, data: any }>(settingsPostUrl, user, httpOptions)
     //   .pipe<UserAccount>(map((response) => {

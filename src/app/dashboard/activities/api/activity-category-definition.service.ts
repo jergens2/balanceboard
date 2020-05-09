@@ -12,6 +12,7 @@ import { Guid } from '../../../shared/utilities/guid.class';
 import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
 import { ActivityCategoryDefinitionHttpShape } from './activity-category-definition-http-shape.interface';
 import { DefaultActivityCategoryDefinitions } from './default-activity-category-definitions.class';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +22,7 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
 
   private _serverUrl: string = serverUrl;
 
-  private _authStatus: AuthStatus = null;
+  private _userId: string = "";
 
   private _activitiesTree: ActivityTree = null;
   private _activitiesTree$: BehaviorSubject<ActivityTree> = new BehaviorSubject<ActivityTree>(null);
@@ -34,7 +35,7 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
   }
 
   get userId(): string {
-    return this._authStatus.user.id;
+    return this._userId;
   }
 
   /*
@@ -50,15 +51,23 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
     return this._activitiesTree.findActivityByTreeId(treeId);
   }
 
-  private _loginComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  login$(authStatus: AuthStatus) {
-    this._authStatus = authStatus;
+  public loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
+
+  public synchronousLogin(userId: string) { return false; }
+  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+    this._userId = userId;
+    // this._loginComplete$.next({
+    //   authenticated: true,
+    //   message: 'Successfully logged in to DaybookHttpRequestService',
+    // });
+    // return this._loginComplete$.asObservable();
+
     this.fetchActivities();
-    return this._loginComplete$.asObservable();
+    return this.loginComplete$.asObservable();
   }
 
   logout() {
-    this._authStatus = null;
+    this._userId = null;
     this._activitiesTree$.next(null);
   }
 
@@ -66,7 +75,7 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
 
 
   private fetchActivities() {
-    const getUrl = this._serverUrl + "/api/activity-category-definition/get/" + this._authStatus.user.id;
+    const getUrl = this._serverUrl + "/api/activity-category-definition/get/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -85,7 +94,10 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
           this._activitiesTree = new ActivityTree(activities);
           // console.log("nexting ", this._activitiesTree);
           this._activitiesTree$.next(this._activitiesTree);
-          this._loginComplete$.next(true);
+          this.loginComplete$.next({
+            authenticated:true,
+            message: 'Successfully logged in to ActivityCategoryDefinitionService'
+          });
         } else if (activities.length == 0) {
           // console.log("response data was 0 or less... creating default activities")
           this.saveDefaultActivities(DefaultActivityCategoryDefinitions.defaultActivities(this.userId));
@@ -112,7 +124,10 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
       .subscribe((allActivities: ActivityCategoryDefinition[]) => {
         this._activitiesTree = new ActivityTree(allActivities);
         this._activitiesTree$.next(this._activitiesTree);
-        this._loginComplete$.next(true);
+        this.loginComplete$.next({
+          authenticated:true,
+          message: 'Successfully logged in to ActivityCategoryDefinitionService'
+        });
       })
   }
 
@@ -120,8 +135,8 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
   public saveActivity$(activity: ActivityCategoryDefinition): Observable<ActivityCategoryDefinition> {
     let saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
     let newActivity = activity;
-    newActivity.userId = this._authStatus.user.id;
-    newActivity.treeId = this._authStatus.user.id + "_" + Guid.newGuid();
+    newActivity.userId = this._userId;
+    newActivity.treeId = this._userId + "_" + Guid.newGuid();
     const postUrl = this._serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
       headers: new HttpHeaders({
@@ -143,8 +158,8 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
 
   saveActivity(activity: ActivityCategoryDefinition) {
     let newActivity = activity;
-    newActivity.userId = this._authStatus.user.id;
-    newActivity.treeId = this._authStatus.user.id + "_" + Guid.newGuid();
+    newActivity.userId = this._userId;
+    newActivity.treeId = this._userId + "_" + Guid.newGuid();
     const postUrl = this._serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
       headers: new HttpHeaders({
