@@ -1,0 +1,105 @@
+.registration-root{
+
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 5px;
+
+    background-color: rgba(255, 255, 255, 0.25);
+    
+}
+
+.registration-form{
+    display:flex;
+    flex-direction: column;
+
+    padding: 20px;
+}
+
+.input-container{
+    display:flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    justify-content: space-between;
+}
+
+
+.form-input{
+    flex-grow: 2;
+    border: 1px solid rgb(212, 212, 212);
+    border-radius: 5px;
+    margin-right: 5px;
+    padding: 3px;
+}
+.form-input:focus{
+    border: 1px solid rgba(0, 89, 255, 0.2);
+    box-shadow: 0px 0px 4px 1px rgba(0, 89, 255, 0.5);
+    outline: none;
+}
+.form-input::placeholder{
+    font-style: italic;
+    color: gray;
+    font-size: 0.9em;
+}
+
+
+.form-message{
+    min-height: 25px;
+    width: 100%;
+    max-width: 280px;
+    font-weight: normal;
+    color: rgb(114, 0, 0);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.icon-container{
+    width: 30px;
+    display:flex; 
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: rgb(170, 170, 170);
+}
+
+.login-button:focus{
+    border: 1px solid rgba(0, 89, 255, 0.2);
+    box-shadow: 0px 0px 4px 1px rgba(0, 89, 255, 0.5);
+    outline: none;
+}
+
+.invalid{
+    border: 1px solid rgb(199, 24, 24);
+}
+
+
+.account-property{
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+}
+.property-name{
+    color: gray;
+    font-style: italic;
+    font-size: 0.9em;
+    width: 85px; 
+    display:flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.property-value{
+    color: rgb(20, 55, 121);
+    font-weight: 550;
+    font-size: 1.3em;
+}
+
+.small-button{
+    height: 25px;
+
+}
+
+.error-message{
+    color: rgb(114, 0, 0);
+}

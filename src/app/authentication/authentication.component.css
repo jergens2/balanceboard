@@ -16,6 +16,7 @@
     background-size: cover;
 }
 .authentication-body{
+    min-width: 360px;
     margin-top:20px;
     padding: 25px;
     width: 100%;

@@ -11,8 +11,7 @@
     </div>
 
     <div class="login-form-row">
-        <input formControlName="password" type="password" class="login-form-input" placeholder="password"
-            tabindex="0">
+        <input formControlName="password" type="password" class="login-form-input" placeholder="password" tabindex="0">
         <fa-icon [icon]="faKey" class="auth-icon"></fa-icon>
     </div>
 
@@ -40,4 +39,10 @@
 
     </div> -->
 
+    <div style="width: 100%; display: flex;" >
+        <button class="medium-button discard-button" (click)="onClickCancel()">
+            <fa-icon [icon]="faArrowLeft"></fa-icon>
+        </button>
+
+    </div>
 </div>

@@ -38,6 +38,17 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     this._reload();
   }
 
+  public onClickLogin(){
+    this._action = 'LOGIN';
+  }
+  public onClickRegister(){
+    this._action = 'REGISTER';
+  }
+
+  public onCancel(){
+    this._action = 'INITIAL';
+  }
+
   /**
    * see auth_process.jpg
    * 
@@ -59,8 +70,15 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Give existing valid token to server to obtain a new one
+   */
   private _refreshToken(){
-    console.log("Refresh token not complete")
+    console.log("WARNING: method incomplete")
+    const token: string = localStorage.getItem('token');
+    this.authService.refreshToken$(token).subscribe((response)=>{
+
+    });
   }
 
   private _checkLocalStorage(): 'NOT_PRESENT' | 'EXPIRED' | 'VALID' {

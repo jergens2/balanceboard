@@ -11,18 +11,19 @@
     </div>
     <div *ngIf="!isLoading">
       <div *ngIf="actionIsInitial" class="buttons-container">
-        <button class="medium-button login-button" (click)="this.action = 'LOGIN'">
+        <button class="medium-button login-button" (click)="onClickLogin()">
           Login
           <fa-icon [icon]="faSignInAlt" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
         </button>
-        <button class="medium-button register-button" (click)="this.action = 'REGISTER'">
+        <button class="medium-button register-button" (click)="onClickRegister()">
           Sign Up
           <fa-icon [icon]="faUserPlus" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
         </button>
       </div>
 
-      <app-login *ngIf="actionIsLogin"></app-login>
-      <app-registration *ngIf="actionIsRegister"></app-registration>
+      <app-login *ngIf="actionIsLogin" (cancel)="onCancel()"></app-login>
+      <app-registration *ngIf="actionIsRegister" (cancel)="onCancel()"></app-registration>
+      <app-pin-pad-unlock *ngIf="actionIsPin" (cancel)="onCancel()" ></app-pin-pad-unlock>
     </div>
 
 

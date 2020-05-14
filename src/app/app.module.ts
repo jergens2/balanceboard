@@ -32,6 +32,7 @@ import { ToolsMenuModule } from './toolbox-menu/tools-menu.module';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { RegistrationComponent } from './authentication/registration/registration.component';
 import { LoginComponent } from './authentication/login/login.component';
+import { PinPadUnlockComponent } from './authentication/pin-pad-unlock/pin-pad-unlock.component';
 
 
 
@@ -51,6 +52,7 @@ import { LoginComponent } from './authentication/login/login.component';
     SearchBarComponent,
     RegistrationComponent,
     LoginComponent,
+    PinPadUnlockComponent,
   ],
   imports: [
     BrowserModule,

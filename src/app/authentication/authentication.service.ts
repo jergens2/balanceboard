@@ -85,11 +85,15 @@ export class AuthenticationService {
       }, (error) => {
         console.log("Login attempt failed: ", error);
         this._loginAttempt$.next(false);
-      })
+      });
+  }
+
+  public refreshToken$(token:string ): Observable<any> { 
+    return this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/refresh-token", token);
   }
 
   public getUserById$(userId: string): Observable<UserAccount> {
-    return this.http.get<{ message: string, data: any }>(serverUrl + "/api/authentication/getUserById/" + userId)
+    return this.http.get<any>(serverUrl + "/api/authentication/getUserById/" + userId)
       .pipe(map((response) => {
         let settings: any[] = Object.assign([], response.data.userSettings);
         let userSettings: UserSetting[] = [];
@@ -101,8 +105,17 @@ export class AuthenticationService {
       }))
   }
 
-  public checkForExistingAccount$(email: string): Observable<Object> {
-    return this.http.get(serverUrl + "/api/authentication/validateNewEmail/" + email)
+  public checkForExistingAccount$(email: string, username: string): Observable<Object> { 
+    return this.http.get(serverUrl + "/api/authentication/check-for-existing/" + email + "/" + username);
+  }
+
+  public unlockWithPin$(pin: string): Observable<boolean> {
+    console.log("Warning: method not implemented.")
+    return null;
+  }
+  public finalizeRegistration$(data: {email: string, code: string}): Observable<any>{
+    console.log("Data: , " , data)
+    return this.http.post<any>(serverUrl + "/api/authentication/finalize-registration", data);
   }
 
   /**
