@@ -118,7 +118,9 @@ export class InitialRegComponent implements OnInit {
       message: string,
       usernameIsUnique: boolean,
       emailIsUnique: boolean,
-      code: string,
+      alreadyRegistered: boolean,
+      codeIsPresent: boolean,
+      registeredAt: string,
     }) => {
       console.log("Response, ", response)
       if (response.usernameIsUnique === true && response.emailIsUnique === true) {
@@ -126,10 +128,8 @@ export class InitialRegComponent implements OnInit {
         this.continue.emit(true);
       } else {
         let message: string[] = [];
-        if (response.code) {
-          this.authService.setInitialRegistrationData(authData);
-          this.goToConfirm.emit(true);
-        } else {
+        console.log("respnose: " , response)
+        if(response.alreadyRegistered === true){
           if (response.usernameIsUnique === false) {
             message.push("Username already taken");
             this._usernameIsInvalid = true;
@@ -138,7 +138,23 @@ export class InitialRegComponent implements OnInit {
             message.push("Email already registered");
             this._emailIsInvalid = true;
           }
+        }else{
+          if (response.codeIsPresent === true) {
+            this.authService.setInitialRegistrationData(authData);
+            this.goToConfirm.emit(true);
+          } else {
+            if (response.usernameIsUnique === false) {
+              message.push("Username already taken");
+              this._usernameIsInvalid = true;
+            }
+            if (response.emailIsUnique === false) {
+              message.push("Email already registered");
+              this._emailIsInvalid = true;
+            }
+          }
         }
+
+
         this.message.emit(message);
       }
       this._checkingForExisting = false;

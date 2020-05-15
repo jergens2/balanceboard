@@ -5,7 +5,7 @@
         (continue)="setAction('CONFIRM_PASSWORD')" (goToConfirm)="onJumpToConfirmation()"></app-initial-reg>
 
     <app-confirm-password *ngIf="action === 'CONFIRM_PASSWORD'" (result)="setAction('CREATE_PIN')"
-        (back)="setAction('INITAL')" (message)="onMessageChanged($event)"></app-confirm-password>
+        (back)="setAction('INITIAL')" (message)="onMessageChanged($event)"></app-confirm-password>
 
     <app-pin-pad-unlock *ngIf="action === 'CREATE_PIN'" [create]="true" (savedPin)="onPinCreated($event)"
         (close)="setAction('INITIAL')">
@@ -40,7 +40,7 @@
         <br><br>
         Please try again.
         <div style="width: 40px;" style="order: 1;">
-            <button class="small-button discard-button" tabindex="0" (click)="onClickGoTo('INITIAL')">
+            <button class="small-button discard-button" tabindex="0" (click)="setAction('INITIAL')">
                 Return
             </button>
         </div>

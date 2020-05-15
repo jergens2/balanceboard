@@ -92,7 +92,6 @@ export class AuthenticationService {
   public loginFromRegistration(){
     const authData = this._registrationContoller.getAuthData();
     this.attemptLogin(authData);
-    this._registrationContoller = null;
   }
 
   public refreshToken$(token:string ): Observable<any> { 
@@ -155,7 +154,9 @@ export class AuthenticationService {
     this._registrationContoller = controller;
   }
   public get registrationController(): RegistrationController{ return this._registrationContoller; }
-
+  public destoryRegController(){
+    this._registrationContoller = null;
+  }
 
   public logout() {
     localStorage.clear();

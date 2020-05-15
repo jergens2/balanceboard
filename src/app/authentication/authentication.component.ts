@@ -65,13 +65,11 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     this._action = 'INITIAL';
   }
 
-  /**
-   * see auth_process.jpg
-   * 
-   * Process starts here in _reload()
-   * 
-   * 
-   */
+  public onLoginFromReg(){
+    this._action = 'LOGIN';
+    this.authService.loginFromRegistration();
+  }
+
   private _reload() {
     console.log("auth component .reload()")
     const currentAuthData: 'NOT_PRESENT' | 'EXPIRED' | 'VALID' = this._checkLocalStorage();

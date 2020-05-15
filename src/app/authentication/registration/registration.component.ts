@@ -29,6 +29,7 @@ export class RegistrationComponent implements OnInit {
   public get email(): string { return this.authService.registrationController.email }
 
   @Output() public cancel: EventEmitter<boolean> = new EventEmitter();
+  @Output() public login: EventEmitter<boolean> = new EventEmitter();
 
   ngOnInit() {
     this.authService.setInitialRegistrationData({
@@ -57,7 +58,8 @@ export class RegistrationComponent implements OnInit {
   }
 
   public onClickContinueToApp(){
-    this.authService.loginFromRegistration();
+    this.login.emit(true);
+
   }
 
   public onJumpToConfirmation(){

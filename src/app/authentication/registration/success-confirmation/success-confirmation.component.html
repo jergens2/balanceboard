@@ -1,5 +1,5 @@
-<div style="display:flex;flex-direction: column; padding: 20px;">
-    <div style="display:flex;flex-direction: column;">
+<div style="display:flex;flex-direction: column; padding: 20px; width: 100%;">
+    <div style="display:flex;flex-direction: column; width: 100%;">
         <div style="width: 100%; margin-bottom: 20px;">
             Nice! An email has been sent to <span style="font-weight:660;">{{ emailAddress }}</span><br>
             <br>
@@ -12,8 +12,8 @@
             </button>
         </div>  
         <div [formGroup]="confirmServerCodeForm"
-            style="display:flex;flex-direction: column; width:100%; margin-bottom: 20px;">
-            <input formControlName="registrationCode" type="text" class="form-input" style="font-size: 1.5em;"
+            style="display:flex;flex-direction: row; width:100%; margin-bottom: 20px; justify-content: center;">
+            <input formControlName="registrationCode" type="text" class="form-input" style="font-size: 1.5em; width: 300px; text-align: center;"
                 placeholder="Registration code">
         </div>
         <div style="width: 100%;display:flex;flex-direction: row; justify-content: center; height: 45px;">

@@ -32,9 +32,16 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   @Output() public cancel: EventEmitter<boolean> = new EventEmitter();
   ngOnInit() {
+    let regUsername: string = "";
+    let regPassword: string = "";
+    if(this.authService.registrationController){
+      regUsername = this.authService.registrationController.email;
+      regPassword = this.authService.registrationController.password;  
+      this.authService.destoryRegController();
+    };
     this._loginForm = new FormGroup({
-      'username': new FormControl(null, Validators.required),
-      'password': new FormControl(null, Validators.required)
+      'username': new FormControl(regUsername, Validators.required),
+      'password': new FormControl(regPassword, Validators.required)
     });
   }
   ngOnDestroy() {
