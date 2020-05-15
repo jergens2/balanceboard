@@ -1,6 +1,6 @@
 import { UserSetting } from "./user-settings/user-setting.model";
 
-export class UserAccount{
+export class UserAccountDestroy{
 
     public get httpBody(): any{
         return {

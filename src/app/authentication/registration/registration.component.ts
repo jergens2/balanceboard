@@ -4,7 +4,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
-import { AuthData } from '../auth-data.interface';
+import { RegistrationData } from '../auth-data.interface';
 import * as moment from 'moment';
 import { RegistrationController } from '../registration-controller.class';
 

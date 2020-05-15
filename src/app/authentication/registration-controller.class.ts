@@ -1,7 +1,7 @@
-import { AuthData } from "./auth-data.interface";
+import { RegistrationData } from "./auth-data.interface";
 
 export class RegistrationController {
-    constructor(authData: AuthData) {
+    constructor(authData: RegistrationData) {
         if (authData.email) {
             this._email = authData.email;
         } else {
@@ -44,7 +44,7 @@ export class RegistrationController {
     public onPinCreated(pin: string) {
         this._pin = pin;
     }
-    public getAuthData(): AuthData {
+    public getAuthData(): RegistrationData {
         let usernameStylized: string = "";
         let username: string = "";
         if (!this.usernameStylized) {

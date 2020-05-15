@@ -37,6 +37,7 @@ import { InitialRegComponent } from './authentication/registration/initial-reg/i
 import { ConfirmPasswordComponent } from './authentication/registration/confirm-password/confirm-password.component';
 import { TermsComponent } from './authentication/registration/terms/terms.component';
 import { SuccessConfirmationComponent } from './authentication/registration/success-confirmation/success-confirmation.component';
+import { UserActionPromptComponent } from './user-action-prompt/user-action-prompt.component';
 
 
 
@@ -61,6 +62,7 @@ import { SuccessConfirmationComponent } from './authentication/registration/succ
     ConfirmPasswordComponent,
     TermsComponent,
     SuccessConfirmationComponent,
+    UserActionPromptComponent,
   ],
   imports: [
     BrowserModule,

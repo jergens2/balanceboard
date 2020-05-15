@@ -20,13 +20,18 @@ export class AppComponent implements OnInit {
 
   private _showModal: boolean = false;
   private _showTools: boolean = false;
+  private _showUserActionPrompt: boolean = false;
   private _allSubs: Subscription[] = [];
   private _appScreenSize: ScreenSizes;
+
 
   public get showModal(): boolean { return this._showModal; }
   public get showTools(): boolean { return this._showTools; }
   public get isAuthenticated(): boolean { return this.authService.isAuthenticated; }
+  public get showUserActionPrompt(): boolean { return this._showUserActionPrompt; }
 
+
+  
   constructor(
     private authService: AuthenticationService,
     private sizeService: ScreenSizeService,
@@ -94,9 +99,21 @@ export class AppComponent implements OnInit {
       this.authService.logout$.subscribe((onLogout)=>{
         this._reload();
       }),
-    
+      this.authService.appComponentLogin$.subscribe((login: boolean)=>{
+        this._loadApp();
+      })
     ];
   }
 
+  private _loadApp(){
+    console.log("Loading app in app component");
+    this._loadServices();
+    let showUserActionPrompt = true;
+    this._showUserActionPrompt = showUserActionPrompt;
+  }
+
+  private _loadServices(){
+
+  }
 
 }

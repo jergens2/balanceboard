@@ -98,9 +98,9 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   private _checkLocalStorage(): 'NOT_PRESENT' | 'EXPIRED' | 'VALID' {
     console.log("Checking local storage");
     const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
+    const userId = localStorage.getItem('userId');
     const expirationString = localStorage.getItem('expiration');
-    const isPresent: boolean = (token !== null) && (user !== null) && (expirationString !== null);
+    const isPresent: boolean = (token !== null) && (userId !== null) && (expirationString !== null);
     if (isPresent) {
       const milliseconds = Number(expirationString);
       const expiration: moment.Moment = moment(milliseconds);

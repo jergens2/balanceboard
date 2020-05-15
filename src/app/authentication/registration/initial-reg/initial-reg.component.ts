@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { AuthData } from '../../auth-data.interface';
+import { RegistrationData } from '../../auth-data.interface';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthenticationService } from '../../authentication.service';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
@@ -81,7 +81,7 @@ export class InitialRegComponent implements OnInit {
       this._usernameIsInvalid = false;
       this._passwordIsInvalid = false;
 
-      const authData: AuthData = {
+      const authData: RegistrationData = {
         email: email,
         username: usernameToLower,
         usernameStylized: usernameValue,
@@ -109,7 +109,7 @@ export class InitialRegComponent implements OnInit {
 
 
   }
-  private _checkForExisting(authData: AuthData) {
+  private _checkForExisting(authData: RegistrationData) {
     this._checkingForExisting = true;
     if (!authData.username) {
       authData.username = 'NO_USERNAME_PROVIDED_BY_USER';

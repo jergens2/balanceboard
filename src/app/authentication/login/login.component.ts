@@ -3,11 +3,10 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faUser, faKey, faUnlock, faSignInAlt, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { AuthenticationService } from '../authentication.service';
-import { UserAccount } from '../../shared/document-definitions/user-account/user-account.class';
 import { Subscription, timer, forkJoin } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import * as moment from 'moment';
-import { AuthData } from '../auth-data.interface';
+import { RegistrationData } from '../auth-data.interface';
 
 @Component({
   selector: 'app-login',
@@ -79,7 +78,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     const username: string = (this.loginForm.controls['username'].value).toLowerCase();
     const email: string = (this.loginForm.controls['username'].value).toLowerCase();
-    const authData: AuthData = {
+    const authData: RegistrationData = {
       username: username,
       usernameStylized: username,
       email: email, 

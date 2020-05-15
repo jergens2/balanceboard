@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.class';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { UserAccount } from './user-account.class';
 import * as moment from 'moment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { serverUrl } from '../../../serverurl';

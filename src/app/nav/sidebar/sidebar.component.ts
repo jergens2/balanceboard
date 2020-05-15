@@ -8,8 +8,6 @@ import { appMenuItems } from '../app-menu-items';
 import { AuthStatus } from '../../authentication/auth-status.class';
 import { Subscription } from 'rxjs';
 import { UserSettingsService } from '../../shared/document-definitions/user-account/user-settings/user-settings.service';
-import { UserSetting } from '../../shared/document-definitions/user-account/user-settings/user-setting.model';
-import { UserAccount } from '../../shared/document-definitions/user-account/user-account.class';
 import { Modal } from '../../modal/modal.class';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
@@ -53,7 +51,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     return this.authService.userId;
   }
   public get username(): string { 
-    return this.authService.user.username;
+    return this.authService.username;
   }
 
   ngOnInit() {

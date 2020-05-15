@@ -1,6 +1,4 @@
-import { UserAccount } from "../shared/document-definitions/user-account/user-account.class";
-
-export interface AuthData { 
+export interface RegistrationData { 
     email: string;
     username: string;
     usernameStylized: string,

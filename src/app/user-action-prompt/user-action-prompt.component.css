@@ -1,0 +1,9 @@
+.user-action-prompt-root{
+    display: flex;
+    flex-direction: column;
+    max-width: 768px;
+    min-width: 360px;
+    max-height: 800px;
+    width: 100%;
+    
+}

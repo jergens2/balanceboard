@@ -1,9 +1,8 @@
 import { map } from 'rxjs/operators';
-import { UserAccount } from '../shared/document-definitions/user-account/user-account.class';
 import { Observable, Subject, BehaviorSubject, Subscription, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthData } from './auth-data.interface';
+import { RegistrationData } from './auth-data.interface';
 import { AuthStatus } from './auth-status.class';
 import { serverUrl } from '../serverurl';
 import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
@@ -32,37 +31,19 @@ export class AuthenticationService {
   private _authStatus: AuthStatus;
 
   public get isAuthenticated(): boolean { return this._isAuthenticated; }
-  public get token(): string {
-    if (this._authStatus) {
-      return this._authStatus.token;
-    }
-    return "";
-  }
-  public get user(): UserAccount {
-    if (this._authStatus) {
-      return this._authStatus.user;
-    }
-    return null;
-  }
-  public get userId(): string {
-    if (this._authStatus) {
-      return this._authStatus.user.id;
-    }
-    return "";
-  }
-  public get userEmail(): string {
-    if (this._authStatus) {
-      return this._authStatus.user.email;
-    }
-    return "";
-  }
+
+  public get token(): string { return this._authStatus ? this._authStatus.token : ''; }
+  public get userId(): string { return this._authStatus ? this._authStatus.userId : ''; }
+  public get userEmail(): string { return this._authStatus ? this._authStatus.email : ''; }
+  public get username(): string { return this._authStatus ? this._authStatus.username : ''; }
+
   public get loginAttempt$(): Observable<boolean> { return this._loginAttempt$.asObservable(); }
 
   public get logout$(): Observable<boolean> { return this._logout$.asObservable(); }
   public get appComponentLogin$(): Observable<boolean> { return this._appComponentLogin$.asObservable(); }
- 
 
-  public attemptLogin(authData: AuthData) {
+
+  public attemptLogin(authData: RegistrationData) {
     console.log("Login attempt:", authData);
     this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/authenticate", authData)
 
@@ -75,8 +56,7 @@ export class AuthenticationService {
         const email: string = response.data.userAccount.email;
         const expiresAt = moment().add(response.data.expiresIn, 'seconds');
         console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
-        const userAccount = new UserAccount(userId, username, email);
-        let responseAuthStatus = new AuthStatus(token, userAccount, moment(expiresAt));
+        let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
@@ -89,16 +69,16 @@ export class AuthenticationService {
       });
   }
 
-  public loginFromRegistration(){
+  public loginFromRegistration() {
     const authData = this._registrationContoller.getAuthData();
     this.attemptLogin(authData);
   }
 
-  public refreshToken$(token:string ): Observable<any> { 
+  public refreshToken$(token: string): Observable<any> {
     return this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/refresh-token", token);
   }
 
-  public getUserById$(userId: string): Observable<UserAccount> {
+  public getUserById$(userId: string): Observable<string> {
     return this.http.get<any>(serverUrl + "/api/authentication/getUserById/" + userId)
       .pipe(map((response) => {
         let settings: any[] = Object.assign([], response.data.userSettings);
@@ -107,11 +87,11 @@ export class AuthenticationService {
           let userSetting: UserSetting = new UserSetting(setting.name, setting.booleanValue, setting.numericValue, setting.stringValue);
           userSettings.push(userSetting);
         }
-        return new UserAccount(response.data.id, response.data.username, response.data.email);
+        return response.data.username;
       }))
   }
 
-  public checkForExistingAccount$(email: string, username: string): Observable<Object> { 
+  public checkForExistingAccount$(email: string, username: string): Observable<Object> {
     return this.http.get(serverUrl + "/api/authentication/check-for-existing/" + email + "/" + username);
   }
 
@@ -119,18 +99,18 @@ export class AuthenticationService {
     console.log("Warning: method not implemented.")
     return null;
   }
-  public finalizeRegistration$(data: {email: string, code: string}): Observable<any>{
+  public finalizeRegistration$(data: { email: string, code: string }): Observable<any> {
     return this.http.post<any>(serverUrl + "/api/authentication/finalize-registration", data);
   }
-  public resendRegistrationCode$(): Observable<any>{
-    if(this._registrationContoller){
+  public resendRegistrationCode$(): Observable<any> {
+    if (this._registrationContoller) {
       const authData = this.registrationController.getAuthData();
       return this.http.post<any>(serverUrl + "/api/authentication/resend-code", authData);
-    }else{
+    } else {
       console.log("Application errror: no registration controller object");
       return null;
     }
-    
+
   }
 
   /**
@@ -143,18 +123,18 @@ export class AuthenticationService {
    */
   public checkLocalStorage$: Subject<boolean> = new Subject();
 
-  public registerNewUserAccount$(authData: AuthData): Observable<Object> {
+  public registerNewUserAccount$(authData: RegistrationData): Observable<Object> {
     return this.http.post(serverUrl + "/api/authentication/register", authData)
   }
 
   private _registrationContoller: RegistrationController;
 
-  public setInitialRegistrationData(authData: AuthData){
+  public setInitialRegistrationData(authData: RegistrationData) {
     let controller = new RegistrationController(authData);
     this._registrationContoller = controller;
   }
-  public get registrationController(): RegistrationController{ return this._registrationContoller; }
-  public destoryRegController(){
+  public get registrationController(): RegistrationController { return this._registrationContoller; }
+  public destoryRegController() {
     this._registrationContoller = null;
   }
 
@@ -184,7 +164,7 @@ export class AuthenticationService {
       Delegated to service-authentication-service.ts
     */
 
-    if (authStatus.isValid()) {
+    if (authStatus.isAuthenticated()) {
       this._authStatus = authStatus;
       console.log("We have arrived at an impasse.");
       // this.serviceAuthenticationService.loginServices$(authStatus).subscribe((serviceLoginsComplete: ServiceAuthenticationAttempt) => {
@@ -195,6 +175,7 @@ export class AuthenticationService {
       //     console.log("Error attempting to log in to the services.")
       //   }
       // });
+      this._completeLogin(authStatus);
     } else {
       localStorage.clear();
       this._authStatus = null;
@@ -203,17 +184,21 @@ export class AuthenticationService {
 
   }
 
+
+
   private _completeLogin(authStatus: AuthStatus) {
     console.log("Complete")
     localStorage.clear();
-    if (authStatus.isValid) {
+    if (authStatus.isAuthenticated) {
       localStorage.setItem("token", authStatus.token);
-      localStorage.setItem("user", JSON.stringify(authStatus.user));
+      localStorage.setItem("userId", authStatus.userId);
+      localStorage.setItem("username", authStatus.username);
+      localStorage.setItem("email", authStatus.email);
       localStorage.setItem("expiration", authStatus.expiresAt.valueOf().toString());
 
       const expiresAt = moment(authStatus.expiresAt);
       const now = moment();
-      const dueTime = expiresAt.diff(now, 'milliseconds');
+      const dueTime = (expiresAt.diff(now, 'milliseconds') - (60*1000));
       console.log("In " + dueTime + " milliseconds")
       timer(dueTime).subscribe((tokenHasExpired) => {
         console.log("WARNING: THE TOKEN IS EXPIRED.")

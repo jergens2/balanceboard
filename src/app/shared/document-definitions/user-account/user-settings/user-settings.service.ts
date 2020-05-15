@@ -3,8 +3,6 @@ import { UserSetting } from './user-setting.model';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { serverUrl } from '../../../../serverurl';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { UserAccount } from '../user-account.class';
-import { map } from 'rxjs/operators';
 import { defaultUserSettings } from './default-user-settings';
 import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
 import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication/service-authentication-attempt.interface';

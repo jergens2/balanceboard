@@ -10,7 +10,10 @@
     <div class="sidebar" *ngIf="sideBarOpen">
         <app-sidebar></app-sidebar>
     </div>
-    <div class="content" *ngIf="!(showTools && (appScreenSize == 0 || appScreenSize == 1))"
+    <div class="user-action-prompt" *ngIf="showUserActionPrompt">
+        <app-user-action-prompt></app-user-action-prompt>
+    </div>
+    <div class="content" *ngIf="!(showTools && (appScreenSize == 0 || appScreenSize == 1)) && !showUserActionPrompt"
         [ngClass]="{'content-mobile': appScreenSize == 0, 'content-tablet': appScreenSize == 1, 'content-normal': appScreenSize == 2, 'content-large': appScreenSize == 3, 'content-large': (appScreenSize === 3 || appScreenSize === 4)}">
         <router-outlet></router-outlet>
     </div>
