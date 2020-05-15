@@ -6,8 +6,8 @@
       balanceboard
     </div>
 
-    <div *ngIf="isLoading">
-      <app-spinner style="width: 200px;"></app-spinner>
+    <div *ngIf="isLoading" style="width: 250px; height: 250px; display:flex;flex-direction: row; justify-content: center; align-items: center;">
+      <app-spinner style="width: 220px; height: 220px;"></app-spinner>
     </div>
     <div *ngIf="!isLoading">
       <div *ngIf="actionIsInitial" class="buttons-container">
@@ -23,7 +23,7 @@
 
       <app-login *ngIf="actionIsLogin" (cancel)="onCancel()"></app-login>
       <app-registration *ngIf="actionIsRegister" (cancel)="onCancel()" (login)="onLoginFromReg()"></app-registration>
-      <app-pin-pad-unlock *ngIf="actionIsPin" (cancel)="onCancel()"></app-pin-pad-unlock>
+      <app-pin-pad-unlock *ngIf="actionIsPin" (close)="onCancel()"></app-pin-pad-unlock>
     </div>
 
 

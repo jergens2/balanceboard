@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.class';
 import { BehaviorSubject, Observable, Scheduler } from 'rxjs';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
 import { ScheduleRotation } from './schedule-rotation.class';
 import { serverUrl } from '../../../../app/serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
@@ -11,7 +11,7 @@ import { DayTemplatesService } from '../day-templates/day-templates.service';
 import { DayTemplate } from '../day-templates/day-template.class'
 import { DayStructureDataItem } from '../../daybook/api/data-items/day-structure-data-item.interface';
 import buildDefaultDataItems  from '../../daybook/api/data-items/default-day-structure-data-items';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 
 @Injectable({

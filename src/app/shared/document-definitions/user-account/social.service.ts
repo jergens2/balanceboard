@@ -6,8 +6,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { serverUrl } from '../../../serverurl';
 import { FriendRequest } from './friend-request.interface';
 import { map } from 'rxjs/operators';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'

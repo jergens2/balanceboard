@@ -63,6 +63,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
 
   public onCancel() {
     this._action = 'INITIAL';
+    localStorage.clear();
   }
 
   public onLoginFromReg(){
@@ -88,10 +89,12 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
    * Give existing valid token to server to obtain a new one
    */
   private _refreshToken() {
-    console.log("WARNING: method incomplete")
+    console.log("WARNING: method incomplete, ", )
     const token: string = localStorage.getItem('token');
     this.authService.refreshToken$(token).subscribe((response) => {
-
+      console.log("Response, " , response)
+    }, (error)=>{
+      console.log("Error", error)
     });
   }
 
@@ -100,10 +103,12 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     const expirationString = localStorage.getItem('expiration');
+    console.log("Expiration string is : " , expirationString)
     const isPresent: boolean = (token !== null) && (userId !== null) && (expirationString !== null);
     if (isPresent) {
       const milliseconds = Number(expirationString);
       const expiration: moment.Moment = moment(milliseconds);
+      console.log("Expiration is : " + expiration.format('YYYY-MM-DD hh:mm:ss a'))
       const cutoff = moment().subtract(10, 'minutes');
       const isExpired: boolean = expiration.isBefore(cutoff);
       if (!isExpired) {

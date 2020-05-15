@@ -8,12 +8,12 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map, mergeAll, merge } from 'rxjs/operators';
 import * as moment from 'moment';
 
-import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticates } from '../../../../authentication/service-authentication-garbage/service-authenticates.interface';
 
 import { RoutineDefinition } from './routine-definition.class';
 import { RoutineDefinitionHttpShape } from './routine-definition-http-shape.interface';
 import { DefaultRoutineDefinitions } from './default-routine-definitions.class';
-import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication/service-authentication-attempt.interface';
+import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 
 @Injectable({

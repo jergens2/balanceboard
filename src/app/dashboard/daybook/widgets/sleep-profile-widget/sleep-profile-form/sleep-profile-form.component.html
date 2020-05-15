@@ -24,11 +24,11 @@
     </div>
 
 
-    <div class="profile-item profile-item-complete" *ngIf="!isEditingWakeupTime && wakeupTimeIsSet"
+    <!-- <div class="profile-item profile-item-complete" *ngIf="!isEditingWakeupTime && wakeupTimeIsSet"
         (click)="isEditingWakeupTime = true">
         <div>Wake up time:</div>
         <div>{{ wakeupTime.format('hh:mm a') }} </div>
-    </div>
+    </div> -->
 
     <div class="profile-item" *ngIf="isEditingBedTime">
         <div class="row-buffer">
@@ -46,11 +46,11 @@
 
         <div class="row-buffer"></div>
     </div>
-    <div class="profile-item profile-item-complete" *ngIf="!isEditingBedTime && bedTimeIsSet"
+    <!-- <div class="profile-item profile-item-complete" *ngIf="!isEditingBedTime && bedTimeIsSet"
         (click)="isEditingBedTime = true">
         <div>Bed Time:</div>
         <div>{{ bedTime.format('hh:mm a') }} </div>
-    </div>
+    </div> -->
 
 
     <div style="display: flex;flex-direction: row-reverse;">

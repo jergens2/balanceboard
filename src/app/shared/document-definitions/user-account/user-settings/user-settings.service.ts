@@ -4,8 +4,8 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { serverUrl } from '../../../../serverurl';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { defaultUserSettings } from './default-user-settings';
-import { ServiceAuthenticates } from '../../../../authentication/service-authentication/service-authenticates.interface';
-import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication/service-authentication-attempt.interface';
+import { ServiceAuthenticates } from '../../../../authentication/service-authentication-garbage/service-authenticates.interface';
+import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 
 @Injectable({

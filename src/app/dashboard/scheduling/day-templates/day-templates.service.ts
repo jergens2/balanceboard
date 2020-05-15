@@ -8,9 +8,9 @@ import { Subject, Observable, BehaviorSubject } from 'rxjs';
 
 import * as moment from 'moment';
 
-import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
 import { Delineation } from './delineation.interface';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'

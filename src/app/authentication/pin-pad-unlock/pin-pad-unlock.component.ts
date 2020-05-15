@@ -1,7 +1,8 @@
 import { Component, OnInit, Output, Input, EventEmitter, HostListener, OnDestroy } from '@angular/core';
 import { faTimes, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { AuthenticationService } from '../authentication.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, timer } from 'rxjs';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-pin-pad-unlock',
@@ -26,6 +27,8 @@ export class PinPadUnlockComponent implements OnInit {
   private _formMessage: string = '';
 
   private _createPin: string = '';
+  private _unlockDisabled: boolean = false;
+  public get unlockDisabled(): string { return this._unlockDisabled === true ? 'disabled' : ''; }
 
   public get showConfirmButton(): boolean { return this._showConfirmButton; }
   public get showUnlockButton(): boolean { return this._showUnlockButton; }
@@ -33,89 +36,129 @@ export class PinPadUnlockComponent implements OnInit {
 
   public get formMessage(): string { return this._formMessage; }
 
-  @Input() public set create(create: boolean){
-    if(create === true){
+  @Input() public set create(create: boolean) {
+    if (create === true) {
       this._pinAction = 'CREATE';
     }
   }
   @Output() public close: EventEmitter<boolean> = new EventEmitter();
   @Output() public savedPin: EventEmitter<string> = new EventEmitter();
-  
 
+
+  private _unlockAttempts: number = 0;
 
   public get pinAction(): 'UNLOCK' | 'CREATE' | 'CONFIRM_CREATE' { return this._pinAction; }
-  public get pinActionMessage(): string { 
-    if(this.pinAction === 'UNLOCK'){
+  public get pinActionMessage(): string {
+    if (this.pinAction === 'UNLOCK') {
       return 'Use your PIN to unlock the app';
-    }else if(this.pinAction === 'CREATE'){
+    } else if (this.pinAction === 'CREATE') {
       return 'Set a 4 to 8 digit PIN';
-    }else if(this.pinAction === 'CONFIRM_CREATE'){
+    } else if (this.pinAction === 'CONFIRM_CREATE') {
       return 'Confirm your PIN';
     }
   }
-  
+
 
   ngOnInit() {
   }
 
-  public onClickButton(num: number){
-    if(this._pinItems.length < 8){
+  public onClickButton(num: number) {
+    if (this._pinItems.length < 8) {
       this._pinItems.push(num);
     }
-    if(this._pinItems.length >= 4){
-      if(this._pinAction === 'CREATE'){
+    if (this._pinItems.length >= 4) {
+      if (this._pinAction === 'CREATE') {
         this._showConfirmButton = true;
-      }else if(this._pinAction === 'UNLOCK' || this._pinAction === 'CONFIRM_CREATE'){
+      } else if (this._pinAction === 'UNLOCK' || this._pinAction === 'CONFIRM_CREATE') {
         this._showUnlockButton = true;
       }
     }
   }
-  public onClickDeletePinItem(){
+  public onClickDeletePinItem() {
     this._pinItems.pop();
   }
 
-  private _checkPin(){
-    
-  }
 
-  public onClickUnlock(){
+  public onClickUnlock() {
+    this._formMessage = "";
     this._showLoadingButton = true;
-    this._showConfirmButton = false;
     this._showUnlockButton = false;
 
-    if(this.pinAction === 'UNLOCK'){
-      let pinValue: string = '';
-      this._pinItems.forEach(item => pinValue += item);
-      this._pinItems = [];
-      this.authService.unlockWithPin$(pinValue).subscribe((response)=>{
-        console.log("Response: " , response);
-      })
-    }else if(this.pinAction === 'CONFIRM_CREATE'){
+
+    this._showConfirmButton = false;
+
+    if (this.pinAction === 'UNLOCK') {
+      this._attemptUnlock();
+    } else if (this.pinAction === 'CONFIRM_CREATE') {
       let confirmPin: string = '';
       this._pinItems.forEach(item => confirmPin += item);
       this._pinItems = [];
-      if(confirmPin === this._createPin){
+      if (confirmPin === this._createPin) {
         this.savedPin.emit(confirmPin);
-      }else{
+      } else {
         this._formMessage = 'PINs do not match, try again'
         this._pinAction = 'CREATE';
       }
     }
   }
 
-  public onClickClose(){
-    if(this.pinAction === 'CONFIRM_CREATE'){
+  private _subs: Subscription[] = [];
+  private _attemptUnlock() {
+
+    let pinValue: string = '';
+    this._pinItems.forEach(item => pinValue += item);
+    this._pinItems = [];
+
+    const email: string = localStorage.getItem("email");
+    if (email) {
+
+      const startTime: moment.Moment = moment();
+      const waitDurationMS: number = 1500;
+
+      this._subs.forEach(sub => sub.unsubscribe());
+      this._subs = [
+        this.authService.loginAttempt$.subscribe((attempt) => {
+          if (attempt === false) {
+            let millisecondsElapsed = moment().diff(startTime, 'milliseconds');
+            if (millisecondsElapsed < waitDurationMS) {
+              const remainder = waitDurationMS - millisecondsElapsed;
+              timer(remainder).subscribe((tick) => {
+                this._stopLoginAttempt();
+              });
+            } else {
+              this._stopLoginAttempt();
+            }
+          }
+        }),
+      ];
+      this.authService.unlockWithPin(pinValue, email);
+    } else {
+      console.log("Error: no email found in localstorage.")
+    }
+
+
+  }
+
+  private _stopLoginAttempt() {
+    this._showLoadingButton = false;
+    this._showUnlockButton = true;
+    this._formMessage = "Login attempt failed";
+    this._subs.forEach(sub => sub.unsubscribe());
+  }
+
+  public onClickClose() {
+    if (this.pinAction === 'CONFIRM_CREATE') {
       this._pinAction = 'CREATE';
       this._showConfirmButton = false;
       this._showLoadingButton = false;
       this._showUnlockButton = false;
-    }else{
+    } else {
       this.close.emit(true);
     }
-    
+
   }
 
-  public onClickConfirmPin(){
+  public onClickConfirmPin() {
     let createPin: string = ''
     this._pinItems.forEach(item => createPin += item);
     this._createPin = createPin;
@@ -127,7 +170,7 @@ export class PinPadUnlockComponent implements OnInit {
   }
 
 
-  private _confirmPins(){
+  private _confirmPins() {
 
   }
 }

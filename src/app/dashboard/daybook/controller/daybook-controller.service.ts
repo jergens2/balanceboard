@@ -4,10 +4,10 @@ import { BehaviorSubject, Observable, Subject, timer, Subscription, forkJoin } f
 import * as moment from 'moment';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { AuthStatus } from '../../../authentication/auth-status.class';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication/service-authenticates.interface';
+import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
 import { DaybookController } from './daybook-controller.class';
 import { DaybookDisplayUpdateType, DaybookDisplayUpdate } from './items/daybook-display-update.interface';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication/service-authentication-attempt.interface';
+import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 
 

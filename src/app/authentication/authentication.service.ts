@@ -6,9 +6,7 @@ import { RegistrationData } from './auth-data.interface';
 import { AuthStatus } from './auth-status.class';
 import { serverUrl } from '../serverurl';
 import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
-import { ServiceAuthenticationService } from './service-authentication/service-authentication.service';
 import * as moment from 'moment';
-import { ServiceAuthenticationAttempt } from './service-authentication/service-authentication-attempt.interface';
 import { RegistrationController } from './registration-controller.class';
 
 
@@ -22,7 +20,6 @@ export class AuthenticationService {
 
   constructor(
     private http: HttpClient,
-    private serviceAuthenticationService: ServiceAuthenticationService,
   ) { }
 
   // public get authStatus$(): Observable<AuthStatus> { return this._authStatusSubject$.asObservable(); }
@@ -48,12 +45,12 @@ export class AuthenticationService {
     this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/authenticate", authData)
 
       .pipe<AuthStatus>(map((response) => {
-        console.log("Login attempt response: ", response)
-        console.log("Expires in: ", response.data.expiresIn)
+        // console.log("Login attempt response: ", response)
+        // console.log("Expires in: ", response.data.expiresIn)
         const token: string = response.data.token;
-        const userId: string = response.data.userAccount.id;
-        const username: string = response.data.userAccount.username;
-        const email: string = response.data.userAccount.email;
+        const userId: string = response.data.id;
+        const username: string = response.data.username;
+        const email: string = response.data.email;
         const expiresAt = moment().add(response.data.expiresIn, 'seconds');
         console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
         let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
@@ -75,6 +72,7 @@ export class AuthenticationService {
   }
 
   public refreshToken$(token: string): Observable<any> {
+
     return this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/refresh-token", token);
   }
 
@@ -95,9 +93,33 @@ export class AuthenticationService {
     return this.http.get(serverUrl + "/api/authentication/check-for-existing/" + email + "/" + username);
   }
 
-  public unlockWithPin$(pin: string): Observable<boolean> {
-    console.log("Warning: method not implemented.")
-    return null;
+  public unlockWithPin(pin: string, email: string) {
+    const data = {
+      email: email,
+      pin: pin,
+    }
+    this.http.post<any>(serverUrl + "/api/authentication/pin-unlock", data)
+      .pipe<AuthStatus>(map((response) => {
+        // console.log("Login attempt response: ", response)
+        // console.log("Expires in: ", response.data.expiresIn)
+        const token: string = response.data.token;
+        const userId: string = response.data.id;
+        const username: string = response.data.username;
+        const email: string = response.data.email;
+        const expiresAt = moment().add(response.data.expiresIn, 'seconds');
+        console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
+        let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
+        return responseAuthStatus;
+      }))
+      .subscribe((authStatus: AuthStatus) => {
+        console.log("pin unlock ")
+        this._loginAttempt$.next(true);
+        this._loginRoutine(authStatus);
+
+      }, (error) => {
+        console.log("Login attempt failed: ", error);
+        this._loginAttempt$.next(false);
+      });
   }
   public finalizeRegistration$(data: { email: string, code: string }): Observable<any> {
     return this.http.post<any>(serverUrl + "/api/authentication/finalize-registration", data);
@@ -167,14 +189,6 @@ export class AuthenticationService {
     if (authStatus.isAuthenticated()) {
       this._authStatus = authStatus;
       console.log("We have arrived at an impasse.");
-      // this.serviceAuthenticationService.loginServices$(authStatus).subscribe((serviceLoginsComplete: ServiceAuthenticationAttempt) => {
-      //   if (serviceLoginsComplete.authenticated === true) {
-      //     console.log("Completing login")
-      //     this._completeLogin(authStatus);
-      //   } else {
-      //     console.log("Error attempting to log in to the services.")
-      //   }
-      // });
       this._completeLogin(authStatus);
     } else {
       localStorage.clear();
@@ -198,7 +212,7 @@ export class AuthenticationService {
 
       const expiresAt = moment(authStatus.expiresAt);
       const now = moment();
-      const dueTime = (expiresAt.diff(now, 'milliseconds') - (60*1000));
+      const dueTime = (expiresAt.diff(now, 'milliseconds') - (60 * 1000));
       console.log("In " + dueTime + " milliseconds")
       timer(dueTime).subscribe((tokenHasExpired) => {
         console.log("WARNING: THE TOKEN IS EXPIRED.")
