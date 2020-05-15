@@ -41,6 +41,7 @@ export class AppComponent implements OnInit {
     this.sizeService.updateSize(innerWidth, innerHeight);
   }
 
+
   ngOnInit() {
     this._reload();
   }

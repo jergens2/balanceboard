@@ -10,6 +10,7 @@ import { UserSetting } from '../shared/document-definitions/user-account/user-se
 import { ServiceAuthenticationService } from './service-authentication/service-authentication.service';
 import * as moment from 'moment';
 import { ServiceAuthenticationAttempt } from './service-authentication/service-authentication-attempt.interface';
+import { RegistrationController } from './registration-controller.class';
 
 
 @Injectable()
@@ -88,6 +89,12 @@ export class AuthenticationService {
       });
   }
 
+  public loginFromRegistration(){
+    const authData = this._registrationContoller.getAuthData();
+    this.attemptLogin(authData);
+    this._registrationContoller = null;
+  }
+
   public refreshToken$(token:string ): Observable<any> { 
     return this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/refresh-token", token);
   }
@@ -114,8 +121,17 @@ export class AuthenticationService {
     return null;
   }
   public finalizeRegistration$(data: {email: string, code: string}): Observable<any>{
-    console.log("Data: , " , data)
     return this.http.post<any>(serverUrl + "/api/authentication/finalize-registration", data);
+  }
+  public resendRegistrationCode$(): Observable<any>{
+    if(this._registrationContoller){
+      const authData = this.registrationController.getAuthData();
+      return this.http.post<any>(serverUrl + "/api/authentication/resend-code", authData);
+    }else{
+      console.log("Application errror: no registration controller object");
+      return null;
+    }
+    
   }
 
   /**
@@ -131,6 +147,15 @@ export class AuthenticationService {
   public registerNewUserAccount$(authData: AuthData): Observable<Object> {
     return this.http.post(serverUrl + "/api/authentication/register", authData)
   }
+
+  private _registrationContoller: RegistrationController;
+
+  public setInitialRegistrationData(authData: AuthData){
+    let controller = new RegistrationController(authData);
+    this._registrationContoller = controller;
+  }
+  public get registrationController(): RegistrationController{ return this._registrationContoller; }
+
 
   public logout() {
     localStorage.clear();

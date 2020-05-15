@@ -33,6 +33,10 @@ import { ColorPickerModule } from 'ngx-color-picker';
 import { RegistrationComponent } from './authentication/registration/registration.component';
 import { LoginComponent } from './authentication/login/login.component';
 import { PinPadUnlockComponent } from './authentication/pin-pad-unlock/pin-pad-unlock.component';
+import { InitialRegComponent } from './authentication/registration/initial-reg/initial-reg.component';
+import { ConfirmPasswordComponent } from './authentication/registration/confirm-password/confirm-password.component';
+import { TermsComponent } from './authentication/registration/terms/terms.component';
+import { SuccessConfirmationComponent } from './authentication/registration/success-confirmation/success-confirmation.component';
 
 
 
@@ -53,6 +57,10 @@ import { PinPadUnlockComponent } from './authentication/pin-pad-unlock/pin-pad-u
     RegistrationComponent,
     LoginComponent,
     PinPadUnlockComponent,
+    InitialRegComponent,
+    ConfirmPasswordComponent,
+    TermsComponent,
+    SuccessConfirmationComponent,
   ],
   imports: [
     BrowserModule,

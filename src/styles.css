@@ -50,6 +50,10 @@
   cursor: pointer;
 }
 
+button:disabled{
+  cursor: not-allowed;
+}
+
 .icon-delete-button{
   cursor: pointer;
   color: gray;

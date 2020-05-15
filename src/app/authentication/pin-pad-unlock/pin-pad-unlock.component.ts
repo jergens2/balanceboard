@@ -1,6 +1,7 @@
-import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, Input, EventEmitter, HostListener, OnDestroy } from '@angular/core';
 import { faTimes, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { AuthenticationService } from '../authentication.service';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-pin-pad-unlock',
@@ -39,6 +40,8 @@ export class PinPadUnlockComponent implements OnInit {
   }
   @Output() public close: EventEmitter<boolean> = new EventEmitter();
   @Output() public savedPin: EventEmitter<string> = new EventEmitter();
+  
+
 
   public get pinAction(): 'UNLOCK' | 'CREATE' | 'CONFIRM_CREATE' { return this._pinAction; }
   public get pinActionMessage(): string { 
@@ -51,6 +54,7 @@ export class PinPadUnlockComponent implements OnInit {
     }
   }
   
+
   ngOnInit() {
   }
 

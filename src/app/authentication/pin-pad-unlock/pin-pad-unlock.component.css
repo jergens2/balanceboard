@@ -34,10 +34,14 @@
     color: rgb(0, 89, 255);
 }
 .pin-pad-button:focus{
-    outline: none;
+    border: 1px solid rgb(0, 89, 255);
+    color: rgb(0, 89, 255);
 }
 
-
+.save-button:focus{
+    border: 1px solid rgb(0, 89, 255);
+    color: rgb(0, 89, 255);
+}
 
 
 .pin-display-area{

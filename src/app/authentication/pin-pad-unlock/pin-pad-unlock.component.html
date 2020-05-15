@@ -1,4 +1,4 @@
-<div class="pin-pad-root">
+<div class="pin-pad-root" >
     <div class="message">
         {{ pinActionMessage }}
     </div>
@@ -34,7 +34,7 @@
         <button class="large-button save-button" (click)="onClickUnlock()" *ngIf="showUnlockButton" tabindex="0">
             <fa-icon [icon]="faArrowRight"></fa-icon>
         </button>
-        <button class="large-button save-button" *ngIf="showLoadingButton" tabindex="0">
+        <button class="large-button save-button" *ngIf="showLoadingButton" >
             <app-spinner style="width: 30px; height: 30px;"></app-spinner>
         </button>
     </div>

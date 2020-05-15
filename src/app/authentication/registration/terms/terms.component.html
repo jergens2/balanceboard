@@ -1,0 +1,64 @@
+<div style="display:flex;flex-direction: column; text-align: left; max-width: 450px; margin: 20px">
+    <div style="text-align: center;">Terms</div>
+    <div class="terms">
+        <div class="term-icon-container">
+            <fa-icon [icon]="faCircle" style="color: rgb(0, 32, 92);"></fa-icon>
+        </div>
+        <div>
+            Balanceboard is a beta product that is currently free of charge to use, but assumes no liability for any
+            service
+            outages or loss of saved data.
+        </div>
+    </div>
+    <div class="terms">
+        <div class="term-icon-container">
+            <fa-icon [icon]="faCircle" style="color: rgb(0, 32, 92);"></fa-icon>
+        </div>
+        <div>
+            Data that you save to balanceboard is treated as if it is your personal private property. This data will not
+            be shared with any other parties. <fa-icon style="font-size: 0.8em; color: #ffff0038; margin-left: 15px;"
+                [icon]="faCrow"></fa-icon>
+        </div>
+    </div>
+    <div class="terms">
+        <div class="term-icon-container">
+            <fa-icon [icon]="faCircle" style="color: rgb(0, 32, 92);"></fa-icon>
+        </div>
+        <div>
+            You are trusting balanceboard to safeguard your digital property in the same way you might trust a bank
+            vault to be a secure place to store physical property.
+        </div>
+    </div>
+    <div class="agreement" [ngClass]="{'good-terms':termsAreAccepted}">
+        <div class="term-icon-container" style="font-size: 1.2em;">
+            <div *ngIf="termsAreAccepted" class="icon-button" (click)="onClickTermsAccepted(false)"
+                style="display:flex;flex-direction: row;justify-content: center;align-items: center;">
+                <fa-icon [icon]="faCheckSquare" style="color: rgb(0, 102, 0);"></fa-icon>
+            </div>
+            <div *ngIf="!termsAreAccepted" (click)="onClickTermsAccepted(true)" class="icon-button"
+                style="display:flex;flex-direction: row;justify-content: center;align-items: center;">
+                <fa-icon [icon]="faSquare"></fa-icon>
+            </div>
+        </div>
+        <div style="font-style: italic;">
+            I understand these terms and by checking this box I am agreeing to them
+        </div>
+    </div>
+
+    <div
+        style="margin-top: 15px; display:flex;flex-direction: row;align-items: center; justify-content: space-between; width: 100%;">
+        <div style="width: 40px; order: 3;">
+
+        </div>
+        <button class="large-button save-button login-button" style="order: 2;" (click)="onClickContinue()"
+            [disabled]="termsAreAccepted? '' : 'disabled'" tabindex="0">Continue
+        </button>
+
+        <div style="width: 40px;" style="order: 1;">
+            <button class="small-button discard-button" (click)="onClickBack()">
+                <fa-icon [icon]="faArrowLeft"></fa-icon>
+            </button>
+        </div>
+
+    </div>
+</div>

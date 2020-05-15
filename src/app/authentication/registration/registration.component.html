@@ -1,143 +1,50 @@
 <div class="registration-root">
 
+    <app-initial-reg *ngIf="action === 'INITIAL'" 
+    (message)="onMessageChanged($event)" (cancel)="onCancel()"
+        (continue)="setAction('CONFIRM_PASSWORD')" (goToConfirm)="onJumpToConfirmation()"></app-initial-reg>
 
+    <app-confirm-password *ngIf="action === 'CONFIRM_PASSWORD'" (result)="setAction('CREATE_PIN')"
+        (back)="setAction('INITAL')" (message)="onMessageChanged($event)"></app-confirm-password>
 
-    <div [formGroup]="registrationForm" *ngIf="action === 'INITIAL'" class="registration-form">
+    <app-pin-pad-unlock *ngIf="action === 'CREATE_PIN'" [create]="true" (savedPin)="onPinCreated($event)"
+        (close)="setAction('INITIAL')">
+    </app-pin-pad-unlock>
 
-        <div class="input-container ">
-            <input formControlName="email" type="text" class="form-input" placeholder="email"
-                [ngClass]="{'invalid':emailIsInvalid}">
-            <div class="icon-container">
-                <fa-icon [icon]="faAt"></fa-icon>
-            </div>
+    <app-terms *ngIf="action === 'TERMS'" (terms)="onTermsComplete($event)">
+    </app-terms>
+
+    <app-success-confirmation *ngIf="action === 'SUCCESSFUL_REG_START'" (continue)="setAction('FINAL')"
+        (cancel)="onCancel()" (error)="onError($event)" (message)="onMessageChanged($event)">
+    </app-success-confirmation>
+
+    <div *ngIf="action === 'FINAL'" style="max-width: 400px; text-align: center;padding: 20px; display:flex;flex-direction: column;">
+        <div>
+            Congrats!
         </div>
-
-        <div class="input-container ">
-            <input formControlName="username" type="text" class="form-input" placeholder="username (optional)"
-                [ngClass]="{'invalid':usernameIsInvalid}">
-            <div class="icon-container">
-                <fa-icon [icon]="faUser"></fa-icon>
-            </div>
+        <div>
+            You've successfully registered <span style="color: rgb(0, 89, 255); font-weight: 600;">{{ email }}</span>
         </div>
-
-        <div class="input-container">
-            <input formControlName="password" type="password" class="form-input" placeholder="password"
-                [ngClass]="{'invalid':passwordIsInvalid}">
-            <div class="icon-container">
-                <fa-icon [icon]="faKey"></fa-icon>
-            </div>
-
+        <div style="margin-top: 15px; width: 100%; display:flex;flex-direction: row; justify-content: center;">
+            <button class="large-button save-button login-button" (click)="onClickContinueToApp()">Continue</button>
         </div>
-
-        <div class="input-container" style="margin-top: 10px;">
-            <div
-                style="display:flex;flex-direction: row;align-items: center; justify-content: space-between; width: 100%;">
-                <div style="width: 40px; order: 3;">
-
-                </div>
-                <button *ngIf="!checkingForExisting" class="large-button save-button login-button" style="order: 2;"
-                    (click)="onClickContinue()" tabindex="0">Continue
-                </button>
-                <button *ngIf="checkingForExisting" class="large-button save-button login-button" style="order: 2;"
-                    style="min-width: 40px;" tabindex="0">
-                    <app-spinner style="width: 30px; height: 30px;"></app-spinner>
-                </button>
-
-                <div style="width: 40px;" style="order: 1;">
-                    <button class="small-button discard-button" (click)="onClickCancel()">
-                        <fa-icon [icon]="faArrowLeft"></fa-icon>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
     </div>
 
-
-
-    <div *ngIf="action === 'CONFIRM_PASSWORD'" [formGroup]="confirmPasswordForm" class="registration-form">
-
-        <div style="display:flex;flex-direction: column;">
-            <div class="account-property"><span class="property-name">email:</span><span
-                    class="property-value">{{ registrationForm.controls['email'].value }}</span></div>
-            <div class="account-property" *ngIf="usernameIsPresent"><span class="property-name">username:</span><span
-                    class="property-value">{{ registrationForm.controls['username'].value }}</span></div>
-        </div>
-
-        <div class="input-container" style="margin-top: 15px;">
-            <input formControlName="password" type="password" class="form-input" placeholder="confirm password">
-            <div class="icon-container">
-                <fa-icon [icon]="faKey"></fa-icon>
-            </div>
-        </div>
-
-        <div class="input-container" style="margin-top: 10px;">
-            <div
-                style="display:flex;flex-direction: row;align-items: center; justify-content: space-between; width: 100%;">
-                <div style="width: 40px; order: 3;">
-
-                </div>
-                <button class="large-button save-button login-button" style="order: 2;"
-                    (click)="onClickConfirmPassword()" tabindex="0">Confirm Password
-                </button>
-
-                <div style="width: 40px;" style="order: 1;">
-                    <button class="small-button discard-button" (click)="onClickStartRegistration()">
-                        <fa-icon [icon]="faArrowLeft"></fa-icon>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div *ngIf="action === 'CREATE_PIN'">
-        <app-pin-pad-unlock [create]="true" (savedPin)="onPinCreated($event)" (close)="onClickGoToConfirmPassword()"></app-pin-pad-unlock>
-    </div>
-
-    <div *ngIf="action === 'WAITING'" style="display:flex;flex-direction: row; justify-content: center; align-items: center; width: 200px; height: 200px;">
+    <div *ngIf="action === 'WAITING'"
+        style="display:flex;flex-direction: row; justify-content: center; align-items: center; width: 200px; height: 200px;">
         <app-spinner style="width: 50px; height: 50px;"></app-spinner>
     </div>
 
-    <div *ngIf="action === 'FAIL'">
+    <div *ngIf="action === 'ERROR'">
         It didn't work.
         <br><br>
-        Try again.
+        Please try again.
         <div style="width: 40px;" style="order: 1;">
-            <button class="small-button discard-button" (click)="onClickStartRegistration()">
+            <button class="small-button discard-button" tabindex="0" (click)="onClickGoTo('INITIAL')">
                 Return
             </button>
         </div>
     </div>
-
-    <div *ngIf="action === 'SUCCESSFUL_REG_START'" class="registration-form">
-        <div style="display:flex;flex-direction: column;">
-            <div style="width: 100%; margin-bottom: 20px;">
-                Nice! An email has been sent to <span style="font-weight:660;">{{ emailAddress }}</span><br>
-                <br>
-                Be sure to check your junk / spam folder if it does not show up in your Inbox.
-            </div>
-            <div [formGroup]="confirmServerCodeForm" style="display:flex;flex-direction: column; width:100%; margin-bottom: 20px;" >
-                <input formControlName="registrationCode" type="text" class="form-input" style="font-size: 1.5em;" placeholder="Registration code">
-            </div>
-            <div style="width: 100%;display:flex;flex-direction: row; justify-content: center;">
-                <button class="large-button save-button login-button" *ngIf="!confirmingCode"
-                    style="min-width: 40px;" tabindex="0" (click)="onClickConfirmCode()">
-                    Confirm Code
-                </button>
-                <button class="large-button save-button login-button" *ngIf="confirmingCode">
-                    Confirming... <app-spinner style="width: 30px; height: 30px;"></app-spinner>
-                </button>
-            </div>
-        </div>
-        <div style="width: 40px;" style="order: 1; margin-top: 20px;">
-            <button class="small-button discard-button" (click)="onClickStartRegistration()">
-                Return
-            </button>
-        </div>
-    </div>
-
 
     <div class="form-message">
         <div *ngIf="formMessage.length > 0">
@@ -145,14 +52,6 @@
                 {{ message}}
             </div>
         </div>
-        <div *ngIf="errorMessage" class="error-message"> {{ errorMessage }} </div>
     </div>
-
-    <!-- <div style="width: 100%; display: flex; min-height: 20px;">
-        <button class="medium-button discard-button" (click)="onClickCancel()">
-            <fa-icon [icon]="faArrowLeft"></fa-icon>
-        </button>
-
-    </div> -->
 
 </div>
