@@ -3,7 +3,7 @@
   <div class="app-modal">
 
     <div class="app-modal-header">
-      <div style="display:flex;flex-direction: row;">
+      <div style="display:flex;flex-direction: row; margin-right: 15px;">
         <fa-icon [icon]="modal.headerIcon" *ngIf="modal.headerIcon"></fa-icon>
         {{ modalHeader }}
       </div>
@@ -14,7 +14,7 @@
 
     <div class="app-modal-body">
       <app-default-modal *ngIf="modal.modalComponentType == 'DEFAULT'"></app-default-modal>
-      <app-confirm-modal *ngIf="modal.modalComponentType == 'CONFIRM'"></app-confirm-modal>
+      <app-confirm-modal *ngIf="modal.modalComponentType == 'CONFIRM'" style="width: 100%;"></app-confirm-modal>
 
       <app-notepad-modal *ngIf="modal.modalComponentType == 'NOTE'"></app-notepad-modal>
       <app-action-item-form *ngIf="modal.modalComponentType == 'TASK'" [action]="modal.action"></app-action-item-form>

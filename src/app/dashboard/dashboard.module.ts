@@ -45,6 +45,7 @@ import { TreemapComponent } from './tasks/views/treemap-view/treemap/treemap.com
 import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule-planner.component';
 import { SocialComponent } from './social/social.component';
 import { PointsComponent } from './points/points.component';
+import { UserAccountProfileComponent } from './user-account-profile/user-account-profile.component';
 
 
 
@@ -93,6 +94,7 @@ import { PointsComponent } from './points/points.component';
     SchedulePlannerComponent,
     SocialComponent,
     PointsComponent,
+    UserAccountProfileComponent,
 
 
   ],

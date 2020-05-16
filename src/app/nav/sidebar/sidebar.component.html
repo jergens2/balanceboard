@@ -2,17 +2,30 @@
 <div class="sidebar-content">
 
   <div class="sidebar-header">
-    <h3 class="mb-5">balanceboard </h3>
-    <div style="margin-bottom: 10px;">
-      <span style='color:dodgerblue; font-size: 1.1em; font-weight: 500;'>{{ username }}</span><br>
-      <span style="color: gray;font-size: 0.8em;">{{ userId }}</span>
+    <h3 style="margin-bottom: 25px;">balanceboard </h3>
+    <div style="margin-bottom: 10px; display: flex;flex-direction: column;">
+      <div style="width: 100%; display: flex; justify-content: center;">
+        <button class="contact-big-circle" (click)="onClickContact()">
+          <fa-icon [icon]="faUser" class="contact-icon"></fa-icon>
+        </button>
+      </div>
+
+      <div
+        style='color:rgba(0, 89, 255, 0.4); font-size: 1.1em; font-weight: 500; display:flex;flex-direction: column; align-items: center;'
+        *ngIf="!hasUsername">
+        <div *ngFor="let emailPiece of email">{{ emailPiece }}</div>
+      </div>
+
+      <span style='color:dodgerblue; font-size: 1.1em; font-weight: 500;' *ngIf="hasUsername">{{ username }}</span><br>
+      <!-- <span style="color: gray;font-size: 0.8em;">{{ userId }}</span> -->
     </div>
 
 
   </div>
 
 
-  <div *ngFor="let menuItem of menuItems" class="sidebar-button no-select"  (mouseenter)="onMouseEnterSidebarNewItemButton(menuItem)" (mouseleave)="onMouseLeaveSidebarNewItemButton(menuItem)">
+  <div *ngFor="let menuItem of menuItems" class="sidebar-button no-select"
+    (mouseenter)="onMouseEnterSidebarNewItemButton(menuItem)" (mouseleave)="onMouseLeaveSidebarNewItemButton(menuItem)">
     <div class="sidebar-button-router-link" [routerLinkActive]='routerLinkActiveClass'
       [routerLink]="menuItem.routerLink">
       <div style="width:30px;margin-right:3px;">
@@ -22,8 +35,10 @@
         {{ menuItem.title }}
       </div>
     </div>
-    <div *ngIf="menuItem.sidebarToolComponent" class="sidebar-new-item-button-container" >
-      <div class="sidebar-new-item-button" [ngClass]="{'sidebar-new-item-button-mouse-over': menuItem.sidebarToolComponentMouseOver}" (click)="onClickMenuItem(menuItem)">
+    <div *ngIf="menuItem.sidebarToolComponent" class="sidebar-new-item-button-container">
+      <div class="sidebar-new-item-button"
+        [ngClass]="{'sidebar-new-item-button-mouse-over': menuItem.sidebarToolComponentMouseOver}"
+        (click)="onClickMenuItem(menuItem)">
         <fa-icon [icon]="faPlus" class="new-item-button"></fa-icon>
       </div>
     </div>

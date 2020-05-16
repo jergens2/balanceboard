@@ -11,7 +11,7 @@ import { ServiceAuthenticationAttempt } from '../../authentication/service-authe
 @Injectable({
   providedIn: 'root'
 })
-export class NotebooksService implements ServiceAuthenticates {
+export class NotebooksService{
 
   constructor(private httpClient: HttpClient) { }
 
@@ -20,22 +20,13 @@ export class NotebooksService implements ServiceAuthenticates {
     authenticated: false, message: '',
   });
   
-  synchronousLogin(userId: string) { return false; }
-  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
-    this._userId = userId;
-    this.fetchNotebookEntries();
-    return this._loginComplete.asObservable();
-  }
-  logout() {
-    this._userId = null;
-    this._notebookEntries$.next([]);
-    this._tags$.next([]);
-  }
 
   private serverUrl = serverUrl;
 
 
-
+  public setUserId(userId: string){
+    this._userId = userId;
+  }
 
 
   private _notebookEntries$: BehaviorSubject<NotebookEntry[]> = new BehaviorSubject([]);

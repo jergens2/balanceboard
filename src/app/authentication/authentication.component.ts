@@ -50,7 +50,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   // }
 
   ngOnInit() {
-    console.log("Auth component init.")
+    // console.log("Auth component init.")
     this._reload();
   }
 
@@ -72,7 +72,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   }
 
   private _reload() {
-    console.log("auth component .reload()")
+    // console.log("auth component .reload()")
     const currentAuthData: 'NOT_PRESENT' | 'EXPIRED' | 'VALID' = this._checkLocalStorage();
     if (currentAuthData === 'NOT_PRESENT') {
       this._action = 'INITIAL';
@@ -91,9 +91,9 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     if (token && userId) {
       this.authService.refreshToken$(token, userId).subscribe((result: boolean)=>{
         if(result === true){
-          console.log(" boo yea son")
+          const thisIsGood = true;
         }else{
-          console.log("Unsuccessful token refresh.  opening PIN pad")
+          // console.log("Unsuccessful token refresh.  opening PIN pad")
           this._action = 'PIN';
           this._isLoading = false;
         }
@@ -102,20 +102,19 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
       this._action = 'INITIAL';
       this._isLoading = false;
     }
-
   }
 
   private _checkLocalStorage(): 'NOT_PRESENT' | 'EXPIRED' | 'VALID' {
-    console.log("Checking local storage");
+    // console.log("Checking local storage");
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     const expirationString = localStorage.getItem('expiration');
-    console.log("Expiration string is : ", expirationString)
+    // console.log("Expiration string is : ", expirationString)
     const isPresent: boolean = (token !== null) && (userId !== null) && (expirationString !== null);
     if (isPresent) {
       const milliseconds = Number(expirationString);
       const expiration: moment.Moment = moment(milliseconds);
-      console.log("Expiration is : " + expiration.format('YYYY-MM-DD hh:mm:ss a'))
+      // console.log("Expiration is : " + expiration.format('YYYY-MM-DD hh:mm:ss a'))
       const cutoff = moment().subtract(10, 'minutes');
       const isExpired: boolean = expiration.isBefore(cutoff);
       if (!isExpired) {

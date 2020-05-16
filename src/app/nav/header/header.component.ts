@@ -68,7 +68,7 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("Header on init")
+    // console.log("Header on init")
     this.headerService.activeBalanceBoardComponentMenu$.subscribe((componentMenu: HeaderMenu) => {
       if (componentMenu != null) {
         this.headerMenus = Object.assign([], this._buildHeaderMenus(componentMenu));

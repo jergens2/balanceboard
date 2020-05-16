@@ -72,6 +72,11 @@ export class LoginComponent implements OnInit, OnDestroy {
           }else{
             this._stopLoginAttempt();
           }          
+        }else{
+          // console.log("attempt is successful")
+          /**
+           * No action necessary, successfull auth will destroy this component.
+           */
         }
       }),
     ]
@@ -85,7 +90,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: this.loginForm.controls['password'].value,
       pin: '',
     };
-    console.log("Attempting login")
+    // console.log("Attempting login")
     this.authService.attemptLogin(authData);
   }
 

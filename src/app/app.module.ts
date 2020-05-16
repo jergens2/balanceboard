@@ -38,6 +38,7 @@ import { ConfirmPasswordComponent } from './authentication/registration/confirm-
 import { TermsComponent } from './authentication/registration/terms/terms.component';
 import { SuccessConfirmationComponent } from './authentication/registration/success-confirmation/success-confirmation.component';
 import { UserActionPromptComponent } from './user-action-prompt/user-action-prompt.component';
+import { SleepProfileSetupComponent } from './user-action-prompt/sleep-profile-setup/sleep-profile-setup.component';
 
 
 
@@ -63,6 +64,7 @@ import { UserActionPromptComponent } from './user-action-prompt/user-action-prom
     TermsComponent,
     SuccessConfirmationComponent,
     UserActionPromptComponent,
+    SleepProfileSetupComponent,
   ],
   imports: [
     BrowserModule,

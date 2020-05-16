@@ -27,6 +27,8 @@ export class AuthenticationService {
   private _isAuthenticated: boolean = false;
   private _authStatus: AuthStatus;
 
+  private _timerSubs: Subscription[] = [];
+
   public get isAuthenticated(): boolean { return this._isAuthenticated; }
 
   public get token(): string { return this._authStatus ? this._authStatus.token : ''; }
@@ -38,10 +40,19 @@ export class AuthenticationService {
 
   public get logout$(): Observable<boolean> { return this._logout$.asObservable(); }
   public get appComponentLogin$(): Observable<boolean> { return this._appComponentLogin$.asObservable(); }
+  public get hasUsername(): boolean {
+    if (this.username) {
+      const nullMatch = /NULL_([a-zA-Z0-9-]{36})/;
+      if (!nullMatch.test(this.username)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
 
   public attemptLogin(authData: RegistrationData) {
-    console.log("Login attempt:", authData);
+    // console.log("Login attempt:", authData);
     this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/authenticate", authData)
 
       .pipe<AuthStatus>(map((response: {
@@ -67,13 +78,14 @@ export class AuthenticationService {
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
+        // console.log("Subscribe: ", authStatus)
         this._loginAttempt$.next(true);
         this._loginRoutine(authStatus, 'STANDARD');
 
       }, (error) => {
-        console.log("Login attempt failed: ", error);
+        // console.log("Login attempt failed: ", error);
         this._loginAttempt$.next(false);
-      });
+      }); 
   }
 
   public loginFromRegistration() {
@@ -93,7 +105,7 @@ export class AuthenticationService {
       token: token,
       userId: userId
     }
-    
+
     this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/refresh-token", data, httpOptions).subscribe((response: {
       message: string,
       success: boolean,
@@ -162,17 +174,17 @@ export class AuthenticationService {
         const username: string = response.data.username;
         const email: string = response.data.email;
         const expiresAt = moment().add(response.data.expiresIn, 'seconds');
-        console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
+        // console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
         let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
-        console.log("pin unlock ")
+        // console.log("pin unlock ")
         this._loginAttempt$.next(true);
         this._loginRoutine(authStatus, 'PIN');
 
       }, (error) => {
-        console.log("Login attempt failed: ", error);
+        // console.log("Login attempt failed: ", error);
         this._loginAttempt$.next(false);
       });
   }
@@ -222,9 +234,12 @@ export class AuthenticationService {
     this._timerSubs = [];
     this._authStatus = null;
 
+    // console.log(" ** _appComponentLogin$.next(false) - reason:  Logout()");
     this._appComponentLogin$.next(false);
     // this._authStatusSubject$ = new BehaviorSubject(new AuthStatus(null, null, false));
     // this._authStatusSubject$.next(null);
+    this._loginAttempt$.next(false);
+    this._registrationContoller = null;
     this._logout$.next();
   }
 
@@ -233,49 +248,51 @@ export class AuthenticationService {
 
   private _loginRoutine(authStatus: AuthStatus, action: 'PIN' | 'STANDARD' | 'REFRESH_TOKEN') {
     if (authStatus.isAuthenticated()) {
+      // console.log("Auth status IS authenticated.")
       this._authStatus = authStatus;
       localStorage.clear();
-      if (authStatus.isAuthenticated) {
-        localStorage.setItem("token", authStatus.token);
-        localStorage.setItem("userId", authStatus.userId);
-        localStorage.setItem("username", authStatus.username);
-        localStorage.setItem("email", authStatus.email);
-        localStorage.setItem("expiration", authStatus.expiresAt.valueOf().toString());
+      localStorage.setItem("token", authStatus.token);
+      localStorage.setItem("userId", authStatus.userId);
+      localStorage.setItem("username", authStatus.username);
+      localStorage.setItem("email", authStatus.email);
+      localStorage.setItem("expiration", authStatus.expiresAt.valueOf().toString());
 
-        const expiresAt = moment(authStatus.expiresAt);
-        const now = moment();
-        const dueTime = (expiresAt.diff(now, 'milliseconds'));
-        const requestNew = (expiresAt.diff(now, 'milliseconds') - (60 * 1000));
-        this._timerSubs.forEach(s => s.unsubscribe());
-        this._timerSubs = [
-          timer(requestNew).subscribe((requestNew) => {
-            this.refreshToken$(authStatus.token, authStatus.userId);
-          }),
-          timer(dueTime).subscribe((tokenHasExpired) => {
-            console.log("WARNING: THE TOKEN IS EXPIRED.")
-            this._isAuthenticated = false;
-            this._appComponentLogin$.next(false);
-          }),
-        ];
+      const expiresAt = moment(authStatus.expiresAt);
+      const now = moment();
+      const dueTime = (expiresAt.diff(now, 'milliseconds'));
+      const requestNew = (expiresAt.diff(now, 'milliseconds') - (60 * 1000));
+      this._timerSubs.forEach(s => s.unsubscribe());
+      this._timerSubs = [
+        timer(requestNew).subscribe((requestNew) => {
+          this.refreshToken$(authStatus.token, authStatus.userId);
+        }),
+        timer(dueTime).subscribe((tokenHasExpired) => {
+          console.log("WARNING: THE TOKEN IS EXPIRED.")
+          this._isAuthenticated = false;
+          // console.log(" ** _appComponentLogin$.next(false)");
+          this._appComponentLogin$.next(false);
+        }),
+      ];
 
 
-        this._isAuthenticated = true;
-        this._authStatus = authStatus;
-        this._appComponentLogin$.next(true);
-      } else {
-        this._isAuthenticated = false;
-        this._authStatus = null;
-        this._appComponentLogin$.next(false);
-      }
-
+      this._isAuthenticated = true;
+      this._authStatus = authStatus;
+      
+      // console.log(" ** _appComponentLogin$.next(true) - Standard login");
+      this._appComponentLogin$.next(true);
     } else {
+      // console.log("Auth status is NOT AUTHENTICATED")
       localStorage.clear();
+      this._isAuthenticated = false;
       this._authStatus = null;
+      // console.log(" ** _appComponentLogin$.next(false) - bad auth?");
       this._appComponentLogin$.next(false);
     }
+
+
   }
 
 
-  private _timerSubs: Subscription[] = [];
+
 
 }

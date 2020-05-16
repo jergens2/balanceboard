@@ -51,7 +51,7 @@ export class DaybookControllerService {
 
 
   public login$(userId: string): Observable<boolean> {
-    console.log("Logging in to daybook controller")
+    // console.log("Logging in to daybook controller")
     this._userId = userId;
     this._initiate();
     // this._allSubscriptions.push(this.activitiesService.activitiesTree$.subscribe((changedTree) => {
@@ -61,11 +61,12 @@ export class DaybookControllerService {
   }
 
   public logout() {
-    console.log("Logging out of daybook controller service")
+    // console.log("Logging out of daybook controller service")
+    this._userId = null;
     this._activeDayController$.next(null);
-    this._activeDayController$ = null;
+    // this._activeDayController$ = null;
     this._todayController$.next(null);
-    this._todayController$ = null;
+    // this._todayController$ = null;
     this._todayYYYYMMDD = moment().format('YYYY-MM-DD');
     this._daybookDayItems$.next([]);
     this._clock = null;
@@ -118,10 +119,10 @@ export class DaybookControllerService {
 
 
   private _updateTodayFromDatabase(updateType: DaybookDisplayUpdateType) {
-    console.log("_updateTodayFromDatabase" , updateType, this.clock.format('YYYY-MM-DD') + " :getting daybook item for date");
+    // console.log("_updateTodayFromDatabase" , updateType, this.clock.format('YYYY-MM-DD') + " :getting daybook item for date");
     this.daybookHttpRequestService.getDaybookDayItemByDate$(this.clock.format('YYYY-MM-DD'))
       .subscribe((items: DaybookDayItem[]) => {
-        console.log("Setting TODAY item")
+        // console.log("Setting TODAY item")
         this._setTodayItem(items, updateType);
         this._loginComplete$.next(true);
       },(error)=>{
@@ -144,13 +145,15 @@ export class DaybookControllerService {
     }
 
 
-    if (!this._activeDayController$) {
-      this._updateActiveDay(updateType, todayController);
-    } else if (this.activeDayController.dateYYYYMMDD === todayController.dateYYYYMMDD) {
-      this._updateActiveDay(updateType, todayController);
-    }
+    this._updateActiveDay(updateType, todayController);
 
+    // if (!this._activeDayController$) {
+    //   this._updateActiveDay(updateType, todayController);
+    // } else if (this.activeDayController.dateYYYYMMDD === todayController.dateYYYYMMDD) {
+    //   this._updateActiveDay(updateType, todayController);
+    // }
 
+    // console.log("Active day contorller; " , this._activeDayController$)
     this._updateChangeSubscriptions();
   }
 

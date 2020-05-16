@@ -11,7 +11,7 @@ export class UserActionPromptService {
 
   private _isFirstTimeUser: boolean = false;
 
-  private _prompts: UserPromptType[] = [UserPromptType.FIRST_TIME_USER];
+  private _prompts: UserPromptType[] = [];
 
   public hasPrompts(): boolean { return this._prompts.length > 0; }
   public get prompts(): UserPromptType[] { return this._prompts; }

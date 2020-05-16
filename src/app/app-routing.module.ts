@@ -17,6 +17,8 @@ import { SchedulePlannerComponent } from "./dashboard/scheduling/schedule-planne
 import { ActivitiesComponent } from "./dashboard/activities/activities.component";
 import { SocialComponent } from "./dashboard/social/social.component";
 import { PointsComponent } from "./dashboard/points/points.component";
+import { UserAccountProfileComponent } from "./dashboard/user-account-profile/user-account-profile.component";
+
 
 
 const appRoutes: Routes = [
@@ -36,7 +38,7 @@ const appRoutes: Routes = [
     { path: 'activities', component: ActivitiesComponent },
     { path: 'activities/:activityIdentifier', component: ActivitiesComponent },
     { path: 'user-settings', component: UserSettingsComponent },
-
+    { path: 'user-account', component: UserAccountProfileComponent },
 
 
     { path: 'scheduling', component: SchedulingComponent },

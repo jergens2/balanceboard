@@ -2,7 +2,7 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { faCogs, faSignOutAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faSignOutAlt, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from '../header/header-menu/menu-item.model';
 import { appMenuItems } from '../app-menu-items';
 import { AuthStatus } from '../../authentication/auth-status.class';
@@ -35,6 +35,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   faPlus = faPlus;
   faCogs = faCogs;
   faSignOutAlt = faSignOutAlt;
+  faUser = faUser;
 
 
   activeLink = { color: 'red' };
@@ -44,15 +45,24 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   // nightMode: UserSetting = null;
 
-  public get email(): string {
-    return this.authService.userEmail;
+  public get email(): string[] {
+    let email = this.authService.userEmail;
+    let split: string[] = [];
+    if (email.length > 16) {
+      split = email.split('@');
+      if (split.length === 2) {
+        let emailName = split[0];
+        let emailDomain = '@' + split[1];
+        return [emailName, emailDomain];
+      } else {
+        return [this.authService.userEmail];
+      }
+    }
+    return [this.authService.userEmail];
   }
-  public get userId(): string {
-    return this.authService.userId;
-  }
-  public get username(): string { 
-    return this.authService.username;
-  }
+  public get userId(): string { return this.authService.userId; }
+  public get username(): string { return this.authService.username; }
+  public get hasUsername(): boolean { return this.authService.hasUsername; }
 
   ngOnInit() {
     this.menuItems = appMenuItems;
@@ -102,6 +112,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   onClick(button: string) {
     this.router.navigate(['/' + button]);
   }
+  onClickContact(){
+    this.router.navigate(['/user-account'])
+  }
 
   onClickLogout() {
 
@@ -136,7 +149,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private logout() {
     this.authService.logout();
-    
+
   }
 
 }
