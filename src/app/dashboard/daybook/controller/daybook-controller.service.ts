@@ -14,7 +14,7 @@ import { ServiceAuthenticationAttempt } from '../../../authentication/service-au
 @Injectable({
   providedIn: 'root'
 })
-export class DaybookControllerService implements ServiceAuthenticates {
+export class DaybookControllerService {
 
   constructor(
     private daybookHttpRequestService: DaybookHttpRequestService,
@@ -22,9 +22,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
 
   private _userId: string;
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
-  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
-    authenticated: false, message: '',
-  });
+  private _loginComplete$: Subject<boolean> = new Subject();
 
   private _clock: moment.Moment = moment();
   // private _clockMinuteTicker$: Subject<moment.Moment>;
@@ -52,10 +50,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
   public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock) }
 
 
-  public synchronousLogin(userId: string): boolean { 
-    return false;
-  }
-  public login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+  public login$(userId: string): Observable<boolean> {
     console.log("Logging in to daybook controller")
     this._userId = userId;
     this._initiate();
@@ -85,7 +80,6 @@ export class DaybookControllerService implements ServiceAuthenticates {
   }
 
   private _startClock() {
-    console.log("Starting clock");
     this._clockSubscriptions.forEach(s => s.unsubscribe());
     this._clockSubscriptions = [];
     this._clock = moment();
@@ -127,12 +121,14 @@ export class DaybookControllerService implements ServiceAuthenticates {
     console.log("_updateTodayFromDatabase" , updateType, this.clock.format('YYYY-MM-DD') + " :getting daybook item for date");
     this.daybookHttpRequestService.getDaybookDayItemByDate$(this.clock.format('YYYY-MM-DD'))
       .subscribe((items: DaybookDayItem[]) => {
+        console.log("Setting TODAY item")
         this._setTodayItem(items, updateType);
-        this._loginComplete$.next({
-          authenticated: true,
-          message: 'Successfully logged in to DaybookControllerService'
-        });
-      });
+        this._loginComplete$.next(true);
+      },(error)=>{
+        console.log("Error with daybook request, ", error);
+        this._loginComplete$.next(false);
+      }
+      );
   }
 
   private _setTodayItem(items: DaybookDayItem[], updateType: DaybookDisplayUpdateType) {
@@ -168,8 +164,8 @@ export class DaybookControllerService implements ServiceAuthenticates {
   }
 
   private _crossMidnight() {
-    console.log('Crossing midnight.  method disabled.');
     this._todayYYYYMMDD = this.clock.format('YYYY-MM-DD');
+    this._updateTodayFromDatabase(DaybookDisplayUpdateType.CLOCK_DATE_CHANGED);
   }
 
 
@@ -266,7 +262,7 @@ export class DaybookControllerService implements ServiceAuthenticates {
         const reloadItem = [prevDay, thisDay, nextDay];
 
 
-        // console.log("Reloading with reload item: ", reloadItem)
+        console.log("TO DO:  ENSure that if the date has changed, that the reload also updates the date in the controller");
         controller.reload(reloadItem);
         if (controller.isToday) {
           this._updateTodayItem(DaybookDisplayUpdateType.DATABASE_ACTION, controller);

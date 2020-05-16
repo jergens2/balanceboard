@@ -66,7 +66,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     localStorage.clear();
   }
 
-  public onLoginFromReg(){
+  public onLoginFromReg() {
     this._action = 'LOGIN';
     this.authService.loginFromRegistration();
   }
@@ -85,17 +85,24 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Give existing valid token to server to obtain a new one
-   */
   private _refreshToken() {
-    console.log("WARNING: method incomplete, ", )
     const token: string = localStorage.getItem('token');
-    this.authService.refreshToken$(token).subscribe((response) => {
-      console.log("Response, " , response)
-    }, (error)=>{
-      console.log("Error", error)
-    });
+    const userId: string = localStorage.getItem('userId');
+    if (token && userId) {
+      this.authService.refreshToken$(token, userId).subscribe((result: boolean)=>{
+        if(result === true){
+          console.log(" boo yea son")
+        }else{
+          console.log("Unsuccessful token refresh.  opening PIN pad")
+          this._action = 'PIN';
+          this._isLoading = false;
+        }
+      })
+    } else {
+      this._action = 'INITIAL';
+      this._isLoading = false;
+    }
+
   }
 
   private _checkLocalStorage(): 'NOT_PRESENT' | 'EXPIRED' | 'VALID' {
@@ -103,7 +110,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
     const expirationString = localStorage.getItem('expiration');
-    console.log("Expiration string is : " , expirationString)
+    console.log("Expiration string is : ", expirationString)
     const isPresent: boolean = (token !== null) && (userId !== null) && (expirationString !== null);
     if (isPresent) {
       const milliseconds = Number(expirationString);

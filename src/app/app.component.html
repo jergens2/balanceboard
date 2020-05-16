@@ -2,8 +2,14 @@
     <app-authentication></app-authentication>
 </div>
 
-<div *ngIf="isAuthenticated" class="app-container"
+<div *ngIf="isAuthenticated && loading" class="loading">
+    <app-spinner style="width:200px;height:200px;"></app-spinner>
+</div>
+
+<div *ngIf="isAuthenticated && !loading" class="app-container"
     [ngClass]="{'app-container-mobile': appScreenSize == 0, 'app-container-tablet': appScreenSize == 1, 'app-container-normal': appScreenSize == 2, 'app-container-large': (appScreenSize === 3 || appScreenSize === 4)}">
+    
+    
     <div class="header">
         <app-header (sidebarButtonClicked)="onHeaderSidebarButtonClicked()"></app-header>
     </div>
@@ -22,6 +28,9 @@
         *ngIf="showTools">
         <app-toolbox></app-toolbox>
     </div>
+
+
+
 </div>
 
 <div class="app-modal-container" *ngIf="showModal">

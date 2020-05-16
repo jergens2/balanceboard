@@ -1,7 +1,7 @@
 import { map } from 'rxjs/operators';
 import { Observable, Subject, BehaviorSubject, Subscription, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RegistrationData } from './auth-data.interface';
 import { AuthStatus } from './auth-status.class';
 import { serverUrl } from '../serverurl';
@@ -44,7 +44,17 @@ export class AuthenticationService {
     console.log("Login attempt:", authData);
     this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/authenticate", authData)
 
-      .pipe<AuthStatus>(map((response) => {
+      .pipe<AuthStatus>(map((response: {
+        message: string,
+        success: boolean,
+        data: {
+          id: string,
+          username: string,
+          email: string,
+          token: string,
+          expiresIn: number,
+        }
+      }) => {
         // console.log("Login attempt response: ", response)
         // console.log("Expires in: ", response.data.expiresIn)
         const token: string = response.data.token;
@@ -58,7 +68,7 @@ export class AuthenticationService {
       }))
       .subscribe((authStatus: AuthStatus) => {
         this._loginAttempt$.next(true);
-        this._loginRoutine(authStatus);
+        this._loginRoutine(authStatus, 'STANDARD');
 
       }, (error) => {
         console.log("Login attempt failed: ", error);
@@ -71,9 +81,44 @@ export class AuthenticationService {
     this.attemptLogin(authData);
   }
 
-  public refreshToken$(token: string): Observable<any> {
+  public refreshToken$(token: string, userId: string): Observable<boolean> {
+    const _result$: Subject<boolean> = new Subject();
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer " + token
+      })
+    };
+    const data = {
+      token: token,
+      userId: userId
+    }
+    
+    this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/refresh-token", data, httpOptions).subscribe((response: {
+      message: string,
+      success: boolean,
+      data: {
+        id: string,
+        username: string,
+        email: string,
+        token: string,
+        expiresIn: number,
+      }
+    }) => {
+      const token: string = response.data.token;
+      const userId: string = response.data.id;
+      const username: string = response.data.username;
+      const email: string = response.data.email;
+      const expiresAt = moment().add(response.data.expiresIn, 'seconds');
+      let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
+      this._loginRoutine(responseAuthStatus, 'REFRESH_TOKEN');
+      _result$.next(true);
+    }, (error) => {
+      console.log("Token refresh error: ", error);
+      _result$.next(false);
+    });
 
-    return this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/refresh-token", token);
+    return _result$.asObservable();
   }
 
   public getUserById$(userId: string): Observable<string> {
@@ -99,7 +144,17 @@ export class AuthenticationService {
       pin: pin,
     }
     this.http.post<any>(serverUrl + "/api/authentication/pin-unlock", data)
-      .pipe<AuthStatus>(map((response) => {
+      .pipe<AuthStatus>(map((response: {
+        message: string,
+        success: boolean,
+        data: {
+          id: string,
+          username: string,
+          email: string,
+          token: string,
+          expiresIn: number,
+        }
+      }) => {
         // console.log("Login attempt response: ", response)
         // console.log("Expires in: ", response.data.expiresIn)
         const token: string = response.data.token;
@@ -114,7 +169,7 @@ export class AuthenticationService {
       .subscribe((authStatus: AuthStatus) => {
         console.log("pin unlock ")
         this._loginAttempt$.next(true);
-        this._loginRoutine(authStatus);
+        this._loginRoutine(authStatus, 'PIN');
 
       }, (error) => {
         console.log("Login attempt failed: ", error);
@@ -176,58 +231,51 @@ export class AuthenticationService {
 
 
 
-  private _loginRoutine(authStatus: AuthStatus) {
-    console.log("loginRoutine: ", authStatus)
-    console.log("expires at: " + authStatus.expiresAt.format('YYYY-MM-DD hh:mm:ss a'))
-    /*0
-      This is where we can execute things that need to be loaded for the user before displaying the app.
-      This mostly includes async tasks like fetching data from the server.
-
-      Delegated to service-authentication-service.ts
-    */
-
+  private _loginRoutine(authStatus: AuthStatus, action: 'PIN' | 'STANDARD' | 'REFRESH_TOKEN') {
     if (authStatus.isAuthenticated()) {
       this._authStatus = authStatus;
-      console.log("We have arrived at an impasse.");
-      this._completeLogin(authStatus);
+      localStorage.clear();
+      if (authStatus.isAuthenticated) {
+        localStorage.setItem("token", authStatus.token);
+        localStorage.setItem("userId", authStatus.userId);
+        localStorage.setItem("username", authStatus.username);
+        localStorage.setItem("email", authStatus.email);
+        localStorage.setItem("expiration", authStatus.expiresAt.valueOf().toString());
+
+        const expiresAt = moment(authStatus.expiresAt);
+        const now = moment();
+        const dueTime = (expiresAt.diff(now, 'milliseconds'));
+        const requestNew = (expiresAt.diff(now, 'milliseconds') - (60 * 1000));
+        this._timerSubs.forEach(s => s.unsubscribe());
+        this._timerSubs = [
+          timer(requestNew).subscribe((requestNew) => {
+            this.refreshToken$(authStatus.token, authStatus.userId);
+          }),
+          timer(dueTime).subscribe((tokenHasExpired) => {
+            console.log("WARNING: THE TOKEN IS EXPIRED.")
+            this._isAuthenticated = false;
+            this._appComponentLogin$.next(false);
+          }),
+        ];
+
+
+        this._isAuthenticated = true;
+        this._authStatus = authStatus;
+        this._appComponentLogin$.next(true);
+      } else {
+        this._isAuthenticated = false;
+        this._authStatus = null;
+        this._appComponentLogin$.next(false);
+      }
+
     } else {
       localStorage.clear();
       this._authStatus = null;
       this._appComponentLogin$.next(false);
     }
-
   }
 
 
-
-  private _completeLogin(authStatus: AuthStatus) {
-    console.log("Complete")
-    localStorage.clear();
-    if (authStatus.isAuthenticated) {
-      localStorage.setItem("token", authStatus.token);
-      localStorage.setItem("userId", authStatus.userId);
-      localStorage.setItem("username", authStatus.username);
-      localStorage.setItem("email", authStatus.email);
-      localStorage.setItem("expiration", authStatus.expiresAt.valueOf().toString());
-
-      const expiresAt = moment(authStatus.expiresAt);
-      const now = moment();
-      const dueTime = (expiresAt.diff(now, 'milliseconds') - (60 * 1000));
-      console.log("In " + dueTime + " milliseconds")
-      timer(dueTime).subscribe((tokenHasExpired) => {
-        console.log("WARNING: THE TOKEN IS EXPIRED.")
-        this._isAuthenticated = false;
-      })
-
-      this._isAuthenticated = true;
-      this._authStatus = authStatus;
-      this._appComponentLogin$.next(true);
-    } else {
-      this._isAuthenticated = false;
-      this._authStatus = null;
-      this._appComponentLogin$.next(false);
-    }
-
-  }
+  private _timerSubs: Subscription[] = [];
 
 }

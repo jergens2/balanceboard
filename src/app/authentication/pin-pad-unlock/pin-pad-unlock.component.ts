@@ -131,6 +131,7 @@ export class PinPadUnlockComponent implements OnInit {
           }
         }),
       ];
+      console.log("PIN UNLOCK: " , pinValue, email)
       this.authService.unlockWithPin(pinValue, email);
     } else {
       console.log("Error: no email found in localstorage.")

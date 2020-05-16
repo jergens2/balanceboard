@@ -16,7 +16,7 @@ import { ServiceAuthenticationAttempt } from '../../../authentication/service-au
 @Injectable({
   providedIn: 'root'
 })
-export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
+export class ActivityCategoryDefinitionService  {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -51,10 +51,10 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
     return this._activitiesTree.findActivityByTreeId(treeId);
   }
 
-  public loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
+  public loginComplete$: Subject<boolean> = new Subject();
 
   public synchronousLogin(userId: string) { return false; }
-  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+  login$(userId: string): Observable<boolean> {
     this._userId = userId;
     // this._loginComplete$.next({
     //   authenticated: true,
@@ -94,15 +94,15 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
           this._activitiesTree = new ActivityTree(activities);
           // console.log("nexting ", this._activitiesTree);
           this._activitiesTree$.next(this._activitiesTree);
-          this.loginComplete$.next({
-            authenticated:true,
-            message: 'Successfully logged in to ActivityCategoryDefinitionService'
-          });
+          this.loginComplete$.next(true);
         } else if (activities.length == 0) {
           // console.log("response data was 0 or less... creating default activities")
           this.saveDefaultActivities(DefaultActivityCategoryDefinitions.defaultActivities(this.userId));
         }
 
+      },(error)=>{
+        console.log("Error fetching activities", error);
+        this.loginComplete$.next(false);
       });
   }
 
@@ -124,10 +124,7 @@ export class ActivityCategoryDefinitionService implements ServiceAuthenticates {
       .subscribe((allActivities: ActivityCategoryDefinition[]) => {
         this._activitiesTree = new ActivityTree(allActivities);
         this._activitiesTree$.next(this._activitiesTree);
-        this.loginComplete$.next({
-          authenticated:true,
-          message: 'Successfully logged in to ActivityCategoryDefinitionService'
-        });
+        this.loginComplete$.next(true);
       })
   }
 

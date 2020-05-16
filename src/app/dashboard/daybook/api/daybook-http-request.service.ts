@@ -14,7 +14,7 @@ import { ServiceAuthenticationAttempt } from '../../../authentication/service-au
 @Injectable({
   providedIn: 'root'
 })
-export class DaybookHttpRequestService implements ServiceAuthenticates {
+export class DaybookHttpRequestService {
 
   constructor(private httpClient: HttpClient) { }
   private _loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
@@ -23,17 +23,12 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
   private _itemBuilder: DaybookDayItemBuilder = new DaybookDayItemBuilder();
   private _userId: string ;
 
-  public synchronousLogin(userId: string): boolean { 
+
+  login(userId: string): void{
     this._userId = userId;
-    return true;
-  }
-  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
-      return null;
   }
 
   logout() {
-
-    console.log("Logging out of daybook http service")
     this._userId = null;
     this._daybookDayItems$.next([]);
     this._changeSubscriptions.forEach((sub) => sub.unsubscribe());
@@ -43,14 +38,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     // console.log(' $ Saving daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
     const postUrl = serverUrl + '/api/daybook-day-item/create';
     daybookDayItem.userId = this._userId;
-    const httpOptions = {
-      // headers: new HttpHeaders({
-      //   'Content-Type': 'application/json'
-      //   // 'Authorization': 'my-auth-token'
-      // })
-    };
-    // console.log("Notice:  saveDaybookItem() method is disabled (no HTTP request)")
-    return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
+    return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape)
       .pipe<DaybookDayItem>(map((response) => {
         // console.log("Received response: " , response);
         const responseItem: DaybookDayItem = this._itemBuilder.buildItemFromResponse(response.data as any);
@@ -63,13 +51,7 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     // console.log(daybookDayItem)
     const postUrl = serverUrl + '/api/daybook-day-item/update';
     daybookDayItem.userId = this._userId;
-    const httpOptions = {
-      // headers: new HttpHeaders({
-      //   'Content-Type': 'application/json'
-      //   // 'Authorization': 'my-auth-token'
-      // })
-    };
-    return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape, httpOptions)
+    return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape)
       .pipe<DaybookDayItem>(map((response) => {
         const responseItem: DaybookDayItem = this._itemBuilder.buildItemFromResponse(response.data as any);
         // console.log("Response item is ", responseItem);
@@ -93,14 +75,8 @@ export class DaybookHttpRequestService implements ServiceAuthenticates {
     const nextWeekYYYYMMDD: string = moment(thisDateYYYYMMDD).add(7, 'days').format('YYYY-MM-DD');
 
     const getUrl = serverUrl + '/api/daybook-day-item/' + this._userId + '/' + prevWeekYYYYMMDD + '/' + nextWeekYYYYMMDD;
-    const httpOptions = {
-      // headers: new HttpHeaders({
-      //   'Content-Type': 'application/json'
-      //   // 'Authorization': 'my-auth-token'
-      // })
-    };
     const dayItems$: Subject<DaybookDayItem[]> = new Subject();
-    this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
+    this.httpClient.get<{ message: string, data: any }>(getUrl)
       .pipe<DaybookDayItem[]>(map((response) => {
         return this.buildDaybookDayItemsFromResponse(response.data as any[]);
       })).subscribe((responseItems: DaybookDayItem[]) => {
