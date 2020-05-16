@@ -121,9 +121,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       if (selectedOption.value == "Logout") {
         this.logout();
-
       } else if (selectedOption.value == "Cancel") {
-
       } else {
         //error 
       }
@@ -137,8 +135,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private logout() {
-    console.log("Sidebar logout");
     this.authService.logout();
+    
   }
 
 }

@@ -1,0 +1,4 @@
+export enum UserPromptType{
+    FIRST_TIME_USER = 'FIRST_TIME_USER',
+    INFORMATION_UPDATE = 'INFORMATION_UPDATE',
+}

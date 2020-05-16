@@ -9,6 +9,7 @@ import { Subscription, Observable, Subject } from 'rxjs';
 import { ActivityCategoryDefinitionService } from './dashboard/activities/api/activity-category-definition.service';
 import { DaybookHttpRequestService } from './dashboard/daybook/api/daybook-http-request.service';
 import { DaybookControllerService } from './dashboard/daybook/controller/daybook-controller.service';
+import { UserActionPromptService } from './user-action-prompt/user-action-prompt.service';
 
 @Component({
   selector: 'app-root',
@@ -35,11 +36,14 @@ export class AppComponent implements OnInit {
   public get isAuthenticated(): boolean { return this._isAuthenticated; }
   public get showUserActionPrompt(): boolean { return this._showUserActionPrompt; }
   public get loading(): boolean { return this._loading; }
+  public get showAppContainer(): boolean { return this.isAuthenticated && !this.loading && !this.showUserActionPrompt; }
+  public get appScreenSize(): ScreenSizes { return this._appScreenSize; }
 
   
   constructor(
     private authService: AuthenticationService,
     private sizeService: ScreenSizeService,
+    private userPromptService: UserActionPromptService,
     // private userSettingsService: UserSettingsService,
     private modalService: ModalService,
     private toolsService: ToolboxService,
@@ -62,18 +66,20 @@ export class AppComponent implements OnInit {
 
   private _reload(){
     this._onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
+
     this._setSubscriptions();
   }
 
   private _onScreenSizeChanged(appScreenSize: ScreenSizes) {
     this._appScreenSize = appScreenSize;
-    if (this._appScreenSize < 2) {
-      this.sideBarOpen = false;
-    } else if (this._appScreenSize >= 2) {
-      if (localStorage.getItem("sidebar_is_open") == "true") {
-        this.sideBarOpen = true;
-      }
-    }
+    console.log("App size is: " , appScreenSize)
+    // if (this._appScreenSize < 2) {
+    //   this.sideBarOpen = false;
+    // } else if (this._appScreenSize >= 2) {
+    //   if (localStorage.getItem("sidebar_is_open") == "true") {
+    //     this.sideBarOpen = true;
+    //   }
+    // }
   }
 
   onHeaderSidebarButtonClicked() {
@@ -118,16 +124,27 @@ export class AppComponent implements OnInit {
           this._unloadApp();
         }
         
+      }),
+      this.userPromptService.promptsCleared$.subscribe((clear)=>{
+        if(clear === true){
+          this._showUserActionPrompt = false;
+          
+        }else{
+          console.log("error with user prompts.")
+        }
       })
     ];
   }
 
   private _unloadApp(){
+    this.modalService.closeModal();
     this._isAuthenticated = false;
     this._loading = true;
     this._allSubs.forEach(sub => sub.unsubscribe());
     this._allSubs = [];
+    this._showModal = false;
   }
+
 
   private _loadApp(){
     console.log("Loading app in app component");
@@ -147,9 +164,11 @@ export class AppComponent implements OnInit {
   }
 
   private _userActionPrompt(){
-    let showUserActionPrompt = true;
+    let showUserActionPrompt = false;
+    if(this.userPromptService.hasPrompts()){
+      showUserActionPrompt = true;
+    }
     this._showUserActionPrompt = showUserActionPrompt;
-    console.log("This . showUserActionPrompt " , this._showUserActionPrompt)
   }
 
   private _loadingSubs: Subscription[] = [];

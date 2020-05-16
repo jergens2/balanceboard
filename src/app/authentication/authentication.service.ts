@@ -218,8 +218,8 @@ export class AuthenticationService {
   public logout() {
     localStorage.clear();
     this._isAuthenticated = false;
-    // this.serviceAuthenticationService.logout();
-
+    this._timerSubs.forEach(s => s.unsubscribe());
+    this._timerSubs = [];
     this._authStatus = null;
 
     this._appComponentLogin$.next(false);

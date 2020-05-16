@@ -1,9 +1,11 @@
 .user-action-prompt-root{
     display: flex;
     flex-direction: column;
+    width: 100%;
     max-width: 768px;
     min-width: 360px;
+    min-height: 400px;
     max-height: 800px;
-    width: 100%;
-    
+
+    background-color: rgba(255, 255, 255, 0.25);
 }
