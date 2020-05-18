@@ -1,22 +1,10 @@
-.sleep-manager-root{
-    flex-grow: 2;
-    display:flex;
+
+
+
+.clock-container{
+    width: 100%;
+    display: flex;
     flex-direction: column;
-    min-width: 360px;
-    width: 100%;
-    max-width: 768px;
-    height: 100%;
-}
-
-
-.buttons-container{
-
-    align-self: flex-end;
-    margin-top: 50px;
-    width: 100%;
-    display:flex;
-    flex-direction: row;
-    justify-content: space-between;
 }
 
 

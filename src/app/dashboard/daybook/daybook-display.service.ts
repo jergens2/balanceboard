@@ -18,6 +18,7 @@ import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from './controller/ite
 import { ToolType } from '../../toolbox-menu/tool-type.enum';
 import { TLEFFormCase } from './widgets/timelog/timelog-entry-form/tlef-form-case.enum';
 import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
+import { SleepManagerService } from './sleep-manager/sleep-manager.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,8 @@ export class DaybookDisplayService {
   constructor(
     private daybookControllerService: DaybookControllerService,
     private activitiesService: ActivityCategoryDefinitionService,
-    private toolBoxService: ToolboxService) { }
+    private toolBoxService: ToolboxService,
+    private sleepService: SleepManagerService) { }
 
   private _widgetChanged$: BehaviorSubject<DaybookWidgetType> = new BehaviorSubject(DaybookWidgetType.TIMELOG);
   private _displayUpdated$: Subject<DaybookDisplayUpdate> = new Subject();
@@ -54,10 +56,10 @@ export class DaybookDisplayService {
 
   public get displayStartTime(): moment.Moment { return this._displayStartTime; }
   public get displayEndTime(): moment.Moment { return this._displayEndTime; }
-  public get wakeupTime(): moment.Moment { return this.activeDayController.wakeupTime; }
-  public get fallAsleepTime(): moment.Moment { return this.activeDayController.fallAsleepTime; }
+  public get wakeupTime(): moment.Moment { return this.sleepService.previousWakeupTime; }
+  public get fallAsleepTime(): moment.Moment { return this.sleepService.nextFallAsleepTime; }
 
-  public get batteryLevel(): number { return this.todayController.batteryLevel; }
+  // public get batteryLevel(): number { return this.todayController.batteryLevel; }
 
   public get timelogDisplayGrid(): TimelogDisplayGrid { return this._timelogDisplayGrid; }
   public get timelogDelineators(): TimelogDelineator[] { return this._timeDelineators; }
@@ -157,16 +159,16 @@ export class DaybookDisplayService {
   }
 
   public openNewCurrentTimelogEntry() {
-    const currentTimePosition = this.daybookControllerService.todayController.timePosition;
-    const newCurrentTLE = this.daybookControllerService.todayController.getNewCurrentTLE();
-    this.tlefController.openNewCurrentTimelogEntry(currentTimePosition, newCurrentTLE);
+    // const currentTimePosition = this.daybookControllerService.todayController.timePosition;
+    // const newCurrentTLE = this.daybookControllerService.todayController.getNewCurrentTLE();
+    this.tlefController.openNewCurrentTimelogEntry();
   }
 
   public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
     // console.log("Opener method:  in the daybook display service")
     // console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
-    const currentTimePosition = this.daybookControllerService.todayController.timePosition;
-    this.tlefController.openTimelogGridItem(gridItem, currentTimePosition);
+    // const currentTimePosition = this.daybookControllerService.todayController.timePosition;
+    this.tlefController.openTimelogGridItem(gridItem);
   }
 
 
@@ -174,8 +176,8 @@ export class DaybookDisplayService {
   private _buildZoomItems() {
     let zoomItems: TimelogZoomControllerItem[] = [];
     // console.log("Active Day controller: " , this.daybookControllerService.activeDayController.dateYYYYMMDD);
-    let startTime = moment(this.daybookControllerService.activeDayController.wakeupTime);
-    let endTime = moment(this.daybookControllerService.activeDayController.fallAsleepTime);
+    let startTime = moment(this.sleepService.previousWakeupTime);
+    let endTime = moment(this.sleepService.nextFallAsleepTime);
     // console.log("Start time is: " + startTime.format('YYYY-MM-DD hh:mm a'))
     // console.log("***End time is : " + endTime.format('YYYY-MM-DD hh:mm a'))
     const wakeItem = new TimelogZoomControllerItem(startTime, endTime, TimelogZoomType.AWAKE);

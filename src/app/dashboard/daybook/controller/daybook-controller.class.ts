@@ -39,20 +39,20 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     private _thisDayYYYYMMDD: string;
 
-    private _sleepController: DaybookSleepController;
+    // private _sleepController: DaybookSleepController;
     private _timelogEntryController: DaybookTimelogEntryController;
     // private _energyController: DaybookEnergyController;
     private _timeDelineatorController: DaybookTimeDelineatorController;
 
     private _dayItems: DaybookDayItem[] = [];
-    private _batteryLevel: number = 0;
+    // private _batteryLevel: number = 0;
 
 
     private _dataChanged$: Subject<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> = new Subject();
     private _subscriptions: Subscription[] = [];
 
     private get timelogEntryController(): DaybookTimelogEntryController { return this._timelogEntryController; }
-    private get sleepController(): DaybookSleepController { return this._sleepController; }
+    // private get sleepController(): DaybookSleepController { return this._sleepController; }
     // private get energyController(): DaybookEnergyController { return this._energyController; }
     private get timeDelineatorController(): DaybookTimeDelineatorController { return this._timeDelineatorController; }
 
@@ -79,7 +79,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     public get dailyWeightLogEntryKg(): number { return this._thisDay.dailyWeightLogEntryKg; }
 
-    public get batteryLevel(): number { return this._batteryLevel; }
+    // public get batteryLevel(): number { return this._batteryLevel; }
 
     public get savedTimeDelineators(): moment.Moment[] { return this.timeDelineatorController.savedTimeDelineators; }
     public saveTimeDelineators(delineators: moment.Moment[]) {
@@ -92,9 +92,9 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         this._timeDelineatorController.updateDelineator(originalTime, saveNewDelineator);
     }
 
-    public getSleepItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): SleepEntryItem {
-        return this.sleepController.getSleepItem(gridItemStart, gridItemEnd);
-    }
+    // public getSleepItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): SleepEntryItem {
+    //     return this.sleepController.getSleepItem(gridItemStart, gridItemEnd);
+    // }
     public getTimelogEntryItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): TimelogEntryItem {
         return this.timelogEntryController.getTimelogEntryItem(gridItemStart, gridItemEnd);
     }
@@ -126,7 +126,7 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
     public getEarliestAvailability(fromTime: moment.Moment): moment.Moment {
         const availabileItems = this.fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
-        const foundIndex = availabileItems.findIndex(item => fromTime.isSameOrAfter(item.startTime) && fromTime.isAfter(item.startTime));
+        const foundIndex = availabileItems.findIndex(item => fromTime.isSameOrAfter(item.startTime) && fromTime.isAfter(item.endTime));
         if (foundIndex >= 0) {
             if (foundIndex === 0) {
                 return availabileItems[foundIndex].startTime;
@@ -167,44 +167,53 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         }
     }
 
+    public getLastActivityTime(): moment.Moment{
+        let lastTime: moment.Moment = moment();
+        // this method needs improvement, in order to account for previously-saved future-timelog-entries which is as of yet(2020-05-18) really an unaddressed app function.
+        if(this.timelogEntryItems.length>0){
+
+        }
+
+        return lastTime;
+    }
     
-    public getFallAsleepTimeMaxVal(): moment.Moment {
-        return moment(this.sleepController.nextDayWakeupTime).subtract(10, 'minutes');
-    }
-    public getFallAsleepTimeMinVal(): moment.Moment {
-        let minVal: moment.Moment = moment(this.fallAsleepTime);
-        const thisIndex = this.findItemIndex(this.fallAsleepTime);
-        if(thisIndex > 0){
-            if(this.fullScheduleItems[thisIndex-1].value === DaybookAvailabilityType.AVAILABLE){
-                minVal = moment(this.fullScheduleItems[thisIndex-1].startTime);
-            }
-        }
-        return minVal;
-    }
-    public getWakeupTimeMaxVal(): moment.Moment {
-        let maxVal: moment.Moment = moment(this.wakeupTime);
-        const thisIndex = this.findItemIndex(this.wakeupTime);
-        if(thisIndex > -1 && thisIndex < this.fullScheduleItems.length-1){
-            if(this.fullScheduleItems[thisIndex].value === DaybookAvailabilityType.AVAILABLE){
-                maxVal = moment(this.fullScheduleItems[thisIndex].endTime);
-            }
-        }
-        return maxVal;
-    }
-    public getWakeupTimeMinVal(): moment.Moment {
-        return moment(this.prevDayFallAsleepTime).add(10, 'minutes');
-    }
+    // public getFallAsleepTimeMaxVal(): moment.Moment {
+    //     return moment(this.sleepController.nextDayWakeupTime).subtract(10, 'minutes');
+    // }
+    // public getFallAsleepTimeMinVal(): moment.Moment {
+    //     let minVal: moment.Moment = moment(this.fallAsleepTime);
+    //     const thisIndex = this.findItemIndex(this.fallAsleepTime);
+    //     if(thisIndex > 0){
+    //         if(this.fullScheduleItems[thisIndex-1].value === DaybookAvailabilityType.AVAILABLE){
+    //             minVal = moment(this.fullScheduleItems[thisIndex-1].startTime);
+    //         }
+    //     }
+    //     return minVal;
+    // }
+    // public getWakeupTimeMaxVal(): moment.Moment {
+    //     let maxVal: moment.Moment = moment(this.wakeupTime);
+    //     const thisIndex = this.findItemIndex(this.wakeupTime);
+    //     if(thisIndex > -1 && thisIndex < this.fullScheduleItems.length-1){
+    //         if(this.fullScheduleItems[thisIndex].value === DaybookAvailabilityType.AVAILABLE){
+    //             maxVal = moment(this.fullScheduleItems[thisIndex].endTime);
+    //         }
+    //     }
+    //     return maxVal;
+    // }
+    // public getWakeupTimeMinVal(): moment.Moment {
+    //     return moment(this.prevDayFallAsleepTime).add(10, 'minutes');
+    // }
 
-    public get wakeupTime(): moment.Moment { return this.sleepController.thisDayWakeupTime; }
-    public get wakeupTimeIsSet(): boolean { return this.sleepController.wakeupTimeIsSet; }
-    public get fallAsleepTime(): moment.Moment { return this.sleepController.thisDayFallAsleepTime; }
-    public get fallAsleepTimeIsSet(): boolean { return this.sleepController.fallAsleepTimeIsSet; }
-    public get prevDayFallAsleepTime(): moment.Moment { return this.sleepController.prevDayFallAsleepTime; }
-    public get awakeToAsleepRatio(): number { return this.sleepController.awakeToAsleepRatio; }
+    // public get wakeupTime(): moment.Moment { return this.sleepController.thisDayWakeupTime; }
+    // public get wakeupTimeIsSet(): boolean { return this.sleepController.wakeupTimeIsSet; }
+    // public get fallAsleepTime(): moment.Moment { return this.sleepController.thisDayFallAsleepTime; }
+    // public get fallAsleepTimeIsSet(): boolean { return this.sleepController.fallAsleepTimeIsSet; }
+    // public get prevDayFallAsleepTime(): moment.Moment { return this.sleepController.prevDayFallAsleepTime; }
+    // public get awakeToAsleepRatio(): number { return this.sleepController.awakeToAsleepRatio; }
 
-    public getEnergyAtTime(time: moment.Moment): number { return this.sleepController.getEnergyAtTime(time); }
-    public setWakeupTime(time: moment.Moment) { this.sleepController.setWakeupTime(time); }
-    public setFallAsleepTime(time: moment.Moment) { this.sleepController.setFallAsleepTime(time); }
+    // public getEnergyAtTime(time: moment.Moment): number { return this.sleepController.getEnergyAtTime(time); }
+    // public setWakeupTime(time: moment.Moment) { this.sleepController.setWakeupTime(time); }
+    // public setFallAsleepTime(time: moment.Moment) { this.sleepController.setFallAsleepTime(time); }
 
     public get timelogEntryItems(): TimelogEntryItem[] { return this.timelogEntryController.timelogEntryItems; }
     public saveTimelogEntryItem$(saveTimelogEntry: TimelogEntryItem): Observable<boolean> {
@@ -217,33 +226,29 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         return this.timelogEntryController.deleteTimelogEntryItem$(this.dateYYYYMMDD, deleteItem);
     }
 
-    public getNewCurrentTLE(): TimelogEntryItem {
-        const endTime: moment.Moment = this.clock;
-        const foundItem = this.fullScheduleItems
-            .filter(item => item.value === DaybookAvailabilityType.AVAILABLE)
-            .find((item) => {
-            return endTime.isSameOrBefore(item.endTime) && endTime.isAfter(item.startTime)
-        });
-        if (foundItem) {
-            const startTime = foundItem.startTime;
-            return new TimelogEntryItem(startTime, endTime);
-        } else {
-            return null;
-        }
+    // public getNewCurrentTLE(): TimelogEntryItem {
+    //     const endTime: moment.Moment = this.clock;
+    //     const foundItem = this.fullScheduleItems
+    //         .filter(item => item.value === DaybookAvailabilityType.AVAILABLE)
+    //         .find((item) => {
+    //         return endTime.isSameOrBefore(item.endTime) && endTime.isAfter(item.startTime)
+    //     });
+    //     if (foundItem) {
+    //         const startTime = foundItem.startTime;
+    //         return new TimelogEntryItem(startTime, endTime);
+    //     } else {
+    //         return null;
+    //     }
 
-    }
+    // }
 
-    private _timePosition$: BehaviorSubject<DaybookTimePosition> = new BehaviorSubject(null);
-    public get timePosition$(): Observable<DaybookTimePosition> { return this._timePosition$.asObservable(); }
-    public get timePosition(): DaybookTimePosition { return this._timePosition$.getValue(); }
+    // private _timePosition$: BehaviorSubject<DaybookTimePosition> = new BehaviorSubject(null);
+    // public get timePosition$(): Observable<DaybookTimePosition> { return this._timePosition$.asObservable(); }
+    // public get timePosition(): DaybookTimePosition { return this._timePosition$.getValue(); }
 
-
-    
-
-
-    public get isNewDay(): boolean {
-        return this.timePosition === DaybookTimePosition.NEW_DAY;
-    }
+    // public get isNewDay(): boolean {
+    //     return this.timePosition === DaybookTimePosition.NEW_DAY;
+    // }
 
     public isTimeAvailable(time: moment.Moment): boolean {
         const foundItem = this.fullScheduleItems.find((item) => {
@@ -307,14 +312,14 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             .concat(this._followingDay.timelogEntryDataItems);
 
         const allTimeDelineations = this._previousDay.timeDelineators.concat(this._thisDay.timeDelineators).concat(this._followingDay.timeDelineators);        
-        this._sleepController = new DaybookSleepController(this.dateYYYYMMDD, this._previousDay.sleepInputItem,
-            this._thisDay.sleepInputItem,
-            this._followingDay.sleepInputItem,
-            this.clock, this._dayItems.map(item => item.sleepInputItem));
+        // this._sleepController = new DaybookSleepController(this.dateYYYYMMDD, this._previousDay.sleepInputItem,
+        //     this._thisDay.sleepInputItem,
+        //     this._followingDay.sleepInputItem,
+        //     this.clock, this._dayItems.map(item => item.sleepInputItem));
 
         const timeScheduleValueItems: TimeScheduleItem<DaybookAvailabilityType>[] = [
             ...allTimelogDataItems.map(item => new TimeScheduleItem<DaybookAvailabilityType>(moment(item.startTimeISO), moment(item.endTimeISO), true, DaybookAvailabilityType.TIMELOG_ENTRY)),
-            ...this.sleepController.getDaybookTimeScheduleItems(),
+            // ...this.sleepController.getDaybookTimeScheduleItems(),
         ];
 
         this.addScheduleValueItems(timeScheduleValueItems);
@@ -334,16 +339,16 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
 
         this._setAvailabilitySections(allTimeDelineations);
         this._updateSubscriptions();
-        const timePosition = this._determineCurrentTimePosition();
-        this._timePosition$.next(timePosition);
-        this._batteryLevel = this.getEnergyAtTime(this.clock);
+        // const timePosition = this._determineCurrentTimePosition();
+        // this._timePosition$.next(timePosition);
+        // this._batteryLevel = this.getEnergyAtTime(this.clock);
     }
 
-    private _determineCurrentTimePosition(): DaybookTimePosition{
-        const prevDayActivities: boolean = this.previousDay.timelogEntryDataItems.length > 0;
-        const determiner: DetermineDaybookTimePosition = new DetermineDaybookTimePosition(this.clock, this.wakeupTime, this.prevDayFallAsleepTime, this.fallAsleepTime, prevDayActivities, this.wakeupTimeIsSet);
-        return determiner.currentTimePosition;
-    }
+    // private _determineCurrentTimePosition(): DaybookTimePosition{
+    //     const prevDayActivities: boolean = this.previousDay.timelogEntryDataItems.length > 0;
+    //     const determiner: DetermineDaybookTimePosition = new DetermineDaybookTimePosition(this.clock, this.wakeupTime, this.prevDayFallAsleepTime, this.fallAsleepTime, prevDayActivities, this.wakeupTimeIsSet);
+    //     return determiner.currentTimePosition;
+    // }
 
     private _setAvailabilitySections(allTimeDelineations: moment.Moment[]) {
         allTimeDelineations = allTimeDelineations.sort((t1, t2) => {
@@ -369,13 +374,14 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
             // console.log("Received an update from timelog.  Updating.")
             this._updateTimelog(update);
         });
-        const sleepSub = this.sleepController.sleepEntryUpdated$.subscribe((update: { entryItem: SleepEntryItem, dateYYYYMMDD: string }[]) => {
-            this._updateSleepItems(update)
-        });
+        // const sleepSub = this.sleepController.sleepEntryUpdated$.subscribe((update: { entryItem: SleepEntryItem, dateYYYYMMDD: string }[]) => {
+        //     this._updateSleepItems(update)
+        // });
         const delineatorSub = this.timeDelineatorController.saveChanges$.subscribe((delineators: moment.Moment[]) => {
             this._updateTimeDelineators(delineators);
         })
-        this._subscriptions = [timelogSub, sleepSub, delineatorSub];
+        // this._subscriptions = [timelogSub, sleepSub, delineatorSub];
+        this._subscriptions = [timelogSub, delineatorSub];
     }
 
     private _updateTimeDelineators(delineators: moment.Moment[]) {

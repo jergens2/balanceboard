@@ -23,12 +23,12 @@ export class DaybookTimePositionFormComponent implements OnInit {
 
     const lastDayOfYear = moment(this.daybookService.clock).endOf('year').dayOfYear();
     this._dayOfTheYear = this.daybookService.clock.dayOfYear() + "/" + lastDayOfYear;
-    this._currentTimePosition = this.daybookService.todayController.timePosition;
+    // this._currentTimePosition = this.daybookService.todayController.timePosition;
 
     this.daybookService.displayUpdated$.subscribe((update) => {
       const lastDayOfYear = moment(this.daybookService.clock).endOf('year').dayOfYear();
       this._dayOfTheYear = this.daybookService.clock.dayOfYear() + "/" + lastDayOfYear;
-      this._currentTimePosition = this.daybookService.todayController.timePosition;
+      // this._currentTimePosition = this.daybookService.todayController.timePosition;
     });
   }
 
@@ -54,7 +54,7 @@ export class DaybookTimePositionFormComponent implements OnInit {
 
     if (this.isNewDay) {
       if (this._wakeupTime) {
-        this.daybookService.activeDayController.setWakeupTime(this._wakeupTime);
+        // this.daybookService.activeDayController.setWakeupTime(this._wakeupTime);
         this.daybookService.openNewCurrentTimelogEntry();
       } else {
         this.toolboxService.closeTool();

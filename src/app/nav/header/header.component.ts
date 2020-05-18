@@ -18,6 +18,7 @@ import { DaybookControllerService } from '../../dashboard/daybook/controller/day
 import * as moment from 'moment';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
 import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
+import { SleepManagerService } from '../../dashboard/daybook/sleep-manager/sleep-manager.service';
 
 @Component({
   selector: 'app-header',
@@ -32,6 +33,7 @@ export class HeaderComponent implements OnInit {
     private toolsService: ToolboxService,
     private modalService: ModalService,
     private daybookDisplayService: DaybookDisplayService,
+    private sleepService: SleepManagerService,
     private router: Router) { }
 
   faBars = faBars;
@@ -185,7 +187,7 @@ export class HeaderComponent implements OnInit {
   }
 
   private _setBattery() {
-    const batteryLevel: number = this.daybookDisplayService.batteryLevel
+    const batteryLevel: number = this.sleepService.getEnergyLevel();
     if (batteryLevel >= 0 && batteryLevel < 0.125) {
       this._batteryIcon = faBatteryEmpty;
       this._batteryNgClass = 'battery-empty';

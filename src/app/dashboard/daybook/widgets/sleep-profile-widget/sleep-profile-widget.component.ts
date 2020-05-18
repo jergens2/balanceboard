@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { SleepBatteryConfiguration } from '../sleep-battery/sleep-battery-configuration.interface';
 import { faBed, faPlusCircle, faMinusCircle, faExclamationTriangle, faCircle } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { SleepManagerService } from '../../sleep-manager/sleep-manager.service';
 
 @Component({
   selector: 'app-sleep-profile-widget',
@@ -13,7 +14,7 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 })
 export class SleepProfileWidgetComponent implements OnInit {
 
-  constructor(private daybookControllerService: DaybookControllerService) { }
+  constructor(private daybookControllerService: DaybookControllerService, private sleepService: SleepManagerService) { }
 
   faCircle = faCircle;
   public sleepProfileForm: FormGroup;
@@ -23,8 +24,8 @@ export class SleepProfileWidgetComponent implements OnInit {
   private _wakeupTime: moment.Moment;
   private _sleepAtTime: moment.Moment;
 
-  public get wakeupTimeIsSet(): boolean { return this.daybookControllerService.activeDayController.wakeupTimeIsSet; }
-  public get fallAsleepTimeIsSet(): boolean { return this.daybookControllerService.activeDayController.fallAsleepTimeIsSet; }
+  // public get wakeupTimeIsSet(): boolean { return this.daybookControllerService..wakeupTimeIsSet; }
+  // public get fallAsleepTimeIsSet(): boolean { return this.daybookControllerService.activeDayController.fallAsleepTimeIsSet; }
 
 
 
@@ -61,8 +62,8 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
   private reInitiate() {
-    this._wakeupTime = this.daybookControllerService.activeDayController.wakeupTime;
-    this._sleepAtTime = this.daybookControllerService.activeDayController.fallAsleepTime;
+    this._wakeupTime = this.sleepService.previousWakeupTime;
+    this._sleepAtTime = this.sleepService.nextFallAsleepTime;
     // console.log("  SPW: This wakeup time is : " + this.wakeupTime);
     // console.log("  SPW: his.sleeptime is " + this.sleepAtTime)
     // console.log("  SPW: wakeup time: " + this.daybookControllerService.activeDayController.wakeupTime.format('hh:mm a'))

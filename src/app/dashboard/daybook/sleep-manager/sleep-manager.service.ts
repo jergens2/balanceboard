@@ -27,27 +27,27 @@ export class SleepManagerService {
 
   private _sleepManager: SleepManager; 
   public get sleepManager(){ return this._sleepManager; }
+  // public get userActionRequired(): boolean { return this.sleepManager.userActionRequired; }
+  public get previousWakeupTime(): moment.Moment { return this.sleepManager.previousWakeupTime; }
+  public get nextFallAsleepTime(): moment.Moment { return this.sleepManager.nextFallAsleepTime; }
+  public get nextWakeupTime(): moment.Moment { return this.sleepManager.nextWakeupTime; }
+  public get energyAtWakeup(): number { return this.sleepManager.energyAtWakeup; }
+  public get id(): string { return this.sleepManager.id; }
+  public get previousWakeTimeIsSet(): boolean { return this.sleepManager.previousWakeTimeIsSet; }
+  public get nextFallAsleepTimeIsSet(): boolean { return this.sleepManager.nextFallAsleepTimeIsSet; }
+  public getEnergyLevel(): number { return this.sleepManager.getEnergyLevel(); }
 
   public initiate$(userId: string): Observable<boolean> {
     this._userId = userId;
-    this._startClock();
+    // this._startClock();
     return this._loadSleepProfile$();
   }
   public logout(){
     this._userId = null;
-    this._clockSubs.forEach((sub)=>sub.unsubscribe());
-    this._clockSubs = [];
+    // this._clockSubs.forEach((sub)=>sub.unsubscribe());
+    // this._clockSubs = [];
   }
 
-
-  private _previousWakeupTime: moment.Moment;
-  private _nextFallAsleepTime: moment.Moment;
-  private _nextWakeupTime: moment.Moment;
-
-  
-
-  public get previousWakeupTime(): moment.Moment { return this._previousWakeupTime; }
-  public get nextFallAsleepTime(): moment.Moment { return this._nextFallAsleepTime; }
   /**
    *  router.post( '/create', controller.create);
       router.post( '/read', controller.read);
@@ -58,7 +58,6 @@ export class SleepManagerService {
     const _userActionRequred$: Subject<boolean> = new Subject();
     this._getSleepProfileHttp$().subscribe((manager: SleepManager)=>{
       this._sleepManager = manager;
-  
       const userActionRequired = this._sleepManager.userActionRequired;
       _userActionRequred$.next(userActionRequired);
     }, (error)=>{
@@ -74,32 +73,32 @@ export class SleepManagerService {
   }
 
 
-  private _clockSubs: Subscription[] = [];
-  private _startClock(){
-    const oneHour = 60*60*1000;
-    this._clockSubs = [
-      timer(oneHour).subscribe((tick)=>{
-        this._updateSleepStatus();
-      }),
-    ];
-  }
+  // private _clockSubs: Subscription[] = [];
+  // private _startClock(){
+  //   const oneHour = 60*60*1000;
+  //   this._clockSubs = [
+  //     timer(oneHour).subscribe((tick)=>{
+  //       // this._updateSleepStatus();
+  //     }),
+  //   ];
+  // }
 
-  private _updateClockSubs(msUntilNextRequest: number){
-    this._clockSubs.forEach(s => s.unsubscribe());
-    this._clockSubs = [
-      timer(msUntilNextRequest).subscribe((tick)=>{
-        this._updateSleepStatus();
-      }),
-    ];
-  }
+  // private _updateClockSubs(msUntilNextRequest: number){
+  //   this._clockSubs.forEach(s => s.unsubscribe());
+  //   this._clockSubs = [
+  //     timer(msUntilNextRequest).subscribe((tick)=>{
+  //       this._updateSleepStatus();
+  //     }),
+  //   ];
+  // }
 
-  private _updateSleepStatus(){
-     this._getSleepProfileHttp$().subscribe((sleepManager: SleepManager)=>{
+  // private _updateSleepStatus(){
+  //    this._getSleepProfileHttp$().subscribe((sleepManager: SleepManager)=>{
 
-     }, (error)=>{
-       console.log("Error of some kind: ", error);
-     })
-  }
+  //    }, (error)=>{
+  //      console.log("Error of some kind: ", error);
+  //    })
+  // }
 
   private _getSleepProfileHttp$(): Observable<SleepManager>{
     const url = serverUrl + '/api/sleep-manager/read';

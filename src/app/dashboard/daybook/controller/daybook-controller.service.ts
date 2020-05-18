@@ -41,13 +41,23 @@ export class DaybookControllerService {
   public get todayController$(): Observable<DaybookController> { return this._todayController$.asObservable(); }
   public get todayController(): DaybookController { return this._todayController$.getValue(); }
 
-  public get batteryLevel(): number { return this.todayController.batteryLevel; }
+  // public get batteryLevel(): number { return this.todayController.batteryLevel; }
 
   public get activeDayController$(): Observable<DaybookController> { return this._activeDayController$.asObservable(); }
   public get activeDayController(): DaybookController { return this._activeDayController$.getValue(); }
 
   public get displayUpdated$(): Observable<DaybookDisplayUpdate> { return this._displayUpdated$.asObservable(); }
-  public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock) }
+  // public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock) }
+  
+
+  public getLastActivityTime(): moment.Moment{ 
+    if(this.todayController){
+      return this.todayController.getLastActivityTime();
+    }else{
+      console.log("Error, no todayController")
+      return null;
+    }
+  }
 
 
   public login$(userId: string): Observable<boolean> {

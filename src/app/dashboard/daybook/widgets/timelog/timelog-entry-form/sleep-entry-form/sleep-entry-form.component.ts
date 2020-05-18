@@ -108,26 +108,26 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     this._setNewFallAsleepTime = newTime;
   }
   public onClickSaveWakeupTime() {
-    if (this.daybookService.activeDayController.wakeupTimeIsSet) {
-      if (!this._setNewWakeupTime.isSame(this._wakeupTime)) {
-        this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
-      }
-    } else {
-      this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
-    }
+    // if (this.daybookService.activeDayController.wakeupTimeIsSet) {
+    //   if (!this._setNewWakeupTime.isSame(this._wakeupTime)) {
+    //     this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
+    //   }
+    // } else {
+    //   this.daybookService.activeDayController.setWakeupTime(this._setNewWakeupTime);
+    // }
     this._isEditingWakeupTime = false;
     this._isEditingFallAsleepTime = false;
   }
 
   public onClickSaveFallAsleepTime() {
-    console.log("SAVING FALL ASLEEP TIME")
-    if (this.daybookService.activeDayController.fallAsleepTimeIsSet) {
-      if (!this._setNewFallAsleepTime.isSame(this._fallAsleepTime)) {
-        this.daybookService.activeDayController.setFallAsleepTime(this._setNewFallAsleepTime);
-      }
-    } else {
-      this.daybookService.activeDayController.setFallAsleepTime(this._setNewFallAsleepTime);
-    }
+    // console.log("SAVING FALL ASLEEP TIME")
+    // if (this.daybookService.activeDayController.fallAsleepTimeIsSet) {
+    //   if (!this._setNewFallAsleepTime.isSame(this._fallAsleepTime)) {
+    //     this.daybookService.activeDayController.setFallAsleepTime(this._setNewFallAsleepTime);
+    //   }
+    // } else {
+    //   this.daybookService.activeDayController.setFallAsleepTime(this._setNewFallAsleepTime);
+    // }
 
     this._isEditingWakeupTime = false;
     this._isEditingFallAsleepTime = false;

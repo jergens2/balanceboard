@@ -1,0 +1,37 @@
+<div class="sleep-manager-data-input">
+    <div class="item">
+        <!-- smfa means SleepManagerFormAction -->
+        <app-sm-wakeup-time *ngIf="smfaWakeupTime" class="item">
+        </app-sm-wakeup-time>
+
+        <app-sm-prev-fall-asleep-time *ngIf="smfaPreviousFallAsleep" class="item">
+
+        </app-sm-prev-fall-asleep-time>
+        <app-sm-sleep-duration *ngIf="smfaSleepDuration" class="item"></app-sm-sleep-duration>
+
+        <app-sm-energy-at-wakeup *ngIf="smfaEnergy" class="item">
+        </app-sm-energy-at-wakeup>
+
+        <app-sm-bedtime *ngIf="smfaBedtime" class="item">
+        </app-sm-bedtime>
+
+        <app-sm-dreams *ngIf="smfaDreams" class="item">
+        </app-sm-dreams>
+    </div>
+
+
+
+    <div class="buttons-container">
+        <div style="width: 50px;">
+            <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickBack()"
+                *ngIf="showBackButton">
+                <fa-icon [icon]="faArrowLeft"></fa-icon>
+            </button>
+        </div>
+        <div style="width: 50px;">
+            <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickForward()">
+                <fa-icon [icon]="faArrowRight"></fa-icon>
+            </button>
+        </div>
+    </div>
+</div>

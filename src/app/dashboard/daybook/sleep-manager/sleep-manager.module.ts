@@ -1,16 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SleepManagerComponent } from './sleep-manager.component';
-import { SmWakeupTimeComponent } from './sm-wakeup-time/sm-wakeup-time.component';
-import { SmPrevFallAsleepTimeComponent } from './sm-prev-fall-asleep-time/sm-prev-fall-asleep-time.component';
-import { SmSleepDurationComponent } from './sm-sleep-duration/sm-sleep-duration.component';
-import { SmEnergyAtWakeupComponent } from './sm-energy-at-wakeup/sm-energy-at-wakeup.component';
-import { SmEnergyAtPresentComponent } from './sm-energy-at-present/sm-energy-at-present.component';
-import { SmDreamsComponent } from './sm-dreams/sm-dreams.component';
-import { SmBedtimeComponent } from './sm-bedtime/sm-bedtime.component';
+import { SmWakeupTimeComponent } from './sleep-manager-form/smfa-wakeup-time/sm-wakeup-time.component';
+import { SmPrevFallAsleepTimeComponent } from './sleep-manager-form/smfa-prev-fall-asleep-time/sm-prev-fall-asleep-time.component';
+import { SmSleepDurationComponent } from './sleep-manager-form/smfa-sleep-duration/sm-sleep-duration.component';
+import { SmEnergyAtWakeupComponent } from './sleep-manager-form/smfa-energy-at-wakeup/sm-energy-at-wakeup.component';
+import { SmEnergyAtPresentComponent } from './sleep-manager-form/smfa-energy-at-present/sm-energy-at-present.component';
+import { SmDreamsComponent } from './sleep-manager-form/smfa-dreams/sm-dreams.component';
+import { SmBedtimeComponent } from './sleep-manager-form/smfa-bedtime/sm-bedtime.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from '../../../shared/shared.module';
+import { SleepManagerFormComponent } from './sleep-manager-form/sleep-manager-form.component';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { SharedModule } from '../../../shared/shared.module';
     SmEnergyAtPresentComponent,
     SmDreamsComponent,
     SmBedtimeComponent,
+    SleepManagerFormComponent,
   ],
   imports: [
     CommonModule,

@@ -24,9 +24,9 @@ export class TlefWakeupTimeComponent implements OnInit {
   ngOnInit() {
 
     // console.log("Wakeup time is : " + this.daybookControllerService.activeDayController.wakeupTime.format('YYYY-MM-DD hh:mm a'))
-    this._time = moment(this.daybookService.activeDayController.wakeupTime);
-    this.maxVal = this.daybookService.activeDayController.getWakeupTimeMaxVal();
-    this.minVal = this.daybookService.activeDayController.getWakeupTimeMinVal();
+    // this._time = moment(this.daybookService.activeDayController.wakeupTime);
+    // this.maxVal = this.daybookService.activeDayController.getWakeupTimeMaxVal();
+    // this.minVal = this.daybookService.activeDayController.getWakeupTimeMinVal();
 
     console.log("Min and max val:  " + this.minVal.format('YYYY-MM-DD hh:mm a') + " to  " + this.maxVal.format('YYYY-MM-DD hh:mm a'))
 

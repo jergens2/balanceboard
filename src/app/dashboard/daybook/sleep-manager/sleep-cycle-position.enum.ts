@@ -1,5 +1,6 @@
 export enum SleepCyclePosition {
     ACTIVE = 'ACTIVE',
+    BEFORE_BEDTIME = 'BEFORE_BEDTIME',
     AFTER_BEDTIME = 'AFTER_BEDTIME',
     SLEEP = 'SLEEP',
     EARLY_WAKEUP = 'EARLY_WAKEUP',

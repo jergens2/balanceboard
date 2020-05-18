@@ -1,35 +1,31 @@
-<div class="sleep-manager-root">
-    <div class="item"> 
-        <app-sm-wakeup-time *ngIf="action === 'WAKEUP_TIME'" class="item">
-        </app-sm-wakeup-time>
-    
-        <app-sm-prev-fall-asleep-time *ngIf="action === 'PREV_FALL_ASLEEP_TIME'" class="item">
-    
-        </app-sm-prev-fall-asleep-time>
-        <app-sm-sleep-duration *ngIf="action === 'SLEEP_DURATION'" class="item"></app-sm-sleep-duration>
-    
-        <app-sm-energy-at-wakeup *ngIf="action === 'ENERGY_WAKEUP'" class="item">
-        </app-sm-energy-at-wakeup>
-    
-        <app-sm-bedtime *ngIf="action === 'BEDTIME'" class="item">
-        </app-sm-bedtime>
-    
-        <app-sm-dreams *ngIf="action === 'DREAMS'" class="item">
-        </app-sm-dreams>
-    </div>
-    
+<div class="clock-container">
 
-
-    <div class="buttons-container">
-        <div style="width: 50px;">
-            <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickBack()" *ngIf="showBackButton">
-                <fa-icon [icon]="faArrowLeft"></fa-icon>
-            </button>
-        </div>
-        <div style="width: 50px;">
-            <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickForward()">
-                <fa-icon [icon]="faArrowRight"></fa-icon>
-            </button>
-        </div>
+    <div style="color: gray; font-size: 0.8em; align-self: flex-end; margin-bottom: 5px;">
+        {{ currentDate }}
     </div>
+    <div style="color: rgb(0, 89, 255); font-weight: bold; font-size: 2.2em; display:flex;flex-direction: row;justify-content: center;">
+        {{ currentTime }}
+    </div>
+
 </div>
+<div style="border-top: 1px solid rgb(216, 216, 216); width: 100%; margin-top: 25px; margin-bottom: 15px; height: 1px;"></div>
+
+
+<div *ngIf="isAfterBedtime">
+    It's nearly bedtime.
+</div>
+
+<div *ngIf="isAfterBedtime">
+    It's after bedtime.
+</div>
+
+<div *ngIf="isSleepTime">
+    Sleep time.
+    <fa-icon [icon]="faCloudMoon" style="color: rgb(0, 27, 78); font-size: 2.0em;"></fa-icon>
+</div>
+
+<div *ngIf="isEarlyWakeup">
+    Early wakeup!
+</div>
+
+<app-sleep-manager-form *ngIf="newDataRequired"></app-sleep-manager-form>

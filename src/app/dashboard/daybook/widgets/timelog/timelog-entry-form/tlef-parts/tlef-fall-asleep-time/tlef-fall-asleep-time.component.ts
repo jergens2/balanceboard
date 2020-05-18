@@ -14,9 +14,10 @@ export class TlefFallAsleepTimeComponent implements OnInit {
   @Output() fallAsleepTimeChanged: EventEmitter<moment.Moment> = new EventEmitter();
 
   ngOnInit() {
-    this._time = moment(this.daybookService.activeDayController.fallAsleepTime);
-    this.maxVal = this.daybookService.activeDayController.getFallAsleepTimeMaxVal();
-    this.minVal = this.daybookService.activeDayController.getFallAsleepTimeMinVal();
+    console.log("times disabled")
+    // this._time = moment(this.daybookService.activeDayController.fallAsleepTime);
+    // this.maxVal = this.daybookService.activeDayController.getFallAsleepTimeMaxVal();
+    // this.minVal = this.daybookService.activeDayController.getFallAsleepTimeMinVal();
 
 
     console.log("Min fall asleep time: " + this.minVal.format('YYYY-MM-DD hh:mm a'))

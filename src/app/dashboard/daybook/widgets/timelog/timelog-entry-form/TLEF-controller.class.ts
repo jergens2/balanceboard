@@ -110,71 +110,72 @@ export class TLEFController {
         this._openTLEFItem(this._tlefItems[this._tlefItems.length - 1]);
     }
 
-    public openNewCurrentTimelogEntry(currentTimePosition: DaybookTimePosition, newCurrentTLE: TimelogEntryItem) {
-        if (currentTimePosition === DaybookTimePosition.NORMAL) {
-            const foundItem = this.tlefItems.find(item => {
-                return item.formCase === TLEFFormCase.NEW_CURRENT;
-            });
-            if (foundItem) {
-                this._openTLEFItem(foundItem);
-            } else {
-                console.log("Could not find NEW_CURRENT item")
-            }
+    public openNewCurrentTimelogEntry() {
+
+        // if (currentTimePosition === DaybookTimePosition.NORMAL) {
+        const foundItem = this.tlefItems.find(item => {
+            return item.formCase === TLEFFormCase.NEW_CURRENT;
+        });
+        if (foundItem) {
+            this._openTLEFItem(foundItem);
         } else {
-            console.log("Position is not normal.  Opening new day form.")
-            this.toolboxService.openNewDayForm();
+            console.log("Could not find NEW_CURRENT item")
         }
+        // } else {
+        //     console.log("Position is not normal.  Opening new day form.")
+        //     this.toolboxService.openNewDayForm();
+        // }
     }
 
-    public openTimelogGridItem(gridItem: TimelogDisplayGridItem, currentTimePosition: DaybookTimePosition) {
+    public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
         /**
          * the TimelogDisplayGridItems should always be up to date / synched with the clock.
          */
         // console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
-        if (currentTimePosition === DaybookTimePosition.NORMAL) {
-
-            if (gridItem.isMerged) {
-                if (gridItem.timelogEntries.length >= 2) {
-                    let biggest = gridItem.timelogEntries[0];
-                    gridItem.timelogEntries.forEach((item) => {
-                        if (item.durationMilliseconds > biggest.durationMilliseconds) {
-                            biggest = item;
-                        }
-                    });
-                    const foundItem = this.tlefItems.find(item => {
-                        return item.startTime.isSameOrAfter(biggest.startTime) && item.endTime.isSame(biggest.endTime);
-                        // return item.isTLEItem && item.startTime.isSameOrAfter(biggest.startTime) && item.endTime.isSame(biggest.endTime);
-                    });
-                    if (foundItem) {
-                        this._openTLEFItem(foundItem);
-                    } else {
-                        console.log("error finding item -- " + gridItem.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm:ss a'));
-                        this.tlefItems.forEach((item) => {
-                            console.log("   Grid bar item: " + item.startTime.format("YYYY-MM-DD hh:mm:ss a") + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a'))
-                        });
+        // if (currentTimePosition === DaybookTimePosition.NORMAL) {
+        console.log("Warning: no time position accounted for in daybook currently. ")
+        if (gridItem.isMerged) {
+            if (gridItem.timelogEntries.length >= 2) {
+                let biggest = gridItem.timelogEntries[0];
+                gridItem.timelogEntries.forEach((item) => {
+                    if (item.durationMilliseconds > biggest.durationMilliseconds) {
+                        biggest = item;
                     }
-                } else {
-                    console.log("Error with timelog entries")
-                }
-            } else {
-                // non merged item.
+                });
                 const foundItem = this.tlefItems.find(item => {
-                    return item.startTime.isSame(gridItem.startTime) && item.endTime.isSame(gridItem.endTime);
+                    return item.startTime.isSameOrAfter(biggest.startTime) && item.endTime.isSame(biggest.endTime);
+                    // return item.isTLEItem && item.startTime.isSameOrAfter(biggest.startTime) && item.endTime.isSame(biggest.endTime);
                 });
                 if (foundItem) {
                     this._openTLEFItem(foundItem);
                 } else {
-                    console.log("Error finding grid item -- " + gridItem.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm:ss a'));
+                    console.log("error finding item -- " + gridItem.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm:ss a'));
                     this.tlefItems.forEach((item) => {
                         console.log("   Grid bar item: " + item.startTime.format("YYYY-MM-DD hh:mm:ss a") + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a'))
                     });
                 }
+            } else {
+                console.log("Error with timelog entries")
             }
         } else {
-            //to do:  more stuff here.
-            console.log("TIME POSITION WAS NOT NORMAL: " + currentTimePosition);
-            this.toolboxService.openNewDayForm();
+            // non merged item.
+            const foundItem = this.tlefItems.find(item => {
+                return item.startTime.isSame(gridItem.startTime) && item.endTime.isSame(gridItem.endTime);
+            });
+            if (foundItem) {
+                this._openTLEFItem(foundItem);
+            } else {
+                console.log("Error finding grid item -- " + gridItem.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm:ss a'));
+                this.tlefItems.forEach((item) => {
+                    console.log("   Grid bar item: " + item.startTime.format("YYYY-MM-DD hh:mm:ss a") + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a'))
+                });
+            }
         }
+        // } else {
+        //     //to do:  more stuff here.
+        //     console.log("TIME POSITION WAS NOT NORMAL: " + currentTimePosition);
+        //     this.toolboxService.openNewDayForm();
+        // }
     }
 
     public goLeft() {
@@ -301,7 +302,8 @@ export class TLEFController {
                 // console.log(currentTime.format('YYYY-MM-DD hh:mm a ') + " : Availability is: " + availability)
                 if (availability === DaybookAvailabilityType.SLEEP) {
                     formCase = TLEFFormCase.SLEEP;
-                    sleepEntry = this._activeDayController.getSleepItem(currentTime, endTime);
+                    console.log("warning: disable this");
+                    sleepEntry = new SleepEntryItem(moment().format('YYYY-MM-DD'), moment(), moment());
                 } else if (availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
                     timelogEntry = this._activeDayController.getTimelogEntryItem(currentTime, endTime);
                     formCase = this._determineCase(timelogEntry);
