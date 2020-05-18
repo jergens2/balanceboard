@@ -38,7 +38,7 @@ import { ConfirmPasswordComponent } from './authentication/registration/confirm-
 import { TermsComponent } from './authentication/registration/terms/terms.component';
 import { SuccessConfirmationComponent } from './authentication/registration/success-confirmation/success-confirmation.component';
 import { UserActionPromptComponent } from './user-action-prompt/user-action-prompt.component';
-import { SleepProfileSetupComponent } from './user-action-prompt/sleep-profile-setup/sleep-profile-setup.component';
+import { SleepManagerModule } from './dashboard/daybook/sleep-manager/sleep-manager.module';
 
 
 
@@ -64,7 +64,7 @@ import { SleepProfileSetupComponent } from './user-action-prompt/sleep-profile-s
     TermsComponent,
     SuccessConfirmationComponent,
     UserActionPromptComponent,
-    SleepProfileSetupComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -72,6 +72,7 @@ import { SleepProfileSetupComponent } from './user-action-prompt/sleep-profile-s
     BrowserAnimationsModule,
     HttpClientModule,
     DashboardModule,
+    SleepManagerModule,
     SharedModule,
     ToolsMenuModule,
     AppRoutingModule,

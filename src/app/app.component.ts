@@ -18,7 +18,7 @@ import { NotebooksService } from './dashboard/notebooks/notebooks.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  
+
 
   // nightMode: UserSetting = null;
   sideBarOpen: boolean = true;
@@ -26,7 +26,8 @@ export class AppComponent implements OnInit {
   private _showModal: boolean = false;
   private _showTools: boolean = false;
   private _showUserActionPrompt: boolean = false;
-  private _allSubs: Subscription[] = [];
+  private _appServiceSubs: Subscription[] = [];
+  private _loadingSubs: Subscription[] = [];
   private _appScreenSize: ScreenSizes;
   private _loading: boolean = true;
   private _isAuthenticated: boolean = false;
@@ -47,7 +48,7 @@ export class AppComponent implements OnInit {
   public get showAppContainer(): boolean { return this.isAuthenticated && !this.loading && !this.showUserActionPrompt; }
   public get appScreenSize(): ScreenSizes { return this._appScreenSize; }
 
-  
+
   constructor(
     private authService: AuthenticationService,
     private sizeService: ScreenSizeService,
@@ -74,7 +75,7 @@ export class AppComponent implements OnInit {
     this._reload();
   }
 
-  private _reload(){
+  private _reload() {
     this._onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
 
     this._setSubscriptions();
@@ -97,10 +98,10 @@ export class AppComponent implements OnInit {
   }
 
 
-  private _setSubscriptions(){
+  private _setSubscriptions() {
     // console.log("Subscribing to subscriptions");
-    this._allSubs.forEach(sub => sub.unsubscribe());
-    this._allSubs = [
+    this._appServiceSubs.forEach(sub => sub.unsubscribe());
+    this._appServiceSubs = [
       this.sizeService.appScreenSize$.subscribe((appScreenSize: ScreenSizes) => {
         this._onScreenSizeChanged(appScreenSize);
       }),
@@ -111,8 +112,8 @@ export class AppComponent implements OnInit {
           this._showModal = false;
         }
       }),
-      this.toolsService.currentToolQueue$.subscribe((queue)=>{
-        if(queue.length > 0){
+      this.toolsService.currentToolQueue$.subscribe((queue) => {
+        if (queue.length > 0) {
           this._showTools = true;
         }
       }),
@@ -121,118 +122,148 @@ export class AppComponent implements OnInit {
           this._showTools = false;
         }
       }),
-      this.authService.logout$.subscribe((onLogout)=>{
+      this.authService.logout$.subscribe((onLogout) => {
         this._unloadApp();
       }),
-      this.authService.appComponentLogin$.subscribe((login: boolean)=>{
+      this.authService.appComponentLogin$.subscribe((login: boolean) => {
         // console.log("Boom Canon: ", login)
-        if(login === true){
+        if (login === true) {
           this._isAuthenticated = true;
-          if(!this._loadingIsComplete){
+          if (!this._loadingIsComplete) {
             this._loadApp();
           }
-        }else{
+        } else {
           this._isAuthenticated = false;
           // console.log("appComponentLogin is FALSE, but NOT unloading the app.")
+          this._unloadApp();
         }
-        
+
       }),
-      this.userPromptService.promptsCleared$.subscribe((clear)=>{
-        if(clear === true){
+      this.userPromptService.promptsCleared$.subscribe((clear) => {
+        if (clear === true) {
           this._showUserActionPrompt = false;
-          
-        }else{
+
+        } else {
           console.log("error with user prompts.")
         }
       })
     ];
   }
 
-  private _unloadApp(){
+  private _unloadApp() {
     // console.log("  _unloading app...")
-    this._allSubs.forEach(sub => sub.unsubscribe());
+    this._appServiceSubs.forEach(sub => sub.unsubscribe());
     this._loadingSubs.forEach(sub => sub.unsubscribe());
     this.modalService.closeModal();
     this._isAuthenticated = false;
     this._loading = true;
     this._loadingIsComplete = false;
-    
+
     this._loadingSubs = [];
 
-    this._allSubs = [];
+    this._appServiceSubs = [];
     this._showModal = false;
-    
-    this._allSubs = [];
+    this._showUserActionPrompt = false;
+    this._appServiceSubs = [];
     this._unloadServices();
     this._reload();
   }
 
 
-  private _loadApp(){
+  private _loadApp() {
     // console.log("Loading app in app component");
     this._loading = true;
-    this._loadServices$().subscribe((result)=>{
-      if(result === true){
-        this._loading = false;
-        this._loadingIsComplete = true;
-        this._userActionPrompt(); 
+    this._loadServices$().subscribe((result) => {
+      if (result === true) {
+        this._userActionPrompt();
         this._loadingSubs.forEach(s => s.unsubscribe());
         this._loadingSubs = [];
-      }else{
+      } else {
         console.log("Error loading services.");
       }
     });
+
+  }
+
+
+
+  private _userActionPrompt() {
+    let showUserActionPrompt = false;
+    this.userPromptService.initiate$(this.authService.userId).subscribe((response: boolean)=>{
+      if(response === true){
+        if (this.userPromptService.hasPrompts()) {
+          this._showUserActionPrompt = true;
+        }
+
+      }else{
+        console.log("Error initiating userPromptService")
+      }
+      this._loading = false;
+      this._loadingIsComplete = true;
+
+    }, (error)=>{
+      console.log("Error: " , error);
+    })
     
   }
 
-  private _userActionPrompt(){
-    let showUserActionPrompt = false;
-    if(this.userPromptService.hasPrompts()){
-      showUserActionPrompt = true;
-    }
-    this._showUserActionPrompt = showUserActionPrompt;
-  }
 
-  private _loadingSubs: Subscription[] = [];
-  private _loadServices$(): Observable<boolean>{
-    const _loadingComplete$:Subject<boolean> = new Subject();
+
+  /**
+   *  This method blindly loads some async services that need we need to fetch some data from, and proceeds when complete.
+   *  
+   *  _userActionPrompt() follows
+   * 
+   *  The _userActionPrompt will independently load some other services, but these ones may require user input. 
+   */
+  private _loadServices$(): Observable<boolean> {
+    const _loadingComplete$: Subject<boolean> = new Subject();
     const userId: string = this.authService.userId;
-    if(userId){
+    if (userId) {
       this.notebookService.setUserId(userId);
       let daybookSub: Subscription;
-      const activitySub: Subscription = this.activitiesService.login$(userId).subscribe((result)=>{
-        if(result === true){
+      let promptSub: Subscription;
+      const activitySub: Subscription = this.activitiesService.login$(userId).subscribe((result) => {
+        if (result === true) {
+
           this.daybookHttpService.login(userId);
-          daybookSub = this.daybookControllerService.login$(userId).subscribe((result)=>{
-            if(result === true){
+          // promptSub = this.userPromptService.initiate$(userId).subscribe((response) => {
+          // if (response === true) {
+          daybookSub = this.daybookControllerService.login$(userId).subscribe((result) => {
+            if (result === true) {
               // console.log("Successfully logged in to all services");
-              this._loadingSubs = [ activitySub, daybookSub ];
+              this._loadingSubs = [activitySub, daybookSub];
               _loadingComplete$.next(true);
-            }else{
+            } else {
               console.log("Error loading daybookController Service")
-              this._loadingSubs = [ activitySub, daybookSub ];
+              this._loadingSubs = [activitySub, daybookSub];
               _loadingComplete$.next(false);
             }
-          })
-        }else{
+          }), (error) => {
+            console.log("Error loading daybookController Service")
+            this._loadingSubs = [activitySub, daybookSub];
+            _loadingComplete$.next(false);
+          }
+        } else {
+          this._loadingSubs = [activitySub, daybookSub];
           console.log("Error loading activities");
           _loadingComplete$.next(false);
         }
-      })
-      
-    }else{
+      });
+    } else {
       console.log("There is an issue with authentication.")
       _loadingComplete$.next(false);
     }
-   return _loadingComplete$.asObservable(); 
+    return _loadingComplete$.asObservable();
   }
 
-  private _unloadServices(){
+  private _unloadServices() {
     // console.log("Unloading services")
     this.activitiesService.logout();
     this.daybookHttpService.logout();
     this.daybookControllerService.logout();
 
     this.notebookService.setUserId('');
+    this.userPromptService.logout();
   }
 }

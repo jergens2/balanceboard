@@ -37,7 +37,7 @@ const appRoutes: Routes = [
 
     { path: 'activities', component: ActivitiesComponent },
     { path: 'activities/:activityIdentifier', component: ActivitiesComponent },
-    { path: 'user-settings', component: UserSettingsComponent },
+    // { path: 'user-settings', component: UserSettingsComponent },
     { path: 'user-account', component: UserAccountProfileComponent },
 
 

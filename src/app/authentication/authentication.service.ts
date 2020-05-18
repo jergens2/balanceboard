@@ -73,7 +73,7 @@ export class AuthenticationService {
         const username: string = response.data.username;
         const email: string = response.data.email;
         const expiresAt = moment().add(response.data.expiresIn, 'seconds');
-        console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
+        // console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
         let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
         return responseAuthStatus;
       }))
@@ -85,7 +85,7 @@ export class AuthenticationService {
       }, (error) => {
         // console.log("Login attempt failed: ", error);
         this._loginAttempt$.next(false);
-      }); 
+      });
   }
 
   public loginFromRegistration() {
@@ -227,6 +227,15 @@ export class AuthenticationService {
     this._registrationContoller = null;
   }
 
+
+  public lock() {
+    this._isAuthenticated = false;
+    this._appComponentLogin$.next(false);
+    this._timerSubs[1].unsubscribe(); // unsubscribe from tokenRefreshSubscription
+    this._authStatus = null;
+    
+  }
+
   public logout() {
     localStorage.clear();
     this._isAuthenticated = false;
@@ -262,22 +271,21 @@ export class AuthenticationService {
       const dueTime = (expiresAt.diff(now, 'milliseconds'));
       const requestNew = (expiresAt.diff(now, 'milliseconds') - (60 * 1000));
       this._timerSubs.forEach(s => s.unsubscribe());
-      this._timerSubs = [
-        timer(requestNew).subscribe((requestNew) => {
-          this.refreshToken$(authStatus.token, authStatus.userId);
-        }),
-        timer(dueTime).subscribe((tokenHasExpired) => {
-          console.log("WARNING: THE TOKEN IS EXPIRED.")
-          this._isAuthenticated = false;
-          // console.log(" ** _appComponentLogin$.next(false)");
-          this._appComponentLogin$.next(false);
-        }),
-      ];
+      const tokenExpiredSub = timer(dueTime).subscribe((tokenHasExpired) => {
+        console.log("WARNING: THE TOKEN IS EXPIRED.")
+        this._isAuthenticated = false;
+        // console.log(" ** _appComponentLogin$.next(false)");
+        this._appComponentLogin$.next(false);
+      });
+      const refreshSub = timer(requestNew).subscribe((requestNew) => {
+        this.refreshToken$(authStatus.token, authStatus.userId);
+      });
+      this._timerSubs = [ tokenExpiredSub, refreshSub ];
 
 
       this._isAuthenticated = true;
       this._authStatus = authStatus;
-      
+
       // console.log(" ** _appComponentLogin$.next(true) - Standard login");
       this._appComponentLogin$.next(true);
     } else {

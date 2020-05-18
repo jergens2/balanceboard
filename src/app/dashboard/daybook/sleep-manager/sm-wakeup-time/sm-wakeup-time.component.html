@@ -1,14 +1,17 @@
-<div class="set-wakeup-time-root">
-    <!-- <div>
-        What time did you wake up?
+<div class="item-root">
+
+    <div>
+        What time did you wake up, today, <br>
+        <div class="date">{{ date }}</div>
     </div>
     <div style="display:flex;flex-direction: row; justify-content: center;">
         <app-time-input [timeValue]="time" (timeChanged)="onTimeChanged($event)" [minValue]="minVal"
             [maxValue]="maxVal">
         </app-time-input>
     </div>
-    <div style="display:flex;flex-direction: row; justify-content: center; font-size: 0.9em; color: rgb(0, 89, 255);" *ngIf="isToday">
+    <div style="display:flex;flex-direction: row; justify-content: center; font-size: 0.9em; color: rgb(0, 89, 255);"
+        *ngIf="isToday">
         {{ durationAgo }}
-    </div> -->
-    component disabled
+    </div>
+
 </div>

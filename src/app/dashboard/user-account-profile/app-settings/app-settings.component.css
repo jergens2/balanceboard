@@ -1,0 +1,22 @@
+.component-section{
+    margin-top: 20px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.component-section-row{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.property{
+    width: 100px;
+}
+
+.value{
+    flex-grow: 2;    
+}

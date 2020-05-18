@@ -14,5 +14,5 @@ export interface DaybookSleepInputDataItem{
     embeddedNote: string;
     noteIds: string[];
 
-    customSleepProfile: any;
+    customSleepProfile: any; 
 }

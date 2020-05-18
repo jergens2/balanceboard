@@ -92,6 +92,7 @@
     background-color: white;
     border: 1px solid rgb(240, 240, 240);
     color: rgb(240, 240, 240);
+    margin-right: 5px;
 
     display:flex;
     flex-direction: row;
@@ -106,12 +107,21 @@
     color: rgb(150, 150, 150);
     border: 1px solid rgb(150, 150, 150);
 }
-.sidebar-new-item-button:hover{
+.sidebar-new-item-button-container:hover > .sidebar-new-item-button{
+    background-color: white;
+    color: rgb(150, 150, 150);
+    border: 1px solid rgb(150, 150, 150);
+}
+.sidebar-new-item-button-container:hover > .sidebar-new-item-button:hover{
     background-color: rgb(0, 96, 223);
     color: white;
     border: 1px solid rgb(0, 96, 223);
     cursor: pointer;
 }
+
+/* .sidebar-new-item-button:hover{
+
+} */
 
 
 .new-item-button{

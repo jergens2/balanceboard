@@ -1,0 +1,32 @@
+<div class="root" [formGroup]="userInformationForm">
+    <div>
+        Personal information
+    </div>
+    <div class="component-section-row">
+        <div class="property">Given name</div>
+        <div class="value" *ngIf="givenName">
+            {{ givenName }}
+            <div class="icon-container">
+                <fa-icon [icon]="faEdit" class="edit-icon" (click)="onClickEdit('GIVEN_NAME')"></fa-icon>
+            </div>
+        </div>
+        <div class="value-input-container" *ngIf="!givenName || isEditingGivenName ">
+            <input type="text" class="value-input" formControlName="givenName" placeholder="Given name not set">
+        </div>
+    </div>
+    <div class="component-section-row">
+        <div class="property">Family name</div>
+        <div class="value" *ngIf="familyName">{{ familyName }}</div>
+        <div class="value-input-container" *ngIf="!familyName">
+            <input type="text" class="value-input" formControlName="familyName" placeholder="Family name not set">
+        </div>
+    </div>
+    <div class="component-section-row">
+        <div class="property">Date of birth</div>
+        <div class="value" *ngIf="familyName">{{ dateOfBirth }}</div>
+        <div class="value-input-container" *ngIf="!familyName">
+            <input type="text" class="value-input" formControlName="dateOfBirth" placeholder="Date of birth not set">
+        </div>
+    </div>
+
+</div>

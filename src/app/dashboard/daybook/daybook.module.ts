@@ -48,11 +48,6 @@ import { TLEFModule } from './widgets/timelog/timelog-entry-form/tlef.module';
     PointsWidgetSmallComponent,
     PointsWidgetLargeComponent,
     SleepBatteryWidgetComponent,
-    // DaybookEntryFormComponent,
-    // WakeupSectionComponent,
-    // DaySectionComponent,
-    // BedtimeSectionComponent,
-    // DaybookEntryFormSectionComponent,
     SleepProfileWidgetComponent,
     WeightLogEntryComponent,
     SleepProfileFormComponent,
@@ -60,11 +55,10 @@ import { TLEFModule } from './widgets/timelog/timelog-entry-form/tlef.module';
     SleepProfileLargeComponent,
     DaybookTimePositionFormComponent,
 
+    
   ],
   exports: [
-
     DaybookTimePositionFormComponent,
-    
   ]
 
 })

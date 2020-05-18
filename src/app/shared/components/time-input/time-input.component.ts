@@ -36,7 +36,7 @@ export class TimeInputComponent implements OnInit {
   public timeInputForm: FormGroup;
 
   public get date(): string{ 
-    return this.timeValue.format('YYYY-MM-DD');
+    return this.timeValue.format('dddd, MMM Do');
   }
 
 

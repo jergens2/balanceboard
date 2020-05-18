@@ -46,6 +46,8 @@ import { SchedulePlannerComponent } from './scheduling/schedule-planner/schedule
 import { SocialComponent } from './social/social.component';
 import { PointsComponent } from './points/points.component';
 import { UserAccountProfileComponent } from './user-account-profile/user-account-profile.component';
+import { PersonalInfoComponent } from './user-account-profile/personal-info/personal-info.component';
+import { AppSettingsComponent } from './user-account-profile/app-settings/app-settings.component';
 
 
 
@@ -96,9 +98,12 @@ import { UserAccountProfileComponent } from './user-account-profile/user-account
     PointsComponent,
     UserAccountProfileComponent,
 
-
+    PersonalInfoComponent,
+    AppSettingsComponent,
   ],
   providers: [],
-  entryComponents: []
+  entryComponents: [],
+  exports: [
+  ]
 })
 export class DashboardModule { }

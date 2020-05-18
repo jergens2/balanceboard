@@ -2,7 +2,7 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { faCogs, faSignOutAlt, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faSignOutAlt, faPlus, faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from '../header/header-menu/menu-item.model';
 import { appMenuItems } from '../app-menu-items';
 import { AuthStatus } from '../../authentication/auth-status.class';
@@ -36,6 +36,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   faCogs = faCogs;
   faSignOutAlt = faSignOutAlt;
   faUser = faUser;
+  public faLock = faLock;
 
 
   activeLink = { color: 'red' };
@@ -117,29 +118,32 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   onClickLogout() {
-
-    let options: IModalOption[] = [
-      {
-        value: "Logout",
-        dataObject: null,
-      },
-      {
-        value: "Cancel",
-        dataObject: null,
-      }
-    ];
-    let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm);
-    modal.headerIcon = faSignOutAlt;
-    // this._modalSubscription = 
-    this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
-      if (selectedOption.value == "Logout") {
-        this.logout();
-      } else if (selectedOption.value == "Cancel") {
-      } else {
-        //error 
-      }
-    });
-    this.modalService.activeModal = modal;
+    console.log("OnclickLogout()")
+    if(!this._isLocking){
+      let options: IModalOption[] = [
+        {
+          value: "Logout",
+          dataObject: null,
+        },
+        {
+          value: "Cancel",
+          dataObject: null,
+        }
+      ];
+      let modal: Modal = new Modal("Logout?", "Confirm: logout?", null, options, {}, ModalComponentType.Confirm);
+      modal.headerIcon = faSignOutAlt;
+      // this._modalSubscription = 
+      this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+        if (selectedOption.value == "Logout") {
+          this.logout();
+        } else if (selectedOption.value == "Cancel") {
+        } else {
+          //error 
+        }
+      });
+      this.modalService.activeModal = modal;
+    }
+    
 
   }
 
@@ -147,7 +151,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   }
 
+  private _isLocking: boolean = false;
+  public onClickLock(){
+    console.log("Locking!")
+    this._isLocking = true;
+    this.authService.lock();
+  }
+
   private logout() {
+    console.log("Logging out")
     this.authService.logout();
 
   }

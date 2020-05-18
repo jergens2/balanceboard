@@ -74,6 +74,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   private _reload() {
     // console.log("auth component .reload()")
     const currentAuthData: 'NOT_PRESENT' | 'EXPIRED' | 'VALID' = this._checkLocalStorage();
+    // console.log("Current auth data = ", currentAuthData)
     if (currentAuthData === 'NOT_PRESENT') {
       this._action = 'INITIAL';
       this._isLoading = false;
@@ -112,14 +113,18 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     // console.log("Expiration string is : ", expirationString)
     const isPresent: boolean = (token !== null) && (userId !== null) && (expirationString !== null);
     if (isPresent) {
+      const now = moment();
       const milliseconds = Number(expirationString);
       const expiration: moment.Moment = moment(milliseconds);
       // console.log("Expiration is : " + expiration.format('YYYY-MM-DD hh:mm:ss a'))
-      const cutoff = moment().subtract(10, 'minutes');
-      const isExpired: boolean = expiration.isBefore(cutoff);
+      const cutoff = moment(expiration).subtract(1, 'minutes');
+      // console.log("cutoff is : " + cutoff.format('YYYY-MM-DD hh:mm:ss a'))
+      const isExpired: boolean = now.isAfter(cutoff);
       if (!isExpired) {
+        // console.log("IT's not expired, so it's VALID")
         return 'VALID';
       } else if (isExpired) {
+        // console.log("ITS EXPIRED, SO... PIN")
         return 'EXPIRED';
       }
     } else {
