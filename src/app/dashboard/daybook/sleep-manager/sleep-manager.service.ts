@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { serverUrl } from '../../../serverurl';
 import { SleepManager } from './sleep-manager.class';
 import { map } from 'rxjs/operators';
+import { SleepManagerForm } from './sleep-manager-form/sleep-manager-form.class';
+import { SleepProfileHTTPData } from './sleep-profile-http-data.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -26,15 +28,18 @@ export class SleepManagerService {
   private _userId: string;
 
   private _sleepManager: SleepManager; 
+  private _sleepManagerForm: SleepManagerForm;
+
   public get sleepManager(){ return this._sleepManager; }
+  public get sleepManagerForm() { return this._sleepManagerForm; }
   // public get userActionRequired(): boolean { return this.sleepManager.userActionRequired; }
   public get previousWakeupTime(): moment.Moment { return this.sleepManager.previousWakeupTime; }
   public get nextFallAsleepTime(): moment.Moment { return this.sleepManager.nextFallAsleepTime; }
   public get nextWakeupTime(): moment.Moment { return this.sleepManager.nextWakeupTime; }
   public get energyAtWakeup(): number { return this.sleepManager.energyAtWakeup; }
   public get id(): string { return this.sleepManager.id; }
-  public get previousWakeTimeIsSet(): boolean { return this.sleepManager.previousWakeTimeIsSet; }
-  public get nextFallAsleepTimeIsSet(): boolean { return this.sleepManager.nextFallAsleepTimeIsSet; }
+  // public get previousWakeTimeIsSet(): boolean { return this.sleepManager.previousWakeTimeIsSet; }
+  // public get nextFallAsleepTimeIsSet(): boolean { return this.sleepManager.nextFallAsleepTimeIsSet; }
   public getEnergyLevel(): number { return this.sleepManager.getEnergyLevel(); }
 
   public initiate$(userId: string): Observable<boolean> {
@@ -58,6 +63,7 @@ export class SleepManagerService {
     const _userActionRequred$: Subject<boolean> = new Subject();
     this._getSleepProfileHttp$().subscribe((manager: SleepManager)=>{
       this._sleepManager = manager;
+      this._sleepManagerForm = new SleepManagerForm(manager);
       const userActionRequired = this._sleepManager.userActionRequired;
       _userActionRequred$.next(userActionRequired);
     }, (error)=>{
@@ -109,22 +115,9 @@ export class SleepManagerService {
     .pipe<SleepManager>(map((response: {
       message: string,
       success: boolean,
-      data: {
-        _id: string,
-        userId: string,
-        previousWakeupTime: string,
-        nextFallAsleepTime: string,
-        nextWakeupTime: string,
-        energyAtWakeup: number,
-      },
+      data: SleepProfileHTTPData,
     })=>{
-      const id = response.data._id;
-      const userId = response.data.userId;
-      const previousWakeupTime = response.data.previousWakeupTime;
-      const nextFallAsleepTime = response.data.nextFallAsleepTime;
-      const nextWakeupTime = response.data.nextWakeupTime;
-      const energyAtWakeup: number = response.data.energyAtWakeup;
-      return new SleepManager(id, previousWakeupTime, nextFallAsleepTime, nextWakeupTime, energyAtWakeup);
+      return new SleepManager(response.data);
     }));
   }
 

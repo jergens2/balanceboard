@@ -1,13 +1,12 @@
 <div class="activity-display-item-root font-family-open-sans" *ngIf="activity">
     <div class="title-container">
         <div style="width:0px;">
-            <div *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color" [cpSaveClickOutside]="false"
+            <input *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color" [cpSaveClickOutside]="false"
                 [cpToggle]="true" [cpOutputFormat]="'rgba'" [style.background]="activity.color" [cpPosition]="'left'"
                 [cpOKButton]="true" [cpOKButtonText]="'Save'" [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
                 [cpCancelButtonClass]="'small-button discard-button'" (colorPickerClose)="onClickCancelColorPicker()"
                 (colorPickerCancel)="onClickCancelColorPicker()" (colorPickerSelect)="onClickSaveColorPicker($event)"
-                (colorPickerChange)="onColorChanged($event)">
-            </div>
+                (colorPickerChange)="onColorChanged($event)"/>
         </div>
         <div class="title-color" [style.background-color]="activity.color" (click)="onClickOpenColorPicker()">
 

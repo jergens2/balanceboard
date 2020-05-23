@@ -167,13 +167,23 @@ export class DaybookController extends TimeSchedule<DaybookAvailabilityType> {
         }
     }
 
-    public getLastActivityTime(): moment.Moment{
-        let lastTime: moment.Moment = moment();
-        // this method needs improvement, in order to account for previously-saved future-timelog-entries which is as of yet(2020-05-18) really an unaddressed app function.
+    public getLastActivityEndTime(): moment.Moment{
+        /*
+        this method assumes that the timelogEntryItems array are all saved items for past events.  this is an unhandled situation.
+        */
+        const now = moment();
+        let lastTime: moment.Moment;
         if(this.timelogEntryItems.length>0){
-
+            for(let i=0; i<this.timelogEntryItems.length; i++){
+                const startIsBefore = this.timelogEntryItems[i].startTime.isBefore(now);
+                const endIsBefore = this.timelogEntryItems[i].endTime.isBefore(now);
+                if(startIsBefore && endIsBefore){
+                    if(this.timelogEntryItems[i].endTime.isAfter(lastTime)){
+                        lastTime = moment(this.timelogEntryItems[i].endTime);
+                    }
+                }
+            }
         }
-
         return lastTime;
     }
     

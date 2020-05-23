@@ -8,7 +8,7 @@
     <div style="flex-grow:2;display:flex;flex-direction: column;">
       <div style="display:flex;flex-direction: row; align-items: center;">
 
-        <div *ngIf="activityItem.colorPickerIsOpen" class="activity-color-circle" style="border: 1px solid black; font-size: 0.1em;" 
+        <input *ngIf="activityItem.colorPickerIsOpen" class="activity-color-circle" style="border: 1px solid black; font-size: 0.1em;" 
           [(colorPicker)]="activityItem.color"
           [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'"
           [style.background]="activityItem.color" [cpPosition]="'left'" [cpOKButton]="true" [cpOKButtonText]="'Save'"
@@ -17,7 +17,7 @@
           (colorPickerClose)="activityItem.onClickCancelColorPicker()"
           (colorPickerCancel)="activityItem.onClickCancelColorPicker()"
           (colorPickerSelect)="activityItem.onClickSaveColorPicker($event)"
-          (colorPickerChange)="activityItem.onColorChanged($event)" ></div>
+          (colorPickerChange)="activityItem.onColorChanged($event)" />
 
         <div class="activity-color-circle" [style.background-color]="activityItem.color"
           *ngIf="!activityItem.colorPickerIsOpen" (click)="activityItem.onClickOpenColorPicker()"></div>

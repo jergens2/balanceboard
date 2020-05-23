@@ -1,0 +1,83 @@
+.slider-bar-root{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    height: 25px;
+}
+.buffer{
+    width: 25px;
+    height: 100%;
+}
+
+.slider-bar{
+    /* width: 100%; */
+    flex-grow: 2;
+    display:flex;
+    flex-direction: row;
+    border-radius: 3px;
+    border: 1px solid gray;
+    height: 25px;
+    cursor: grab;
+}
+.is-dragging{
+    cursor: grabbing;
+    border: 1px solid rgb(0, 89, 255);
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0, 89, 255,0.75);
+-moz-box-shadow: 0px 0px 5px 0px rgba(0, 89, 255,0.75);
+box-shadow: 0px 0px 5px 0px rgba(0, 89, 255,0.75);
+}
+.bar-unit{
+    flex-grow: 2;
+    border: 1px solid rgba(0, 0, 0, 0);
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.bar-unit:hover{
+    background-color: rgb(73, 152, 255);
+}
+
+.indicator-container{
+    height: 1px;
+    width: 1px;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.indicator{
+    position: absolute;
+    height: 28px;
+    width: 28px;
+    border-radius: 28px;
+    background-color: white;
+    border: 1px solid gray;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.indicator:hover{
+    border: 1px solid rgba(0, 89, 255, 0.7);
+}
+.indicator:hover > .inner-circle{
+    border: 1px solid rgba(0, 89, 255, 0.5);
+}
+
+.inner-circle{
+    
+    height: 16px;
+    width: 16px;
+    border-radius: 16px;
+    border: 1px solid rgb(221, 221, 221);
+}
+
+
+.valued-unit{
+    background-color: rgba(0, 89, 255, 0.5);
+}
+.active-indicator{
+    background-color: rgb(0, 89, 255);
+}

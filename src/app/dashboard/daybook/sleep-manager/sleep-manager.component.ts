@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { SleepProfileActions } from './sleep-profile-actions.enum';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { timer } from 'rxjs';

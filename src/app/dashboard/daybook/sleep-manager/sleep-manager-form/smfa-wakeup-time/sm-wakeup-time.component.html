@@ -1,16 +1,16 @@
 <div class="item-root">
-    <div style="width:30px;height:30px; align-self: flex-end; display:flex; flex-direction: row;justify-content: center;align-items:center;">
+    <!-- <div style="width:30px;height:30px; align-self: flex-end; display:flex; flex-direction: row;justify-content: center;align-items:center;">
         <fa-icon [icon]="faCheckCircle" *ngIf="sectionIsComplete" style="color: rgb(1, 151, 1);"></fa-icon>
-    </div>
+    </div> -->
     <div style="margin-bottom: 20px;">
-        What time did you wake up today?
+        When did you wake up?
     </div>
     <div style="display:flex;flex-direction: row; justify-content: center; font-size: 1.3em;">
-        <app-time-input [timeValue]="time" (timeChanged)="onTimeChanged($event)" [minValue]="minWakeupTime" 
+        <app-time-input [timeValue]="time" (timeChanged)="onTimeChanged($event)" [minValue]="minWakeupTime"  
             [maxValue]="maxWakeupTime">
         </app-time-input>
     </div>
-    <div style="display:flex;flex-direction: row; justify-content: center; font-size: 0.9em; color: rgb(0, 89, 255); height: 30px;">
+    <div style="display:flex;flex-direction: row; justify-content: center; font-size: 1.1em; color: rgb(0, 89, 255); height: 30px;margin-top: 20px;">
        <div  *ngIf="isToday">
         {{ durationAgo }}
        </div>

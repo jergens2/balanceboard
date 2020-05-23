@@ -1,0 +1,10 @@
+export enum SleepManagerFormActions{
+    WAKEUP_TIME = 'WAKEUP_TIME', 
+    PREV_SLEEP_TIME = 'PREV_SLEEP_TIME',
+    SLEEP_DURATION =  'SLEEP_DURATION',
+    
+    DREAMS = 'DREAMS',
+
+    NEXT_WAKEUP_TIME = 'NEXT_WAKEUP_TIME',
+    BEDTIME = 'BEDTIME',
+}

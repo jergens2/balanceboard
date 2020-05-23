@@ -37,6 +37,7 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
 import { DropdownListComponent } from "./components/dropdown-list/dropdown-list.component";
 import { DeleteConfirmButtonComponent } from "./components/delete-confirm-button/delete-confirm-button.component";
 import { TimeInputComponent } from "./components/time-input/time-input.component";
+import { SliderBarComponent } from './components/slider-bar/slider-bar.component';
 
 
 
@@ -84,6 +85,7 @@ import { TimeInputComponent } from "./components/time-input/time-input.component
         TimeInputComponent,
         DeleteConfirmButtonComponent,
         SpinnerComponent,
+        SliderBarComponent,
 
 
         
@@ -104,6 +106,7 @@ import { TimeInputComponent } from "./components/time-input/time-input.component
         DropdownListComponent,
         TimeInputComponent,
         SpinnerComponent,
+        SliderBarComponent,
     ]
 })
 

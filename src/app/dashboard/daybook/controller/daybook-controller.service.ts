@@ -52,7 +52,7 @@ export class DaybookControllerService {
 
   public getLastActivityTime(): moment.Moment{ 
     if(this.todayController){
-      return this.todayController.getLastActivityTime();
+      return this.todayController.getLastActivityEndTime();
     }else{
       console.log("Error, no todayController")
       return null;

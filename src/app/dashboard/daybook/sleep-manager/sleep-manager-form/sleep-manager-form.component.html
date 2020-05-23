@@ -1,4 +1,22 @@
 <div class="sleep-manager-data-input">
+    <div style="display: flex; flex-direction: column; margin-bottom: 20px; min-height: 60px;">
+        <div class="property-item" *ngIf="prevFallAsleepTimeIsSet">
+
+            <div class="property-value">{{ prevFallAsleepTime.format('h:mm a') }}</div>
+            <div class="property-name">sleep start</div>
+        </div>
+
+        <div class="property-item" *ngIf="wakeupTimeIsSet">
+
+            <div class="property-value">{{ wakeupTime.format('h:mm a') }}</div>
+            <div class="property-name">sleep end</div>
+        </div>
+
+
+
+
+    </div>
+
     <div class="item">
         <!-- smfa means SleepManagerFormAction -->
         <app-sm-wakeup-time *ngIf="smfaWakeupTime" class="item">
@@ -9,8 +27,6 @@
         </app-sm-prev-fall-asleep-time>
         <app-sm-sleep-duration *ngIf="smfaSleepDuration" class="item"></app-sm-sleep-duration>
 
-        <app-sm-energy-at-wakeup *ngIf="smfaEnergy" class="item">
-        </app-sm-energy-at-wakeup>
 
         <app-sm-bedtime *ngIf="smfaBedtime" class="item">
         </app-sm-bedtime>
@@ -28,7 +44,7 @@
                 <fa-icon [icon]="faArrowLeft"></fa-icon>
             </button>
         </div>
-        <div style="width: 50px;">
+        <div style="width: 50px; display:flex;flex-direction: row-reverse;">
             <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickForward()">
                 <fa-icon [icon]="faArrowRight"></fa-icon>
             </button>

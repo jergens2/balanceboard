@@ -4,8 +4,6 @@ import { SleepManagerComponent } from './sleep-manager.component';
 import { SmWakeupTimeComponent } from './sleep-manager-form/smfa-wakeup-time/sm-wakeup-time.component';
 import { SmPrevFallAsleepTimeComponent } from './sleep-manager-form/smfa-prev-fall-asleep-time/sm-prev-fall-asleep-time.component';
 import { SmSleepDurationComponent } from './sleep-manager-form/smfa-sleep-duration/sm-sleep-duration.component';
-import { SmEnergyAtWakeupComponent } from './sleep-manager-form/smfa-energy-at-wakeup/sm-energy-at-wakeup.component';
-import { SmEnergyAtPresentComponent } from './sleep-manager-form/smfa-energy-at-present/sm-energy-at-present.component';
 import { SmDreamsComponent } from './sleep-manager-form/smfa-dreams/sm-dreams.component';
 import { SmBedtimeComponent } from './sleep-manager-form/smfa-bedtime/sm-bedtime.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -20,8 +18,6 @@ import { SleepManagerFormComponent } from './sleep-manager-form/sleep-manager-fo
     SmWakeupTimeComponent,
     SmPrevFallAsleepTimeComponent,
     SmSleepDurationComponent,
-    SmEnergyAtWakeupComponent,
-    SmEnergyAtPresentComponent,
     SmDreamsComponent,
     SmBedtimeComponent,
     SleepManagerFormComponent,

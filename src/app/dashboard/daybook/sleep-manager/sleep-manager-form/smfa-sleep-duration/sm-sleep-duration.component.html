@@ -1,1 +1,4 @@
-<p>sm-sleep-duration works!</p>
+<div class="item-root">
+    Sleep duration {{ durationString }}
+    <app-slider-bar style="width: 100%;" (valueChanged)="onSliderValueChanged($event)"></app-slider-bar>
+</div>

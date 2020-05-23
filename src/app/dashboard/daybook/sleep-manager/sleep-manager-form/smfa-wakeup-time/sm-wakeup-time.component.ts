@@ -4,6 +4,7 @@ import { DurationString } from '../../../../../shared/utilities/time-utilities/d
 import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import { SleepManagerService } from '../../sleep-manager.service';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-sm-wakeup-time',
@@ -22,19 +23,35 @@ export class SmWakeupTimeComponent implements OnInit {
   private _sectionIsComplete: boolean = false;
 
   public get date(): string { return this._date; }
-  public get sectionIsComplete(): boolean { return this.sleepService.previousWakeTimeIsSet; }
+  // public get sectionIsComplete(): boolean { return this.sleepService.previousWakeTimeIsSet; }
 
   ngOnInit() {
-    this._sectionIsComplete = this.sleepService.previousWakeTimeIsSet;
-    this._time = moment(this.sleepService.previousWakeupTime);
-    this.maxWakeupTime = this.sleepService.sleepManager.wakeupTimeMax;
-    this.minWakeupTime = this.daybookService.getLastActivityTime();
-    this._date = moment().format('dddd, MMM Do')
+    this.maxWakeupTime = moment();
+    // this._sectionIsComplete = this.sleepService.previousWakeTimeIsSet;
+    
+    if(this.sleepService.sleepManagerForm.formInputWakeupTime){
+      this._time = moment(this.sleepService.sleepManagerForm.formInputWakeupTime)
+    }else{
+      this._time = moment(this.sleepService.previousWakeupTime);
+    }
+    timer(0, 60000).subscribe((tick)=>{
+      this._date = moment(this._time).format('dddd, MMM Do')
+      this._calculateDurationString();
+    });
 
-    console.log("Min and max val:  " + this.minWakeupTime.format('YYYY-MM-DD hh:mm a') + " to  " + this.maxWakeupTime.format('YYYY-MM-DD hh:mm a'))
+    const lastActivityTime = this.daybookService.getLastActivityTime();
+    if(lastActivityTime){
+      this.minWakeupTime = moment(lastActivityTime);
+    }else{
+      this.minWakeupTime = moment().subtract(23, 'hours');
+    }
 
-    this._calculateDurationString();
-    // this.wakeupTimeChanged.emit(this.time);
+    
+
+    // console.log("Min and max val:  " + this.minWakeupTime.format('YYYY-MM-DD hh:mm a') + " to  " + this.maxWakeupTime.format('YYYY-MM-DD hh:mm a'))
+
+    
+    this.onTimeChanged(this._time);
   }
 
 
@@ -49,8 +66,10 @@ export class SmWakeupTimeComponent implements OnInit {
   }
 
   onTimeChanged(time: moment.Moment) {
+    console.log("Time changed: " + time.format('hh:mm a'))
     this._time = moment(time);
     this._calculateDurationString();
+    this.sleepService.sleepManagerForm.setformInputWakeupTime(moment(time));
   }
 
   public get isToday(): boolean { return true; }

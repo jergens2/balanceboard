@@ -1,0 +1,15 @@
+<div class="slider-bar-root" (mouseleave)="onMouseLeaveRoot()">
+    <div class="buffer" (mouseenter)="onEnterLeftBuffer()" (mouseup)="onIndicatorUp()"></div>
+    <div class="slider-bar no-select" [ngClass]="{'is-dragging': isDragging }">
+        <div *ngFor="let unit of barUnits" class="bar-unit" (click)="onClickUnit(unit)"
+            (mouseenter)="onMouseEnter(unit)" (mouseleave)="onMouseLeave(unit)"
+            [ngClass]="{'valued-unit': unit.isValued }">
+            <div *ngIf="unit.isSet" class="indicator-container">
+                <div class="indicator" (mousedown)="onIndicatorDown(unit)" (mouseup)="onIndicatorUp(unit)">
+                    <div class="inner-circle" [ngClass]="{'active-indicator': isDragging }"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="buffer" (mouseenter)="onEnterRightBuffer()" (mouseup)="onIndicatorUp()"></div>
+</div>
