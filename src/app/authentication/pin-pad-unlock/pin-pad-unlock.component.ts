@@ -3,15 +3,16 @@ import { faTimes, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-
 import { AuthenticationService } from '../authentication.service';
 import { Observable, Subscription, timer } from 'rxjs';
 import * as moment from 'moment';
+import { KeydownService } from '../../shared/keydown.service';
 
 @Component({
   selector: 'app-pin-pad-unlock',
   templateUrl: './pin-pad-unlock.component.html',
   styleUrls: ['./pin-pad-unlock.component.css']
 })
-export class PinPadUnlockComponent implements OnInit {
+export class PinPadUnlockComponent implements OnInit, OnDestroy {
 
-  constructor(private authService: AuthenticationService) { }
+  constructor(private authService: AuthenticationService, private keydownService: KeydownService) { }
 
   private _pinItems: number[] = [];
   public get pinItems(): number[] { return this._pinItems; }
@@ -58,8 +59,27 @@ export class PinPadUnlockComponent implements OnInit {
     }
   }
 
+  private _keySub: Subscription = new Subscription();
 
   ngOnInit() {
+    this._keySub = this.keydownService.keyDown$.subscribe((keyValue)=>{
+      // console.log("Keyvalue: ", keyValue)
+      if(keyValue === '0'){ this.onClickButton(0); }
+      else if(keyValue === '1'){ this.onClickButton(1); }
+      else if(keyValue === '2'){ this.onClickButton(2); }
+      else if(keyValue === '3'){ this.onClickButton(3); }
+      else if(keyValue === '4'){ this.onClickButton(4); }
+      else if(keyValue === '5'){ this.onClickButton(5); }
+      else if(keyValue === '6'){ this.onClickButton(6); }
+      else if(keyValue === '7'){ this.onClickButton(7); }
+      else if(keyValue === '8'){ this.onClickButton(8); }
+      else if(keyValue === '9'){ this.onClickButton(9); }
+      else if(keyValue === 'Enter') { this.onClickUnlock(); }
+    });
+  }
+
+  ngOnDestroy(){
+    this._keySub.unsubscribe();
   }
 
   public onClickButton(num: number) {

@@ -7,3 +7,29 @@
     flex-direction: column;
     align-items: center;
 }
+
+.sleep-percent-container{
+    margin-top: 10px;
+    width: 100%;
+    display:flex;flex-direction: row;
+    justify-content: center;
+
+}
+
+.sleep-percent{
+    font-weight: bold;
+    color: rgb(0, 89, 255);
+}
+
+.sleep-duration-container{
+    text-align: left;
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+}
+.sleep-duration{
+    text-align: center;
+    width: 100%;
+    font-weight: bold;
+    color: rgb(0, 89, 255);
+}

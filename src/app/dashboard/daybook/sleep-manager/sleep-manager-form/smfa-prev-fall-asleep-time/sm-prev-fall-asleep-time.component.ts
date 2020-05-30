@@ -26,7 +26,7 @@ export class SmPrevFallAsleepTimeComponent implements OnInit {
   ngOnInit(): void {
     this._wokeUpAt = moment(this.sleepService.sleepManagerForm.formInputWakeupTime);
     this._sleepDuration = DurationString.calculateDurationString(this._fallAsleepTime, this.wokeUpAt)
-    if (this.sleepService.sleepManagerForm.formInputPrevFallAsleep) {
+    if (this.sleepService.sleepManagerForm.prevFallAsleepTimeIsSet) {
       this._fallAsleepTime = moment(this.sleepService.sleepManagerForm.formInputPrevFallAsleep)
     } else {
       this._fallAsleepTime = moment(this.sleepService.sleepManager.previousFallAsleepTime);

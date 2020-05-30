@@ -22,15 +22,18 @@ export class SleepManagerFormComponent implements OnInit {
   public get smfaWakeupTime(): boolean { return this.smfa === SleepManagerFormActions.WAKEUP_TIME ;}
   public get smfaPreviousFallAsleep(): boolean { return this.smfa === SleepManagerFormActions.PREV_SLEEP_TIME ;}
   public get smfaSleepDuration(): boolean { return this.smfa === SleepManagerFormActions.SLEEP_DURATION;}
-  // public get smfaEnergy(): boolean { return this.smfa === SleepManagerFormActions.ENERGY_WAKEUP ;}
+  public get smfaEnergy(): boolean { return this.smfa === SleepManagerFormActions.ENERGY ;}
   public get smfaBedtime(): boolean { return this.smfa === SleepManagerFormActions.BEDTIME ;}
   public get smfaDreams(): boolean { return this.smfa === SleepManagerFormActions.DREAMS ;}
 
 
   public get wakeupTimeIsSet(): boolean { return this.sleepManagerForm.wakeupTimeIsSet; }
   public get prevFallAsleepTimeIsSet(): boolean { return this.sleepManagerForm.prevFallAsleepTimeIsSet; }
+  public get durationIsSet(): boolean { return this.sleepManagerForm.durationIsSet; }
   public get wakeupTime(): moment.Moment { return this.sleepManagerForm.formInputWakeupTime; }
   public get prevFallAsleepTime(): moment.Moment { return this.sleepManagerForm.formInputPrevFallAsleep; }
+  public get sleepDuration(): string { return this.sleepManagerForm.durationString; }
+  public get sleepPeriodDuration(): string { return this.sleepManagerForm.sleepPeriodDurationString; }
 
   constructor(private sleepService: SleepManagerService) { }
 

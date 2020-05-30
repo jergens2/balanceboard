@@ -5,12 +5,14 @@ import { Modal } from './modal/modal.class';
 import { ToolboxService } from './toolbox-menu/toolbox.service';
 import { ScreenSizeService } from './shared/screen-size/screen-size.service';
 import { ScreenSizes } from './shared/screen-size/screen-sizes-enum';
-import { Subscription, Observable, Subject } from 'rxjs';
+import { Subscription, Observable, Subject, BehaviorSubject, timer } from 'rxjs';
 import { ActivityCategoryDefinitionService } from './dashboard/activities/api/activity-category-definition.service';
 import { DaybookHttpRequestService } from './dashboard/daybook/api/daybook-http-request.service';
 import { DaybookControllerService } from './dashboard/daybook/controller/daybook-controller.service';
 import { UserActionPromptService } from './user-action-prompt/user-action-prompt.service';
 import { NotebooksService } from './dashboard/notebooks/notebooks.service';
+import * as moment from 'moment';
+import { KeydownService } from './shared/keydown.service';
 
 @Component({
   selector: 'app-root',
@@ -40,6 +42,8 @@ export class AppComponent implements OnInit {
    */
   private _loadingIsComplete: boolean = false;
 
+  private _userActivitySub: Subscription = new Subscription();
+
   public get showModal(): boolean { return this._showModal; }
   public get showTools(): boolean { return this._showTools; }
   public get isAuthenticated(): boolean { return this._isAuthenticated; }
@@ -61,14 +65,28 @@ export class AppComponent implements OnInit {
     private daybookHttpService: DaybookHttpRequestService,
     private daybookControllerService: DaybookControllerService,
     private notebookService: NotebooksService,
+    private keydownService: KeydownService
   ) { }
 
   @HostListener('window:resize', ['$event']) onResize(event) {
     let innerWidth = event.target.innerWidth;
     let innerHeight = event.target.innerHeight;
     this.sizeService.updateSize(innerWidth, innerHeight);
+    this._resetUserInactiveTimer();
   }
 
+
+
+  @HostListener('window:mousemove') refreshUserState() {
+    this._resetUserInactiveTimer();
+  }
+
+  private _keyDown$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public get keyDown$(): Observable<string> { return this._keyDown$.asObservable(); }
+  @HostListener('window:keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
+    this.keydownService.keyDown(event.key);
+    this._resetUserInactiveTimer();
+  }
 
   ngOnInit() {
     // console.log("APP COMPONENT NG ON INIT")
@@ -134,7 +152,6 @@ export class AppComponent implements OnInit {
           }
         } else {
           this._isAuthenticated = false;
-          // console.log("appComponentLogin is FALSE, but NOT unloading the app.")
           this._unloadApp();
         }
 
@@ -152,6 +169,7 @@ export class AppComponent implements OnInit {
 
   private _unloadApp() {
     // console.log("  _unloading app...")
+    this._userActivitySub.unsubscribe();
     this._appServiceSubs.forEach(sub => sub.unsubscribe());
     this._loadingSubs.forEach(sub => sub.unsubscribe());
     this.modalService.closeModal();
@@ -185,26 +203,33 @@ export class AppComponent implements OnInit {
 
   }
 
-
+  private _resetUserInactiveTimer() {
+    this._userActivitySub.unsubscribe();
+    const inactivityLockTime = (moment().add(30, 'minutes')).diff(moment(), 'milliseconds');
+    this._userActivitySub = timer(inactivityLockTime).subscribe((tick) => {
+      console.log("Automatically locking app after 30 minutes.")
+      this.authService.lock();
+    });
+  }
 
   private _userActionPrompt() {
     let showUserActionPrompt = false;
-    this.userPromptService.initiate$(this.authService.userId).subscribe((response: boolean)=>{
-      if(response === true){
+    this.userPromptService.initiate$(this.authService.userId).subscribe((response: boolean) => {
+      if (response === true) {
         if (this.userPromptService.hasPrompts()) {
           this._showUserActionPrompt = true;
         }
 
-      }else{
+      } else {
         console.log("Error initiating userPromptService")
       }
       this._loading = false;
       this._loadingIsComplete = true;
 
-    }, (error)=>{
-      console.log("Error: " , error);
+    }, (error) => {
+      console.log("Error: ", error);
     })
-    
+
   }
 
 

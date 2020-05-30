@@ -3,7 +3,7 @@ import { AuthenticationService } from './authentication.service';
 import * as moment from 'moment';
 
 import { faKey, faUser, faUnlock, faSpinner, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
-import { Subject, Observable, BehaviorSubject } from 'rxjs';
+import { Subject, Observable, BehaviorSubject, Subscription } from 'rxjs';
 
 
 @Component({
@@ -27,31 +27,19 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   public get isLoading(): boolean { return this._isLoading; }
 
 
-  private _action: 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' = 'INITIAL';
-  public get action(): 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' { return this._action; }
-  public get actionIsInitial() { return this._action === 'INITIAL'; }
-  public get actionIsLogin() { return this._action === 'LOGIN'; }
-  public get actionIsRegister() { return this._action === 'REGISTER'; }
-  public get actionIsPin() { return this._action === 'PIN'; }
+  private _action: 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' = 'INITIAL';
+  public get action(): 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' { return this._action; }
+  public get actionIsInitial(): boolean { return this._action === 'INITIAL'; }
+  public get actionIsLogin(): boolean { return this._action === 'LOGIN'; }
+  public get actionIsRegister(): boolean { return this._action === 'REGISTER'; }
+  public get actionIsPin(): boolean { return this._action === 'PIN'; }
+  public get actionIsLockScreen(): boolean { return this._action === 'LOCK_SCREEN'; }
 
-  // private _pinKeyPressed$: BehaviorSubject<number> = new BehaviorSubject(null);
-  // public get pinKeyPressed$(): Observable<number> { return this._pinKeyPressed$.asObservable(); }
-  // @HostListener('keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
-  //   if (event.key === '0') { this.authService.pinKeyPressed(0); }
-  //   else if (event.key === '1') { this.authService.pinKeyPressed(1); }
-  //   else if (event.key === '2') { this.authService.pinKeyPressed(2); }
-  //   else if (event.key === '3') { this.authService.pinKeyPressed(3); }
-  //   else if (event.key === '4') { this.authService.pinKeyPressed(4); }
-  //   else if (event.key === '5') { this.authService.pinKeyPressed(5); }
-  //   else if (event.key === '6') { this.authService.pinKeyPressed(6); }
-  //   else if (event.key === '7') { this.authService.pinKeyPressed(7); }
-  //   else if (event.key === '8') { this.authService.pinKeyPressed(8); }
-  //   else if (event.key === '9') { this.authService.pinKeyPressed(9); }
-  // }
+
 
   ngOnInit() {
-    // console.log("Auth component init.")
     this._reload();
+    console.log("Action: ", this._action)
   }
 
   public onClickLogin() {
@@ -71,18 +59,33 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     this.authService.loginFromRegistration();
   }
 
+  public onUnlock(){
+    this._action = 'PIN';
+  }
+
+
+  private _lockSub: Subscription = new Subscription();
   private _reload() {
-    // console.log("auth component .reload()")
-    const currentAuthData: 'NOT_PRESENT' | 'EXPIRED' | 'VALID' = this._checkLocalStorage();
+    this._lockSub.unsubscribe();
+    this._lockSub = this.authService.lockApp$.subscribe((lock)=>{
+      if(lock === true){
+        console.log("received lock signal")
+        this._action = 'LOCK_SCREEN'
+      }
+    });
+    const currentAuthData: 'NOT_PRESENT' | 'EXPIRED' | 'VALID' | 'LOCKED' = this._checkLocalStorage();
     // console.log("Current auth data = ", currentAuthData)
     if (currentAuthData === 'NOT_PRESENT') {
       this._action = 'INITIAL';
       this._isLoading = false;
     } else if (currentAuthData === 'EXPIRED') {
-      this._action = 'PIN';
+      this._action = 'LOCK_SCREEN';
       this._isLoading = false;
     } else if (currentAuthData === 'VALID') {
       this._refreshToken()
+    } else if (currentAuthData === 'LOCKED') {
+      this._action = 'LOCK_SCREEN';
+      this._isLoading = false;
     }
   }
 
@@ -90,22 +93,22 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     const token: string = localStorage.getItem('token');
     const userId: string = localStorage.getItem('userId');
     if (token && userId) {
-      this.authService.refreshToken$(token, userId).subscribe((result: boolean)=>{
-        if(result === true){
+      this.authService.refreshToken$(token, userId).subscribe((result: boolean) => {
+        if (result === true) {
           const thisIsGood = true;
-        }else{
+        } else {
           // console.log("Unsuccessful token refresh.  opening PIN pad")
           this._action = 'PIN';
           this._isLoading = false;
         }
-      })
+      });
     } else {
       this._action = 'INITIAL';
       this._isLoading = false;
     }
   }
 
-  private _checkLocalStorage(): 'NOT_PRESENT' | 'EXPIRED' | 'VALID' {
+  private _checkLocalStorage(): 'NOT_PRESENT' | 'EXPIRED' | 'VALID' | 'LOCKED' {
     // console.log("Checking local storage");
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId');
@@ -113,19 +116,23 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     // console.log("Expiration string is : ", expirationString)
     const isPresent: boolean = (token !== null) && (userId !== null) && (expirationString !== null);
     if (isPresent) {
-      const now = moment();
-      const milliseconds = Number(expirationString);
-      const expiration: moment.Moment = moment(milliseconds);
-      // console.log("Expiration is : " + expiration.format('YYYY-MM-DD hh:mm:ss a'))
-      const cutoff = moment(expiration).subtract(1, 'minutes');
-      // console.log("cutoff is : " + cutoff.format('YYYY-MM-DD hh:mm:ss a'))
-      const isExpired: boolean = now.isAfter(cutoff);
-      if (!isExpired) {
-        // console.log("IT's not expired, so it's VALID")
-        return 'VALID';
-      } else if (isExpired) {
-        // console.log("ITS EXPIRED, SO... PIN")
-        return 'EXPIRED';
+      if (token === 'LOCKED_TOKEN') {
+        return 'LOCKED';
+      } else {
+        const now = moment();
+        const milliseconds = Number(expirationString);
+        const expiration: moment.Moment = moment(milliseconds);
+        // console.log("Expiration is : " + expiration.format('YYYY-MM-DD hh:mm:ss a'))
+        const cutoff = moment(expiration).subtract(1, 'minutes');
+        // console.log("cutoff is : " + cutoff.format('YYYY-MM-DD hh:mm:ss a'))
+        const isExpired: boolean = now.isAfter(cutoff);
+        if (!isExpired) {
+          // console.log("IT's not expired, so it's VALID")
+          return 'VALID';
+        } else if (isExpired) {
+          // console.log("ITS EXPIRED, SO... PIN")
+          return 'EXPIRED';
+        }
       }
     } else {
       return 'NOT_PRESENT';

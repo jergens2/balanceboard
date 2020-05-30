@@ -1,3 +1,25 @@
-<div class="item-root">
-    Dreams
+<div class="item-root" [formGroup]="dreamsForm">
+    <div style="font-size: 0.8em; font-style: italic; color: gray;">
+        Dreams
+    </div>
+    <div *ngIf="displayDreams.length > 0" class="dreams">
+        <div *ngFor="let dream of displayDreams" class="dream">
+            <div class="dream-body">{{ dream }} </div>
+            <fa-icon [icon]="faEdit" class="icon-button"
+                style="display:flex;flex-direction: row; justify-content: center; align-items: center;"
+                (click)="onClickEdit(dream)"></fa-icon>
+
+
+            <fa-icon [icon]="faTrash" class="icon-button"
+                style="display:flex;flex-direction: row; justify-content: center; align-items: center;"
+                (click)="onClickDelete(dream)"></fa-icon>
+        </div>
+    </div>
+    <textarea placeholder="Write about any dreams you had" class="dreams-textarea" formControlName="dreams"></textarea>
+    <div style="display:flex;flex-direction: row-reverse; align-items: center; width: 100%;" *ngIf="showAddButton">
+        <button class="medium-button save-button add-button" style="margin-left: 10px;" (click)="onClickAddDream()">
+            <fa-icon [icon]="faPlus"
+                style="display:flex;flex-direction: row; justify-content: center; align-items: center;"></fa-icon>
+        </button> Add another
+    </div>
 </div>

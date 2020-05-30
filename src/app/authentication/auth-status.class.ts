@@ -8,6 +8,7 @@ export class AuthStatus {
     private _username: string = "";
     private _email: string = "";
     private _userId: string = "";
+    private _isLocked: boolean = false;
 
     constructor(token: string, userId: string, username: string, email: string, expiresAt: moment.Moment) {
         this._token = token;
@@ -22,6 +23,14 @@ export class AuthStatus {
     public get email(): string { return this._email; }
     public get userId(): string { return this._userId; }
     public get expiresAt(): moment.Moment { return this._expiresAt; }
+    
+    public get isLocked(): boolean { return this._isLocked; }
+
+    public lock(){
+
+        this._isLocked = true;
+        
+    }
 
     public isAuthenticated(): boolean {
         return !this.isExpired();

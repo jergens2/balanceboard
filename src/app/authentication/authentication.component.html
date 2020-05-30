@@ -22,6 +22,7 @@
       </div>
 
       <app-login *ngIf="actionIsLogin" (cancel)="onCancel()"></app-login>
+      <app-lock-screen *ngIf="actionIsLockScreen" (cancel)="onCancel()" (unlock)="onUnlock()"></app-lock-screen>
       <app-registration *ngIf="actionIsRegister" (cancel)="onCancel()" (login)="onLoginFromReg()"></app-registration>
       <app-pin-pad-unlock *ngIf="actionIsPin" (close)="onCancel()"></app-pin-pad-unlock>
     </div>

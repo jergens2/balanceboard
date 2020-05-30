@@ -1,0 +1,17 @@
+<div class="lock-screen-circle">
+    <div class="date">
+        {{ date }}
+    </div>
+    <div class="clock">
+        {{ clock }}
+    </div>
+    <div class="unlock-container"  (mouseenter)="onMouseEnterLock()" (mouseleave)="onMouseLeaveLock()">
+        <fa-icon [icon]="faLock" class="icon-button" *ngIf="!mouseIsOverLock"></fa-icon>
+        <fa-icon [icon]="faLockOpen" class="icon-button" *ngIf="mouseIsOverLock" (click)="onClickUnlock()"></fa-icon>
+    </div>
+</div>
+
+
+<div *ngIf="false">
+    <app-pin-pad-unlock></app-pin-pad-unlock>
+</div>

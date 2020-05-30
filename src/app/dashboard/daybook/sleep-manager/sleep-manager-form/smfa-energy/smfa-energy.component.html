@@ -1,0 +1,13 @@
+<div class="energy-root">
+    <div style="text-align: center;">
+        About how well-rested did you feel upon wakeup?
+    </div>
+
+
+    <div style="margin-top: 10px; width: 100%;">
+        <app-slider-bar style="width: 100%;" (valueChanged)="onSliderValueChanged($event)"></app-slider-bar>
+    </div>
+    <div class="percent-container">
+        <span class="percent" style="margin-right: 5px;">{{ percent }} %</span> <span>{{ restString }}</span>
+    </div>
+</div>

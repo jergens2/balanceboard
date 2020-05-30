@@ -17,6 +17,10 @@ export class AuthenticationService {
   private _loginAttempt$: Subject<boolean> = new Subject();
   private _logout$: Subject<boolean> = new Subject();
   private _appComponentLogin$: Subject<boolean> = new Subject();
+  private _unlockAttempts: number = 0;
+
+  // used by AuthenticationComponent to subscribe to changes
+  private _lockApp$: Subject<boolean> = new Subject();
 
   constructor(
     private http: HttpClient,
@@ -37,6 +41,7 @@ export class AuthenticationService {
   public get username(): string { return this._authStatus ? this._authStatus.username : ''; }
 
   public get loginAttempt$(): Observable<boolean> { return this._loginAttempt$.asObservable(); }
+  public get lockApp$(): Observable<boolean> { return this._lockApp$.asObservable(); }
 
   public get logout$(): Observable<boolean> { return this._logout$.asObservable(); }
   public get appComponentLogin$(): Observable<boolean> { return this._appComponentLogin$.asObservable(); }
@@ -185,7 +190,13 @@ export class AuthenticationService {
 
       }, (error) => {
         // console.log("Login attempt failed: ", error);
-        this._loginAttempt$.next(false);
+        if(this._unlockAttempts >= 3){
+          this.logout();
+        }else{
+          this._unlockAttempts++;
+          this._loginAttempt$.next(false);
+        }
+        
       });
   }
   public finalizeRegistration$(data: { email: string, code: string }): Observable<any> {
@@ -228,12 +239,23 @@ export class AuthenticationService {
   }
 
 
+  /**
+   * Both lock() and logout() are methods that stop the app, via _appComponentLogin$.next(false), causing AppComponent to unload the app.
+   * The difference between lock() and logout() is:
+   * lock allows for an unlock via PIN for a pre-determined period of time (e.g. 1 hour window), while logout() clears everything instantly.
+   * lock(), therefore, is simply for the convenience of the user to not have to sign out of their app every time they leave their PC, 
+   * rather than leave the app completely open.  an optional function.
+   */
   public lock() {
+    console.log("locking")
     this._isAuthenticated = false;
     this._appComponentLogin$.next(false);
-    this._timerSubs[1].unsubscribe(); // unsubscribe from tokenRefreshSubscription
+    this._timerSubs.forEach(s => s.unsubscribe());
+    this._timerSubs = [];
     this._authStatus = null;
-    
+    localStorage.setItem("token", "LOCKED_TOKEN")
+    this._unlockAttempts = 0;
+    this._lockApp$.next(true);
   }
 
   public logout() {
@@ -250,6 +272,7 @@ export class AuthenticationService {
     this._loginAttempt$.next(false);
     this._registrationContoller = null;
     this._logout$.next();
+    this._unlockAttempts = 0;
   }
 
 
@@ -265,6 +288,8 @@ export class AuthenticationService {
       localStorage.setItem("username", authStatus.username);
       localStorage.setItem("email", authStatus.email);
       localStorage.setItem("expiration", authStatus.expiresAt.valueOf().toString());
+
+
 
       const expiresAt = moment(authStatus.expiresAt);
       const now = moment();

@@ -39,6 +39,7 @@ import { TermsComponent } from './authentication/registration/terms/terms.compon
 import { SuccessConfirmationComponent } from './authentication/registration/success-confirmation/success-confirmation.component';
 import { UserActionPromptComponent } from './user-action-prompt/user-action-prompt.component';
 import { SleepManagerModule } from './dashboard/daybook/sleep-manager/sleep-manager.module';
+import { LockScreenComponent } from './authentication/lock-screen/lock-screen.component';
 
 
 
@@ -64,6 +65,7 @@ import { SleepManagerModule } from './dashboard/daybook/sleep-manager/sleep-mana
     TermsComponent,
     SuccessConfirmationComponent,
     UserActionPromptComponent,
+    LockScreenComponent,
 
   ],
   imports: [

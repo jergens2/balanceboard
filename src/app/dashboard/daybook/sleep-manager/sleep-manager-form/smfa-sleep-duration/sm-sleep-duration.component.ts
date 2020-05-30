@@ -12,24 +12,37 @@ export class SmSleepDurationComponent implements OnInit {
 
   constructor(private sleepService: SleepManagerService) { }
   private _durationString: string = "";
-  public get durationString(): string { return this._durationString; }
+  private _totalDuration: string = "";
+  private _sleepPercent: number = 100;
+  public get totalDuration(): string { return this._totalDuration; }
+  public get sleepPercent(): number { return this._sleepPercent; }
+  public get effectiveSleepDuration(): string { return this._durationString; }
 
   ngOnInit(): void {
- 
-    this._recalculateDuration();
+    if(this.sleepService.sleepManagerForm.durationIsSet){
+      this._recalculateDuration(this.sleepService.sleepManagerForm.formInputDurationPercent);
+      this.onSliderValueChanged(this.sleepService.sleepManagerForm.formInputDurationPercent);
+    }else{
+      this._recalculateDuration();
+      this.onSliderValueChanged(100);
+    }
+
   }
 
-  public onSliderValueChanged(value: number){
-    const percent = 100/value;
-    this._recalculateDuration(percent);
+  public onSliderValueChanged(value: number) {
+    this._sleepPercent = value;
+    this._recalculateDuration(value);
+    this.sleepService.sleepManagerForm.setformInputDurationPercent(value);
   }
 
 
-  private _recalculateDuration(percent: number = 1){
+  private _recalculateDuration(percent: number = 100) {
     const sleepStart = moment(this.sleepService.sleepManagerForm.formInputPrevFallAsleep);
     const sleepEnd = moment(this.sleepService.sleepManagerForm.formInputWakeupTime);
-    
-    const durationMs = moment(sleepEnd).diff(sleepStart, 'milliseconds') * (1/percent);
+
+    const durationMs = moment(sleepEnd).diff(sleepStart, 'milliseconds') * (percent / 100);
+    const totalDuration =  moment(sleepEnd).diff(sleepStart, 'milliseconds');
     this._durationString = DurationString.getDurationStringFromMS(durationMs);
+    this._totalDuration = DurationString.getDurationStringFromMS(totalDuration);
   }
 }

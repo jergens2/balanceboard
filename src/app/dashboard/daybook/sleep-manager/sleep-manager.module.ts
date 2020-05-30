@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from '../../../shared/shared.module';
 import { SleepManagerFormComponent } from './sleep-manager-form/sleep-manager-form.component';
+import { SmfaEnergyComponent } from './sleep-manager-form/smfa-energy/smfa-energy.component';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { SleepManagerFormComponent } from './sleep-manager-form/sleep-manager-fo
     SmDreamsComponent,
     SmBedtimeComponent,
     SleepManagerFormComponent,
+    SmfaEnergyComponent,
   ],
   imports: [
     CommonModule,

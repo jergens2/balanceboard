@@ -1,32 +1,40 @@
 <div class="sleep-manager-data-input">
     <div style="display: flex; flex-direction: column; margin-bottom: 20px; min-height: 60px;">
-        <div class="property-item" *ngIf="prevFallAsleepTimeIsSet">
-
-            <div class="property-value">{{ prevFallAsleepTime.format('h:mm a') }}</div>
-            <div class="property-name">sleep start</div>
+        <div style="display:flex;flex-direction: row;justify-content: space-between;" *ngIf="prevFallAsleepTimeIsSet && wakeupTimeIsSet">
+            <div class="property-name">
+                Sleep period
+            </div>
+            <div class="property-name" style="color: rgb(115, 170, 216);" >
+                {{ sleepPeriodDuration }}
+            </div>
         </div>
 
-        <div class="property-item" *ngIf="wakeupTimeIsSet">
+        <div style="display:flex;flex-direction: row; justify-content: center; align-items: center;">
+            <div class="property-value" *ngIf="prevFallAsleepTimeIsSet">{{ prevFallAsleepTime.format('h:mm a') }}</div>
+            <div class="property-name" *ngIf="prevFallAsleepTimeIsSet && wakeupTimeIsSet"> to </div>
+            <div class="property-value" *ngIf="wakeupTimeIsSet">{{ wakeupTime.format('h:mm a') }}</div>
+            <div class="property-name" *ngIf="!prevFallAsleepTimeIsSet && wakeupTimeIsSet"> woke up</div>
 
-            <div class="property-value">{{ wakeupTime.format('h:mm a') }}</div>
-            <div class="property-name">sleep end</div>
+        </div>
+        <div>
+            <span class="property-name" *ngIf="durationIsSet">Sleep duration: </span> <span class="property-value">{{ sleepDuration }} </span>
         </div>
 
-
-
+    </div>
+    <div style="width: 100%; height: 1px; margin-top: 10px; margin-bottom: 10px; border-top: 1px solid gray;;">
 
     </div>
 
     <div class="item">
-        <!-- smfa means SleepManagerFormAction -->
         <app-sm-wakeup-time *ngIf="smfaWakeupTime" class="item">
         </app-sm-wakeup-time>
 
         <app-sm-prev-fall-asleep-time *ngIf="smfaPreviousFallAsleep" class="item">
-
         </app-sm-prev-fall-asleep-time>
+
         <app-sm-sleep-duration *ngIf="smfaSleepDuration" class="item"></app-sm-sleep-duration>
 
+        <app-smfa-energy *ngIf="smfaEnergy" class="item"></app-smfa-energy>
 
         <app-sm-bedtime *ngIf="smfaBedtime" class="item">
         </app-sm-bedtime>

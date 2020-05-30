@@ -1,17 +1,23 @@
 
 <div class="user-action-prompt-root">
-    <app-sleep-manager *ngIf="promptIsSleep" class="item"></app-sleep-manager>
-    <div *ngIf="promptIsInfo">
-        Info screen.  <button (click)="onClickContinue()">Okay!</button>
-    </div>    
+    
+    <div class="item">
+        <app-sleep-manager *ngIf="promptIsSleep" class="item"></app-sleep-manager>
+
+        <div *ngIf="promptIsInfo" class="item">
+            Info screen.  <button (click)="onClickContinue()">Okay!</button>
+        </div>   
+    </div>
+ 
+
+    <div class="bottom-section" (mouseleave)="onMouseLeaveButtons()">
+        <div>
+            <button class="small-button discard-button" *ngIf="!confirmLogout" (click)="onClickLogout()">Logout</button>
+            <button class="small-button discard-button confirm-logout" *ngIf="confirmLogout" (click)="onClickConfirmLogout()">Confirm</button>
+        </div>
+        <div>
+            <button class="small-button discard-button" *ngIf="showSkipButton" (click)="onClickSkip()">Skip</button>
+        </div>
+    </div>
 </div>
 
-<div class="bottom-section" (mouseleave)="onMouseLeaveButtons()">
-    <div>
-        <button class="small-button discard-button" *ngIf="!confirmLogout" (click)="onClickLogout()">Logout</button>
-        <button class="small-button discard-button confirm-logout" *ngIf="confirmLogout" (click)="onClickConfirmLogout()">Confirm</button>
-    </div>
-    <div>
-        <button class="small-button discard-button" *ngIf="showSkipButton" (click)="onClickSkip()">Skip</button>
-    </div>
-</div>
