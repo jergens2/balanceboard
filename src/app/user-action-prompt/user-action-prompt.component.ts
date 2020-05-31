@@ -27,14 +27,18 @@ export class UserActionPromptComponent implements OnInit {
     let prompts: UserPromptType[] = this.promptService.prompts;
     if(prompts.length > 0){
       this._currentPrompt = prompts[0];
-      console.log("current pronpt is: ", this._currentPrompt)
-      console.log("This.proimptissleep", this.promptIsSleep)
+      // console.log("current pronpt is: ", this._currentPrompt)
+      // console.log("This.proimptissleep", this.promptIsSleep)
     }else{
       this.promptService.clearPrompts();
     }
+
+
   }
 
-
+  public onSleepManagerComplete(){
+    this.promptService.clearSleepPrompt();
+  }
 
   public onClickContinue(){
     this.promptService.clearPrompts();

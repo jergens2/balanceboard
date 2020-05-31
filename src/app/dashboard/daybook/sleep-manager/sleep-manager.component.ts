@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { timer } from 'rxjs';
@@ -23,6 +23,8 @@ export class SleepManagerComponent implements OnInit {
 
 
   public faCloudMoon = faCloudMoon;
+
+  @Output() complete: EventEmitter<boolean> = new EventEmitter();
 
 
   public get sleepCyclePosition(): SleepCyclePosition { return this.sleepService.sleepManager.currentPosition; }
@@ -64,6 +66,14 @@ export class SleepManagerComponent implements OnInit {
     this.screenService.appScreenSize$.subscribe((size)=>{
       this._screenSize = size;
     });
+
+    this.sleepService.formComplete$.subscribe((complete)=>{
+      if(complete === true){
+        this.complete.emit(true);
+      }else{
+        console.log("Error: unable to finish the sleep data form");
+      }
+    })
   }
 
   private _startClock() {

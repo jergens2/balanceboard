@@ -151,7 +151,7 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
           }
         }),
       ];
-      console.log("PIN UNLOCK: " , pinValue, email)
+      // console.log("PIN UNLOCK: " , pinValue, email)
       this.authService.unlockWithPin(pinValue, email);
     } else {
       console.log("Error: no email found in localstorage.")
@@ -190,8 +190,4 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
     this._showUnlockButton = false;
   }
 
-
-  private _confirmPins() {
-
-  }
 }

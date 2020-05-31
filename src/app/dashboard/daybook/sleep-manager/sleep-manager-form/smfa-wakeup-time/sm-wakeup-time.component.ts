@@ -66,7 +66,6 @@ export class SmWakeupTimeComponent implements OnInit {
   }
 
   onTimeChanged(time: moment.Moment) {
-    console.log("Time changed: " + time.format('hh:mm a'))
     this._time = moment(time);
     this._calculateDurationString();
     this.sleepService.sleepManagerForm.setformInputWakeupTime(moment(time));

@@ -14,7 +14,7 @@ import { SleepManagerService } from '../../sleep-manager/sleep-manager.service';
 })
 export class SleepProfileWidgetComponent implements OnInit {
 
-  constructor(private daybookControllerService: DaybookControllerService, private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepManagerService) { }
 
   faCircle = faCircle;
   public sleepProfileForm: FormGroup;
@@ -49,12 +49,12 @@ export class SleepProfileWidgetComponent implements OnInit {
 
   ngOnInit() {
     this.reInitiate();
-    this.daybookControllerService.activeDayController$.subscribe((dayChanged) => {
-      if(dayChanged){
-        this.reInitiate();
-      }
+    // this.daybookControllerService.activeDayController$.subscribe((dayChanged) => {
+    //   if(dayChanged){
+    //     this.reInitiate();
+    //   }
 
-    });
+    // });
   }
 
   public onWakeupTimeChanged(time: moment.Moment) {

@@ -49,6 +49,16 @@ export class UserActionPromptService {
     this._promptsCleared$.next(true);
   }
 
+  public clearSleepPrompt(){
+    const sleepIndex = this.prompts.findIndex(item => item === UserPromptType.SLEEP_MANAGER);
+    if(sleepIndex > -1){
+      this._prompts.splice(sleepIndex, 1);
+    }
+    if(this._prompts.length === 0){
+      this._promptsCleared$.next(true);
+    }
+  }
+
   private _promptsCleared$: Subject<boolean> = new Subject();
   public get promptsCleared$(): Observable<boolean>{
     return this._promptsCleared$.asObservable();

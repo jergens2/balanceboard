@@ -66,18 +66,18 @@ export class SleepManagerFormComponent implements OnInit {
 
   private _finalize() {
     this._isLoading = true;
-    console.log("\n\n***Finalizing")
-    console.log("Wakeup time: ", this.sleepManagerForm.formInputWakeupTime.format('YYYY-MM-DD hh:mm a'));
-    console.log("Prev fall asleep time: ", this.sleepManagerForm.formInputPrevFallAsleep.format('YYYY-MM-DD hh:mm a'));
-    console.log("Duration percent: ", this.sleepManagerForm.formInputDurationPercent);
+    // console.log("\n\n***Finalizing")
+    // console.log("Wakeup time: ", this.sleepManagerForm.formInputWakeupTime.format('YYYY-MM-DD hh:mm a'));
+    // console.log("Prev fall asleep time: ", this.sleepManagerForm.formInputPrevFallAsleep.format('YYYY-MM-DD hh:mm a'));
+    // console.log("Duration percent: ", this.sleepManagerForm.formInputDurationPercent);
 
 
-    console.log("Energy: ", this.sleepManagerForm.formInputStartEnergyPercent);
-    console.log("dreams: ", this.sleepManagerForm.formInputDreams);
-    console.log("activities: ", this.sleepManagerForm.formInputActivities);
+    // console.log("Energy: ", this.sleepManagerForm.formInputStartEnergyPercent);
+    // console.log("dreams: ", this.sleepManagerForm.formInputDreams);
+    // console.log("activities: ", this.sleepManagerForm.formInputActivities);
 
-    console.log("bed time: ", this.sleepManagerForm.formInputFallAsleepTime.format('YYYY-MM-DD hh:mm a'));
-    console.log("next wakeup: ", this.sleepManagerForm.formInputNextWakeup.format('YYYY-MM-DD hh:mm a'));
+    // console.log("bed time: ", this.sleepManagerForm.formInputFallAsleepTime.format('YYYY-MM-DD hh:mm a'));
+    // console.log("next wakeup: ", this.sleepManagerForm.formInputNextWakeup.format('YYYY-MM-DD hh:mm a'));
 
     let data: SleepProfileHTTPData = {
       _id: '',

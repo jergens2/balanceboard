@@ -44,78 +44,58 @@ export class SleepManagerService {
 
   public initiate$(userId: string): Observable<boolean> {
     this._userId = userId;
-    // this._startClock();
-    return this._loadSleepProfile$();
+    this._loadSleepProfile$();
+    return this._userActionRequired$.asObservable();
   }
   public logout(){
     this._userId = null;
-    // this._clockSubs.forEach((sub)=>sub.unsubscribe());
-    // this._clockSubs = [];
   }
 
-  /**
-   *  router.post( '/create', controller.create);
-      router.post( '/read', controller.read);
-      router.post( '/update', controller.update);
-      router.post( '/delete', controller.delete);
-   */
+  private _formComplete$: Subject<boolean> = new Subject();
+  public get formComplete$(): Observable<boolean> { return this._formComplete$.asObservable(); }
+
+
+  private _userActionRequired$: Subject<boolean> = new Subject();
   private _loadSleepProfile$(): Observable<boolean> {
-    const _userActionRequred$: Subject<boolean> = new Subject();
     this._getSleepProfileHttp$().subscribe((manager: SleepManager)=>{
       this._sleepManager = manager;
       this._sleepManagerForm = new SleepManagerForm(manager);
       const userActionRequired = this._sleepManager.userActionRequired;
-      _userActionRequred$.next(userActionRequired);
+      this._userActionRequired$.next(userActionRequired);
     }, (error)=>{
       console.log("Error getting sleep profile: ", error);
-      _userActionRequred$.next(false);
+      this._userActionRequired$.next(false);
     });
-    return _userActionRequred$.asObservable();
+    return this._userActionRequired$.asObservable();
   }
 
   public updateSleepProfile$(sleepProfile: SleepProfileHTTPData): Observable<any> {
     sleepProfile.userId = this._userId;
-    console.log("Update sleep profile: " , sleepProfile);
+    // console.log("Update sleep profile: " , sleepProfile);
     const url = serverUrl + '/api/sleep-manager/update';
 
-    this.httpClient.post(url, sleepProfile).subscribe((response)=>{
-      console.log("Response updating: " , response);
+    this.httpClient.post<{
+      message: string,
+      success: boolean,
+      data: any,
+    }>(url, sleepProfile).subscribe((response)=>{
+      // console.log("Response updating: " , response);
+
+      const newManager = new SleepManager(response.data)
+      this._sleepManager = newManager;
+      this._sleepManagerForm = new SleepManagerForm(newManager);
+      const userActionRequired = this._sleepManager.userActionRequired;
+      
+      this._formComplete$.next(true);
+
 
     }, (error)=>{
       console.log("There has been an error.", error)
+      this._formComplete$.next(false);
     });
-    return null;
+    return this._formComplete$.asObservable();
   }
   
-
-
-  // private _clockSubs: Subscription[] = [];
-  // private _startClock(){
-  //   const oneHour = 60*60*1000;
-  //   this._clockSubs = [
-  //     timer(oneHour).subscribe((tick)=>{
-  //       // this._updateSleepStatus();
-  //     }),
-  //   ];
-  // }
-
-  // private _updateClockSubs(msUntilNextRequest: number){
-  //   this._clockSubs.forEach(s => s.unsubscribe());
-  //   this._clockSubs = [
-  //     timer(msUntilNextRequest).subscribe((tick)=>{
-  //       this._updateSleepStatus();
-  //     }),
-  //   ];
-  // }
-
-  // private _updateSleepStatus(){
-  //    this._getSleepProfileHttp$().subscribe((sleepManager: SleepManager)=>{
-
-  //    }, (error)=>{
-  //      console.log("Error of some kind: ", error);
-  //    })
-  // }
-
   private _getSleepProfileHttp$(): Observable<SleepManager>{
     const url = serverUrl + '/api/sleep-manager/read';
     const data = {
@@ -127,7 +107,6 @@ export class SleepManagerService {
       success: boolean,
       data: SleepProfileHTTPData,
     })=>{
-      console.log("Get response: " , response)
       return new SleepManager(response.data);
     }));
   }
