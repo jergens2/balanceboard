@@ -90,6 +90,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     // console.log("APP COMPONENT NG ON INIT")
+    this._resetUserInactiveTimer();
     this._reload();
   }
 
@@ -203,12 +204,16 @@ export class AppComponent implements OnInit {
 
   }
 
+
+  private _inactivityStartTime: moment.Moment;
   private _resetUserInactiveTimer() {
+    this._inactivityStartTime = moment();
     this._userActivitySub.unsubscribe();
-    const inactivityLockTime = (moment().add(30, 'minutes')).diff(moment(), 'milliseconds');
-    this._userActivitySub = timer(inactivityLockTime).subscribe((tick) => {
-      console.log("Automatically locking app after 30 minutes.")
-      this.authService.lock();
+    this._userActivitySub = timer(0, 3000).subscribe((tick)=>{
+      const diffMin = moment().diff(this._inactivityStartTime, "minutes");
+      if(diffMin > 15){
+        this.authService.lock();
+      }
     });
   }
 

@@ -50,7 +50,13 @@ export class SleepManager {
 
     private _currentDbValue: SleepProfileHTTPData;
 
+    /**
+     * 
+     * @param data 
+     * data can be null, and this class will handle that
+     */
     constructor(data: SleepProfileHTTPData) {
+        console.log("constructing profile: " , data);
         this._currentDbValue = data;
 
         this._validate();
@@ -87,6 +93,7 @@ export class SleepManager {
              * However, otherwise we will either require to show the user a prompt to address the case,
              * and if the data is out of date, then new data is required.
              */
+            console.log("Current position is ", this.currentPosition)
 
             if (this._currentPosition === SleepCyclePosition.ACTIVE) {
                 userActionRequired = false;
@@ -104,7 +111,7 @@ export class SleepManager {
                 dataUpdateRequired = true;
             }
         } else {
-            
+            console.log("No data")
             this._previousFallAsleepTime = moment(defaultSleepTime).subtract(24, 'hours');
             this._previousWakeupTime = defaultWakeupTime;
             this._nextFallAsleepTime = defaultSleepTime;

@@ -1,4 +1,4 @@
-<div class="sleep-manager-root">
+<div class="sleep-manager-root" [ngClass]="rootNgClass">
     <div class="clock-container">
 
         <div style="color: gray; font-size: 0.9em; font-weight: bold; align-self: center; margin-bottom: 5px;">
@@ -8,27 +8,32 @@
             style="color: rgb(5, 35, 92); font-weight: bold; font-size: 2.2em; display:flex;flex-direction: row;justify-content: center;">
             {{ currentTime }}
         </div>
-    
+
     </div>
-    
+
     <div class="content">
-        <div *ngIf="isAfterBedtime" class="item">
+        <div *ngIf="isAfterBedtime">
             It's nearly bedtime.
         </div>
     
-        <div *ngIf="isAfterBedtime" class="item">
+        <div *ngIf="isAfterBedtime">
             It's after bedtime.
         </div>
     
-        <div *ngIf="isSleepTime" class="item">
+        <div *ngIf="isSleepTime">
             Sleep time.
             <fa-icon [icon]="faCloudMoon" style="color: rgb(0, 27, 78); font-size: 2.0em;"></fa-icon>
         </div>
     
-        <div *ngIf="isEarlyWakeup" class="item">
+        <div *ngIf="isEarlyWakeup">
             Early wakeup!
         </div>
     
-        <app-sleep-manager-form *ngIf="newDataRequired" class="item"></app-sleep-manager-form>
+        <app-sleep-manager-form *ngIf="newDataRequired" style="height: 100%;"></app-sleep-manager-form>
     </div>
+
+    
+
+
+
 </div>

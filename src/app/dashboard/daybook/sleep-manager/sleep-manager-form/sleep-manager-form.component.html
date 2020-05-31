@@ -1,10 +1,11 @@
-<div class="sleep-manager-data-input">
-    <div style="display: flex; flex-direction: column; margin-bottom: 20px; min-height: 60px;">
-        <div style="display:flex;flex-direction: row;justify-content: space-between;" *ngIf="prevFallAsleepTimeIsSet && wakeupTimeIsSet">
+<div class="sleep-manager-data-input" *ngIf="!isLoading">
+    <div class="sleep-duration-container" *ngIf="showDurationContainer">
+        <div style="display:flex;flex-direction: row;justify-content: space-between;"
+            *ngIf="prevFallAsleepTimeIsSet && wakeupTimeIsSet">
             <div class="property-name">
                 Sleep period
             </div>
-            <div class="property-name" style="color: rgb(115, 170, 216);" >
+            <div class="property-name" style="color: rgb(115, 170, 216);">
                 {{ sleepPeriodDuration }}
             </div>
         </div>
@@ -14,34 +15,34 @@
             <div class="property-name" *ngIf="prevFallAsleepTimeIsSet && wakeupTimeIsSet"> to </div>
             <div class="property-value" *ngIf="wakeupTimeIsSet">{{ wakeupTime.format('h:mm a') }}</div>
             <div class="property-name" *ngIf="!prevFallAsleepTimeIsSet && wakeupTimeIsSet"> woke up</div>
-
         </div>
         <div>
-            <span class="property-name" *ngIf="durationIsSet">Sleep duration: </span> <span class="property-value">{{ sleepDuration }} </span>
-        </div>
-
-    </div>
-    <div style="width: 100%; height: 1px; margin-top: 10px; margin-bottom: 10px; border-top: 1px solid gray;;">
-
+            <span class="property-name" *ngIf="durationIsSet">Sleep duration: </span> <span
+                class="property-value">{{ sleepDuration }} </span>
+        </div> 
     </div>
 
-    <div class="item">
-        <app-sm-wakeup-time *ngIf="smfaWakeupTime" class="item">
-        </app-sm-wakeup-time>
 
-        <app-sm-prev-fall-asleep-time *ngIf="smfaPreviousFallAsleep" class="item">
-        </app-sm-prev-fall-asleep-time>
 
-        <app-sm-sleep-duration *ngIf="smfaSleepDuration" class="item"></app-sm-sleep-duration>
+    <app-sm-wakeup-time *ngIf="smfaWakeupTime" class="form-item">
+    </app-sm-wakeup-time>
 
-        <app-smfa-energy *ngIf="smfaEnergy" class="item"></app-smfa-energy>
+    <app-sm-prev-fall-asleep-time *ngIf="smfaPreviousFallAsleep" class="form-item">
+    </app-sm-prev-fall-asleep-time>
 
-        <app-sm-bedtime *ngIf="smfaBedtime" class="item">
-        </app-sm-bedtime>
+    <app-sm-sleep-duration *ngIf="smfaSleepDuration" class="form-item"></app-sm-sleep-duration>
 
-        <app-sm-dreams *ngIf="smfaDreams" class="item">
-        </app-sm-dreams>
-    </div>
+    <app-smfa-energy *ngIf="smfaEnergy" class="form-item"></app-smfa-energy>
+
+    <app-sm-dreams *ngIf="smfaDreams" class="form-item">
+    </app-sm-dreams>
+
+    <app-sm-bedtime *ngIf="smfaBedtime" class="form-item">
+    </app-sm-bedtime>
+
+
+
+
 
 
 
@@ -54,8 +55,14 @@
         </div>
         <div style="width: 50px; display:flex;flex-direction: row-reverse;">
             <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickForward()">
-                <fa-icon [icon]="faArrowRight"></fa-icon>
+                <fa-icon [icon]="faArrowRight" *ngIf="proceedNormally"></fa-icon>
+                <fa-icon [icon]="faCheck" style='color: lime' *ngIf="finalAction"></fa-icon>
             </button>
         </div>
     </div>
+</div>
+
+
+<div *ngIf="isLoading" class="loading-container">
+    <app-spinner style="width: 150px; height: 150px;"></app-spinner>
 </div>

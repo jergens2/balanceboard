@@ -73,10 +73,20 @@ export class SleepManagerService {
     return _userActionRequred$.asObservable();
   }
 
-  public updateSleepProfile$(sleepProfile: any): Observable<any> {
-    console.log("Method incomplete");
+  public updateSleepProfile$(sleepProfile: SleepProfileHTTPData): Observable<any> {
+    sleepProfile.userId = this._userId;
+    console.log("Update sleep profile: " , sleepProfile);
+    const url = serverUrl + '/api/sleep-manager/update';
+
+    this.httpClient.post(url, sleepProfile).subscribe((response)=>{
+      console.log("Response updating: " , response);
+
+    }, (error)=>{
+      console.log("There has been an error.", error)
+    });
     return null;
   }
+  
 
 
   // private _clockSubs: Subscription[] = [];
@@ -111,12 +121,13 @@ export class SleepManagerService {
     const data = {
       userId: this._userId,
     };
-    return this.httpClient.post<any>(url, this._userId)
+    return this.httpClient.post<any>(url, data)
     .pipe<SleepManager>(map((response: {
       message: string,
       success: boolean,
       data: SleepProfileHTTPData,
     })=>{
+      console.log("Get response: " , response)
       return new SleepManager(response.data);
     }));
   }

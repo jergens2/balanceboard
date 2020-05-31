@@ -51,7 +51,7 @@ export class SmDreamsComponent implements OnInit {
     this._valueChangeSub.unsubscribe();
     this._valueChangeSub = this.dreamsForm.controls['dreams'].valueChanges.subscribe((valueChange) => {
       if (valueChange !== null) {
-        console.log("Value changed: ", valueChange);
+        // console.log("Value changed: ", valueChange);
 
         if (valueChange.length > 0) {
           this._showAddButton = true;

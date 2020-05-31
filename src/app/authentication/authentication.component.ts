@@ -23,18 +23,17 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthenticationService) { }
 
-  private _isLoading: boolean = true;
-  public get isLoading(): boolean { return this._isLoading; }
 
 
-  private _action: 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' = 'INITIAL';
-  public get action(): 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' { return this._action; }
+
+  private _action: 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' | 'LOADING'= 'LOADING';
+  public get action(): 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' | 'LOADING' { return this._action; }
   public get actionIsInitial(): boolean { return this._action === 'INITIAL'; }
   public get actionIsLogin(): boolean { return this._action === 'LOGIN'; }
   public get actionIsRegister(): boolean { return this._action === 'REGISTER'; }
   public get actionIsPin(): boolean { return this._action === 'PIN'; }
   public get actionIsLockScreen(): boolean { return this._action === 'LOCK_SCREEN'; }
-
+  public get isLoading(): boolean { return this._action === 'LOADING'; }
 
 
   ngOnInit() {
@@ -59,7 +58,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     this.authService.loginFromRegistration();
   }
 
-  public onUnlock(){
+  public onUnlock() {
     this._action = 'PIN';
   }
 
@@ -67,8 +66,8 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   private _lockSub: Subscription = new Subscription();
   private _reload() {
     this._lockSub.unsubscribe();
-    this._lockSub = this.authService.lockApp$.subscribe((lock)=>{
-      if(lock === true){
+    this._lockSub = this.authService.lockApp$.subscribe((lock) => {
+      if (lock === true) {
         console.log("received lock signal")
         this._action = 'LOCK_SCREEN'
       }
@@ -77,15 +76,12 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     // console.log("Current auth data = ", currentAuthData)
     if (currentAuthData === 'NOT_PRESENT') {
       this._action = 'INITIAL';
-      this._isLoading = false;
     } else if (currentAuthData === 'EXPIRED') {
       this._action = 'LOCK_SCREEN';
-      this._isLoading = false;
     } else if (currentAuthData === 'VALID') {
-      this._refreshToken()
+      this._refreshToken();
     } else if (currentAuthData === 'LOCKED') {
       this._action = 'LOCK_SCREEN';
-      this._isLoading = false;
     }
   }
 
@@ -99,12 +95,10 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
         } else {
           // console.log("Unsuccessful token refresh.  opening PIN pad")
           this._action = 'PIN';
-          this._isLoading = false;
         }
       });
     } else {
       this._action = 'INITIAL';
-      this._isLoading = false;
     }
   }
 

@@ -6,27 +6,31 @@
       balanceboard
     </div>
 
-    <div *ngIf="isLoading" style="width: 250px; height: 250px; display:flex;flex-direction: row; justify-content: center; align-items: center;">
+
+
+    <div *ngIf="actionIsInitial" class="buttons-container">
+      <button class="medium-button login-button" (click)="onClickLogin()">
+        Login
+        <fa-icon [icon]="faSignInAlt" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
+      </button>
+      <button class="medium-button register-button" (click)="onClickRegister()">
+        Sign Up
+        <fa-icon [icon]="faUserPlus" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
+      </button>
+    </div>
+
+    <app-login *ngIf="actionIsLogin" (cancel)="onCancel()"></app-login>
+    <app-lock-screen *ngIf="actionIsLockScreen" (cancel)="onCancel()" (unlock)="onUnlock()"></app-lock-screen>
+    <app-registration *ngIf="actionIsRegister" (cancel)="onCancel()" (login)="onLoginFromReg()"></app-registration>
+    <app-pin-pad-unlock *ngIf="actionIsPin" (close)="onCancel()"></app-pin-pad-unlock>
+    
+    <div *ngIf="isLoading"
+      style="width: 250px; height: 250px; display:flex;flex-direction: row; justify-content: center; align-items: center;">
       <app-spinner style="width: 220px; height: 220px;"></app-spinner>
     </div>
-    <div *ngIf="!isLoading">
-      <div *ngIf="actionIsInitial" class="buttons-container">
-        <button class="medium-button login-button" (click)="onClickLogin()">
-          Login
-          <fa-icon [icon]="faSignInAlt" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
-        </button>
-        <button class="medium-button register-button" (click)="onClickRegister()">
-          Sign Up
-          <fa-icon [icon]="faUserPlus" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
-        </button>
-      </div>
 
-      <app-login *ngIf="actionIsLogin" (cancel)="onCancel()"></app-login>
-      <app-lock-screen *ngIf="actionIsLockScreen" (cancel)="onCancel()" (unlock)="onUnlock()"></app-lock-screen>
-      <app-registration *ngIf="actionIsRegister" (cancel)="onCancel()" (login)="onLoginFromReg()"></app-registration>
-      <app-pin-pad-unlock *ngIf="actionIsPin" (close)="onCancel()"></app-pin-pad-unlock>
-    </div>
 
 
 
   </div>
+</div>

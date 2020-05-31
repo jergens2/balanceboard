@@ -7,6 +7,6 @@ export enum SleepManagerFormActions{
     
     DREAMS = 'DREAMS',
 
-    NEXT_WAKEUP_TIME = 'NEXT_WAKEUP_TIME',
+    // NEXT_WAKEUP_TIME = 'NEXT_WAKEUP_TIME',
     BEDTIME = 'BEDTIME',
 }

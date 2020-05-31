@@ -93,6 +93,52 @@ export class AuthenticationService {
       });
   }
 
+  
+  public unlockWithPin(pin: string, email: string) {
+    const data = {
+      email: email,
+      pin: pin,
+    }
+    this.http.post<any>(serverUrl + "/api/authentication/pin-unlock", data)
+      .pipe<AuthStatus>(map((response: {
+        message: string,
+        success: boolean,
+        data: {
+          id: string,
+          username: string,
+          email: string,
+          token: string,
+          expiresIn: number,
+        }
+      }) => {
+        // console.log("Login attempt response: ", response)
+        // console.log("Expires in: ", response.data.expiresIn)
+        const token: string = response.data.token;
+        const userId: string = response.data.id;
+        const username: string = response.data.username;
+        const email: string = response.data.email;
+        const expiresAt = moment().add(response.data.expiresIn, 'seconds');
+        // console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
+        let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
+        return responseAuthStatus;
+      }))
+      .subscribe((authStatus: AuthStatus) => {
+        // console.log("pin unlock ")
+        this._loginAttempt$.next(true);
+        this._loginRoutine(authStatus, 'PIN');
+
+      }, (error) => {
+        // console.log("Login attempt failed: ", error);
+        if(this._unlockAttempts >= 3){
+          this.logout();
+        }else{
+          this._unlockAttempts++;
+          this._loginAttempt$.next(false);
+        }
+        
+      });
+  }
+
   public loginFromRegistration() {
     const authData = this._registrationContoller.getAuthData();
     this.attemptLogin(authData);
@@ -138,67 +184,10 @@ export class AuthenticationService {
     return _result$.asObservable();
   }
 
-  public getUserById$(userId: string): Observable<string> {
-    return this.http.get<any>(serverUrl + "/api/authentication/getUserById/" + userId)
-      .pipe(map((response) => {
-        let settings: any[] = Object.assign([], response.data.userSettings);
-        let userSettings: UserSetting[] = [];
-        for (let setting of settings) {
-          let userSetting: UserSetting = new UserSetting(setting.name, setting.booleanValue, setting.numericValue, setting.stringValue);
-          userSettings.push(userSetting);
-        }
-        return response.data.username;
-      }))
-  }
-
   public checkForExistingAccount$(email: string, username: string): Observable<Object> {
     return this.http.get(serverUrl + "/api/authentication/check-for-existing/" + email + "/" + username);
   }
 
-  public unlockWithPin(pin: string, email: string) {
-    const data = {
-      email: email,
-      pin: pin,
-    }
-    this.http.post<any>(serverUrl + "/api/authentication/pin-unlock", data)
-      .pipe<AuthStatus>(map((response: {
-        message: string,
-        success: boolean,
-        data: {
-          id: string,
-          username: string,
-          email: string,
-          token: string,
-          expiresIn: number,
-        }
-      }) => {
-        // console.log("Login attempt response: ", response)
-        // console.log("Expires in: ", response.data.expiresIn)
-        const token: string = response.data.token;
-        const userId: string = response.data.id;
-        const username: string = response.data.username;
-        const email: string = response.data.email;
-        const expiresAt = moment().add(response.data.expiresIn, 'seconds');
-        // console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
-        let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
-        return responseAuthStatus;
-      }))
-      .subscribe((authStatus: AuthStatus) => {
-        // console.log("pin unlock ")
-        this._loginAttempt$.next(true);
-        this._loginRoutine(authStatus, 'PIN');
-
-      }, (error) => {
-        // console.log("Login attempt failed: ", error);
-        if(this._unlockAttempts >= 3){
-          this.logout();
-        }else{
-          this._unlockAttempts++;
-          this._loginAttempt$.next(false);
-        }
-        
-      });
-  }
   public finalizeRegistration$(data: { email: string, code: string }): Observable<any> {
     return this.http.post<any>(serverUrl + "/api/authentication/finalize-registration", data);
   }
@@ -218,8 +207,7 @@ export class AuthenticationService {
    * 
    * in the AppComponent:
    * Start with loading=true, then  check local storage.
-   * if local storage --> try to log in with it (and continue loading in the app component)
-   * but if no local storage, stop loading 
+   * 
    */
   public checkLocalStorage$: Subject<boolean> = new Subject();
 
@@ -242,9 +230,12 @@ export class AuthenticationService {
   /**
    * Both lock() and logout() are methods that stop the app, via _appComponentLogin$.next(false), causing AppComponent to unload the app.
    * The difference between lock() and logout() is:
-   * lock allows for an unlock via PIN for a pre-determined period of time (e.g. 1 hour window), while logout() clears everything instantly.
+   * lock allows for an unlock via PIN for a pre-determined period of time (e.g. 1 hour window), while logout() clears everything
    * lock(), therefore, is simply for the convenience of the user to not have to sign out of their app every time they leave their PC, 
    * rather than leave the app completely open.  an optional function.
+   * 
+   * TO DO:  Add an api call:  /authentication/lock 
+   * why?  for the purpose of telling the server.  Why though?
    */
   public lock() {
     console.log("locking")
@@ -275,6 +266,21 @@ export class AuthenticationService {
     this._unlockAttempts = 0;
   }
 
+
+
+
+    // public getUserById$(userId: string): Observable<string> {
+  //   return this.http.get<any>(serverUrl + "/api/authentication/getUserById/" + userId)
+  //     .pipe(map((response) => {
+  //       let settings: any[] = Object.assign([], response.data.userSettings);
+  //       let userSettings: UserSetting[] = [];
+  //       for (let setting of settings) {
+  //         let userSetting: UserSetting = new UserSetting(setting.name, setting.booleanValue, setting.numericValue, setting.stringValue);
+  //         userSettings.push(userSetting);
+  //       }
+  //       return response.data.username;
+  //     }))
+  // }
 
 
 

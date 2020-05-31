@@ -14,9 +14,9 @@ export class SleepManagerForm {
     private _formInputWakeupTime: moment.Moment;
     private _formInputPrevFallAsleep: moment.Moment;
     private _formInputStartEnergyPercent: number;
-    private _formInputDreams: string[];
+    private _formInputDreams: string[] = [];
     private _formInputDurationPercent: number;
-    private _formInputActivities: TimelogEntryActivity[];
+    private _formInputActivities: TimelogEntryActivity[] = [];
     private _formInputBedTime: moment.Moment;
     private _formInputNextWakeup: moment.Moment;
 
@@ -40,7 +40,7 @@ export class SleepManagerForm {
     public get formInputDreams(): string[] { return this._formInputDreams; }
     public get formInputDurationPercent(): number { return this._formInputDurationPercent; }
     public get formInputActivities(): TimelogEntryActivity[] { return this._formInputActivities; }
-    public get formInputBedTime(): moment.Moment { return this._formInputBedTime; }
+    public get formInputFallAsleepTime(): moment.Moment { return moment(this._formInputBedTime).add(20, 'minutes'); }
     public get formInputNextWakeup(): moment.Moment { return this._formInputNextWakeup; }
 
     public get durationString(): string { return this._durationString; }
@@ -51,6 +51,8 @@ export class SleepManagerForm {
     public setformInputDurationPercent(percent: number) { this._formInputDurationPercent = percent; }
     public setStartEnergy(percent: number) { this._formInputStartEnergyPercent = percent; }
     public setformInputDreams(dreams: string[]) { this._formInputDreams = dreams; }
+    public setformInputBedtime(bedtime: moment.Moment) { this._formInputBedTime = moment(bedtime); }
+    public setformInputNextWakeup(nextWakeup: moment.Moment) { this._formInputNextWakeup = moment(nextWakeup); }
 
     public onClickForward() {
         if (this.formAction === SleepManagerFormActions.WAKEUP_TIME) {
@@ -72,16 +74,20 @@ export class SleepManagerForm {
             this._durationString = DurationString.getDurationStringFromMS(durationMS, true);
             this._formAction$.next(SleepManagerFormActions.ENERGY);
         }
-        else if (this.formAction === SleepManagerFormActions.ENERGY) { 
+        else if (this.formAction === SleepManagerFormActions.ENERGY) {
             this._energyIsSet = true;
-            this._formAction$.next(SleepManagerFormActions.DREAMS); 
+            this._formAction$.next(SleepManagerFormActions.DREAMS);
         }
-        else if (this.formAction === SleepManagerFormActions.DREAMS) { 
+        else if (this.formAction === SleepManagerFormActions.DREAMS) {
             this._dreamsSet = true;
-            this._formAction$.next(SleepManagerFormActions.NEXT_WAKEUP_TIME); 
+            this._formAction$.next(SleepManagerFormActions.BEDTIME);
         }
-        else if (this.formAction === SleepManagerFormActions.NEXT_WAKEUP_TIME) { this._formAction$.next(SleepManagerFormActions.BEDTIME); }
-        else if (this.formAction === SleepManagerFormActions.BEDTIME) { this._nextFallAsleepNext(); }
+        // else if (this.formAction === SleepManagerFormActions.NEXT_WAKEUP_TIME) {
+        //     this._formAction$.next(SleepManagerFormActions.BEDTIME);
+        // }
+        else if (this.formAction === SleepManagerFormActions.BEDTIME) {
+            this._finalize();
+        }
     }
 
 
@@ -90,8 +96,7 @@ export class SleepManagerForm {
         else if (this.formAction === SleepManagerFormActions.SLEEP_DURATION) { this._formAction$.next(SleepManagerFormActions.PREV_SLEEP_TIME); }
         else if (this.formAction === SleepManagerFormActions.ENERGY) { this._formAction$.next(SleepManagerFormActions.SLEEP_DURATION); }
         else if (this.formAction === SleepManagerFormActions.DREAMS) { this._formAction$.next(SleepManagerFormActions.ENERGY); }
-        else if (this.formAction === SleepManagerFormActions.NEXT_WAKEUP_TIME) { this._formAction$.next(SleepManagerFormActions.DREAMS); }
-        else if (this.formAction === SleepManagerFormActions.BEDTIME) { this._formAction$.next(SleepManagerFormActions.NEXT_WAKEUP_TIME); }
+        else if (this.formAction === SleepManagerFormActions.BEDTIME) { this._formAction$.next(SleepManagerFormActions.DREAMS); }
     }
 
     private _formAction$: BehaviorSubject<SleepManagerFormActions> = new BehaviorSubject(SleepManagerFormActions.WAKEUP_TIME);
@@ -121,9 +126,12 @@ export class SleepManagerForm {
     // private _nextWakeupNext() {
 
     // }
-    private _nextFallAsleepNext() {
-        console.log("final action")
+
+    private _finalize$: Subject<boolean> = new Subject();
+    private _finalize() {
+        this._finalize$.next(true);
     }
+    public get finalize$(): Observable<boolean> { return this._finalize$.asObservable(); }
 
     // private _prevSleepTimeBack() {
 
