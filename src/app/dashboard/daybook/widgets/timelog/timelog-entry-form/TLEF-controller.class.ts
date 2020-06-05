@@ -5,19 +5,18 @@ import { Observable, BehaviorSubject, Subject } from "rxjs";
 import { DaybookController } from "../../../controller/daybook-controller.class";
 import { TimelogDelineator, TimelogDelineatorType } from "../timelog-delineator.class";
 import { ToolboxService } from "../../../../../toolbox-menu/toolbox.service";
-import { DaybookTimePosition } from "../../../daybook-time-position-form/daybook-time-position.enum";
 import { TimelogDisplayGridItem } from "../timelog-display-grid-item.class";
 import { ToolType } from "../../../../../toolbox-menu/tool-type.enum";
 import { TLEFControllerItem } from "./TLEF-controller-item.class";
 import { SleepEntryItem } from "./sleep-entry-form/sleep-entry-item.class";
 import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from "../../../controller/items/daybook-display-update.interface";
 import { TLEFGridBarItem } from "./tlef-parts/tlef-grid-items-bar/tlef-grid-bar-item.class";
-import { DaybookAvailabilityType } from "../../../controller/items/daybook-availability-type.enum";
 import { ActivityCategoryDefinition } from "../../../../../dashboard/activities/api/activity-category-definition.class";
-import { ActivityTree } from "../../../../../dashboard/activities/api/activity-tree.class";
 import { ActivityCategoryDefinitionService } from "../../../../activities/api/activity-category-definition.service";
 import { ColorConverter } from "../../../../../shared/utilities/color-converter.class";
 import { ColorType } from "../../../../../shared/utilities/color-type.enum";
+import { DaybookTimeScheduleStatus } from "../../../api/controllers/daybook-time-schedule-status.enum";
+import { TimelogEntryBuilder } from "../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class";
 
 export class TLEFController {
 
@@ -298,21 +297,22 @@ export class TLEFController {
                 let timelogEntry: TimelogEntryItem;
                 let sleepEntry: SleepEntryItem;
                 let isAvailable: boolean = false;
-                const availability: DaybookAvailabilityType = this._activeDayController.getDaybookAvailability(currentTime, endTime);
+                const availability: DaybookTimeScheduleStatus = this._activeDayController.getScheduleStatus(currentTime);
                 // console.log(currentTime.format('YYYY-MM-DD hh:mm a ') + " : Availability is: " + availability)
-                if (availability === DaybookAvailabilityType.SLEEP) {
+                if (availability === DaybookTimeScheduleStatus.SLEEP) {
                     formCase = TLEFFormCase.SLEEP;
                     console.log("warning: disable this");
-                    sleepEntry = new SleepEntryItem(moment().format('YYYY-MM-DD'), moment(), moment());
-                } else if (availability === DaybookAvailabilityType.TIMELOG_ENTRY) {
+                    sleepEntry = new SleepEntryItem(moment(), moment());
+                } else if (availability === DaybookTimeScheduleStatus.ACTIVE) {
                     timelogEntry = this._activeDayController.getTimelogEntryItem(currentTime, endTime);
                     formCase = this._determineCase(timelogEntry);
-                } else if (availability === DaybookAvailabilityType.AVAILABLE) {
+                } else if (availability === DaybookTimeScheduleStatus.AVAILABLE) {
                     isAvailable = true;
                     timelogEntry = new TimelogEntryItem(currentTime, endTime);
                     formCase = this._determineCase(timelogEntry);
                 }
-                let backgroundColor: string = this._getBackgroundColor(timelogEntry);
+                const tleBuilder: TimelogEntryBuilder = new TimelogEntryBuilder();
+                const backgroundColor: string = tleBuilder.getBackgroundColor(timelogEntry, this._activitiesService.activitiesTree);
                 let newItem: TLEFControllerItem = new TLEFControllerItem(currentTime, endTime, isAvailable, formCase, timelogEntry, sleepEntry, startDelineator, endDelineator, backgroundColor);
                 if (startDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
                     newItem.isDrawing
@@ -413,30 +413,7 @@ export class TLEFController {
     }
     public get onFormClosed$(): Observable<boolean> { return this._formClosed$.asObservable(); }
 
-    private _getBackgroundColor(timelogEntry: TimelogEntryItem): string {
-        let backgroundColor: string = "";
-        if (timelogEntry) {
-            if (timelogEntry.timelogEntryActivities.length > 0) {
-                let topActivitySet: boolean = false;
-                timelogEntry.timelogEntryActivities.sort((a1, a2) => {
-                    if (a1.percentage > a2.percentage) return -1;
-                    else if (a1.percentage < a2.percentage) return 1;
-                    else return 0;
-                }).forEach((activityEntry) => {
-                    let foundActivity: ActivityCategoryDefinition = this._activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
-                    let durationMS: number = (activityEntry.percentage * timelogEntry.durationMilliseconds) / 100;
-                    let durationMinutes: number = durationMS / (60 * 1000);
-                    if (!topActivitySet) {
-                        topActivitySet = true;
-                        const alpha = 0.2;
-                        backgroundColor = ColorConverter.convert(foundActivity.color, ColorType.RGBA, alpha);
-                    }
-
-                });
-            }
-        }
-        return backgroundColor;
-    }
+    
     /**
      * Subscribe to the toolbox Close (X) button.
      */

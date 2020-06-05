@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
-import { Subscription, Observable, fromEvent, Subscriber } from 'rxjs';
+import { Subscription, Observable, fromEvent, Subscriber, timer } from 'rxjs';
 import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks, faUsers, IconDefinition, faBatteryEmpty, faBatteryQuarter, faBatteryHalf, faBatteryThreeQuarters, faBatteryFull } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.model';
 import { HeaderService } from './header.service';
@@ -81,17 +81,16 @@ export class HeaderComponent implements OnInit {
     this.headerMenus = Object.assign([], this._buildHeaderMenus());
 
     this._setBattery();
-    this.daybookDisplayService.displayUpdated$.subscribe((item) => {
+    timer(0, 30000).subscribe((tick)=>{
       this._setBattery();
-    });
-
+    })
     
   }
 
   public onClickClock(){
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
     this.router.navigate(['/daybook']);
-    this.daybookDisplayService.openNewCurrentTimelogEntry();
+    // this.daybookDisplayService.openNewCurrentTimelogEntry();
   }
   public onClickBattery(){
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);
@@ -187,24 +186,25 @@ export class HeaderComponent implements OnInit {
   }
 
   private _setBattery() {
-    const batteryLevel: number = this.sleepService.getEnergyLevel();
-    if (batteryLevel >= 0 && batteryLevel < 0.125) {
+    const batteryLevel = 100 - this.sleepService.getEnergyLevel();
+    // console.log("Battery level: " , batteryLevel)
+    if (batteryLevel >= 0 && batteryLevel < 12.5) {
       this._batteryIcon = faBatteryEmpty;
       this._batteryNgClass = 'battery-empty';
     }
-    else if (batteryLevel >= 0.125 && batteryLevel < 0.375) {
+    else if (batteryLevel >= 12.5 && batteryLevel < 37.5) {
       this._batteryIcon = faBatteryQuarter;
       this._batteryNgClass = 'battery-quarter';
     }
-    else if (batteryLevel >= 0.375 && batteryLevel < 0.625) {
+    else if (batteryLevel >= 37.5 && batteryLevel < 62.5) {
       this._batteryIcon = faBatteryHalf;
       this._batteryNgClass = 'battery-half';
     }
-    else if (batteryLevel >= 0.625 && batteryLevel < 0.875) {
+    else if (batteryLevel >= 62.5 && batteryLevel < 87.5) {
       this._batteryIcon = faBatteryThreeQuarters;
       this._batteryNgClass = 'battery-three-quarters';
     }
-    else if (batteryLevel >= 0.875 && batteryLevel <= 1) {
+    else if (batteryLevel >= 87.5 && batteryLevel <= 100) {
       this._batteryIcon = faBatteryFull;
       this._batteryNgClass = 'battery-full';
     } else {
@@ -213,7 +213,7 @@ export class HeaderComponent implements OnInit {
       this._batteryIcon = null;
     }
     // console.log("battery ng class" + this.batteryNgClass)
-    this._batteryPercent = (batteryLevel * 100).toFixed(0);
+    this._batteryPercent = (batteryLevel).toFixed(0);
   }
 
   private logout() {

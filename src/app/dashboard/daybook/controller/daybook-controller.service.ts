@@ -70,6 +70,10 @@ export class DaybookControllerService {
     return this._loginComplete$.asObservable();
   }
 
+  public saveTodayControllerChanges$(): Observable<any>{
+    return this._updateController$(this.todayController, {prevDayChanged: true, thisDayChanged: true, nextDayChanged: true});
+  }
+
   public logout() {
     // console.log("Logging out of daybook controller service")
     this._userId = null;
@@ -207,7 +211,7 @@ export class DaybookControllerService {
     items.forEach((controller: DaybookController) => {
       // console.log("Subscribing to daybookDayItem: " + daybookDayItem.dateYYYYMMDD);
       const sub = controller.dataChanged$.subscribe((daysChanged) => {
-        this._updateController(controller, daysChanged);
+        this._updateController$(controller, daysChanged);
       });
       this._daybookItemSubs.push(sub);
     });
@@ -245,8 +249,8 @@ export class DaybookControllerService {
    * @param controller 
    * @param daysChanged 
    */
-  private _updateController(controller: DaybookController, daysChanged) {
-    // console.log("Updating the controller in the request service: ", controller)
+  private _updateController$(controller: DaybookController, daysChanged): Observable<boolean> {
+    let isComplete$: Subject<boolean> = new Subject();
     let prevDay: DaybookDayItem;
     let thisDay: DaybookDayItem;
     let nextDay: DaybookDayItem;
@@ -282,7 +286,12 @@ export class DaybookControllerService {
         } else {
           this._updateActiveDay(DaybookDisplayUpdateType.DATABASE_ACTION, controller);
         }
+        isComplete$.next(true);
+      }, (err)=>{
+        console.log("error updating day items: " , err);
+        isComplete$.next(true);
       });
+    return isComplete$.asObservable();
   }
 
 }

@@ -24,6 +24,7 @@ import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep
 import { DaybookTimePositionFormComponent } from './daybook-time-position-form/daybook-time-position-form.component';
 import { TimelogModule } from './widgets/timelog/timelog.module';
 import { TLEFModule } from './widgets/timelog/timelog-entry-form/tlef.module';
+import { EnergyChartComponent } from './widgets/sleep-profile-widget/sleep-profile-large/energy-chart/energy-chart.component';
 
 
 
@@ -54,6 +55,7 @@ import { TLEFModule } from './widgets/timelog/timelog-entry-form/tlef.module';
     SleepProfileDisplayComponent,
     SleepProfileLargeComponent,
     DaybookTimePositionFormComponent,
+    EnergyChartComponent,
 
     
   ],

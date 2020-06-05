@@ -37,7 +37,7 @@ export class TlefFooterComponent implements OnInit {
 
   public onClickSaveNew() {
     console.log("Saving new")
-    this.daybookService.activeDayController.saveTimelogEntryItem$(this.controller.changesMadeTLE);
+    this.daybookService.activeDayController.saveTimelogEntryItem(this.controller.changesMadeTLE);
     this._close();
   }
 

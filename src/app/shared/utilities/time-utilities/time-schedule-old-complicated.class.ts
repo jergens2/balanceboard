@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { TimeScheduleItem } from './time-schedule-item.class';
 
 
-export class TimeSchedule<T>{
+export class TimeScheduleOldnComplicated<T>{
 
     /**
      *  The TimeSchedule class is a class that keeps track of a congruous table of time, with some property associated with each block.
@@ -184,7 +184,7 @@ export class TimeSchedule<T>{
                 timeDelineation.isSameOrAfter(splitItem.startTime) && timeDelineation.isSameOrBefore(splitItem.endTime));
         
             if (foundDelineations.length > 0) {
-                const newTimeSchedule = new TimeSchedule<T>(foundItem.startTime, foundItem.endTime);
+                const newTimeSchedule = new TimeScheduleOldnComplicated<T>(foundItem.startTime, foundItem.endTime);
                 let timeScheduleItems: TimeScheduleItem<T>[] = [];
                 if (foundDelineations.length === 1) {
                     if (foundDelineations[0].isSame(splitItem.startTime) || foundDelineations[0].isSame(splitItem.endTime)) {

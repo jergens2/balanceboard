@@ -16,12 +16,15 @@ export class TimelogEntryItem {
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
     private _utcOffsetMinutes: number;
-    private _timelogEntryActivities: TimelogEntryActivity[];
+    private _timelogEntryActivities: TimelogEntryActivity[] = [];
     private _embeddedNote: string = '';
 
-    public beginsBeforeFrameStart = false;
-    public endsAfterFrameEnd = false;
-    public isSavedEntry = false;
+    private _isSavedEntry: boolean = false;
+
+    // public beginsBeforeFrameStart = false;
+    // public endsAfterFrameEnd = false;
+    public get isSavedEntry(): boolean { return this._isSavedEntry; }
+    public setIsSaved() { this._isSavedEntry = true; }
 
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
@@ -39,10 +42,6 @@ export class TimelogEntryItem {
     }
     public get durationString(): string {
         return DurationString.calculateDurationString(this._startTime, this._endTime);
-    }
-
-    public percentOfTotal(totalSeconds: number): number {
-        return (this.durationSeconds / totalSeconds) * 100;
     }
 
     public get utcOffsetMinutes(): number { return this._utcOffsetMinutes; }

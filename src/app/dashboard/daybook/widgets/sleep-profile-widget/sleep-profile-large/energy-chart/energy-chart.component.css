@@ -1,0 +1,16 @@
+.chart-root{
+    min-width: 360px;
+    width: 100%;
+
+    height: 300px;
+
+    display:flex;
+    flex-direction: row;
+}
+
+
+
+.chart-item{
+    flex-grow: 2;
+    
+}

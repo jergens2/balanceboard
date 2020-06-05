@@ -25,7 +25,7 @@ export class TlefPromptComponent implements OnInit {
     if(changesMadeTLE.isSavedEntry){
       this.daybookService.activeDayController.updateTimelogEntryItem$(changesMadeTLE);
     }else{
-      this.daybookService.activeDayController.saveTimelogEntryItem$(changesMadeTLE);
+      this.daybookService.activeDayController.saveTimelogEntryItem(changesMadeTLE);
     }
     
     this._controller.closeTLEFPrompt();

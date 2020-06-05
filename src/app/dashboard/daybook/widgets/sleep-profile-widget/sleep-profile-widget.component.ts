@@ -37,7 +37,7 @@ export class SleepProfileWidgetComponent implements OnInit {
     }
 
   }
-  public get sleepAtTime(): string {
+  public get bedtime(): string {
     if (this._sleepAtTime) {
       return this._sleepAtTime.format('hh:mm a');
     } else {

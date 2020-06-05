@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { ItemState } from '../../../../../../../shared/utilities/item-state.class';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
-import { TimeSchedule } from '../../../../../../../shared/utilities/time-utilities/time-schedule.class';
+import { TimeScheduleOldnComplicated } from '../../../../../../../shared/utilities/time-utilities/time-schedule-old-complicated.class';
 import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 
 export class TimeSelectionRow {

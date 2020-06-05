@@ -2,11 +2,11 @@ import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span
 import * as moment from 'moment';
 import { Observable, Subject } from 'rxjs';
 import { TimeUtilities } from '../../../shared/utilities/time-utilities/time-utilities';
-import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
+import { TimeScheduleOldnComplicated } from '../../../shared/utilities/time-utilities/time-schedule-old-complicated.class';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
-import { DaybookAvailabilityType } from './items/daybook-availability-type.enum';
+import { DaybookTimeScheduleStatus } from './items/daybook-availability-type.enum';
 
 export class DaybookSleepController {
 
@@ -61,7 +61,7 @@ export class DaybookSleepController {
     public get sleepEntryUpdated$(): Observable<{ entryItem: SleepEntryItem, dateYYYYMMDD: string }[]> { return this._sleepEntryUpdated$.asObservable(); }
 
 
-    public getDaybookTimeScheduleItems(): TimeScheduleItem<DaybookAvailabilityType>[] {
+    public getDaybookTimeScheduleItems(): TimeScheduleItem<DaybookTimeScheduleStatus>[] {
         const sleepItems: SleepEntryItem[] = [
             this._prevDaySleepItem,
             this._thisDaySleepItem,
@@ -76,7 +76,7 @@ export class DaybookSleepController {
             if (endTime.isAfter(this.endOfNextDay)) {
                 endTime = moment(this.endOfNextDay);
             }
-            return new TimeScheduleItem(startTime, endTime, true, DaybookAvailabilityType.SLEEP)
+            return new TimeScheduleItem(startTime, endTime, true, DaybookTimeScheduleStatus.SLEEP)
         });
         return items;
     }
@@ -159,7 +159,7 @@ export class DaybookSleepController {
             } else {
                 startTime = moment(endTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
             }
-            thisDaySleepEntry = new SleepEntryItem(this.thisDateYYYYMMDD, startTime, endTime, thisDaySleepItem);
+            thisDaySleepEntry = new SleepEntryItem(startTime, endTime, thisDaySleepItem);
         }
         if (prevDaySleepItem.endSleepTimeISO || prevDaySleepItem.startSleepTimeISO) {
             let startTime: moment.Moment, endTime: moment.Moment;
@@ -173,7 +173,7 @@ export class DaybookSleepController {
             } else {
                 startTime = moment(endTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
             }
-            prevDaySleepEntry = new SleepEntryItem(this.prevDateYYYYMMDD, startTime, endTime, prevDaySleepItem);
+            prevDaySleepEntry = new SleepEntryItem(startTime, endTime, prevDaySleepItem);
         }
         if (nextDaySleepItem.endSleepTimeISO || nextDaySleepItem.startSleepTimeISO) {
             let startTime: moment.Moment, endTime: moment.Moment;
@@ -187,17 +187,17 @@ export class DaybookSleepController {
             } else {
                 startTime = moment(endTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
             }
-            nextDaySleepEntry = new SleepEntryItem(this.nextDateYYYYMMDD, startTime, endTime, nextDaySleepItem);
+            nextDaySleepEntry = new SleepEntryItem(startTime, endTime, nextDaySleepItem);
         }
         if (!thisDaySleepEntry) {
             if (prevDaySleepEntry) {
                 const start = moment(prevDaySleepEntry.startTime).add(24, 'hours');
                 const end = moment(prevDaySleepEntry.endTime).add(24, 'hours');
-                thisDaySleepEntry = new SleepEntryItem(this.thisDateYYYYMMDD, start, end)
+                thisDaySleepEntry = new SleepEntryItem(start, end)
             } else if (nextDaySleepEntry) {
                 const start = moment(nextDaySleepEntry.startTime).subtract(24, 'hours');
                 const end = moment(nextDaySleepEntry.endTime).subtract(24, 'hours');
-                thisDaySleepEntry = new SleepEntryItem(this.thisDateYYYYMMDD, start, end)
+                thisDaySleepEntry = new SleepEntryItem(start, end)
             } else {
                 thisDaySleepEntry = this._buildDefaultSleepEntry();
             }
@@ -206,12 +206,12 @@ export class DaybookSleepController {
         if (!prevDaySleepEntry) {
             const start = moment(thisDaySleepEntry.startTime).subtract(24, 'hours');
             const end = moment(thisDaySleepEntry.endTime).subtract(24, 'hours');
-            prevDaySleepEntry = new SleepEntryItem(this.prevDateYYYYMMDD, start, end)
+            prevDaySleepEntry = new SleepEntryItem(start, end)
         }
         if (!nextDaySleepEntry) {
             const start = moment(thisDaySleepEntry.startTime).add(24, 'hours');
             const end = moment(thisDaySleepEntry.endTime).add(24, 'hours');
-            nextDaySleepEntry = new SleepEntryItem(this.nextDateYYYYMMDD, start, end)
+            nextDaySleepEntry = new SleepEntryItem(start, end)
         }
 
         this._prevDaySleepItem = prevDaySleepEntry;
@@ -228,7 +228,7 @@ export class DaybookSleepController {
                 const startTime = moment(item.startSleepTimeISO);
                 const endTime = moment(item.endSleepTimeISO);
                 const date = moment(endTime).format('YYYY-MM-DD');
-                sleepEntryItems.push(new SleepEntryItem(date, startTime, endTime, item));
+                sleepEntryItems.push(new SleepEntryItem(startTime, endTime, item));
             }
         });
         let ratio: number = 2;
@@ -255,7 +255,7 @@ export class DaybookSleepController {
     private _buildDefaultSleepEntry(): SleepEntryItem {
         let wakeupTime = moment(this.dateYYYYMMDD).startOf('day').add(7, 'hours').add(30, 'minutes');
         const startTime = moment(wakeupTime).subtract(this.ratioAsleepHoursPerDay, 'hours');
-        const defaultEntry = new SleepEntryItem(this.thisDateYYYYMMDD, startTime, wakeupTime);
+        const defaultEntry = new SleepEntryItem(startTime, wakeupTime);
         return defaultEntry;
     }
 

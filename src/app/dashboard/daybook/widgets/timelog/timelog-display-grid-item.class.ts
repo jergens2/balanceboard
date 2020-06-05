@@ -1,12 +1,12 @@
 import * as moment from 'moment';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { DaybookAvailabilityType } from '../../controller/items/daybook-availability-type.enum';
+import { DaybookTimeScheduleStatus } from '../../api/controllers/daybook-time-schedule-status.enum';
 
 
 export class TimelogDisplayGridItem {
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment, percent: number, availability: DaybookAvailabilityType) {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, percent: number, availability: DaybookTimeScheduleStatus) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.percent = percent;
@@ -16,7 +16,7 @@ export class TimelogDisplayGridItem {
 
     private _drawTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
     private _creating = false;
-    private _availabilityType: DaybookAvailabilityType;
+    private _availabilityType: DaybookTimeScheduleStatus;
     private _itemIndex: number = -1;
 
     public startTime: moment.Moment;
@@ -32,10 +32,10 @@ export class TimelogDisplayGridItem {
 
     public get itemIndex(): number { return this._itemIndex; }
 
-    public get availabilityType(): DaybookAvailabilityType { return this._availabilityType; }
-    public get isAvailable(): boolean { return this._availabilityType === DaybookAvailabilityType.AVAILABLE };
-    public get isTimelogEntry(): boolean { return this._availabilityType === DaybookAvailabilityType.TIMELOG_ENTRY; }
-    public get isSleepEntry(): boolean { return this._availabilityType === DaybookAvailabilityType.SLEEP; }
+    public get availabilityType(): DaybookTimeScheduleStatus { return this._availabilityType; }
+    public get isAvailable(): boolean { return this._availabilityType === DaybookTimeScheduleStatus.AVAILABLE };
+    public get isTimelogEntry(): boolean { return this._availabilityType === DaybookTimeScheduleStatus.ACTIVE; }
+    public get isSleepEntry(): boolean { return this._availabilityType === DaybookTimeScheduleStatus.SLEEP; }
 
     public get drawTimelogEntry(): TimelogEntryItem { return this._drawTLE$.getValue(); }
     public get drawTLE$(): Observable<TimelogEntryItem> { return this._drawTLE$.asObservable(); }

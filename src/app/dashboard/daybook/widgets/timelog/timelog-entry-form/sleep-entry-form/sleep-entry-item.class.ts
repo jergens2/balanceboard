@@ -1,14 +1,13 @@
 import * as moment from 'moment';
 import { TimeSpanItem } from '../../../../../../shared/utilities/time-utilities/time-span-item.interface';
 import { DaybookSleepInputDataItem } from '../../../../api/data-items/daybook-sleep-input-data-item.interface';
+import { TimelogEntryActivity } from '../../../../api/data-items/timelog-entry-activity.interface';
 // import { DaybookEnergyItem } from '../../../../controller/items/daybook-energy-item.class';
 
 export class SleepEntryItem {
 
-    private _dateYYYYMMDD: string
-    constructor(dateYYYYMMDD: string, startTime: moment.Moment, endTime: moment.Moment, inputItem?: DaybookSleepInputDataItem) {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, inputItem?: DaybookSleepInputDataItem) {
         // console.log("Constructing sleep entry item: ", dateYYYYMMDD, startTime.format('YYYY-MM-DD hh:mm a') + " to " + endTime.format("YYYY-MM-DD hh:mm a"), inputItem )
-        this._dateYYYYMMDD = dateYYYYMMDD;
         this._startTime = startTime;
         this._endTime = endTime;
         if (inputItem) {
@@ -19,17 +18,12 @@ export class SleepEntryItem {
             if (inputItem.endSleepTimeISO) {
                 this._endTimeIsSaved = true;
             }
-            if (inputItem.energyAtStartUserInput) {
-                this._energyAtStart = inputItem.energyAtStartUserInput;
-            }
-            if (inputItem.energyAtEndUserInput) {
-                this._energyAtEnd = inputItem.energyAtEndUserInput;
+
+            if (inputItem.energyAtEnd) {
+                this._energyAtEnd = inputItem.energyAtEnd;
             }
 
             this.note = inputItem.embeddedNote;
-            if (inputItem.noteIds.length > 0) {
-                console.log("Do something with the note IDs");
-            }
             this.percentAsleep = inputItem.percentAsleep;
         }
     }
@@ -46,6 +40,8 @@ export class SleepEntryItem {
     private _endTime: moment.Moment;
     private _startTimeIsSaved: boolean = false;
     private _endTimeIsSaved: boolean = false;
+
+    private _activityItems: TimelogEntryActivity[] = [];
 
 
     public get isSavedEntry(): boolean { return this._isSavedEntry; }
@@ -129,21 +125,18 @@ export class SleepEntryItem {
 
     public exportToDataItem(): DaybookSleepInputDataItem {
         return {
-
             startSleepTimeISO: this.startTime.toISOString(),
             startSleepTimeUtcOffsetMinutes: this.startTime.utcOffset(),
             endSleepTimeISO: this.endTime.toISOString(),
             endSleepTimeUtcOffsetMinutes: this.endTime.utcOffset(),
 
-            energyAtStartUserInput: 0,
-            energyAtEndUserInput: 0,
+            energyAtEnd: this.energyAtEnd,
 
             percentAsleep: this.percentAsleep,
 
             embeddedNote: this.note,
-            noteIds: [],
 
-            customSleepProfile: null,
+            activities: this._activityItems,
         }
     }
 }

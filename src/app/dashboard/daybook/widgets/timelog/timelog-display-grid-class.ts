@@ -3,10 +3,10 @@ import { TimelogDelineator, TimelogDelineatorType } from "./timelog-delineator.c
 import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookController } from '../../controller/daybook-controller.class';
-import { DaybookAvailabilityType } from '../../controller/items/daybook-availability-type.enum';
 import { TimeScheduleItem } from '../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TLEFController } from './timelog-entry-form/TLEF-controller.class';
 import { TLEFControllerItem } from './timelog-entry-form/TLEF-controller-item.class';
+import { DaybookTimeScheduleStatus } from '../../api/controllers/daybook-time-schedule-status.enum';
 
 export class TimelogDisplayGrid {
 
@@ -94,7 +94,7 @@ export class TimelogDisplayGrid {
 
       const itemMs = moment(item.endTime).diff(moment(item.startTime), 'milliseconds');
       const percent: number = (itemMs / this.totalViewMilliseconds) * 100;
-      const availability: DaybookAvailabilityType = this._activeController.getDaybookAvailability(item.startTime, item.endTime);
+      const availability: DaybookTimeScheduleStatus = this._activeController.getScheduleStatus(item.startTime);
       const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, availability);
       gridItems.push(newGridItem);
     });

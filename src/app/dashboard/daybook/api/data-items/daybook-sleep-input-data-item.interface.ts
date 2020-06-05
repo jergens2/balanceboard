@@ -1,3 +1,5 @@
+import { TimelogEntryActivity } from "./timelog-entry-activity.interface";
+
 export interface DaybookSleepInputDataItem{ 
 
     startSleepTimeISO: string;
@@ -6,13 +8,11 @@ export interface DaybookSleepInputDataItem{
     endSleepTimeISO: string;
     endSleepTimeUtcOffsetMinutes: number;
     
-    energyAtStartUserInput: number;
-    energyAtEndUserInput: number;
-
     percentAsleep: number;
 
     embeddedNote: string;
-    noteIds: string[];
 
-    customSleepProfile: any; 
+    activities: TimelogEntryActivity[];
+
+    energyAtEnd: number;
 }

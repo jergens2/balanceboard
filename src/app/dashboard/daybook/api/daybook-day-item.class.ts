@@ -54,18 +54,19 @@ export class DaybookDayItem {
     public get notebookEntryIds(): string[] { return this.httpShape.notebookEntryIds; }
     public get taskItemIds(): string[] { return this.httpShape.taskItemIds; }
 
-    public get sleepInputItem(): DaybookSleepInputDataItem { return this.httpShape.sleepInputItem }
-    public set sleepInputItem(item: DaybookSleepInputDataItem) { this._httpShape.sleepInputItem = item; }
+    public get sleepInputItems(): DaybookSleepInputDataItem[] { return this.httpShape.sleepInputItems }
+    public set sleepInputItems(items: DaybookSleepInputDataItem[]) { this._httpShape.sleepInputItems = items; }
 
     public getSleepEntryItem(): SleepEntryItem { 
-        if(this.sleepInputItem.startSleepTimeISO && this.sleepInputItem.endSleepTimeISO){
-            const startTime = moment(this.sleepInputItem.startSleepTimeISO);
-            const endTime = moment(this.sleepInputItem.endSleepTimeISO);
-            return new SleepEntryItem(this.dateYYYYMMDD, startTime, endTime, this.sleepInputItem);
-        }else{
-            return null;
-        }
-        
+        // if(this.sleepInputItem.startSleepTimeISO && this.sleepInputItem.endSleepTimeISO){
+        //     const startTime = moment(this.sleepInputItem.startSleepTimeISO);
+        //     const endTime = moment(this.sleepInputItem.endSleepTimeISO);
+        //     return new SleepEntryItem(this.dateYYYYMMDD, startTime, endTime, this.sleepInputItem);
+        // }else{
+        //     return null;
+        // }
+        console.log("Warning: method disabled, returning NULL")
+        return null;
     }
 
     public get isToday(): boolean { return this._isToday; }

@@ -33,13 +33,17 @@ export class SleepManagerService {
   public get sleepManager(){ return this._sleepManager; }
   public get sleepManagerForm() { return this._sleepManagerForm; }
   // public get userActionRequired(): boolean { return this.sleepManager.userActionRequired; }
+  public get previousFallAsleepTime(): moment.Moment { return this.sleepManager.previousFallAsleepTime; }
   public get previousWakeupTime(): moment.Moment { return this.sleepManager.previousWakeupTime; }
+
   public get nextFallAsleepTime(): moment.Moment { return this.sleepManager.nextFallAsleepTime; }
   public get nextWakeupTime(): moment.Moment { return this.sleepManager.nextWakeupTime; }
   public get energyAtWakeup(): number { return this.sleepManager.energyAtWakeup; }
   public get id(): string { return this.sleepManager.id; }
   // public get previousWakeTimeIsSet(): boolean { return this.sleepManager.previousWakeTimeIsSet; }
   // public get nextFallAsleepTimeIsSet(): boolean { return this.sleepManager.nextFallAsleepTimeIsSet; }
+
+
   public getEnergyLevel(): number { return this.sleepManager.getEnergyLevel(); }
 
   public initiate$(userId: string): Observable<boolean> {

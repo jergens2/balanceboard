@@ -1,52 +1,66 @@
 <div class="sleep-profile-root">
-    Component disabled
-    <!-- <div class="profile-row">
+
+    <!-- <app-energy-chart></app-energy-chart> -->
+    <div class="profile-row">
         <div class="row-header">
-            <div style="width: 200px;"> Wake up time:  </div>
-            <div>
+            <div class="property-name"> Wake up time: </div>
+            <div class="property-value">
                 {{ wakeupTime.format('h:mm a') }}
-            </div> 
+            </div>
         </div>
     </div>
 
     <div class="profile-row">
         <div class="row-header">
-            <div style="width: 200px;">Awake for:   </div> 
-            <div>
+            <div class="property-name">Awake for: </div>
+            <div class="property-value">
                 {{ awakeForString }}
-            </div> 
+            </div>
         </div>
     </div>
 
     <div class="profile-row">
         <div class="row-header">
-            <div style="width: 200px;"> Time until fall asleep :   </div>
-            <div>
-                {{ timeUntilFallAsleepString }}
-            </div> 
+            <div class="property-name"> Time until sleep : </div>
+            <div class="property-value">
+                {{ timeUntilSleepString }}
+            </div>
         </div>
     </div>
 
     <div class="profile-row">
         <div class="row-header">
-            <div style="width: 200px;"> Fall asleep time: </div>
-            <div>
+            <div class="property-name"> Fall asleep time: </div>
+            <div class="property-value">
                 {{ fallAsleepTime.format('h:mm a') }}
-            </div>  
+            </div>
         </div>
     </div>
 
 
     <div class="profile-row">
         <div class="row-header">
-            <div style="width: 200px;">Current energy:  </div> 
-            <div>
+            <div class="property-name">Current energy: </div>
+            <div class="property-value">
                 {{ currentEnergy.toFixed(1) }} %
-            </div> 
-            
+            </div>
+
         </div>
-    </div> -->
+    </div>
 
-    
 
+    <div class="profile-row">
+        <div class="row-header" >
+            <div class="property-name">Bed time: </div>
+            <div class="property-value" style="display:flex;flex-direction: column;">
+                <div>
+                    {{ bedtime.format('h:mm a') }}
+                </div>
+                <div>
+                    {{ timeUntilSleepString }}
+                </div>
+                
+            </div>
+        </div>
+    </div>
 </div>

@@ -4,7 +4,7 @@ import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class
 import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
-import { DaybookAvailabilityType } from '../../../../../controller/items/daybook-availability-type.enum';
+import { DaybookTimeScheduleStatus } from '../../../../../controller/items/daybook-availability-type.enum';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { DaybookDisplayUpdateType } from '../../../../../controller/items/daybook-display-update.interface';
 
@@ -241,8 +241,7 @@ export class TimeSelectionColumnComponent implements OnInit {
   }
 
   private _findSectionIndex(newRow: TimeSelectionRow): number {
-    const availableItems = this.daybookDisplayService.activeDayController
-      .fullScheduleItems.filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
+    const availableItems = this.daybookDisplayService.activeDayController.getAvailableScheduleItems();
 
 
     if (availableItems.length === 0) {
@@ -263,8 +262,7 @@ export class TimeSelectionColumnComponent implements OnInit {
 
   }
   private _getSectionStart(sectionIndex: number): moment.Moment {
-    const availableItems = this.daybookDisplayService.activeDayController.fullScheduleItems
-      .filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
+    const availableItems = this.daybookDisplayService.activeDayController.getAvailableScheduleItems();
     if (availableItems.length >= sectionIndex + 1) {
       return availableItems[sectionIndex].startTime;
     } else {
@@ -273,8 +271,7 @@ export class TimeSelectionColumnComponent implements OnInit {
     }
   }
   private _getSectionEnd(sectionIndex: number): moment.Moment {
-    const availableItems = this.daybookDisplayService.activeDayController.fullScheduleItems
-      .filter(item => item.value === DaybookAvailabilityType.AVAILABLE);
+    const availableItems = this.daybookDisplayService.activeDayController.getAvailableScheduleItems();
     if (availableItems.length >= sectionIndex + 1) {
       return availableItems[sectionIndex].endTime;
     } else {

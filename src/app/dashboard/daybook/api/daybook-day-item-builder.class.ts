@@ -14,8 +14,8 @@ import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data
 
 export class DaybookDayItemBuilder {
 
-    constructor() { 
-        
+    constructor() {
+
     }
 
     public buildItemFromResponse(dayItemHttpData: any): DaybookDayItem {
@@ -75,21 +75,25 @@ export class DaybookDayItemBuilder {
             }
         }
 
-        let sleepInputItem: DaybookSleepInputDataItem;
-        if (dayItemHttpData.sleepInputItem) {
-            const data = dayItemHttpData.sleepInputItem;
-            sleepInputItem = {
-                startSleepTimeISO: data.startSleepTimeISO,
-                startSleepTimeUtcOffsetMinutes: data.startSleepTimeUtcOffsetMinutes,
-                endSleepTimeISO: data.endSleepTimeISO,
-                endSleepTimeUtcOffsetMinutes: data.endSleepTimeUtcOffsetMinutes,
-                energyAtStartUserInput: data.energyAtStartUserInput,
-                energyAtEndUserInput: data.energyAtEndUserInput,
-                percentAsleep: data.percentAsleep,
-                embeddedNote: data.embeddedNote,
-                noteIds: data.noteIds,
-                customSleepProfile: data.customSleepProfile,
-            };
+        let sleepInputItems: DaybookSleepInputDataItem[] = [];
+        if (dayItemHttpData.sleepInputItems) {
+            if (dayItemHttpData.sleepInputItems.length > 0) {
+                for (let i = 0; i < dayItemHttpData.sleepInputItems.length; i++) {
+                    const data = dayItemHttpData.sleepInputItems[i];
+                    let sleepInputItem: DaybookSleepInputDataItem = {
+                        startSleepTimeISO: data.startSleepTimeISO,
+                        startSleepTimeUtcOffsetMinutes: data.startSleepTimeUtcOffsetMinutes,
+                        endSleepTimeISO: data.endSleepTimeISO,
+                        endSleepTimeUtcOffsetMinutes: data.endSleepTimeUtcOffsetMinutes,
+                        percentAsleep: data.percentAsleep,
+                        embeddedNote: data.embeddedNote,
+                        activities: data.activities,
+                        energyAtEnd: data.energyAtEnd,
+                    };
+                    sleepInputItems.push(sleepInputItem);
+                }
+            }
+
         } else {
             console.log('No sleepInputItem property on DB item');
         }
@@ -130,7 +134,7 @@ export class DaybookDayItemBuilder {
         }
 
         let sevenDayAwakeToAsleepRatio: number = -1;
-        if(dayItemHttpData.sevenDayAwakeToAsleepRatio){
+        if (dayItemHttpData.sevenDayAwakeToAsleepRatio) {
             sevenDayAwakeToAsleepRatio = dayItemHttpData.sevenDayAwakeToAsleepRatio;
         }
 
@@ -147,10 +151,7 @@ export class DaybookDayItemBuilder {
             dateYYYYMMDD: dateYYYYMMDD,
             daybookTimelogEntryDataItems: daybookTimelogEntryDataItems,
             timeDelineators: timeDelineators,
-            sleepInputItem: sleepInputItem,
-            sleepEnergyLevelInputs: sleepEnergyLevelInputs,
-            // sevenDayAwakeToAsleepRatio: sevenDayAwakeToAsleepRatio,
-            daybookActivityDataItems: daybookActivityDataItems,
+            sleepInputItems: sleepInputItems,
             dailyTaskListDataItems: dailyTaskListDataItems,
             dayStructureDataItems: dayStructureDataItems,
             scheduledActivityItems: scheduledActivityItems,

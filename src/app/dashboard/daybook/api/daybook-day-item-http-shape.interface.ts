@@ -19,12 +19,8 @@ export interface DaybookDayItemHttpShape {
     daybookTimelogEntryDataItems: DaybookTimelogEntryDataItem[];
     timeDelineators: string[];
 
-    sleepInputItem: DaybookSleepInputDataItem;
-    sleepEnergyLevelInputs: SleepEnergyLevelInput[];
+    sleepInputItems: DaybookSleepInputDataItem[];
     
-    // sevenDayAwakeToAsleepRatio: number;
-
-    daybookActivityDataItems: DaybookActivityDataItem[];
     dailyTaskListDataItems: DailyTaskListDataItem[];
     dayStructureDataItems: DayStructureDataItem[];
 

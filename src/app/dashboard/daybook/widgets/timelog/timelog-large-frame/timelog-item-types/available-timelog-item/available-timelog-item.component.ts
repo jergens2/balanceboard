@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../../timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimeSchedule } from '../../../../../../../shared/utilities/time-utilities/time-schedule.class';
+import { TimeScheduleOldnComplicated } from '../../../../../../../shared/utilities/time-utilities/time-schedule-old-complicated.class';
 import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import * as moment from 'moment';
@@ -90,7 +90,7 @@ export class AvailableTimelogItemComponent implements OnInit {
 
     const durationMS: number = this.gridItem.endTime.diff(this.gridItem.startTime, 'milliseconds');
     // console.log("Drawing TLE " + this._drawTLE.startTime.format('hh:mm a') + " to " + this._drawTLE.endTime.format('hh:mm a'));
-    const timeSchedule: TimeSchedule<any> = new TimeSchedule(this.gridItem.startTime, this.gridItem.endTime);
+    const timeSchedule: TimeScheduleOldnComplicated<any> = new TimeScheduleOldnComplicated(this.gridItem.startTime, this.gridItem.endTime);
     timeSchedule.addScheduleValueItems([new TimeScheduleItem(timelogEntry.startTime, timelogEntry.endTime, true, timelogEntry)]);
     let percentages: number[] = timeSchedule.fullScheduleItems.map((item) => {
       return (item.endTime.diff(item.startTime, 'milliseconds') / durationMS) * 100;

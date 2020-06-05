@@ -79,7 +79,7 @@ export class TLEFControllerItem {
         const newTLE = new TimelogEntryItem(this._initialTLEValue.startTime, this._initialTLEValue.endTime);
         newTLE.timelogEntryActivities = this._initialTLEValue.timelogEntryActivities;
         newTLE.embeddedNote = this._initialTLEValue.embeddedNote;
-        newTLE.isSavedEntry = this._initialTLEValue.isSavedEntry;
+        if(this._initialTLEValue.isSavedEntry){newTLE.setIsSaved(); }
         return newTLE;
     }
     public getInitialSleepValue(): SleepEntryItem {
@@ -92,7 +92,7 @@ export class TLEFControllerItem {
         const newTLE = new TimelogEntryItem(tle.startTime, tle.endTime);
         newTLE.timelogEntryActivities = tle.timelogEntryActivities;
         newTLE.embeddedNote = tle.embeddedNote;
-        newTLE.isSavedEntry = tle.isSavedEntry;
+        if(tle.isSavedEntry){ newTLE.setIsSaved(); }
         this._unsavedTLEChanges = newTLE;
     }
     public getUnsavedTLEChanges(): TimelogEntryItem {

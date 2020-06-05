@@ -44,7 +44,7 @@ export class SleepManager {
     public get sleepTimeMax(): moment.Moment { return this._sleepTimeMax; }
     public get sleepTimeMin(): moment.Moment { return this._sleepTimeMin; }
 
-
+    public get prevSleepDurationMs(): number { return moment(this._previousWakeupTime).diff(moment(this._previousFallAsleepTime), 'milliseconds'); } 
 
 
 
@@ -64,13 +64,20 @@ export class SleepManager {
 
     /**
      *   return a value >= 0 && <= 1;
+     * 
+     *  TO DO: 
+     *  during user action prompt sleep form manager,
+     *  calculate approximate bed time from 7 day ratio
+     * 
+     *  This method will therefore assume that the value saved for nextFallAsleepTime is a calculated value that represents what the likely fall asleep time should be.
      */
     public getEnergyLevel(): number {
-
-
-        return 0;
+        const now = moment();
+        const totalDurationMS = moment(this.nextFallAsleepTime).diff(moment(this.previousWakeupTime), 'milliseconds');
+        const durationFromStart = moment(now).diff(moment(this.previousWakeupTime), 'milliseconds');
+        const currentEnergy = (durationFromStart / totalDurationMS) * this._energyAtWakeup;
+        return currentEnergy;
     }
-
 
     private _validate() {
         let userActionRequired: boolean = false;
@@ -80,11 +87,12 @@ export class SleepManager {
         const defaultWakeupTime: moment.Moment = moment(now).hour(7).minute(30).startOf('minute');
         const defaultSleepTime: moment.Moment = moment(now).hour(22).minute(30).startOf('minute');
 
-        if (dataExists) {
+        if (dataExists) {           
             this._previousFallAsleepTime = moment(this._currentDbValue.previousFallAsleepTime);
             this._previousWakeupTime = moment(this._currentDbValue.previousWakeupTime);
             this._nextFallAsleepTime = moment(this._currentDbValue.nextFallAsleepTime);
             this._nextWakeupTime = moment(this._currentDbValue.nextWakeupTime);
+            this._energyAtWakeup = this._currentDbValue.energyAtWakeup;
 
             this._currentPosition = this._getCurrentPosition();
             /**
@@ -102,11 +110,22 @@ export class SleepManager {
                 userActionRequired = true;
                 dataUpdateRequired = false;
             } else if (this._currentPosition === SleepCyclePosition.EARLY_WAKEUP || this._currentPosition === SleepCyclePosition.NEXT_DAY) {
-                // Shift over to the next day
-                this._previousFallAsleepTime = moment(this._nextFallAsleepTime);
-                this._previousWakeupTime = moment(this._nextWakeupTime);
-                this._nextFallAsleepTime = moment(this._nextFallAsleepTime).add(24, 'hours');
-                this._nextWakeupTime = moment(this._nextWakeupTime).add(24, 'hours');
+                // Shift forward by 1 day, now requiring user input.
+
+                let prevFallAsleepTime = moment(this._nextFallAsleepTime);
+                let previousWakeupTime = moment(this._nextWakeupTime);
+                const daysAgo = moment().diff(previousWakeupTime, 'days');
+                if(daysAgo > 0){
+                    this._previousFallAsleepTime = moment(defaultSleepTime).subtract(24, 'hours');
+                    this._previousWakeupTime = defaultWakeupTime;
+                    this._nextFallAsleepTime = defaultSleepTime;
+                    this._nextWakeupTime = moment(defaultWakeupTime).add(24, 'hours');
+                }else{
+                    this._previousFallAsleepTime = prevFallAsleepTime;
+                    this._previousWakeupTime = previousWakeupTime;
+                    this._nextFallAsleepTime = moment(prevFallAsleepTime).add(24, 'hours');
+                    this._nextWakeupTime = moment(previousWakeupTime).add(24, 'hours');
+                }
                 userActionRequired = true;
                 dataUpdateRequired = true;
             }

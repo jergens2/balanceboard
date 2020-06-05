@@ -2,7 +2,7 @@ import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog
 import * as moment from 'moment';
 import { Subject, Observable } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
-import { TimeSchedule } from '../../../shared/utilities/time-utilities/time-schedule.class';
+import { TimeScheduleOldnComplicated } from '../../../shared/utilities/time-utilities/time-schedule-old-complicated.class';
 import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
 
 export class DaybookTimelogEntryController {
@@ -36,13 +36,12 @@ export class DaybookTimelogEntryController {
 
     private _dateYYYYMMDD: string;
     private _timelogEntryItems: TimelogEntryItem[];
-    private _timelogActionComplete$: Subject<boolean> = new Subject();
 
-    private _timelogSchedule: TimeSchedule<TimelogEntryItem>;
+    private _timelogSchedule: TimeScheduleOldnComplicated<TimelogEntryItem>;
 
     private _timelogUpdated$: Subject<{ dateYYYYMMDD: string, items: DaybookTimelogEntryDataItem[] }> = new Subject();
 
-    public get timelogSchedule(): TimeSchedule<TimelogEntryItem> { return this._timelogSchedule; }
+    public get timelogSchedule(): TimeScheduleOldnComplicated<TimelogEntryItem> { return this._timelogSchedule; }
 
     public get lastTimelogEntryItemTime(): moment.Moment {
         if (this._timelogEntryItems.length > 0) {
@@ -107,17 +106,16 @@ export class DaybookTimelogEntryController {
     }
 
 
-    public saveTimelogEntryItem$(dateYYYYMMDD: string, saveTimelogEntry: TimelogEntryItem): Observable<boolean> {
+    public saveTimelogEntryItem(dateYYYYMMDD: string, saveTimelogEntry: TimelogEntryItem){
         let items = this._getDateItem(dateYYYYMMDD);
         items.push(saveTimelogEntry);
         this._sendUpdate({
             dateYYYYMMDD: dateYYYYMMDD,
             items: this._sortItems(items).map(item => item.exportDataEntryItem()),
         });
-        return this._timelogActionComplete$.asObservable();
     }
 
-    public updateTimelogEntryItem$(dateYYYYMMDD: string, updateTimelogEntry: TimelogEntryItem): Observable<boolean> {
+    public updateTimelogEntryItem(dateYYYYMMDD: string, updateTimelogEntry: TimelogEntryItem){
         let items = this._getDateItem(dateYYYYMMDD);
         console.log("updating from ITEMS:")
         items.forEach(item=> console.log(item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a')))
@@ -134,9 +132,8 @@ export class DaybookTimelogEntryController {
         }else{
             console.log('Error updating timelog entry: could not find item.')
         }
-        return this._timelogActionComplete$.asObservable();
     }
-    public deleteTimelogEntryItem$(dateYYYYMMDD: string, deleteTimelogEntry: TimelogEntryItem): Observable<boolean> {
+    public deleteTimelogEntryItem(dateYYYYMMDD: string, deleteTimelogEntry: TimelogEntryItem){
         let items = this._getDateItem(dateYYYYMMDD);
         const foundIndex = items.findIndex((item)=>{
             return item.startTime.isSame(deleteTimelogEntry.startTime) && item.endTime.isSame(deleteTimelogEntry.endTime);
@@ -150,7 +147,6 @@ export class DaybookTimelogEntryController {
         }else{
             console.log('Error updating timelog entry: could not find item.')
         }
-        return this._timelogActionComplete$.asObservable();
     }
 
 
@@ -160,7 +156,7 @@ export class DaybookTimelogEntryController {
     }
 
     private _buildSchedule() {
-        let newSchedule: TimeSchedule<TimelogEntryItem> = new TimeSchedule(this.startOfPrevDate, this.endOfNextDate);
+        let newSchedule: TimeScheduleOldnComplicated<TimelogEntryItem> = new TimeScheduleOldnComplicated(this.startOfPrevDate, this.endOfNextDate);
         const positiveValues: TimeScheduleItem<TimelogEntryItem>[] = this.timelogEntryItems.map(item => new TimeScheduleItem(item.startTime, item.endTime, true, item));
         newSchedule.addScheduleValueItems(positiveValues);
         this._timelogSchedule = newSchedule;
@@ -173,7 +169,7 @@ export class DaybookTimelogEntryController {
         timelogEntry.embeddedNote = dataItem.embeddedNote;
         timelogEntry.timelogEntryActivities = dataItem.timelogEntryActivities;
         // console.log("activities set to: " , timelogEntry.timelogEntryActivities)
-        timelogEntry.isSavedEntry = true;
+        timelogEntry.setIsSaved();
         return timelogEntry;
     }
 

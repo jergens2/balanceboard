@@ -10,6 +10,10 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    margin: 4px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgb(245, 245, 245);
 }
 
 .row-header{
@@ -18,4 +22,14 @@
     font-size: 1.1em;
     font-weight: bold;
     color: rgb(0, 28, 104);
+}
+
+.property-name{
+    font-size: 0.8em;
+    color: gray;
+    font-style: italic;
+    min-width: 120px;
+}
+.property-value{
+    margin-left: 10px;
 }
