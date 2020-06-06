@@ -67,6 +67,7 @@ export class UserActionPromptService {
 
   public logout(){
     this._prompts = [];
+    this.sleepService.logout();
   }
 
 }

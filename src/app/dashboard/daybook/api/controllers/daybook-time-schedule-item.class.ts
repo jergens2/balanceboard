@@ -6,8 +6,8 @@ import { TimelogEntryItem } from "../../widgets/timelog/timelog-large-frame/time
 import { SleepEntryItem } from "../../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class";
 import { TimelogEntryBuilder } from "../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class";
 
-export class DaybookTimeScheduleItem{
-    
+export class DaybookTimeScheduleItem {
+
     private _status: DaybookTimeScheduleStatus;
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
@@ -20,38 +20,42 @@ export class DaybookTimeScheduleItem{
     public get timelogEntry(): TimelogEntryItem { return this._timelogEntry; }
     public get sleepEntry(): SleepEntryItem { return this._sleepEntry; }
 
+    public set startTime(time: moment.Moment) {this._startTime = moment(time);}
+    public set endTime(time: moment.Moment) {this._endTime = moment(time);}
 
+    public toString(): string {
+        return ' ' + this._startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + this._endTime.format('YYYY-MM-DD hh:mm a') + ' :' + this.status;
+    }
 
-
-    constructor(status: DaybookTimeScheduleStatus, startTime: moment.Moment, endTime: moment.Moment, timelogEntry?: DaybookTimelogEntryDataItem, sleepEntry?: DaybookSleepInputDataItem){
+    constructor(status: DaybookTimeScheduleStatus, startTime: moment.Moment, endTime: moment.Moment, timelogEntry?: DaybookTimelogEntryDataItem, sleepEntry?: DaybookSleepInputDataItem) {
         this._status = status;
         this._startTime = moment(startTime);
         this._endTime = moment(endTime);
-        if(status === DaybookTimeScheduleStatus.ACTIVE){
-            if(timelogEntry){
+        if (status === DaybookTimeScheduleStatus.ACTIVE) {
+            if (timelogEntry) {
                 this._buildFromTimelogEntry(timelogEntry);
-            }else{
+            } else {
                 console.log("Error: no timelogEntryDataItem provided")
             }
-        }else if(status === DaybookTimeScheduleStatus.SLEEP){
-            if(sleepEntry){
+        } else if (status === DaybookTimeScheduleStatus.SLEEP) {
+            if (sleepEntry) {
 
-            }else{
+            } else {
                 console.log("Error: no sleepEntry item provided");
             }
-        }else if(status === DaybookTimeScheduleStatus.AVAILABLE){
-            
+        } else if (status === DaybookTimeScheduleStatus.AVAILABLE) {
+
         }
     }
 
-    private _buildFromTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem){
+    private _buildFromTimelogEntry(timelogEntry: DaybookTimelogEntryDataItem) {
         const builder = new TimelogEntryBuilder();
         this._timelogEntry = builder.buildFromDataItem(timelogEntry);
         this._startTime = moment(this._timelogEntry.startTime);
         this._endTime = moment(this._timelogEntry.endTime);
     }
 
-    private _buildFromSleepEntry(sleepEntry: DaybookSleepInputDataItem){
+    private _buildFromSleepEntry(sleepEntry: DaybookSleepInputDataItem) {
         const startTime = moment(sleepEntry.startSleepTimeISO);
         const endTime = moment(sleepEntry.endSleepTimeISO);
         this._sleepEntry = new SleepEntryItem(startTime, endTime, sleepEntry);

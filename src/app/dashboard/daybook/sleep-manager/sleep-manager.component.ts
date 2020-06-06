@@ -4,7 +4,6 @@ import * as moment from 'moment';
 import { timer } from 'rxjs';
 import { SleepManagerService } from './sleep-manager.service';
 import { SleepCyclePosition } from './sleep-cycle-position.enum';
-import { DaybookControllerService } from '../controller/daybook-controller.service';
 import { faCloudMoon } from '@fortawesome/free-solid-svg-icons';
 import { ScreenSizeService } from '../../../shared/screen-size/screen-size.service';
 import { ScreenSizes } from '../../../shared/screen-size/screen-sizes-enum';
@@ -18,7 +17,6 @@ export class SleepManagerComponent implements OnInit {
 
   constructor(
     private sleepService: SleepManagerService, 
-    private daybookService: DaybookControllerService,
     private screenService: ScreenSizeService) { }
 
 
@@ -61,7 +59,6 @@ export class SleepManagerComponent implements OnInit {
    */
   ngOnInit(): void {
     this._startClock();
-    const lastActivityTime = this.daybookService.getLastActivityTime();
     this._screenSize = this.screenService.appScreenSize;
     this.screenService.appScreenSize$.subscribe((size)=>{
       this._screenSize = size;

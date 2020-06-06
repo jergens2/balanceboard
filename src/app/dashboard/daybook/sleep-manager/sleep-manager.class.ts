@@ -2,6 +2,7 @@ import * as moment from 'moment';
 import { SleepCyclePosition } from './sleep-cycle-position.enum';
 import { BehaviorSubject } from 'rxjs';
 import { SleepProfileHTTPData } from './sleep-profile-http-data.interface';
+import { DaybookTimeSchedule } from '../api/controllers/daybook-time-schedule.class';
 
 
 export class SleepManager {
@@ -14,6 +15,8 @@ export class SleepManager {
     private _nextFallAsleepTime: moment.Moment;
     private _nextWakeupTime: moment.Moment;
     private _energyAtWakeup: number;
+
+    private _daybookTimeSchedule: DaybookTimeSchedule;
 
     // private _previousWakeTimeIsSet: boolean = false;
     // private _nextFallAsleepTimeIsSet: boolean = false;
@@ -33,6 +36,7 @@ export class SleepManager {
     public get nextWakeupTime(): moment.Moment { return this._nextWakeupTime; }
     public get energyAtWakeup(): number { return this._energyAtWakeup; }
     public get id(): string { return this._id; }
+    public get daybookTimeSchedule(): DaybookTimeSchedule { return this._daybookTimeSchedule; }
 
     // public get previousWakeTimeIsSet(): boolean { return this._previousWakeTimeIsSet; }
     // public get nextFallAsleepTimeIsSet(): boolean { return this._nextFallAsleepTimeIsSet; }
@@ -55,10 +59,10 @@ export class SleepManager {
      * @param data 
      * data can be null, and this class will handle that
      */
-    constructor(data: SleepProfileHTTPData) {
+    constructor(data: SleepProfileHTTPData, schedule?: DaybookTimeSchedule) {
         // console.log("constructing profile: " , data);
         this._currentDbValue = data;
-
+        this._daybookTimeSchedule = schedule;
         this._validate();
     }
 
@@ -76,6 +80,7 @@ export class SleepManager {
         const totalDurationMS = moment(this.nextFallAsleepTime).diff(moment(this.previousWakeupTime), 'milliseconds');
         const durationFromStart = moment(now).diff(moment(this.previousWakeupTime), 'milliseconds');
         const currentEnergy = (durationFromStart / totalDurationMS) * this._energyAtWakeup;
+        console.log("Energy level is: ", currentEnergy )
         return currentEnergy;
     }
 
@@ -86,6 +91,14 @@ export class SleepManager {
         const now = moment();
         const defaultWakeupTime: moment.Moment = moment(now).hour(7).minute(30).startOf('minute');
         const defaultSleepTime: moment.Moment = moment(now).hour(22).minute(30).startOf('minute');
+
+
+        if(this._daybookTimeSchedule){
+
+        }else{
+            
+        }
+
 
         if (dataExists) {           
             this._previousFallAsleepTime = moment(this._currentDbValue.previousFallAsleepTime);

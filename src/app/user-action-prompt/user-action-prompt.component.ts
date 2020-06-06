@@ -37,6 +37,8 @@ export class UserActionPromptComponent implements OnInit {
   }
 
   public onSleepManagerComplete(){
+
+    
     this.promptService.clearSleepPrompt();
   }
 

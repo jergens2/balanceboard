@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
-import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import { SleepManagerService } from '../../sleep-manager.service';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { timer } from 'rxjs';
@@ -13,7 +12,7 @@ import { timer } from 'rxjs';
 })
 export class SmWakeupTimeComponent implements OnInit {
 
-  constructor(private daybookService: DaybookControllerService, private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepManagerService) { }
 
   public faCheckCircle = faCheckCircle;
   private _saveClicked = false;
@@ -39,12 +38,12 @@ export class SmWakeupTimeComponent implements OnInit {
       this._calculateDurationString();
     });
 
-    const lastActivityTime = this.daybookService.getLastActivityTime();
-    if(lastActivityTime){
-      this.minWakeupTime = moment(lastActivityTime);
-    }else{
+    console.log("big chunky warning")
+    // if(lastActivityTime){
+    //   this.minWakeupTime = moment(lastActivityTime);
+    // }else{
       this.minWakeupTime = moment().subtract(23, 'hours');
-    }
+    // }
 
     
 

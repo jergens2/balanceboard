@@ -4,7 +4,6 @@ import { SleepManagerForm } from './sleep-manager-form.class';
 import { SleepManagerService } from '../sleep-manager.service';
 import { SleepManagerFormActions } from './smfa-actions.enum';
 import { SleepProfileHTTPData } from '../sleep-profile-http-data.interface';
-import { DaybookControllerService } from '../../controller/daybook-controller.service';
 import * as moment from 'moment';
 import { DaybookSleepInputDataItem } from '../../api/data-items/daybook-sleep-input-data-item.interface';
 
@@ -49,7 +48,7 @@ export class SleepManagerFormComponent implements OnInit {
 
 
 
-  constructor(private sleepService: SleepManagerService, private daybookService: DaybookControllerService) { }
+  constructor(private sleepService: SleepManagerService) { }
 
   ngOnInit(): void {
 
@@ -69,19 +68,6 @@ export class SleepManagerFormComponent implements OnInit {
 
   private _finalize() {
     this._isLoading = true;
-    // console.log("\n\n***Finalizing")
-    // console.log("Wakeup time: ", this.sleepManagerForm.formInputWakeupTime.format('YYYY-MM-DD hh:mm a'));
-    // console.log("Prev fall asleep time: ", this.sleepManagerForm.formInputPrevFallAsleep.format('YYYY-MM-DD hh:mm a'));
-    // console.log("Duration percent: ", this.sleepManagerForm.formInputDurationPercent);
-
-
-    // console.log("Energy: ", this.sleepManagerForm.formInputStartEnergyPercent);
-    // console.log("dreams: ", this.sleepManagerForm.formInputDreams);
-    // console.log("activities: ", this.sleepManagerForm.formInputActivities);
-
-    // console.log("bed time: ", this.sleepManagerForm.formInputFallAsleepTime.format('YYYY-MM-DD hh:mm a'));
-    // console.log("next wakeup: ", this.sleepManagerForm.formInputNextWakeup.format('YYYY-MM-DD hh:mm a'));
-
     const prevFallAsleepTime: string = this.sleepManagerForm.formInputPrevFallAsleep.toISOString();
     const prevFallAsleepUTCOffset: number = this.sleepManagerForm.formInputPrevFallAsleep.utcOffset();
     const previousWakeupTime: string = this.sleepManagerForm.formInputWakeupTime.toISOString();
@@ -92,8 +78,6 @@ export class SleepManagerFormComponent implements OnInit {
     const nextWakeupTime: string = this.sleepManagerForm.formInputNextWakeup.toISOString();
     const nextWakeupUTCOffset: number = this.sleepManagerForm.formInputNextWakeup.utcOffset();
     const durationPercent: number = this.sleepManagerForm.formInputDurationPercent;
-
-
     let data: SleepProfileHTTPData = {
       _id: '',
       userId: '',
@@ -109,57 +93,8 @@ export class SleepManagerFormComponent implements OnInit {
     }
     let sleepTimes: {}
 
+    this.sleepService.updateSleepProfile$(data);
 
-    let prevDaySleepItems: DaybookSleepInputDataItem[] = [];
-    let thisDaySleepItems: DaybookSleepInputDataItem[] = [];
-    const startOfThisDay = moment().startOf('day');
-    if (moment(prevFallAsleepTime).isBefore(startOfThisDay)) {
-      prevDaySleepItems = [
-        {
-          startSleepTimeISO: prevFallAsleepTime,
-          startSleepTimeUtcOffsetMinutes: prevFallAsleepUTCOffset,
-          endSleepTimeISO: startOfThisDay.toISOString(),
-          endSleepTimeUtcOffsetMinutes: startOfThisDay.utcOffset(),
-          percentAsleep: durationPercent,
-          embeddedNote: '',
-          activities: [],
-          energyAtEnd: -1,
-        },
-      ];
-      thisDaySleepItems = [
-        {
-          startSleepTimeISO: startOfThisDay.toISOString(),
-          startSleepTimeUtcOffsetMinutes: startOfThisDay.utcOffset(),
-          endSleepTimeISO: previousWakeupTime,
-          endSleepTimeUtcOffsetMinutes: previousWakeupUTCOffset,
-          percentAsleep: durationPercent,
-          embeddedNote: '',
-          activities: [],
-          energyAtEnd: energyAtWakeup,
-        },
-      ]
-    }else{
-      thisDaySleepItems = [
-        {
-          startSleepTimeISO: prevFallAsleepTime,
-          startSleepTimeUtcOffsetMinutes: prevFallAsleepUTCOffset,
-          endSleepTimeISO: previousWakeupTime,
-          endSleepTimeUtcOffsetMinutes: previousWakeupUTCOffset,
-          percentAsleep: durationPercent,
-          embeddedNote: '',
-          activities: [],
-          energyAtEnd: energyAtWakeup,
-        },
-      ]
-    }
-    this.daybookService.todayController.setSleepEntryItems(prevDaySleepItems, thisDaySleepItems);
-    this.daybookService.saveTodayControllerChanges$().subscribe((saved)=>{
-      if(saved === true){
-        this.sleepService.updateSleepProfile$(data);
-      }else{
-        console.log('Error saving...')
-      }
-    });
   }
 
 }

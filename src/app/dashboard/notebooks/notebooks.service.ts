@@ -27,7 +27,9 @@ export class NotebooksService{
   public setUserId(userId: string){
     this._userId = userId;
   }
-
+  public logout(){
+    this._userId = null;
+  }
 
   private _notebookEntries$: BehaviorSubject<NotebookEntry[]> = new BehaviorSubject([]);
   public get notebookEntries$(): Observable<NotebookEntry[]> {

@@ -29,6 +29,8 @@ export class DaybookController{
 
     constructor(thisDayYYYYMMDD: string, daybookDayItems: DaybookDayItem[], startTime: moment.Moment, endTime: moment.Moment, clock: moment.Moment) {
         // console.log("*Constructing Daybook Controller")
+        this._startTime = moment(startTime);
+        this._endTime = moment(endTime);
         this._thisDayYYYYMMDD = thisDayYYYYMMDD;
         this._clock = clock;
         this._reload(daybookDayItems);
@@ -89,7 +91,7 @@ export class DaybookController{
 
     public get dailyWeightLogEntryKg(): number { return this._thisDay.dailyWeightLogEntryKg; }
 
-
+    public get schedule(): DaybookTimeSchedule { return this._schedule;}
 
     // public get batteryLevel(): number { return this._batteryLevel; }
 
@@ -170,7 +172,9 @@ export class DaybookController{
         return this._schedule.isAvailableAtTime(timeToCheck);
     }
     public isRangeAvailable(startTime: moment.Moment, endTime: moment.Moment): boolean {
-        return this._schedule.isRangeAvailable(startTime, endTime);
+        const isAvailable = this._schedule.isRangeAvailable(startTime, endTime);
+        console.log("isRangeAvailable? " + startTime.format('hh:mm a') + " - " + endTime.format('hh:mm a'), isAvailable)
+        return isAvailable;
     }
 
     public get dataChanged$(): Observable<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> {
@@ -219,6 +223,7 @@ export class DaybookController{
         }
         this._timeDelineatorController = new DaybookTimeDelineatorController(this.dateYYYYMMDD, allTimeDelineations);
         this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, relevantTimelogItems);
+
 
         this._schedule = new DaybookTimeSchedule(this.startTime, this.endTime, allTimelogEntryItems, allSleepItems, allTimeDelineations);
         this._updateSubscriptions();

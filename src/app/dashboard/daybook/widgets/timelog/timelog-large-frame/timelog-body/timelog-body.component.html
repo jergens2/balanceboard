@@ -33,7 +33,7 @@
         </div> -->
 
         <app-time-selection-column  style="grid-row: 1 / -1; grid-column: 2 / span 1;"
-            [timeDelineators]="timeDelineators" (drawNewTLE)="onDrawNewTLE($event)"
+            (drawNewTLE)="onDrawNewTLE($event)"
             (createNewTLE)="onCreateNewTLE($event)"></app-time-selection-column>
 
     </div>

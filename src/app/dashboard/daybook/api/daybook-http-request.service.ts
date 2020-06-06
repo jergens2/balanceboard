@@ -24,7 +24,7 @@ export class DaybookHttpRequestService {
   private _userId: string ;
 
 
-  login(userId: string): void{
+  setUserId(userId: string): void{
     this._userId = userId;
   }
 

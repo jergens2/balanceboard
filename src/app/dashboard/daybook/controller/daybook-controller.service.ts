@@ -70,9 +70,6 @@ export class DaybookControllerService {
     return this._loginComplete$.asObservable();
   }
 
-  public saveTodayControllerChanges$(): Observable<any>{
-    return this._updateController$(this.todayController, {prevDayChanged: true, thisDayChanged: true, nextDayChanged: true});
-  }
 
   public logout() {
     // console.log("Logging out of daybook controller service")
@@ -92,6 +89,7 @@ export class DaybookControllerService {
 
   private _initiate() {
     this._startClock();
+    this._updateTodayFromDatabase(DaybookDisplayUpdateType.DEFAULT);
   }
 
   private _startClock() {
@@ -128,7 +126,7 @@ export class DaybookControllerService {
       this._updateTodayFromDatabase(DaybookDisplayUpdateType.CLOCK);
     });
     this._clockSubscriptions = [clockSub, minuteSub];
-    this._updateTodayFromDatabase(DaybookDisplayUpdateType.DEFAULT);
+    
   }
 
 
@@ -148,8 +146,11 @@ export class DaybookControllerService {
 
   private _setTodayItem(items: DaybookDayItem[], updateType: DaybookDisplayUpdateType) {
 
-    const startTime = items[0].startOfThisDay;
-    const endTime = items[items.length - 1].endOfThisDay;
+    const startTime = moment(this.todayYYYYMMDD).startOf('day').subtract(24, 'hours');
+    const endTime = moment(this.todayYYYYMMDD).startOf('day').add(48, 'hours');
+
+    // console.log("start time, end time, today, clock, items", startTime.format('YYYY-MM-DD hh:mm a'), endTime.format('YYYY-MM-DD hh:mm a'), this.todayYYYYMMDD, this.clock.format('YYYY-MM-DD hh:mm a'), items)
+    console.log("start time, end time", startTime.format('YYYY-MM-DD hh:mm a'), endTime.format('YYYY-MM-DD hh:mm a'));
 
     const todayController: DaybookController = new DaybookController(this.todayYYYYMMDD, items, startTime, endTime, this.clock);
     if (!this._todayController$) {
