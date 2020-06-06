@@ -1,10 +1,9 @@
-import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { HeaderMenu } from './header-menu/header-menu.model';
 import { appMenuItems } from '../app-menu-items';
-import { Subscription, Observable, fromEvent, Subscriber, timer } from 'rxjs';
+import { Subscription, Observable, fromEvent, Subscriber, timer, Subject } from 'rxjs';
 import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks, faUsers, IconDefinition, faBatteryEmpty, faBatteryQuarter, faBatteryHalf, faBatteryThreeQuarters, faBatteryFull } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.model';
-import { HeaderService } from './header.service';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
 import { ToolboxService } from '../../toolbox-menu/toolbox.service';
@@ -25,10 +24,9 @@ import { SleepManagerService } from '../../dashboard/daybook/sleep-manager/sleep
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(
-    private headerService: HeaderService,
     private authService: AuthenticationService,
     private toolsService: ToolboxService,
     private modalService: ModalService,
@@ -43,12 +41,12 @@ export class HeaderComponent implements OnInit {
   private _batteryIcon: IconDefinition;
   private _batteryNgClass: string;
   private _batteryPercent: string = "";
-  
+
 
   activeAppTool: string = null;
 
   headerMenus: HeaderMenu[] = [];
-  private activeSubscriptions: Subscription[] = [];
+  private _menuSubs: Subscription[] = [];
   // private closeMenuSubscription: Subscription = new Subscription();
   private documentClickListener: Observable<Event> = fromEvent(document, 'click');
 
@@ -69,45 +67,54 @@ export class HeaderComponent implements OnInit {
     return anyOpen;
   }
 
+
+
+
+
+
+  private _timerSub: Subscription = new Subscription();
+
   ngOnInit() {
     // console.log("Header on init")
-    this.headerService.activeBalanceBoardComponentMenu$.subscribe((componentMenu: HeaderMenu) => {
-      if (componentMenu != null) {
-        this.headerMenus = Object.assign([], this._buildHeaderMenus(componentMenu));
-      } else {
-        this.headerMenus = Object.assign([], this._buildHeaderMenus());
-      }
-    });
-    this.headerMenus = Object.assign([], this._buildHeaderMenus());
 
+    // const menuSub = this._activeComponentMenu$.subscribe((componentMenu: HeaderMenu) => {
+    //   if (componentMenu != null) {
+    //     this.headerMenus = Object.assign([], this._buildHeaderMenus(componentMenu));
+    //   } else {
+    //     this.headerMenus = Object.assign([], this._buildHeaderMenus());
+    //   }
+    // });
+    this.headerMenus = Object.assign([], this._buildHeaderMenus());
+    this._timerSub = timer(0, 30000).subscribe((tick) => { this._setBattery(); });
     this._setBattery();
-    timer(0, 30000).subscribe((tick)=>{
-      this._setBattery();
-    })
-    
   }
 
-  public onClickClock(){
+  ngOnDestroy() {
+    this._menuSubs.forEach(s => s.unsubscribe());
+    this._menuSubs = [];
+    this._menuSubs.forEach(s => s.unsubscribe());
+    this._menuSubs = [];
+    this._timerSub.unsubscribe();
+  }
+
+  public onClickClock() {
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
     this.router.navigate(['/daybook']);
     // this.daybookDisplayService.openNewCurrentTimelogEntry();
   }
-  public onClickBattery(){
+  public onClickBattery() {
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);
     this.router.navigate(['/daybook']);
   }
 
+
   private _buildHeaderMenus(currentComponentMenu?: HeaderMenu): HeaderMenu[] {
     this.closeMenus();
-    this.activeSubscriptions.forEach((sub: Subscription) => {
-      sub.unsubscribe();
-    })
-    this.activeSubscriptions = [];
-
-    let newMenus: HeaderMenu[] = [];
-
-    let signOutMenuItem = new MenuItem('Sign Out', null, faSignOutAlt);
-    this.activeSubscriptions.push(signOutMenuItem.clickEmitted$.subscribe(() => {
+    this._menuSubs.forEach(s => s.unsubscribe());
+    this._menuSubs = [];
+    const newMenus: HeaderMenu[] = [];
+    const signOutMenuItem = new MenuItem('Sign Out', null, faSignOutAlt);
+    const signOutSub = signOutMenuItem.clickEmitted$.subscribe(() => {
       let options: IModalOption[] = [
         {
           value: "Logout",
@@ -122,63 +129,45 @@ export class HeaderComponent implements OnInit {
       modal.headerIcon = faSignOutAlt;
 
       this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
-        if (selectedOption.value == "Logout") {
-          this.logout();
-
-        } else if (selectedOption.value == "Cancel") {
-
+        if (selectedOption.value == "Logout") { this.logout(); }
+        else if (selectedOption.value == "Cancel") {
         } else {
           //error 
         }
       });
       this.modalService.activeModal = modal;
-    }));
-
+    });
     newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem('Settings', '/user-settings', faCogs), signOutMenuItem])));
 
+    const notepadMenuItem: MenuItem = new MenuItem('Notebook Entry', null, faStickyNote);
+    const actionItemMenuItem: MenuItem = new MenuItem("Action Item", null, faCheckCircle);
+    const timelogEntryMenuItem: MenuItem = new MenuItem("Timelog Entry", null, faTable);
+    const futureEventMenuItem: MenuItem = new MenuItem("Appointment / Future Event", null, faCalendarAlt);
+    const dailyTaskListMenuItem: MenuItem = new MenuItem("Daily Task List", null, faTasks);
+    this._menuSubs = [
+      signOutSub,
+      notepadMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.NOTEBOOK_ENTRY)),
+      actionItemMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.ACTION_ITEM)),
+      timelogEntryMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.TIMELOG_ENTRY)),
+      futureEventMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.FUTURE_EVENT)),
+      dailyTaskListMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.DAILY_TASK_LIST)),
+    ];
 
-    /*
-      Tools Menu
-    */
-    let toolsMenuItems: MenuItem[] = [];
+    const toolsMenuItems: MenuItem[] = [
+      notepadMenuItem,
+      actionItemMenuItem,
+      timelogEntryMenuItem,
+      futureEventMenuItem,
+      dailyTaskListMenuItem
+    ];
 
-    let notepadMenuItem: MenuItem = new MenuItem('Notebook Entry', null, faStickyNote);
-    this.activeSubscriptions.push(notepadMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.NOTEBOOK_ENTRY);
-    }));
-    let actionItemMenuItem: MenuItem = new MenuItem("Action Item", null, faCheckCircle);
-    this.activeSubscriptions.push(actionItemMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.ACTION_ITEM);
-    }));
-    let timelogEntryMenuItem: MenuItem = new MenuItem("Timelog Entry", null, faTable);
-    this.activeSubscriptions.push(timelogEntryMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.TIMELOG_ENTRY);
-    }));
-    let futureEventMenuItem: MenuItem = new MenuItem("Appointment / Future Event", null, faCalendarAlt);
-    this.activeSubscriptions.push(futureEventMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.FUTURE_EVENT);
-    }));
-    let dailyTaskListMenuItem: MenuItem = new MenuItem("Daily Task List", null, faTasks);
-    this.activeSubscriptions.push(dailyTaskListMenuItem.clickEmitted$.subscribe(() => {
-      this.toolsService.openTool(ToolType.DAILY_TASK_LIST);
-    }));
-
-    toolsMenuItems.push(notepadMenuItem);
-    toolsMenuItems.push(actionItemMenuItem);
-    toolsMenuItems.push(timelogEntryMenuItem);
-    toolsMenuItems.push(futureEventMenuItem);
-    toolsMenuItems.push(dailyTaskListMenuItem);
-
-    let toolsMenu: HeaderMenu = new HeaderMenu('Tools', toolsMenuItems);
+    const toolsMenu: HeaderMenu = new HeaderMenu('Tools', toolsMenuItems);
     toolsMenu.icon = faWrench;
     newMenus.push(toolsMenu);
 
     /*
     End of tools menu
     */
-
-
-
     if (currentComponentMenu) {
       newMenus.push(currentComponentMenu);
     }
@@ -217,10 +206,9 @@ export class HeaderComponent implements OnInit {
   }
 
   private logout() {
-    this.activeSubscriptions.forEach(subscription => {
-      subscription.unsubscribe();
-    });
-    this.activeSubscriptions = [];
+    this._menuSubs.forEach(s => s.unsubscribe());
+    this._menuSubs = [];
+    this._timerSub.unsubscribe();
     this.authService.logout();
   }
 

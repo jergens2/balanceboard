@@ -150,7 +150,7 @@ export class AppComponent implements OnInit {
       this.userPromptService.promptsCleared$.subscribe((clear) => {
         if (clear === true) { this._finishLoadingApp(); }
         else { console.log("error with user prompts."); }
-      })
+      }),
     ];
   }
 
@@ -163,7 +163,6 @@ export class AppComponent implements OnInit {
 
       }
     })
-
   }
 
   private _unloadApp() {
@@ -175,9 +174,7 @@ export class AppComponent implements OnInit {
     this._isAuthenticated = false;
     this._loading = true;
     this._loadingIsComplete = false;
-
     this._loadingSubs = [];
-
     this._appServiceSubs = [];
     this._showModal = false;
     this._showUserActionPrompt = false;
@@ -199,7 +196,6 @@ export class AppComponent implements OnInit {
         console.log("Error loading services.");
       }
     });
-
   }
 
 
@@ -222,25 +218,21 @@ export class AppComponent implements OnInit {
         if (this.userPromptService.hasPrompts()) {
           this._showUserActionPrompt = true;
         }
-
       } else {
         console.log("Error initiating userPromptService")
       }
       this._loading = false;
       this._loadingIsComplete = true;
-
     }, (error) => {
       console.log("Error: ", error);
-    })
-
+    });
   }
 
 
 
   /**
    *  This method loads activities service and proceeds when complete.
-   *  
-   *  _userActionPrompt() follows
+   *     *  _userActionPrompt() follows
    * 
    */
   private _loadServices$(): Observable<boolean> {

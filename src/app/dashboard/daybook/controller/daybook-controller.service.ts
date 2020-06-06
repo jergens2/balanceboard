@@ -74,10 +74,10 @@ export class DaybookControllerService {
   public logout() {
     // console.log("Logging out of daybook controller service")
     this._userId = null;
-    this._activeDayController$.next(null);
-    // this._activeDayController$ = null;
-    this._todayController$.next(null);
-    // this._todayController$ = null;
+    // this._activeDayController$.next(null);
+    this._activeDayController$ = null;
+    // this._todayController$.next(null);
+    this._todayController$ = null;
     this._todayYYYYMMDD = moment().format('YYYY-MM-DD');
     this._daybookDayItems$.next([]);
     this._clock = null;

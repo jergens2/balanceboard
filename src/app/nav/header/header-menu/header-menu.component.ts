@@ -3,7 +3,6 @@ import { HeaderMenu } from './header-menu.model';
 import { MenuItem } from './menu-item.model';
 import { Router } from '@angular/router';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { HeaderService } from '../header.service';
 
 @Component({
   selector: 'app-header-menu',
@@ -14,7 +13,7 @@ export class HeaderMenuComponent implements OnInit {
 
   faChevronRight = faChevronRight;
 
-  constructor(private router: Router, private headerService: HeaderService) { }
+  constructor(private router: Router) { }
 
   private mouseOverSubMenu: boolean = false;
 
