@@ -65,16 +65,21 @@ export class DaybookHttpRequestService {
    * and link them, and then return the item for the provided date with the previous and following dates attached.
    * @param thisDateYYYYMMDD the date of the DaybookDayItem to get
    */
-  public getDaybookDayItemByDate$(thisDateYYYYMMDD: string)
+  public getDaybookDayItemByDate$(thisDateYYYYMMDD: string, rangeStartYYYYMMDD?: string, rangeEndYYYYMMDD?: string)
     : Observable<DaybookDayItem[]> {
 
     const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
     const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
 
-    const prevWeekYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(7, 'days').format('YYYY-MM-DD');
-    const nextWeekYYYYMMDD: string = moment(thisDateYYYYMMDD).add(7, 'days').format('YYYY-MM-DD');
+    if(!rangeStartYYYYMMDD){
+      rangeStartYYYYMMDD = moment(thisDateYYYYMMDD).subtract(7, 'days').format('YYYY-MM-DD');
+    }
+    if(!rangeEndYYYYMMDD){
+      rangeEndYYYYMMDD = moment(thisDateYYYYMMDD).add(7, 'days').format('YYYY-MM-DD');
 
-    const getUrl = serverUrl + '/api/daybook-day-item/' + this._userId + '/' + prevWeekYYYYMMDD + '/' + nextWeekYYYYMMDD;
+    }
+
+    const getUrl = serverUrl + '/api/daybook-day-item/' + this._userId + '/' + rangeStartYYYYMMDD + '/' + rangeEndYYYYMMDD;
     const dayItems$: Subject<DaybookDayItem[]> = new Subject();
     this.httpClient.get<{ message: string, data: any }>(getUrl)
       .pipe<DaybookDayItem[]>(map((response) => {
@@ -89,10 +94,10 @@ export class DaybookHttpRequestService {
         if (!thisDayItem) { saveItems.push(new DaybookDayItem(thisDateYYYYMMDD)); }
         if (saveItems.length > 0) {
           this._saveMultipleItems$(saveItems).subscribe(savedItems => {
-            dayItems$.next(this._populateRemainder(prevWeekYYYYMMDD, nextWeekYYYYMMDD, responseItems.concat(savedItems)));
+            dayItems$.next(this._populateRemainder(rangeStartYYYYMMDD, rangeEndYYYYMMDD, responseItems.concat(savedItems)));
           });
         } else {
-          dayItems$.next(this._populateRemainder(prevWeekYYYYMMDD, nextWeekYYYYMMDD, responseItems.concat(responseItems)))
+          dayItems$.next(this._populateRemainder(rangeStartYYYYMMDD, rangeEndYYYYMMDD, responseItems.concat(responseItems)))
         }
       });
     return dayItems$.asObservable();

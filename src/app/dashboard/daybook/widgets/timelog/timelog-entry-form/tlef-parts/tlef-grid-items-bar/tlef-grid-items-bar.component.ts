@@ -2,8 +2,6 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { DaybookControllerService } from '../../../../../controller/daybook-controller.service';
 import { TLEFGridBarItem } from './tlef-grid-bar-item.class';
-import { DaybookTimeScheduleStatus } from '../../../../../controller/items/daybook-availability-type.enum';
-import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';

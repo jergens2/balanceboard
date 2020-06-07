@@ -7,6 +7,8 @@ import { TimelogDelineator } from '../../widgets/timelog/timelog-delineator.clas
 
 export class DaybookTimeSchedule {
 
+
+    private _dateYYYYMMDD: string;
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
     private _timeScheduleItems: DaybookTimeScheduleItem[] = [];
@@ -15,19 +17,22 @@ export class DaybookTimeSchedule {
 
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
+    public get dateYYYYMMDD(): string { return this._dateYYYYMMDD; }
 
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment,
+    constructor(dateYYYYMMDD: string, startTime: moment.Moment, endTime: moment.Moment,
         timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: DaybookSleepInputDataItem[], delineators: moment.Moment[]) {
+        this._dateYYYYMMDD = dateYYYYMMDD;
         console.log("Constructing schedule: " + startTime.format('YYYY-MM-DD hh:mm a') + " - " + endTime.format('YYYY-MM-DD hh:mm a'))
         this._startTime = moment(startTime);
         this._endTime = moment(endTime);
-
         this._buildSchedule(timelogEntries, sleepEntries, delineators);
-
         this._logToConsole();
 
     }
+
+   
+
 
 
 
@@ -44,20 +49,22 @@ export class DaybookTimeSchedule {
     public isRangeAvailable(startTime: moment.Moment, endTime: moment.Moment): boolean {
         const availableItems = this.getAvailableScheduleItems();
         const totalMS = moment(endTime).diff(startTime, 'milliseconds');
-        for (let i = 0; i < availableItems.length; i++) {
-            if (startTime.isSameOrAfter(availableItems[i].startTime) && endTime.isSameOrBefore(availableItems[i].endTime)) {
-                return true;
-            } else if (startTime.isSameOrAfter(availableItems[i].startTime) && endTime.isAfter(availableItems[i].endTime)) {
-                const duration = moment(availableItems[i].endTime).diff(moment(startTime), 'milliseconds');
-                return (duration > (0.5 * totalMS));
-            } else if (startTime.isBefore(availableItems[i].startTime) && endTime.isAfter(availableItems[i].endTime)) {
-                const duration = moment(endTime).diff(moment(availableItems[i].startTime), 'milliseconds');
-                return (duration > (0.5 * totalMS));
+
+        let isRangeAvailable: boolean = false;
+        availableItems.forEach((item) => {
+            if (startTime.isSameOrAfter(item.startTime) && endTime.isSameOrBefore(item.endTime)) {
+                isRangeAvailable = true;
+            } else if (startTime.isSameOrAfter(item.startTime) && endTime.isAfter(item.endTime)) {
+                const duration = moment(item.endTime).diff(moment(startTime), 'milliseconds');
+                isRangeAvailable = (duration > (0.5 * totalMS));
+            } else if (startTime.isBefore(item.startTime) && endTime.isAfter(item.endTime)) {
+                const duration = moment(endTime).diff(moment(item.startTime), 'milliseconds');
+                isRangeAvailable = (duration > (0.5 * totalMS));
             } else {
 
             }
-        }
-        return false;
+        });
+        return isRangeAvailable;
     }
     public getAvailableScheduleItems(): DaybookTimeScheduleItem[] {
         return this._timeScheduleItems.filter(item => item.status === DaybookTimeScheduleStatus.AVAILABLE);
@@ -73,10 +80,11 @@ export class DaybookTimeSchedule {
 
     private _buildSchedule(timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: DaybookSleepInputDataItem[], delineators: moment.Moment[]) {
 
-        // const isToday: boolean = this.startTime.format('YYYY-MM-DD') === moment().format('YYYY-MM-DD');
-        // if (isToday) {
-        //     delineators.push(moment().startOf('minute'));
-        // }
+        const isToday: boolean = moment().format('YYYY-MM-DD') === this.dateYYYYMMDD;
+
+        if (isToday) {
+            delineators.push(moment().startOf('minute'));
+        }
         let timeScheduleItems: DaybookTimeScheduleItem[] = [
             ...timelogEntries.map(item => {
                 const startTime = moment(item.startTimeISO);
@@ -136,7 +144,7 @@ export class DaybookTimeSchedule {
                 currentTime = moment(timeScheduleItems[i].endTime);
                 allItems.push(timeScheduleItems[i]);
             }
-            if(currentTime.isBefore(this.endTime)){
+            if (currentTime.isBefore(this.endTime)) {
                 allItems = allItems.concat(buildAvailableItems(currentTime, this.endTime, delineators));
             }
         }
@@ -153,6 +161,14 @@ export class DaybookTimeSchedule {
                 return 0;
             }
         });
+        for (let i = 0; i < timeScheduleItems.length; i++) {
+            const start = timeScheduleItems[i].startTime;
+            const end = timeScheduleItems[i].endTime;
+            const endOfDay = moment(start).startOf('day').add(24, 'hours');
+            if (end.isAfter(endOfDay)) {
+                console.log('Danger: no item should ever cross midnight');
+            }
+        }
         let overlappingItems: boolean = false;
         if (timeScheduleItems.length > 1) {
             for (let i = 1; i < timeScheduleItems.length; i++) {
@@ -161,21 +177,23 @@ export class DaybookTimeSchedule {
                     console.log("Error: Overlapping items!")
                 }
             }
+
+
         }
 
-        for(let i=0; i<timeScheduleItems.length; i++){
-            if(timeScheduleItems[i].startTime.isBefore(this.startTime)){
-                if(timeScheduleItems[i].endTime.isSameOrBefore(this.startTime)){
+        for (let i = 0; i < timeScheduleItems.length; i++) {
+            if (timeScheduleItems[i].startTime.isBefore(this.startTime)) {
+                if (timeScheduleItems[i].endTime.isSameOrBefore(this.startTime)) {
                     timeScheduleItems.splice(i, 1);
                     i--;
-                }else{
+                } else {
                     timeScheduleItems[i].startTime = this.startTime;
                 }
-            }else if(timeScheduleItems[i].endTime.isAfter(this.endTime)){
-                if(timeScheduleItems[i].startTime.isSameOrAfter(this.endTime)){
+            } else if (timeScheduleItems[i].endTime.isAfter(this.endTime)) {
+                if (timeScheduleItems[i].startTime.isSameOrAfter(this.endTime)) {
                     timeScheduleItems.splice(i, 1);
                     i--;
-                }else{
+                } else {
                     timeScheduleItems[i].endTime = this.endTime;
                 }
             }
@@ -189,4 +207,80 @@ export class DaybookTimeSchedule {
             console.log("  " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " -- " + item.status)
         });
     }
+
+
+     // public get dayStartTime(): moment.Moment {
+    //     const thisDayWakeItems = this._getThisDayWakeItems();
+    //     if(thisDayWakeItems.length === 0){
+    //         console.log('Error: wtf');
+    //     }else if(thisDayWakeItems.length === 1){
+    //         return thisDayWakeItems[0].startTime;
+    //     }else if(thisDayWakeItems.length > 1){
+    //         return this._findLargestWakeItem(thisDayWakeItems).startTime;
+    //     }
+    //     return null;
+    // }
+    // public get dayEndTime(): moment.Moment {
+    //     const thisDayWakeItems = this._getThisDayWakeItems();
+    //     if(thisDayWakeItems.length === 0){
+    //         console.log('Error: wtf');
+    //     }else if(thisDayWakeItems.length === 1){
+    //         return thisDayWakeItems[0].endTime;
+    //     }else if(thisDayWakeItems.length > 1){
+    //         return this._findLargestWakeItem(thisDayWakeItems).endTime;
+    //     }
+    //     return null;
+    // }
+
+    // private _findLargestWakeItem(thisDayWakeItems: DaybookTimeScheduleItem[]): DaybookTimeScheduleItem{
+    //     const startOfThisDay: moment.Moment = moment(this.dateYYYYMMDD);
+    //     const endOfThisDay: moment.Moment = moment(this.dateYYYYMMDD);
+    //     const getMilliseconds = function(wakeItem: DaybookTimeScheduleItem): number{
+    //         const crossesStart = wakeItem.startTime.isBefore(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
+    //         const crossesEnd = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isAfter(endOfThisDay);
+    //         const isInside = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
+    //         const encapsulates = wakeItem.startTime.isSameOrBefore(startOfThisDay) && wakeItem.endTime.isSameOrAfter(endOfThisDay);
+    //         let startTime: moment.Moment;
+    //         let endTime: moment.Moment;
+    //         if(crossesStart){
+    //             startTime = moment(startOfThisDay);
+    //             endTime = moment(wakeItem.endTime);
+    //         }else if(isInside){
+    //             startTime = moment(wakeItem.startTime);
+    //             endTime = moment(wakeItem.endTime)
+    //         }else if(crossesEnd){
+    //             startTime = moment(wakeItem.startTime);
+    //             endTime = moment(endOfThisDay);
+    //         }else if(encapsulates){
+    //             console.log('Big badaboom.  Bada big boom.');
+    //         }
+    //         return moment(endTime).diff(startTime, 'milliseconds');
+    //     }
+    //     let largestItem = thisDayWakeItems[0];
+    //     let largestMs = getMilliseconds(largestItem);
+    //     for(let i=1; i<thisDayWakeItems.length; i++){
+    //         let currentMs = getMilliseconds(thisDayWakeItems[i]);
+    //         if(currentMs > largestMs){
+    //             largestItem = thisDayWakeItems[i];
+    //         }
+    //     }
+    //     return largestItem;
+    // }
+
+    // private _getThisDayWakeItems(): DaybookTimeScheduleItem[]{
+    //     const startOfThisDay: moment.Moment = moment(this.dateYYYYMMDD);
+    //     const endOfThisDay: moment.Moment = moment(this.dateYYYYMMDD);
+    //     const sleepCycle = this._getSleepCycle();
+    //     const wakeItems = sleepCycle.filter(item => item.status !== DaybookTimeScheduleStatus.SLEEP);
+    //     const thisDaywakeItems = wakeItems.filter((wakeItem)=>{
+    //         const crossesStart = wakeItem.startTime.isBefore(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
+    //         const crossesEnd = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isAfter(endOfThisDay);
+    //         const isInside = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
+    //         const encapsulates = wakeItem.startTime.isSameOrBefore(startOfThisDay) && wakeItem.endTime.isSameOrAfter(endOfThisDay);
+    //         return crossesStart || crossesEnd || isInside || encapsulates;
+    //     });
+    //     return thisDaywakeItems;
+    // }
+
+
 }

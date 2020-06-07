@@ -3,6 +3,7 @@ import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class
 import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
 import { TimelogDelineatorType, TimelogDelineator } from '../../../timelog-delineator.class';
 import { Subscription, Subject, Observable } from 'rxjs';
+import { DaybookTimeScheduleStatus } from '../../../../../api/controllers/daybook-time-schedule-status.enum';
 
 export class TimeSelectionColumn {
 
@@ -18,9 +19,11 @@ export class TimeSelectionColumn {
     public get endTime(): moment.Moment { return this._endTime; }
     public get rows(): TimeSelectionRow[] { return this._rows; }
 
+
     private _daybookService: DaybookDisplayService;
 
     constructor(daybookService: DaybookDisplayService) {
+        // console.log("Construction TimeSelectionColumn")
         this._daybookService = daybookService;
         this._startTime = moment(this._daybookService.displayStartTime);
         this._endTime = moment(this._daybookService.displayEndTime);
@@ -34,29 +37,29 @@ export class TimeSelectionColumn {
         const durationMinutes: number = this.endTime.diff(this.startTime, 'minutes');
         const rowCount = durationMinutes / this._divisorMinutes;
         const rows: TimeSelectionRow[] = [];
-        const delineatedSections = this._daybookService.activeDayController.schedule.timeScheduleItems;
+        const timeScheduleItems = this._daybookService.schedule.timeScheduleItems;
+        const availableItems = timeScheduleItems.filter(item => item.status === DaybookTimeScheduleStatus.AVAILABLE);
         let currentTime: moment.Moment = moment(this.startTime);
         for (let i = 0; i < rowCount; i++) {
             // console.log(" " + i + " :" + currentTime.format('hh:mm a') + " to " + moment(currentTime).add(divisorMinutes, 'minutes').format('hh:mm a'))
             let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(this._divisorMinutes, 'minutes'), i);
-            newRow.isAvailable = this._daybookService.activeDayController.isRangeAvailable(newRow.startTime, newRow.endTime);
-
+            newRow.isAvailable = this._daybookService.schedule.isRangeAvailable(newRow.startTime, newRow.endTime);
             if (newRow.isAvailable) {
-                newRow.sectionIndex = delineatedSections.findIndex(item => newRow.startTime.isSameOrAfter(item.startTime) && newRow.startTime.isBefore(item.endTime));
+                newRow.sectionIndex = availableItems.findIndex(item => newRow.startTime.isSameOrAfter(item.startTime) && newRow.startTime.isBefore(item.endTime));
             }
+
             let delineator = this._findDelineator(newRow);
             if (delineator) {
                 newRow.setDelineator(delineator);
             }
-
             rows.push(newRow);
             currentTime = moment(currentTime).add(this._divisorMinutes, 'minutes');
         }
         rows.forEach((row) => {
             if (row.isAvailable) {
                 if (row.sectionIndex >= 0) {
-                    row.earliestAvailability = delineatedSections[row.sectionIndex].startTime;
-                    row.latestAvailability = delineatedSections[row.sectionIndex].endTime;
+                    row.earliestAvailability = timeScheduleItems[row.sectionIndex].startTime;
+                    row.latestAvailability = timeScheduleItems[row.sectionIndex].endTime;
                 } else {
                     console.log("Error of some kind with row availability index")
                 }
@@ -106,6 +109,11 @@ export class TimeSelectionColumn {
         ];
     }
 
+    public reset() {
+        this._rows.forEach((row) => {
+            row.reset();
+        });
+    }
 
     private _findDelineator(newRow: TimeSelectionRow): TimelogDelineator {
         const priority = [
@@ -169,27 +177,27 @@ export class TimeSelectionColumn {
         return null;
     }
 
-    private _findSectionIndex(newRow: TimeSelectionRow): number {
-        const availableItems = this._daybookService.activeDayController.getAvailableScheduleItems();
+    // private _findSectionIndex(newRow: TimeSelectionRow): number {
+    //     const availableItems = this._daybookService.schedule.getAvailableScheduleItems();
 
 
-        if (availableItems.length === 0) {
-            console.log('Error: no item found')
-            return -1;
-        } else if (availableItems.length === 1) {
-            return 0;
-        } else if (availableItems.length > 1) {
-            let foundIndex: number = availableItems.findIndex((scheduleItem) => {
-                const startsBefore = newRow.startTime.isSameOrBefore(scheduleItem.startTime) && newRow.endTime.isAfter(scheduleItem.startTime);
-                const endsAfter = newRow.startTime.isBefore(scheduleItem.endTime) && newRow.endTime.isSameOrAfter(scheduleItem.endTime);
-                const isIn = newRow.startTime.isSameOrAfter(scheduleItem.startTime) && newRow.startTime.isSameOrBefore(scheduleItem.endTime);
-                return (startsBefore || endsAfter || isIn);
-            });
-            if (foundIndex === -1) { console.log('Error: could not find item') }
-            return foundIndex;
-        }
+    //     if (availableItems.length === 0) {
+    //         console.log('Error: no item found')
+    //         return -1;
+    //     } else if (availableItems.length === 1) {
+    //         return 0;
+    //     } else if (availableItems.length > 1) {
+    //         let foundIndex: number = availableItems.findIndex((scheduleItem) => {
+    //             const startsBefore = newRow.startTime.isSameOrBefore(scheduleItem.startTime) && newRow.endTime.isAfter(scheduleItem.startTime);
+    //             const endsAfter = newRow.startTime.isBefore(scheduleItem.endTime) && newRow.endTime.isSameOrAfter(scheduleItem.endTime);
+    //             const isIn = newRow.startTime.isSameOrAfter(scheduleItem.startTime) && newRow.startTime.isSameOrBefore(scheduleItem.endTime);
+    //             return (startsBefore || endsAfter || isIn);
+    //         });
+    //         if (foundIndex === -1) { console.log('Error: could not find item') }
+    //         return foundIndex;
+    //     }
 
-    }
+    // }
 
     private _calculateDivisorMinutes() {
         // for performance reasons we don't want too many, but for functionality reasons we don't want too few.

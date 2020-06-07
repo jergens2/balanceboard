@@ -12,8 +12,10 @@
     </div>
 
     <div class="content">
-        <div *ngIf="isAfterBedtime">
+        <div *ngIf="isNearBedtime">
             It's nearly bedtime.
+            
+            <button (click)="onClickContinue()" class="medium-button save-button">Okay!</button>
         </div>
     
         <div *ngIf="isAfterBedtime">

@@ -19,6 +19,12 @@ import { ToolType } from '../../toolbox-menu/tool-type.enum';
 import { TLEFFormCase } from './widgets/timelog/timelog-entry-form/tlef-form-case.enum';
 import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
 import { SleepManagerService } from './sleep-manager/sleep-manager.service';
+import { DaybookTimeSchedule } from './api/controllers/daybook-time-schedule.class';
+import { DaybookTimeScheduleItem } from './api/controllers/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleStatus } from './api/controllers/daybook-time-schedule-status.enum';
+import { DaybookSleepInputDataItem } from './api/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookTimelogEntryDataItem } from './api/data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookSleepCycle } from './controller/daybook-sleep-cycle.class';
 
 @Injectable({
   providedIn: 'root'
@@ -43,6 +49,7 @@ export class DaybookDisplayService {
   private _timelogDisplayGrid: TimelogDisplayGrid;
 
   private _tlefController: TLEFController;
+  private _schedule: DaybookTimeSchedule;
 
   public get dateYYYYMMDD(): string { return this.daybookControllerService.activeDayController.dateYYYYMMDD; }
   public get activeDayController(): DaybookController { return this.daybookControllerService.activeDayController; }
@@ -68,6 +75,7 @@ export class DaybookDisplayService {
   public get currentZoom(): TimelogZoomControllerItem { return this._currentZoom; }
 
   public get tlefController(): TLEFController { return this._tlefController; }
+  public get schedule(): DaybookTimeSchedule { return this._schedule; }
 
   public setDaybookWidget(widget: DaybookWidgetType) { this._widgetChanged$.next(widget); }
 
@@ -109,7 +117,7 @@ export class DaybookDisplayService {
         this._updateDisplay(update);
       }),
     ];
-    
+
     this._updateDisplay({
       type: DaybookDisplayUpdateType.DEFAULT,
       controller: this.daybookControllerService.activeDayController,
@@ -117,33 +125,74 @@ export class DaybookDisplayService {
     this._currentZoom = this.zoomItems[0];
   }
 
+
+
+  public getScheduleStatus(timeToCheck: moment.Moment): DaybookTimeScheduleStatus {
+    return this._schedule.getStatusAtTime(timeToCheck);
+  }
+  public getAvailableScheduleItems(): DaybookTimeScheduleItem[] {
+    return this._schedule.getAvailableScheduleItems();
+  }
+
+
+
   private _updateDisplay(update: DaybookDisplayUpdate) {
-    console.log("Daybook Display update: ", update.type);
+    // console.log("Daybook Display update: ", update.type);
+
+    const dateYYYYMMDD = update.controller.dateYYYYMMDD;
+    const isToday: boolean = update.controller.isToday;
+    const isBeforeToday = update.controller.isBeforeToday;
+    const isAfterToday = update.controller.isAfterToday;
+    let sleepItems: DaybookSleepInputDataItem[] = [];
+    let dayStartTime: moment.Moment;
+    let dayEndTime: moment.Moment;
+
+    
+    if (isToday) {
+      sleepItems = this.sleepService.getTodaySleepDataItems();
+      dayStartTime = moment(this.sleepService.previousWakeupTime);
+      dayEndTime = moment(this.sleepService.nextFallAsleepTime);
+    } else if (isAfterToday) {
+      const sleepCycle = new DaybookSleepCycle(this.sleepService.relevantItems);
+      sleepItems = sleepCycle.getFutureSleepDataItems();
+      dayStartTime = sleepCycle.getDayStartTime(dateYYYYMMDD);
+      dayEndTime = sleepCycle.getDayEndTime(dateYYYYMMDD);
+    } else if (isBeforeToday) {
+      const sleepCycle = new DaybookSleepCycle(update.controller.dayItems);
+      sleepItems = update.controller.getSleepDataItems();
+      dayStartTime = sleepCycle.getDayStartTime(dateYYYYMMDD);
+      dayEndTime = sleepCycle.getDayEndTime(dateYYYYMMDD);
+
+    } else {
+      console.log("Big time error");
+    }
+    this._displayStartTime = TimeUtilities.roundDownToFloor(moment(dayStartTime).subtract(15, 'minutes'), 30);
+    this._displayEndTime = TimeUtilities.roundUpToCeiling(moment(dayEndTime).add(15, 'minutes'), 30);
+    const timelogEntries: DaybookTimelogEntryDataItem[] = update.controller.timelogEntryItems.map(item => item.exportDataEntryItem());
+    const delineators: moment.Moment[] = update.controller.savedTimeDelineators;
+    
+    this._schedule = new DaybookTimeSchedule(this.dateYYYYMMDD, this.displayStartTime, this.displayEndTime, timelogEntries, sleepItems, delineators);
+
     this._buildZoomItems();
     this._updateTimelogDelineators();
 
 
+
     if (!this._tlefController) {
-      this._tlefController = new TLEFController(this._timeDelineators, this.activeDayController, this.clock, this.toolBoxService, this.activitiesService);
+      this._tlefController = new TLEFController(this._timeDelineators, this._schedule, this.activeDayController, this.clock, this.toolBoxService, this.activitiesService);
     } else {
       this._tlefController.update(this._timeDelineators, this.activeDayController, this.clock, update);
     }
     this._updateTLEFSubscription();
-    let newGrid: TimelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._timeDelineators, this.activeDayController, this._tlefController);
+    let newGrid: TimelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._timeDelineators, this._schedule, this.activeDayController, this._tlefController);
     this._timelogDisplayGrid = newGrid;
     // this._updateDrawingTLE(update);
+
+
     this._displayUpdated$.next(update);
   }
 
-  // private _updateDrawingTLE(update: DaybookDisplayUpdate) {
-    
-  //   if (this.tlefController.formIsOpen && update.type === DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY) {
-  //     console.log("Warning disabled")
-  //     // this._timelogDisplayGrid.items
-  //     // this._timelogDisplayGrid.createTimelogEntry(openItem.getInitialTLEValue());
-      
-  //   }
-  // }
+
 
   private _tlefSubscription: Subscription = new Subscription();
   private _updateTLEFSubscription() {
@@ -173,23 +222,15 @@ export class DaybookDisplayService {
 
 
 
+
   private _buildZoomItems() {
     let zoomItems: TimelogZoomControllerItem[] = [];
-    // console.log("Active Day controller: " , this.daybookControllerService.activeDayController.dateYYYYMMDD);
-    let startTime = moment(this.sleepService.previousWakeupTime);
-    let endTime = moment(this.sleepService.nextFallAsleepTime);
-    // console.log("Start time is: " + startTime.format('YYYY-MM-DD hh:mm a'))
-    // console.log("***End time is : " + endTime.format('YYYY-MM-DD hh:mm a'))
-    const wakeItem = new TimelogZoomControllerItem(startTime, endTime, TimelogZoomType.AWAKE);
+    const wakeItem = new TimelogZoomControllerItem(this.displayStartTime, this._displayEndTime, TimelogZoomType.AWAKE);
     wakeItem.icon = faSun;
-    const listItem = new TimelogZoomControllerItem(startTime, endTime, TimelogZoomType.LIST);
+    const listItem = new TimelogZoomControllerItem(this.displayStartTime, this._displayEndTime, TimelogZoomType.LIST);
     listItem.icon = faList;
     zoomItems = [wakeItem, listItem];
     this._zoomItems = zoomItems;
-    this._displayStartTime = TimeUtilities.roundDownToFloor(moment(startTime).subtract(15, 'minutes'), 30);
-    this._displayEndTime = TimeUtilities.roundUpToCeiling(moment(endTime).add(15, 'minutes'), 30);
-    // console.log("Updating times: displayStartTime = " + this._displayStartTime.format('YYYY-MM-DD hh:mm a') )
-    // console.log("Updating times: displayEndTime = " + this._displayEndTime.format('YYYY-MM-DD hh:mm a'))
   }
 
   private _updateTimelogDelineators() {
@@ -244,10 +285,10 @@ export class DaybookDisplayService {
           nowLineCrossesTLE = true;
         }
         if (openItem.isDrawing) {
-          if(drawDelineatorStart && drawDelineatorEnd){
+          if (drawDelineatorStart && drawDelineatorEnd) {
             timelogDelineators.push(drawDelineatorStart);
             timelogDelineators.push(drawDelineatorEnd);
-          }else{
+          } else {
             timelogDelineators.push(openItem.startDelineator);
             timelogDelineators.push(openItem.endDelineator);
           }
@@ -255,8 +296,8 @@ export class DaybookDisplayService {
         }
       }
     }
-    if(!drawItemsPushed){
-      if(drawDelineatorStart && drawDelineatorEnd){
+    if (!drawItemsPushed) {
+      if (drawDelineatorStart && drawDelineatorEnd) {
         timelogDelineators.push(drawDelineatorStart);
         timelogDelineators.push(drawDelineatorEnd);
       }

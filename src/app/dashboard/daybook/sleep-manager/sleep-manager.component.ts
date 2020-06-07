@@ -33,6 +33,7 @@ export class SleepManagerComponent implements OnInit {
 
   private _screenSize: ScreenSizes
 
+  public get isNearBedtime(): boolean { return this.sleepCyclePosition === SleepCyclePosition.BEFORE_BEDTIME; }
   public get isAfterBedtime(): boolean { return this.sleepCyclePosition === SleepCyclePosition.AFTER_BEDTIME; }
   public get isSleepTime(): boolean { return this.sleepCyclePosition === SleepCyclePosition.SLEEP; }
   public get isEarlyWakeup(): boolean { return this.sleepCyclePosition === SleepCyclePosition.EARLY_WAKEUP; }
@@ -70,7 +71,11 @@ export class SleepManagerComponent implements OnInit {
       }else{
         console.log("Error: unable to finish the sleep data form");
       }
-    })
+    });
+  }
+
+  public onClickContinue(){
+    this.complete.emit(true);
   }
 
   private _startClock() {

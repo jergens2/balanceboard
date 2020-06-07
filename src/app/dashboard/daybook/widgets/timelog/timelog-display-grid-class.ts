@@ -7,16 +7,18 @@ import { TimeScheduleItem } from '../../../../shared/utilities/time-utilities/ti
 import { TLEFController } from './timelog-entry-form/TLEF-controller.class';
 import { TLEFControllerItem } from './timelog-entry-form/TLEF-controller-item.class';
 import { DaybookTimeScheduleStatus } from '../../api/controllers/daybook-time-schedule-status.enum';
+import { DaybookTimeSchedule } from '../../api/controllers/daybook-time-schedule.class';
 
 export class TimelogDisplayGrid {
 
-  constructor(startTime: moment.Moment, endTime: moment.Moment, delineators: TimelogDelineator[], activeDayController: DaybookController, tlefController: TLEFController) {
+  constructor(startTime: moment.Moment, endTime: moment.Moment, delineators: TimelogDelineator[], schedule: DaybookTimeSchedule, activeDayController: DaybookController, tlefController: TLEFController) {
     // console.log("Constructing timelogDisplayGrid: delineators: ", delineators);
     this._startTime = moment(startTime);
     this._endTime = moment(endTime);
     this._timeDelineators = delineators;
     this._activeController = activeDayController;
     this._tlefController = tlefController;
+    this._daybookSchedule = schedule;
     this._buildGrid();
   }
 
@@ -25,6 +27,7 @@ export class TimelogDisplayGrid {
   private _timeDelineators: TimelogDelineator[];
   private _activeController: DaybookController;
   private _tlefController: TLEFController;
+  private _daybookSchedule: DaybookTimeSchedule;
 
 
   private _gridItems: TimelogDisplayGridItem[] = [];
@@ -94,7 +97,7 @@ export class TimelogDisplayGrid {
 
       const itemMs = moment(item.endTime).diff(moment(item.startTime), 'milliseconds');
       const percent: number = (itemMs / this.totalViewMilliseconds) * 100;
-      const availability: DaybookTimeScheduleStatus = this._activeController.getScheduleStatus(item.startTime);
+      const availability: DaybookTimeScheduleStatus = this._daybookSchedule.getStatusAtTime(item.startTime);
       const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, availability);
       gridItems.push(newGridItem);
     });

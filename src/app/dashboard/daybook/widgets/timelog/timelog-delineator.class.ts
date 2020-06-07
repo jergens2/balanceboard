@@ -54,7 +54,9 @@ export class TimelogDelineator {
     public get icon(): IconDefinition { return this._icon; }
     public get delineatorType(): TimelogDelineatorType { return this._delineatorType; };
 
-    public setNowLineCrossesTLE(){ this._nowLineCrossesTLE = true; }
+    public setNowLineCrossesTLE(){ 
+        // console.log("Now line crosses timelog entry")
+        this._nowLineCrossesTLE = true; }
     public get nowLineCrossesTLE(): boolean { return this._nowLineCrossesTLE; }
 
     public get isSleepDelineator(): boolean { return this._delineatorType === TimelogDelineatorType.WAKEUP_TIME || this._delineatorType === TimelogDelineatorType.FALLASLEEP_TIME; }

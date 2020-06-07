@@ -17,6 +17,7 @@ import { ColorConverter } from "../../../../../shared/utilities/color-converter.
 import { ColorType } from "../../../../../shared/utilities/color-type.enum";
 import { DaybookTimeScheduleStatus } from "../../../api/controllers/daybook-time-schedule-status.enum";
 import { TimelogEntryBuilder } from "../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class";
+import { DaybookTimeSchedule } from "../../../api/controllers/daybook-time-schedule.class";
 
 export class TLEFController {
 
@@ -28,15 +29,17 @@ export class TLEFController {
     private _timeDelineators: TimelogDelineator[] = [];
     private _activeDayController: DaybookController;
     private _currentlyOpenTLEFItem$: BehaviorSubject<TLEFControllerItem> = new BehaviorSubject(null);
+    private _daybookSchedule: DaybookTimeSchedule;
 
     private toolboxService: ToolboxService;
 
     private _activitiesService: ActivityCategoryDefinitionService;
     private _stachedItem: TLEFControllerItem;
 
-    constructor(timeDelineators: TimelogDelineator[], activeDayController: DaybookController,
+    constructor(timeDelineators: TimelogDelineator[], daybookSchedule: DaybookTimeSchedule, activeDayController: DaybookController,
         clock: moment.Moment, toolboxService: ToolboxService, activitiesService: ActivityCategoryDefinitionService) {
         this._timeDelineators = timeDelineators;
+        this._daybookSchedule = daybookSchedule;
         this._activeDayController = activeDayController;
         this.toolboxService = toolboxService;
         this._activitiesService = activitiesService;
@@ -297,7 +300,7 @@ export class TLEFController {
                 let timelogEntry: TimelogEntryItem;
                 let sleepEntry: SleepEntryItem;
                 let isAvailable: boolean = false;
-                const availability: DaybookTimeScheduleStatus = this._activeDayController.getScheduleStatus(currentTime);
+                const availability: DaybookTimeScheduleStatus = this._daybookSchedule.getStatusAtTime(currentTime);
                 // console.log(currentTime.format('YYYY-MM-DD hh:mm a ') + " : Availability is: " + availability)
                 if (availability === DaybookTimeScheduleStatus.SLEEP) {
                     formCase = TLEFFormCase.SLEEP;

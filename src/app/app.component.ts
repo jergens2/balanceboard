@@ -150,19 +150,26 @@ export class AppComponent implements OnInit {
       this.userPromptService.promptsCleared$.subscribe((clear) => {
         if (clear === true) { this._finishLoadingApp(); }
         else { console.log("error with user prompts."); }
+        this._showUserActionPrompt = false;
       }),
     ];
   }
 
   private _finishLoadingApp() {
-    console.log("_finishLoadingApp()");
-    this.daybookControllerService.login$(this.authService.userId).subscribe((loginComplete)=>{
+    console.log("loading app")
+    this._showUserActionPrompt = false;
+    this._loading = true;
+    let sub = this.daybookControllerService.login$(this.authService.userId).subscribe((loginComplete)=>{
       if(loginComplete === true){
-        this._showUserActionPrompt = false;
+        
       }else{
 
       }
-    })
+      console.log("daybook Loading is complete: " , loginComplete)
+      this._loading = false;
+      this._loadingIsComplete = true;
+      sub.unsubscribe();
+    });
   }
 
   private _unloadApp() {
@@ -217,12 +224,14 @@ export class AppComponent implements OnInit {
       if (response === true) {
         if (this.userPromptService.hasPrompts()) {
           this._showUserActionPrompt = true;
+          this._loading = false;
+          this._loadingIsComplete = true;
+        }else{
+          this._finishLoadingApp();
         }
       } else {
         console.log("Error initiating userPromptService")
       }
-      this._loading = false;
-      this._loadingIsComplete = true;
     }, (error) => {
       console.log("Error: ", error);
     });

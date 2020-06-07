@@ -1,21 +1,13 @@
 import * as moment from 'moment';
 
-
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { DaybookSleepController } from './daybook-sleep-controller.class';
+
 import { Subject, Observable, Subscription, BehaviorSubject } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 import { DaybookTimeDelineatorController } from './daybook-time-delineator-controller.class';
-import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
-import { TimeScheduleOldnComplicated } from '../../../shared/utilities/time-utilities/time-schedule-old-complicated.class';
-import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
-import { DaybookTimePosition } from '../daybook-time-position-form/daybook-time-position.enum';
-import { DetermineDaybookTimePosition } from './items/determine-daybook-time-position.class';
-import { DaybookTimeSchedule } from '../api/controllers/daybook-time-schedule.class';
-import { DaybookTimeScheduleStatus } from '../api/controllers/daybook-time-schedule-status.enum';
-import { DaybookTimeScheduleItem } from '../api/controllers/daybook-time-schedule-item.class';
+
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 
 
@@ -25,7 +17,7 @@ import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input
  *  Specifically, the contoller contains 3 DaybookDayItem objects:  previousDay, thisDay, nextDay.
  *  With this controller we can execute CRUD operations for things such as TimelogEntryItems and other DaybookDayItem input values.
  */
-export class DaybookController{
+export class DaybookController {
 
     constructor(thisDayYYYYMMDD: string, daybookDayItems: DaybookDayItem[], startTime: moment.Moment, endTime: moment.Moment, clock: moment.Moment) {
         // console.log("*Constructing Daybook Controller")
@@ -51,11 +43,6 @@ export class DaybookController{
     // private _energyController: DaybookEnergyController;
     private _timeDelineatorController: DaybookTimeDelineatorController;
 
-    private _dayItems: DaybookDayItem[] = [];
-    // private _batteryLevel: number = 0;
-    private _schedule: DaybookTimeSchedule;
-
-
     private _dataChanged$: Subject<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> = new Subject();
     private _subscriptions: Subscription[] = [];
 
@@ -63,7 +50,7 @@ export class DaybookController{
     // private get sleepController(): DaybookSleepController { return this._sleepController; }
     // private get energyController(): DaybookEnergyController { return this._energyController; }
     private get timeDelineatorController(): DaybookTimeDelineatorController { return this._timeDelineatorController; }
-    
+
 
     public reload(dayItems: DaybookDayItem[]) {
         this._reload(dayItems);
@@ -75,12 +62,15 @@ export class DaybookController{
     public get clock(): moment.Moment { return this._clock; }
     public get dateYYYYMMDD(): string { return this._thisDayYYYYMMDD; }
     public get isToday(): boolean { return this._thisDay.dateYYYYMMDD === this.clock.format('YYYY-MM-DD'); }
+    public get isAfterToday(): boolean { return this._thisDay.dateYYYYMMDD > this.clock.format('YYYY-MM-DD'); }
+    public get isBeforeToday(): boolean { return this._thisDay.dateYYYYMMDD < this.clock.format('YYYY-MM-DD'); }
     public get controllerStartTime(): moment.Moment { return moment(this._thisDay.dateYYYYMMDD).startOf('day').subtract(1, 'days'); }
     public get controllerEndTime(): moment.Moment { return moment(this._thisDay.dateYYYYMMDD).startOf('day').add(2, 'days'); }
 
     public get previousDay(): DaybookDayItem { return this._previousDay; }
     public get thisDay(): DaybookDayItem { return this._thisDay; }
     public get followingDay(): DaybookDayItem { return this._followingDay; }
+    public get dayItems(): DaybookDayItem[] { return [this.previousDay, this.thisDay, this.followingDay]; }
 
     public get startOfPrevDay(): moment.Moment { return moment(this.previousDay.dateYYYYMMDD).startOf('day'); }
     public get startOfThisDay(): moment.Moment { return moment(this.thisDay.dateYYYYMMDD).startOf('day'); }
@@ -91,7 +81,7 @@ export class DaybookController{
 
     public get dailyWeightLogEntryKg(): number { return this._thisDay.dailyWeightLogEntryKg; }
 
-    public get schedule(): DaybookTimeSchedule { return this._schedule;}
+
 
     // public get batteryLevel(): number { return this._batteryLevel; }
 
@@ -106,40 +96,31 @@ export class DaybookController{
         this._timeDelineatorController.updateDelineator(originalTime, saveNewDelineator);
     }
 
-    // public getSleepItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): SleepEntryItem {
-    //     return this.sleepController.getSleepItem(gridItemStart, gridItemEnd);
-    // }
+    public getSleepDataItems(): DaybookSleepInputDataItem[] {
+        const allSleepItems = [
+            ...this._previousDay.sleepInputItems,
+            ...this._thisDay.sleepInputItems,
+            ...this._followingDay.sleepInputItems,
+        ];
+        return allSleepItems;
+    }
     public getTimelogEntryItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): TimelogEntryItem {
         return this.timelogEntryController.getTimelogEntryItem(gridItemStart, gridItemEnd);
     }
 
-    public getScheduleStatus(timeToCheck: moment.Moment): DaybookTimeScheduleStatus  {
-        return this._schedule.getStatusAtTime(timeToCheck);
-    }
-    public getAvailableScheduleItems(): DaybookTimeScheduleItem[] { 
-        return this._schedule.getAvailableScheduleItems();
-    }
 
-
-    public getEarliestAvailability(fromTime: moment.Moment): moment.Moment {
-        return null;
-    }
-    public getLatestAvailability(fromTime: moment.Moment): moment.Moment {
-        return null;
-    }
-
-    public getLastActivityEndTime(): moment.Moment{
+    public getLastActivityEndTime(): moment.Moment {
         /*
         this method assumes that the timelogEntryItems array are all saved items for past events.  this is an unhandled situation.
         */
         const now = moment();
         let lastTime: moment.Moment;
-        if(this.timelogEntryItems.length>0){
-            for(let i=0; i<this.timelogEntryItems.length; i++){
+        if (this.timelogEntryItems.length > 0) {
+            for (let i = 0; i < this.timelogEntryItems.length; i++) {
                 const startIsBefore = this.timelogEntryItems[i].startTime.isBefore(now);
                 const endIsBefore = this.timelogEntryItems[i].endTime.isBefore(now);
-                if(startIsBefore && endIsBefore){
-                    if(this.timelogEntryItems[i].endTime.isAfter(lastTime)){
+                if (startIsBefore && endIsBefore) {
+                    if (this.timelogEntryItems[i].endTime.isAfter(lastTime)) {
                         lastTime = moment(this.timelogEntryItems[i].endTime);
                     }
                 }
@@ -147,9 +128,9 @@ export class DaybookController{
         }
         return lastTime;
     }
-    
 
-    public setSleepEntryItems(prevDayItems: DaybookSleepInputDataItem[], thisDayItems: DaybookSleepInputDataItem[]){
+
+    public setSleepEntryItems(prevDayItems: DaybookSleepInputDataItem[], thisDayItems: DaybookSleepInputDataItem[]) {
         this._previousDay.sleepInputItems = prevDayItems;
         this._thisDay.sleepInputItems = thisDayItems;
         // this._dataChanged$.next({ prevDayChanged: true, thisDayChanged: true, nextDayChanged: false});
@@ -161,28 +142,28 @@ export class DaybookController{
     public saveTimelogEntryItem(saveTimelogEntry: TimelogEntryItem) {
         return this.timelogEntryController.saveTimelogEntryItem(this.dateYYYYMMDD, saveTimelogEntry);
     }
-    public updateTimelogEntryItem$(updateTimelogEntry: TimelogEntryItem){
+    public updateTimelogEntryItem$(updateTimelogEntry: TimelogEntryItem) {
         return this.timelogEntryController.updateTimelogEntryItem(this.dateYYYYMMDD, updateTimelogEntry);
     }
-    public deleteTimelogEntryItem$(deleteItem: TimelogEntryItem){
+    public deleteTimelogEntryItem$(deleteItem: TimelogEntryItem) {
         return this.timelogEntryController.deleteTimelogEntryItem(this.dateYYYYMMDD, deleteItem);
     }
 
-    public isTimeAvailable(timeToCheck: moment.Moment): boolean {
-        return this._schedule.isAvailableAtTime(timeToCheck);
-    }
-    public isRangeAvailable(startTime: moment.Moment, endTime: moment.Moment): boolean {
-        const isAvailable = this._schedule.isRangeAvailable(startTime, endTime);
-        console.log("isRangeAvailable? " + startTime.format('hh:mm a') + " - " + endTime.format('hh:mm a'), isAvailable)
-        return isAvailable;
-    }
+    // public isTimeAvailable(timeToCheck: moment.Moment): boolean {
+    //     return this._schedule.isAvailableAtTime(timeToCheck);
+    // }
+    // public isRangeAvailable(startTime: moment.Moment, endTime: moment.Moment): boolean {
+    //     const isAvailable = this._schedule.isRangeAvailable(startTime, endTime);
+    //     console.log("isRangeAvailable? " + startTime.format('hh:mm a') + " - " + endTime.format('hh:mm a'), isAvailable)
+    //     return isAvailable;
+    // }
 
     public get dataChanged$(): Observable<{ prevDayChanged: boolean, thisDayChanged: boolean, nextDayChanged: boolean }> {
         return this._dataChanged$.asObservable();
     }
 
     private _reload(dayItems: DaybookDayItem[]) {
-        this._dayItems = dayItems;
+        // this._dayItems = dayItems;
         // console.log("*Reloading.  DayItems count: " + this._dayItems.length)
         const thisDateYYYYMMDD: string = this.dateYYYYMMDD;
         const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'day').format('YYYY-MM-DD');
@@ -204,7 +185,7 @@ export class DaybookController{
             ...this._previousDay.timeDelineators,
             ...this._thisDay.timeDelineators,
             ...this._followingDay.timeDelineators,
-        ];      
+        ];
         const allSleepItems = [
             ...this._previousDay.sleepInputItems,
             ...this._thisDay.sleepInputItems,
@@ -225,7 +206,7 @@ export class DaybookController{
         this._timelogEntryController = new DaybookTimelogEntryController(this.dateYYYYMMDD, relevantTimelogItems);
 
 
-        this._schedule = new DaybookTimeSchedule(this.startTime, this.endTime, allTimelogEntryItems, allSleepItems, allTimeDelineations);
+
         this._updateSubscriptions();
     }
 
@@ -259,11 +240,11 @@ export class DaybookController{
             thisDayChanged: updateItem.dateYYYYMMDD === this.thisDay.dateYYYYMMDD,
             nextDayChanged: updateItem.dateYYYYMMDD === this.followingDay.dateYYYYMMDD,
         };
-        if(daysChanged.prevDayChanged){
+        if (daysChanged.prevDayChanged) {
             this._previousDay.timelogEntryDataItems = updateItem.items;
-        }else if(daysChanged.thisDayChanged){
+        } else if (daysChanged.thisDayChanged) {
             this._thisDay.timelogEntryDataItems = updateItem.items;
-        }else if(daysChanged.nextDayChanged){
+        } else if (daysChanged.nextDayChanged) {
             this._followingDay.timelogEntryDataItems = updateItem.items;
         }
         // console.log("Next: ", daysChanged);

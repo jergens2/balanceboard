@@ -4,7 +4,6 @@ import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class
 import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
-import { DaybookTimeScheduleStatus } from '../../../../../controller/items/daybook-availability-type.enum';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { DaybookDisplayUpdateType } from '../../../../../controller/items/daybook-display-update.interface';
 import { TimeSelectionColumn } from './time-selection-column.class';
@@ -18,7 +17,6 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
 
   constructor(private daybookDisplayService: DaybookDisplayService) { }
 
-  private _rows: TimeSelectionRow[] = [];
   private _mouseIsInComponent: boolean;
   private _startRow: TimeSelectionRow;
   private _endRow: TimeSelectionRow;
@@ -35,7 +33,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     }
   }
 
-  public get rows(): TimeSelectionRow[] { return this._rows; }
+  public get rows(): TimeSelectionRow[] { return this._column.rows; }
   public get startTime(): moment.Moment { return this.daybookDisplayService.displayStartTime; }
   public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
   public get startRow(): TimeSelectionRow { return this._startRow; }
@@ -55,7 +53,8 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   }
 
   private _rebuild() {
-    this._timeDelineators = this.daybookDisplayService.timelogDelineators;
+    this._timeDelineators = Object.assign([], this.daybookDisplayService.timelogDelineators);
+    this._timeDelineators.push(new TimelogDelineator(moment().startOf('minute'), TimelogDelineatorType.NOW));
     this._column = new TimeSelectionColumn(this.daybookDisplayService);
     this._subscribeToColumn();
   }
@@ -98,6 +97,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   }
 
   private _updateDragging(updateRow: TimeSelectionRow) {
+    
     this._endRow = updateRow;
     const dragTimes = this._buildSection();
     const startTime = dragTimes.startTime;
@@ -118,6 +118,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     const sectionEnd = moment(this._getSectionEnd(startSectionIndex));
     let startTime: moment.Moment = moment(this.startRow.startTime);
     let endTime: moment.Moment = moment(this.endRow.startTime);
+    // console.log("update dragging", startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
     if (endTime.isAfter(sectionEnd)) {
       endTime = moment(sectionEnd);
     } else if (endTime.isBefore(startTime)) {
@@ -176,9 +177,8 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
 
   private _reset() {
     // console.log("COLUMN:  RESET")
-    this._rows.forEach((row) => {
-      row.reset();
-    });
+
+    this._column.reset();
     this._startRow = null;
     this._endRow = null;
     // this._mouseUpRow = null;
@@ -197,7 +197,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   }
 
   private _getSectionStart(sectionIndex: number): moment.Moment {
-    const availableItems = this.daybookDisplayService.activeDayController.getAvailableScheduleItems();
+    const availableItems = this.daybookDisplayService.schedule.getAvailableScheduleItems();
     if (availableItems.length >= sectionIndex + 1) {
       return availableItems[sectionIndex].startTime;
     } else {
@@ -206,7 +206,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     }
   }
   private _getSectionEnd(sectionIndex: number): moment.Moment {
-    const availableItems = this.daybookDisplayService.activeDayController.getAvailableScheduleItems();
+    const availableItems = this.daybookDisplayService.schedule.getAvailableScheduleItems();
     if (availableItems.length >= sectionIndex + 1) {
       return availableItems[sectionIndex].endTime;
     } else {
@@ -225,7 +225,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     let saveAllDelineators: moment.Moment[] = [];
     const existingValues = this.daybookDisplayService.activeDayController.savedTimeDelineators;
     existingValues.forEach((existingValue) => {
-      if (this.daybookDisplayService.activeDayController.isTimeAvailable(existingValue)) {
+      if (this.daybookDisplayService.schedule.isAvailableAtTime(existingValue)) {
         saveAllDelineators.push(moment(existingValue));
       }
     });

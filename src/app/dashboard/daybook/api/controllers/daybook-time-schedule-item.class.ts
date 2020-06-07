@@ -20,6 +20,7 @@ export class DaybookTimeScheduleItem {
     public get timelogEntry(): TimelogEntryItem { return this._timelogEntry; }
     public get sleepEntry(): SleepEntryItem { return this._sleepEntry; }
 
+    public set status(status: DaybookTimeScheduleStatus){ this._status = status; }
     public set startTime(time: moment.Moment) {this._startTime = moment(time);}
     public set endTime(time: moment.Moment) {this._endTime = moment(time);}
 

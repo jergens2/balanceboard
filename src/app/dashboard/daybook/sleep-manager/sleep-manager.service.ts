@@ -49,13 +49,16 @@ export class SleepManagerService {
   // public get nextFallAsleepTimeIsSet(): boolean { return this.sleepManager.nextFallAsleepTimeIsSet; }
 
 
+  public getTodaySleepDataItems(): DaybookSleepInputDataItem[] { return this.sleepManager.getTodayItems(); }
   public getEnergyLevel(): number { return this.sleepManager.getEnergyLevel(); }
+
+  public get relevantItems(): DaybookDayItem[] { return this.sleepManager.relevantItems; }
 
   public initiate$(userId: string): Observable<boolean> {
     this._userId = userId;
     const _userActionRequired$: Subject<boolean> = new Subject();
-    this._loadDaybookItems$().subscribe((schedule: DaybookTimeSchedule)=>{
-      this._loadSleepProfile$(schedule).subscribe((userActionRequired: boolean)=>{
+    this._loadDaybookItems$().subscribe((items: DaybookDayItem[]) => {
+      this._loadSleepProfile$(items).subscribe((userActionRequired: boolean) => {
         _userActionRequired$.next(userActionRequired);
       });
     });
@@ -71,33 +74,16 @@ export class SleepManagerService {
   public get formComplete$(): Observable<boolean> { return this._formComplete$.asObservable(); }
 
 
-  private _loadDaybookItems$() : Observable<DaybookTimeSchedule>{
-    const _schedule$: Subject<DaybookTimeSchedule> = new Subject();
-    let schedule: DaybookTimeSchedule;
+  private _loadDaybookItems$(): Observable<DaybookDayItem[]> {
     const today = moment().format('YYYY-MM-DD');
-    const scheduleStart = moment(today).startOf('day').subtract(1, 'day');
+    const scheduleStart = moment(today).startOf('day').subtract(14, 'days');
     const scheduleEnd = moment(today).startOf('day').add(2, 'days');
-    this.daybookHTTPService.getDaybookDayItemByDate$(today).subscribe((items: DaybookDayItem[]) => {
-      let timelogDataItems: DaybookTimelogEntryDataItem[] = [];
-      let sleepItems: DaybookSleepInputDataItem[] = [];
-      let delineators: moment.Moment[] = [];
-      items.forEach((item) => {
-        timelogDataItems = timelogDataItems.concat(item.timelogEntryDataItems);
-        sleepItems = sleepItems.concat(item.sleepInputItems);
-        delineators = delineators.concat(item.timeDelineators);
-      })      
-      schedule = new DaybookTimeSchedule(scheduleStart, scheduleEnd, timelogDataItems, sleepItems, delineators);
-      _schedule$.next(schedule);
-    }, (error)=>{
-      console.log("Error loading daybookDayItems from httpService")
-      _schedule$.next(null);
-    });
-    return _schedule$.asObservable();
+    return this.daybookHTTPService.getDaybookDayItemByDate$(today, scheduleStart.format('YYYY-MM-DD'), scheduleEnd.format('YYYY-MM-DD'));
   }
 
-  private _loadSleepProfile$(schedule: DaybookTimeSchedule): Observable<boolean> {
+  private _loadSleepProfile$(items: DaybookDayItem[]): Observable<boolean> {
     const _userActionRequired$: Subject<boolean> = new Subject();
-    this._getSleepProfileHttp$(schedule).subscribe((manager: SleepManager) => {
+    this._getSleepProfileHttp$(items).subscribe((manager: SleepManager) => {
       this._sleepManager = manager;
       this._sleepManagerForm = new SleepManagerForm(manager);
       const userActionRequired = this._sleepManager.userActionRequired;
@@ -112,31 +98,40 @@ export class SleepManagerService {
   public updateSleepProfile$(sleepProfile: SleepProfileHTTPData): Observable<any> {
     sleepProfile.userId = this._userId;
     // console.log("Update sleep profile: " , sleepProfile);
+
+
     const today = moment().format('YYYY-MM-DD');
-    this.daybookHTTPService.getDaybookDayItemByDate$(today).subscribe((items: DaybookDayItem[]) => {
-      this._saveDaybookSleepData$(items).subscribe((isComplete: boolean)=>{
+    let updateSubs: Subscription[] = [];
+
+    const daybookItemsSub = this.daybookHTTPService.getDaybookDayItemByDate$(today).subscribe((items: DaybookDayItem[]) => {
+      const saveSub = this._saveDaybookSleepData$(items).subscribe((isComplete: boolean) => {
         const url = serverUrl + '/api/sleep-manager/update';
         this.httpClient.post<{
           message: string,
           success: boolean,
           data: any,
         }>(url, sleepProfile).subscribe((response) => {
-          // console.log("Response updating: " , response);
-          const newManager = new SleepManager(response.data)
-          this._sleepManager = newManager;
-          this._sleepManagerForm = new SleepManagerForm(newManager);
-          const userActionRequired = this._sleepManager.userActionRequired;
-          this._formComplete$.next(true);
+          const loadSub = this._loadDaybookItems$().subscribe((items: DaybookDayItem[]) => {
+            const newManager = new SleepManager(response.data, items);
+            this._sleepManager = newManager;
+            this._sleepManagerForm = new SleepManagerForm(newManager);
+            const userActionRequired = this._sleepManager.userActionRequired;
+            updateSubs = [daybookItemsSub, saveSub, loadSub];
+            updateSubs.forEach(s => s.unsubscribe());
+            this._formComplete$.next(true);
+          });
         }, (error) => {
+          updateSubs = [daybookItemsSub, saveSub];
+          updateSubs.forEach(s => s.unsubscribe());
           console.log("There has been an error.", error)
           this._formComplete$.next(false);
         });
       });
     });
-    return this._formComplete$.asObservable();    
+    return this._formComplete$.asObservable();
   }
 
-  private _saveDaybookSleepData$(items: DaybookDayItem[]): Observable<boolean>{
+  private _saveDaybookSleepData$(items: DaybookDayItem[]): Observable<boolean> {
     const isComplete$: Subject<boolean> = new Subject();
     const prevFallAsleepTime: string = this.sleepManagerForm.formInputPrevFallAsleep.toISOString();
     const prevFallAsleepUTCOffset: number = this.sleepManagerForm.formInputPrevFallAsleep.utcOffset();
@@ -176,7 +171,7 @@ export class SleepManagerService {
           energyAtEnd: energyAtWakeup,
         },
       ]
-    }else{
+    } else {
       thisDaySleepItems = [
         {
           startSleepTimeISO: prevFallAsleepTime,
@@ -201,16 +196,16 @@ export class SleepManagerService {
       this.daybookHTTPService.updateDaybookDayItem$(item)))
       .subscribe((updatedItems: DaybookDayItem[]) => {
         // console.log("Received updated items from forkJoin: ", updatedItems);
-      
+
         isComplete$.next(true);
-      }, (err)=>{
-        console.log("error updating day items: " , err);
+      }, (err) => {
+        console.log("error updating day items: ", err);
         isComplete$.next(true);
       });
     return isComplete$.asObservable();
   }
 
-  private _getSleepProfileHttp$(schedule: DaybookTimeSchedule): Observable<SleepManager> {
+  private _getSleepProfileHttp$(items: DaybookDayItem[]): Observable<SleepManager> {
     const url = serverUrl + '/api/sleep-manager/read';
     const data = {
       userId: this._userId,
@@ -221,7 +216,7 @@ export class SleepManagerService {
         success: boolean,
         data: SleepProfileHTTPData,
       }) => {
-        return new SleepManager(response.data, schedule);
+        return new SleepManager(response.data, items);
       }));
   }
 

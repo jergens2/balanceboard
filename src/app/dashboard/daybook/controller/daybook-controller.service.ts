@@ -237,8 +237,9 @@ export class DaybookControllerService {
   private getActiveDateFromDatabase(dateYYYYMMDD: string) {
     this.daybookHttpRequestService.getDaybookDayItemByDate$(dateYYYYMMDD)
       .subscribe((items: DaybookDayItem[]) => {
-        const startTime = moment(items[0].startOfThisDay);
-        const endTime = moment(items[items.length - 1].endOfThisDay);
+        const startTime = moment(this.todayYYYYMMDD).startOf('day').subtract(24, 'hours');
+        const endTime = moment(this.todayYYYYMMDD).startOf('day').add(48, 'hours');
+    
         const newController = new DaybookController(dateYYYYMMDD, items, startTime, endTime, this.clock);
         this._updateActiveDay(DaybookDisplayUpdateType.CALENDAR, newController);
       });
@@ -280,7 +281,6 @@ export class DaybookControllerService {
         const reloadItem = [prevDay, thisDay, nextDay];
 
 
-        console.log("TO DO:  ENSure that if the date has changed, that the reload also updates the date in the controller");
         controller.reload(reloadItem);
         if (controller.isToday) {
           this._updateTodayItem(DaybookDisplayUpdateType.DATABASE_ACTION, controller);

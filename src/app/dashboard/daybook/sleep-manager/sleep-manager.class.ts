@@ -3,6 +3,10 @@ import { SleepCyclePosition } from './sleep-cycle-position.enum';
 import { BehaviorSubject } from 'rxjs';
 import { SleepProfileHTTPData } from './sleep-profile-http-data.interface';
 import { DaybookTimeSchedule } from '../api/controllers/daybook-time-schedule.class';
+import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookTimeScheduleStatus } from '../api/controllers/daybook-time-schedule-status.enum';
+import { DaybookDayItem } from '../api/daybook-day-item.class';
+import { DaybookSleepCycle } from '../controller/daybook-sleep-cycle.class';
 
 
 export class SleepManager {
@@ -10,13 +14,13 @@ export class SleepManager {
     private _id: string;
     private _userActionRequired = false;
     private _dataUpdateRequired = false;
-    private _previousFallAsleepTime: moment.Moment; 
+    private _previousFallAsleepTime: moment.Moment;
     private _previousWakeupTime: moment.Moment;
     private _nextFallAsleepTime: moment.Moment;
     private _nextWakeupTime: moment.Moment;
     private _energyAtWakeup: number;
 
-    private _daybookTimeSchedule: DaybookTimeSchedule;
+    private _daybookDayItems: DaybookDayItem[] = [];
 
     // private _previousWakeTimeIsSet: boolean = false;
     // private _nextFallAsleepTimeIsSet: boolean = false;
@@ -36,7 +40,7 @@ export class SleepManager {
     public get nextWakeupTime(): moment.Moment { return this._nextWakeupTime; }
     public get energyAtWakeup(): number { return this._energyAtWakeup; }
     public get id(): string { return this._id; }
-    public get daybookTimeSchedule(): DaybookTimeSchedule { return this._daybookTimeSchedule; }
+    public get dayItems(): DaybookDayItem[] { return this._daybookDayItems; }
 
     // public get previousWakeTimeIsSet(): boolean { return this._previousWakeTimeIsSet; }
     // public get nextFallAsleepTimeIsSet(): boolean { return this._nextFallAsleepTimeIsSet; }
@@ -48,7 +52,7 @@ export class SleepManager {
     public get sleepTimeMax(): moment.Moment { return this._sleepTimeMax; }
     public get sleepTimeMin(): moment.Moment { return this._sleepTimeMin; }
 
-    public get prevSleepDurationMs(): number { return moment(this._previousWakeupTime).diff(moment(this._previousFallAsleepTime), 'milliseconds'); } 
+    public get prevSleepDurationMs(): number { return moment(this._previousWakeupTime).diff(moment(this._previousFallAsleepTime), 'milliseconds'); }
 
 
 
@@ -57,12 +61,15 @@ export class SleepManager {
     /**
      * 
      * @param data 
-     * data can be null, and this class will handle that
+     * response data from http request
+     * can be null, and SleepManager will handle this assume this means data is required.
+     * 
+     * @param dayItems
      */
-    constructor(data: SleepProfileHTTPData, schedule?: DaybookTimeSchedule) {
-        // console.log("constructing profile: " , data);
+    constructor(data: SleepProfileHTTPData, dayItems: DaybookDayItem[]) {
+        console.log("constructing profile: ", data);
         this._currentDbValue = data;
-        this._daybookTimeSchedule = schedule;
+        this._daybookDayItems = dayItems;
         this._validate();
     }
 
@@ -80,9 +87,104 @@ export class SleepManager {
         const totalDurationMS = moment(this.nextFallAsleepTime).diff(moment(this.previousWakeupTime), 'milliseconds');
         const durationFromStart = moment(now).diff(moment(this.previousWakeupTime), 'milliseconds');
         const currentEnergy = (durationFromStart / totalDurationMS) * this._energyAtWakeup;
-        console.log("Energy level is: ", currentEnergy )
+        console.log("Energy level is: ", currentEnergy)
         return currentEnergy;
     }
+
+    /**
+     *  Ths purpose of this method is to hold relevant DaybookDayItems.
+     *  Relevant in this context means it is an some item between today and 14 days ago,
+     *  and contains within it the sleepDataItems, thus we can make inferences from this.
+     */
+    public get relevantItems(): DaybookDayItem[] {
+        return this._relevantPastSleepItems;
+    }
+
+
+    public getTodayItems(): DaybookSleepInputDataItem[] {
+        const now = moment();
+        const prevDayYYYYMMDD: string = moment(now).startOf('day').subtract(24, 'hours').format('YYYY-MM-DD');
+        const prevDay = this._daybookDayItems.find(item => item.dateYYYYMMDD === prevDayYYYYMMDD);
+        const prevDayItems = prevDay.sleepInputItems;
+
+        let startTime = moment().startOf('day');
+        if (this.previousFallAsleepTime.isAfter(startTime)) {
+            startTime = moment(this.previousFallAsleepTime);
+        }
+        const todayItems: DaybookSleepInputDataItem[] = [];
+        todayItems.push({
+            startSleepTimeISO: startTime.toISOString(),
+            startSleepTimeUtcOffsetMinutes: startTime.utcOffset(),
+            endSleepTimeISO: this._previousWakeupTime.toISOString(),
+            endSleepTimeUtcOffsetMinutes: this._previousWakeupTime.utcOffset(),
+            percentAsleep: 100,
+            embeddedNote: '',
+            activities: [],
+            energyAtEnd: 100,
+        });
+        startTime = moment(this.nextFallAsleepTime);
+        const endOfThisDay = moment(now).startOf('day').add(24, 'hours');
+        let tomorrowStartItem: DaybookSleepInputDataItem;
+        if (startTime.isBefore(endOfThisDay)) {
+            let endTime = moment(endOfThisDay);
+            if (this.nextWakeupTime.isBefore(endTime)) {
+                console.log("Warning: unusual");
+                endTime = moment(this.nextWakeupTime);
+            } else {
+                tomorrowStartItem = {
+                    startSleepTimeISO: endOfThisDay.toISOString(),
+                    startSleepTimeUtcOffsetMinutes: endOfThisDay.utcOffset(),
+                    endSleepTimeISO: this.nextWakeupTime.toISOString(),
+                    endSleepTimeUtcOffsetMinutes: this.nextWakeupTime.utcOffset(),
+                    percentAsleep: 100,
+                    embeddedNote: '',
+                    activities: [],
+                    energyAtEnd: 100,
+                }
+            }
+            todayItems.push({
+                startSleepTimeISO: startTime.toISOString(),
+                startSleepTimeUtcOffsetMinutes: startTime.utcOffset(),
+                endSleepTimeISO: endTime.toISOString(),
+                endSleepTimeUtcOffsetMinutes: endTime.utcOffset(),
+                percentAsleep: 100,
+                embeddedNote: '',
+                activities: [],
+                energyAtEnd: 100,
+            });
+        }
+        const tomorrowItems = [tomorrowStartItem];
+        if (todayItems.length > 1) {
+            const lastItem = todayItems[todayItems.length - 1];
+            tomorrowItems.push({
+                startSleepTimeISO: moment(lastItem.startSleepTimeISO).add(24, 'hours').toISOString(),
+                startSleepTimeUtcOffsetMinutes: moment(lastItem.startSleepTimeISO).add(24, 'hours').utcOffset(),
+                endSleepTimeISO: moment(lastItem.endSleepTimeISO).add(24, 'hours').toISOString(),
+                endSleepTimeUtcOffsetMinutes: moment(lastItem.endSleepTimeISO).add(24, 'hours').utcOffset(),
+                percentAsleep: 100,
+                embeddedNote: '',
+                activities: [],
+                energyAtEnd: 100,
+            });
+        }
+        return [...prevDayItems, ...todayItems, ...tomorrowItems];
+    }
+
+    private get _relevantPastSleepItems(): DaybookDayItem[] {
+        return this._daybookDayItems.filter((item) => {
+            let totalSleepTimeMs = 0;
+            item.sleepInputItems.forEach((sleepItem) => {
+                totalSleepTimeMs += moment(sleepItem.endSleepTimeISO).diff(moment(sleepItem.startSleepTimeISO), 'milliseconds');
+            });
+            const aboveMin: boolean = totalSleepTimeMs > (1000 * 60 * 60);
+            const beforeToday = item.dateYYYYMMDD < moment().format('YYYY-MM-DD');
+            return (totalSleepTimeMs && beforeToday);
+        });
+    }
+
+
+
+
 
     private _validate() {
         let userActionRequired: boolean = false;
@@ -93,14 +195,9 @@ export class SleepManager {
         const defaultSleepTime: moment.Moment = moment(now).hour(22).minute(30).startOf('minute');
 
 
-        if(this._daybookTimeSchedule){
-
-        }else{
-            
-        }
 
 
-        if (dataExists) {           
+        if (dataExists) {
             this._previousFallAsleepTime = moment(this._currentDbValue.previousFallAsleepTime);
             this._previousWakeupTime = moment(this._currentDbValue.previousWakeupTime);
             this._nextFallAsleepTime = moment(this._currentDbValue.nextFallAsleepTime);
@@ -128,12 +225,12 @@ export class SleepManager {
                 let prevFallAsleepTime = moment(this._nextFallAsleepTime);
                 let previousWakeupTime = moment(this._nextWakeupTime);
                 const daysAgo = moment().diff(previousWakeupTime, 'days');
-                if(daysAgo > 0){
+                if (daysAgo > 0) {
                     this._previousFallAsleepTime = moment(defaultSleepTime).subtract(24, 'hours');
                     this._previousWakeupTime = defaultWakeupTime;
                     this._nextFallAsleepTime = defaultSleepTime;
                     this._nextWakeupTime = moment(defaultWakeupTime).add(24, 'hours');
-                }else{
+                } else {
                     this._previousFallAsleepTime = prevFallAsleepTime;
                     this._previousWakeupTime = previousWakeupTime;
                     this._nextFallAsleepTime = moment(prevFallAsleepTime).add(24, 'hours');
