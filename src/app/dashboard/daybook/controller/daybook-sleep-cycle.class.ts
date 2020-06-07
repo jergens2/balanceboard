@@ -3,9 +3,11 @@ import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookTimeScheduleStatus } from '../api/controllers/daybook-time-schedule-status.enum';
 import { DaybookTimeScheduleItem } from '../api/controllers/daybook-time-schedule-item.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookTimeSchedule } from '../api/controllers/daybook-time-schedule.class';
 
 export class DaybookSleepCycle {
 
+    private _relevantItems: DaybookDayItem[] = [];
     /**
      * The purpose of this class is to be able to try and determine a sleep pattern based on previous sleep items.
      */
@@ -13,40 +15,63 @@ export class DaybookSleepCycle {
         this._relevantItems = relevantItems;
     }
 
-    private _relevantItems: DaybookDayItem[] = [];
-
-
+    public get averageSleepDurationMs(): number {
+        const averageRatio = this._calculateSleepAverage();
+        const msPerDay = 1000 * 60 * 60 * 24;
+        return averageRatio * msPerDay;
+    }
 
     public getDayStartTime(dateYYYYMMDD: string): moment.Moment {
-        const thisDayWakeItems = this._getThisDayWakeItems(dateYYYYMMDD);
-        if (thisDayWakeItems.length === 0) {
-            console.log('Error: wtf');
-        } else if (thisDayWakeItems.length === 1) {
-            return thisDayWakeItems[0].startTime;
-        } else if (thisDayWakeItems.length > 1) {
-            return this._findLargestWakeItem(thisDayWakeItems, dateYYYYMMDD).startTime;
-        }
-        return null;
+        const thisDayItems = this._getDayCycleAllItems(dateYYYYMMDD);
+        const sleepCycle = this._buildSleepCycle(thisDayItems);
+        const wakeItems = this._getThisDayWakeItems(dateYYYYMMDD, sleepCycle);
+        const largestWakeItem = this._findLargestWakeItem(wakeItems, dateYYYYMMDD);
+        // console.log("largest wake item is ", largestWakeItem)
+        // console.log("Start of " + dateYYYYMMDD + " is " + largestWakeItem.startTime.format('YYYY-MM-DD hh:mm a')) 
+        return largestWakeItem.startTime;
     }
     public getDayEndTime(dateYYYYMMDD: string): moment.Moment {
-        const thisDayWakeItems = this._getThisDayWakeItems(dateYYYYMMDD);
-        if (thisDayWakeItems.length === 0) {
-            console.log('Error: wtf');
-        } else if (thisDayWakeItems.length === 1) {
-            return thisDayWakeItems[0].endTime;
-        } else if (thisDayWakeItems.length > 1) {
-            return this._findLargestWakeItem(thisDayWakeItems, dateYYYYMMDD).endTime;
+        const thisDayItems = this._getDayCycleAllItems(dateYYYYMMDD);
+        const sleepCycle = this._buildSleepCycle(thisDayItems);
+        const wakeItems = this._getThisDayWakeItems(dateYYYYMMDD, sleepCycle);
+        const largestWakeItem = this._findLargestWakeItem(wakeItems, dateYYYYMMDD);
+        return largestWakeItem.endTime;
+    }
+
+    public getSleepDataItems(dateYYYYMMDD: string): DaybookSleepInputDataItem[] {
+        // console.log("Getting items for date: ", dateYYYYMMDD)
+        const thisDayItems = this._getDayCycleAllItems(dateYYYYMMDD);
+        return thisDayItems.filter(item => item.status === DaybookTimeScheduleStatus.SLEEP)
+            .map(item => item.exportToSleepDataItem());
+    }
+
+    private _buildSleepCycle(items: DaybookTimeScheduleItem[]): DaybookTimeScheduleItem[] {
+        let mergedItems: DaybookTimeScheduleItem[] = [];
+        let currentItem = items[0];
+        let currentStatus = currentItem.status;
+        const statusSleep = DaybookTimeScheduleStatus.SLEEP;
+        const statusActive = DaybookTimeScheduleStatus.ACTIVE;
+        if (currentStatus !== statusSleep) {
+            currentStatus === statusActive;
         }
-        return null;
+        for (let i = 1; i < items.length; i++) {
+            const itemStatus = items[i].status === statusSleep ? statusSleep : statusActive;
+            if (itemStatus === currentStatus) {
+                currentItem.endTime = items[i].endTime;
+            } else {
+                mergedItems.push(currentItem);
+                currentItem = items[i];
+                currentStatus = currentItem.status
+            }
+        }
+        mergedItems.push(currentItem);
+
+        // console.log("  SLEEP CYCLE: ")
+        // mergedItems.forEach(item =>{
+        //     console.log("  " + item.toString())
+        // })
+        return mergedItems;
     }
-
-
-    public getFutureSleepDataItems(): DaybookSleepInputDataItem[] { 
-        return []
-    }
-
-    
-
 
     private _calculateSleepAverage(): number {
         let ratios: number[] = [];
@@ -54,16 +79,16 @@ export class DaybookSleepCycle {
         const relevantItems = this._relevantItems;
         if (relevantItems.length === 0) {
             return defaultRatio;
-        } else if (relevantItems.length < 3) {
+        } else if (relevantItems.length < 7) {
             ratios = [defaultRatio, ...relevantItems.map(item => this._getSleepRatio(item))];
-        } else if (relevantItems.length >= 3) {
+        } else if (relevantItems.length >= 7) {
             ratios = relevantItems.map(item => this._getSleepRatio(item));
         }
         let sum: number = 0;
         ratios.forEach((ratio) => {
             sum += ratio;
         });
-        return (sum / ratios.length) * 100;
+        return (sum / ratios.length);
     }
 
     /**
@@ -78,10 +103,6 @@ export class DaybookSleepCycle {
         });
         return sleepMs / dayMs;
     }
-
-
-
-
 
 
     private _findLargestWakeItem(thisDayWakeItems: DaybookTimeScheduleItem[], dateYYYYMMDD: string): DaybookTimeScheduleItem {
@@ -115,58 +136,199 @@ export class DaybookSleepCycle {
             if (currentMs > largestMs) {
                 largestItem = thisDayWakeItems[i];
             }
-        }
+        } 
         return largestItem;
     }
 
-    private _getThisDayWakeItems(dateYYYYMMDD: string): DaybookTimeScheduleItem[] {
-        const startOfThisDay: moment.Moment = moment(dateYYYYMMDD);
-        const endOfThisDay: moment.Moment = moment(dateYYYYMMDD);
-        let sleepItems: DaybookSleepInputDataItem[] = [];
-        this._relevantItems.forEach((item) => {
-            sleepItems = [...sleepItems, ...item.sleepInputItems];
-        });
-        const timeItems: DaybookTimeScheduleItem[] = sleepItems.map(item => {
-            return new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.SLEEP, moment(item.startSleepTimeISO), moment(item.endSleepTimeISO), null, item)
-        });
-        const sleepCycle = this._getSleepCycle(timeItems);
-        const wakeItems = sleepCycle.filter(item => item.status !== DaybookTimeScheduleStatus.SLEEP);
+    private _getThisDayWakeItems(dateYYYYMMDD: string, cycleItems: DaybookTimeScheduleItem[]): DaybookTimeScheduleItem[] {
+        const startOfThisDay: moment.Moment = moment(dateYYYYMMDD).startOf('day');
+        const endOfThisDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(24, 'hours');
+        const wakeItems = cycleItems.filter(item => item.status !== DaybookTimeScheduleStatus.SLEEP);
         const thisDaywakeItems = wakeItems.filter((wakeItem) => {
-            const crossesStart = wakeItem.startTime.isBefore(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
-            const crossesEnd = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isAfter(endOfThisDay);
+            const crossesStart = wakeItem.startTime.isBefore(startOfThisDay) && wakeItem.endTime.isAfter(startOfThisDay);
+            const crossesEnd = wakeItem.startTime.isBefore(endOfThisDay) && wakeItem.endTime.isAfter(endOfThisDay);
             const isInside = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
             const encapsulates = wakeItem.startTime.isSameOrBefore(startOfThisDay) && wakeItem.endTime.isSameOrAfter(endOfThisDay);
             return crossesStart || crossesEnd || isInside || encapsulates;
         });
+        console.log("THIS DAY WAKE ITEMS: (" + dateYYYYMMDD + " )")
+        thisDaywakeItems.forEach((item )=>{ console.log("   "+ item.toString())})
         return thisDaywakeItems;
     }
 
 
-    /**
-     * It is assumed that all items coming in are broken at midnight for each day,
-     * in other words, there shouldn't be any items that cross midnight.
-     * 
-     * This method will return an array of blocks that are either SLEEP or ACTIVE, and those blocks may cross midnight.
-     */
-    private _getSleepCycle(items: DaybookTimeScheduleItem[]): DaybookTimeScheduleItem[] {
-        let mergedItems: DaybookTimeScheduleItem[] = [];
-        let currentItem = Object.assign({}, items[0]);
 
-        if (currentItem.status !== DaybookTimeScheduleStatus.SLEEP) {
-            currentItem.status = DaybookTimeScheduleStatus.ACTIVE;
-        }
-        for (let i = 1; i < items.length; i++) {
-            if (items[i].status === currentItem.status) {
-                currentItem.endTime = items[i].endTime;
+    /**
+     * 
+     * Will build an array of cycle items spanning prev day to next day
+     */
+    private _getDayCycleAllItems(dateYYYYMMDD: string): DaybookTimeScheduleItem[] {
+        const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
+        const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+        // console.log("Dates: " , prevDateYYYYMMDD, dateYYYYMMDD, nextDateYYYYMMDD);
+        let prevDayItem = this._relevantItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD);
+        let thisDayItem = this._relevantItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
+        let nextDayItem = this._relevantItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD);
+        if (prevDayItem && thisDayItem && nextDayItem) {
+            const timelogItems = [
+                ...prevDayItem.timelogEntryDataItems,
+                ...thisDayItem.timelogEntryDataItems,
+                ...nextDayItem.timelogEntryDataItems,
+            ];
+            const sleepItems = [
+                ...prevDayItem.sleepInputItems,
+                ...thisDayItem.sleepInputItems,
+                ...nextDayItem.sleepInputItems,
+            ];
+            const startTime = moment(prevDateYYYYMMDD).startOf('day');
+            const endTime = moment(nextDateYYYYMMDD).startOf('day').add(24, 'hours');
+            const schedule = new DaybookTimeSchedule(dateYYYYMMDD, startTime, endTime, timelogItems, sleepItems, []);
+            return schedule.timeScheduleItems;
+        } else {
+            let prevSchedItems: DaybookTimeScheduleItem[] = [],
+                thisSchedItems: DaybookTimeScheduleItem[] = [],
+                nextSchedItems: DaybookTimeScheduleItem[] = [];
+            if (!prevDayItem) {
+                prevSchedItems = this._defaultDayCycleItems(prevDateYYYYMMDD);
             } else {
-                mergedItems.push(currentItem);
-                const newStatus = items[i].status === DaybookTimeScheduleStatus.SLEEP ? DaybookTimeScheduleStatus.SLEEP : DaybookTimeScheduleStatus.ACTIVE;
-                const newItem = new DaybookTimeScheduleItem(newStatus, items[i].startTime, items[i].endTime, null, null);
-                currentItem = newItem;
+                const startTime = moment(prevDateYYYYMMDD).startOf('day');
+                const endTime = moment(prevDateYYYYMMDD).startOf('day').add(24, 'hours');
+                const schedule = new DaybookTimeSchedule(prevDateYYYYMMDD, startTime, endTime, prevDayItem.timelogEntryDataItems, prevDayItem.sleepInputItems, []);
+                prevSchedItems = schedule.timeScheduleItems;
             }
+            if (!thisDayItem) {
+                thisSchedItems = this._defaultDayCycleItems(dateYYYYMMDD);
+            } else {
+                const startTime = moment(dateYYYYMMDD).startOf('day');
+                const endTime = moment(dateYYYYMMDD).startOf('day').add(24, 'hours');
+                const schedule = new DaybookTimeSchedule(dateYYYYMMDD, startTime, endTime, thisDayItem.timelogEntryDataItems, thisDayItem.sleepInputItems, []);
+                thisSchedItems = schedule.timeScheduleItems;
+            }
+            if (!nextDayItem) {
+                nextSchedItems = this._defaultDayCycleItems(nextDateYYYYMMDD);
+            } else {
+                const startTime = moment(nextDateYYYYMMDD).startOf('day');
+                const endTime = moment(nextDateYYYYMMDD).startOf('day').add(24, 'hours');
+                const schedule = new DaybookTimeSchedule(nextDateYYYYMMDD, startTime, endTime, nextDayItem.timelogEntryDataItems, nextDayItem.sleepInputItems, []);
+                nextSchedItems = schedule.timeScheduleItems;
+            }
+            return [
+                ...prevSchedItems,
+                ...thisSchedItems,
+                ...nextSchedItems,
+            ];
         }
-        mergedItems.push(currentItem);
-        return mergedItems;
+    }
+
+    /**
+     * 
+     * Creates an array of sleep cycle schedule items for a specific 24 hour period
+     * based off of default values.
+     */
+    private _defaultDayCycleItems(dateYYYYMMDD: string): DaybookTimeScheduleItem[] {
+        let items: DaybookTimeScheduleItem[] = [];
+        // console.log("*** Building default day cycle items for date: " + dateYYYYMMDD)
+        const startOfThisDay = moment(dateYYYYMMDD).startOf('day');
+        const endOfThisDay = moment(startOfThisDay).add(24, 'hours');
+        const dayWakeupTime = this._averageWakeTime(dateYYYYMMDD);
+        const daySleepTime = this._averageSleepTime(dateYYYYMMDD);
+
+        // console.log("   wakeup time: " + dayWakeupTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("   sleep time: " + daySleepTime.format('YYYY-MM-DD hh:mm a'))
+
+        const statusActive = DaybookTimeScheduleStatus.ACTIVE;
+        const statusSleep = DaybookTimeScheduleStatus.SLEEP;
+        if (dayWakeupTime.isAfter(startOfThisDay) && dayWakeupTime.isBefore(endOfThisDay)) {
+            if (daySleepTime.isAfter(dayWakeupTime)) {
+                if (daySleepTime.isAfter(endOfThisDay)) {
+                    items = [
+                        new DaybookTimeScheduleItem(statusActive, startOfThisDay, moment(daySleepTime).subtract(24, 'hours')),
+                        new DaybookTimeScheduleItem(statusSleep, moment(daySleepTime).subtract(24, 'hours'), moment(dayWakeupTime)),
+                        new DaybookTimeScheduleItem(statusActive, moment(dayWakeupTime), moment(endOfThisDay)),
+                    ];
+                } else {
+                    items = [
+                        new DaybookTimeScheduleItem(statusSleep, startOfThisDay, moment(dayWakeupTime)),
+                        new DaybookTimeScheduleItem(statusActive, moment(dayWakeupTime), moment(daySleepTime)),
+                        new DaybookTimeScheduleItem(statusSleep, moment(daySleepTime), moment(endOfThisDay)),
+                    ];
+                }
+            } else {
+                console.log("error with sleep time" + daySleepTime.format('YYYY-MM-DD hh:mm a'))
+            }
+        } else {
+            console.log("error with wakeup time: " + dayWakeupTime.format('YYYY-MM-DD hh:mm a'));
+        }
+        return items;
+    }
+
+    private _dayItemWakeupTime(item: DaybookDayItem): moment.Moment {
+        let wakeupTime: moment.Moment;
+        if(item.hasSleepItems){
+            let largest = item.sleepInputItems[0];
+            let currentMs = moment(largest.endSleepTimeISO).diff(largest.startSleepTimeISO, 'milliseconds');
+            for (let i = 0; i < item.sleepInputItems.length; i++) {
+                const thisMs = moment(item.sleepInputItems[i].endSleepTimeISO).diff(item.sleepInputItems[i].startSleepTimeISO, 'milliseconds');
+                if (thisMs > currentMs && !moment(item.sleepInputItems[i].endSleepTimeISO).isSame(item.endOfThisDay)) {
+                    largest = item.sleepInputItems[i];
+                    currentMs = thisMs;
+                }
+            }
+            wakeupTime = moment(largest.endSleepTimeISO);
+        }else{
+            wakeupTime = this._averageWakeTime(item.dateYYYYMMDD);
+        }
+        return wakeupTime
+    }
+
+    private _dayItemFallAsleepTime(item: DaybookDayItem): moment.Moment {
+        let fallAsleepTime: moment.Moment;
+        if(item.hasSleepItems){
+            let last = item.sleepInputItems[item.sleepInputItems.length - 1];
+            if (moment(last.startSleepTimeISO).isBefore(this._dayItemWakeupTime(item))) {
+                fallAsleepTime = moment(last.startSleepTimeISO).add(24, 'hours');
+            } else {
+                fallAsleepTime = moment(last.startSleepTimeISO);
+            }
+        }else{
+            fallAsleepTime = this._averageSleepTime(item.dateYYYYMMDD);
+        }
+        return fallAsleepTime;
+    }
+
+
+    private _averageWakeTime(dateYYYYMMDD: string): moment.Moment {
+        let averageWakeupTime: moment.Moment;
+        if (this._relevantItems.length > 7) {
+            // console.log("   for date:   " + dateYYYYMMDD + " .  relevant items.length == " + this._relevantItems.length)
+            const times: moment.Moment[] = this._relevantItems.map(item => this._dayItemWakeupTime(item));
+            const startOfThisDay = moment(dateYYYYMMDD).startOf('day');
+            const msPostStart = times.map<number>(t => t.diff(startOfThisDay, 'milliseconds'));
+            let sum = 0;
+            msPostStart.forEach(ms => sum += ms);
+            const averageMs = sum / msPostStart.length;
+            averageWakeupTime = moment(startOfThisDay).add(averageMs, 'milliseconds');
+        } else {
+            averageWakeupTime = moment(dateYYYYMMDD).hour(7).minute(30).startOf('minute');
+        }
+        // console.log("Average wakeup time is : " + averageWakeupTime.format('YYYY-MM-DD hh:mm a'))
+        return averageWakeupTime;
+    }
+    private _averageSleepTime(dateYYYYMMDD: string): moment.Moment {
+        let averageSleepTime: moment.Moment;
+        if (this._relevantItems.length > 7) {
+            const times: moment.Moment[] = this._relevantItems.map(item => this._dayItemFallAsleepTime(item));
+            const startOfThisDay = moment(dateYYYYMMDD).startOf('day');
+            const msPostStart = times.map<number>(t => t.diff(startOfThisDay, 'milliseconds'));
+            let sum = 0;
+            msPostStart.forEach(ms => sum += ms);
+            const averageMs = sum / msPostStart.length;
+            averageSleepTime = moment(startOfThisDay).add(averageMs, 'milliseconds');
+        } else {
+            averageSleepTime = moment(dateYYYYMMDD).hour(22).minute(30).startOf('minute');
+        }
+        // console.log("Average sleep time is : " + averageSleepTime.format('YYYY-MM-DD hh:mm a'))
+        return averageSleepTime;
     }
 
 }

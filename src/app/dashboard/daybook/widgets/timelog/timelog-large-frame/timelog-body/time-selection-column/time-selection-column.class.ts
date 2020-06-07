@@ -39,10 +39,16 @@ export class TimeSelectionColumn {
         const rows: TimeSelectionRow[] = [];
         const timeScheduleItems = this._daybookService.schedule.timeScheduleItems;
         const availableItems = timeScheduleItems.filter(item => item.status === DaybookTimeScheduleStatus.AVAILABLE);
+
+
+        console.log("SCHEDFULE")
+        this._daybookService.schedule.timeScheduleItems.forEach(item => console.log("  " +item.toString()))
+
         let currentTime: moment.Moment = moment(this.startTime);
         for (let i = 0; i < rowCount; i++) {
             // console.log(" " + i + " :" + currentTime.format('hh:mm a') + " to " + moment(currentTime).add(divisorMinutes, 'minutes').format('hh:mm a'))
             let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(this._divisorMinutes, 'minutes'), i);
+
             newRow.isAvailable = this._daybookService.schedule.isRangeAvailable(newRow.startTime, newRow.endTime);
             if (newRow.isAvailable) {
                 newRow.sectionIndex = availableItems.findIndex(item => newRow.startTime.isSameOrAfter(item.startTime) && newRow.startTime.isBefore(item.endTime));

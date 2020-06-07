@@ -62,6 +62,7 @@ export class DaybookController {
     public get clock(): moment.Moment { return this._clock; }
     public get dateYYYYMMDD(): string { return this._thisDayYYYYMMDD; }
     public get isToday(): boolean { return this._thisDay.dateYYYYMMDD === this.clock.format('YYYY-MM-DD'); }
+    public get isTomorrow(): boolean { return this._thisDay.dateYYYYMMDD === moment(this.clock).add(1, 'days').format('YYYY-MM-DD'); }
     public get isAfterToday(): boolean { return this._thisDay.dateYYYYMMDD > this.clock.format('YYYY-MM-DD'); }
     public get isBeforeToday(): boolean { return this._thisDay.dateYYYYMMDD < this.clock.format('YYYY-MM-DD'); }
     public get controllerStartTime(): moment.Moment { return moment(this._thisDay.dateYYYYMMDD).startOf('day').subtract(1, 'days'); }
@@ -96,6 +97,9 @@ export class DaybookController {
         this._timeDelineatorController.updateDelineator(originalTime, saveNewDelineator);
     }
 
+    public hasSleepItems(): boolean {
+        return this._previousDay.hasSleepItems && this._thisDay.hasSleepItems && this._followingDay.hasSleepItems;
+    }
     public getSleepDataItems(): DaybookSleepInputDataItem[] {
         const allSleepItems = [
             ...this._previousDay.sleepInputItems,

@@ -57,6 +57,17 @@ export class DaybookDayItem {
     public get sleepInputItems(): DaybookSleepInputDataItem[] { return this.httpShape.sleepInputItems }
     public set sleepInputItems(items: DaybookSleepInputDataItem[]) { this._httpShape.sleepInputItems = items; }
 
+
+    public get hasSleepItems(): boolean{
+        const minMs = 1000* 60* 60;
+        let sum = 0;
+        this.sleepInputItems.forEach((sleepItem)=>{
+            sum += moment(sleepItem.endSleepTimeISO).diff(moment(sleepItem.startSleepTimeISO), 'milliseconds');
+        });        
+        return sum > minMs;
+    }
+
+
     public getSleepEntryItem(): SleepEntryItem { 
         // if(this.sleepInputItem.startSleepTimeISO && this.sleepInputItem.endSleepTimeISO){
         //     const startTime = moment(this.sleepInputItem.startSleepTimeISO);
@@ -65,7 +76,7 @@ export class DaybookDayItem {
         // }else{
         //     return null;
         // }
-        console.log("Warning: method disabled, returning NULL")
+        console.log("Warning: method disabled, returning NULL.  No sleep entry item.")
         return null;
     }
 

@@ -28,6 +28,7 @@ export class DaybookTimeScheduleItem {
         return ' ' + this._startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + this._endTime.format('YYYY-MM-DD hh:mm a') + ' :' + this.status;
     }
 
+
     constructor(status: DaybookTimeScheduleStatus, startTime: moment.Moment, endTime: moment.Moment, timelogEntry?: DaybookTimelogEntryDataItem, sleepEntry?: DaybookSleepInputDataItem) {
         this._status = status;
         this._startTime = moment(startTime);
@@ -36,16 +37,33 @@ export class DaybookTimeScheduleItem {
             if (timelogEntry) {
                 this._buildFromTimelogEntry(timelogEntry);
             } else {
-                console.log("Error: no timelogEntryDataItem provided")
+                // console.log("Error: no timelogEntryDataItem provided")
             }
         } else if (status === DaybookTimeScheduleStatus.SLEEP) {
             if (sleepEntry) {
-
+                this._buildFromSleepEntry(sleepEntry);
             } else {
-                console.log("Error: no sleepEntry item provided");
+                // console.log("Error: no sleepEntry item provided");
             }
         } else if (status === DaybookTimeScheduleStatus.AVAILABLE) {
 
+        }
+    }
+
+    public exportToSleepDataItem(): DaybookSleepInputDataItem { 
+        if(this._sleepEntry){
+            return this._sleepEntry.exportToDataItem();
+        }else{
+            return {
+                startSleepTimeISO: this.startTime.toISOString(),
+                startSleepTimeUtcOffsetMinutes: this.startTime.utcOffset(),
+                endSleepTimeISO: this.endTime.toISOString(),
+                endSleepTimeUtcOffsetMinutes: this.endTime.utcOffset(),
+                percentAsleep: 100,
+                embeddedNote: '',
+                activities: [],
+                energyAtEnd: 100,
+            }
         }
     }
 

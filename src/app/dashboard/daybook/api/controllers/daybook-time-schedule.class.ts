@@ -23,11 +23,11 @@ export class DaybookTimeSchedule {
     constructor(dateYYYYMMDD: string, startTime: moment.Moment, endTime: moment.Moment,
         timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: DaybookSleepInputDataItem[], delineators: moment.Moment[]) {
         this._dateYYYYMMDD = dateYYYYMMDD;
-        console.log("Constructing schedule: " + startTime.format('YYYY-MM-DD hh:mm a') + " - " + endTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("Constructing schedule: " + startTime.format('YYYY-MM-DD hh:mm a') + " - " + endTime.format('YYYY-MM-DD hh:mm a'))
         this._startTime = moment(startTime);
         this._endTime = moment(endTime);
         this._buildSchedule(timelogEntries, sleepEntries, delineators);
-        this._logToConsole();
+        // this._logToConsole();
 
     }
 

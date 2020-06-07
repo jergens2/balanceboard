@@ -12,6 +12,7 @@ import { DaybookTimeSchedule } from '../api/controllers/daybook-time-schedule.cl
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookSleepCycle } from '../controller/daybook-sleep-cycle.class';
 
 @Injectable({
   providedIn: 'root'
@@ -43,13 +44,16 @@ export class SleepManagerService {
 
   public get nextFallAsleepTime(): moment.Moment { return this.sleepManager.nextFallAsleepTime; }
   public get nextWakeupTime(): moment.Moment { return this.sleepManager.nextWakeupTime; }
+  public get tomorrowEndTime(): moment.Moment { return this.sleepManager.tomorrowEndTime; }
   public get energyAtWakeup(): number { return this.sleepManager.energyAtWakeup; }
   public get id(): string { return this.sleepManager.id; }
   // public get previousWakeTimeIsSet(): boolean { return this.sleepManager.previousWakeTimeIsSet; }
   // public get nextFallAsleepTimeIsSet(): boolean { return this.sleepManager.nextFallAsleepTimeIsSet; }
 
 
+  public get sleepCycle(): DaybookSleepCycle { return this.sleepManager.sleepCyclePattern; }
   public getTodaySleepDataItems(): DaybookSleepInputDataItem[] { return this.sleepManager.getTodayItems(); }
+  public getTomorrowSleepDataItems(): DaybookSleepInputDataItem[] { return this.sleepManager.getTomorrowItems(); }
   public getEnergyLevel(): number { return this.sleepManager.getEnergyLevel(); }
 
   public get relevantItems(): DaybookDayItem[] { return this.sleepManager.relevantItems; }
