@@ -66,7 +66,7 @@ export class EnergyChartComponent implements OnInit {
 
 
   private _calculateEnergyLevel(time: moment.Moment): number { 
-    const currentEnergy = this.sleepService.getEnergyLevel();
+    const currentEnergy = this.sleepService.sleepManager.getEnergyLevel();
     const currentPosition = this.sleepService.sleepManager.currentPosition;
 
     let energy: number = 0;
@@ -80,21 +80,21 @@ export class EnergyChartComponent implements OnInit {
       if(time.isBefore(moment())){
         
 
-        if(time.isBefore(this.sleepService.previousWakeupTime)){
+        if(time.isBefore(this.sleepService.sleepManager.previousWakeupTime)){
           
-          if(time.isBefore(this.sleepService.previousFallAsleepTime)){
+          if(time.isBefore(this.sleepService.sleepManager.previousFallAsleepTime)){
             
           }else{
 
           }
-        }else if(time.isSameOrAfter(this.sleepService.previousWakeupTime)){
+        }else if(time.isSameOrAfter(this.sleepService.sleepManager.previousWakeupTime)){
 
         }
   
       }else if(time.isAfter(moment())){
-        if(time.isAfter(this.sleepService.nextFallAsleepTime)){
+        if(time.isAfter(this.sleepService.sleepManager.nextFallAsleepTime)){
           
-        }else if(time.isSameOrBefore(this.sleepService.nextFallAsleepTime)){
+        }else if(time.isSameOrBefore(this.sleepService.sleepManager.nextFallAsleepTime)){
 
         }
       }

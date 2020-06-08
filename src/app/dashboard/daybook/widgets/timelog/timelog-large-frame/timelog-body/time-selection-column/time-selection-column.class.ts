@@ -41,8 +41,8 @@ export class TimeSelectionColumn {
         const availableItems = timeScheduleItems.filter(item => item.status === DaybookTimeScheduleStatus.AVAILABLE);
 
 
-        console.log("SCHEDFULE")
-        this._daybookService.schedule.timeScheduleItems.forEach(item => console.log("  " +item.toString()))
+        // console.log("SCHEDFULE")
+        // this._daybookService.schedule.timeScheduleItems.forEach(item => console.log("  " +item.toString()))
 
         let currentTime: moment.Moment = moment(this.startTime);
         for (let i = 0; i < rowCount; i++) {

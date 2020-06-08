@@ -150,7 +150,7 @@ export class DaybookControllerService {
     const endTime = moment(this.todayYYYYMMDD).startOf('day').add(48, 'hours');
 
     // console.log("start time, end time, today, clock, items", startTime.format('YYYY-MM-DD hh:mm a'), endTime.format('YYYY-MM-DD hh:mm a'), this.todayYYYYMMDD, this.clock.format('YYYY-MM-DD hh:mm a'), items)
-    console.log("start time, end time", startTime.format('YYYY-MM-DD hh:mm a'), endTime.format('YYYY-MM-DD hh:mm a'));
+    // console.log("start time, end time", startTime.format('YYYY-MM-DD hh:mm a'), endTime.format('YYYY-MM-DD hh:mm a'));
 
     const todayController: DaybookController = new DaybookController(this.todayYYYYMMDD, items, startTime, endTime, this.clock);
     if (!this._todayController$) {
@@ -160,13 +160,13 @@ export class DaybookControllerService {
     }
 
 
-    this._updateActiveDay(updateType, todayController);
+    // this._updateActiveDay(updateType, todayController);
 
-    // if (!this._activeDayController$) {
-    //   this._updateActiveDay(updateType, todayController);
-    // } else if (this.activeDayController.dateYYYYMMDD === todayController.dateYYYYMMDD) {
-    //   this._updateActiveDay(updateType, todayController);
-    // }
+    if (!this._activeDayController$) {
+      this._updateActiveDay(updateType, todayController);
+    } else if (this.activeDayController.dateYYYYMMDD === todayController.dateYYYYMMDD) {
+      this._updateActiveDay(updateType, todayController);
+    }
 
     // console.log("Active day contorller; " , this._activeDayController$)
     this._updateChangeSubscriptions();

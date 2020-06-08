@@ -62,8 +62,8 @@ export class SleepProfileWidgetComponent implements OnInit {
   }
 
   private reInitiate() {
-    this._wakeupTime = this.sleepService.previousWakeupTime;
-    this._sleepAtTime = this.sleepService.nextFallAsleepTime;
+    this._wakeupTime = this.sleepService.sleepManager.previousWakeupTime;
+    this._sleepAtTime = this.sleepService.sleepManager.nextFallAsleepTime;
     // console.log("  SPW: This wakeup time is : " + this.wakeupTime);
     // console.log("  SPW: his.sleeptime is " + this.sleepAtTime)
     // console.log("  SPW: wakeup time: " + this.daybookControllerService.activeDayController.wakeupTime.format('hh:mm a'))

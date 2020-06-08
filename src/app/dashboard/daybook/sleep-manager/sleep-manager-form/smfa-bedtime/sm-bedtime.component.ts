@@ -33,8 +33,8 @@ export class SmBedtimeComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this._bedtime = moment(this.sleepService.nextFallAsleepTime).subtract(20, 'minutes');
-    this._nextWakeup = moment(this.sleepService.nextWakeupTime);
+    this._bedtime = moment(this.sleepService.sleepManager.nextFallAsleepTime).subtract(20, 'minutes');
+    this._nextWakeup = moment(this.sleepService.sleepManager.nextWakeupTime);
 
 
     this.minBedtime = moment(this.sleepService.sleepManagerForm.formInputWakeupTime).add(1, 'hours');

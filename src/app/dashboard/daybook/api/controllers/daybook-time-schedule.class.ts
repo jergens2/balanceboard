@@ -175,6 +175,7 @@ export class DaybookTimeSchedule {
                 if (timeScheduleItems[i].startTime.isBefore(timeScheduleItems[i - 1].endTime)) {
                     overlappingItems = true;
                     console.log("Error: Overlapping items!")
+                    timeScheduleItems.forEach((item)=> console.log("  " + item.toString()) )
                 }
             }
 

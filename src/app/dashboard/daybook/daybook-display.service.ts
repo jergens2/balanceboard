@@ -24,7 +24,8 @@ import { DaybookTimeScheduleItem } from './api/controllers/daybook-time-schedule
 import { DaybookTimeScheduleStatus } from './api/controllers/daybook-time-schedule-status.enum';
 import { DaybookSleepInputDataItem } from './api/data-items/daybook-sleep-input-data-item.interface';
 import { DaybookTimelogEntryDataItem } from './api/data-items/daybook-timelog-entry-data-item.interface';
-import { DaybookSleepCycle } from './controller/daybook-sleep-cycle.class';
+import { DaybookSleepCycle } from './sleep-manager/sleep-manager-form/daybook-sleep-cycle.class';
+import { SleepManager } from './sleep-manager/sleep-manager.class';
 
 @Injectable({
   providedIn: 'root'
@@ -118,7 +119,15 @@ export class DaybookDisplayService {
     this._subs = [];
     this._subs = [
       this.daybookControllerService.displayUpdated$.subscribe((update: DaybookDisplayUpdate) => {
-        this._updateDisplay(update);
+        console.log("** UPDATING: ", update.type)
+        if(update.type === DaybookDisplayUpdateType.CLOCK){
+          if(moment().format('YYYY-MM-DD') === update.controller.dateYYYYMMDD){
+            this._updateDisplay(update);
+          }
+        }else{
+          this._updateDisplay(update);
+        }
+        
       }),
     ];
 
@@ -146,23 +155,25 @@ export class DaybookDisplayService {
     const dateYYYYMMDD = update.controller.dateYYYYMMDD;
     const isToday: boolean = update.controller.isToday;
     const isTomorrow: boolean = update.controller.isTomorrow;
+    const isYesterday: boolean = update.controller.isYesterday;
     const isBeforeToday = update.controller.isBeforeToday;
     const isAfterToday = update.controller.isAfterToday;
     let sleepItems: DaybookSleepInputDataItem[] = [];
     let dayStartTime: moment.Moment;
     let dayEndTime: moment.Moment;
 
-    const sleepCycle: DaybookSleepCycle = this.sleepService.sleepCycle;
+    const sleepManager:SleepManager = this.sleepService.sleepManager;
+    const sleepCycle: DaybookSleepCycle = sleepManager.sleepCycle;
     
     if (isToday) {
-      sleepItems = this.sleepService.getTodaySleepDataItems();
-      dayStartTime = moment(this.sleepService.previousWakeupTime);
-      dayEndTime = moment(this.sleepService.nextFallAsleepTime);
+      sleepItems = sleepManager.getTodayItems();
+      dayStartTime = moment(sleepManager.previousWakeupTime);
+      dayEndTime = moment(sleepManager.nextFallAsleepTime);
     } else if (isAfterToday) {
       if(isTomorrow){
-        sleepItems = this.sleepService.getTomorrowSleepDataItems();
-        dayStartTime = moment(this.sleepService.nextWakeupTime);
-        dayEndTime = moment(this.sleepService.tomorrowEndTime);
+        sleepItems = sleepManager.getTomorrowItems();
+        dayStartTime = moment(sleepManager.nextWakeupTime);
+        dayEndTime = moment(sleepManager.tomorrowEndTime);
       }else{
         // console.log("Future date:  " + dateYYYYMMDD);
         sleepItems = sleepCycle.getSleepDataItems(dateYYYYMMDD);
@@ -170,16 +181,22 @@ export class DaybookDisplayService {
         dayEndTime = sleepCycle.getDayEndTime(dateYYYYMMDD);
       }
     } else if (isBeforeToday) {
-      // console.log("Past date: " + dateYYYYMMDD)
-      if(update.controller.hasSleepItems()){
-        sleepItems = update.controller.getSleepDataItems();
+      if(isYesterday){
+        sleepItems = sleepManager.getYesterdayItems();
+        dayStartTime = moment(sleepManager.yesterdayStartTime);
+        dayEndTime = moment(sleepManager.previousFallAsleepTime);
       }else{
-        sleepItems = sleepCycle.getSleepDataItems(dateYYYYMMDD);
+        if(update.controller.hasSleepItems()){
+          sleepItems = update.controller.getSleepDataItems();
+        }else{
+          sleepItems = sleepCycle.getSleepDataItems(dateYYYYMMDD);
+        }
+        
+        dayStartTime = sleepCycle.getDayStartTime(dateYYYYMMDD);
+        dayEndTime = sleepCycle.getDayEndTime(dateYYYYMMDD);
       }
+      // console.log("Past date: " + dateYYYYMMDD)
       
-      dayStartTime = sleepCycle.getDayStartTime(dateYYYYMMDD);
-      dayEndTime = sleepCycle.getDayEndTime(dateYYYYMMDD);
-
     } else {
       console.log("Big time error");
     }
@@ -192,6 +209,9 @@ export class DaybookDisplayService {
     console.log("Setting display!")
     console.log(this._displayStartTime.format('YYYY-MM-DD hh:mm a') + " to " + this._displayEndTime.format('YYYY-MM-DD hh:mm a'));
 
+
+    console.log(" SLEEP ITEMS")
+    sleepItems.forEach((item)=> console.log("   " + moment(item.startSleepTimeISO).format('YYYY-MM-DD hh:mm a') + " - " + moment(item.endSleepTimeISO).format('YYYY-MM-DD hh:mm a')))
 
     const timelogEntries: DaybookTimelogEntryDataItem[] = update.controller.timelogEntryItems.map(item => item.exportDataEntryItem());
     const delineators: moment.Moment[] = update.controller.savedTimeDelineators;

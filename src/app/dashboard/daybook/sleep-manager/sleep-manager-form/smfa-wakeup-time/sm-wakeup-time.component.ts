@@ -31,7 +31,7 @@ export class SmWakeupTimeComponent implements OnInit {
     if(this.sleepService.sleepManagerForm.formInputWakeupTime){
       this._time = moment(this.sleepService.sleepManagerForm.formInputWakeupTime)
     }else{
-      this._time = moment(this.sleepService.previousWakeupTime);
+      this._time = moment(this.sleepService.sleepManager.previousWakeupTime);
     }
     timer(0, 60000).subscribe((tick)=>{
       this._date = moment(this._time).format('dddd, MMM Do')
