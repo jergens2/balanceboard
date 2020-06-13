@@ -3,7 +3,7 @@ import { BehaviorSubject, Subject, Observable } from "rxjs";
 import { SleepManager } from "../sleep-manager.class";
 import { TimelogEntryActivity } from "../../api/data-items/timelog-entry-activity.interface";
 import * as moment from 'moment';
-import { DurationString } from "../../../../shared/utilities/time-utilities/duration-string.class";
+import { DurationString } from "../../../../shared/time-utilities/duration-string.class";
 
 export class SleepManagerForm {
     private _manager: SleepManager;

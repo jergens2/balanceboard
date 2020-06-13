@@ -1,0 +1,29 @@
+.first-time-config-root{
+    min-width: 360px;
+    max-width: 600px;
+    width: 100%;
+    height: 350px;
+
+    padding: 20px;
+
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-size: 1.2em;
+}
+
+
+
+.medium-button{
+    width: 45px;
+    height: 45px;
+    border-radius: 45px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}

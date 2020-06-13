@@ -3,7 +3,7 @@ import { DaybookControllerService } from '../../../../controller/daybook-control
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 import { TimelogEntryItem } from '../timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
-import { DurationString } from '../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../../shared/time-utilities/duration-string.class';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
 import { TimelogEntryActivity } from '../../../../api/data-items/timelog-entry-activity.interface';

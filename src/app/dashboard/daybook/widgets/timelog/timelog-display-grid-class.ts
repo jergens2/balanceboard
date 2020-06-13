@@ -3,7 +3,7 @@ import { TimelogDelineator, TimelogDelineatorType } from "./timelog-delineator.c
 import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookController } from '../../controller/daybook-controller.class';
-import { TimeScheduleItem } from '../../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
 import { TLEFController } from './timelog-entry-form/TLEF-controller.class';
 import { TLEFControllerItem } from './timelog-entry-form/TLEF-controller-item.class';
 import { DaybookTimeScheduleStatus } from '../../api/controllers/daybook-time-schedule-status.enum';

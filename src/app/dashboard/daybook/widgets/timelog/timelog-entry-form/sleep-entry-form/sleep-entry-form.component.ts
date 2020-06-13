@@ -4,7 +4,7 @@ import { SleepEntryItem } from './sleep-entry-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
 import * as moment from 'moment';
 import { Subscription, from } from 'rxjs';
-import { DurationString } from '../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../../shared/time-utilities/duration-string.class';
 import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from '../../../../controller/items/daybook-display-update.interface';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faBed } from '@fortawesome/free-solid-svg-icons'; 

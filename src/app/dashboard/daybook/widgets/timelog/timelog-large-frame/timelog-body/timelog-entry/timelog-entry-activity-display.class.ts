@@ -2,7 +2,7 @@ import { TimelogEntryActivity } from "../../../../../api/data-items/timelog-entr
 import { ActivityTree } from "../../../../../../activities/api/activity-tree.class";
 import { ActivityCategoryDefinition } from "../../../../../../activities/api/activity-category-definition.class";
 import { TimelogEntryDisplayItemUnit } from "./tle-display-item-unit.class";
-import { DurationString } from "../../../../../../../shared/utilities/time-utilities/duration-string.class";
+import { DurationString } from "../../../../../../../shared/time-utilities/duration-string.class";
 
 export class TimelogEntryActivityDisplay {
 

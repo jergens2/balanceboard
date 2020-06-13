@@ -77,7 +77,6 @@ export class TimeInputComponent implements OnInit {
         newValue = moment(this.minValue);
       }
     }
-
     this._timeValue = moment(newValue);
     this.timeInputForm.patchValue({ "timeValue": this.timeValue.format("HH:mm") });
     this.timeChanged.emit(this.timeValue);

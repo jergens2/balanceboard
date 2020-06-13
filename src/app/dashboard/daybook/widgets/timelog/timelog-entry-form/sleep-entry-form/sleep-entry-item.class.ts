@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { TimeSpanItem } from '../../../../../../shared/utilities/time-utilities/time-span-item.interface';
+import { TimeSpanItem } from '../../../../../../shared/time-utilities/time-span-item.interface';
 import { DaybookSleepInputDataItem } from '../../../../api/data-items/daybook-sleep-input-data-item.interface';
 import { TimelogEntryActivity } from '../../../../api/data-items/timelog-entry-activity.interface';
 // import { DaybookEnergyItem } from '../../../../controller/items/daybook-energy-item.class';

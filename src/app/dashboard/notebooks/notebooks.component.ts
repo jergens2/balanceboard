@@ -23,9 +23,10 @@ export class NotebooksComponent implements OnInit {
 
   constructor(private notebooksService: NotebooksService) { }
 
-
+  private _isLoading: boolean = true;
   private _allNotebookEntries: NotebookEntry[] = [];
 
+  public get isLoading(): boolean { return this._isLoading; }
 
   filteredNotebookEntries: NotebookEntry[] = [];
 
@@ -42,21 +43,19 @@ export class NotebooksComponent implements OnInit {
     let year: number = 2019;
 
 
-
-
-    this.notebooksService.notebookEntries$.subscribe((entries: NotebookEntry[]) => {
-      if (entries.length > 0) {
-        this._allNotebookEntries = entries;
-        this.filteredNotebookEntries = this.buildFilteredNotebookEntries(entries);
+    this.notebooksService.fetchNotebookEntries$().subscribe((isComplete)=>{
+      if(isComplete){
+        this._allNotebookEntries = this.notebooksService.notebookEntries;
+        this.notebooksService.notebookEntries$.subscribe((entries: NotebookEntry[]) => {
+          if (entries.length > 0) {
+            this._allNotebookEntries = entries;
+            this.filteredNotebookEntries = this.buildFilteredNotebookEntries(entries);
+          }
+          this.buildYearViewData(year);
+        });
+        this._isLoading = false;
       }
-      this.buildYearViewData(year);
     });
-    this._allNotebookEntries = this.notebooksService.notebookEntries;
-
-    this.buildYearViewData(year);
-
-    this.loadingEnd = moment();
-    console.log("Loading: " + this.loadingEnd.diff(this.loadingStart, "milliseconds") + " ms")
   }
 
 

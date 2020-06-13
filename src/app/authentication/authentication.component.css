@@ -8,13 +8,7 @@
     align-items: center;
     justify-content: space-between;
 }
-.background-image{
-    background: url("../../assets/bg2.JPG") no-repeat center center fixed; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-}
+
 .authentication-body{
     min-width: 360px;
     /* margin-top:20px; */

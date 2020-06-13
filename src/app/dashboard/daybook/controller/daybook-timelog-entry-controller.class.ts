@@ -2,8 +2,8 @@ import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog
 import * as moment from 'moment';
 import { Subject, Observable } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
-import { TimeScheduleOldnComplicated } from '../../../shared/utilities/time-utilities/time-schedule-old-complicated.class';
-import { TimeScheduleItem } from '../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { TimeScheduleOldnComplicated } from '../../../shared/time-utilities/time-schedule-old-complicated.class';
+import { TimeScheduleItem } from '../../../shared/time-utilities/time-schedule-item.class';
 
 export class DaybookTimelogEntryController {
     constructor(dateYYYYMMDD: string, relevantItems: {

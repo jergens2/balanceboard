@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { DaybookControllerService } from '../../../../../controller/daybook-controller.service';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../../../shared/time-utilities/duration-string.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 @Component({

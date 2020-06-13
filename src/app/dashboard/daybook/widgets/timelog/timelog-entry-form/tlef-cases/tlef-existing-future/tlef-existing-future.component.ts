@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../../../shared/time-utilities/duration-string.class';
 import { TLEFController } from '../../TLEF-controller.class';
 import * as moment from 'moment';
 import { timer } from 'rxjs';

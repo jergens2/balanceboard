@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { ItemState } from '../../../../../../../shared/utilities/item-state.class';
 import { TimelogDelineator } from '../../../timelog-delineator.class';
-import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../../../shared/time-utilities/duration-string.class';
 import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 

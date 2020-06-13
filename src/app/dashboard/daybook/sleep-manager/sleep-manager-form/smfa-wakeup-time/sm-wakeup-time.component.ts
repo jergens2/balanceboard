@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 import { SleepManagerService } from '../../sleep-manager.service';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { timer } from 'rxjs';

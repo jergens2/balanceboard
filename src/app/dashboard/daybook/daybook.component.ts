@@ -59,6 +59,14 @@ export class DaybookComponent implements OnInit, OnDestroy {
       // console.log("Screensize changed to: " , this._screenSize)
     });
 
+    const now = moment();
+    console.log("End of: MS", moment(now).endOf('millisecond').format('YYYY-MM-DD hh:mm a'))
+    console.log("End of: second", moment(now).endOf('second').format('YYYY-MM-DD hh:mm a'))
+    console.log("End of: hour", moment(now).endOf('hour').format('YYYY-MM-DD hh:mm a'))
+    console.log("End of: day", moment(now).endOf('day').format('YYYY-MM-DD hh:mm a'))
+    console.log("End of: week", moment(now).endOf('week').format('YYYY-MM-DD hh:mm a'))
+    console.log("End of: month", moment(now).endOf('month').format('YYYY-MM-DD hh:mm a'))
+    console.log("End of: year", moment(now).endOf('year').format('YYYY-MM-DD hh:mm a'))
 
     this.daybookDisplayService.reinitiate();
 

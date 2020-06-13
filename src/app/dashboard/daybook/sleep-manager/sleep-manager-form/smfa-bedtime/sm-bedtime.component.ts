@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { SleepManagerService } from '../../sleep-manager.service';
-import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 import { timer, Subscription } from 'rxjs';
 
 @Component({

@@ -1,0 +1,25 @@
+<div class="app-container background-image-3"
+    [ngClass]="{'app-container-mobile': appScreenSize === 0, 'app-container-tablet': appScreenSize === 1, 'app-container-normal': appScreenSize === 2, 'app-container-large': (appScreenSize === 3 || appScreenSize === 4)}"
+    >
+
+
+    <div class="header">
+        <app-header (sidebarButtonClicked)="onHeaderSidebarButtonClicked()"></app-header>
+    </div>
+    <div class="sidebar" style="background-color: rgba(255, 255, 255, 0.6);">
+        <app-sidebar  *ngIf="sidebarIsOpen"></app-sidebar>
+    </div>
+
+    <div class="content" *ngIf="!(showTools && (appScreenSize == 0 || appScreenSize == 1))"
+        [ngClass]="{'content-mobile': appScreenSize == 0, 'content-tablet': appScreenSize == 1, 'content-normal': appScreenSize == 2, 'content-large': appScreenSize == 3, 'content-large': (appScreenSize === 3 || appScreenSize === 4)}">
+        <router-outlet></router-outlet>
+    </div>
+    <div class="app-tools-container"
+        [ngClass]="{'app-tools-container-mobile': appScreenSize == 0, 'app-tools-container-tablet': appScreenSize == 1, 'app-tools-container-normal': appScreenSize == 2, 'app-tools-container-large': (appScreenSize === 3 || appScreenSize === 4)}"
+        *ngIf="showTools">
+        <app-toolbox></app-toolbox>
+    </div>
+
+
+
+</div>

@@ -6,7 +6,7 @@ import { DaybookController } from './controller/daybook-controller.class';
 import { DaybookWidgetType } from './widgets/daybook-widget.class';
 import { TimelogZoomType } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-type.enum';
 import * as moment from 'moment';
-import { TimeUtilities } from '../../shared/utilities/time-utilities/time-utilities';
+import { TimeUtilities } from '../../shared/time-utilities/time-utilities';
 import { TimelogDisplayGrid } from './widgets/timelog/timelog-display-grid-class';
 import { TimelogDelineator, TimelogDelineatorType } from './widgets/timelog/timelog-delineator.class';
 import { TimelogEntryItem } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
@@ -171,7 +171,7 @@ export class DaybookDisplayService {
       dayEndTime = moment(sleepManager.nextFallAsleepTime);
     } else if (isAfterToday) {
       if(isTomorrow){
-        sleepItems = sleepManager.getTomorrowItems();
+        sleepItems = sleepManager.getTomorrowSleepInputDataItems();
         dayStartTime = moment(sleepManager.nextWakeupTime);
         dayEndTime = moment(sleepManager.tomorrowEndTime);
       }else{
@@ -182,7 +182,7 @@ export class DaybookDisplayService {
       }
     } else if (isBeforeToday) {
       if(isYesterday){
-        sleepItems = sleepManager.getYesterdayItems();
+        sleepItems = sleepManager.getYesterdaySleepInputDataItems();
         dayStartTime = moment(sleepManager.yesterdayStartTime);
         dayEndTime = moment(sleepManager.previousFallAsleepTime);
       }else{

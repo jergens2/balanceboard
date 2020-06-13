@@ -2,8 +2,8 @@ import * as moment from 'moment';
 import { ItemState } from '../../../../../../../shared/utilities/item-state.class';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
-import { TimeScheduleOldnComplicated } from '../../../../../../../shared/utilities/time-utilities/time-schedule-old-complicated.class';
-import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { TimeScheduleOldnComplicated } from '../../../../../../../shared/time-utilities/time-schedule-old-complicated.class';
+import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
 
 export class TimeSelectionRow {
     constructor(startTime: moment.Moment, endTime: moment.Moment, rowIndex: number) {

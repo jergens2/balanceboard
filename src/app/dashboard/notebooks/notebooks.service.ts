@@ -16,10 +16,6 @@ export class NotebooksService{
   constructor(private httpClient: HttpClient) { }
 
   private _userId: string;
-  private _loginComplete: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
-    authenticated: false, message: '',
-  });
-  
 
   private serverUrl = serverUrl;
 
@@ -54,7 +50,8 @@ export class NotebooksService{
 
 
 
-  private fetchNotebookEntries() {
+  public fetchNotebookEntries$(): Observable<boolean> {
+    const _isComplete$: Subject<boolean> = new Subject();
     let requestUrl: string = this.serverUrl + "/api/notebook/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -87,12 +84,9 @@ export class NotebooksService{
       .subscribe((notebookEntries: NotebookEntry[]) => {
         this.getTags(notebookEntries);
         this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
-        this._loginComplete.next({
-          authenticated: true,
-          message: 'Successfully logged in to NotebookService',
-        });
+        _isComplete$.next(true);
       });
-
+      return _isComplete$.asObservable();
   }
 
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SleepManagerService } from '../../sleep-manager.service';
 import * as moment from 'moment';
-import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 
 @Component({
   selector: 'app-sm-prev-fall-asleep-time',

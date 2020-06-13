@@ -1,7 +1,7 @@
 import { RoutineDefinitionHttpShape } from "./routine-definition-http-shape.interface";
 import { RoutineDefinitionFrequency } from "./routine-definition-frequency.interface";
-import { TimeOfDay } from "../../../../shared/utilities/time-utilities/time-of-day-enum";
-import { TimeRange } from "../../../../shared/utilities/time-utilities/time-range.interface";
+import { TimeOfDay } from "../../../../shared/time-utilities/time-of-day-enum";
+import { TimeRange } from "../../../../shared/time-utilities/time-range.interface";
 
 export class RoutineDefinition{
 

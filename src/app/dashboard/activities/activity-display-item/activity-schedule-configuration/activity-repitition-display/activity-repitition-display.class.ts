@@ -1,10 +1,10 @@
 import { ActivityScheduleRepitition } from "../../../api/activity-schedule-repitition.interface";
-import { TimeUnit } from "../../../../../shared/utilities/time-utilities/time-unit.enum";
+import { TimeUnit } from "../../../../../shared/time-utilities/time-unit.enum";
 import { ActivityOccurrenceConfiguration } from "../../../api/activity-occurrence-configuration.interface";
 import { Observable, Subject, Subscription } from "rxjs";
 import { ActivityRepititionOccurrence } from "./repitition-occurrence/repitition-occurrence.class";
 import { ItemState } from "../../../../../shared/utilities/item-state.class";
-import { TimeOfDay } from "../../../../../shared/utilities/time-utilities/time-of-day-enum";
+import { TimeOfDay } from "../../../../../shared/time-utilities/time-of-day-enum";
 
 export class ActivityRepititionDisplay {
     /**

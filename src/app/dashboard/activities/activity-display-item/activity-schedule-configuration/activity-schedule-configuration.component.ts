@@ -6,7 +6,7 @@ import { ActivityRepititionDisplay } from './activity-repitition-display/activit
 
 import { faSave, faPlus, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
-import { TimeUnit } from '../../../../shared/utilities/time-utilities/time-unit.enum';
+import { TimeUnit } from '../../../../shared/time-utilities/time-unit.enum';
 import * as moment from 'moment';
 import { ItemState } from '../../../../shared/utilities/item-state.class';
 

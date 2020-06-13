@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { timer } from 'rxjs';
 import * as moment from 'moment';
-import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 import { SleepBatteryConfiguration } from '../sleep-battery-configuration.interface';
 
 @Component({

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../../timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimeScheduleOldnComplicated } from '../../../../../../../shared/utilities/time-utilities/time-schedule-old-complicated.class';
-import { TimeScheduleItem } from '../../../../../../../shared/utilities/time-utilities/time-schedule-item.class';
+import { TimeScheduleOldnComplicated } from '../../../../../../../shared/time-utilities/time-schedule-old-complicated.class';
+import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import * as moment from 'moment';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';

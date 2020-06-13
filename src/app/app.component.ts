@@ -21,16 +21,10 @@ import { KeydownService } from './shared/keydown.service';
 })
 export class AppComponent implements OnInit {
 
-
-  // nightMode: UserSetting = null;
-  sideBarOpen: boolean = true;
-
   private _showModal: boolean = false;
-  private _showTools: boolean = false;
   private _showUserActionPrompt: boolean = false;
   private _appServiceSubs: Subscription[] = [];
   private _loadingSubs: Subscription[] = [];
-  private _appScreenSize: ScreenSizes;
   private _loading: boolean = true;
   private _isAuthenticated: boolean = false;
   /**
@@ -41,17 +35,13 @@ export class AppComponent implements OnInit {
    * so, if _loadingIsComplete === true, then we do not reload the application.
    */
   private _loadingIsComplete: boolean = false;
-
   private _userActivitySub: Subscription = new Subscription();
 
   public get showModal(): boolean { return this._showModal; }
-  public get showTools(): boolean { return this._showTools; }
   public get isAuthenticated(): boolean { return this._isAuthenticated; }
   public get showUserActionPrompt(): boolean { return this._showUserActionPrompt; }
   public get loading(): boolean { return this._loading; }
   public get showAppContainer(): boolean { return this.isAuthenticated && !this.loading && !this.showUserActionPrompt; }
-  public get appScreenSize(): ScreenSizes { return this._appScreenSize; }
-
 
   constructor(
     private authService: AuthenticationService,
@@ -59,8 +49,6 @@ export class AppComponent implements OnInit {
     private userPromptService: UserActionPromptService,
     // private userSettingsService: UserSettingsService,
     private modalService: ModalService,
-    private toolsService: ToolboxService,
-
     private activitiesService: ActivityCategoryDefinitionService,
     private daybookHttpService: DaybookHttpRequestService,
     private daybookControllerService: DaybookControllerService,
@@ -74,8 +62,6 @@ export class AppComponent implements OnInit {
     this.sizeService.updateSize(innerWidth, innerHeight);
     this._resetUserInactiveTimer();
   }
-
-
 
   @HostListener('window:mousemove') refreshUserState() {
     this._resetUserInactiveTimer();
@@ -94,46 +80,17 @@ export class AppComponent implements OnInit {
     this._reload();
   }
 
-  private _reload() {
-    this._onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
-
-    this._setSubscriptions();
-  }
-
-  private _onScreenSizeChanged(appScreenSize: ScreenSizes) {
-    this._appScreenSize = appScreenSize;
-    if (this._appScreenSize < 2) {
-      this.sideBarOpen = false;
-    } else if (this._appScreenSize >= 2) {
-      if (localStorage.getItem("sidebar_is_open") === "true") {
-        this.sideBarOpen = true;
-      }
-    }
-  }
-
-  onHeaderSidebarButtonClicked() {
-    this.sideBarOpen = !this.sideBarOpen;
-    localStorage.setItem("sidebar_is_open", this.sideBarOpen.toString());
-  }
-
-
+  private _reload() { this._setSubscriptions(); }
   private _setSubscriptions() {
     // console.log("Subscribing to subscriptions");
     this._appServiceSubs.forEach(sub => sub.unsubscribe());
     this._appServiceSubs = [
-      this.sizeService.appScreenSize$.subscribe((appScreenSize: ScreenSizes) => {
-        this._onScreenSizeChanged(appScreenSize);
-      }),
+
       this.modalService.activeModal$.subscribe((modal: Modal) => {
         if (modal) { this._showModal = true; }
         else { this._showModal = false; }
       }),
-      this.toolsService.currentToolQueue$.subscribe((queue) => {
-        if (queue.length > 0) { this._showTools = true; }
-      }),
-      this.toolsService.onFormClosed$.subscribe((formClosed: boolean) => {
-        if (formClosed === true) { this._showTools = false; }
-      }),
+
       this.authService.logout$.subscribe((onLogout) => { this._unloadApp(); }),
       this.authService.appComponentLogin$.subscribe((login: boolean) => {
         // console.log("Boom Canon: ", login)

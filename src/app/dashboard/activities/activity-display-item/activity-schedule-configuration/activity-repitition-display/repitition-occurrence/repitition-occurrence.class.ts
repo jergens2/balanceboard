@@ -1,5 +1,5 @@
 import { ActivityOccurrenceConfiguration } from "../../../../api/activity-occurrence-configuration.interface";
-import { TimeUnit } from "../../../../../../shared/utilities/time-utilities/time-unit.enum";
+import { TimeUnit } from "../../../../../../shared/time-utilities/time-unit.enum";
 import { Observable, Subject, BehaviorSubject } from "rxjs";
 import { ItemState } from "../../../../../../shared/utilities/item-state.class";
 

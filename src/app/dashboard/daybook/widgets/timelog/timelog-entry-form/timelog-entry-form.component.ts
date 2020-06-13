@@ -5,7 +5,7 @@ import { DaybookControllerService } from '../../../controller/daybook-controller
 import * as moment from 'moment';
 import { LoggingService } from '../../../../../shared/logging/logging.service';
 import { TLEFFormCase } from './tlef-form-case.enum';
-import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 
 import { DaybookDisplayService } from '../../../daybook-display.service';
 import { Subscription } from 'rxjs';

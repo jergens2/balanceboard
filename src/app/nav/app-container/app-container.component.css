@@ -1,0 +1,96 @@
+
+.content{
+    /* height: 100%; */
+    
+    width: 100%;
+    height:100%;
+    /* padding-left:15px;
+    padding-right:15px; */
+    /* padding:15px; */
+    background-color: rgba(255, 255, 255, 0.90);
+    z-index:0;
+
+}
+
+
+.header{
+    grid-column: 1 / -1;
+    grid-row: 1 / span 1;
+
+    position: fixed;
+    width:100%;
+    
+    z-index: 100;
+}
+
+.sidebar{
+    /* overflow-y: auto; */
+    grid-column: 1 / span 1;
+    grid-row: 2 / -1;
+
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+
+.app-container-mobile{
+    grid-template-rows: 29px auto;
+    grid-template-columns: 1fr;
+}
+.app-container-tablet{
+    grid-template-rows: 29px auto;
+    grid-template-columns: 1fr;
+}
+.app-container-normal{
+    grid-template-rows: 29px auto;
+    grid-template-columns: 250px 1fr 1px;
+}
+.app-container-large{
+    grid-template-rows: 29px auto;
+    grid-template-columns: 250px 1fr 1px;
+}
+
+
+.content-mobile{
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+}
+.content-tablet{
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+}
+.content-normal{
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+}
+.content-large{
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+}
+
+
+.app-container{
+    width:100%;
+    height: 100vh;
+    display:grid;
+    
+}
+
+
+.app-tools-container{
+
+    grid-column: 3 / span 1;
+    grid-row: 2 / span 1;
+    z-index: 0;
+    
+    /* height:90vh; */
+}
+
+.app-tools-container-mobile, .app-tools-container-tablet{
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    width:100%;
+    height:100%;
+}
+
+
+

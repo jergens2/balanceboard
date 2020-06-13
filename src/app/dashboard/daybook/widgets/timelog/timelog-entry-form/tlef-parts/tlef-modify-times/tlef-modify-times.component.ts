@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
-import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../../../shared/time-utilities/duration-string.class';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
 @Component({

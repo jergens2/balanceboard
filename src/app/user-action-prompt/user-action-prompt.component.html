@@ -1,13 +1,15 @@
 
 <div class="user-action-prompt-root">
     
-    <div class="item">
+
         <app-sleep-manager *ngIf="promptIsSleep" class="item" (complete)="onSleepManagerComplete()"></app-sleep-manager>
+        <app-first-time-config *ngIf="promptIsConfig" class="item" (complete)="onConfigComplete()"></app-first-time-config>
+        
 
         <div *ngIf="promptIsInfo" class="item">
             Info screen.  <button (click)="onClickContinue()">Okay!</button>
         </div>   
-    </div>
+    
  
 
     <!-- <div class="bottom-section" (mouseleave)="onMouseLeaveButtons()">

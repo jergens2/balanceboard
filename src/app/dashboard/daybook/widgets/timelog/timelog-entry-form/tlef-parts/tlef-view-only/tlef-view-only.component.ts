@@ -4,7 +4,7 @@ import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
-import { DurationString } from '../../../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../../../shared/time-utilities/duration-string.class';
 import { TimelogEntryDecorator } from '../timelog-entry-decorator.class';
 import { TimelogEntryDisplayItemUnit } from '../../../timelog-large-frame/timelog-body/timelog-entry/tle-display-item-unit.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';

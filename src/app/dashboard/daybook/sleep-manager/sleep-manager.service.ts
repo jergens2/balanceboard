@@ -13,6 +13,7 @@ import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 import { DaybookSleepCycle } from './sleep-manager-form/daybook-sleep-cycle.class';
+import { UserPromptType } from '../../../user-action-prompt/user-prompt-type.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -39,15 +40,19 @@ export class SleepManagerService {
   public get sleepManager() { return this._sleepManager; }
   public get sleepManagerForm() { return this._sleepManagerForm; }
 
-  public initiate$(userId: string): Observable<boolean> {
+  public initiate$(userId: string): Observable<UserPromptType> {
     this._userId = userId;
-    const _userActionRequired$: Subject<boolean> = new Subject();
+    const _prompt$: Subject<UserPromptType> = new Subject();
     this._loadDaybookItems$().subscribe((items: DaybookDayItem[]) => {
       this._loadSleepProfile$(items).subscribe((userActionRequired: boolean) => {
-        _userActionRequired$.next(userActionRequired);
+        if(userActionRequired === true){
+          _prompt$.next(UserPromptType.SLEEP_MANAGER);
+        }else{
+          _prompt$.next();
+        }        
       });
     });
-    return _userActionRequired$.asObservable();
+    return _prompt$.asObservable();
   }
   public logout() {
     this._userId = null;

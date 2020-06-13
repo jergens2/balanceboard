@@ -10,7 +10,7 @@ import { ActivityTree } from '../../activities/api/activity-tree.class';
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from './data-items/daybook-day-item-scheduled-activity.class';
 
 import blankDaybookItemHttpShape from './data-items/blank-http-shape';
-import { TimeSpanItem } from '../../../shared/utilities/time-utilities/time-span-item.interface';
+import { TimeSpanItem } from '../../../shared/time-utilities/time-span-item.interface';
 import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
 import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data-item.interface';
 import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';

@@ -40,6 +40,8 @@ import { SuccessConfirmationComponent } from './authentication/registration/succ
 import { UserActionPromptComponent } from './user-action-prompt/user-action-prompt.component';
 import { SleepManagerModule } from './dashboard/daybook/sleep-manager/sleep-manager.module';
 import { LockScreenComponent } from './authentication/lock-screen/lock-screen.component';
+import { AppContainerComponent } from './nav/app-container/app-container.component';
+import { UserAccountProfileModule } from './dashboard/user-account-profile/user-account-profile.module';
 
 
 
@@ -66,6 +68,7 @@ import { LockScreenComponent } from './authentication/lock-screen/lock-screen.co
     SuccessConfirmationComponent,
     UserActionPromptComponent,
     LockScreenComponent,
+    AppContainerComponent,
 
   ],
   imports: [
@@ -75,6 +78,7 @@ import { LockScreenComponent } from './authentication/lock-screen/lock-screen.co
     HttpClientModule,
     DashboardModule,
     SleepManagerModule,
+    UserAccountProfileModule,
     SharedModule,
     ToolsMenuModule,
     AppRoutingModule,

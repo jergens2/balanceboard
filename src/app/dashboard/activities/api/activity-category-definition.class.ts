@@ -3,8 +3,8 @@ import { ActivityScheduleConfiguration } from "./activity-schedule-configuration
 import { ActivityCategoryDefinitionHttpShape } from "./activity-category-definition-http-shape.interface";
 
 import * as moment from 'moment';
-import { TimeUnit } from "../../../shared/utilities/time-utilities/time-unit.enum";
-import { ScheduleRepititionCalculator } from "../../../shared/utilities/time-utilities/schedule-repitition-calculator.class";
+import { TimeUnit } from "../../../shared/time-utilities/time-unit.enum";
+import { ScheduleRepititionCalculator } from "../../../shared/time-utilities/schedule-repitition-calculator.class";
 import { ActivityPointsConfiguration } from "./activity-points-configuration.interface";
 import { ActivityScheduleRepitition } from "./activity-schedule-repitition.interface";
 

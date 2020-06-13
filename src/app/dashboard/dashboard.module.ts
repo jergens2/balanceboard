@@ -100,6 +100,7 @@ import { AppSettingsComponent } from './user-account-profile/app-settings/app-se
 
     PersonalInfoComponent,
     AppSettingsComponent,
+
   ],
   providers: [],
   entryComponents: [],

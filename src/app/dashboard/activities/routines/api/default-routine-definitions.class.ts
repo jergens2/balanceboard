@@ -1,7 +1,7 @@
 import { RoutineDefinition } from "./routine-definition.class";
 import { Guid } from "../../../../shared/utilities/guid.class";
-import { TimeUnit } from "../../../../shared/utilities/time-utilities/time-unit.enum";
-import { TimeOfDay } from "../../../../shared/utilities/time-utilities/time-of-day-enum";
+import { TimeUnit } from "../../../../shared/time-utilities/time-unit.enum";
+import { TimeOfDay } from "../../../../shared/time-utilities/time-of-day-enum";
 import * as moment from 'moment';
 
 export class DefaultRoutineDefinitions{

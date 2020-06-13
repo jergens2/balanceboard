@@ -17,7 +17,9 @@
     <div class="pin-display-area" style="margin-bottom: 10px;">
         <div style="width: 35px"></div>
         <div class="pin-display">
-            <div class="pin-item" *ngFor="let item of pinItems"></div>
+            <div class="pin-item" *ngFor="let item of pinItems">
+                <div class="inner-pin-item"></div>
+            </div>
         </div>
         <div style="width: 30px;margin-right: 5px;">
             <button *ngIf="pinItems.length > 0" class="delete-button" (click)="onClickDeletePinItem()"><fa-icon [icon]="faTimes"></fa-icon></button>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { DaybookControllerService } from '../../../controller/daybook-controller.service';
-import { DurationString } from '../../../../../shared/utilities/time-utilities/duration-string.class';
+import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 import { SleepManagerService } from '../../../sleep-manager/sleep-manager.service';
 import { timer } from 'rxjs';
 

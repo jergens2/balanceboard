@@ -11,7 +11,7 @@
     /* box-shadow: 1px 0px 3px rgb(110, 110, 110); */
     padding-right: 10px;
 
-    background-color: #fdfdfd;
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 .sidebar-content-night-mode{
