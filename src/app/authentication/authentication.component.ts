@@ -54,7 +54,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   }
 
   public onLoginFromReg() {
-    this._action = 'LOGIN';
+    this._action = 'LOADING';
     this.authService.loginFromRegistration();
   }
 

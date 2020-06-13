@@ -6,21 +6,28 @@
     display:flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 .authentication-body{
     min-width: 360px;
     /* margin-top:20px; */
     padding: 25px;
-    width: 100%;
+    min-width: 360px;
+
+    max-width: 600px;
     border-radius: 25px;    /* border: 1px solid rgb(197, 197, 197); */
     text-align: center;
     border:1px solid rgba(255, 255, 255, 0);
 
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
     display:flex;
     flex-direction: column;
     align-items: center;
+}
+.transparent{
+    background-color: rgba(255, 255, 255, 0);
 }
 .authentication-focused{
     /* border:1px solid rgb(0, 58, 134); */
@@ -37,11 +44,11 @@
 }
 
 .login-button{
-    border: 1px solid rgba(43, 128, 207, 1);;
+    border: 1px solid rgba(43, 128, 207, 1);
     border: none;
     border-radius: 10px;
     margin:5px;
-    background-color:rgba(43, 128, 207, 0.5);
+    background-color:rgba(43, 128, 207, 0.9);
     padding:5px;
     width:100px;
     color: black;
@@ -51,14 +58,18 @@
     border: none;
     border-radius: 10px;
     margin:5px;
-    background-color:rgba(85, 165, 148, 0.5);
+    background-color:rgba(0, 189, 148, 0.9);
     padding:5px;
     width:100px;
     color: black;
 }
 
-
-
+.medium-button{
+    border: 1px solid rgba(255, 255, 255, 0);
+}
+.medium-button:hover{
+    border: 1px solid rgb(0, 89, 255);
+}
 
 .buttons-container{
     margin: 20px;

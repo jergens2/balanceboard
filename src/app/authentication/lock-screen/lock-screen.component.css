@@ -2,10 +2,10 @@
     min-width: 360px;
     min-height: 360px;
     /* width: 100%; */
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.7);
     border: 2px solid rgb(123, 169, 255);
     border-radius: 360px;
-    margin-top: 150px;
+    margin-top: 25px;
 
     display:flex;
     flex-direction: column;

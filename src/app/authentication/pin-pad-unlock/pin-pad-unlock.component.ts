@@ -74,7 +74,15 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
       else if(keyValue === '7'){ this.onClickButton(7); }
       else if(keyValue === '8'){ this.onClickButton(8); }
       else if(keyValue === '9'){ this.onClickButton(9); }
-      else if(keyValue === 'Enter') { this.onClickUnlock(); }
+      else if(keyValue === 'Enter') { 
+        if(this.showConfirmButton){
+          this.onClickConfirmPin();
+        }else if(this.showUnlockButton){
+          this.onClickUnlock(); 
+        }
+        
+      
+      }
     });
   }
 

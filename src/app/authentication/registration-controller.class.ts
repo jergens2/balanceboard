@@ -2,6 +2,7 @@ import { RegistrationData } from "./auth-data.interface";
 
 export class RegistrationController {
     constructor(authData: RegistrationData) {
+        console.log("Constructing: ", authData)
         if (authData.email) {
             this._email = authData.email;
         } else {
@@ -32,10 +33,10 @@ export class RegistrationController {
     public get password(): string { return this._password; }
     public get pin(): string { return this._pin; }
 
-    public get usernameIsPresent(): boolean { 
-        if(this.username.length >= 6 && this.username.length <= 24){
+    public get usernameIsPresent(): boolean {
+        if (this.username.length >= 6 && this.username.length <= 24) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -45,22 +46,18 @@ export class RegistrationController {
         this._pin = pin;
     }
     public getAuthData(): RegistrationData {
-        let usernameStylized: string = "";
-        let username: string = "";
-        if (!this.usernameStylized) {
+        let usernameStylized: string = this._usernameStylized;
+        let username: string = this._username;
+        if (this._username === '') {
+            username = 'NO_REGISTERED_USERNAME_USE_EMAIL';
             usernameStylized = 'NO_REGISTERED_USERNAME_USE_EMAIL';
-            username = usernameStylized;
-          } else {
-            username = usernameStylized.toLowerCase();
-          }
+        }
         return {
-
             email: this.email,
             username: username,
             usernameStylized: usernameStylized,
             password: this.password,
             pin: this.pin,
-
         }
     }
 }

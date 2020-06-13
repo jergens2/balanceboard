@@ -1,6 +1,6 @@
 <div class="authentication-root background-image-3 font-family-ubuntu">
 
-  <div class="authentication-body">
+  <div class="authentication-body" [ngClass]="{'transparent':actionIsLockScreen}">
 
     <div class="title">
       balanceboard
@@ -9,11 +9,11 @@
 
 
     <div *ngIf="actionIsInitial" class="buttons-container">
-      <button class="medium-button login-button" (click)="onClickLogin()">
+      <button class="login-button medium-button " (click)="onClickLogin()">
         Login
         <fa-icon [icon]="faSignInAlt" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
       </button>
-      <button class="medium-button register-button" (click)="onClickRegister()">
+      <button class="register-button medium-button " (click)="onClickRegister()">
         Sign Up
         <fa-icon [icon]="faUserPlus" style="font-size:0.7em;margin-left: 10px;"></fa-icon>
       </button>

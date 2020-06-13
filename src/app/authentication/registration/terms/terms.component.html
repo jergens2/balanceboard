@@ -20,7 +20,7 @@
                 [icon]="faCrow"></fa-icon>
         </div>
     </div>
-    <div class="terms">
+    <!-- <div class="terms">
         <div class="term-icon-container">
             <fa-icon [icon]="faCircle" style="color: rgb(0, 32, 92);"></fa-icon>
         </div>
@@ -28,7 +28,7 @@
             You are trusting balanceboard to safeguard your digital property in the same way you might trust a bank
             vault to be a secure place to store physical property.
         </div>
-    </div>
+    </div> -->
     <div class="agreement" [ngClass]="{'good-terms':termsAreAccepted}">
         <div class="term-icon-container" style="font-size: 1.2em;">
             <div *ngIf="termsAreAccepted" class="icon-button" (click)="onClickTermsAccepted(false)"

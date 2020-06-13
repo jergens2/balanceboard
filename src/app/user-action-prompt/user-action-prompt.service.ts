@@ -81,7 +81,9 @@ export class UserActionPromptService {
 
 
   public logout() {
-    this._prompts$.next([]);
+    if(this._prompts$){
+      this._prompts$.next([]);
+    }
     this.sleepService.logout();
     this.accountService.logout();
   }

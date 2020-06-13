@@ -88,6 +88,7 @@ export class RegistrationComponent implements OnInit {
   private _finalizeRegistration() {
     const regController: RegistrationController = this.authService.registrationController;   
     const authData = regController.getAuthData();
+    console.log("REGISTERING AUTH DATA: " , authData);
     this.authService.registerNewUserAccount$(authData).subscribe((response) => {
       this.setAction('SUCCESSFUL_REG_START');
     }, (err) => {

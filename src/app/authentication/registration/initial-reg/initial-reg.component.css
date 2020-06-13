@@ -8,6 +8,14 @@
     color: gray;
 }
 
+.icon-container{
+    width: 30px;
+    display:flex; 
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: rgb(170, 170, 170);
+}
 
 .form-input{
     flex-grow: 2;
