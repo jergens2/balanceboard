@@ -2,33 +2,29 @@ import { Injectable } from '@angular/core';
 import { DayTemplate } from './day-template.class';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../../authentication/auth-status.class';
 import { map } from 'rxjs/operators';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 
 import * as moment from 'moment';
 
-import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
-import { Delineation } from './delineation.interface';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DayTemplatesService implements ServiceAuthenticates {
+export class DayTemplatesService  {
 
   constructor(private httpClient: HttpClient) { }
   private serverUrl = serverUrl;
 
 
 
-  private _loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
+  private _loginComplete$: Subject<any> = new Subject();
 
   private _userId: string = "";
   public synchronousLogin(userId: string) { return false;   
   }
 
-  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+  login$(userId: string): Observable<any> {
     
     this._userId = userId;
     this.getTemplatesHTTP();

@@ -4,31 +4,26 @@ import { DaybookSleepInputDataItem } from '../data-items/daybook-sleep-input-dat
 import { DaybookTimeScheduleStatus } from './daybook-time-schedule-status.enum';
 import { DaybookTimeScheduleItem } from './daybook-time-schedule-item.class';
 import { TimelogDelineator } from '../../widgets/timelog/timelog-delineator.class';
+import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
+import { TimeSchedule } from '../../../../shared/time-utilities/time-schedule.class';
 
-export class DaybookTimeSchedule {
+export class DaybookTimeSchedule extends TimeSchedule{
 
 
     private _dateYYYYMMDD: string;
-    private _startTime: moment.Moment;
-    private _endTime: moment.Moment;
     private _timeScheduleItems: DaybookTimeScheduleItem[] = [];
 
     public get timeScheduleItems(): DaybookTimeScheduleItem[] { return this._timeScheduleItems; }
 
-    public get startTime(): moment.Moment { return this._startTime; }
-    public get endTime(): moment.Moment { return this._endTime; }
     public get dateYYYYMMDD(): string { return this._dateYYYYMMDD; }
 
 
     constructor(dateYYYYMMDD: string, startTime: moment.Moment, endTime: moment.Moment,
-        timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: DaybookSleepInputDataItem[], delineators: moment.Moment[]) {
+        timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: TimeScheduleItem[], delineators: moment.Moment[]) {
+        super(startTime, endTime);
+        console.log("Construction of daybook time schedule")
         this._dateYYYYMMDD = dateYYYYMMDD;
-        // console.log("Constructing schedule: " + startTime.format('YYYY-MM-DD hh:mm a') + " - " + endTime.format('YYYY-MM-DD hh:mm a'))
-        this._startTime = moment(startTime);
-        this._endTime = moment(endTime);
         this._buildSchedule(timelogEntries, sleepEntries, delineators);
-        // this._logToConsole();
-
     }
 
    
@@ -78,31 +73,31 @@ export class DaybookTimeSchedule {
 
 
 
-    private _buildSchedule(timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: DaybookSleepInputDataItem[], delineators: moment.Moment[]) {
+    private _buildSchedule(timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: TimeScheduleItem[], delineators: moment.Moment[]) {
 
         const isToday: boolean = moment().format('YYYY-MM-DD') === this.dateYYYYMMDD;
 
         if (isToday) {
             delineators.push(moment().startOf('minute'));
         }
-        let timeScheduleItems: DaybookTimeScheduleItem[] = [
-            ...timelogEntries.map(item => {
-                const startTime = moment(item.startTimeISO);
-                const endTime = moment(item.endTimeISO);
-                return new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.ACTIVE, startTime, endTime, item, null);
-            }),
-            ...sleepEntries.map(item => {
-                const startTime = moment(item.startSleepTimeISO);
-                const endTime = moment(item.endSleepTimeISO);
-                return new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.SLEEP, startTime, endTime, null, item);
-            }),
+        // let timeScheduleItems: DaybookTimeScheduleItem[] = [
+        //     ...timelogEntries.map(item => {
+        //         const startTime = moment(item.startTimeISO);
+        //         const endTime = moment(item.endTimeISO);
+        //         return new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.ACTIVE, startTime, endTime, item, null);
+        //     }),
+        //     ...sleepEntries.map(item => {
+        //         const startTime = moment(item.startSleepTimeISO);
+        //         const endTime = moment(item.endSleepTimeISO);
+        //         return new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.SLEEP, startTime, endTime, null, item);
+        //     }),
 
-        ];
+        // ];
 
 
-        timeScheduleItems = this._sortAndValidate(timeScheduleItems);
-        timeScheduleItems = this._populateAvailableSpots(timeScheduleItems, delineators);
-        this._timeScheduleItems = timeScheduleItems;
+        // timeScheduleItems = this._sortAndValidate(timeScheduleItems);
+        // timeScheduleItems = this._populateAvailableSpots(timeScheduleItems, delineators);
+        // this._timeScheduleItems = timeScheduleItems;
     }
 
 
@@ -182,23 +177,23 @@ export class DaybookTimeSchedule {
 
         }
 
-        for (let i = 0; i < timeScheduleItems.length; i++) {
-            if (timeScheduleItems[i].startTime.isBefore(this.startTime)) {
-                if (timeScheduleItems[i].endTime.isSameOrBefore(this.startTime)) {
-                    timeScheduleItems.splice(i, 1);
-                    i--;
-                } else {
-                    timeScheduleItems[i].startTime = this.startTime;
-                }
-            } else if (timeScheduleItems[i].endTime.isAfter(this.endTime)) {
-                if (timeScheduleItems[i].startTime.isSameOrAfter(this.endTime)) {
-                    timeScheduleItems.splice(i, 1);
-                    i--;
-                } else {
-                    timeScheduleItems[i].endTime = this.endTime;
-                }
-            }
-        }
+        // for (let i = 0; i < timeScheduleItems.length; i++) {
+        //     if (timeScheduleItems[i].startTime.isBefore(this.startTime)) {
+        //         if (timeScheduleItems[i].endTime.isSameOrBefore(this.startTime)) {
+        //             timeScheduleItems.splice(i, 1);
+        //             i--;
+        //         } else {
+        //             timeScheduleItems[i].startTime = this.startTime;
+        //         }
+        //     } else if (timeScheduleItems[i].endTime.isAfter(this.endTime)) {
+        //         if (timeScheduleItems[i].startTime.isSameOrAfter(this.endTime)) {
+        //             timeScheduleItems.splice(i, 1);
+        //             i--;
+        //         } else {
+        //             timeScheduleItems[i].endTime = this.endTime;
+        //         }
+        //     }
+        // }
         return timeScheduleItems;
     }
 
@@ -208,80 +203,6 @@ export class DaybookTimeSchedule {
             console.log("  " + item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a') + " -- " + item.status)
         });
     }
-
-
-     // public get dayStartTime(): moment.Moment {
-    //     const thisDayWakeItems = this._getThisDayWakeItems();
-    //     if(thisDayWakeItems.length === 0){
-    //         console.log('Error: wtf');
-    //     }else if(thisDayWakeItems.length === 1){
-    //         return thisDayWakeItems[0].startTime;
-    //     }else if(thisDayWakeItems.length > 1){
-    //         return this._findLargestWakeItem(thisDayWakeItems).startTime;
-    //     }
-    //     return null;
-    // }
-    // public get dayEndTime(): moment.Moment {
-    //     const thisDayWakeItems = this._getThisDayWakeItems();
-    //     if(thisDayWakeItems.length === 0){
-    //         console.log('Error: wtf');
-    //     }else if(thisDayWakeItems.length === 1){
-    //         return thisDayWakeItems[0].endTime;
-    //     }else if(thisDayWakeItems.length > 1){
-    //         return this._findLargestWakeItem(thisDayWakeItems).endTime;
-    //     }
-    //     return null;
-    // }
-
-    // private _findLargestWakeItem(thisDayWakeItems: DaybookTimeScheduleItem[]): DaybookTimeScheduleItem{
-    //     const startOfThisDay: moment.Moment = moment(this.dateYYYYMMDD);
-    //     const endOfThisDay: moment.Moment = moment(this.dateYYYYMMDD);
-    //     const getMilliseconds = function(wakeItem: DaybookTimeScheduleItem): number{
-    //         const crossesStart = wakeItem.startTime.isBefore(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
-    //         const crossesEnd = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isAfter(endOfThisDay);
-    //         const isInside = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
-    //         const encapsulates = wakeItem.startTime.isSameOrBefore(startOfThisDay) && wakeItem.endTime.isSameOrAfter(endOfThisDay);
-    //         let startTime: moment.Moment;
-    //         let endTime: moment.Moment;
-    //         if(crossesStart){
-    //             startTime = moment(startOfThisDay);
-    //             endTime = moment(wakeItem.endTime);
-    //         }else if(isInside){
-    //             startTime = moment(wakeItem.startTime);
-    //             endTime = moment(wakeItem.endTime)
-    //         }else if(crossesEnd){
-    //             startTime = moment(wakeItem.startTime);
-    //             endTime = moment(endOfThisDay);
-    //         }else if(encapsulates){
-    //             console.log('Big badaboom.  Bada big boom.');
-    //         }
-    //         return moment(endTime).diff(startTime, 'milliseconds');
-    //     }
-    //     let largestItem = thisDayWakeItems[0];
-    //     let largestMs = getMilliseconds(largestItem);
-    //     for(let i=1; i<thisDayWakeItems.length; i++){
-    //         let currentMs = getMilliseconds(thisDayWakeItems[i]);
-    //         if(currentMs > largestMs){
-    //             largestItem = thisDayWakeItems[i];
-    //         }
-    //     }
-    //     return largestItem;
-    // }
-
-    // private _getThisDayWakeItems(): DaybookTimeScheduleItem[]{
-    //     const startOfThisDay: moment.Moment = moment(this.dateYYYYMMDD);
-    //     const endOfThisDay: moment.Moment = moment(this.dateYYYYMMDD);
-    //     const sleepCycle = this._getSleepCycle();
-    //     const wakeItems = sleepCycle.filter(item => item.status !== DaybookTimeScheduleStatus.SLEEP);
-    //     const thisDaywakeItems = wakeItems.filter((wakeItem)=>{
-    //         const crossesStart = wakeItem.startTime.isBefore(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
-    //         const crossesEnd = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isAfter(endOfThisDay);
-    //         const isInside = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
-    //         const encapsulates = wakeItem.startTime.isSameOrBefore(startOfThisDay) && wakeItem.endTime.isSameOrAfter(endOfThisDay);
-    //         return crossesStart || crossesEnd || isInside || encapsulates;
-    //     });
-    //     return thisDaywakeItems;
-    // }
 
 
 }

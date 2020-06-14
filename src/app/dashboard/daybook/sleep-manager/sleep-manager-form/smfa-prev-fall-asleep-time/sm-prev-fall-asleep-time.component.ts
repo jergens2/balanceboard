@@ -24,13 +24,14 @@ export class SmPrevFallAsleepTimeComponent implements OnInit {
   public minVal: moment.Moment;
 
   ngOnInit(): void {
-    this._wokeUpAt = moment(this.sleepService.sleepManagerForm.formInputWakeupTime);
-    this._sleepDuration = DurationString.calculateDurationString(this._fallAsleepTime, this.wokeUpAt)
+    this._wokeUpAt = moment(this.sleepService.sleepManagerForm.formInputWakeupTime);    
     if (this.sleepService.sleepManagerForm.prevFallAsleepTimeIsSet) {
       this._fallAsleepTime = moment(this.sleepService.sleepManagerForm.formInputPrevFallAsleep)
     } else {
       this._fallAsleepTime = moment(this.sleepService.sleepManager.previousFallAsleepTime);
     }
+    
+    this._sleepDuration = DurationString.calculateDurationString(this._fallAsleepTime, this.wokeUpAt)
     this.onTimeChanged(this._fallAsleepTime);
   }
 

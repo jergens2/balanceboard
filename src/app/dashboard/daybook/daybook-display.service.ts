@@ -19,13 +19,12 @@ import { ToolType } from '../../toolbox-menu/tool-type.enum';
 import { TLEFFormCase } from './widgets/timelog/timelog-entry-form/tlef-form-case.enum';
 import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
 import { SleepManagerService } from './sleep-manager/sleep-manager.service';
-import { DaybookTimeSchedule } from './api/controllers/daybook-time-schedule.class';
-import { DaybookTimeScheduleItem } from './api/controllers/daybook-time-schedule-item.class';
-import { DaybookTimeScheduleStatus } from './api/controllers/daybook-time-schedule-status.enum';
 import { DaybookSleepInputDataItem } from './api/data-items/daybook-sleep-input-data-item.interface';
 import { DaybookTimelogEntryDataItem } from './api/data-items/daybook-timelog-entry-data-item.interface';
-import { DaybookSleepCycle } from './sleep-manager/sleep-manager-form/daybook-sleep-cycle.class';
+import { DaybookSleepCycle } from './sleep-manager/sleep-cycle/daybook-sleep-cycle.class';
 import { SleepManager } from './sleep-manager/sleep-manager.class';
+import { DaybookTimeSchedule } from './api/daybook-time-schedule/daybook-time-schedule.class';
+import { TimeScheduleItem } from '../../shared/time-utilities/time-schedule-item.class';
 
 @Injectable({
   providedIn: 'root'
@@ -120,14 +119,14 @@ export class DaybookDisplayService {
     this._subs = [
       this.daybookControllerService.displayUpdated$.subscribe((update: DaybookDisplayUpdate) => {
         console.log("** UPDATING: ", update.type)
-        if(update.type === DaybookDisplayUpdateType.CLOCK){
-          if(moment().format('YYYY-MM-DD') === update.controller.dateYYYYMMDD){
+        if (update.type === DaybookDisplayUpdateType.CLOCK) {
+          if (moment().format('YYYY-MM-DD') === update.controller.dateYYYYMMDD) {
             this._updateDisplay(update);
           }
-        }else{
+        } else {
           this._updateDisplay(update);
         }
-        
+
       }),
     ];
 
@@ -138,103 +137,54 @@ export class DaybookDisplayService {
     this._currentZoom = this.zoomItems[0];
   }
 
-
-
-  public getScheduleStatus(timeToCheck: moment.Moment): DaybookTimeScheduleStatus {
-    return this._schedule.getStatusAtTime(timeToCheck);
-  }
-  public getAvailableScheduleItems(): DaybookTimeScheduleItem[] {
-    return this._schedule.getAvailableScheduleItems();
-  }
-
-
-
   private _updateDisplay(update: DaybookDisplayUpdate) {
-    // console.log("Daybook Display update: ", update.type);
-
+    console.log("Daybook Display update: " + update.controller.dateYYYYMMDD, update.type);
     const dateYYYYMMDD = update.controller.dateYYYYMMDD;
-    const isToday: boolean = update.controller.isToday;
-    const isTomorrow: boolean = update.controller.isTomorrow;
-    const isYesterday: boolean = update.controller.isYesterday;
-    const isBeforeToday = update.controller.isBeforeToday;
-    const isAfterToday = update.controller.isAfterToday;
-    let sleepItems: DaybookSleepInputDataItem[] = [];
-    let dayStartTime: moment.Moment;
-    let dayEndTime: moment.Moment;
-
-    const sleepManager:SleepManager = this.sleepService.sleepManager;
+    const sleepManager: SleepManager = this.sleepService.sleepManager;
     const sleepCycle: DaybookSleepCycle = sleepManager.sleepCycle;
-    
-    if (isToday) {
-      sleepItems = sleepManager.getTodayItems();
-      dayStartTime = moment(sleepManager.previousWakeupTime);
-      dayEndTime = moment(sleepManager.nextFallAsleepTime);
-    } else if (isAfterToday) {
-      if(isTomorrow){
-        sleepItems = sleepManager.getTomorrowSleepInputDataItems();
-        dayStartTime = moment(sleepManager.nextWakeupTime);
-        dayEndTime = moment(sleepManager.tomorrowEndTime);
-      }else{
-        // console.log("Future date:  " + dateYYYYMMDD);
-        sleepItems = sleepCycle.getSleepDataItems(dateYYYYMMDD);
-        dayStartTime = sleepCycle.getDayStartTime(dateYYYYMMDD);
-        dayEndTime = sleepCycle.getDayEndTime(dateYYYYMMDD);
+
+    // if (sleepCycle.isValid) {
+      const sleepItems: TimeScheduleItem[] = sleepCycle.get72HourSleepDataItems(dateYYYYMMDD);
+      const dayStartTime: moment.Moment = sleepCycle.getDayStartTime(dateYYYYMMDD);
+      const dayEndTime: moment.Moment = sleepCycle.getDayStartTime(dateYYYYMMDD);
+
+      this._wakeupTime = moment(dayStartTime);
+      this._fallAsleepTime = moment(dayEndTime);
+      this._displayStartTime = TimeUtilities.roundDownToFloor(moment(dayStartTime).subtract(15, 'minutes'), 30);
+      this._displayEndTime = TimeUtilities.roundUpToCeiling(moment(dayEndTime).add(15, 'minutes'), 30);
+
+      console.log("Setting display!")
+      console.log(this._displayStartTime.format('YYYY-MM-DD hh:mm a') + " to " + this._displayEndTime.format('YYYY-MM-DD hh:mm a'));
+
+      const timelogEntries: DaybookTimelogEntryDataItem[] = update.controller.timelogEntryItems.map(item => item.exportDataEntryItem());
+      const delineators: moment.Moment[] = update.controller.savedTimeDelineators;
+      this._updateTimelogDelineators();
+
+      console.log("Now moving on to creating the daybook time schedule")
+      this._schedule = new DaybookTimeSchedule(this.dateYYYYMMDD, this.displayStartTime, this.displayEndTime, timelogEntries, sleepItems, delineators);
+
+      this._buildZoomItems();
+
+
+
+
+      if (!this._tlefController) {
+        this._tlefController = new TLEFController(this._timeDelineators, this._schedule, this.activeDayController, this.clock, this.toolBoxService, this.activitiesService);
+      } else {
+        this._tlefController.update(this._timeDelineators, this.activeDayController, this.clock, update);
       }
-    } else if (isBeforeToday) {
-      if(isYesterday){
-        sleepItems = sleepManager.getYesterdaySleepInputDataItems();
-        dayStartTime = moment(sleepManager.yesterdayStartTime);
-        dayEndTime = moment(sleepManager.previousFallAsleepTime);
-      }else{
-        if(update.controller.hasSleepItems()){
-          sleepItems = update.controller.getSleepDataItems();
-        }else{
-          sleepItems = sleepCycle.getSleepDataItems(dateYYYYMMDD);
-        }
-        
-        dayStartTime = sleepCycle.getDayStartTime(dateYYYYMMDD);
-        dayEndTime = sleepCycle.getDayEndTime(dateYYYYMMDD);
-      }
-      // console.log("Past date: " + dateYYYYMMDD)
-      
-    } else {
-      console.log("Big time error");
-    }
-
-    this._wakeupTime = moment(dayStartTime);
-    this._fallAsleepTime = moment(dayEndTime);
-    this._displayStartTime = TimeUtilities.roundDownToFloor(moment(dayStartTime).subtract(15, 'minutes'), 30);
-    this._displayEndTime = TimeUtilities.roundUpToCeiling(moment(dayEndTime).add(15, 'minutes'), 30);
-
-    console.log("Setting display!")
-    console.log(this._displayStartTime.format('YYYY-MM-DD hh:mm a') + " to " + this._displayEndTime.format('YYYY-MM-DD hh:mm a'));
+      this._updateTLEFSubscription();
+      let newGrid: TimelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._timeDelineators, this._schedule, this.activeDayController, this._tlefController);
+      this._timelogDisplayGrid = newGrid;
+      // this._updateDrawingTLE(update);
 
 
-    console.log(" SLEEP ITEMS")
-    sleepItems.forEach((item)=> console.log("   " + moment(item.startSleepTimeISO).format('YYYY-MM-DD hh:mm a') + " - " + moment(item.endSleepTimeISO).format('YYYY-MM-DD hh:mm a')))
-
-    const timelogEntries: DaybookTimelogEntryDataItem[] = update.controller.timelogEntryItems.map(item => item.exportDataEntryItem());
-    const delineators: moment.Moment[] = update.controller.savedTimeDelineators;
-    this._updateTimelogDelineators();
-    this._schedule = new DaybookTimeSchedule(this.dateYYYYMMDD, this.displayStartTime, this.displayEndTime, timelogEntries, sleepItems, delineators);
-
-    this._buildZoomItems();
+      this._displayUpdated$.next(update);
+    // } else {
+    //   console.log("Error: sleep cycle is not valid");
+    // }
 
 
-
-
-    if (!this._tlefController) {
-      this._tlefController = new TLEFController(this._timeDelineators, this._schedule, this.activeDayController, this.clock, this.toolBoxService, this.activitiesService);
-    } else {
-      this._tlefController.update(this._timeDelineators, this.activeDayController, this.clock, update);
-    }
-    this._updateTLEFSubscription();
-    let newGrid: TimelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._timeDelineators, this._schedule, this.activeDayController, this._tlefController);
-    this._timelogDisplayGrid = newGrid;
-    // this._updateDrawingTLE(update);
-
-
-    this._displayUpdated$.next(update);
   }
 
 

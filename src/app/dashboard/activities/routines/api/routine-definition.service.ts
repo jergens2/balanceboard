@@ -8,23 +8,21 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map, mergeAll, merge } from 'rxjs/operators';
 import * as moment from 'moment';
 
-import { ServiceAuthenticates } from '../../../../authentication/service-authentication-garbage/service-authenticates.interface';
 
 import { RoutineDefinition } from './routine-definition.class';
 import { RoutineDefinitionHttpShape } from './routine-definition-http-shape.interface';
 import { DefaultRoutineDefinitions } from './default-routine-definitions.class';
-import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class RoutineDefinitionService implements ServiceAuthenticates {
+export class RoutineDefinitionService  {
 
   constructor(private httpClient: HttpClient) { }
 
 
-  public loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
+  public loginComplete$: Subject<any> = new Subject();
 
   private _userId: string;
 
@@ -32,7 +30,7 @@ export class RoutineDefinitionService implements ServiceAuthenticates {
     this._userId = userId;
     return true;
   }
-  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+  login$(userId: string): Observable<any> {
     // console.log("RoutineDefinitionService: Logging in - ")
     // console.log("I don't think we need this CRUD any more.  Perhpas Cannibalize this method for another CRUD.")
     // this._authStatus = authStatus;

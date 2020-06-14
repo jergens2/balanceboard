@@ -1,6 +1,5 @@
 import { RoutineDefinitionFrequency } from "./routine-definition-frequency.interface";
 import { TimeOfDay } from "../../../../shared/time-utilities/time-of-day-enum";
-import { TimeRange } from "../../../../shared/time-utilities/time-range.interface";
 
 export interface RoutineDefinitionHttpShape{
     _id: string,
@@ -9,7 +8,10 @@ export interface RoutineDefinitionHttpShape{
     name: string,
     frequencies: RoutineDefinitionFrequency[],
     timeOfDay: TimeOfDay,
-    timeOfDayRanges: TimeRange[],
+    timeOfDayRanges: {
+        startTimeISO: string,
+        endTimeISO: string,
+    }[],
     activityIds: string[],
     childOfRoutineId: string,
     

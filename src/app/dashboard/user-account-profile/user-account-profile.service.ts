@@ -23,7 +23,7 @@ export class UserAccountProfileService {
 
   public get userProfile$(): Observable<UserAccountProfile> { return this._userProfile$.asObservable(); }
   public get userProfile(): UserAccountProfile { return this._userProfile$.getValue(); }
-  
+
   public get appConfig(): UAPAppConfiguration { return this.userProfile.uapAppConfig; }
   public get appPreferences(): UAPAppPreferences { return this.userProfile.uapAppPreferences; }
   public get personalInfo(): UAPPersonalInformation { return this.userProfile.uapPersonalInfo; }
@@ -33,7 +33,7 @@ export class UserAccountProfileService {
     const _prompt$: Subject<UserPromptType> = new Subject();
     this._getUserAccountProfile$().subscribe((profile) => {
       this._userProfile$ = new BehaviorSubject(profile);
-      console.log("Profile!" , profile.isValid, profile);
+      // console.log("Profile!" , profile.isValid, profile);
       if (profile.isValid) {
         _prompt$.next();
       } else {
@@ -48,21 +48,20 @@ export class UserAccountProfileService {
   }
 
   public setAppConfig$(config: UAPAppConfiguration): Observable<boolean> {
-    console.log("Setting app config")
-    this.userProfile.setAppConfig(config);
+    console.log("setting appconfig")
+    const profile = this.userProfile;
+    profile.setAppConfig(config);
     const _complete$: Subject<boolean> = new Subject();
     const url = serverUrl + "/api/user-account-profile/save";
     const body = {
       id: this.userProfile.id,
       userId: this._userId,
-      userProfile: this.userProfile.userProfileHttp(),
+      userProfile: profile.userProfileHttp(),
     }
     this.httpClient.post<{ message: string, data: any, success: boolean }>(url, body)
       .subscribe((response) => {
-        console.log("Respoinse is: ", response)
-        
-        if(response.success === true){
-          
+        // console.log("Respoinse is: ", response)
+        if(response.success === true){          
           const newProfile = new UserAccountProfile(response.data);
           this._userProfile$.next(newProfile);
         }
@@ -84,11 +83,10 @@ export class UserAccountProfileService {
         success: boolean,
         data: any,
       }) => {
-        console.log("Building : ", response)
+        // console.log("Building : ", response)
         if(response.success === true){
           return new UserAccountProfile(response.data);
         }else{
-          console.log("success was fail")
           return new UserAccountProfile(null);
         }
       }));

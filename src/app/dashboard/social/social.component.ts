@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { SocialService } from '../../shared/document-definitions/user-account/social.service';
+import { SocialService } from './social.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { FriendRequest } from '../../shared/document-definitions/user-account/friend-request.interface';
+import { FriendRequest } from './friend-request.interface';
 
 @Component({
   selector: 'app-social',

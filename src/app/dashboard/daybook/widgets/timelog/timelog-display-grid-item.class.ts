@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { DaybookTimeScheduleStatus } from '../../api/controllers/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleStatus } from '../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
 
 
 export class TimelogDisplayGridItem {

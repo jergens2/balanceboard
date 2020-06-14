@@ -8,25 +8,23 @@ import * as moment from 'moment';
 import { serverUrl } from '../../../../serverurl';
 import { map } from 'rxjs/operators';
 import { RoutineDefinitionService } from '../../../../dashboard/activities/routines/api/routine-definition.service';
-import { ServiceAuthenticates } from '../../../../authentication/service-authentication-garbage/service-authenticates.interface';
-import { ServiceAuthenticationAttempt } from '../../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class DailyTaskListService implements ServiceAuthenticates{
+export class DailyTaskListService {
 
   private serverUrl = serverUrl;
 
   constructor(private httpClient: HttpClient, private routineDefinitionService: RoutineDefinitionService) { }
 
   private _userId: string;
-  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({authenticated: false, message: ''});
+  private _loginComplete$: BehaviorSubject<any> = new BehaviorSubject({authenticated: false, message: ''});
   private _today: moment.Moment;
   private _clockSubscription: Subscription = new Subscription();
   public synchronousLogin(userId: string) { return false; }
-  public login$(userId: string): Observable<ServiceAuthenticationAttempt>{
+  public login$(userId: string): Observable<any>{
     this._today = moment();
     this._userId = userId;
     

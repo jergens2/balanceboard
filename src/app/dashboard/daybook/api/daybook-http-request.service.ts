@@ -5,10 +5,7 @@ import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { DaybookDayItem } from './daybook-day-item.class';
 import { map } from 'rxjs/operators';
-import { DaybookDayItemHttpShape } from './daybook-day-item-http-shape.interface';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
 import { DaybookDayItemBuilder } from './daybook-day-item-builder.class';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 
 @Injectable({
@@ -17,7 +14,6 @@ import { ServiceAuthenticationAttempt } from '../../../authentication/service-au
 export class DaybookHttpRequestService {
 
   constructor(private httpClient: HttpClient) { }
-  private _loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
   private _changeSubscriptions: Subscription[] = [];
   private _daybookDayItems$: BehaviorSubject<DaybookDayItem[]> = new BehaviorSubject([]);
   private _itemBuilder: DaybookDayItemBuilder = new DaybookDayItemBuilder();

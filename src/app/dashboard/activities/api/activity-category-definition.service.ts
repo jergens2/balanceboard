@@ -1,18 +1,13 @@
 import { Injectable } from '@angular/core';
 import { ActivityCategoryDefinition } from './activity-category-definition.class';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-
-
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
-import { AuthStatus } from '../../../authentication/auth-status.class';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.class';
 import { Guid } from '../../../shared/utilities/guid.class';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
 import { ActivityCategoryDefinitionHttpShape } from './activity-category-definition-http-shape.interface';
 import { DefaultActivityCategoryDefinitions } from './default-activity-category-definitions.class';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 @Injectable({
   providedIn: 'root'
 })

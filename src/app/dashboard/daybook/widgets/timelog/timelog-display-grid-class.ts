@@ -6,8 +6,8 @@ import { DaybookController } from '../../controller/daybook-controller.class';
 import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
 import { TLEFController } from './timelog-entry-form/TLEF-controller.class';
 import { TLEFControllerItem } from './timelog-entry-form/TLEF-controller-item.class';
-import { DaybookTimeScheduleStatus } from '../../api/controllers/daybook-time-schedule-status.enum';
-import { DaybookTimeSchedule } from '../../api/controllers/daybook-time-schedule.class';
+import { DaybookTimeScheduleStatus } from '../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeSchedule } from '../../api/daybook-time-schedule/daybook-time-schedule.class';
 
 export class TimelogDisplayGrid {
 

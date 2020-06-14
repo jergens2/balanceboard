@@ -1,5 +1,4 @@
 import { TimeOfDay } from "../../../shared/time-utilities/time-of-day-enum";
-import { TimeRange } from "../../../shared/time-utilities/time-range.interface";
 import { DayOfWeek } from "../../../shared/time-utilities/day-of-week.enum";
 import { TimeUnit } from "../../../shared/time-utilities/time-unit.enum";
 
@@ -16,9 +15,9 @@ export interface ActivityOccurrenceConfiguration{
 
 
     timesOfDay: TimeOfDay[],
-    timesOfDayRanges: TimeRange[],
+    timesOfDayRanges: {startTimeISO: string, endTimeISO: string}[],
 
-    timesOfDayExcludedRanges: TimeRange[],
+    timesOfDayExcludedRanges: {startTimeISO: string, endTimeISO: string}[],
 
     daysOfWeek: DayOfWeek[],
     daysOfWeekExcluded: DayOfWeek[],

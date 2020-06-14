@@ -7,26 +7,24 @@ import { serverUrl } from '../../serverurl';
 import { AuthStatus } from '../../authentication/auth-status.class';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { ServiceAuthenticates } from '../../authentication/service-authentication-garbage/service-authenticates.interface';
-import { ServiceAuthenticationAttempt } from '../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TaskService implements ServiceAuthenticates{
+export class TaskService {
 
   constructor(private httpClient: HttpClient) { }
 
   private _serverUrl = serverUrl;
   private _userId: string;
   synchronousLogin(userId: string){ return false;}
-  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+  login$(userId: string): Observable<any> {
     this._userId = userId;
     this.getTasksHTTP();
     return this._loginComplete$.asObservable();
   }
 
-  private _loginComplete$: Subject<ServiceAuthenticationAttempt> = new Subject();
+  private _loginComplete$: Subject<any> = new Subject();
 
   logout() {
     this._userId = null;

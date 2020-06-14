@@ -2,7 +2,6 @@ import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog
 import * as moment from 'moment';
 import { Subject, Observable } from 'rxjs';
 import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
-import { TimeScheduleOldnComplicated } from '../../../shared/time-utilities/time-schedule-old-complicated.class';
 import { TimeScheduleItem } from '../../../shared/time-utilities/time-schedule-item.class';
 
 export class DaybookTimelogEntryController {
@@ -24,9 +23,7 @@ export class DaybookTimelogEntryController {
             } else {
                 return 0;
             }
-        })
-        this._buildSchedule();
-
+        });
     }
 
 
@@ -37,11 +34,9 @@ export class DaybookTimelogEntryController {
     private _dateYYYYMMDD: string;
     private _timelogEntryItems: TimelogEntryItem[];
 
-    private _timelogSchedule: TimeScheduleOldnComplicated<TimelogEntryItem>;
 
     private _timelogUpdated$: Subject<{ dateYYYYMMDD: string, items: DaybookTimelogEntryDataItem[] }> = new Subject();
 
-    public get timelogSchedule(): TimeScheduleOldnComplicated<TimelogEntryItem> { return this._timelogSchedule; }
 
     public get lastTimelogEntryItemTime(): moment.Moment {
         if (this._timelogEntryItems.length > 0) {
@@ -79,7 +74,6 @@ export class DaybookTimelogEntryController {
 
     public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
 
-    public isActiveAtTime(timeToCheck: moment.Moment): boolean { return this.timelogSchedule.hasValueAtTime(timeToCheck); }
 
     public getItemAtTime(startTime: moment.Moment): TimelogEntryItem {
         const foundItem = this.timelogEntryItems.find(item => item.startTime.isSame(startTime));
@@ -153,13 +147,6 @@ export class DaybookTimelogEntryController {
 
     private _sendUpdate(updateItem: { dateYYYYMMDD: string, items: DaybookTimelogEntryDataItem[] }) {
         this._timelogUpdated$.next(updateItem);
-    }
-
-    private _buildSchedule() {
-        let newSchedule: TimeScheduleOldnComplicated<TimelogEntryItem> = new TimeScheduleOldnComplicated(this.startOfPrevDate, this.endOfNextDate);
-        const positiveValues: TimeScheduleItem<TimelogEntryItem>[] = this.timelogEntryItems.map(item => new TimeScheduleItem(item.startTime, item.endTime, true, item));
-        newSchedule.addScheduleValueItems(positiveValues);
-        this._timelogSchedule = newSchedule;
     }
 
 

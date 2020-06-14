@@ -1,14 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../../timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimeScheduleOldnComplicated } from '../../../../../../../shared/time-utilities/time-schedule-old-complicated.class';
 import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import * as moment from 'moment';
-import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
-import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { DaybookDisplayUpdateType } from '../../../../../controller/items/daybook-display-update.interface';
 
 
 @Component({
@@ -90,11 +86,9 @@ export class AvailableTimelogItemComponent implements OnInit {
 
     const durationMS: number = this.gridItem.endTime.diff(this.gridItem.startTime, 'milliseconds');
     // console.log("Drawing TLE " + this._drawTLE.startTime.format('hh:mm a') + " to " + this._drawTLE.endTime.format('hh:mm a'));
-    const timeSchedule: TimeScheduleOldnComplicated<any> = new TimeScheduleOldnComplicated(this.gridItem.startTime, this.gridItem.endTime);
-    timeSchedule.addScheduleValueItems([new TimeScheduleItem(timelogEntry.startTime, timelogEntry.endTime, true, timelogEntry)]);
-    let percentages: number[] = timeSchedule.fullScheduleItems.map((item) => {
-      return (item.endTime.diff(item.startTime, 'milliseconds') / durationMS) * 100;
-    });
+
+    console.log("ERROR: incomplete.  need to add DaybookTimeSchedule stuff.");
+    let percentages: number[] = [];
     // console.log("Percenates is : " , percentages);
     let gridTemplateRows: string = "";
     let drawTLEgridRow: string = "";

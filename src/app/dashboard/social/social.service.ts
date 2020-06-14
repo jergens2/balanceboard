@@ -1,25 +1,23 @@
 import { Injectable } from '@angular/core';
-import { AuthStatus } from '../../../authentication/auth-status.class';
+import { AuthStatus } from '../../authentication/auth-status.class';
 import { Observable, BehaviorSubject } from 'rxjs';
 import * as moment from 'moment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { serverUrl } from '../../../serverurl';
+import { serverUrl } from '../../serverurl';
 import { FriendRequest } from './friend-request.interface';
 import { map } from 'rxjs/operators';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SocialService implements ServiceAuthenticates{
+export class SocialService {
 
   private _userId: string;
-  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
+  private _loginComplete$: BehaviorSubject<any> = new BehaviorSubject({
     authenticated: false, message: '',
   });
   public synchronousLogin(user: string) { return false;}
-  public login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+  public login$(userId: string): Observable<any> {
     this._userId = userId;
     this.getFriendRequests();
     return this._loginComplete$.asObservable();

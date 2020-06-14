@@ -52,7 +52,6 @@ export class UserAccountProfile {
         } else {
             this._isValid = false;
         }
-        console.log("is valid? " , this._isValid)
         this._setId(data);
         this._setPersonalInfo(userProfile);
         this._setAppPreferences(userProfile);

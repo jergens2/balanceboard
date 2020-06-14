@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { UserAccountProfileService } from '../user-account-profile.service';
 import { UAPAppConfiguration } from '../api/uap-app-configuraiton.interface';
+import { SleepManagerService } from '../../daybook/sleep-manager/sleep-manager.service';
 
 @Component({
   selector: 'app-first-time-config',
@@ -11,7 +12,7 @@ import { UAPAppConfiguration } from '../api/uap-app-configuraiton.interface';
 })
 export class FirstTimeConfigComponent implements OnInit {
 
-  constructor(private userProfileService: UserAccountProfileService) { }
+  constructor(private userProfileService: UserAccountProfileService, private sleepService: SleepManagerService) { }
 
   public faCheck = faCheck;
 
@@ -55,7 +56,7 @@ export class FirstTimeConfigComponent implements OnInit {
       defaultFallAsleepMinute: this.fallAsleepTime.minute(),
     }
     this.userProfileService.setAppConfig$(config).subscribe((isComplete)=>{
-      console.log("NEEEEEEEEEEXT")
+      this.sleepService.updateConfig(config);
       this.complete.next(true);
     });
   }

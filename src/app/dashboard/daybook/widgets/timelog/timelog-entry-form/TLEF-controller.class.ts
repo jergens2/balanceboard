@@ -15,9 +15,9 @@ import { ActivityCategoryDefinition } from "../../../../../dashboard/activities/
 import { ActivityCategoryDefinitionService } from "../../../../activities/api/activity-category-definition.service";
 import { ColorConverter } from "../../../../../shared/utilities/color-converter.class";
 import { ColorType } from "../../../../../shared/utilities/color-type.enum";
-import { DaybookTimeScheduleStatus } from "../../../api/controllers/daybook-time-schedule-status.enum";
+import { DaybookTimeScheduleStatus } from "../../../api/daybook-time-schedule/daybook-time-schedule-status.enum";
 import { TimelogEntryBuilder } from "../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class";
-import { DaybookTimeSchedule } from "../../../api/controllers/daybook-time-schedule.class";
+import { DaybookTimeSchedule } from "../../../api/daybook-time-schedule/daybook-time-schedule.class";
 
 export class TLEFController {
 

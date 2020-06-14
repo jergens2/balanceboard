@@ -5,9 +5,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { faCogs, faSignOutAlt, faPlus, faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from '../header/header-menu/menu-item.model';
 import { appMenuItems } from '../app-menu-items';
-import { AuthStatus } from '../../authentication/auth-status.class';
-import { Subscription } from 'rxjs';
-import { UserSettingsService } from '../../shared/document-definitions/user-account/user-settings/user-settings.service';
 import { Modal } from '../../modal/modal.class';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
@@ -25,7 +22,6 @@ import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widge
 export class SidebarComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthenticationService,
-    private userSettingsService: UserSettingsService,
     private router: Router,
     private modalService: ModalService,
     private toolsService: ToolboxService,

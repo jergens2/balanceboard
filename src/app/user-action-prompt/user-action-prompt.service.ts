@@ -31,6 +31,7 @@ export class UserActionPromptService {
       if (prompt) {
         addPrompts.push(prompt);
       }
+
       const sleepPrompt = this.sleepService.initiate$(userId).subscribe((prompt: UserPromptType) => {
         if (prompt) {
           addPrompts.push(prompt);

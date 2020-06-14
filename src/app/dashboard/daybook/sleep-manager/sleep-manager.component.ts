@@ -3,7 +3,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { timer } from 'rxjs';
 import { SleepManagerService } from './sleep-manager.service';
-import { SleepCyclePosition } from './sleep-cycle-position.enum';
+import { SleepCyclePosition } from './sleep-cycle/sleep-cycle-position.enum';
 import { faCloudMoon } from '@fortawesome/free-solid-svg-icons';
 import { ScreenSizeService } from '../../../shared/screen-size/screen-size.service';
 import { ScreenSizes } from '../../../shared/screen-size/screen-sizes-enum';

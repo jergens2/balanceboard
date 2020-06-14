@@ -5,7 +5,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RegistrationData } from './auth-data.interface';
 import { AuthStatus } from './auth-status.class';
 import { serverUrl } from '../serverurl';
-import { UserSetting } from '../shared/document-definitions/user-account/user-settings/user-setting.model';
 import * as moment from 'moment';
 import { RegistrationController } from './registration-controller.class';
 

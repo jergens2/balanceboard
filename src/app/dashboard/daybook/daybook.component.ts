@@ -60,16 +60,6 @@ export class DaybookComponent implements OnInit, OnDestroy {
     });
 
     const now = moment();
-    console.log("End of: MS", moment(now).endOf('millisecond').format('YYYY-MM-DD hh:mm a'))
-    console.log("End of: second", moment(now).endOf('second').format('YYYY-MM-DD hh:mm a'))
-    console.log("End of: hour", moment(now).endOf('hour').format('YYYY-MM-DD hh:mm a'))
-    console.log("End of: day", moment(now).endOf('day').format('YYYY-MM-DD hh:mm a'))
-    console.log("End of: week", moment(now).endOf('week').format('YYYY-MM-DD hh:mm a'))
-    console.log("End of: month", moment(now).endOf('month').format('YYYY-MM-DD hh:mm a'))
-    console.log("End of: year", moment(now).endOf('year').format('YYYY-MM-DD hh:mm a'))
-
-    this.daybookDisplayService.reinitiate();
-
 
     // this._activeDay = this.daybookControllerService.activeDayController;
     // console.log("This active day is", this._activeDay)

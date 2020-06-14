@@ -91,8 +91,6 @@ export class SleepManagerFormComponent implements OnInit {
       nextWakeupTime: nextWakeupTime,
       nextWakeupUTCOffset: nextWakeupUTCOffset,
     }
-    let sleepTimes: {}
-
     this.sleepService.updateSleepProfile$(data);
 
   }

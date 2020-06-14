@@ -5,7 +5,6 @@ import { HomeComponent } from "./dashboard/home/home.component";
 import { NetWorthComponent } from "./dashboard/finance/net-worth/net-worth.component";
 import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 
-import { UserSettingsComponent } from "./shared/document-definitions/user-account/user-settings/user-settings.component";
 
 import { DayTemplatesComponent } from "./dashboard/scheduling/day-templates/day-templates.component";
 import { NotebooksComponent } from "./dashboard/notebooks/notebooks.component";

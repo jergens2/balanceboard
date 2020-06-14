@@ -5,8 +5,6 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
-import { ServiceAuthenticates } from '../../authentication/service-authentication-garbage/service-authenticates.interface';
-import { ServiceAuthenticationAttempt } from '../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
 
 @Injectable({
   providedIn: 'root'

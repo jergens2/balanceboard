@@ -13,6 +13,7 @@ import { UserActionPromptService } from './user-action-prompt/user-action-prompt
 import { NotebooksService } from './dashboard/notebooks/notebooks.service';
 import * as moment from 'moment';
 import { KeydownService } from './shared/keydown.service';
+import { DaybookDisplayService } from './dashboard/daybook/daybook-display.service';
 
 @Component({
   selector: 'app-root',
@@ -52,6 +53,7 @@ export class AppComponent implements OnInit {
     private activitiesService: ActivityCategoryDefinitionService,
     private daybookHttpService: DaybookHttpRequestService,
     private daybookControllerService: DaybookControllerService,
+    private daybookDisplayService: DaybookDisplayService,
     private notebookService: NotebooksService,
     private keydownService: KeydownService
   ) { }
@@ -122,6 +124,7 @@ export class AppComponent implements OnInit {
       }else{
 
       }
+      this.daybookDisplayService.reinitiate();
       console.log("daybook Loading is complete: " , loginComplete)
       this._loading = false;
       this._loadingIsComplete = true;

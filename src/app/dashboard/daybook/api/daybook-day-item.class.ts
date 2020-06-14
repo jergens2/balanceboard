@@ -59,12 +59,19 @@ export class DaybookDayItem {
 
 
     public get hasSleepItems(): boolean{
-        const minMs = 1000* 60* 60;
+        const minMs = 2* 1000* 60* 60; // 2 hours
         let sum = 0;
-        this.sleepInputItems.forEach((sleepItem)=>{
-            sum += moment(sleepItem.endSleepTimeISO).diff(moment(sleepItem.startSleepTimeISO), 'milliseconds');
-        });        
-        return sum > minMs;
+        if(this.sleepInputItems.length === 0){
+            return false;
+        }else if(this.sleepInputItems.length > 1){
+            return true;
+        }else{
+            this.sleepInputItems.forEach((sleepItem)=>{
+                sum += moment(sleepItem.endSleepTimeISO).diff(moment(sleepItem.startSleepTimeISO), 'milliseconds');
+            });        
+            return sum > minMs;
+        }
+        
     }
 
 

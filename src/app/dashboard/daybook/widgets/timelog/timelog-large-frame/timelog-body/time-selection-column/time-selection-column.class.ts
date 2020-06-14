@@ -3,7 +3,7 @@ import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class
 import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
 import { TimelogDelineatorType, TimelogDelineator } from '../../../timelog-delineator.class';
 import { Subscription, Subject, Observable } from 'rxjs';
-import { DaybookTimeScheduleStatus } from '../../../../../api/controllers/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleStatus } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
 
 export class TimeSelectionColumn {
 
