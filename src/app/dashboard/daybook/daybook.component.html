@@ -2,14 +2,14 @@
   <div class="daybook-header font-family-lexend">
     {{ daybookHeader }}
   </div>
-
+<!-- 
   <div class="layout-flex" *ngIf="daybookIsLoading">
     <div class="spinner-container">
       <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
     </div>
-  </div>
+  </div> -->
 
-  <div class="layout-flex-container" *ngIf="!daybookIsLoading">
+  <div class="layout-flex-container">
 
 
     <div class="layout-flex">
@@ -17,14 +17,17 @@
 
 
       <div class="main-widget">
-        <app-timelog-large-frame *ngIf="primaryWidget.type === 'TIMELOG'" [ngStyle]="primaryWidget.ngStyle"
-          [ngClass]="primaryWidget.ngClass"></app-timelog-large-frame>
-        <app-calendar-large *ngIf="primaryWidget.type === 'CALENDAR'" [ngStyle]="primaryWidget.ngStyle"
-          [ngClass]="primaryWidget.ngClass"></app-calendar-large>
-        <app-daily-task-list-large *ngIf="primaryWidget.type === 'DAILY_TASK_LIST'" [ngClass]="primaryWidget.ngStyle"
-          [ngClass]="primaryWidget.ngClass"></app-daily-task-list-large>
-        <app-sleep-profile-large *ngIf="primaryWidget.type === 'SLEEP_PROFILE'" [ngStyle]="primaryWidget.ngStyle"
-          [ngClass]="primaryWidget.ngClass"></app-sleep-profile-large>
+        <app-timelog-large-frame *ngIf="widgetIsTimelog" [ngStyle]="primaryWidget.ngStyle"
+          class="main-widget-item" [ngClass]="primaryWidget.ngClass"></app-timelog-large-frame>
+        <app-calendar-large *ngIf="widgetIsCalendar" [ngStyle]="primaryWidget.ngStyle"
+          class="main-widget-item" [ngClass]="primaryWidget.ngClass"></app-calendar-large>
+        <app-daily-task-list-large *ngIf="widgetIsDTL" [ngClass]="primaryWidget.ngStyle"
+          class="main-widget-item" [ngClass]="primaryWidget.ngClass"></app-daily-task-list-large>
+        <app-sleep-profile-large *ngIf="widgetIsSleepProfile" [ngStyle]="primaryWidget.ngStyle"
+          class="main-widget-item" [ngClass]="primaryWidget.ngClass"></app-sleep-profile-large>
+        <!-- <div class="main-widget-item spinner-container" *ngIf="serviceIsLoading">
+          <app-spinner style="width: 150px; height: 150px;"></app-spinner>
+        </div> -->
       </div>
 
 

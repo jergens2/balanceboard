@@ -7,7 +7,7 @@ import { TimelogDelineator } from '../../widgets/timelog/timelog-delineator.clas
 import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
 import { TimeSchedule } from '../../../../shared/time-utilities/time-schedule.class';
 
-export class DaybookTimeSchedule extends TimeSchedule{
+export class DaybookTimeSchedule extends TimeSchedule {
 
 
     private _dateYYYYMMDD: string;
@@ -18,15 +18,20 @@ export class DaybookTimeSchedule extends TimeSchedule{
     public get dateYYYYMMDD(): string { return this._dateYYYYMMDD; }
 
 
+    /**
+     *  This class is constructed on the assumption that  
+     */
     constructor(dateYYYYMMDD: string, startTime: moment.Moment, endTime: moment.Moment,
-        timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: TimeScheduleItem[], delineators: moment.Moment[]) {
+        timelogEntries: DaybookTimelogEntryDataItem[], sleepEntries: DaybookTimeScheduleItem[], delineators: moment.Moment[]) {
         super(startTime, endTime);
         console.log("Construction of daybook time schedule")
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._buildSchedule(timelogEntries, sleepEntries, delineators);
     }
 
-   
+    private get _statusAvailable(): DaybookTimeScheduleStatus { return DaybookTimeScheduleStatus.AVAILABLE; }
+    private get _statusSleep(): DaybookTimeScheduleStatus { return DaybookTimeScheduleStatus.SLEEP; }
+    private get _statusActive(): DaybookTimeScheduleStatus { return DaybookTimeScheduleStatus.ACTIVE; }
 
 
 
@@ -109,20 +114,20 @@ export class DaybookTimeSchedule extends TimeSchedule{
                 else { return 0; }
             });
             if (relevantDelineators.length === 0) {
-                return [new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.AVAILABLE, startTime, endTime)];
+                return [new DaybookTimeScheduleItem(startTime, endTime, this._statusAvailable)];
             } else if (relevantDelineators.length === 1) {
                 return [
-                    new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.AVAILABLE, startTime, relevantDelineators[0]),
-                    new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.AVAILABLE, relevantDelineators[0], endTime),
+                    new DaybookTimeScheduleItem(startTime, relevantDelineators[0], this._statusAvailable),
+                    new DaybookTimeScheduleItem(relevantDelineators[0], endTime, this._statusAvailable),
                 ];
             } else if (relevantDelineators.length > 1) {
                 let currentTime = moment(startTime);
                 let availableItems: DaybookTimeScheduleItem[] = [];
                 for (let i = 0; i < relevantDelineators.length; i++) {
-                    availableItems.push(new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.AVAILABLE, currentTime, relevantDelineators[i]));
+                    availableItems.push(new DaybookTimeScheduleItem(currentTime, relevantDelineators[i], this._statusAvailable));
                     currentTime = moment(relevantDelineators[i]);
                 }
-                availableItems.push(new DaybookTimeScheduleItem(DaybookTimeScheduleStatus.AVAILABLE, currentTime, endTime));
+                availableItems.push(new DaybookTimeScheduleItem(currentTime, endTime, this._statusAvailable));
                 return availableItems;
             }
         }
@@ -170,7 +175,7 @@ export class DaybookTimeSchedule extends TimeSchedule{
                 if (timeScheduleItems[i].startTime.isBefore(timeScheduleItems[i - 1].endTime)) {
                     overlappingItems = true;
                     console.log("Error: Overlapping items!")
-                    timeScheduleItems.forEach((item)=> console.log("  " + item.toString()) )
+                    timeScheduleItems.forEach((item) => console.log("  " + item.toString()))
                 }
             }
 

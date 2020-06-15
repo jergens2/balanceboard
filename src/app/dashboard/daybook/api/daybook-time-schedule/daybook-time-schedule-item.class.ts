@@ -7,7 +7,7 @@ import { SleepEntryItem } from "../../widgets/timelog/timelog-entry-form/sleep-e
 import { TimelogEntryBuilder } from "../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class";
 import { TimeScheduleItem } from "../../../../shared/time-utilities/time-schedule-item.class";
 
-export class DaybookTimeScheduleItem extends TimeScheduleItem{
+export class DaybookTimeScheduleItem extends TimeScheduleItem {
 
     private _status: DaybookTimeScheduleStatus;
     private _timelogEntry: TimelogEntryItem;
@@ -17,9 +17,9 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem{
     public get timelogEntry(): TimelogEntryItem { return this._timelogEntry; }
     public get sleepEntry(): SleepEntryItem { return this._sleepEntry; }
 
-    public set status(status: DaybookTimeScheduleStatus){ this._status = status; }
+    public set status(status: DaybookTimeScheduleStatus) { this._status = status; }
 
-    constructor(status: DaybookTimeScheduleStatus, startTime: moment.Moment, endTime: moment.Moment, timelogEntry?: DaybookTimelogEntryDataItem, sleepEntry?: DaybookSleepInputDataItem) {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, status: DaybookTimeScheduleStatus, timelogEntry?: DaybookTimelogEntryDataItem, sleepEntry?: DaybookSleepInputDataItem) {
         super(startTime.toISOString(), endTime.toISOString(), startTime.utcOffset(), endTime.utcOffset());
         this._status = status;
         if (status === DaybookTimeScheduleStatus.ACTIVE) {
@@ -29,20 +29,17 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem{
                 // console.log("Error: no timelogEntryDataItem provided")
             }
         } else if (status === DaybookTimeScheduleStatus.SLEEP) {
-            if (sleepEntry) {
-                this._buildSleepEntry(sleepEntry);
-            } else {
-                // console.log("Error: no sleepEntry item provided");
-            }
+            this._buildSleepEntry(sleepEntry);
+
         } else if (status === DaybookTimeScheduleStatus.AVAILABLE) {
 
         }
     }
 
-    public exportToSleepDataItem(): DaybookSleepInputDataItem { 
-        if(this._sleepEntry){
+    public exportToSleepDataItem(): DaybookSleepInputDataItem {
+        if (this._sleepEntry) {
             return this._sleepEntry.exportToDataItem();
-        }else{
+        } else {
             return {
                 startSleepTimeISO: this.startTime.toISOString(),
                 startSleepTimeUtcOffsetMinutes: this.startTime.utcOffset(),
@@ -62,8 +59,10 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem{
     }
 
     private _buildSleepEntry(sleepEntry: DaybookSleepInputDataItem) {
-        const startTime = moment(sleepEntry.startSleepTimeISO);
-        const endTime = moment(sleepEntry.endSleepTimeISO);
-        this._sleepEntry = new SleepEntryItem(startTime, endTime, sleepEntry);
+        if(sleepEntry){
+            const startTime = moment(sleepEntry.startSleepTimeISO);
+            const endTime = moment(sleepEntry.endSleepTimeISO);
+            this._sleepEntry = new SleepEntryItem(startTime, endTime, sleepEntry);
+        }
     }
 }

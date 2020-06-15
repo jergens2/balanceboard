@@ -29,17 +29,24 @@ export class DaybookComponent implements OnInit, OnDestroy {
   private _screenSize: ScreenSizes;
   private _screenSizeSubscription: Subscription = new Subscription();
 
+  private _isLoading: boolean = true;
+  
+
   public faSpinner = faSpinner;
   public faExpand = faExpand;
 
-  public daybookIsLoading: boolean = true;
 
   public get widgets(): DaybookWidget[] { return this._widgets; }
   public get primaryWidget(): DaybookWidget { return this.widgets.find(w => w.isExpanded); }
+  public get widgetIsCalendar(): boolean { return this.primaryWidget.type === DaybookWidgetType.CALENDAR; }
+  public get widgetIsTimelog(): boolean { return this.primaryWidget.type === DaybookWidgetType.TIMELOG; }
+  public get widgetIsDTL(): boolean { return this.primaryWidget.type === DaybookWidgetType.DAILY_TASK_LIST; }
+  public get widgetIsSleepProfile(): boolean { return this.primaryWidget.type === DaybookWidgetType.SLEEP_PROFILE; }
   public get calendarWidget(): DaybookWidget { return this.widgets.find(w => w.type === 'CALENDAR') }
   public get timelogWidget(): DaybookWidget { return this.widgets.find(w => w.type === 'TIMELOG') }
   public get dailyTaskListWidget(): DaybookWidget { return this.widgets.find(w => w.type === 'DAILY_TASK_LIST') }
   public get sleepProfileWidget(): DaybookWidget { return this.widgets.find(w => w.type === 'SLEEP_PROFILE') }
+  public get serviceIsLoading(): boolean { return this._isLoading; }
 
 
   public get daybookHeader(): string {
@@ -50,38 +57,30 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
   public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
-  private _dbSub: Subscription = new Subscription();
+  private _subscriptions: Subscription[] = [];
 
   ngOnInit() {
+    const widget = this.daybookDisplayService.widgetChanged;
     this._screenSize = this.screenScreenSizeService.appScreenSize;
-    this.screenScreenSizeService.appScreenSize$.subscribe((changedSize) => {
-      this._screenSize = changedSize;
-      // console.log("Screensize changed to: " , this._screenSize)
-    });
-
-    const now = moment();
-
-    // this._activeDay = this.daybookControllerService.activeDayController;
-    // console.log("This active day is", this._activeDay)
-    // this.daybookControllerService.activeDayController$.subscribe((activeDayChanged) => {
-    //   if (activeDayChanged) {
-    //     this._activeDay = activeDayChanged;
-    //   }
-    // });
-
-
+    this._subscriptions = [
+      this.screenScreenSizeService.appScreenSize$.subscribe((changedSize) => {
+        this._screenSize = changedSize;
+        // console.log("Screensize changed to: " , this._screenSize)
+      }),
+      // this.daybookDisplayService.isLoading$.subscribe((isLoading)=>{
+      //   console.log("oh shit we're loading? ", isLoading)
+      //   this._isLoading = isLoading;
+      // }),
+      this.daybookDisplayService.widgetChanged$.subscribe((changedWidget: DaybookWidgetType) => {
+        // if (changedWidget !== currentValue) {
+          // currentValue = changedWidget;
+          this._setPrimaryWidget(changedWidget);
+        // }
+      })
+    ];
     this._buildWidgets();
-
-    this.daybookIsLoading = false;
-    let currentValue: DaybookWidgetType = Object.assign({}, this.daybookDisplayService.widgetChanged);
-    this._setPrimaryWidget(currentValue);
-
-    this._dbSub = this.daybookDisplayService.widgetChanged$.subscribe((changedWidget: DaybookWidgetType) => {
-      // if (changedWidget !== currentValue) {
-        // currentValue = changedWidget;
-        this._setPrimaryWidget(changedWidget);
-      // }
-    });
+    this._setPrimaryWidget(widget);
+    this._isLoading = false;
   }
 
   private _buildWidgets() {
@@ -116,7 +115,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
     this._widgetSubscriptions.forEach(sub => sub.unsubscribe());
     this._widgetSubscriptions = [];
     this._widgets = null;
-    this._dbSub.unsubscribe();
+    this._subscriptions.forEach(s => s.unsubscribe());
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
   }
 

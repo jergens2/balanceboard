@@ -25,6 +25,7 @@ import { DaybookSleepCycle } from './sleep-manager/sleep-cycle/daybook-sleep-cyc
 import { SleepManager } from './sleep-manager/sleep-manager.class';
 import { DaybookTimeSchedule } from './api/daybook-time-schedule/daybook-time-schedule.class';
 import { TimeScheduleItem } from '../../shared/time-utilities/time-schedule-item.class';
+import { DaybookTimeScheduleItem } from './api/daybook-time-schedule/daybook-time-schedule-item.class';
 
 @Injectable({
   providedIn: 'root'
@@ -54,12 +55,15 @@ export class DaybookDisplayService {
 
   private _wakeupTime: moment.Moment;
   private _fallAsleepTime: moment.Moment;
+  
+  private _serviceIsLoading$: Subject<boolean> = new Subject();
 
   public get dateYYYYMMDD(): string { return this.daybookControllerService.activeDayController.dateYYYYMMDD; }
   public get activeDayController(): DaybookController { return this.daybookControllerService.activeDayController; }
   public get todayController(): DaybookController { return this.daybookControllerService.todayController; }
   public get clock(): moment.Moment { return this.daybookControllerService.clock; }
 
+  public get isLoading$(): Observable<boolean> { return this._serviceIsLoading$.asObservable(); }
 
   public get widgetChanged$(): Observable<DaybookWidgetType> { return this._widgetChanged$.asObservable(); }
   public get widgetChanged(): DaybookWidgetType { return this._widgetChanged$.getValue(); }
@@ -139,12 +143,13 @@ export class DaybookDisplayService {
 
   private _updateDisplay(update: DaybookDisplayUpdate) {
     console.log("Daybook Display update: " + update.controller.dateYYYYMMDD, update.type);
+    this._serviceIsLoading$.next(true);
     const dateYYYYMMDD = update.controller.dateYYYYMMDD;
     const sleepManager: SleepManager = this.sleepService.sleepManager;
     const sleepCycle: DaybookSleepCycle = sleepManager.sleepCycle;
 
     // if (sleepCycle.isValid) {
-      const sleepItems: TimeScheduleItem[] = sleepCycle.get72HourSleepDataItems(dateYYYYMMDD);
+      const sleepItems: DaybookTimeScheduleItem[] = sleepCycle.get72HourSleepDataItems(dateYYYYMMDD);
       const dayStartTime: moment.Moment = sleepCycle.getDayStartTime(dateYYYYMMDD);
       const dayEndTime: moment.Moment = sleepCycle.getDayEndTime(dateYYYYMMDD);
 
@@ -184,7 +189,7 @@ export class DaybookDisplayService {
     //   console.log("Error: sleep cycle is not valid");
     // }
 
-
+    this._serviceIsLoading$.next(false);
   }
 
 
