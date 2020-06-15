@@ -51,8 +51,8 @@ export class DaybookSleepCycle {
         if (splitAtMidnight === false) {
             sleepItems = this._mergeSleepItems(sleepItems);
         }
-        console.log("Returning sleep items: ")
-        sleepItems.forEach((item) => { console.log("  " + item.toString()) })
+        // console.log("Returning sleep items: ")
+        // sleepItems.forEach((item) => { console.log("  " + item.toString()) })
         return sleepItems;
     }
 
@@ -126,12 +126,17 @@ export class DaybookSleepCycle {
                     items = foundItem.sleepInputItems.map((sleepItem) => {
                         return new TimeScheduleItem(sleepItem.startSleepTimeISO, sleepItem.endSleepTimeISO, sleepItem.startSleepTimeUtcOffsetMinutes, sleepItem.endSleepTimeUtcOffsetMinutes);
                     });
+               
+                }else{
+                    items = this._getDefaultSleepItemsTemplate(dateYYYYMMDD);
                 }
+            }else{
+                items = this._getDefaultSleepItemsTemplate(dateYYYYMMDD);
             }
-            items = this._getDefaultSleepItemsTemplate(dateYYYYMMDD);
+            
         }
-        // console.log("ITEMS FOR DATE:  " + dateYYYYMMDD)
-        // items.forEach((item) => { console.log(item.toString()) });
+        // console.log("** ITEMS FOR DATE:  " + dateYYYYMMDD)
+        // items.forEach((item) => { console.log("  " + item.toString()) });
         return items
     }
     private _getYesterdaySleepTimeRanges(): TimeScheduleItem[] {
@@ -199,7 +204,7 @@ export class DaybookSleepCycle {
         const defaultSleepTime = this._defaultFallAsleepTime(dateYYYYMMDD);
         const items: TimeScheduleItem[] = [];
         if (defaultWakeupTime.isAfter(dateStartTime) && defaultWakeupTime.isBefore(dateEndTime)) {
-            items.push(new TimeScheduleItem(defaultWakeupTime.toISOString(), dateStartTime.toISOString(), defaultWakeupTime.utcOffset(), dateStartTime.utcOffset()));
+            items.push(new TimeScheduleItem(dateStartTime.toISOString(), defaultWakeupTime.toISOString(), dateStartTime.utcOffset(), defaultWakeupTime.utcOffset()));
         } else if (defaultWakeupTime.isBefore(dateStartTime)) {
             const sleepEndTime = moment(defaultWakeupTime).add(1, 'days');
             const defaultFallAsleepTime = moment(this._defaultFallAsleepTime(dateYYYYMMDD));
@@ -211,13 +216,7 @@ export class DaybookSleepCycle {
             }
         }
         if (defaultSleepTime.isBefore(dateEndTime)) {
-            const sleepStartTime = moment(defaultSleepTime);
-            let sleepEndTime = moment(dateEndTime);
-            if (defaultWakeupTime.isBefore(dateStartTime)) {
-                console.log("rare situation")
-                sleepEndTime = moment(defaultWakeupTime).add(1, 'days');
-            }
-            items.push(new TimeScheduleItem(sleepStartTime.toISOString(), sleepEndTime.toISOString(), sleepStartTime.utcOffset(), sleepEndTime.utcOffset()));
+            items.push(new TimeScheduleItem(defaultSleepTime.toISOString(), dateEndTime.toISOString(), defaultSleepTime.utcOffset(), dateEndTime.utcOffset()));
         }
         return items;
     }
@@ -242,15 +241,18 @@ export class DaybookSleepCycle {
             const largest = this._findLargestWakeItem(awakeItems, dateYYYYMMDD);
             return largest.startTime;
         } else {
-            return this._defaultFallAsleepTime(dateYYYYMMDD);
+            return this._defaultWakeupTime(dateYYYYMMDD);
         }
     }
     private _findDayEndTime(dateYYYYMMDD: string): moment.Moment {
         const foundItem = this._relevantItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
         if (foundItem) {
-
+            const sleepItems = this.get72HourSleepDataItems(dateYYYYMMDD, false);
+            const awakeItems = this._get72HAwakeItems(sleepItems, dateYYYYMMDD);
+            const largest = this._findLargestWakeItem(awakeItems, dateYYYYMMDD);
+            return largest.endTime;
         } else {
-            return this._defaultWakeupTime(dateYYYYMMDD);
+            return this._defaultFallAsleepTime(dateYYYYMMDD);
         }
     }
 

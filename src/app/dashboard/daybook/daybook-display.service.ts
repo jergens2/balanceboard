@@ -146,7 +146,7 @@ export class DaybookDisplayService {
     // if (sleepCycle.isValid) {
       const sleepItems: TimeScheduleItem[] = sleepCycle.get72HourSleepDataItems(dateYYYYMMDD);
       const dayStartTime: moment.Moment = sleepCycle.getDayStartTime(dateYYYYMMDD);
-      const dayEndTime: moment.Moment = sleepCycle.getDayStartTime(dateYYYYMMDD);
+      const dayEndTime: moment.Moment = sleepCycle.getDayEndTime(dateYYYYMMDD);
 
       this._wakeupTime = moment(dayStartTime);
       this._fallAsleepTime = moment(dayEndTime);
