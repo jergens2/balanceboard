@@ -10,7 +10,6 @@ import { TlefNewOrModifyComponent } from './tlef-parts/tlef-new-or-modify/tlef-n
 import { TlefViewOnlyComponent } from './tlef-parts/tlef-view-only/tlef-view-only.component';
 import { TlefFallAsleepTimeComponent } from './tlef-parts/tlef-fall-asleep-time/tlef-fall-asleep-time.component';
 import { TimelogEntryFormComponent } from './timelog-entry-form.component';
-import { TlefWakeupTimeComponent } from './tlef-parts/tlef-wakeup-time/tlef-wakeup-time.component';
 import { TlefModifyTimesComponent } from './tlef-parts/tlef-modify-times/tlef-modify-times.component';
 import { TlefModifyActivitiesComponent } from './tlef-parts/tlef-modify-activities/tlef-modify-activities.component';
 import { TlefFooterComponent } from './tlef-parts/tlef-footer/tlef-footer.component';
@@ -42,7 +41,6 @@ import { FallAsleepTimeComponent } from './sleep-entry-form/fall-asleep-time/fal
     TlefViewOnlyComponent,
     TlefFallAsleepTimeComponent,
     TimelogEntryFormComponent,
-    TlefWakeupTimeComponent,
     TlefModifyTimesComponent,
     TlefModifyActivitiesComponent,
     TlefFooterComponent,
@@ -67,7 +65,6 @@ import { FallAsleepTimeComponent } from './sleep-entry-form/fall-asleep-time/fal
     TimelogEntryFormComponent,
     SleepInputFormComponent,
     TlefModifyActivitiesComponent,
-    TlefWakeupTimeComponent,
     // ActivitySliderBarComponent,
   ]
 })

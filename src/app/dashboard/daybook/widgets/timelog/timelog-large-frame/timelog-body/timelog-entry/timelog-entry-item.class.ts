@@ -54,8 +54,7 @@ export class TimelogEntryItem {
         return this._timelogEntryActivities; 
     }
 
-
-    public exportDataEntryItem(): DaybookTimelogEntryDataItem {
+    public toDataEntryItem(): DaybookTimelogEntryDataItem {
         const returnItem = {
             startTimeISO: this._startTime.toISOString(),
             startTimeUtcOffsetMinutes: this._startTime.utcOffset(),

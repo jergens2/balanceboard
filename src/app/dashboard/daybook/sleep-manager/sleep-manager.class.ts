@@ -85,7 +85,7 @@ export class SleepManager {
      * @param dayItems
      */
     constructor(data: SleepProfileHTTPData, dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration) {
-        // console.log("constructing profile: ", data);
+        // console.log("Constructing sleep manager: ", data);
         this._rebuild(data, dayItems, appConfig);
         const now = moment();
         const msToNextMinute = moment(now).add(1, 'minutes').startOf('minute').diff(now, 'milliseconds');
@@ -97,25 +97,13 @@ export class SleepManager {
         this.updateConfig(appConfig)
         this._currentDbValue = data;
         this._daybookDayItems = dayItems;
-
+        const positionFinder = new SleepCyclePositionFinder(data);
+        this._currentPosition = positionFinder.position;  //  null is permissable
         this._validateExistingData();
-        const itemsForSleepCycle = {
-            prevFallAsleepTime: moment(this.previousFallAsleepTime),
-            previousWakeupTime: moment(this.previousWakeupTime),
-            nextFallAsleepTime: moment(this.nextFallAsleepTime),
-            nextWakeupTime: moment(this.nextWakeupTime),
-            energyAtWakeup: this.energyAtWakeup,
-        }
-        // console.log("TIME VALUES SET: ")
-        // console.log("PREV FALL ASLEEP: " , this.previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
-        // console.log("PREV WAKE: " , this.previousWakeupTime.format('YYYY-MM-DD hh:mm a'))
-        // console.log("NEXT FALL ASLEEP: " , this.nextFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
-        // console.log("NEXT WAKE: " , this.nextWakeupTime.format('YYYY-MM-DD hh:mm a'))
-        const positionFinder = new SleepCyclePositionFinder(this.previousWakeupTime, this.nextFallAsleepTime, this.nextWakeupTime);
-        this._currentPosition = positionFinder.position;  // could be null
-        // console.log("CURRENT POSITION IS : " , this._currentPosition)
         this._sleepCycle = new DaybookSleepCycle(this._dateYYYYMMDD, this._relevantPastSleepItems, appConfig,
             moment(this.previousFallAsleepTime), moment(this.previousWakeupTime), moment(this.nextFallAsleepTime), moment(this.nextWakeupTime));
+
+
     }
 
 

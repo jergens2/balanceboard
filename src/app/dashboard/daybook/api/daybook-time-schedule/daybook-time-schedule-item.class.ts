@@ -36,6 +36,13 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
         }
     }
 
+    public toString(): string { 
+        let val = "DaybookTimeScheduleItem\n";
+        val += "\t" + this.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.endTime.format("YYYY-MM-DD hh:mm a") + "\n";
+        val += "\tStatus: " + this.status;
+        return val;
+    }
+
     public exportToSleepDataItem(): DaybookSleepInputDataItem {
         if (this._sleepEntry) {
             return this._sleepEntry.exportToDataItem();

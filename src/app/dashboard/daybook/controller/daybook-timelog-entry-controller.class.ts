@@ -105,7 +105,7 @@ export class DaybookTimelogEntryController {
         items.push(saveTimelogEntry);
         this._sendUpdate({
             dateYYYYMMDD: dateYYYYMMDD,
-            items: this._sortItems(items).map(item => item.exportDataEntryItem()),
+            items: this._sortItems(items).map(item => item.toDataEntryItem()),
         });
     }
 
@@ -121,7 +121,7 @@ export class DaybookTimelogEntryController {
             items.splice(foundIndex, 1, updateTimelogEntry);
             this._sendUpdate({
                 dateYYYYMMDD: dateYYYYMMDD,
-                items: this._sortItems(items).map(item => item.exportDataEntryItem()),
+                items: this._sortItems(items).map(item => item.toDataEntryItem()),
             });
         }else{
             console.log('Error updating timelog entry: could not find item.')
@@ -136,7 +136,7 @@ export class DaybookTimelogEntryController {
             items.splice(foundIndex, 1);
             this._sendUpdate({
                 dateYYYYMMDD: dateYYYYMMDD,
-                items: this._sortItems(items).map(item => item.exportDataEntryItem()),
+                items: this._sortItems(items).map(item => item.toDataEntryItem()),
             });
         }else{
             console.log('Error updating timelog entry: could not find item.')

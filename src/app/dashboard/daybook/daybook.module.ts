@@ -21,7 +21,6 @@ import { WeightLogEntryComponent } from './widgets/weight-log-entry/weight-log-e
 import { SleepProfileFormComponent } from './widgets/sleep-profile-widget/sleep-profile-form/sleep-profile-form.component';
 import { SleepProfileDisplayComponent } from './widgets/sleep-profile-widget/sleep-profile-display/sleep-profile-display.component';
 import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep-profile-large/sleep-profile-large.component';
-import { DaybookTimePositionFormComponent } from './daybook-time-position-form/daybook-time-position-form.component';
 import { TimelogModule } from './widgets/timelog/timelog.module';
 import { TLEFModule } from './widgets/timelog/timelog-entry-form/tlef.module';
 import { EnergyChartComponent } from './widgets/sleep-profile-widget/sleep-profile-large/energy-chart/energy-chart.component';
@@ -54,14 +53,10 @@ import { EnergyChartComponent } from './widgets/sleep-profile-widget/sleep-profi
     SleepProfileFormComponent,
     SleepProfileDisplayComponent,
     SleepProfileLargeComponent,
-    DaybookTimePositionFormComponent,
     EnergyChartComponent,
 
     
   ],
-  exports: [
-    DaybookTimePositionFormComponent,
-  ]
 
 })
 export class DaybookModule { }

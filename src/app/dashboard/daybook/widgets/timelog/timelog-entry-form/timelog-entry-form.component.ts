@@ -1,16 +1,10 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { ToolboxService } from '../../../../../toolbox-menu/toolbox.service';
-import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import * as moment from 'moment';
-import { LoggingService } from '../../../../../shared/logging/logging.service';
 import { TLEFFormCase } from './tlef-form-case.enum';
-import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
-
 import { DaybookDisplayService } from '../../../daybook-display.service';
 import { Subscription } from 'rxjs';
 import { TLEFController } from './TLEF-controller.class';
-import { DaybookDisplayUpdateType } from '../../../controller/items/daybook-display-update.interface';
 
 @Component({
   selector: 'app-timelog-entry-form',
@@ -30,9 +24,7 @@ import { DaybookDisplayUpdateType } from '../../../controller/items/daybook-disp
 export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   constructor(
-    private toolsService: ToolboxService,
     private daybookService: DaybookDisplayService,
-    private loggingService: LoggingService,
   ) { }
 
   private _formCase: TLEFFormCase;

@@ -6,17 +6,14 @@ import { UAPAppConfiguration } from '../../../user-account-profile/api/uap-app-c
 import { TimeSchedule } from '../../../../shared/time-utilities/time-schedule.class';
 import { DaybookTimeScheduleItem } from '../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { DaybookTimeScheduleStatus } from '../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { TimeUtilities } from '../../../../shared/time-utilities/time-utilities';
 
 export class DaybookSleepCycle {
 
 
-    // private _isValid: boolean ;
     private _relevantItems: DaybookDayItem[] = [];
     private _appConfig: UAPAppConfiguration;
-    /**
-     * The purpose of this class is to be able to try and determine a sleep pattern based on previous sleep items.
-     * see daybook-sleep-cycle.jpg
-     */
+
 
     private _previousFallAsleepTime: moment.Moment;
     private _previousWakeupTime: moment.Moment;
@@ -26,8 +23,14 @@ export class DaybookSleepCycle {
 
     private get _statusSleep(): DaybookTimeScheduleStatus { return DaybookTimeScheduleStatus.SLEEP; }
 
-    // public get isValid(): boolean { return this._isValid; }
+    public get wakeupTime(): moment.Moment { return this._previousWakeupTime; }
+    public get fallAsleepTime(): moment.Moment { return this._nextFallAsleepTime; }
 
+
+    /**
+     * The purpose of this class is to be able to try and determine a sleep pattern based on previous sleep items.
+     * see daybook-sleep-cycle.jpg
+     */
     constructor(dateYYYYMMDD: string, relevantItems: DaybookDayItem[], appConfig: UAPAppConfiguration,
         prevFallAsleepTime: moment.Moment, prevWakeupTime: moment.Moment, nextFallAsleepTime: moment.Moment, nextWakeupTime: moment.Moment) {
         this._relevantItems = relevantItems;
@@ -63,6 +66,13 @@ export class DaybookSleepCycle {
         const averageRatio = this._calculateSleepAverage();
         const msPerDay = 1000 * 60 * 60 * 24;
         return averageRatio * msPerDay;
+    }
+
+    public getDisplayStartTime(dateYYYYMMDD: string): moment.Moment { 
+        return TimeUtilities.roundDownToFloor(moment(this.getDayStartTime(dateYYYYMMDD)).subtract(15, 'minutes'), 30);
+    }
+    public getDisplayEndTime(dateYYYYMMDD: string): moment.Moment { 
+        return TimeUtilities.roundUpToCeiling(moment(this.getDayEndTime(dateYYYYMMDD)).add(15, 'minutes'), 30);
     }
 
     public getDayStartTime(dateYYYYMMDD: string): moment.Moment {
@@ -146,6 +156,8 @@ export class DaybookSleepCycle {
         const yesterdate = moment().subtract(24, 'hours').format('YYYY-MM-DD');
         const foundItem = this._relevantItems.find(item => item.dateYYYYMMDD === yesterdate);
         if (foundItem) {
+            // console.log("foundItem.sleepInputItems:")
+            // foundItem.sleepInputItems.forEach(item => { console.log(item)})
             const items = foundItem.sleepInputItems.map((sleepItem) => {
                 return new DaybookTimeScheduleItem(moment(sleepItem.startSleepTimeISO), moment(sleepItem.endSleepTimeISO), this._statusSleep, null, sleepItem);
             });
@@ -297,8 +309,8 @@ export class DaybookSleepCycle {
         const endTime = moment(dateYYYYMMDD).startOf('day').add(48, 'hours');
         const schedule: TimeSchedule = new TimeSchedule(startTime, endTime);
         const wakeItems = schedule.getInverseItems(sleepItems);
-        console.log("Wake items: " )
-        wakeItems.forEach(item => console.log("  " + item.toString()))
+        // console.log("Wake items: " )
+        // wakeItems.forEach(item => console.log("  " + item.toString()))
         const startOfThisDay: moment.Moment = moment(dateYYYYMMDD).startOf('day');
         const endOfThisDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(24, 'hours');
 

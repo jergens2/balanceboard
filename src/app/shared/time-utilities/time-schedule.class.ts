@@ -17,18 +17,25 @@ export class TimeSchedule{
     public get durationMs(): number { return this.endTime.diff(this.startTime, 'milliseconds'); }
     public get durationString(): string { return DurationString.getDurationStringFromMS(this.durationMs); }
 
+
+    /**
+     * A generic class to represent a range of time and an array of items
+     */
     constructor(startTime: moment.Moment, endTime: moment.Moment){
+        console.log("Constructing time schedule: " + startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + endTime.format('YYYY-MM-DD hh:mm a'))
         if(startTime.isBefore(endTime)){
             this._startTime = moment(startTime);
             this._endTime = moment(endTime);
         }else{
             console.log("Error with times");
         }
-        
     }
 
+    /**
+     *  this method is essentially a static method for DaybookSleepCycle.
+     */
     getInverseItems(scheduleItems: TimeScheduleItem[]): TimeScheduleItem[]{
-        console.log("Getting inverse items: " , scheduleItems)
+        // console.log("Getting inverse items: " , scheduleItems)
         scheduleItems = scheduleItems.sort((item1, item2)=>{
             if(item1.startTime.isBefore(item2.startTime)){ return -1; }
             else if(item1.startTime.isAfter(item2.startTime)) { return 1;}

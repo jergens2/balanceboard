@@ -2,25 +2,23 @@ import * as moment from 'moment';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { DaybookTimeScheduleStatus } from '../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
 
 
-export class TimelogDisplayGridItem {
+export class TimelogDisplayGridItem extends TimeScheduleItem{
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment, percent: number, availability: DaybookTimeScheduleStatus) {
-        this.startTime = startTime;
-        this.endTime = endTime;
+    constructor(startTime: moment.Moment, endTime: moment.Moment, percent: number, status: DaybookTimeScheduleStatus) {
+        super(startTime.toISOString(), endTime.toISOString());
         this.percent = percent;
 
-        this._availabilityType = availability;
+        this._timeScheduleStatus = status;
     }
 
     private _drawTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
     private _creating = false;
-    private _availabilityType: DaybookTimeScheduleStatus;
+    private _timeScheduleStatus: DaybookTimeScheduleStatus;
     private _itemIndex: number = -1;
 
-    public startTime: moment.Moment;
-    public endTime: moment.Moment;
     public percent: number;
     public isLargeGridItem: boolean = false;
     public isSmallGridItem: boolean = false;
@@ -32,10 +30,10 @@ export class TimelogDisplayGridItem {
 
     public get itemIndex(): number { return this._itemIndex; }
 
-    public get availabilityType(): DaybookTimeScheduleStatus { return this._availabilityType; }
-    public get isAvailable(): boolean { return this._availabilityType === DaybookTimeScheduleStatus.AVAILABLE };
-    public get isTimelogEntry(): boolean { return this._availabilityType === DaybookTimeScheduleStatus.ACTIVE; }
-    public get isSleepEntry(): boolean { return this._availabilityType === DaybookTimeScheduleStatus.SLEEP; }
+    public get timeScheduleStatus(): DaybookTimeScheduleStatus { return this._timeScheduleStatus; }
+    public get isAvailable(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.AVAILABLE };
+    public get isTimelogEntry(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.ACTIVE; }
+    public get isSleepEntry(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.SLEEP; }
 
     public get drawTimelogEntry(): TimelogEntryItem { return this._drawTLE$.getValue(); }
     public get drawTLE$(): Observable<TimelogEntryItem> { return this._drawTLE$.asObservable(); }
@@ -62,6 +60,6 @@ export class TimelogDisplayGridItem {
     public timelogEntries: TimelogEntryItem[] = [];
 
     public toString(): string{
-        return this.itemIndex + ": " + this.availabilityType + " - " + this.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.endTime.format('YYYY-MM-DD hh:mm a');
+        return this.itemIndex + ": " + this.timeScheduleStatus + "  " + this.percent + " % -->" + this.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.endTime.format('YYYY-MM-DD hh:mm a');
     }
 }

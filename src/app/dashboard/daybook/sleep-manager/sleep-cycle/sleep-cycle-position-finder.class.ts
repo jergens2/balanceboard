@@ -1,9 +1,13 @@
 import * as moment from 'moment';
 import { SleepCyclePosition } from './sleep-cycle-position.enum';
+import { SleepProfileHTTPData } from '../sleep-profile-http-data.interface';
 
 export class SleepCyclePositionFinder {
-    constructor(previousWakeupTime: moment.Moment, nextFallAsleepTime: moment.Moment, nextWakeupTime: moment.Moment){
-        if(previousWakeupTime && nextWakeupTime && nextWakeupTime){
+    constructor(data: SleepProfileHTTPData){
+        if(data){
+            const previousWakeupTime: moment.Moment = moment(data.previousWakeupTime);
+            const nextFallAsleepTime: moment.Moment = moment(data.nextFallAsleepTime);
+            const nextWakeupTime: moment.Moment = moment(data.nextWakeupTime);
             this._position = this._getCurrentPosition(previousWakeupTime, nextFallAsleepTime, nextWakeupTime)
             console.log("POSITION: " , this._position);
         }else{

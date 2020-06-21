@@ -25,6 +25,7 @@ export class UserActionPromptService {
 
   private _loadingComplete$: Subject<boolean> = new Subject();
   public initiate$(userId: string): Observable<boolean> {
+
     const _prompts$ = new BehaviorSubject<UserPromptType[]>([]);
     const initAccountSub = this.accountService.initiate$(userId).subscribe((prompt: UserPromptType) => {
       const addPrompts: UserPromptType[] = [];
