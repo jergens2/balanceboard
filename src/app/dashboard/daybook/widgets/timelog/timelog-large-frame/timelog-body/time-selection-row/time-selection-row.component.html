@@ -3,7 +3,7 @@
     <div class="row-body" >
 
 
-        <div class="timelog-delineator" *ngIf="showDelineator" 
+        <div class="timelog-delineator" *ngIf="showDelineator" [ngClass]="row.delineatorNgClass"
             (mouseenter)="row.onMouseEnterSavedDelineator()" (mouseleave)="row.onMouseLeaveSavedDelineator()"
             (click)="onClickDelineator(row.markedDelineator)">
 

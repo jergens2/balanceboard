@@ -6,6 +6,7 @@ import { Subscription, Subject, Observable, range } from 'rxjs';
 import { DaybookTimeScheduleStatus } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
 import { DaybookTimeScheduleItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { TimeRangeRelationship } from '../../../../../../../shared/time-utilities/time-range-relationship.enum';
+import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
 
 export class TimeSelectionColumn {
 
@@ -35,7 +36,7 @@ export class TimeSelectionColumn {
 
 
     private _buildRows() {
-        console.log("   Rebuilding rows in TimeSelectionColumn.class")
+        // console.log("   Rebuilding rows in TimeSelectionColumn.class")
         const durationMinutes: number = this.endTime.diff(this.startTime, 'minutes');
         const rowCount = durationMinutes / this._divisorMinutes;
         const rows: TimeSelectionRow[] = [];
@@ -151,11 +152,16 @@ export class TimeSelectionColumn {
         } else if (availableItems.length === 1) {
             return 0;
         } else if (availableItems.length > 1) {
-            let foundIndex: number = availableItems.findIndex((scheduleItem) => {
-                const startsBefore = startTime.isSameOrBefore(scheduleItem.startTime) && endTime.isAfter(scheduleItem.startTime);
-                const endsAfter = startTime.isBefore(scheduleItem.endTime) && endTime.isSameOrAfter(scheduleItem.endTime);
-                const isIn = startTime.isSameOrAfter(scheduleItem.startTime) && startTime.isSameOrBefore(scheduleItem.endTime);
-                return (startsBefore || endsAfter || isIn);
+            const foundIndex = availableItems.findIndex(availableItem =>{
+                const sameStart = startTime.isSame(availableItem.startTime);
+                const isDuring = startTime.isSameOrAfter(availableItem.startTime) && endTime.isSameOrBefore(availableItem.endTime);
+                if(sameStart || isDuring){
+                    return true;
+                }
+                else{
+                    const sameEnd = startTime.isBefore(availableItem.endTime) && endTime.isSame(availableItem.endTime);
+                    return sameEnd;
+                }
             });
             return foundIndex;
         }

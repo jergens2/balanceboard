@@ -23,6 +23,7 @@ export class TimeSelectionRow {
     private _drawDelineator: TimelogDelineator;
 
     private _delineatorNgStyle: any = {};
+    private _delineatorNgClass: any = {};
     private _gridStyle: any = {};
     private _bodyStyle: any = {};
     private _markedDelineator: TimelogDelineator;
@@ -54,14 +55,7 @@ export class TimeSelectionRow {
     public isDeleting = false;
     private _isDrawing: boolean = false;
 
-    // public get ngClass(): any {
-    //     return {
-    //         'sleep-delineator': this.isSleepDelineator,
-    //         'saved-delineator': this.isSavedDelineator,
-    //         'push-backwards': this.isDragging,
-    //         'is-drawing': this._isDrawing
-    //     };
-    // }
+    public get delineatorNgClass(): any { return this._delineatorNgClass; }
     public get sectionIndex(): number { return this._sectionIndex; }
 
     public get deleteDelineator$(): Observable<moment.Moment> { return this._deleteDelineator$.asObservable(); }
@@ -257,10 +251,9 @@ export class TimeSelectionRow {
 
 
 
-
     private _buildDelineatorsStyle() {
         // let currentTime = moment(this.startTime);
-        if (this.markedDelineator) {
+        if (this.hasMarkedDelineator) {
 
             if (this.startTime.isSame(this.markedDelineator.time)) {
                 this._gridStyle = { 'grid-template-rows': '1fr' };
@@ -278,23 +271,14 @@ export class TimeSelectionRow {
                 }
 
             }
-
             const thisType = this.markedDelineator.delineatorType;
             const types = TimelogDelineatorType;
             if (thisType === types.WAKEUP_TIME || thisType === types.FALLASLEEP_TIME) {
-                // this._delineatorNgStyle = {
-                //     'color': 'navy',
-                //     'cursor':'pointer'
-                // };
+                this._delineatorNgClass = ['delineator-sleep'];
             } else if (thisType === types.TIMELOG_ENTRY_START || thisType === types.TIMELOG_ENTRY_END) {
-                // this._delineatorNgStyle = {
-                // 'background-color': 'lime',
-                // };
+                this._delineatorNgClass = ['delineator-timelog-entry'];
             } else if (thisType === types.SAVED_DELINEATOR) {
-                // this._delineatorNgStyle = {
-                //     'color': 'darkblue',
-                //     'cursor': 'pointer'
-                // };
+                this._delineatorNgClass = ['delineator-saved'];
             }
         }
 

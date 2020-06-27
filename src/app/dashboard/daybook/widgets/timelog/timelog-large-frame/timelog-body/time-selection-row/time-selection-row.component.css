@@ -7,6 +7,9 @@
     grid-template-rows: 1fr;
 
     background-color: none;
+
+    position: relative;
+    z-index: 0;
 }
 
 .row-body{
@@ -19,14 +22,18 @@
     align-items: center;
     justify-content: flex-end;
 
-    background-color: none;
 }
 
 .row-is-available{
-    background-color: red;
+    /* background-color: red; */
+    z-index: 1;
 }
 .row-is-active{
-    background-color: blue;
+    background-color: rgba(0, 89, 255, 0.1);
+    z-index: 10;
+}
+.row-is-active > .row-body{
+    background-color: rgba(0, 89, 255, 0.1);
 }
 
 .draw-time-delineator-container{
@@ -94,15 +101,17 @@
     border:1px solid rgba(255, 0, 0, 0.5);
 }
 
-.push-backwards{
-    position:relative;
-    z-index: 1;
+.delineator-sleep{
+    color: orange;
+}
+.delineator-timelog-entry{
+    color: green;
+}
+.delineator-saved{
+    color: red;
+}
 
-    background-color: black;
-}
-.is-drawing{
-    color: rgba(0, 89, 255, 1);
-}
+
 
 .edit-delineator{
     cursor: default;

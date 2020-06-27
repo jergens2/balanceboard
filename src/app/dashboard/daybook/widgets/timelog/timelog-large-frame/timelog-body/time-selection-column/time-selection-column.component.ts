@@ -22,6 +22,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   private _startRow: TimeSelectionRow;
   private _endRow: TimeSelectionRow;
   private _timeDelineators: TimelogDelineator[] = [];
+  private _isActive: boolean = false;
 
   @HostListener('window:mouseup', ['$event.target']) onMouseUp() {
     if (!this._mouseIsInComponent) {
@@ -104,14 +105,25 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     this._startRow = row;
     this._activateSection(this._startRow);
     if (!this._startRow.markedDelineator) {
-      console.log("starting dragging.  draw delineator")
       this._startRow.onDrawTLEDelineators(this.startRow.startTime);
     }
   }
 
   private _updateDragging(updateRow: TimeSelectionRow) {
-    this._endRow = updateRow;
-    console.log("  Dragging: " + this.startRow.startTime.format('hh:mm a') + " to " + this.endRow.endTime.format('hh:mm a'))
+    // console.log("UPDATING DRAGGING: "  + updateRow.startTime.format('hh:mm a'))
+    const sectionRows = this.rows.filter(item => item.sectionIndex === this._startRow.sectionIndex);
+    const sectionStart = sectionRows[0];
+    // console.log("   SECTION START TIME: " + sectionStart.startTime.format('hh:mm a'))
+    const sectionEnd = sectionRows[sectionRows.length-1];
+    if(updateRow.startTime.isBefore(sectionStart.startTime)){
+      this._endRow = sectionStart;
+    }else if(updateRow.endTime.isAfter(sectionEnd.startTime)){
+      this._endRow = sectionEnd;
+    }else{
+      this._endRow = updateRow;
+    }
+
+    
 
     let startTime: moment.Moment, endTime: moment.Moment;
 
@@ -121,7 +133,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
       endTime = moment(this._startRow.startTime);
     } else if (this._endRow.startTime.isAfter(this._startRow.startTime)) {
       startTime = moment(this._startRow.startTime);
-      endTime = moment(this._endRow.startTime);
+      endTime = moment(this._endRow.endTime);
     } else if (this._endRow.startTime.isSame(this._startRow.startTime)) {
       // console.log("SAME TIME")
       draw = false;
@@ -137,14 +149,11 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
       if(!this._isActive){
         this._activateSection(this._startRow);
       }
-      
       this.rows.forEach((row) => {
         row.onDrawTLEDelineators(startTime, endTime);
       });
       this.daybookDisplayService.onDrawTimelogEntry(new TimelogEntryItem(startTime, endTime));
     }
-
-
   }
 
   private _buildTimeRange(): TimeScheduleItem {
@@ -194,7 +203,6 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   }
 
   private _reset() {
-    console.log("COLUMN:  RESET")
     this._isActive = false;
     this._column.reset();
     this._startRow = null;
@@ -204,9 +212,8 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     this.daybookDisplayService.onDrawTimelogEntry(null);
   }
 
-  private _isActive: boolean = false;
+
   private _activateSection(activateRow: TimeSelectionRow) {
-    console.log("ACTIVATING SECTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     this._isActive = true;
     this.rows.forEach((row) => {
       if (row.sectionIndex === activateRow.sectionIndex) {
