@@ -94,21 +94,6 @@ export class DaybookDisplayService {
   }
   public openWakeupTime() { this.tlefController.openWakeupTime(); }
   public openFallAsleepTime() { this.tlefController.openFallAsleepTime(); }
-  public drawNewTimelogEntry(drawTLE: TimelogEntryItem) {
-
-    console.log("WARNING:  to do:  update the time Schedule.  ")
-    // const startDelineator = new TimelogDelineator(drawTLE.startTime, TimelogDelineatorType.DRAWING_TLE_START);
-    // const endDelineator = new TimelogDelineator(drawTLE.endTime, TimelogDelineatorType.DRAWING_TLE_END);
-    // this._drawDelineators = {
-    //   start: startDelineator,
-    //   end: endDelineator,
-    // }
-    this._updateDisplay({
-      type: DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY,
-      controller: this.activeDayController,
-    });
-    // this.tlefController.drawNewTimelogEntry(drawTLE);
-  }
 
   public onZoomChanged(newZoomValue: TimelogZoomControllerItem) {
     this._currentZoom = newZoomValue;
@@ -118,13 +103,23 @@ export class DaybookDisplayService {
     });
   }
 
+  private _drawTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
+  public get currentDrawingTLE(): TimelogEntryItem { return this._drawTLE$.getValue(); }
+  public get currentDrawingTLE$(): Observable<TimelogEntryItem> { return this._drawTLE$.asObservable(); }
+  public onDrawTimelogEntry(drawTLE: TimelogEntryItem){
+    // console.log("DRAWING: ", drawTLE === null)
+    this._drawTLE$.next(drawTLE);
+  }
+  public onCreateNewTimelogEntry(timelogEntry: TimelogEntryItem) {
+    console.log("CREATING NEW TIMELOG ENTRY!" + timelogEntry.toString());
+  }
 
   public reinitiate() {
     this._subs.forEach(sub => sub.unsubscribe());
     this._subs = [];
     this._subs = [
       this.daybookControllerService.displayUpdated$.subscribe((update: DaybookDisplayUpdate) => {
-        console.log("** UPDATING: ", update.type)
+        console.log("  * DaybookControllerService.displayUpdated$: ", update.type)
         if (update.type === DaybookDisplayUpdateType.CLOCK) {
           if (moment().format('YYYY-MM-DD') === update.controller.dateYYYYMMDD) {
             this._updateDisplay(update);

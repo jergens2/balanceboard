@@ -2,8 +2,10 @@ import * as moment from 'moment';
 import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class';
 import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
 import { TimelogDelineatorType, TimelogDelineator } from '../../../timelog-delineator.class';
-import { Subscription, Subject, Observable } from 'rxjs';
+import { Subscription, Subject, Observable, range } from 'rxjs';
 import { DaybookTimeScheduleStatus } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { TimeRangeRelationship } from '../../../../../../../shared/time-utilities/time-range-relationship.enum';
 
 export class TimeSelectionColumn {
 
@@ -23,7 +25,7 @@ export class TimeSelectionColumn {
     private _daybookService: DaybookDisplayService;
 
     constructor(daybookService: DaybookDisplayService) {
-        // console.log("Construction TimeSelectionColumn")
+        console.log("** Construction TimeSelectionColumn")
         this._daybookService = daybookService;
         this._startTime = moment(this._daybookService.displayStartTime);
         this._endTime = moment(this._daybookService.displayEndTime);
@@ -33,46 +35,27 @@ export class TimeSelectionColumn {
 
 
     private _buildRows() {
-        // this._reset();
+        console.log("   Rebuilding rows in TimeSelectionColumn.class")
         const durationMinutes: number = this.endTime.diff(this.startTime, 'minutes');
         const rowCount = durationMinutes / this._divisorMinutes;
         const rows: TimeSelectionRow[] = [];
         const timeScheduleItems = this._daybookService.schedule.timeScheduleItems;
-        const availableItems = timeScheduleItems.filter(item => item.status === DaybookTimeScheduleStatus.AVAILABLE);
-
-
-        // console.log("SCHEDFULE")
-        // this._daybookService.schedule.timeScheduleItems.forEach(item => console.log("  " +item.toString()))
-
         let currentTime: moment.Moment = moment(this.startTime);
+        const availableItems: DaybookTimeScheduleItem[] = this._getMergedAvailableItems();
         for (let i = 0; i < rowCount; i++) {
-            // console.log(" " + i + " :" + currentTime.format('hh:mm a') + " to " + moment(currentTime).add(divisorMinutes, 'minutes').format('hh:mm a'))
-            let newRow = new TimeSelectionRow(currentTime, moment(currentTime).add(this._divisorMinutes, 'minutes'), i);
-
-            newRow.isAvailable = this._daybookService.schedule.isRangeAvailable(newRow.startTime, newRow.endTime);
-            if (newRow.isAvailable) {
-                newRow.sectionIndex = availableItems.findIndex(item => newRow.startTime.isSameOrAfter(item.startTime) && newRow.startTime.isBefore(item.endTime));
-            }
-
-            let delineator = this._findDelineator(newRow);
+            const startTime: moment.Moment = moment(currentTime);
+            const endTime: moment.Moment = moment(currentTime).add(this._divisorMinutes, 'minutes');
+            const sectionIndex = this._findSectionIndex(startTime, endTime, availableItems);
+            const newRow = new TimeSelectionRow(startTime, endTime, sectionIndex);
+            const delineator = this._findDelineator(newRow);
             if (delineator) {
-                newRow.setDelineator(delineator);
+                newRow.markTimelogDelineator(delineator);
             }
             rows.push(newRow);
             currentTime = moment(currentTime).add(this._divisorMinutes, 'minutes');
         }
-        rows.forEach((row) => {
-            if (row.isAvailable) {
-                if (row.sectionIndex >= 0) {
-                    row.earliestAvailability = timeScheduleItems[row.sectionIndex].startTime;
-                    row.latestAvailability = timeScheduleItems[row.sectionIndex].endTime;
-                } else {
-                    console.log("Error of some kind with row availability index")
-                }
-            }
-            // console.log(row.startTime.format('hh:mm a') + " is available? " + row.isAvailable)
-        })
         this._rows = rows;
+        // this._rows.forEach((item) => { console.log("  " + item.toString()) })
         this._updateRowSubscriptions();
     }
 
@@ -95,7 +78,7 @@ export class TimeSelectionColumn {
             this._deleteDelineator$.next(del);
         }));
         const editSubscriptions = this.rows.map(row => row.editDelineator$.subscribe((saveNewDelineator: moment.Moment) => {
-            this._daybookService.activeDayController.updateDelineator(row.timelogDelineator.time, saveNewDelineator);
+            this._daybookService.activeDayController.updateDelineator(row.markedDelineator.time, saveNewDelineator);
         }));
         const startDragSubs = this.rows.map(row => row.startDragging$.subscribe((startDragging: TimeSelectionRow) => {
             if (startDragging) { this._startDragging$.next(startDragging); }
@@ -133,77 +116,80 @@ export class TimeSelectionColumn {
             TimelogDelineatorType.TIMELOG_ENTRY_END,
             TimelogDelineatorType.DAY_STRUCTURE,
         ];
-        const percentThreshold: number = 0.03;
-        const totalViewMS = this.endTime.diff(this.startTime, 'milliseconds');
-        const rangeMS = totalViewMS * percentThreshold;
-        const rangeStart = moment(newRow.startTime).subtract(rangeMS, 'milliseconds');
-        const rangeEnd = moment(newRow.startTime).add(rangeMS, 'milliseconds');
+        // const percentThreshold: number = 0.03;
+        // const totalViewMS = this.endTime.diff(this.startTime, 'milliseconds');
+        // const rangeMS = totalViewMS * percentThreshold;
+        // const rangeStart = moment(newRow.startTime).subtract(rangeMS, 'milliseconds');
+        // const rangeEnd = moment(newRow.startTime).add(rangeMS, 'milliseconds');
         const foundRangeItems = this._daybookService.timelogDelineators.filter(item => {
-            return item.time.isSameOrAfter(rangeStart) && item.time.isSameOrBefore(rangeEnd);
+            return item.time.isSameOrAfter(newRow.startTime) && item.time.isSameOrBefore(newRow.endTime);
         });
+        let foundDelineator: TimelogDelineator;
         if (foundRangeItems.length > 0) {
             const foundItems = this._daybookService.timelogDelineators.filter(item =>
                 item.time.isSameOrAfter(newRow.startTime) && item.time.isBefore(newRow.endTime));
-            let foundDelineator: TimelogDelineator;
-            if (foundItems.length > 0) {
-                if (foundItems.length === 1) {
-                    foundDelineator = foundItems[0];
-                } else if (foundItems.length > 1) {
+            if (foundItems.length === 1) {
+                foundDelineator = foundItems[0];
+            } else if (foundItems.length > 1) {
 
-                    let foundItem = foundItems[0];
-                    for (let i = 1; i < foundItems.length; i++) {
-                        if (priority.indexOf(foundItems[i].delineatorType) < priority.indexOf(foundItems[i - 1].delineatorType)) {
-                            foundItem = foundItems[i];
+                let foundItem = foundItems[0];
+                for (let i = 1; i < foundItems.length; i++) {
+                    if (priority.indexOf(foundItems[i].delineatorType) < priority.indexOf(foundItems[i - 1].delineatorType)) {
+                        foundItem = foundItems[i];
+                    }
+                }
+                foundDelineator = foundItem;
+            }
+        }
+        return foundDelineator;
+    }
+
+    private _findSectionIndex(startTime: moment.Moment, endTime: moment.Moment, availableItems: DaybookTimeScheduleItem[]): number {
+        if (availableItems.length === 0) {
+            console.log('Error: no item found')
+            return -1;
+        } else if (availableItems.length === 1) {
+            return 0;
+        } else if (availableItems.length > 1) {
+            let foundIndex: number = availableItems.findIndex((scheduleItem) => {
+                const startsBefore = startTime.isSameOrBefore(scheduleItem.startTime) && endTime.isAfter(scheduleItem.startTime);
+                const endsAfter = startTime.isBefore(scheduleItem.endTime) && endTime.isSameOrAfter(scheduleItem.endTime);
+                const isIn = startTime.isSameOrAfter(scheduleItem.startTime) && startTime.isSameOrBefore(scheduleItem.endTime);
+                return (startsBefore || endsAfter || isIn);
+            });
+            return foundIndex;
+        }
+    }
+
+    private _getMergedAvailableItems(): DaybookTimeScheduleItem[] {
+        let allAvailableItems = this._daybookService.schedule.getAvailableScheduleItems();
+        if (allAvailableItems.length > 1) {
+            const mergeDelineators: TimelogDelineator[] = this._daybookService.timelogDelineators
+                .filter(item => {
+                    return (item.delineatorType === TimelogDelineatorType.NOW || item.delineatorType === TimelogDelineatorType.DAY_STRUCTURE);
+                });
+            for (let i = 1; i < allAvailableItems.length; i++) {
+                const item1 = allAvailableItems[i - 1];
+                const item2 = allAvailableItems[i];
+                const itemsAreContinuous: boolean = item1.getRelationshipTo(item2) === TimeRangeRelationship.IMMEDIATELY_BEFORE;
+                if (itemsAreContinuous) {
+                    let mergeOver: boolean = false;
+                    for (let j = 0; j < mergeDelineators.length; j++) {
+                        if (item2.startTime.isSame(mergeDelineators[j].time)) {
+                            // console.log("ITS THE SAME, BABY!" + mergeDelineators[j].toString())
+                            mergeOver = true;
                         }
                     }
-                    foundDelineator = foundItem;
-                }
-                if (foundRangeItems.length == 1) {
-                    return foundDelineator;
-                } else if (foundRangeItems.length > 1) {
-                    if (priority.indexOf(foundDelineator.delineatorType) <= 8) {
-                        // console.log("its less than or equal to 5: " , priority[priority.indexOf(foundDelineator.delineatorType)])
-                        return foundDelineator
-                    } else {
-                        // console.log("its greater than 5: " , priority[priority.indexOf(foundDelineator.delineatorType)])
-                        let mostPriority = priority.indexOf(foundRangeItems[0].delineatorType);
-                        for (let i = 0; i < foundRangeItems.length; i++) {
-                            let thisItemPriority = priority.indexOf(foundRangeItems[i].delineatorType);
-                            if (thisItemPriority < mostPriority) {
-                                mostPriority = thisItemPriority;
-                            }
-                        }
-                        if (priority.indexOf(foundDelineator.delineatorType) === mostPriority) {
-                            return foundDelineator;
-                        }
+                    if (mergeOver) {
+                        item1.changeEndTime(item2.endTime);
+                        allAvailableItems.splice(i, 1);
+                        i--;
                     }
                 }
             }
         }
-        return null;
+        return allAvailableItems;
     }
-
-    // private _findSectionIndex(newRow: TimeSelectionRow): number {
-    //     const availableItems = this._daybookService.schedule.getAvailableScheduleItems();
-
-
-    //     if (availableItems.length === 0) {
-    //         console.log('Error: no item found')
-    //         return -1;
-    //     } else if (availableItems.length === 1) {
-    //         return 0;
-    //     } else if (availableItems.length > 1) {
-    //         let foundIndex: number = availableItems.findIndex((scheduleItem) => {
-    //             const startsBefore = newRow.startTime.isSameOrBefore(scheduleItem.startTime) && newRow.endTime.isAfter(scheduleItem.startTime);
-    //             const endsAfter = newRow.startTime.isBefore(scheduleItem.endTime) && newRow.endTime.isSameOrAfter(scheduleItem.endTime);
-    //             const isIn = newRow.startTime.isSameOrAfter(scheduleItem.startTime) && newRow.startTime.isSameOrBefore(scheduleItem.endTime);
-    //             return (startsBefore || endsAfter || isIn);
-    //         });
-    //         if (foundIndex === -1) { console.log('Error: could not find item') }
-    //         return foundIndex;
-    //     }
-
-    // }
 
     private _calculateDivisorMinutes() {
         // for performance reasons we don't want too many, but for functionality reasons we don't want too few.

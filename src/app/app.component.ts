@@ -115,7 +115,7 @@ export class AppComponent implements OnInit {
   }
 
   private _finishLoadingApp() {
-    console.log("loading app")
+    // console.log("loading app")
     this._showUserActionPrompt = false;
     this._loading = true;
     let sub = this.daybookControllerService.login$(this.authService.userId).subscribe((loginComplete)=>{
@@ -125,7 +125,7 @@ export class AppComponent implements OnInit {
 
       }
       this.daybookDisplayService.reinitiate();
-      console.log("daybook Loading is complete: " , loginComplete)
+      // console.log("daybook Loading is complete: " , loginComplete)
       this._loading = false;
       this._loadingIsComplete = true;
       sub.unsubscribe();

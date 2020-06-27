@@ -7,11 +7,12 @@ import { TimelogZoomControllerComponent } from './timelog-large-frame/timelog-zo
 import { TimelogBodyComponent } from './timelog-large-frame/timelog-body/timelog-body.component';
 import { TimelogEntryListComponent } from './timelog-large-frame/timelog-entry-list/timelog-entry-list.component';
 import { TimeSelectionColumnComponent } from './timelog-large-frame/timelog-body/time-selection-column/time-selection-column.component';
-import { AvailableTimelogItemComponent } from './timelog-large-frame/timelog-item-types/available-timelog-item/available-timelog-item.component';
+import { AvailableTimelogItemComponent } from './timelog-large-frame/timelog-body/available-timelog-item/available-timelog-item.component';
 import { TimeSelectionRowComponent } from './timelog-large-frame/timelog-body/time-selection-row/time-selection-row.component';
 import { TLEFModule } from './timelog-entry-form/tlef.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from '../../../../shared/shared.module';
+import { DrawTleComponent } from './timelog-large-frame/timelog-body/draw-tle/draw-tle.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import { SharedModule } from '../../../../shared/shared.module';
     TimeSelectionColumnComponent,
     AvailableTimelogItemComponent,
     TimeSelectionRowComponent,
+    DrawTleComponent,
   ],
   imports: [
     CommonModule,

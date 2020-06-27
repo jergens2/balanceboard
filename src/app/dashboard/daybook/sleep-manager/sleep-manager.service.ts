@@ -48,7 +48,7 @@ export class SleepManagerService {
   }
 
   public initiate$(userId: string): Observable<UserPromptType> {
-    console.log("initiating sleep service.")
+    // console.log("initiating sleep service.")
     this._userId = userId;
     // this._appConfig = this.accountService.appConfig;
     const _prompt$: Subject<UserPromptType> = new Subject();
@@ -82,13 +82,13 @@ export class SleepManagerService {
   }
 
   private _loadSleepProfile$(items: DaybookDayItem[]): Observable<boolean> {
-    console.log("Loading sleep profile")
+    // console.log("Loading sleep profile")
     const _userActionRequired$: Subject<boolean> = new Subject();
     this._getSleepProfileHttp$(items).subscribe((manager: SleepManager) => {
       this._sleepManager = manager;
       this._sleepManagerForm = new SleepManagerForm(manager);
       const userActionRequired = this._sleepManager.userActionRequired;
-      console.log("Action required? ", userActionRequired)
+      // console.log("Action required? ", userActionRequired)
       _userActionRequired$.next(userActionRequired);
     }, (error) => {
       console.log("Error getting sleep profile: ", error);

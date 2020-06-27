@@ -304,7 +304,7 @@ export class TLEFController {
                 // console.log(currentTime.format('YYYY-MM-DD hh:mm a ') + " : Availability is: " + availability)
                 if (availability === DaybookTimeScheduleStatus.SLEEP) {
                     formCase = TLEFFormCase.SLEEP;
-                    console.log("warning: disable this");
+                    // console.log("warning: disable this");
                     sleepEntry = new SleepEntryItem(moment(), moment());
                 } else if (availability === DaybookTimeScheduleStatus.ACTIVE) {
                     timelogEntry = this._activeDayController.getTimelogEntryItem(currentTime, endTime);

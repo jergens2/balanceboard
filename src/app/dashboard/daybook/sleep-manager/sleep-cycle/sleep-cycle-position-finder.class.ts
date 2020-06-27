@@ -9,7 +9,6 @@ export class SleepCyclePositionFinder {
             const nextFallAsleepTime: moment.Moment = moment(data.nextFallAsleepTime);
             const nextWakeupTime: moment.Moment = moment(data.nextWakeupTime);
             this._position = this._getCurrentPosition(previousWakeupTime, nextFallAsleepTime, nextWakeupTime)
-            console.log("POSITION: " , this._position);
         }else{
             console.log("Error: can't build sleep cycle position finder yet.")
         }

@@ -4,17 +4,20 @@ import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 
 export class TimeSelectionRow {
-    constructor(startTime: moment.Moment, endTime: moment.Moment, rowIndex: number) {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, sectionIndex: number) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.rowIndex = rowIndex;
-
-
+        this._sectionIndex = sectionIndex;
+        if(this._sectionIndex > -1){
+            this._isAvailable = true;
+        }
     }
 
     private _startDragging$: BehaviorSubject<TimeSelectionRow> = new BehaviorSubject(null);
     private _stopDragging$: BehaviorSubject<TimeSelectionRow> = new BehaviorSubject(null);
     private _updateDragging$: BehaviorSubject<TimeSelectionRow> = new BehaviorSubject(null);
+    private _deleteDelineator$: Subject<moment.Moment> = new Subject();
+    private _editDelineator$: Subject<moment.Moment> = new Subject();
     private _hoverSavedDelineator: boolean = false;
 
     private _drawDelineator: TimelogDelineator;
@@ -22,12 +25,15 @@ export class TimeSelectionRow {
     private _delineatorNgStyle: any = {};
     private _gridStyle: any = {};
     private _bodyStyle: any = {};
-    private _timelogDelineator: TimelogDelineator;
+    private _markedDelineator: TimelogDelineator;
 
-    private _deleteDelineator$: Subject<moment.Moment> = new Subject();
-    private _editDelineator$: Subject<moment.Moment> = new Subject();
 
-    public sectionIndex: number = -1;
+
+    
+
+    private _sectionIndex: number = -1;
+    private _isAvailable: boolean = false;
+
     public earliestAvailability: moment.Moment;
     public latestAvailability: moment.Moment;
 
@@ -35,14 +41,28 @@ export class TimeSelectionRow {
     public endTime: moment.Moment;
 
     public mouseIsOver: boolean = false;
-    public rowIndex: number;
-    public isAvailable = false;
-    public isGrabbingSection = false;
+    
+
+    private _isActiveSection: boolean = false;
+    public activate(){this._isActiveSection = true;}
+    public deactivate(){this._isActiveSection = false;}
+    public get isActiveSection(): boolean { return this._isActiveSection; };
+
     public isDragging = false;
 
     public isEditing = false;
     public isDeleting = false;
-    public ngClassIsDrawing = false;
+    private _isDrawing: boolean = false;
+
+    // public get ngClass(): any {
+    //     return {
+    //         'sleep-delineator': this.isSleepDelineator,
+    //         'saved-delineator': this.isSavedDelineator,
+    //         'push-backwards': this.isDragging,
+    //         'is-drawing': this._isDrawing
+    //     };
+    // }
+    public get sectionIndex(): number { return this._sectionIndex; }
 
     public get deleteDelineator$(): Observable<moment.Moment> { return this._deleteDelineator$.asObservable(); }
     public get editDelineator$(): Observable<moment.Moment> { return this._editDelineator$.asObservable(); }
@@ -50,7 +70,38 @@ export class TimeSelectionRow {
     public get updateDragging$(): Observable<TimeSelectionRow> { return this._updateDragging$.asObservable(); }
     public get stopDragging$(): Observable<TimeSelectionRow> { return this._stopDragging$.asObservable(); }
 
-    public get timelogDelineator(): TimelogDelineator { return this._timelogDelineator; }
+    public get markedDelineator(): TimelogDelineator { return this._markedDelineator; }
+    public get hasMarkedDelineator(): boolean {
+        if (!this.markedDelineator) {
+            return false;
+        } else {
+            if (this.markedDelineator.delineatorType === TimelogDelineatorType.FRAME_START ||
+                this.markedDelineator.delineatorType === TimelogDelineatorType.FRAME_END) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+    public get isAvailable(): boolean { return this._isAvailable; }
+    public get isDrawing(): boolean { return this._isDrawing; }
+
+    public get existingNotDrawing(): boolean { return !this.isDrawing && this.hasMarkedDelineator;}
+    public get drawingNew(): boolean { return this.isDrawing && !this.hasMarkedDelineator;}
+    public get drawingOverExisting(): boolean { return this.isDrawing && this.hasMarkedDelineator;}
+
+    public get isSleepDelineator(): boolean {
+        if (this.markedDelineator) {
+            return this.markedDelineator.isSleepDelineator;
+        }
+        return false;
+    }
+    public get isSavedDelineator(): boolean {
+        if (this.markedDelineator) {
+            return this.markedDelineator.isSaved
+        }
+        return false;
+    }
 
     public get gridStyle(): any { return this._gridStyle; }
     public get delineatorNgStyle(): any { return this._delineatorNgStyle; }
@@ -60,38 +111,31 @@ export class TimeSelectionRow {
 
 
     public get drawDelineator(): TimelogDelineator { return this._drawDelineator; }
-    public get showTimelogDelineator(): boolean {
-        if (this.timelogDelineator) {
-            const doNotShow: TimelogDelineatorType[] = [
-                TimelogDelineatorType.FRAME_START,
-                TimelogDelineatorType.FRAME_END,
-                TimelogDelineatorType.NOW
-            ];
-            if (!this.isEditing && doNotShow.indexOf(this.timelogDelineator.delineatorType) === -1) {
-                return true;
-            }
-        }
-        return false;
-    }
+
     public get showNowDelineator(): boolean {
-        if (this.timelogDelineator) {
-            if (this.timelogDelineator.delineatorType === TimelogDelineatorType.NOW) {
+        if (this.markedDelineator) {
+            if (this.markedDelineator.delineatorType === TimelogDelineatorType.NOW) {
                 return true;
             }
         }
         return false;
     }
-    public setDelineator(delineator: TimelogDelineator) {
+    public toString(): string { 
+        let val: string = this.startTime.format('hh:mm a') + " to " + this.endTime.format('hh:mm a');
+        val += "\n\tAvailability section index: " + this.sectionIndex; 
+        if(this.hasMarkedDelineator){
+            val+="\n\t*Marked delineator: " + this.markedDelineator.time.format('hh:mm a') + " -- " + this.markedDelineator.delineatorType;
+        }
+        return val;
+    }
+    public markTimelogDelineator(delineator: TimelogDelineator) {
         if (delineator) {
-            this._timelogDelineator = delineator;
+            this._markedDelineator = delineator;
             this._buildDelineatorsStyle();
         } else {
-            this._timelogDelineator = null;
+            this._markedDelineator = null;
             this._gridStyle = {};
         }
-        // if (this.timelogDelineator) {
-        //     console.log("TIME LOG DELINEATOR:  " + this.timelogDelineator.time.format('hh:mm a') + " : " + this.timelogDelineator.delineatorType)
-        // }
     }
 
     public deleteDelineator(timelogDelineator: moment.Moment) {
@@ -100,66 +144,47 @@ export class TimeSelectionRow {
     public updateSavedDelineator(newDelineatorTime: moment.Moment) {
         if (newDelineatorTime.isSameOrAfter(this.startTime) && newDelineatorTime.isSameOrBefore(this.endTime)) {
             this._editDelineator$.next(newDelineatorTime);
-            this.setDelineator(new TimelogDelineator(newDelineatorTime, TimelogDelineatorType.SAVED_DELINEATOR));
+            this.markTimelogDelineator(new TimelogDelineator(newDelineatorTime, TimelogDelineatorType.SAVED_DELINEATOR));
         } else {
 
             this._editDelineator$.next(newDelineatorTime);
-            this.setDelineator(null);
+            this.markTimelogDelineator(null);
         }
     }
 
 
-    public onDrawDelineator(drawStart: moment.Moment, drawEnd?: moment.Moment) {
-        // console.log("DRAWING THE DELINEATOR IN THE ROW")
+    // public stopDrawing(){
+    //     this._isDrawing = false;
+    //     this._drawDelineator = null;
+    // }
+    public onDrawTLEDelineators(drawStart: moment.Moment, drawEnd?: moment.Moment) {
+        this._drawDelineator = null;
+        const hasExisting = this.markedDelineator;
+        const isSameAsStart: boolean = this.startTime.isSame(drawStart);
+        let isSameAsEnd: boolean = false;
+        if(drawEnd){
+            isSameAsEnd = this.startTime.isSame(drawEnd);
+        }
+        this._isDrawing = isSameAsStart || isSameAsEnd;
 
-        if (drawStart && drawEnd) {
-            if (this.timelogDelineator) {
-                if (this.timelogDelineator.time.isSame(drawStart) || this.timelogDelineator.time.isSame(drawEnd)) {
-                    this.ngClassIsDrawing = true;
-                } else {
-                    this.ngClassIsDrawing = false;
-                }
-                this._drawDelineator = null;
-            } else {
-                this.ngClassIsDrawing = false;
 
-                if (drawStart.isSame(this.startTime) || drawEnd.isSame(this.startTime)) {
-                    this._drawDelineator = new TimelogDelineator(this.startTime, TimelogDelineatorType.SAVED_DELINEATOR);
-
-                } else if (drawStart.isAfter(this.startTime) && drawStart.isBefore(this.endTime)) {
-                    this._drawDelineator = new TimelogDelineator(drawStart, TimelogDelineatorType.SAVED_DELINEATOR);
-                } else if (drawEnd.isAfter(this.startTime) && drawEnd.isBefore(this.endTime)) {
-                    this._drawDelineator = new TimelogDelineator(drawEnd, TimelogDelineatorType.SAVED_DELINEATOR);
-                } else {
-                    this._drawDelineator = null;
-                }
-            }
-        } else if (drawStart && !drawEnd) {
-            if (this.timelogDelineator) {
-                if (this.timelogDelineator.time.isSame(drawStart)) {
-                    this.ngClassIsDrawing = true;
-                } else {
-                    this.ngClassIsDrawing = false;
-                }
-            } else {
-                this.ngClassIsDrawing = false;
-                if (this.startTime.isSame(drawStart)) {
-                    this._drawDelineator = new TimelogDelineator(drawStart, TimelogDelineatorType.SAVED_DELINEATOR);
-                } else {
-                    this._drawDelineator = null;
-                }
-            }
-        } else {
-            console.log('Error in method TimeSelectionRow.onDrawDelineator(): param values are null')
+        if(hasExisting && this._isDrawing){
+            //case: drawing over existing
+            // console.log("DRAWING OVER EXISTING: " + this.startTime.format('hh:mm a'));
+            // this._drawDelineator = new TimelogDelineator(this.startTime, TimelogDelineatorType.SAVED_DELINEATOR);
             this._drawDelineator = null;
-            this.ngClassIsDrawing = false;
+        }else if(!hasExisting && this._isDrawing){
+            // console.log("DRAWING NEW: " + this.startTime.format('hh:mm a'));
+            this._drawDelineator = new TimelogDelineator(this.startTime, TimelogDelineatorType.SAVED_DELINEATOR);
+        }else if(!this._isDrawing){
+            this._drawDelineator = null;
         }
     }
     public onMouseDown() {
-        if (this.timelogDelineator) {
+        if (this.markedDelineator) {
             if (this.isDeleting) {
-                this._deleteDelineator$.next(this.timelogDelineator.time);
-            } else if (this.timelogDelineator.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR) {
+                this._deleteDelineator$.next(this.markedDelineator.time);
+            } else if (this.markedDelineator.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR) {
                 this.isEditing = true;
             }
         } else {
@@ -201,7 +226,7 @@ export class TimeSelectionRow {
 
 
     public hideSavedDelineator() {
-        this.setDelineator(null);
+        this.markTimelogDelineator(null);
     }
 
     public get hoverSavedDelineator(): boolean { return this._hoverSavedDelineator; }
@@ -218,14 +243,14 @@ export class TimeSelectionRow {
     }
 
     public reset() {
-        this.isGrabbingSection = false;
+        this._isActiveSection = false;
         this.isEditing = false;
         this.isDeleting = false;
         this.isDragging = false;
         this._hoverSavedDelineator = false;
         this.mouseIsOver = false;
         this._drawDelineator = null;
-        this.ngClassIsDrawing = false;
+        this._isDrawing = false;
         // this._gridStyle = {};
         // this._bodyStyle = {};
     }
@@ -235,14 +260,14 @@ export class TimeSelectionRow {
 
     private _buildDelineatorsStyle() {
         // let currentTime = moment(this.startTime);
-        if (this.timelogDelineator) {
+        if (this.markedDelineator) {
 
-            if (this.startTime.isSame(this.timelogDelineator.time)) {
+            if (this.startTime.isSame(this.markedDelineator.time)) {
                 this._gridStyle = { 'grid-template-rows': '1fr' };
                 this._bodyStyle = { 'grid-row': '1 / span 1' };
             } else {
                 const totalMS = moment(this.endTime).diff(this.startTime, 'milliseconds');
-                const delineatorMS = moment(this.timelogDelineator.time).diff(this.startTime, 'milliseconds');
+                const delineatorMS = moment(this.markedDelineator.time).diff(this.startTime, 'milliseconds');
                 if (delineatorMS > 0) {
                     const percent = (delineatorMS / totalMS) * 100;
                     const inversePercent = 100 - percent;
@@ -254,7 +279,7 @@ export class TimeSelectionRow {
 
             }
 
-            const thisType = this.timelogDelineator.delineatorType;
+            const thisType = this.markedDelineator.delineatorType;
             const types = TimelogDelineatorType;
             if (thisType === types.WAKEUP_TIME || thisType === types.FALLASLEEP_TIME) {
                 // this._delineatorNgStyle = {
@@ -266,10 +291,10 @@ export class TimeSelectionRow {
                 // 'background-color': 'lime',
                 // };
             } else if (thisType === types.SAVED_DELINEATOR) {
-                this._delineatorNgStyle = {
-                    'color': 'darkblue',
-                    'cursor': 'pointer'
-                };
+                // this._delineatorNgStyle = {
+                //     'color': 'darkblue',
+                //     'cursor': 'pointer'
+                // };
             }
         }
 

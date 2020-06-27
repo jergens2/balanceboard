@@ -36,6 +36,14 @@
     display:grid;
     grid-template-columns: 1fr;
 }
+.draw-timelog-entry-container{
+    grid-column: 3 / span 1;
+    grid-row: 1 / -1;
+
+    display:grid;
+    grid-template-columns: 1fr;
+
+}
 
 .center-message{
     grid-column: 2 / span 2;

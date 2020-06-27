@@ -18,9 +18,13 @@ export class TimeSelectionRowComponent implements OnInit {
 
   constructor(private daybookService: DaybookDisplayService) { }
 
+  public get showDelineator(): boolean { 
+    return this.row.hasMarkedDelineator || this.row.isDrawing;
+  }
+
   ngOnInit() {
-    if(this.row.timelogDelineator){
-      this._editTime = this.row.timelogDelineator.time;
+    if(this.row.markedDelineator){
+      this._editTime = this.row.markedDelineator.time;
     }
     
     if(this.row.isAvailable){
@@ -52,7 +56,7 @@ export class TimeSelectionRowComponent implements OnInit {
     this.row.updateSavedDelineator(this._editTime);
   }
   public onClickDelete(){
-    this.row.deleteDelineator(this.row.timelogDelineator.time);
+    this.row.deleteDelineator(this.row.markedDelineator.time);
   }
 
   public onClickNowDelineator(){

@@ -72,8 +72,8 @@ export class DaybookTimeSchedule extends TimeSchedule {
         } else {
             console.log("Error:  times provided are outside of range.")
         }
-        console.log("IN RANGE ITEMS");
-        inRangeItems.forEach((item => console.log("  " + item.toString())))
+        // console.log("IN RANGE ITEMS");
+        // inRangeItems.forEach((item => console.log("  " + item.toString())))
         return inRangeItems;
     }
 
@@ -120,7 +120,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
 
 
     private _rebuild() {
-        // console.log("Construction of daybook time schedule.  This is where the MAGIC happens baby")
+        console.log("Construction of daybook time schedule.  This is where the MAGIC happens baby")
         this._updateTimelogDelineators();
 
         // console.log("Time Delineators:")
@@ -136,19 +136,32 @@ export class DaybookTimeSchedule extends TimeSchedule {
             ...sleepItems,
         ];
         timeScheduleItems = this._sortAndValidateScheduleItems(timeScheduleItems);
+        const splitItemsByDelineatorType = [
+            TimelogDelineatorType.SAVED_DELINEATOR,
+            TimelogDelineatorType.NOW,
+        ];
         const delineators: moment.Moment[] = this._displayDelineators
-            .filter(item => item.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR)
+            .filter(item => splitItemsByDelineatorType.indexOf(item.delineatorType) > -1)
             .map(item => item.time);
         timeScheduleItems = this._populateAvailableScheduleItems(timeScheduleItems, delineators);
+        timeScheduleItems = this._sortAndValidateScheduleItems(timeScheduleItems);
         this._timeScheduleItems = timeScheduleItems;
 
+        // console.log("Schedule rebuilt: ")
+        // this._timeScheduleItems.forEach(item => console.log("  " + item.toString()))
     }
 
 
 
 
 
-
+    /**
+     * 
+     * @param timeScheduleItems an array containing all SLEEP items and TIMELOG ENTRY items, representing all time ranges which are NOT available
+     * @param delineators an array of just the times to split at.  Should include delineators of type NOW and of type SAVED_DELINEATOR
+     * 
+     * Provde this method with these 2 arrays to return the completed full array containing time ranges that ARE available and time ranges that ARE NOT available.
+     */
     private _populateAvailableScheduleItems(timeScheduleItems: DaybookTimeScheduleItem[], delineators: moment.Moment[]): DaybookTimeScheduleItem[] {
         const buildAvailableItems = function (startTime: moment.Moment, endTime: moment.Moment, delineators: moment.Moment[]): DaybookTimeScheduleItem[] {
             const _statusAvailable = DaybookTimeScheduleStatus.AVAILABLE;
@@ -183,13 +196,13 @@ export class DaybookTimeSchedule extends TimeSchedule {
         } else {
             for (let i = 0; i < timeScheduleItems.length; i++) {
                 if (currentTime.isBefore(timeScheduleItems[i].startTime)) {
-                    allItems = allItems.concat(buildAvailableItems(currentTime, timeScheduleItems[i].startTime, delineators));
+                    allItems = [ ...allItems, ...buildAvailableItems(currentTime, timeScheduleItems[i].startTime, delineators)];
                 }
                 currentTime = moment(timeScheduleItems[i].endTime);
                 allItems.push(timeScheduleItems[i]);
             }
             if (currentTime.isBefore(this.endTime)) {
-                allItems = allItems.concat(buildAvailableItems(currentTime, this.endTime, delineators));
+                allItems = [ ...allItems, ...buildAvailableItems(currentTime, this.endTime, delineators)];
             }
         }
         return allItems;
@@ -285,15 +298,16 @@ export class DaybookTimeSchedule extends TimeSchedule {
         //         }
         //     }
         // }
-        if (!drawItemsPushed) {
-            if (drawDelineatorStart && drawDelineatorEnd) {
-                timelogDelineators.push(drawDelineatorStart);
-                timelogDelineators.push(drawDelineatorEnd);
-            }
-        }
+        // if (!drawItemsPushed) {
+        //     if (drawDelineatorStart && drawDelineatorEnd) {
+        //         timelogDelineators.push(drawDelineatorStart);
+        //         timelogDelineators.push(drawDelineatorEnd);
+        //     }
+        // }
         if (this._activeDayController.isToday) {
             const nowDelineator = new TimelogDelineator(nowTime, TimelogDelineatorType.NOW)
             if (nowLineCrossesTLE) {
+                console.log("NOW LINE CROSSES existing timelog entry");
                 nowDelineator.setNowLineCrossesTLE();
             }
             timelogDelineators.push(nowDelineator);
@@ -371,6 +385,8 @@ export class DaybookTimeSchedule extends TimeSchedule {
                 }
             }
         }
+        // console.log("SORTED DELINEATORS:")
+        // sortedDelineators.forEach(item => console.log("  " + item.toString()))
         return sortedDelineators;
     }
     private _addDayStructureDelineators(timelogDelineators: TimelogDelineator[]): TimelogDelineator[] {

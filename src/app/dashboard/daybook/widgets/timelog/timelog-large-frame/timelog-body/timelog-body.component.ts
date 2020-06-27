@@ -36,16 +36,14 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public get timeDelineators(): TimelogDelineator[] { return this.daybookDisplayService.timelogDelineators; }
   public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
+  private _isDrawingNewTLE: boolean = false;
+  public get isDrawingNewTLE(): boolean { return this._isDrawingNewTLE; }
+
   public get isFresh(): boolean { return this._isFresh; }
 
   // public get minutesPerTwentyPixels(): number { return this._minutesPerTwentyPixels; };
   // public get timeDelineatorsNgStyle(): any { return this._timelogDisplayController.timeDelineatorsNgStyle; };
-  public onDrawNewTLE(drawTLE: TimelogEntryItem) {
-    this.timelogDisplayGrid.drawTimelogEntry(drawTLE);
-  }
-  public onCreateNewTLE(timelogEntry: TimelogEntryItem) {
-    this.timelogDisplayGrid.createTimelogEntry(timelogEntry);
-  }
+
 
   public onMouseMove(event: MouseEvent) { }
   public onMouseLeave() { }
@@ -57,7 +55,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   // }
 
   private _updateDisplaySub: Subscription = new Subscription();
-  private _gridItemSub: Subscription = new Subscription();
+  private _drawTLESub: Subscription = new Subscription();
 
 
   ngOnInit() {
@@ -69,16 +67,24 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
     });
 
+    this._drawTLESub = this.daybookDisplayService.currentDrawingTLE$.subscribe((drawTLE)=>{
+      if(drawTLE){
+        this._isDrawingNewTLE = true;
+      }else{
+        this._isDrawingNewTLE = false;
+      }
+    })
+
   }
   ngOnDestroy() {
     this._updateDisplaySub.unsubscribe();
-    this._gridItemSub.unsubscribe();
+    this._drawTLESub.unsubscribe();
   }
 
   private _update() {
     this._buildTimelog();
-    this._gridItemSub.unsubscribe();
-    this._gridItemSub = this.daybookDisplayService.tlefController.currentlyOpenTLEFItem$.subscribe((tlef) => {
+    this._drawTLESub.unsubscribe();
+    this._drawTLESub = this.daybookDisplayService.tlefController.currentlyOpenTLEFItem$.subscribe((tlef) => {
       // console.log("TLEF: ", tlef)  
       if (tlef !== null) {
         this._setActiveTLEFGridItem();

@@ -27,14 +27,15 @@
                 </div>
             </div>
         </div>
+        <div *ngIf="isDrawingNewTLE" class="draw-timelog-entry-container">
+            <app-draw-tle></app-draw-tle>
+        </div>
 <!-- 
         <div class="center-message" *ngIf="isFresh">
             <button class="medium-button" (click)="onClickStart()">Start</button>
         </div> -->
 
-        <app-time-selection-column  style="grid-row: 1 / -1; grid-column: 2 / span 1;"
-            (drawNewTLE)="onDrawNewTLE($event)"
-            (createNewTLE)="onCreateNewTLE($event)"></app-time-selection-column>
+        <app-time-selection-column  style="grid-row: 1 / -1; grid-column: 2 / span 1;"></app-time-selection-column>
 
     </div>
 </div>

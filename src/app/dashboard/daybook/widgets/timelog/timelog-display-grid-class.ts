@@ -42,47 +42,7 @@ export class TimelogDisplayGrid {
 
   public ngStyle: any = {};
 
-
-  /**
-   * This method is for DRAWING the item, as in, user is actively dragging and drawing
-   */
-  public drawTimelogEntry(drawTLE: TimelogEntryItem) {
-    if (drawTLE) {
-      const foundItem = this.gridItems.find((gridItem) => {
-        return drawTLE.startTime.isSameOrAfter(gridItem.startTime) && drawTLE.endTime.isSameOrBefore(gridItem.endTime);
-      });
-      if (foundItem) {
-        this.gridItems.forEach(item => item.stopDrawing());
-        foundItem.onDrawTimelogEntry(drawTLE);
-      } else {
-        this.gridItems.forEach(item => item.stopDrawing());
-        console.log('Error : no found item to draw timelog entry')
-      }
-    } else {
-      this.gridItems.forEach(item => item.stopDrawing());
-    }
-  }
-
-  /** 
-   *  This method is to create the item after user stops dragging.
-   */
-  public createTimelogEntry(drawTLE: TimelogEntryItem) {
-    if (drawTLE) {
-      const foundItem = this.gridItems.find((gridItem) => {
-        return drawTLE.startTime.isSameOrAfter(gridItem.startTime) && drawTLE.endTime.isSameOrBefore(gridItem.endTime);
-      });
-      if (foundItem) {
-        this.gridItems.forEach(item => item.stopCreating());
-        foundItem.onCreateTimelogEntry(drawTLE);
-      } else {
-        this.gridItems.forEach(item => item.stopCreating());
-        console.log('Error : no found item to draw timelog entry')
-      }
-    }
-  }
-
   public setActiveItemByIndex(currentActiveIndex: number) {
-
     this.gridItems.forEach((item) => {
       item.isActiveFormItem = false;
     });
@@ -90,34 +50,15 @@ export class TimelogDisplayGrid {
   }
 
   private _buildGrid() {
-   
     let displayGridNgStyle: any = {};
-    let gridItems: TimelogDisplayGridItem[] = this._daybookSchedule.getItemsInRange(this.startTime, this.endTime).map(item => { 
-      const percent: number = (item.durationMs / this.totalViewMilliseconds) * 100;
-      const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, item.status);
-      return newGridItem;
-    });
-
-    console.log("IN RANGE ITEMS:  ")
-    gridItems.forEach((item)=> console.log(" " + item.toString()) )
-
-    console.log("NOW WE SPLIT")
+    let gridItems: TimelogDisplayGridItem[] = this._daybookSchedule.getItemsInRange(this.startTime, this.endTime)
+      .map(item => {
+        const percent: number = (item.durationMs / this.totalViewMilliseconds) * 100;
+        const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, item.status);
+        return newGridItem;
+      });
     gridItems = this._splitAvailableItems(gridItems);
-
-
-    console.log("SPLIT ITEMS:  ")
-    gridItems.forEach((item)=> console.log(" " + item.toString()) )
-
-    // gridItems.forEach((gridItem) => {
-    //   this._activeController.timelogEntryItems.forEach((timelogEntry) => {
-    //     if (timelogEntry.startTime.isSameOrAfter(gridItem.startTime) && timelogEntry.endTime.isSameOrBefore(gridItem.endTime)) {
-    //       gridItem.timelogEntries.push(timelogEntry);
-    //     } else {
-
-    //     }
-    //   })
-    // });
-    for(let i=0; i<gridItems.length; i++){
+    for (let i = 0; i < gridItems.length; i++) {
       gridItems[i].setItemIndex(i);
     }
     let length = gridItems.length;
@@ -134,7 +75,7 @@ export class TimelogDisplayGrid {
             gridItems[i].isVerySmallItem = true;
           } else if (gridItems[i].percent >= minPercent && gridItems[i].percent < smallPercent) {
             gridItems[i].isSmallGridItem = true;
-          }else if(gridItems[i].percent >= largePercent){
+          } else if (gridItems[i].percent >= largePercent) {
             gridItems[i].isLargeGridItem = true;
           }
         }
@@ -161,7 +102,7 @@ export class TimelogDisplayGrid {
           gridItems[i].isVerySmallItem = true;
         } else if (gridItems[i].percent >= minPercent && gridItems[i].percent < smallPercent) {
           gridItems[i].isSmallGridItem = true;
-        }else if(gridItems[i].percent >= largePercent){
+        } else if (gridItems[i].percent >= largePercent) {
           gridItems[i].isLargeGridItem = true;
         }
       }
@@ -174,27 +115,28 @@ export class TimelogDisplayGrid {
     this.ngStyle = displayGridNgStyle;
     this._gridItems = gridItems;
 
-    console.log("Grid items:")
-    this._gridItems.forEach(item => console.log(item.toString()))
+    // console.log("Grid items:")
+    // this._gridItems.forEach(item => console.log(item.toString()))
 
   }
 
-  private _splitAvailableItems(gridItems: TimelogDisplayGridItem[]): TimelogDisplayGridItem[] { 
+  private _splitAvailableItems(gridItems: TimelogDisplayGridItem[]): TimelogDisplayGridItem[] {
     let splitItems: TimelogDisplayGridItem[] = [];
-    for(let i=0; i<gridItems.length; i++){
-      if(gridItems[i].timeScheduleStatus === DaybookTimeScheduleStatus.AVAILABLE){
-        const relevantDelineators = this.timeDelineators.filter((item)=>{
+    for (let i = 0; i < gridItems.length; i++) {
+      if (gridItems[i].timeScheduleStatus === DaybookTimeScheduleStatus.AVAILABLE) {
+        const relevantDelineators = this.timeDelineators.filter((item) => {
           const overlaps: boolean = gridItems[i].getRelationshipToTime(item.time) === TimeRangeRelationship.OVERLAPS;
           const validType: boolean = ([
             TimelogDelineatorType.NOW, TimelogDelineatorType.DAY_STRUCTURE, TimelogDelineatorType.SAVED_DELINEATOR
           ].indexOf(item.delineatorType)) > -1;
           return overlaps && validType;
         });
-        console.log("RELEVANT ITEMS: ")
-        relevantDelineators.forEach((item)=> console.log("  " + item.toString()))
-        if(relevantDelineators.length > 0){
+
+        if (relevantDelineators.length > 0) {
+          // console.log("RELEVANT ITEMS: ")
+          // relevantDelineators.forEach((item) => console.log("  " + item.toString()))
           let currentTime = moment(gridItems[i].startTime);
-          for(let j=0; j<relevantDelineators.length; j++){
+          for (let j = 0; j < relevantDelineators.length; j++) {
             const schedItem = new TimeScheduleItem(currentTime.toISOString(), relevantDelineators[j].time.toISOString());
             const percent: number = (schedItem.durationMs / gridItems[i].durationMs) * gridItems[i].percent;
             const newGridItem = new TimelogDisplayGridItem(schedItem.startTime, schedItem.endTime, percent, gridItems[i].timeScheduleStatus);
@@ -205,15 +147,13 @@ export class TimelogDisplayGrid {
           const percent: number = (schedItem.durationMs / gridItems[i].durationMs) * gridItems[i].percent;
           const newGridItem = new TimelogDisplayGridItem(schedItem.startTime, schedItem.endTime, percent, gridItems[i].timeScheduleStatus);
           splitItems.push(newGridItem);
-        }else{
+        } else {
           splitItems.push(gridItems[i]);
         }
-      }else{
+      } else {
         splitItems.push(gridItems[i]);
       }
     }
-
-
     return splitItems;
   }
 

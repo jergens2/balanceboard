@@ -22,24 +22,33 @@
     background-color: none;
 }
 
-
+.row-is-available{
+    background-color: red;
+}
+.row-is-active{
+    background-color: blue;
+}
 
 .draw-time-delineator-container{
     width:100%; 
     height: 1px; 
     display:flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
 }
-.draw-time-delineator{
-    
-    background-color: rgba(255, 255, 255, 0);
-    color: rgba(0, 89, 255, 1);
+
+.timelog-delineator{
+
+    border: 1px solid rgba(255, 255, 255, 0);
+    background-color: rgba(0, 116, 194, 0.178);
+
+
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
+    
     padding:2px;
     border-radius: 3px;
     font-size: 0.8em;
@@ -47,33 +56,30 @@
     height: 20px;
 
     position: relative;
-    z-index: -1;
+    z-index: 1;
+
+
 }
 
-
-.timelog-delineator{
-
-    border: 1px solid rgba(255, 255, 255, 0);
-    background-color: rgba(255, 255, 255, 0);
-
+.draw-time-delineator{
+    color: rgba(0, 89, 255, 1);
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    padding:4px;
     border-radius: 3px;
-    font-size: 0.8em;
+    font-size: 1.0em;
     font-weight: bold;
     height: 20px;
 
-    position: relative;
-    z-index: 10;
-
-
+    /* position: relative;
+    z-index: 2; */
 }
+
+
 .timelog-delineator:hover{
-    background-color: rgb(137, 196, 255);
-    z-index: 11;
+    /* background-color: rgb(137, 196, 255); */
+    /* z-index: 11; */
 }
 
 .timelog-delineator-now{
@@ -90,7 +96,9 @@
 
 .push-backwards{
     position:relative;
-    z-index: -5;
+    z-index: 1;
+
+    background-color: black;
 }
 .is-drawing{
     color: rgba(0, 89, 255, 1);
