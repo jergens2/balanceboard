@@ -67,7 +67,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
     });
 
-    this._drawTLESub = this.daybookDisplayService.currentDrawingTLE$.subscribe((drawTLE)=>{
+    this._drawTLESub = this.daybookDisplayService.currentlyDrawingTLE$.subscribe((drawTLE)=>{
       if(drawTLE){
         this._isDrawingNewTLE = true;
       }else{

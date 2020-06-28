@@ -104,14 +104,17 @@ export class DaybookDisplayService {
   }
 
   private _drawTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
-  public get currentDrawingTLE(): TimelogEntryItem { return this._drawTLE$.getValue(); }
-  public get currentDrawingTLE$(): Observable<TimelogEntryItem> { return this._drawTLE$.asObservable(); }
-  public onDrawTimelogEntry(drawTLE: TimelogEntryItem){
-    // console.log("DRAWING: ", drawTLE === null)
-    this._drawTLE$.next(drawTLE);
-  }
+  // private _stopDrawingTLE$: Subject<boolean> = new Subject();
+
+  public get currentlyDrawingTLE$(): Observable<TimelogEntryItem> { return this._drawTLE$.asObservable(); }
+  public get currentlyDrawingTLE(): TimelogEntryItem { return this._drawTLE$.getValue(); }
+  // public get onStopDrawingTLE$(): Observable<boolean> { return this._stopDrawingTLE$.asObservable(); }
+  
+  public onStartDrawingTLE(drawTLE: TimelogEntryItem){this._drawTLE$.next(drawTLE);}
+
   public onCreateNewTimelogEntry(timelogEntry: TimelogEntryItem) {
-    console.log("CREATING NEW TIMELOG ENTRY!" + timelogEntry.toString());
+    console.log("method disabled.  CREATING NEW TIMELOG ENTRY!" + timelogEntry.toString());
+
   }
 
   public reinitiate() {

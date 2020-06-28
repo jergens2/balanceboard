@@ -1,0 +1,5 @@
+export enum TSRDrawStatus{
+    DRAWING_NEW = 'DRAWING_NEW',
+    DRAWING_OVER = 'DRAWING_OVER',
+    NOT_DRAWING = 'NOT_DRAWING',
+}

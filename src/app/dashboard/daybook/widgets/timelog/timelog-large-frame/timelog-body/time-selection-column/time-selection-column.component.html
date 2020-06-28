@@ -1,8 +1,8 @@
-<div class="selection-column-root" (mouseleave)="onMouseLeave()" (mouseenter)="onMouseEnter()">
+<div class="selection-column-root" (mouseleave)="onMouseLeave()" (mouseenter)="onMouseEnter()" [ngClass]="{'is-grabbing':isDrawing}">
     <!-- [ngClass]="{'active-root': isActive}" -->
 
-    <app-time-selection-row *ngFor="let row of rows" class="selection-row" [row]="row"
-        [ngClass]="{'available-row':row.isAvailable, 'grabbing-row':row.isGrabbingSection}"
+    <app-time-selection-row *ngFor="let row of rows" class="selection-row" [row]="row" 
+        [ngClass]="{'available-row':row.isAvailable}"
         (mousedown)="row.onMouseDown()" (mouseenter)="row.onMouseEnter(startRow)"
         (mouseleave)="row.onMouseLeave(startRow)" (mouseup)="row.onMouseUp(startRow)">
     </app-time-selection-row>

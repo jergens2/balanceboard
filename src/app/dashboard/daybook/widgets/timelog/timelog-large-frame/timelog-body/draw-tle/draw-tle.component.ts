@@ -26,45 +26,54 @@ export class DrawTleComponent implements OnInit, OnDestroy {
   private _drawTLE: TimelogEntryItem;
   public get drawTLE(): TimelogEntryItem { return this._drawTLE; }
 
-  private drawSub: Subscription = new Subscription();
+  private _subs: Subscription[] = [];
   ngOnInit(): void {
     this._rebuild();
-    this.drawSub = this.daybookService.currentDrawingTLE$.subscribe((drawTLE)=>{
-      if(drawTLE){
-        this._rebuild();
-      }
-
-    });
+    this._subs = [
+      this.daybookService.currentlyDrawingTLE$.subscribe((drawTLE) => {
+        if (drawTLE) {
+          this._rebuild();
+        }else{
+          this._stopDrawing();
+        }
+      }),
+      // this.daybookService.onStopDrawingTLE$.subscribe((stopDrawing) => {
+      //   this._stopDrawing();
+      // })
+    ];
   }
-  ngOnDestroy(){
-    this.drawSub.unsubscribe();
+  ngOnDestroy() {
+    this._subs.forEach(s => s.unsubscribe());
+  }
+  private _stopDrawing(){
+    this._subs.forEach(s => s.unsubscribe());
+    this._drawTLE = null;
   }
 
-  private _rebuild(){ 
+  private _rebuild() {
     this._startTime = moment(this.daybookService.displayStartTime);
     this._endTime = moment(this.daybookService.displayEndTime);
-
-    this._drawTLE = this.daybookService.currentDrawingTLE;
-    if(!this._drawTLE){
+    this._drawTLE = this.daybookService.currentlyDrawingTLE;
+    if (!this._drawTLE) {
       console.log("Error:  no drawing TLE");
     }
     this._buildStyle();
   }
 
-  private _buildStyle(){  
+  private _buildStyle() {
     const timeRanges: TimeScheduleItem[] = [
       new TimeScheduleItem(this.startTime.toISOString(), this._drawTLE.startTime.toISOString()),
       new TimeScheduleItem(this._drawTLE.startTime.toISOString(), this._drawTLE.endTime.toISOString()),
       new TimeScheduleItem(this._drawTLE.endTime.toISOString(), this.endTime.toISOString()),
     ];
     const totalDuration = moment(this.endTime).diff(this.startTime, 'milliseconds');
-    const percentages = timeRanges.map(item => (item.durationMs / totalDuration)*100);
+    const percentages = timeRanges.map(item => (item.durationMs / totalDuration) * 100);
     let gridTemplateRows: string = "";
-    percentages.forEach(p =>{
+    percentages.forEach(p => {
       gridTemplateRows += p.toFixed(2) + "% ";
     });
     this._ngStyle = {
-      'grid-template-rows':gridTemplateRows
+      'grid-template-rows': gridTemplateRows
     };
   }
 

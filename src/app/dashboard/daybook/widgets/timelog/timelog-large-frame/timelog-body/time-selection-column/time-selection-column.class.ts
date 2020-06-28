@@ -40,14 +40,14 @@ export class TimeSelectionColumn {
         const durationMinutes: number = this.endTime.diff(this.startTime, 'minutes');
         const rowCount = durationMinutes / this._divisorMinutes;
         const rows: TimeSelectionRow[] = [];
-        const timeScheduleItems = this._daybookService.schedule.timeScheduleItems;
         let currentTime: moment.Moment = moment(this.startTime);
         const availableItems: DaybookTimeScheduleItem[] = this._getMergedAvailableItems();
         for (let i = 0; i < rowCount; i++) {
             const startTime: moment.Moment = moment(currentTime);
             const endTime: moment.Moment = moment(currentTime).add(this._divisorMinutes, 'minutes');
             const sectionIndex = this._findSectionIndex(startTime, endTime, availableItems);
-            const newRow = new TimeSelectionRow(startTime, endTime, sectionIndex);
+            const section = availableItems[sectionIndex];
+            const newRow = new TimeSelectionRow(startTime, endTime, sectionIndex, section);
             const delineator = this._findDelineator(newRow);
             if (delineator) {
                 newRow.markTimelogDelineator(delineator);
@@ -85,7 +85,9 @@ export class TimeSelectionColumn {
             if (startDragging) { this._startDragging$.next(startDragging); }
         }));
         const updateDragSubs = this.rows.map(row => row.updateDragging$.subscribe((updateDragging: TimeSelectionRow) => {
-            if (updateDragging) { this._updateDragging$.next(updateDragging); }
+            if (updateDragging) { 
+                this._updateDragging$.next(updateDragging); 
+            }
         }));
         const stopDragSbus = this.rows.map(row => row.stopDragging$.subscribe((stopDragging: TimeSelectionRow) => {
             if (stopDragging) { this._stopDragging$.next(stopDragging); }
@@ -167,6 +169,12 @@ export class TimeSelectionColumn {
         }
     }
 
+
+    /**
+     * If there are 2 Available TimeScheduleItems, 1 that starts immediately after the other,
+     * and if the reason for the division was due to either a NOW delineator or a DAY_STRUCTURE delineator,
+     * then merge the 2 items.
+     */
     private _getMergedAvailableItems(): DaybookTimeScheduleItem[] {
         let allAvailableItems = this._daybookService.schedule.getAvailableScheduleItems();
         if (allAvailableItems.length > 1) {

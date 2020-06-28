@@ -8,7 +8,7 @@ import { ToolType } from "../toolbox-menu/tool-type.enum";
 
 let menuItems: MenuItem[] = [];
 
-menuItems.push(new MenuItem('Home', '/home', faHome));
+// menuItems.push(new MenuItem('Home', '/home', faHome));
 
 let daybookMenu = new MenuItem('Daybook', '/daybook', faBookOpen);
 daybookMenu.sidebarToolComponent = ToolType.TIMELOG_ENTRY;
