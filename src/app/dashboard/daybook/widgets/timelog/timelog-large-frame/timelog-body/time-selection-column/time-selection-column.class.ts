@@ -176,7 +176,7 @@ export class TimeSelectionColumn {
      * then merge the 2 items.
      */
     private _getMergedAvailableItems(): DaybookTimeScheduleItem[] {
-        let allAvailableItems = this._daybookService.schedule.getAvailableScheduleItems();
+        let allAvailableItems = this._daybookService.daybookSchedule.getAvailableScheduleItems();
         if (allAvailableItems.length > 1) {
             const mergeDelineators: TimelogDelineator[] = this._daybookService.timelogDelineators
                 .filter(item => {

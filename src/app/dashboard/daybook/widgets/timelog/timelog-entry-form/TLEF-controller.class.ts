@@ -54,8 +54,6 @@ export class TLEFController {
     public get currentlyOpenTLEFItem$(): Observable<TLEFControllerItem> { return this._currentlyOpenTLEFItem$.asObservable(); }
 
     public get changesMade(): boolean { return this._changesMadeTLE$.getValue() !== null; }
-    // public get showDeleteButton(): boolean { return this._initialValue.isSavedEntry; }
-    // public get formCase(): TLEFFormCase { return this._formCase; }
     public get tlefItems(): TLEFControllerItem[] { return this._tlefItems; }
     public get gridBarItems(): TLEFGridBarItem[] { return this.tlefItems.map(item => item.gridBarItem); }
 
@@ -64,7 +62,6 @@ export class TLEFController {
 
     public get currentlyOpenTLEFItem(): TLEFControllerItem { return this._currentlyOpenTLEFItem$.getValue(); }
 
-    // public get activeItem(): TLEFControllerItem { return this._tlefItems.find(item => item.isActive); }
     public get activeIndex(): number { return this.currentlyOpenTLEFItem.itemIndex; }
     public get showDeleteButton(): boolean { return this.currentlyOpenTLEFItem.getInitialTLEValue().isSavedEntry; }
 
@@ -80,40 +77,36 @@ export class TLEFController {
         return isNew;
     }
 
-    public update(timeDelineators: TimelogDelineator[], activeDayController: DaybookController, clock: moment.Moment, update: DaybookDisplayUpdate) {
-        // console.log("Updating the TLEF Controller by " + update.type + "   - " + clock.format('hh:mm:ss a'))
-        this._clock = moment(clock);
-        this._timeDelineators = timeDelineators;
-        this._activeDayController = activeDayController;
-        let currentItem: TLEFControllerItem = this.currentlyOpenTLEFItem;
-        this._buildItems();
-        if (update.type === DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY) {
-            this._drawTimelogEntry();
-        } else {
-            if (currentItem) {
-                if (currentItem.isDrawing) {
-                    if (update.type !== DaybookDisplayUpdateType.CLOCK) {
-                        this.toolboxService.closeTool();
-                    } else {
-                        this._setActiveItem(currentItem);
-                    }
-                } else {
-                    this._setActiveItem(currentItem);
-                }
-            }
-        }
-    }
+    // public update(timeDelineators: TimelogDelineator[], activeDayController: DaybookController, clock: moment.Moment, update: DaybookDisplayUpdate) {
+    //     // console.log("Updating the TLEF Controller by " + update.type + "   - " + clock.format('hh:mm:ss a'))
+    //     this._clock = moment(clock);
+    //     this._timeDelineators = timeDelineators;
+    //     this._activeDayController = activeDayController;
+    //     let currentItem: TLEFControllerItem = this.currentlyOpenTLEFItem;
+    //     this._buildItems();
+    //     if (update.type === DaybookDisplayUpdateType.DRAW_TIMELOG_ENTRY) {
+    //         this._drawTimelogEntry();
+    //     } else {
+    //         if (currentItem) {
+    //             if (currentItem.isDrawing) {
+    //                 if (update.type !== DaybookDisplayUpdateType.CLOCK) {
+    //                     this.toolboxService.closeTool();
+    //                 } else {
+    //                     this._setActiveItem(currentItem);
+    //                 }
+    //             } else {
+    //                 this._setActiveItem(currentItem);
+    //             }
+    //         }
+    //     }
+    // }
 
-    public openWakeupTime() {
-        this._openTLEFItem(this._tlefItems[0]);
-    }
+    public openWakeupTime() {this._openTLEFItem(this._tlefItems[0]);}
 
-    public openFallAsleepTime() {
-        this._openTLEFItem(this._tlefItems[this._tlefItems.length - 1]);
-    }
+    public openFallAsleepTime() {this._openTLEFItem(this._tlefItems[this._tlefItems.length - 1]);}
 
     public openNewCurrentTimelogEntry() {
-
+        console.log("opening new current TLE")
         // if (currentTimePosition === DaybookTimePosition.NORMAL) {
         const foundItem = this.tlefItems.find(item => {
             return item.formCase === TLEFFormCase.NEW_CURRENT;
@@ -127,6 +120,9 @@ export class TLEFController {
         //     console.log("Position is not normal.  Opening new day form.")
         //     this.toolboxService.openNewDayForm();
         // }
+    }
+    public onCreateNewTimelogEntry(timelogEntry: TimelogEntryItem){
+        
     }
 
     public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
@@ -231,16 +227,8 @@ export class TLEFController {
         this._stachedItem = null;
     }
 
-
-
-
-
-
-
-
-
     private _openTLEFItem(item: TLEFControllerItem) {
-        // console.log("Opening TLEF Item", item);
+        console.log("Opening TLEF Item", item);
         let openItem: boolean = true;
         if (this.currentlyOpenTLEFItem) {
             if (this.changesMade) {
@@ -345,8 +333,6 @@ export class TLEFController {
             }
         }
         this._tlefItems = items;
-        // console.log("TLEF ITEMS REBUILT:")
-        // this._tlefItems.forEach(item => console.log(item.toString()))
     }
 
     /**
@@ -370,15 +356,7 @@ export class TLEFController {
         return intersects;
     }
 
-    private _drawTimelogEntry() {
-        const foundItem = this.tlefItems.find(item => item.startDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START)
-        if (foundItem) {
-            this._openTLEFItem(foundItem);
-            this.toolboxService.openTool(ToolType.TIMELOG_ENTRY);
-        } else {
-            console.log("Error finding item to draw")
-        }
-    }
+
 
     private _determineCase(entry: TimelogEntryItem): TLEFFormCase {
         let formCase: TLEFFormCase;

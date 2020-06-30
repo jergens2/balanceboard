@@ -59,14 +59,10 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
 
   ngOnInit() {
-
     this._update();
-
     this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
       this._update();
-
     });
-
     this._drawTLESub = this.daybookDisplayService.currentlyDrawingTLE$.subscribe((drawTLE)=>{
       if(drawTLE){
         this._isDrawingNewTLE = true;
@@ -74,7 +70,8 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
         this._isDrawingNewTLE = false;
       }
     })
-
+    // console.log(" GRID ITEMS: " )
+    // this.gridItems.forEach(item => console.log("  " + item.toString()))
   }
   ngOnDestroy() {
     this._updateDisplaySub.unsubscribe();

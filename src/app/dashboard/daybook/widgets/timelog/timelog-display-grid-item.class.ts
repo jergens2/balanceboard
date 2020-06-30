@@ -7,11 +7,14 @@ import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedul
 
 export class TimelogDisplayGridItem extends TimeScheduleItem{
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment, percent: number, status: DaybookTimeScheduleStatus) {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, percent: number, status: DaybookTimeScheduleStatus, timelogEntry?: TimelogEntryItem) {
         super(startTime.toISOString(), endTime.toISOString());
         this.percent = percent;
 
         this._timeScheduleStatus = status;
+        if(timelogEntry){
+            this.timelogEntries = [timelogEntry];
+        }
     }
     private _timeScheduleStatus: DaybookTimeScheduleStatus;
     private _itemIndex: number = -1;

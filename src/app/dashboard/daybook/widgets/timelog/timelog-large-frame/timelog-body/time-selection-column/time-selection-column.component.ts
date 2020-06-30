@@ -44,6 +44,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   private _columnSubs: Subscription[] = [];
 
   ngOnInit() {
+    console.log("TimeSelectionColumn")
     this._rebuild();
     this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
       this._rebuild();
@@ -129,7 +130,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     this.rows.forEach((row) => {
       row.onDrawTLEDelineators(startTime, endTime);
     });
-    console.log("UPDATING DRAWING: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
+    // console.log("UPDATING DRAWING: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
     if(startTime.isSame(endTime)){
       this.daybookDisplayService.onStartDrawingTLE(null);
     }else{
@@ -216,7 +217,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     let saveAllDelineators: moment.Moment[] = [];
     const existingValues = this.daybookDisplayService.activeDayController.savedTimeDelineators;
     existingValues.forEach((existingValue) => {
-      if (this.daybookDisplayService.schedule.isAvailableAtTime(existingValue)) {
+      if (this.daybookDisplayService.daybookSchedule.isAvailableAtTime(existingValue)) {
         saveAllDelineators.push(moment(existingValue));
       }
     });
@@ -236,10 +237,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   private _createNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
     const saveNewTLE = new TimelogEntryItem(startTime, endTime);
     this.daybookDisplayService.onCreateNewTimelogEntry(saveNewTLE);
-    // console.log("Opening new TLE: " + startTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
-
     this._reset();
-    // this.createNewTLE.emit(saveNewTLE);
   }
 
 

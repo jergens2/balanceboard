@@ -17,10 +17,10 @@
 
                 <div *ngIf="showNowLine(gridItem)" class="now-line"></div>
 
-                <!-- <app-available-timelog-item *ngIf="gridItem.isAvailable" class='available-item'
-                    [gridItem]="gridItem"></app-available-timelog-item> -->
+                <app-available-timelog-item *ngIf="gridItem.isAvailable" class='available-item'
+                    [gridItem]="gridItem"></app-available-timelog-item>
 
-                <app-timelog-entry *ngIf="gridItem.isTimelogEntry" style="flex-grow: 2;"
+                <app-timelog-entry *ngIf="gridItem.isTimelogEntry" style="flex-grow: 2;" 
                     [gridItem]="gridItem"></app-timelog-entry>
 
                 <div *ngIf="gridItem.isSleepEntry" class='sleep-item' (click)="onClickGridItem(gridItem)">

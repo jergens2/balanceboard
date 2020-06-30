@@ -4,6 +4,9 @@ import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 import { TSRDrawStatus } from './tsr-draw-status.enum';
 import { DaybookTimeScheduleItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 export class TimeSelectionRow {
     constructor(startTime: moment.Moment, endTime: moment.Moment, sectionIndex: number, section: DaybookTimeScheduleItem) {
@@ -28,7 +31,6 @@ export class TimeSelectionRow {
     private _drawDelineator: TimelogDelineator;
 
     private _delineatorNgStyle: any = {};
-    private _delineatorNgClass: any = {};
     private _gridStyle: any = {};
     private _bodyStyle: any = {};
     private _markedDelineator: TimelogDelineator;
@@ -45,6 +47,7 @@ export class TimeSelectionRow {
     private _endTime: moment.Moment;
 
     private _tsrDrawStatus: TSRDrawStatus;
+    private _icon: IconDefinition = null;
 
     public mouseIsOver: boolean = false;
     public isDragging = false;
@@ -61,8 +64,21 @@ export class TimeSelectionRow {
     public get sectionEndTime(): moment.Moment { return this._sectionEndTime; }
 
 
-    public get delineatorNgClass(): any { return this._delineatorNgClass; }
     public get sectionIndex(): number { return this._sectionIndex; }
+    public get isAvailable(): boolean { return this._isAvailable; }
+    public get isDrawing(): boolean { return this._isDrawing; }
+    public get isActiveSection(): boolean { return this._isActiveSection; };
+    public get tsrDrawStatus(): TSRDrawStatus { return this._tsrDrawStatus; }
+
+    public get existingNotDrawing(): boolean { return this.tsrDrawStatus === TSRDrawStatus.NOT_DRAWING; }
+    public get drawingNew(): boolean { return this.tsrDrawStatus === TSRDrawStatus.DRAWING_NEW; }
+    public get drawingOverExisting(): boolean { return this.tsrDrawStatus === TSRDrawStatus.DRAWING_OVER; }
+    public get gridStyle(): any { return this._gridStyle; }
+    public get delineatorNgStyle(): any { return this._delineatorNgStyle; }
+
+    public get bodyStyle(): any { return this._bodyStyle; }
+    public get diffMS(): number { return this.endTime.diff(this.startTime, 'milliseconds'); }
+    public get drawDelineator(): TimelogDelineator { return this._drawDelineator; }
 
     public get deleteDelineator$(): Observable<moment.Moment> { return this._deleteDelineator$.asObservable(); }
     public get editDelineator$(): Observable<moment.Moment> { return this._editDelineator$.asObservable(); }
@@ -84,46 +100,8 @@ export class TimeSelectionRow {
             }
         }
     }
-    public get isAvailable(): boolean { return this._isAvailable; }
-    public get isDrawing(): boolean { return this._isDrawing; }
-    // public get isDeleting(): boolean { return this._isDeleting; }
-    public get isActiveSection(): boolean { return this._isActiveSection; };
-    public get tsrDrawStatus(): TSRDrawStatus { return this._tsrDrawStatus; }
+    public get icon(): IconDefinition { return this._icon; }
 
-    public get existingNotDrawing(): boolean { return this.tsrDrawStatus === TSRDrawStatus.NOT_DRAWING; }
-    public get drawingNew(): boolean { return this.tsrDrawStatus === TSRDrawStatus.DRAWING_NEW; }
-    public get drawingOverExisting(): boolean { return this.tsrDrawStatus === TSRDrawStatus.DRAWING_OVER; }
-
-    public get isSleepDelineator(): boolean {
-        if (this.markedDelineator) {
-            return this.markedDelineator.isSleepDelineator;
-        }
-        return false;
-    }
-    public get isSavedDelineator(): boolean {
-        if (this.markedDelineator) {
-            return this.markedDelineator.isSaved
-        }
-        return false;
-    }
-
-    public get gridStyle(): any { return this._gridStyle; }
-    public get delineatorNgStyle(): any { return this._delineatorNgStyle; }
-
-    public get bodyStyle(): any { return this._bodyStyle; }
-    public get diffMS(): number { return this.endTime.diff(this.startTime, 'milliseconds'); }
-
-
-    public get drawDelineator(): TimelogDelineator { return this._drawDelineator; }
-
-    public get showNowDelineator(): boolean {
-        if (this.markedDelineator) {
-            if (this.markedDelineator.delineatorType === TimelogDelineatorType.NOW) {
-                return true;
-            }
-        }
-        return false;
-    }
     public toString(): string {
         let val: string = this.startTime.format('hh:mm a') + " to " + this.endTime.format('hh:mm a');
         val += "\n\tAvailability section index: " + this.sectionIndex;
@@ -283,11 +261,12 @@ export class TimeSelectionRow {
             const thisType = this.markedDelineator.delineatorType;
             const types = TimelogDelineatorType;
             if (thisType === types.WAKEUP_TIME || thisType === types.FALLASLEEP_TIME) {
-                this._delineatorNgClass = ['delineator-sleep'];
-            } else if (thisType === types.TIMELOG_ENTRY_START || thisType === types.TIMELOG_ENTRY_END) {
-                this._delineatorNgClass = ['delineator-timelog-entry'];
-            } else if (thisType === types.SAVED_DELINEATOR) {
-                this._delineatorNgClass = ['delineator-saved'];
+                if (thisType === types.WAKEUP_TIME) {
+                    this._icon = faSun;
+                }
+                else { this._icon = faMoon; }
+            } else if (thisType === types.NOW) { 
+                this._icon = faClock; 
             }
         }
         // console.log("Style is: (grid, body)" , this._gridStyle, this._bodyStyle);

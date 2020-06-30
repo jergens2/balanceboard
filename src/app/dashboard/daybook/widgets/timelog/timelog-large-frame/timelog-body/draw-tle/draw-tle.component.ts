@@ -46,7 +46,7 @@ export class DrawTleComponent implements OnInit, OnDestroy {
     this._subs.forEach(s => s.unsubscribe());
   }
   private _stopDrawing(){
-    this._subs.forEach(s => s.unsubscribe());
+    console.log( " STOPPING DRAWING")
     this._drawTLE = null;
   }
 

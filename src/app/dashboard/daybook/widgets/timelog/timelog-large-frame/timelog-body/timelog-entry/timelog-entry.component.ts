@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from './timelog-entry-item.class';
 import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
@@ -6,12 +6,8 @@ import { ScreenSizeService } from '../../../../../../../shared/screen-size/scree
 import { ScreenSizes } from '../../../../../../../shared/screen-size/screen-sizes-enum';
 import { ColorConverter } from '../../../../../../../shared/utilities/color-converter.class';
 import { ColorType } from '../../../../../../../shared/utilities/color-type.enum';
-import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
-import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
-import { ToolType } from '../../../../../../../toolbox-menu/tool-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { TimelogEntryDisplayItemUnit } from './tle-display-item-unit.class';
 import { TimelogEntryActivityDisplay } from './timelog-entry-activity-display.class';
 import * as moment from 'moment';
 
@@ -53,7 +49,6 @@ export class TimelogEntryComponent implements OnInit {
 
   
   ngOnInit() {
-    
     this.screenSize = this.screenSizeService.appScreenSize;
     this._rebuild(this._calculateMaxItems());
 
@@ -71,10 +66,7 @@ export class TimelogEntryComponent implements OnInit {
     this.daybookService.openTimelogGridItem(this.gridItem);
   }
 
-
   private _calculateMaxItems(): number{
-    let maxItems: number;
-
     const table: {
       screenSize: ScreenSizes,
       itemSize: 'VERY_SMALL' | 'SMALL' | 'NORMAL' | 'LARGE',
@@ -101,13 +93,11 @@ export class TimelogEntryComponent implements OnInit {
       { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'NORMAL', maxItems: 6 },
       { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'LARGE', maxItems: 8 },
     ];
-
     let itemSize: 'VERY_SMALL' | 'SMALL' | 'NORMAL' | 'LARGE';
     if(this.isVerySmallSize){ itemSize = 'VERY_SMALL'; }
     else if(this.isSmallSize){ itemSize = 'SMALL'; }
     else if(this.isNormalSize){ itemSize = 'NORMAL'; }
     else if(this.isLargeSize){ itemSize = 'LARGE'; }
-
     const foundItem = table.find(item => item.itemSize === itemSize && item.screenSize === this.screenSize);
     if(foundItem){
       return foundItem.maxItems;
@@ -118,19 +108,11 @@ export class TimelogEntryComponent implements OnInit {
   }
 
   private _rebuild(maxItems: number) {
-    // let displayEntry: TimelogEntryDisplayItem = new TimelogEntryDisplayItem(this.gridItem, this.activitiesService.activitiesTree);
-    // this._displayEntry = displayEntry;
-
-
     let activityItems: TimelogEntryActivityDisplay[] = [];
     let remainingItems: TimelogEntryActivityDisplay[] = [];
-
     this._setNoteText();
-
     if (this.gridItem.timelogEntries.length > 0) {
       let mergedTimelogEntry = this.gridItem.timelogEntries[0];
-      
-
       if (this.gridItem.timelogEntries.length > 1) {
         const startTime = moment(this.gridItem.timelogEntries[0].startTime);
         const endTime = moment(this.gridItem.timelogEntries[this.gridItem.timelogEntries.length - 1].endTime);
@@ -156,49 +138,35 @@ export class TimelogEntryComponent implements OnInit {
           }
         });
       }
-      // console.log(mergedTimelogEntry.toString())
-
       const entryDurationMS: number = mergedTimelogEntry.durationMilliseconds;
-
-
       let itemsRemainingCount = maxItems;
-      
       let backgroundColorSet: boolean = false;
-
       mergedTimelogEntry.timelogEntryActivities.sort((a1, a2) => {
         if (a1.percentage > a2.percentage) return -1;
         else if (a1.percentage < a2.percentage) return 1;
         else return 0;
       }).forEach((activityEntry) => {
-
         let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
         if(!backgroundColorSet){
           const alpha = 0.04;
           this._backgroundColor = ColorConverter.convert(foundActivity.color, ColorType.RGBA, alpha);
           backgroundColorSet  = true;
-        }
-        
-
-        
+        }        
         let durationMS: number = (activityEntry.percentage * entryDurationMS) / 100;
         const activityDisplayItem: TimelogEntryActivityDisplay = new TimelogEntryActivityDisplay(durationMS, foundActivity);
-
         if(itemsRemainingCount > 0){
           activityItems.push(activityDisplayItem);
           itemsRemainingCount -= 1;
         }else{
           remainingItems.push(activityDisplayItem);
-        }
-        
-        
+        }      
       });
+    }else{
+      console.log("no timelog entry")
     }
-
-
     this._activityItems = activityItems;
     this._remainingItems = remainingItems;
   }
-
 
   private _setNoteText(){
     let noteText: string = "";
@@ -219,8 +187,6 @@ export class TimelogEntryComponent implements OnInit {
         }
       }
     });
-
-
     if(this.isNormalSize || this.isLargeSize){
       if(noteText.length > 80){
         this._noteText = noteText.substring(0, 80) + "...";
@@ -236,7 +202,5 @@ export class TimelogEntryComponent implements OnInit {
       }
       this._noteText = "";
     }
-
   }
-
 }

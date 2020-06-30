@@ -1,14 +1,17 @@
 <div class="row-root" [ngStyle]="row.gridStyle"
     [ngClass]="{'row-is-available': row.isAvailable, 'row-is-drawing':row.isDrawing , 'row-is-active-section': row.isActiveSection}">
-    <div class="delineator-container" *ngIf="row.hasMarkedDelineator && !row.isEditing">
-        <div class="timelog-delineator not-drawing" *ngIf="row.existingNotDrawing">
-            {{ row.markedTime }}
+    <div class="delineator-container" *ngIf="row.hasMarkedDelineator && !row.isEditing"  (click)="onClickDelineator(row)">
+        <div class="timelog-delineator not-drawing-delineator"
+        *ngIf="row.existingNotDrawing" [ngClass]="rowDelineatorClass(row)">
+            <div style="margin-right: 5px; " *ngIf="row.icon">
+                <fa-icon [icon]="row.icon"></fa-icon>
+            </div>{{ row.markedTime }}
         </div>
-        <div class="timelog-delineator drawing" *ngIf="row.drawingOverExisting">
+        <div class="timelog-delineator drawing-delineator" *ngIf="row.drawingOverExisting">
             {{ row.markedTime }}
         </div>
     </div>
-    <div class="delineator-container" *ngIf="row.hasMarkedDelineator && row.isEditing">
+    <div class="delineator-container" style="justify-content:flex-start;" *ngIf="row.hasMarkedDelineator && row.isEditing">
         <div class="edit-delineator" *ngIf="row.markedDelineator && row.isEditing">
             <div class="edit-time-container">
                 <app-time-input [timeValue]="row.markedDelineator.time" [minValue]="row.earliestAvailability"
@@ -20,5 +23,5 @@
             </div>
         </div>
     </div>
-    <div class="delineator-container" *ngIf="!row.markedDelineator && !row.isEditing"></div>
+    <div style="height: 1px; border-top: 1px solid rgba(0, 0, 0, 0);" *ngIf="!row.markedDelineator && !row.isEditing"></div>
 </div>

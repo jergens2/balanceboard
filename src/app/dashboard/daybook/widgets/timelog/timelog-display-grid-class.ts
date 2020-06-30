@@ -54,7 +54,8 @@ export class TimelogDisplayGrid {
     let gridItems: TimelogDisplayGridItem[] = this._daybookSchedule.getItemsInRange(this.startTime, this.endTime)
       .map(item => {
         const percent: number = (item.durationMs / this.totalViewMilliseconds) * 100;
-        const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, item.status);
+        let timelogEntry: TimelogEntryItem = item.timelogEntry;
+        const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, item.status, timelogEntry);
         return newGridItem;
       });
     gridItems = this._splitAvailableItems(gridItems);
