@@ -1,12 +1,5 @@
-<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="gridItem"
+<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="gridItem" [ngClass]="{'is-drawing': gridItem.isDrawing}"
     (click)="onClickOpenTimelogEntry()">
-
-    <!-- <div *ngIf="isLargeSize || isNormalSize">
-        <div class="note-text-large">
-            <p>{{ noteText }}</p>
-
-        </div>
-    </div> -->
 
     <div class="items-frame">
         <div class="activity-items-container">

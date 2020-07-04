@@ -17,8 +17,8 @@ export class TLEFControllerItem {
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
 
-    private _startDelineator: TimelogDelineator;
-    private _endDelineator: TimelogDelineator;
+    // private _startDelineator: TimelogDelineator;
+    // private _endDelineator: TimelogDelineator;
 
     private _gridBarItem: TLEFGridBarItem;
 
@@ -28,30 +28,36 @@ export class TLEFControllerItem {
         startTime: moment.Moment,
         endTime: moment.Moment,
         isAvailable: boolean,
+        isDrawing: boolean,
         formCase: TLEFFormCase,
         timelogEntry: TimelogEntryItem,
         sleepEntry: SleepEntryItem,
-        startDelineator: TimelogDelineator,
-        endDelineator: TimelogDelineator,
         backgroundColor: string) {
 
         this._startTime = moment(startTime);
         this._endTime = moment(endTime);
         this._formCase = formCase;
         this._isAvailable = isAvailable;
+        this._isDrawing = isDrawing;
         this._gridBarItem = new TLEFGridBarItem(startTime, endTime, isAvailable, formCase, backgroundColor);
 
-        this._startDelineator = startDelineator;
-        this._endDelineator = endDelineator;
+        // this._startDelineator = startDelineator;
+        // this._endDelineator = endDelineator;
 
         this._initialSleepValue = sleepEntry;
         this._initialTLEValue = timelogEntry;
 
 
-        if (this.startDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
+        if (this._isDrawing) {
             // console.log("TLEF controller item: isDrawing === true")
             this._isDrawing = true;
             this._gridBarItem.isDrawing = true;
+        }
+        if (this.formCase === TLEFFormCase.NEW_CURRENT ||
+            this.formCase === TLEFFormCase.NEW_CURRENT_FUTURE ||
+            this.formCase === TLEFFormCase.EXISTING_CURRENT) {
+            this._isCurrent = true;
+            this._gridBarItem.isCurrent = true;
         }
     }
 
@@ -60,8 +66,8 @@ export class TLEFControllerItem {
     public get formCase(): TLEFFormCase { return this._formCase; }
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
-    public get startDelineator(): TimelogDelineator { return this._startDelineator; }
-    public get endDelineator(): TimelogDelineator { return this._endDelineator; }
+    // public get startDelineator(): TimelogDelineator { return this._startDelineator; }
+    // public get endDelineator(): TimelogDelineator { return this._endDelineator; }
 
     public get isActive(): boolean { return this._isActive; }
 
@@ -69,17 +75,17 @@ export class TLEFControllerItem {
     public get isTLEItem(): boolean { return this.formCase !== TLEFFormCase.SLEEP; }
 
 
-    public setItemIndex(index: number) {
-        this._itemIndex = index;
-        this._gridBarItem.setItemIndex(index);
-    }
-    public get itemIndex(): number { return this._itemIndex; }
+    // public setItemIndex(index: number) {
+    //     this._itemIndex = index;
+    //     this._gridBarItem.setItemIndex(index);
+    // }
+    // public get itemIndex(): number { return this._itemIndex; }
 
     public getInitialTLEValue(): TimelogEntryItem {
         const newTLE = new TimelogEntryItem(this._initialTLEValue.startTime, this._initialTLEValue.endTime);
         newTLE.timelogEntryActivities = this._initialTLEValue.timelogEntryActivities;
         newTLE.embeddedNote = this._initialTLEValue.embeddedNote;
-        if(this._initialTLEValue.isSavedEntry){newTLE.setIsSaved(); }
+        if (this._initialTLEValue.isSavedEntry) { newTLE.setIsSaved(); }
         return newTLE;
     }
     public getInitialSleepValue(): SleepEntryItem {
@@ -92,7 +98,7 @@ export class TLEFControllerItem {
         const newTLE = new TimelogEntryItem(tle.startTime, tle.endTime);
         newTLE.timelogEntryActivities = tle.timelogEntryActivities;
         newTLE.embeddedNote = tle.embeddedNote;
-        if(tle.isSavedEntry){ newTLE.setIsSaved(); }
+        if (tle.isSavedEntry) { newTLE.setIsSaved(); }
         this._unsavedTLEChanges = newTLE;
     }
     public getUnsavedTLEChanges(): TimelogEntryItem {
@@ -100,12 +106,6 @@ export class TLEFControllerItem {
     }
     public unsavedChanges(): boolean {
         return this._unsavedChanges;
-    }
-
-
-    public setIsCurrent(){ 
-        this._isCurrent = true; 
-        this._gridBarItem.isCurrent = true;
     }
 
     private _isActive: boolean = false;
@@ -136,7 +136,7 @@ export class TLEFControllerItem {
         // return (sameStart && sameEnd && sameCase && sameAvailability);
         return (sameStart && sameEnd);
     }
-    public isSimilar(otherItem: TLEFControllerItem): boolean{
+    public isSimilar(otherItem: TLEFControllerItem): boolean {
         const sameStart = this.startTime.isSame(otherItem.startTime);
         const sameEnd = this.endTime.isSame(otherItem.endTime);
         return sameStart || sameEnd;
@@ -145,7 +145,7 @@ export class TLEFControllerItem {
 
     public toString(): string {
 
-        return this.startTime.format('hh:mm a') + " to " + this.endTime.format('hh:mm a') + " : " + this.formCase;
+        return this.startTime.format('hh:mm a') + " to " + this.endTime.format('hh:mm a') + " : " + this.formCase + " ";
 
     }
 }

@@ -7,6 +7,8 @@ import { DaybookSleepCycle } from '../../sleep-manager/sleep-cycle/daybook-sleep
 import { DaybookController } from '../../controller/daybook-controller.class';
 import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
 import { TimeRangeRelationship } from '../../../../shared/time-utilities/time-range-relationship.enum';
+import { TimelogEntryBuilder } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class';
+import { TimelogEntryItem } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
 export class DaybookTimeSchedule extends TimeSchedule {
 
@@ -43,7 +45,6 @@ export class DaybookTimeSchedule extends TimeSchedule {
         this._clock = moment(clock);
         this._sleepCycle = sleepCycle;
         this._activeDayController = activeDayController;
-
         this._rebuild();
     }
 
@@ -116,23 +117,35 @@ export class DaybookTimeSchedule extends TimeSchedule {
     // }
 
 
+    public onCreateNewTimelogEntry(drawStartDel: TimelogDelineator, drawEndDel: TimelogDelineator) {
+        console.log("creating TLE from drawing")
+        this._drawDelineators = {
+            start: drawStartDel,
+            end: drawEndDel,
+        }
+        this._rebuild();
+    }
 
 
 
     private _rebuild() {
-        console.log("Construction of daybook time schedule.  This is where the MAGIC happens baby")
         this._updateTimelogDelineators();
-
-        // console.log("Time Delineators:")
-        // this._displayDelineators.forEach((item) => { console.log("  " + item.toString()) })
-
-        this._statusSleep
         const sleepItems: DaybookTimeScheduleItem[] = this._sleepCycle.get72HourSleepDataItems(this.dateYYYYMMDD);
         const timelogEntryItems = this._activeDayController.timelogEntryItems;
+        let drawItems: DaybookTimeScheduleItem[] = [];
+        if (this._drawDelineators) {
+            const startTime = this._drawDelineators.start.time;
+            const endTime = this._drawDelineators.end.time;
+            const drawNewTLE = new TimelogEntryItem(startTime, endTime);
+            const newSchedItem = new DaybookTimeScheduleItem(startTime, endTime, this._statusActive, drawNewTLE.toDataEntryItem());
+            drawItems = [newSchedItem];
+            this._drawDelineators = null;
+        }
         let timeScheduleItems: DaybookTimeScheduleItem[] = [
             ...timelogEntryItems.map(item => {
                 return new DaybookTimeScheduleItem(item.startTime, item.endTime, this._statusActive, item.toDataEntryItem());
             }),
+            ...drawItems,
             ...sleepItems,
         ];
         timeScheduleItems = this._sortAndValidateScheduleItems(timeScheduleItems);
@@ -145,6 +158,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
             .map(item => item.time);
         timeScheduleItems = this._populateAvailableScheduleItems(timeScheduleItems, delineators);
         timeScheduleItems = this._sortAndValidateScheduleItems(timeScheduleItems);
+        timeScheduleItems = this._splitAvailableStatusItems(timeScheduleItems);
         this._timeScheduleItems = timeScheduleItems;
 
         // console.log("Schedule rebuilt: ")
@@ -153,6 +167,44 @@ export class DaybookTimeSchedule extends TimeSchedule {
 
 
 
+ private _splitAvailableStatusItems(timeScheduleItems: DaybookTimeScheduleItem[]): DaybookTimeScheduleItem[] {
+    let splitItems: DaybookTimeScheduleItem[] = [];
+    for (let i = 0; i < timeScheduleItems.length; i++) {
+      if (timeScheduleItems[i].status === DaybookTimeScheduleStatus.AVAILABLE) {
+        const relevantDelineators = this._displayDelineators.filter((item) => {
+          const overlaps: boolean = timeScheduleItems[i].getRelationshipToTime(item.time) === TimeRangeRelationship.OVERLAPS;
+          const validType: boolean = ([
+            TimelogDelineatorType.NOW, TimelogDelineatorType.DAY_STRUCTURE, TimelogDelineatorType.SAVED_DELINEATOR,
+          ].indexOf(item.delineatorType)) > -1;
+          return overlaps && validType;
+        });
+        if (relevantDelineators.length > 0) {
+          // console.log("RELEVANT ITEMS: ")
+          // relevantDelineators.forEach((item) => console.log("  " + item.toString()))
+          let currentTime = moment(timeScheduleItems[i].startTime);
+          for (let j = 0; j < relevantDelineators.length; j++) {
+            const schedItem = new TimeScheduleItem(currentTime.toISOString(), relevantDelineators[j].time.toISOString());
+            let status = timeScheduleItems[i].status;
+            if (relevantDelineators[j].delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
+              status = DaybookTimeScheduleStatus.ACTIVE;
+            }
+            const newGridItem = new DaybookTimeScheduleItem(schedItem.startTime, schedItem.endTime, status);
+            splitItems.push(newGridItem);
+            currentTime = moment(relevantDelineators[j].time);
+          }
+          const schedItem = new TimeScheduleItem(currentTime.toISOString(), timeScheduleItems[i].endTime.toISOString());
+          const newGridItem = new DaybookTimeScheduleItem(schedItem.startTime, schedItem.endTime, DaybookTimeScheduleStatus.AVAILABLE);
+          splitItems.push(newGridItem);
+        } else {
+          splitItems.push(timeScheduleItems[i]);
+        }
+      } else {
+        splitItems.push(timeScheduleItems[i]);
+      }
+    }
+    return splitItems;
+  }
+
 
 
     /**
@@ -160,7 +212,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
      * @param timeScheduleItems an array containing all SLEEP items and TIMELOG ENTRY items, representing all time ranges which are NOT available
      * @param delineators an array of just the times to split at.  Should include delineators of type NOW and of type SAVED_DELINEATOR
      * 
-     * Provde this method with these 2 arrays to return the completed full array containing time ranges that ARE available and time ranges that ARE NOT available.
+     * Provide this method with these 2 arrays to return the completed full array containing time ranges that ARE available and time ranges that ARE NOT available.
      */
     private _populateAvailableScheduleItems(timeScheduleItems: DaybookTimeScheduleItem[], delineators: moment.Moment[]): DaybookTimeScheduleItem[] {
         const buildAvailableItems = function (startTime: moment.Moment, endTime: moment.Moment, delineators: moment.Moment[]): DaybookTimeScheduleItem[] {
@@ -196,13 +248,13 @@ export class DaybookTimeSchedule extends TimeSchedule {
         } else {
             for (let i = 0; i < timeScheduleItems.length; i++) {
                 if (currentTime.isBefore(timeScheduleItems[i].startTime)) {
-                    allItems = [ ...allItems, ...buildAvailableItems(currentTime, timeScheduleItems[i].startTime, delineators)];
+                    allItems = [...allItems, ...buildAvailableItems(currentTime, timeScheduleItems[i].startTime, delineators)];
                 }
                 currentTime = moment(timeScheduleItems[i].endTime);
                 allItems.push(timeScheduleItems[i]);
             }
             if (currentTime.isBefore(this.endTime)) {
-                allItems = [ ...allItems, ...buildAvailableItems(currentTime, this.endTime, delineators)];
+                allItems = [...allItems, ...buildAvailableItems(currentTime, this.endTime, delineators)];
             }
         }
         return allItems;
@@ -253,13 +305,9 @@ export class DaybookTimeSchedule extends TimeSchedule {
         timelogDelineators.push(wakeupDelineator);
         timelogDelineators.push(fallAsleepDelineator);
         timelogDelineators.push(fameEndDelineator);
-        let drawDelineatorStart: TimelogDelineator;
-        let drawDelineatorEnd: TimelogDelineator;
-        let drawItemsPushed: boolean = false;
         if (this._drawDelineators) {
-            drawDelineatorStart = this._drawDelineators.start;
-            drawDelineatorEnd = this._drawDelineators.end;
-            this._drawDelineators = null;
+            timelogDelineators.push(this._drawDelineators.start);
+            timelogDelineators.push(this._drawDelineators.end);
         }
         this._activeDayController.savedTimeDelineators.forEach((timeDelineation) => {
             timelogDelineators.push(new TimelogDelineator(timeDelineation, TimelogDelineatorType.SAVED_DELINEATOR));
@@ -273,37 +321,10 @@ export class DaybookTimeSchedule extends TimeSchedule {
             timeDelineatorEnd.timelogEntryEnd = timelogEntryItem;
             timelogDelineators.push(timeDelineatorStart);
             timelogDelineators.push(timeDelineatorEnd);
-            if (nowTime.isSameOrAfter(timelogEntryItem.startTime) && nowTime.isSameOrBefore(timelogEntryItem.endTime)) {
+            if (nowTime.isSameOrAfter(timelogEntryItem.startTime) && nowTime.isBefore(timelogEntryItem.endTime)) {
                 nowLineCrossesTLE = true;
             }
         });
-        // DISABLING THIS SHIT because tlefcontroller is no longer a property here, and not sure why this is needed to create the delineators.
-        // if (this.tlefController) {
-        //     if (this.tlefController.formIsOpen) {
-        //         const openItem = this.tlefController.currentlyOpenTLEFItem;
-        //         const newStartDelineator = new TimelogDelineator(openItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
-        //         const newEndDelineator = new TimelogDelineator(openItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
-        //         if (nowTime.isSameOrAfter(newStartDelineator.time) && nowTime.isSameOrBefore(openItem.endTime)) {
-        //             nowLineCrossesTLE = true;
-        //         }
-        //         if (openItem.isDrawing) {
-        //             if (drawDelineatorStart && drawDelineatorEnd) {
-        //                 timelogDelineators.push(drawDelineatorStart);
-        //                 timelogDelineators.push(drawDelineatorEnd);
-        //             } else {
-        //                 timelogDelineators.push(openItem.startDelineator);
-        //                 timelogDelineators.push(openItem.endDelineator);
-        //             }
-        //             drawItemsPushed = true;
-        //         }
-        //     }
-        // }
-        // if (!drawItemsPushed) {
-        //     if (drawDelineatorStart && drawDelineatorEnd) {
-        //         timelogDelineators.push(drawDelineatorStart);
-        //         timelogDelineators.push(drawDelineatorEnd);
-        //     }
-        // }
         if (this._activeDayController.isToday) {
             const nowDelineator = new TimelogDelineator(nowTime, TimelogDelineatorType.NOW)
             if (nowLineCrossesTLE) {
@@ -328,8 +349,8 @@ export class DaybookTimeSchedule extends TimeSchedule {
         const priority = [
             TimelogDelineatorType.FRAME_START,
             TimelogDelineatorType.FRAME_END,
-            TimelogDelineatorType.DRAWING_TLE_END,
             TimelogDelineatorType.DRAWING_TLE_START,
+            TimelogDelineatorType.DRAWING_TLE_END,
             TimelogDelineatorType.WAKEUP_TIME,
             TimelogDelineatorType.FALLASLEEP_TIME,
             TimelogDelineatorType.TIMELOG_ENTRY_START,
@@ -385,8 +406,6 @@ export class DaybookTimeSchedule extends TimeSchedule {
                 }
             }
         }
-        // console.log("SORTED DELINEATORS:")
-        // sortedDelineators.forEach(item => console.log("  " + item.toString()))
         return sortedDelineators;
     }
     private _addDayStructureDelineators(timelogDelineators: TimelogDelineator[]): TimelogDelineator[] {

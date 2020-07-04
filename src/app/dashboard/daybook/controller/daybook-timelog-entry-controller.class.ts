@@ -46,7 +46,7 @@ export class DaybookTimelogEntryController {
         }
     }
 
-    public getTimelogEntryItem(gridItemStart, gridItemEnd): TimelogEntryItem {
+    public getTimelogEntryItem(gridItemStart: moment.Moment, gridItemEnd: moment.Moment): TimelogEntryItem {
         const foundItem = this.timelogEntryItems.find((item) => {
             const startsAfterStart = gridItemStart.isSameOrAfter(item.startTime);
             const startsBeforeEnd = gridItemStart.isSameOrBefore(item.endTime);

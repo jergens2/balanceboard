@@ -30,8 +30,6 @@ export class TLEFGridItemsBarComponent implements OnInit, OnDestroy {
   public faArrowLeft = faArrowLeft;
   public faArrowRight = faArrowRight;
 
-  public get isDrawing(): boolean { return this.daybookDisplayService.tlefController.currentlyOpenTLEFItem.isDrawing; }
-
   private _daybookSub: Subscription = new Subscription();
   private _toolboxSub: Subscription = new Subscription();
 
@@ -51,11 +49,7 @@ export class TLEFGridItemsBarComponent implements OnInit, OnDestroy {
   }
 
   public onClickItem(item: TLEFGridBarItem) {
-    if(!this.isDrawing){
       this.daybookDisplayService.tlefController.onClickGridBarItem(item);
-    }
-    
-
   }
 
   public onClickGoLeft(){

@@ -25,9 +25,9 @@ export class TLEFGridBarItem {
 
     private _mouseIsOver: boolean = false;
 
-    private _itemIndex: number = -1;
-    public setItemIndex(index: number) { this._itemIndex = index; }
-    public get itemIndex(): number { return this._itemIndex; }
+    // private _itemIndex: number = -1;
+    // public setItemIndex(index: number) { this._itemIndex = index; }
+    // public get itemIndex(): number { return this._itemIndex; }
     
 
     public get mouseIsOver(): boolean { return this._mouseIsOver; }

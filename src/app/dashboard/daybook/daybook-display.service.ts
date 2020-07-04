@@ -79,8 +79,12 @@ export class DaybookDisplayService {
 
 
   public onStartDrawingTLE(drawTLE: TimelogEntryItem) { this._drawTLE$.next(drawTLE); }
-  public onCreateNewTimelogEntry(timelogEntry: TimelogEntryItem) { 
-    this.tlefController.onCreateNewTimelogEntry(timelogEntry);
+  public onCreateNewTimelogEntry(drawStartDel: TimelogDelineator, drawEndDel: TimelogDelineator) { 
+    console.log("CREATING new TLE: ")
+    console.log("  " + drawStartDel.toString() + " \n"+ drawEndDel.toString())
+    this.daybookSchedule.onCreateNewTimelogEntry(drawStartDel, drawEndDel);
+    this.tlefController.onCreateNewTimelogEntry(this.daybookSchedule);
+    this.timelogDisplayGrid.onCreateNewTimelogEntry(this.daybookSchedule, drawStartDel.time, drawEndDel.time);
     // this._createTLE$.next(timelogEntry); 
   }
 
@@ -127,8 +131,8 @@ export class DaybookDisplayService {
     const sleepManager: SleepManager = this.sleepService.sleepManager;
     const sleepCycle: DaybookSleepCycle = sleepManager.sleepCycle;
     this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, this.clock, sleepCycle, update.controller);
-    this._tlefController = new TLEFController(this._daybookSchedule.displayDelineators, this._daybookSchedule, this.activeDayController, this.clock, this.toolBoxService, this.activitiesService);
-    this._timelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._daybookSchedule.displayDelineators, this._daybookSchedule, this.activeDayController);
+    this._tlefController = new TLEFController(this._daybookSchedule, this.activeDayController, this.clock, this.toolBoxService, this.activitiesService);
+    this._timelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._daybookSchedule, this.activeDayController);
     this._buildZoomItems();
     this._displayUpdated$.next(update);
   }

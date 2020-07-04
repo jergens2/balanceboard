@@ -17,7 +17,10 @@ export class TimelogDisplayGridItem extends TimeScheduleItem{
         }
     }
     private _timeScheduleStatus: DaybookTimeScheduleStatus;
-    private _itemIndex: number = -1;
+    // private _itemIndex: number = -1;
+    private _isDrawing: boolean = false;
+
+
     public percent: number;
     public isLargeGridItem: boolean = false;
     public isSmallGridItem: boolean = false;
@@ -25,15 +28,19 @@ export class TimelogDisplayGridItem extends TimeScheduleItem{
     public isActiveFormItem: boolean = false;
     public isMerged: boolean = false;
     public get durationMS(): number { return moment(this.endTime).diff(moment(this.startTime), 'milliseconds'); }
-    public get itemIndex(): number { return this._itemIndex; }
+    // public get itemIndex(): number { return this._itemIndex; }
     public get timeScheduleStatus(): DaybookTimeScheduleStatus { return this._timeScheduleStatus; }
     public get isAvailable(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.AVAILABLE };
     public get isTimelogEntry(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.ACTIVE; }
     public get isSleepEntry(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.SLEEP; }
-    public setItemIndex(index: number) { this._itemIndex = index; }
+    public get isDrawing(): boolean { return this._isDrawing; }
+
+    // public setItemIndex(index: number) { this._itemIndex = index; }
+    public setIsDrawing(){ this._isDrawing = true; }
     public timelogEntries: TimelogEntryItem[] = [];
 
     public toString(): string{
-        return this.itemIndex + ": " + this.timeScheduleStatus + "  " + this.percent + " % -->" + this.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.endTime.format('YYYY-MM-DD hh:mm a');
+        return this.timeScheduleStatus + "  " + this.percent.toFixed(0) + " % " 
+        + "\n\t " + this.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.endTime.format('YYYY-MM-DD hh:mm a');
     }
 }
