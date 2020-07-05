@@ -26,7 +26,7 @@ export class TimeSelectionColumn {
     private _daybookService: DaybookDisplayService;
 
     constructor(daybookService: DaybookDisplayService) {
-        console.log("** Construction TimeSelectionColumn")
+        // console.log("** Construction TimeSelectionColumn")
         this._daybookService = daybookService;
         this._startTime = moment(this._daybookService.displayStartTime);
         this._endTime = moment(this._daybookService.displayEndTime);

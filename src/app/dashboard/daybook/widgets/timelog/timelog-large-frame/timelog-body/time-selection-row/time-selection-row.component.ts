@@ -40,21 +40,6 @@ export class TimeSelectionRowComponent implements OnInit {
 
   private _editTime: moment.Moment;
 
-  public rowDelineatorClass(): any {
-    if (this.row.markedDelineator) {
-      if (this.row.markedDelineator.delineatorType === TimelogDelineatorType.DAY_STRUCTURE) { return ["delineator-day-structure"]; }
-      if (this.row.markedDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_END
-        || this.row.markedDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
-        return ["delineator-timelog-entry"];
-      }
-      if (this.row.markedDelineator.delineatorType === TimelogDelineatorType.FALLASLEEP_TIME) { return ["delineator-fall-asleep"]; }
-      if (this.row.markedDelineator.delineatorType === TimelogDelineatorType.WAKEUP_TIME) { return ["delineator-wake-up"]; }
-      if (this.row.markedDelineator.delineatorType === TimelogDelineatorType.NOW) { return ["delineator-now"]; }
-      if (this.row.markedDelineator.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR) { return ["delineator-saved"]; }
-    } else {
-      return {};
-    }
-  }
 
   public onEditTimeChanged(time: moment.Moment) {
     this._editTime = time;
@@ -62,18 +47,15 @@ export class TimeSelectionRowComponent implements OnInit {
 
   public onClickDelineator(row: TimeSelectionRow) {
     const delineator = row.markedDelineator;
-    console.log("Clickety click: " + delineator.toString())
     if (delineator.delineatorType === TimelogDelineatorType.WAKEUP_TIME) {
       this.daybookService.openWakeupTime();
     } else if (delineator.delineatorType === TimelogDelineatorType.FALLASLEEP_TIME) {
       this.daybookService.openFallAsleepTime();
-    } else if(delineator.delineatorType === TimelogDelineatorType.NOW){
-      console.log("ITS NOW BOY")
+    } else if (delineator.delineatorType === TimelogDelineatorType.NOW) {
       this.daybookService.openNewCurrentTimelogEntry();
-    } else if(delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_START){
-      console.log("on click timelog entry start.  method disabled.")
-    } else if(delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_END){
-      console.log("on click timelog entry end.  method disabled.")
+    } else if (delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_START
+      || delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_END) {
+      this.daybookService.openTLEDelineator(delineator);
     }
   }
 

@@ -25,31 +25,24 @@ export class SmWakeupTimeComponent implements OnInit {
   // public get sectionIsComplete(): boolean { return this.sleepService.previousWakeTimeIsSet; }
 
   ngOnInit() {
-    this.maxWakeupTime = moment();
-    // this._sectionIsComplete = this.sleepService.previousWakeTimeIsSet;
-    
-    if(this.sleepService.sleepManagerForm.formInputWakeupTime){
+    this._rebuild();
+  }
+
+  private _rebuild() {
+    this.maxWakeupTime = moment().startOf('minute');
+    if (this.sleepService.sleepManagerForm.formInputWakeupTime) {
       this._time = moment(this.sleepService.sleepManagerForm.formInputWakeupTime)
-    }else{
+    } else {
       this._time = moment(this.sleepService.sleepManager.defaultWakeupTimeToday);
     }
-    timer(0, 60000).subscribe((tick)=>{
+    if (this._time.isAfter(this.maxWakeupTime)) {
+      this._time = moment(this.maxWakeupTime);
+    }
+    timer(0, 60000).subscribe((tick) => {
       this._date = moment(this._time).format('dddd, MMM Do')
       this._calculateDurationString();
     });
-
-    console.log("big chunky warning")
-    // if(lastActivityTime){
-    //   this.minWakeupTime = moment(lastActivityTime);
-    // }else{
-      this.minWakeupTime = moment().subtract(23, 'hours');
-    // }
-
-    
-
-    // console.log("Min and max val:  " + this.minWakeupTime.format('YYYY-MM-DD hh:mm a') + " to  " + this.maxWakeupTime.format('YYYY-MM-DD hh:mm a'))
-
-    
+    this.minWakeupTime = moment().subtract(23, 'hours');
     this.onTimeChanged(this._time);
   }
 
@@ -81,9 +74,9 @@ export class SmWakeupTimeComponent implements OnInit {
       const minutes = moment().diff(this.time, 'minutes');
       if (minutes <= 2) {
         durationString = 'Just recently';
-      } else if (minutes <= 5) { 
+      } else if (minutes <= 5) {
         durationString = 'A few minutes ago';
-      }else {
+      } else {
         durationString = DurationString.calculateDurationString(this.time, moment()) + " ago";
       }
     } else {

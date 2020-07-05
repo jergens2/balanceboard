@@ -33,10 +33,10 @@
     height: 1px;
     grid-row: 1 / span 1;
     grid-column: 1 / span 1;
-    width:100%;
+    /* width:100%; */
 
-    width: 100px;
-    margin-left: -30px;
+    width: 90px;
+    margin-left: -20px;
 
     display: flex;
     flex-direction: row;
@@ -85,6 +85,7 @@
 }
 .delineator-timelog-entry{
     color: grey;
+    font-weight: normal;
 }
 .delineator-fall-asleep{
     color: navy;
@@ -103,7 +104,6 @@
 .delineator-saved{
     color: rgb(138, 165, 198)
 }
-
 
 
 

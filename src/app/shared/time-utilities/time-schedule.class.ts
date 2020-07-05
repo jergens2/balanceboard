@@ -22,7 +22,7 @@ export class TimeSchedule{
      * A generic class to represent a range of time and an array of items
      */
     constructor(startTime: moment.Moment, endTime: moment.Moment){
-        console.log("Constructing time schedule: " + startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + endTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("Constructing time schedule: " + startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + endTime.format('YYYY-MM-DD hh:mm a'))
         if(startTime.isBefore(endTime)){
             this._startTime = moment(startTime);
             this._endTime = moment(endTime);

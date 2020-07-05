@@ -76,8 +76,10 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
     this._updatePercentages(activityItem);
   }
 
+  /** This is the event of a new activity been added to the list */
   public onActivityValueChanged(activity: ActivityCategoryDefinition) {
-    // This is the event of a new activity being added.
+    console.log("Boom")
+    activity = this.activitiesService.findActivityByTreeId(activity.treeId);
     let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length + 1);
     let durationPercent = durationMinutes / (this.timelogEntryMinutes) * 100;
     const minimumActivityPercent: number = 2;
@@ -89,6 +91,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
     this._activityItems = this._addNewActivityItem(activityItem);
     this._updateChangeSubscriptions();
     this._updatePercentages(activityItem);
+    this._updateActivityChangedSubscriptions();
   }
 
   private _reload() {
@@ -112,7 +115,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
     this.activityItems.forEach((activityItem) => {
       activityItem.updatePercentage(activityItem.durationPercent, maxPercent, true);
     });
-    this.updateActivityChangedSubscriptions();
+    this._updateActivityChangedSubscriptions();
 
     // 
   }
@@ -147,12 +150,12 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
   }
 
   private _activityChangedSubscriptions: Subscription[] = [];
-  private updateActivityChangedSubscriptions() {
+  private _updateActivityChangedSubscriptions() {
     this._activityChangedSubscriptions.forEach((sub) => { sub.unsubscribe(); });
     this._activityChangedSubscriptions = [];
     this.activityItems.forEach((item) => {
       this._activityChangedSubscriptions.push(item.activityModified$.subscribe((activity) => {
-        // console.log("Activity modified (color) , ", activity)
+        console.log("Activity modified (color) , ", activity)
         this.activitiesService.updateActivity(activity);
       }));
     });

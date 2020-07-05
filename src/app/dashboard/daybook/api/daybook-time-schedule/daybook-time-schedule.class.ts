@@ -18,41 +18,26 @@ export class DaybookTimeSchedule extends TimeSchedule {
     private _activeDayController: DaybookController;
     private _displayDelineators: TimelogDelineator[] = [];
 
+    private _drawDelineators: { start: TimelogDelineator, end: TimelogDelineator };
+    private _sleepCycle: DaybookSleepCycle;
+
     private get _statusAvailable(): DaybookTimeScheduleStatus { return DaybookTimeScheduleStatus.AVAILABLE; }
     private get _statusSleep(): DaybookTimeScheduleStatus { return DaybookTimeScheduleStatus.SLEEP; }
     private get _statusActive(): DaybookTimeScheduleStatus { return DaybookTimeScheduleStatus.ACTIVE; }
 
-    public get timeScheduleItems(): DaybookTimeScheduleItem[] { return this._timeScheduleItems; }
-    public get dateYYYYMMDD(): string { return this._dateYYYYMMDD; }
-    public get wakeupTime(): moment.Moment { return this._sleepCycle.wakeupTime; }
-    public get fallAsleepTime(): moment.Moment { return this._sleepCycle.fallAsleepTime; }
-
-    public get displayDelineators(): TimelogDelineator[] { return this._displayDelineators; }
-
-    private _clock: moment.Moment;
-    private _drawDelineators: { start: TimelogDelineator, end: TimelogDelineator };
-
-
-    private _sleepCycle: DaybookSleepCycle;
-
-
-    constructor(dateYYYYMMDD: string,
-        clock: moment.Moment,
-        sleepCycle: DaybookSleepCycle,
-        activeDayController: DaybookController) {
+    constructor(dateYYYYMMDD: string, sleepCycle: DaybookSleepCycle, activeDayController: DaybookController) {
         super(sleepCycle.getDisplayStartTime(dateYYYYMMDD), sleepCycle.getDisplayEndTime(dateYYYYMMDD));
         this._dateYYYYMMDD = dateYYYYMMDD;
-        this._clock = moment(clock);
         this._sleepCycle = sleepCycle;
         this._activeDayController = activeDayController;
         this._rebuild();
     }
 
-
-    public update() {
-        console.log("Updating DaybookTimeSchedule")
-        this._rebuild();
-    }
+    public get timeScheduleItems(): DaybookTimeScheduleItem[] { return this._timeScheduleItems; }
+    public get dateYYYYMMDD(): string { return this._dateYYYYMMDD; }
+    public get wakeupTime(): moment.Moment { return this._sleepCycle.wakeupTime; }
+    public get fallAsleepTime(): moment.Moment { return this._sleepCycle.fallAsleepTime; }
+    public get displayDelineators(): TimelogDelineator[] { return this._displayDelineators; }
 
     public getItemsInRange(startTime: moment.Moment, endTime: moment.Moment): DaybookTimeScheduleItem[] {
         const checkRange = new TimeScheduleItem(startTime.toISOString(), endTime.toISOString());
@@ -167,43 +152,43 @@ export class DaybookTimeSchedule extends TimeSchedule {
 
 
 
- private _splitAvailableStatusItems(timeScheduleItems: DaybookTimeScheduleItem[]): DaybookTimeScheduleItem[] {
-    let splitItems: DaybookTimeScheduleItem[] = [];
-    for (let i = 0; i < timeScheduleItems.length; i++) {
-      if (timeScheduleItems[i].status === DaybookTimeScheduleStatus.AVAILABLE) {
-        const relevantDelineators = this._displayDelineators.filter((item) => {
-          const overlaps: boolean = timeScheduleItems[i].getRelationshipToTime(item.time) === TimeRangeRelationship.OVERLAPS;
-          const validType: boolean = ([
-            TimelogDelineatorType.NOW, TimelogDelineatorType.DAY_STRUCTURE, TimelogDelineatorType.SAVED_DELINEATOR,
-          ].indexOf(item.delineatorType)) > -1;
-          return overlaps && validType;
-        });
-        if (relevantDelineators.length > 0) {
-          // console.log("RELEVANT ITEMS: ")
-          // relevantDelineators.forEach((item) => console.log("  " + item.toString()))
-          let currentTime = moment(timeScheduleItems[i].startTime);
-          for (let j = 0; j < relevantDelineators.length; j++) {
-            const schedItem = new TimeScheduleItem(currentTime.toISOString(), relevantDelineators[j].time.toISOString());
-            let status = timeScheduleItems[i].status;
-            if (relevantDelineators[j].delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
-              status = DaybookTimeScheduleStatus.ACTIVE;
+    private _splitAvailableStatusItems(timeScheduleItems: DaybookTimeScheduleItem[]): DaybookTimeScheduleItem[] {
+        let splitItems: DaybookTimeScheduleItem[] = [];
+        for (let i = 0; i < timeScheduleItems.length; i++) {
+            if (timeScheduleItems[i].status === DaybookTimeScheduleStatus.AVAILABLE) {
+                const relevantDelineators = this._displayDelineators.filter((item) => {
+                    const overlaps: boolean = timeScheduleItems[i].getRelationshipToTime(item.time) === TimeRangeRelationship.OVERLAPS;
+                    const validType: boolean = ([
+                        TimelogDelineatorType.NOW, TimelogDelineatorType.DAY_STRUCTURE, TimelogDelineatorType.SAVED_DELINEATOR,
+                    ].indexOf(item.delineatorType)) > -1;
+                    return overlaps && validType;
+                });
+                if (relevantDelineators.length > 0) {
+                    // console.log("RELEVANT ITEMS: ")
+                    // relevantDelineators.forEach((item) => console.log("  " + item.toString()))
+                    let currentTime = moment(timeScheduleItems[i].startTime);
+                    for (let j = 0; j < relevantDelineators.length; j++) {
+                        const schedItem = new TimeScheduleItem(currentTime.toISOString(), relevantDelineators[j].time.toISOString());
+                        let status = timeScheduleItems[i].status;
+                        if (relevantDelineators[j].delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
+                            status = DaybookTimeScheduleStatus.ACTIVE;
+                        }
+                        const newGridItem = new DaybookTimeScheduleItem(schedItem.startTime, schedItem.endTime, status);
+                        splitItems.push(newGridItem);
+                        currentTime = moment(relevantDelineators[j].time);
+                    }
+                    const schedItem = new TimeScheduleItem(currentTime.toISOString(), timeScheduleItems[i].endTime.toISOString());
+                    const newGridItem = new DaybookTimeScheduleItem(schedItem.startTime, schedItem.endTime, DaybookTimeScheduleStatus.AVAILABLE);
+                    splitItems.push(newGridItem);
+                } else {
+                    splitItems.push(timeScheduleItems[i]);
+                }
+            } else {
+                splitItems.push(timeScheduleItems[i]);
             }
-            const newGridItem = new DaybookTimeScheduleItem(schedItem.startTime, schedItem.endTime, status);
-            splitItems.push(newGridItem);
-            currentTime = moment(relevantDelineators[j].time);
-          }
-          const schedItem = new TimeScheduleItem(currentTime.toISOString(), timeScheduleItems[i].endTime.toISOString());
-          const newGridItem = new DaybookTimeScheduleItem(schedItem.startTime, schedItem.endTime, DaybookTimeScheduleStatus.AVAILABLE);
-          splitItems.push(newGridItem);
-        } else {
-          splitItems.push(timeScheduleItems[i]);
         }
-      } else {
-        splitItems.push(timeScheduleItems[i]);
-      }
+        return splitItems;
     }
-    return splitItems;
-  }
 
 
 
@@ -295,7 +280,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
 
     private _updateTimelogDelineators() {
         let nowLineCrossesTLE: boolean = false;
-        const nowTime = moment(this._clock).startOf('minute');
+        const nowTime = moment().startOf('minute');
         const timelogDelineators: TimelogDelineator[] = [];
         const frameStartDelineator = new TimelogDelineator(this.startTime, TimelogDelineatorType.FRAME_START);
         const fameEndDelineator = new TimelogDelineator(this.endTime, TimelogDelineatorType.FRAME_END);
@@ -327,10 +312,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
         });
         if (this._activeDayController.isToday) {
             const nowDelineator = new TimelogDelineator(nowTime, TimelogDelineatorType.NOW)
-            if (nowLineCrossesTLE) {
-                console.log("NOW LINE CROSSES existing timelog entry");
-                nowDelineator.setNowLineCrossesTLE();
-            }
+            if (nowLineCrossesTLE) { nowDelineator.setNowLineCrossesTLE(); }
             timelogDelineators.push(nowDelineator);
         }
         const structureItems = this._addDayStructureDelineators(timelogDelineators);
@@ -379,12 +361,13 @@ export class DaybookTimeSchedule extends TimeSchedule {
         }
         // Remove any DAY_STRUCTURE delineators if they are within an hour of any other.
         for (let i = 0; i < sortedDelineators.length; i++) {
+            const thresholdMs = 1000 * 60 * 60 * 2; // 2 hours ;
             const sd = sortedDelineators[i];
             if (sd.delineatorType === TimelogDelineatorType.DAY_STRUCTURE) {
                 let remove: boolean = false;
                 if (i > 0) {
                     const diff = moment(sd.time).diff(sortedDelineators[i - 1].time, 'milliseconds');
-                    if (diff < (1000 * 60 * 60)) {
+                    if (diff < thresholdMs) {
                         // console.log("Removing DAY_STRUCTURE delineator " + sd.time.format('YYYY-MM-DD hh:mm a')
                         //     + " because prev delineator is within an hour");
                         remove = true;
@@ -393,7 +376,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
                 if (!remove) {
                     if (i < sortedDelineators.length - 1) {
                         const diff = moment(sortedDelineators[i + 1].time).diff(sd.time, 'milliseconds');
-                        if (diff < (1000 * 60 * 60)) {
+                        if (diff < thresholdMs) {
                             // console.log("Removing DAY_STRUCTURE delineator " + sd.time.format('YYYY-MM-DD hh:mm a')
                             //     + "because next delineator is within an hour");
                             remove = true;

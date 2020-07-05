@@ -1,7 +1,9 @@
-<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="gridItem" [ngClass]="{'is-drawing': gridItem.isDrawing}"
+<div class="timelog-entry-display-root" [style.background-color]="backgroundColor" *ngIf="gridItem" [ngClass]="{'is-drawing-new': gridItem.isDrawing}"
     (click)="onClickOpenTimelogEntry()">
-
-    <div class="items-frame">
+    <!-- <div class="items-frame" *ngIf="gridItem.isDrawing">
+        New timelog entry: {{ gridItem.startTime.format('h:mm a') }} to {{ gridItem.endTime.format('h:mm a') }}
+    </div> -->
+    <div class="items-frame" *ngIf="!gridItem.isDrawing">
         <div class="activity-items-container">
 
 
@@ -20,12 +22,12 @@
 
             </div>
 
-            <div *ngIf="remainingItems.length > 0" class="remaining-items">
-                <div *ngFor="let item of remainingItems" style="display:flex;flex-direction: row; align-items: center;">
+            <!-- <div *ngIf="remainingItems.length > 0" class="remaining-items"> -->
+                <div *ngFor="let item of remainingItems" >
                     <div *ngFor="let unit of item.units" [ngStyle]="unit.ngStyle" style="margin-right: 1px;"
                         class="unit"></div>
                 </div>
-            </div>
+            <!-- </div> -->
 
 
 
@@ -57,10 +59,10 @@
 
 
         </div>
-        <div class="note-text" *ngIf="!noteTextSmall">
+        <div class="note-text" *ngIf="hasText && !noteTextSmall">
             {{ noteText }}
         </div>
-        <div class="note-text-small" *ngIf="noteTextSmall">
+        <div class="note-text-small" *ngIf="hasText && noteTextSmall">
             {{ noteTextSmall }}
         </div>
     </div>

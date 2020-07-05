@@ -44,7 +44,6 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   private _columnSubs: Subscription[] = [];
 
   ngOnInit() {
-    console.log("TimeSelectionColumn")
     this._rebuild();
     this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
       this._rebuild();
@@ -53,7 +52,6 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
 
   private _rebuild() {
     this._timeDelineators = Object.assign([], this.daybookDisplayService.timelogDelineators);
-    this._timeDelineators.push(new TimelogDelineator(moment().startOf('minute'), TimelogDelineatorType.NOW));
     this._column = new TimeSelectionColumn(this.daybookDisplayService);
     this._subscribeToColumn();
   }

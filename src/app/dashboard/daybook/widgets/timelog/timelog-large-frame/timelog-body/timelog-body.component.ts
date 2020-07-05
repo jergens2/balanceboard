@@ -72,21 +72,9 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   private _update() {
     this._buildTimelog();
     this._drawTLESub.unsubscribe();
-    // this._drawTLESub = this.daybookDisplayService.tlefController.currentlyOpenTLEFItem$.subscribe((tlef) => {
-    //   // console.log("TLEF: ", tlef)  
-    //   if (tlef !== null) {
-    //     this._setActiveTLEFGridItem();
-    //   } else {
-    //     this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
-    //   }
-
-    // });
     this._drawTLESub = this.daybookDisplayService.currentlyDrawingTLE$.subscribe((drawTLE)=>{
-      if(drawTLE){
-        this._isDrawingNewTLE = true;
-      }else{
-        this._isDrawingNewTLE = false;
-      }
+      if(drawTLE){this._isDrawingNewTLE = true;}
+      else{this._isDrawingNewTLE = false;}
     });
   }
 
@@ -98,45 +86,17 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
     const now = moment();
     if (now.isSameOrAfter(gridItem.startTime) && now.isSameOrBefore(gridItem.endTime)) {
-      // return gridItem.isAvailable;
-      return true;
+      return gridItem.isAvailable;
+      // return true;
     }
     return false;
   }
 
   private _buildTimelog() {
+    
     this._buildGuideLineHours();
-    // this._setActiveTLEFGridItem();
-    // this._setIsFresh();
+
   }
-
-  // private _setActiveTLEFGridItem() {
-  //   const controller = this.daybookDisplayService.tlefController;
-  //   // console.log("Controller is: ", controller);
-  //   let activeBarItem = controller.currentlyOpenTLEFItem;
-  //   if (activeBarItem) {
-  //     const foundItem = this.gridItems.find((gridItem) => {
-  //       const isSame = gridItem.startTime.isSame(activeBarItem.startTime) && gridItem.endTime.isSame(activeBarItem.endTime);
-  //       const endsAfterStart = activeBarItem.startTime.isSame(gridItem.startTime) && activeBarItem.endTime.isAfter(gridItem.startTime);
-  //       const isBeforeEnd = activeBarItem.startTime.isAfter(gridItem.startTime) && activeBarItem.endTime.isBefore(gridItem.endTime);
-  //       const endsAtEnd = activeBarItem.endTime.isSame(gridItem.endTime) && activeBarItem.startTime.isBefore(gridItem.endTime);
-  //       return isSame || endsAtEnd || endsAfterStart || isBeforeEnd;
-  //     });
-  //     if (foundItem) {
-  //       this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
-  //       foundItem.isActiveFormItem = true;
-  //       // console.log('Active bar item is set to: [' + this.gridItems.indexOf(foundItem) +']  : ' + foundItem.startTime.format('hh:mm a') + " - " + foundItem.endTime.format('hh:mm a'))
-  //     } else {
-  //       this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
-  //     }
-  //   } else {
-  //     this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
-  //   }
-  // }
-
-  // private _setIsFresh(){
-  //   this._isFresh = this.daybookDisplayService.activeDayController.isNewDay;
-  // }
 
   private _buildGuideLineHours() {
     let guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];

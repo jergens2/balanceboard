@@ -44,9 +44,9 @@ export class ActivityInputDropdownComponent implements OnInit {
 
   public placeHolder: string = "Search for activity";
 
-  @Input('placeHolder') setPlaceHolderValue(value: string){
-    this.placeHolder = value;
-  }
+  // @Input('placeHolder') setPlaceHolderValue(value: string){
+  //   this.placeHolder = value;
+  // }
 
   @Output() valueChanged: EventEmitter<ActivityCategoryDefinition> = new EventEmitter<ActivityCategoryDefinition>();
   @Input('initialValue') set initialValue(providedParent: ActivityCategoryDefinition) {

@@ -47,7 +47,6 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
 
     if (this.daybookService.tlefController.currentlyOpenTLEFItem) {
       if (this.daybookService.tlefController.currentlyOpenTLEFItem.isTLEItem) {
-        console.log("Reloading")
         this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
 
         // if (!this._entryStartTime) {

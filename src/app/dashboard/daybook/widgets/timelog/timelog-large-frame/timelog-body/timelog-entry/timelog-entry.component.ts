@@ -27,6 +27,7 @@ export class TimelogEntryComponent implements OnInit {
   private _remainingItems: TimelogEntryActivityDisplay[] = [];
   private _noteText: string = "";
   private _noteTextSmall: string = "";
+  private _hasText: boolean = false;
 
   public screenSize: ScreenSizes;
 
@@ -39,6 +40,7 @@ export class TimelogEntryComponent implements OnInit {
   public get isVerySmallSize(): boolean { return this.gridItem.isVerySmallItem; }
   public get isNormalSize(): boolean { return !this.isSmallSize && !this.isVerySmallSize && !this.isLargeSize; }
 
+  public get hasText(): boolean { return this._hasText; }
   public get backgroundColor(): string { return this._backgroundColor; };
 
   public get activityItems(): TimelogEntryActivityDisplay[] { return this._activityItems; }
@@ -75,11 +77,11 @@ export class TimelogEntryComponent implements OnInit {
       { screenSize: ScreenSizes.MOBILE, itemSize: 'VERY_SMALL', maxItems: 2 },
       { screenSize: ScreenSizes.MOBILE, itemSize: 'SMALL', maxItems: 2 },
       { screenSize: ScreenSizes.MOBILE, itemSize: 'NORMAL', maxItems: 2 },
-      { screenSize: ScreenSizes.MOBILE, itemSize: 'LARGE', maxItems: 4 },
+      { screenSize: ScreenSizes.MOBILE, itemSize: 'LARGE', maxItems: 2 },
       { screenSize: ScreenSizes.TABLET, itemSize: 'VERY_SMALL', maxItems: 3 },
       { screenSize: ScreenSizes.TABLET, itemSize: 'SMALL', maxItems: 3 },
       { screenSize: ScreenSizes.TABLET, itemSize: 'NORMAL', maxItems: 4 },
-      { screenSize: ScreenSizes.TABLET, itemSize: 'LARGE', maxItems: 5 },
+      { screenSize: ScreenSizes.TABLET, itemSize: 'LARGE', maxItems: 4 },
       { screenSize: ScreenSizes.NORMAL, itemSize: 'VERY_SMALL', maxItems: 2 },
       { screenSize: ScreenSizes.NORMAL, itemSize: 'SMALL', maxItems: 2 },
       { screenSize: ScreenSizes.NORMAL, itemSize: 'NORMAL', maxItems: 2 },
@@ -91,7 +93,7 @@ export class TimelogEntryComponent implements OnInit {
       { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'VERY_SMALL', maxItems: 3 },
       { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'SMALL', maxItems: 3 },
       { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'NORMAL', maxItems: 6 },
-      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'LARGE', maxItems: 8 },
+      { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'LARGE', maxItems: 6 },
     ];
     let itemSize: 'VERY_SMALL' | 'SMALL' | 'NORMAL' | 'LARGE';
     if(this.isVerySmallSize){ itemSize = 'VERY_SMALL'; }
@@ -187,20 +189,26 @@ export class TimelogEntryComponent implements OnInit {
         }
       }
     });
-    if(this.isNormalSize || this.isLargeSize){
-      if(noteText.length > 80){
-        this._noteText = noteText.substring(0, 80) + "...";
+    if(textFound){
+      if(this.isNormalSize || this.isLargeSize){
+        if(noteText.length > 80){
+          this._noteText = noteText.substring(0, 80) + "...";
+        }else{
+          this._noteText = noteText;
+        }
+        this._noteTextSmall = "";
       }else{
-        this._noteText = noteText;
+        if(noteText.length > 30){
+          this._noteTextSmall = noteText.substring(0, 30) + "...";
+        }else{
+          this._noteTextSmall = noteText;
+        }
+        this._noteText = "";
       }
-      this._noteTextSmall = "";
+      this._hasText = true;
     }else{
-      if(noteText.length > 30){
-        this._noteTextSmall = noteText.substring(0, 30) + "...";
-      }else{
-        this._noteTextSmall = noteText;
-      }
-      this._noteText = "";
+      this._hasText = false;
     }
+    
   }
 }

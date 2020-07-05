@@ -16,7 +16,6 @@ import { DaybookTimeSchedule } from "../../../api/daybook-time-schedule/daybook-
 
 export class TLEFController {
 
-    private _clock: moment.Moment;
     private _changesMadeTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
     private _promptToSaveChanges: boolean = false;
     private _tlefItems: TLEFControllerItem[] = [];
@@ -30,19 +29,25 @@ export class TLEFController {
     private _toolboxService: ToolboxService;
 
     constructor(daybookSchedule: DaybookTimeSchedule, activeDayController: DaybookController,
-        clock: moment.Moment, toolboxService: ToolboxService, activitiesService: ActivityCategoryDefinitionService) {
+        toolboxService: ToolboxService, activitiesService: ActivityCategoryDefinitionService) {
 
         this._daybookSchedule = daybookSchedule;
         this._activeDayController = activeDayController;
         this._toolboxService = toolboxService;
         this._activitiesService = activitiesService;
-
         this._startTime = moment(this._daybookSchedule.startTime);
         this._endTime = moment(this._daybookSchedule.endTime);
-        this._clock = moment(clock);
         this._buildItems();
         this._setToolboxSub();
 
+    }
+
+    public update(daybookSchedule: DaybookTimeSchedule, activeDayController: DaybookController) {
+        this._daybookSchedule = daybookSchedule;
+        this._activeDayController = activeDayController;
+        this._startTime = moment(this._daybookSchedule.startTime);
+        this._endTime = moment(this._daybookSchedule.endTime);
+        this._buildItems();
     }
 
     private get _timeDelineators(): TimelogDelineator[] { return this._daybookSchedule.displayDelineators; }
@@ -83,6 +88,16 @@ export class TLEFController {
         else { console.log("Error drawing new timelog entry: No grid item"); }
     }
 
+    public openTLEDelineator(delineator: TimelogDelineator){
+        let gridItem;
+        if(delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_START){
+            gridItem = this.tlefItems.find((item) => { return item.startTime.isSame(delineator.time) });
+        }else if(delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_END){
+            gridItem = this.tlefItems.find((item) => { return item.endTime.isSame(delineator.time) });
+        }else{
+            console.log("Error with provided delineator: " + delineator.toString());
+        }
+    }
     public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
         // console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
         if (gridItem.isMerged) {
@@ -153,8 +168,8 @@ export class TLEFController {
             }
         });
     }
-    public makeChangesTLE(changedItem: TimelogEntryItem) {this._changesMadeTLE$.next(changedItem);}
-    public clearChanges() {this._changesMadeTLE$.next(null);}
+    public makeChangesTLE(changedItem: TimelogEntryItem) { this._changesMadeTLE$.next(changedItem); }
+    public clearChanges() { this._changesMadeTLE$.next(null); }
     public closeTLEFPrompt() {
         // console.log("Closing prompt");
         this._promptToSaveChanges = false;
@@ -209,6 +224,8 @@ export class TLEFController {
     private _buildItems() {
         const drawStart = this._timeDelineators.find(item => item.delineatorType === TimelogDelineatorType.DRAWING_TLE_START);
         const drawEnd = this._timeDelineators.find(item => item.delineatorType === TimelogDelineatorType.DRAWING_TLE_END);
+        // console.log(" ** ** * * * rebuilding TLEF controller. DaybookScheduleItems: ")
+        // this._daybookSchedule.getItemsInRange(this._startTime, this._endTime).forEach((item)=>{console.log("   " + item.toString())})
         let items: TLEFControllerItem[] = this._daybookSchedule.getItemsInRange(this._startTime, this._endTime)
             .map(item => {
                 const startTime = item.startTime;
@@ -224,9 +241,7 @@ export class TLEFController {
                     sleepEntry = new SleepEntryItem(moment(), moment());
                 } else if (status === DaybookTimeScheduleStatus.ACTIVE) {
                     if (drawStart && drawEnd) {
-                        if (drawStart.time.isSame(startTime)) {
-                            isDrawing = true;
-                        }
+                        if (drawStart.time.isSame(startTime)) {isDrawing = true;}
                     }
                     if (isDrawing) {
                         timelogEntry = new TimelogEntryItem(drawStart.time, drawEnd.time);
@@ -245,6 +260,12 @@ export class TLEFController {
                 let newItem: TLEFControllerItem = new TLEFControllerItem(startTime, endTime, isAvailable, isDrawing, formCase, timelogEntry, sleepEntry, backgroundColor);
                 return newItem;
             });
+        const newCurrent = items.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+        const newCurrentFuture = items.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+        const existingCurrent = items.find(item => item.formCase === TLEFFormCase.EXISTING_CURRENT);
+        if (newCurrent) { newCurrent.setAsCurrent(); }
+        else if (newCurrentFuture) { newCurrentFuture.setAsCurrent(); }
+        else if (existingCurrent) { existingCurrent.setAsActive(); }
         this._tlefItems = items;
         // console.log("TLEF CONTROLLER ITEMS REBUILT")
         // this._tlefItems.forEach(item => console.log("   " + item.toString()))
@@ -253,7 +274,7 @@ export class TLEFController {
         let formCase: TLEFFormCase;
         const startTime: moment.Moment = entry.startTime;
         const endTime: moment.Moment = entry.endTime;
-        const now: moment.Moment = moment(this._clock).startOf('minute');
+        const now: moment.Moment = moment().startOf('minute');
         const isPrevious: boolean = endTime.isBefore(now);
         const isFuture: boolean = startTime.isAfter(now);
         if (isPrevious) {
@@ -279,7 +300,6 @@ export class TLEFController {
         this._currentlyOpenTLEFItem$.next(null);
         // this._shakeTemporaryItems();
         this._formClosed$.next(true);
-        this._buildItems();
     }
     public get onFormClosed$(): Observable<boolean> { return this._formClosed$.asObservable(); }
     /**
@@ -292,89 +312,4 @@ export class TLEFController {
             }
         });
     }
-
-    /**
-     * Checks to see if the NOW line is between the start and end of an existing TLE.
-     */
-    // private _nowLineIntersects(startDelineator: TimelogDelineator, endDelineator: TimelogDelineator): boolean {
-    //     let intersects: boolean = false;
-    //     if (endDelineator.delineatorType === TimelogDelineatorType.NOW) {
-    //         if (endDelineator.nowLineCrossesTLE) {
-    //             intersects = true;
-    //         }
-    //         // const prev = startDelineator.delineatorType;
-    //         // const tleStart = TimelogDelineatorType.TIMELOG_ENTRY_START;
-    //         // const tleEnd = TimelogDelineatorType.TIMELOG_ENTRY_END;
-    //         // const faTime = TimelogDelineatorType.FALLASLEEP_TIME;
-    //         // const wuTime = TimelogDelineatorType.WAKEUP_TIME;
-    //         // if (prev === tleStart && (nextDelineatorType === tleStart || nextDelineatorType === tleEnd || nextDelineatorType === faTime)) {
-    //         //     intersects = true;
-    //         // }
-    //     }
-    //     return intersects;
-    // }
-
-    // private _buildItems() {
-    // let items: TLEFControllerItem[] = [];
-    // if (this._timeDelineators.length > 0) {
-    //     console.log("REBUILDING:")
-    //     this._timeDelineators.forEach(item => console.log("     "  + item.toString()))
-    //     let currentTime: moment.Moment = this._timeDelineators[0].time;
-    //     for (let i = 1; i < this._timeDelineators.length; i++) {
-    //         const startDelineator: TimelogDelineator = this._timeDelineators[i - 1];
-    //         let endDelineator: TimelogDelineator = this._timeDelineators[i];
-    //         let intersects: boolean = this._nowLineIntersects(startDelineator, endDelineator);
-    //         if (intersects) {
-    //             i++;
-    //             endDelineator = this._timeDelineators[i];
-    //         }
-    //         let endTime: moment.Moment = endDelineator.time;
-    //         let formCase: TLEFFormCase;
-    //         let timelogEntry: TimelogEntryItem;
-    //         let sleepEntry: SleepEntryItem;
-    //         let isAvailable: boolean = false;
-    //         const availability: DaybookTimeScheduleStatus = this._daybookSchedule.getStatusAtTime(currentTime);
-    //         if (availability === DaybookTimeScheduleStatus.SLEEP) {
-    //             formCase = TLEFFormCase.SLEEP;
-    //             sleepEntry = new SleepEntryItem(moment(), moment());
-    //         } else if (availability === DaybookTimeScheduleStatus.ACTIVE) {
-    //             console.log("WERE ACTIVE: " + this._timeDelineators[i].toString())
-    //             if(this._timeDelineators[i].delineatorType === TimelogDelineatorType.DRAWING_TLE_START){
-    //                 if(this._timeDelineators[i-1].delineatorType === TimelogDelineatorType.DRAWING_TLE_START){
-    //                     const drawStart = this._timeDelineators[i-1].time;
-    //                     const drawEnd = this._timeDelineators[i].time;
-    //                     timelogEntry = new TimelogEntryItem(drawStart, drawEnd);
-    //                     formCase = this._determineCase(timelogEntry);
-    //                 }else{
-    //                     console.log("Error with delineators;")
-    //                 }
-    //             }else{
-    //                 console.log("TRYING TO GET TIMELOG ENTRY FOR TIMES: ")
-    //                 console.log("    " + currentTime.format('hh:mm a') + " to " + endTime.format('hh:mm a'))
-    //                 timelogEntry = this._activeDayController.getTimelogEntryItem(currentTime, endTime);
-    //                 formCase = this._determineCase(timelogEntry);
-    //             }
-    //         } else if (availability === DaybookTimeScheduleStatus.AVAILABLE) {
-    //             isAvailable = true;
-    //             timelogEntry = new TimelogEntryItem(currentTime, endTime);
-    //             formCase = this._determineCase(timelogEntry);
-    //         }
-    //         const tleBuilder: TimelogEntryBuilder = new TimelogEntryBuilder();
-    //         const backgroundColor: string = tleBuilder.getBackgroundColor(timelogEntry, this._activitiesService.activitiesTree);
-    //         let newItem: TLEFControllerItem = new TLEFControllerItem(currentTime, endTime, isAvailable, formCase, timelogEntry, sleepEntry, startDelineator, endDelineator, backgroundColor);
-    //         if (startDelineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
-    //             newItem.isDrawing;
-    //         }
-    //         items.push(newItem);
-    //         currentTime = moment(endDelineator.time);
-
-    //     }
-    // } else {
-    //     console.log("Error with timeDelineators.");
-    // }
-    // for (let i = 0; i < items.length; i++) {
-    //     items[i].setItemIndex(i);
-    // }
-    // }
-
 }

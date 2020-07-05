@@ -47,7 +47,7 @@ export class TLEFActivityListItem {
     }
 
     public onClickSaveColorPicker(color: string){
-        // console.log("Saving color: ", color);
+        console.log("Saving color: ", color);
         this._originalColor = color;
         this.color = color;
         this.activity.color = color;

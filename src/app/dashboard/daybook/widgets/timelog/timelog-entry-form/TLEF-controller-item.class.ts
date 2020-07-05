@@ -22,8 +22,6 @@ export class TLEFControllerItem {
 
     private _gridBarItem: TLEFGridBarItem;
 
-
-    private _itemIndex: number = -1;
     constructor(
         startTime: moment.Moment,
         endTime: moment.Moment,
@@ -53,12 +51,6 @@ export class TLEFControllerItem {
             this._isDrawing = true;
             this._gridBarItem.isDrawing = true;
         }
-        if (this.formCase === TLEFFormCase.NEW_CURRENT ||
-            this.formCase === TLEFFormCase.NEW_CURRENT_FUTURE ||
-            this.formCase === TLEFFormCase.EXISTING_CURRENT) {
-            this._isCurrent = true;
-            this._gridBarItem.isCurrent = true;
-        }
     }
 
     public get gridBarItem(): TLEFGridBarItem { return this._gridBarItem; }
@@ -74,13 +66,10 @@ export class TLEFControllerItem {
     public get isSleepItem(): boolean { return this.formCase === TLEFFormCase.SLEEP; }
     public get isTLEItem(): boolean { return this.formCase !== TLEFFormCase.SLEEP; }
 
-
-    // public setItemIndex(index: number) {
-    //     this._itemIndex = index;
-    //     this._gridBarItem.setItemIndex(index);
-    // }
-    // public get itemIndex(): number { return this._itemIndex; }
-
+    public setAsCurrent(){
+        this._isCurrent = true;
+            this._gridBarItem.isCurrent = true;
+    }
     public getInitialTLEValue(): TimelogEntryItem {
         const newTLE = new TimelogEntryItem(this._initialTLEValue.startTime, this._initialTLEValue.endTime);
         newTLE.timelogEntryActivities = this._initialTLEValue.timelogEntryActivities;

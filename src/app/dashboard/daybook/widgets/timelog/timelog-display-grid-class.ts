@@ -3,22 +3,13 @@ import { TimelogDelineator, TimelogDelineatorType } from "./timelog-delineator.c
 import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookController } from '../../controller/daybook-controller.class';
-import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
-import { TLEFController } from './timelog-entry-form/TLEF-controller.class';
 import { TLEFControllerItem } from './timelog-entry-form/TLEF-controller-item.class';
-import { DaybookTimeScheduleStatus } from '../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
 import { DaybookTimeSchedule } from '../../api/daybook-time-schedule/daybook-time-schedule.class';
-import { DaybookTimeScheduleItem } from '../../api/daybook-time-schedule/daybook-time-schedule-item.class';
-import { TimeRangeRelationship } from '../../../../shared/time-utilities/time-range-relationship.enum';
 
 export class TimelogDisplayGrid {
 
-  constructor(startTime: moment.Moment, endTime: moment.Moment, schedule: DaybookTimeSchedule, activeDayController: DaybookController) {
-    this._startTime = moment(startTime);
-    this._endTime = moment(endTime);
-
-    this._daybookSchedule = schedule;
-    this._buildGrid();
+  constructor(schedule: DaybookTimeSchedule) {
+    this._buildGrid(schedule);
   }
 
   private _startTime: moment.Moment;
@@ -34,20 +25,23 @@ export class TimelogDisplayGrid {
 
   public ngStyle: any = {};
 
-  public onCreateNewTimelogEntry(schedule: DaybookTimeSchedule, drawStartTime: moment.Moment, drawEndTime: moment.Moment) {
-    this._daybookSchedule = schedule;
-    this._buildGrid();
-    // console.log("Grid items:")
-    // this._gridItems.forEach(item => console.log(item.toString()))
-    const gridItem = this.gridItems.find((item) => { return item.startTime.isSame(drawStartTime) && item.endTime.isSame(drawEndTime) });
-    if (gridItem) {
-      console.log("OOO YEA YEA")
-    } else {
-      console.log("Error drawing new timelog entry: No grid item");
-    }
+  public update(schedule: DaybookTimeSchedule){
+    this._buildGrid(schedule);
+  }
+  public updateActiveItem(tlefItem: TLEFControllerItem) {
+    this.gridItems.forEach(gridItem => {
+      if (gridItem.startTime.isSame(tlefItem.startTime)) {
+        gridItem.isActiveFormItem = true;
+      } else {
+        gridItem.isActiveFormItem = false;
+      }
+    });
   }
 
-  private _buildGrid() {
+  private _buildGrid(schedule: DaybookTimeSchedule) {
+    this._daybookSchedule = schedule;
+    this._startTime = moment(schedule.startTime);
+    this._endTime = moment(schedule.endTime);
     let displayGridNgStyle: any = {};
     let gridItems: TimelogDisplayGridItem[] = this._daybookSchedule.getItemsInRange(this.startTime, this.endTime)
       .map(item => {
@@ -56,10 +50,10 @@ export class TimelogDisplayGrid {
         const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, item.status, timelogEntry);
         return newGridItem;
       });
-    gridItems.forEach((gridItem)=>{
-      this.timeDelineators.forEach((delineator)=>{
-        if(delineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START){
-          if(gridItem.startTime.isSame(delineator.time)){
+    gridItems.forEach((gridItem) => {
+      this.timeDelineators.forEach((delineator) => {
+        if (delineator.delineatorType === TimelogDelineatorType.DRAWING_TLE_START) {
+          if (gridItem.startTime.isSame(delineator.time)) {
             gridItem.setIsDrawing();
           }
         }

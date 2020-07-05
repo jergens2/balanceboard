@@ -79,18 +79,16 @@ export class DaybookDisplayService {
 
 
   public onStartDrawingTLE(drawTLE: TimelogEntryItem) { this._drawTLE$.next(drawTLE); }
-  public onCreateNewTimelogEntry(drawStartDel: TimelogDelineator, drawEndDel: TimelogDelineator) { 
-    console.log("CREATING new TLE: ")
-    console.log("  " + drawStartDel.toString() + " \n"+ drawEndDel.toString())
+  public onCreateNewTimelogEntry(drawStartDel: TimelogDelineator, drawEndDel: TimelogDelineator) {
     this.daybookSchedule.onCreateNewTimelogEntry(drawStartDel, drawEndDel);
     this.tlefController.onCreateNewTimelogEntry(this.daybookSchedule);
-    this.timelogDisplayGrid.onCreateNewTimelogEntry(this.daybookSchedule, drawStartDel.time, drawEndDel.time);
-    // this._createTLE$.next(timelogEntry); 
+    this.timelogDisplayGrid.update(this.daybookSchedule);
   }
 
   public setDaybookWidget(widget: DaybookWidgetType) { this._widgetChanged$.next(widget); }
-  public openNewCurrentTimelogEntry() {this.tlefController.openNewCurrentTimelogEntry();}
-  public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {this.tlefController.openTimelogGridItem(gridItem);}
+  public openNewCurrentTimelogEntry() { this.tlefController.openNewCurrentTimelogEntry(); }
+  public openTimelogGridItem(gridItem: TimelogDisplayGridItem) { this.tlefController.openTimelogGridItem(gridItem); }
+  public openTLEDelineator(delineator: TimelogDelineator) { this.tlefController.openTLEDelineator(delineator); }
   public openWakeupTime() { this.tlefController.openWakeupTime(); }
   public openFallAsleepTime() { this.tlefController.openFallAsleepTime(); }
 
@@ -115,10 +113,8 @@ export class DaybookDisplayService {
         } else {
           this._updateDisplay(update);
         }
-
       }),
     ];
-
     this._updateDisplay({
       type: DaybookDisplayUpdateType.DEFAULT,
       controller: this.daybookControllerService.activeDayController,
@@ -128,13 +124,39 @@ export class DaybookDisplayService {
 
   private _updateDisplay(update: DaybookDisplayUpdate) {
     console.log("* * * * * Daybook Display update: " + update.controller.dateYYYYMMDD, update.type);
-    const sleepManager: SleepManager = this.sleepService.sleepManager;
-    const sleepCycle: DaybookSleepCycle = sleepManager.sleepCycle;
-    this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, this.clock, sleepCycle, update.controller);
-    this._tlefController = new TLEFController(this._daybookSchedule, this.activeDayController, this.clock, this.toolBoxService, this.activitiesService);
-    this._timelogDisplayGrid = new TimelogDisplayGrid(this.displayStartTime, this.displayEndTime, this._daybookSchedule, this.activeDayController);
+    this._updateDaybookSchedule(update);
+    this._updateTimelogDisplayGrid();
+    this._updateTlefController();
     this._buildZoomItems();
     this._displayUpdated$.next(update);
+  }
+
+
+  private _updateDaybookSchedule(update: DaybookDisplayUpdate) {
+    const sleepManager: SleepManager = this.sleepService.sleepManager;
+    const sleepCycle: DaybookSleepCycle = sleepManager.sleepCycle;
+    this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
+    // console.log("* DAYBOOK SCHEDULE HAS BEEN UPDATED")
+    // this._daybookSchedule.displayDelineators.forEach((del) => { console.log("   " + del.toString()) })
+  }
+  private _updateTimelogDisplayGrid() {
+    if (!this._timelogDisplayGrid) {
+      this._timelogDisplayGrid = new TimelogDisplayGrid(this._daybookSchedule);
+    } else {
+      this._timelogDisplayGrid.update(this._daybookSchedule)
+    }
+  }
+  private _updateTlefController() {
+    if (!this._tlefController) {
+      this._tlefController = new TLEFController(this._daybookSchedule, this.activeDayController, this.toolBoxService, this.activitiesService);
+    } else {
+      this._tlefController.update(this._daybookSchedule, this.activeDayController);
+    }
+    this._updateTLEFSubscriptions();
+    if (this._tlefController.formIsOpen) {
+      // console.log("* updating TLEF controller.  it was open, so updating active grid item.")
+      this.timelogDisplayGrid.updateActiveItem(this.tlefController.currentlyOpenTLEFItem);
+    }
   }
 
   private _buildZoomItems() {
@@ -148,18 +170,25 @@ export class DaybookDisplayService {
   }
 
 
-  // private _tlefSubscription: Subscription = new Subscription();
-  // private _updateTLEFSubscription() {
-  //   this._tlefSubscription.unsubscribe();
-  //   this._tlefSubscription = this.tlefController.onFormClosed$.subscribe((formIsClosed: boolean) => {
-  //     if (formIsClosed) {
-  //       this._updateDisplay({
-  //         type: DaybookDisplayUpdateType.DEFAULT,
-  //         controller: this.daybookControllerService.activeDayController,
-  //       });
-  //     }
-  //   });
-  // }
+  private _tlefSubscriptions: Subscription[] = [];
+  private _updateTLEFSubscriptions() {
+    this._tlefSubscriptions.forEach(s => s.unsubscribe());
+    this._tlefSubscriptions = [
+      this.tlefController.onFormClosed$.subscribe((formIsClosed: boolean) => {
+        if (formIsClosed) {
+          this._updateDisplay({
+            type: DaybookDisplayUpdateType.DEFAULT,
+            controller: this.daybookControllerService.activeDayController,
+          });
+        }
+      }),
+      this.tlefController.currentlyOpenTLEFItem$.subscribe((tlefItem) => {
+        if (tlefItem) {
+          this.timelogDisplayGrid.updateActiveItem(tlefItem);
+        }
+      })
+    ];
+  }
 
 
 
