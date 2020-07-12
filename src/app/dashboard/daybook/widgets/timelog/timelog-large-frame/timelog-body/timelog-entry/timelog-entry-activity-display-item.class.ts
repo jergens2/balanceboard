@@ -4,7 +4,7 @@ import { ActivityCategoryDefinition } from "../../../../../../activities/api/act
 import { TimelogEntryDisplayItemUnit } from "./tle-display-item-unit.class";
 import { DurationString } from "../../../../../../../shared/time-utilities/duration-string.class";
 
-export class TimelogEntryActivityDisplay {
+export class TimelogEntryActivityDisplayItem {
 
     private _activity: ActivityCategoryDefinition;
     private _units: TimelogEntryDisplayItemUnit[] = [];
@@ -26,7 +26,10 @@ export class TimelogEntryActivityDisplay {
         if(this._name.length > 16){
             this._name = this._name.substr(0, 16) + "...";
         }
+        // console.log("Item built!:  " + this.toString())
     }
+
+    public toString(): string { return this._activity.name + " - " + this._durationString; }
 
     private _buildUnits() {
         const durationMinutes = this._durationMS / (1000 * 60);

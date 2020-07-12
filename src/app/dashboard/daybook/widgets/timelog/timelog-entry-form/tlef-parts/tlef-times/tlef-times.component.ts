@@ -32,9 +32,9 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
     this._reload();
     this._subs = [
       this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe(s => this._reload()),
-      // this.daybookService.displayUpdated$.subscribe((update)=>{
-      //   this._reload();
-      // })
+      this.daybookService.displayUpdated$.subscribe((update)=>{
+        this._reload();
+      })
     ];
   }
 
@@ -44,7 +44,7 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
   }
 
   private _reload() {
-
+    
     if (this.daybookService.tlefController.currentlyOpenTLEFItem) {
       if (this.daybookService.tlefController.currentlyOpenTLEFItem.isTLEItem) {
         this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
@@ -68,6 +68,7 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
       this._entryStartTime = moment();
       this._entryEndTime = moment();
     }
+    console.log("RELOADING:" + this.entryStartTime + " -- " + this.entryEndTime)
   }
 
 

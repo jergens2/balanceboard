@@ -12,18 +12,14 @@ export class TimeSelectionColumn {
 
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
-
     private _divisorMinutes: number = 5;
-
     private _rows: TimeSelectionRow[] = [];
-
+    private _daybookService: DaybookDisplayService;
 
     public get startTime(): moment.Moment { return this._startTime; }
     public get endTime(): moment.Moment { return this._endTime; }
     public get rows(): TimeSelectionRow[] { return this._rows; }
 
-
-    private _daybookService: DaybookDisplayService;
 
     constructor(daybookService: DaybookDisplayService) {
         // console.log("** Construction TimeSelectionColumn")

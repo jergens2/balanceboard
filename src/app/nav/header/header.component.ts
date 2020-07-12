@@ -100,7 +100,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public onClickClock() {
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
     this.router.navigate(['/daybook']);
-    // this.daybookDisplayService.openNewCurrentTimelogEntry();
+    this.daybookDisplayService.openNewCurrentTimelogEntry();
   }
   public onClickBattery() {
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);

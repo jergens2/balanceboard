@@ -11,7 +11,7 @@
         <input *ngIf="activityItem.colorPickerIsOpen" class="activity-color-circle" style="border: 1px solid black; font-size: 0.1em;" 
           [(colorPicker)]="activityItem.color"
           [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'"
-          [style.background]="activityItem.color" [cpPosition]="'left'" [cpOKButton]="true" [cpOKButtonText]="'Save'"
+          [style.background]="activityItem.color" [cpPosition]="'bottom'" [cpOKButton]="true" [cpOKButtonText]="'Save'"
           [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
           [cpCancelButtonClass]="'small-button discard-button'"
           (colorPickerClose)="activityItem.onClickCancelColorPicker()"

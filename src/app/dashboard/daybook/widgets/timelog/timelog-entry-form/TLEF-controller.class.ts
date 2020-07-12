@@ -13,6 +13,7 @@ import { ActivityCategoryDefinitionService } from "../../../../activities/api/ac
 import { DaybookTimeScheduleStatus } from "../../../api/daybook-time-schedule/daybook-time-schedule-status.enum";
 import { TimelogEntryBuilder } from "../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class";
 import { DaybookTimeSchedule } from "../../../api/daybook-time-schedule/daybook-time-schedule.class";
+import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from "../../../controller/items/daybook-display-update.interface";
 
 export class TLEFController {
 
@@ -42,12 +43,60 @@ export class TLEFController {
 
     }
 
-    public update(daybookSchedule: DaybookTimeSchedule, activeDayController: DaybookController) {
+    public update(update: DaybookDisplayUpdate, daybookSchedule: DaybookTimeSchedule, activeDayController: DaybookController) {
+        console.log("  *TLEF-Controller.class.update() ")
         this._daybookSchedule = daybookSchedule;
         this._activeDayController = activeDayController;
         this._startTime = moment(this._daybookSchedule.startTime);
         this._endTime = moment(this._daybookSchedule.endTime);
+        let activeItem: TLEFControllerItem;
+        if (this.currentlyOpenTLEFItem) {
+            activeItem = this.currentlyOpenTLEFItem;
+        }
         this._buildItems();
+
+        if (activeItem) {
+
+            if (!activeItem.isDrawing) {
+                if (!this.changesMade) {
+                    console.log("No unsaved changes, so opening: ", activeItem)
+                    const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
+                    this._openTLEFItem(newActiveItem);
+                } else {
+                    console.log("There are unsaved changes, so updating: ", activeItem)
+                    const updateActiveItem = this._findActiveItemAfterUpdate(activeItem);
+                    if (updateActiveItem) {
+                        // updateActiveItem.transposeFrom(activeItem);
+                        // this._currentlyOpenTLEFItem$.next(null);
+                        // this._changesMadeTLE$.next(null);
+                        this._setActiveItem(updateActiveItem);
+                        // this._currentlyOpenTLEFItem$.next(updateActiveItem);
+                    } else {
+                        console.log("unable to find an active item...")
+                    }
+
+                }
+            }
+        }
+    }
+
+    private _findActiveItemAfterUpdate(activeItem: TLEFControllerItem): TLEFControllerItem {
+        const currentCase = activeItem.formCase;
+        if (currentCase === TLEFFormCase.NEW_CURRENT) {
+            return this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+        } else if (currentCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
+            return this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+        }
+        const foundSameItem = this._tlefItems.find(item => item.isSame(activeItem));
+        if (foundSameItem) { return foundSameItem; }
+        else {
+            const foundSimilarItem = this._tlefItems.find(item => item.isSimilar(activeItem));
+            if (foundSimilarItem) { return foundSimilarItem; }
+            else {
+                console.log("COULD NOT FIND ITEM AFTER UPDATE that matches: " + activeItem.toString());
+                this.tlefItems.forEach(item => console.log("   " + item.toString()))
+            }
+        }
     }
 
     private get _timeDelineators(): TimelogDelineator[] { return this._daybookSchedule.displayDelineators; }
@@ -75,46 +124,48 @@ export class TLEFController {
     public openWakeupTime() { this._openTLEFItem(this._tlefItems[0]); }
     public openFallAsleepTime() { this._openTLEFItem(this._tlefItems[this._tlefItems.length - 1]); }
     public openNewCurrentTimelogEntry() {
-        console.log("opening new current TLE")
-        const foundItem = this.tlefItems.find(item => { return item.formCase === TLEFFormCase.NEW_CURRENT; });
-        if (foundItem) { this._openTLEFItem(foundItem); }
-        else { console.log("Could not find NEW_CURRENT item") }
+        const newCurrentItem = this.tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+        const existingcurrentItem = this.tlefItems.find(item => item.formCase === TLEFFormCase.EXISTING_CURRENT);
+        const newCurrentFutureItem = this.tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+        if (newCurrentItem) { this._openTLEFItem(newCurrentItem); }
+        else if (existingcurrentItem) { this._openTLEFItem(existingcurrentItem); }
+        else if (newCurrentFutureItem) { this._openTLEFItem(newCurrentFutureItem); }
+        else {
+            console.log("Error: Could not find a current item.")
+        }
     }
     public onCreateNewTimelogEntry(schedule: DaybookTimeSchedule) {
         this._daybookSchedule = schedule;
         this._buildItems();
         const gridItem = this.tlefItems.find((item) => { return item.isDrawing });
-        if (gridItem) { this._openTLEFItem(gridItem); }
+        if (gridItem) {
+            if (this.currentlyOpenTLEFItem) {
+                if (!this.currentlyOpenTLEFItem.isSame(gridItem)) {
+                    this._openTLEFItem(gridItem);
+                }
+            } else {
+                this._openTLEFItem(gridItem);
+            }
+        }
         else { console.log("Error drawing new timelog entry: No grid item"); }
     }
 
-    public openTLEDelineator(delineator: TimelogDelineator){
-        let gridItem;
-        if(delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_START){
-            gridItem = this.tlefItems.find((item) => { return item.startTime.isSame(delineator.time) });
-        }else if(delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_END){
-            gridItem = this.tlefItems.find((item) => { return item.endTime.isSame(delineator.time) });
-        }else{
-            console.log("Error with provided delineator: " + delineator.toString());
+    public openTLEDelineator(delineator: TimelogDelineator) {
+        const gridItem = this.tlefItems.find((item) => { return item.startTime.isSame(delineator.time) });
+        if (gridItem) {
+            this._openTLEFItem(gridItem);
         }
+
     }
     public openTimelogGridItem(gridItem: TimelogDisplayGridItem) {
         // console.log("opening grid item: " + gridItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm a'));
         if (gridItem.isMerged) {
             if (gridItem.timelogEntries.length >= 2) {
                 let biggest = gridItem.timelogEntries[0];
-                gridItem.timelogEntries.forEach((item) => {
-                    if (item.durationMilliseconds > biggest.durationMilliseconds) {
-                        biggest = item;
-                    }
-                });
-                const foundItem = this.tlefItems.find(item => {
-                    return item.startTime.isSameOrAfter(biggest.startTime) && item.endTime.isSame(biggest.endTime);
-                    // return item.isTLEItem && item.startTime.isSameOrAfter(biggest.startTime) && item.endTime.isSame(biggest.endTime);
-                });
-                if (foundItem) {
-                    this._openTLEFItem(foundItem);
-                } else {
+                gridItem.timelogEntries.forEach((item) => { if (item.durationMilliseconds > biggest.durationMilliseconds) { biggest = item; } });
+                const foundItem = this.tlefItems.find(item => { return item.startTime.isSameOrAfter(biggest.startTime) && item.endTime.isSame(biggest.endTime); });
+                if (foundItem) { this._openTLEFItem(foundItem); }
+                else {
                     console.log("error finding item -- " + gridItem.startTime.format('YYYY-MM-DD hh:mm:ss a') + " to " + gridItem.endTime.format('YYYY-MM-DD hh:mm:ss a'));
                     this.tlefItems.forEach((item) => {
                         console.log("   Grid bar item: " + item.startTime.format("YYYY-MM-DD hh:mm:ss a") + " to " + item.endTime.format('YYYY-MM-DD hh:mm:ss a'))
@@ -168,7 +219,10 @@ export class TLEFController {
             }
         });
     }
-    public makeChangesTLE(changedItem: TimelogEntryItem) { this._changesMadeTLE$.next(changedItem); }
+    public makeChangesTLE(changedItem: TimelogEntryItem) {
+        this.currentlyOpenTLEFItem.setUnsavedTLEChanges(changedItem);
+        this._changesMadeTLE$.next(changedItem);
+    }
     public clearChanges() { this._changesMadeTLE$.next(null); }
     public closeTLEFPrompt() {
         // console.log("Closing prompt");
@@ -183,15 +237,15 @@ export class TLEFController {
     }
     private _openTLEFItem(item: TLEFControllerItem) {
         // console.log("Opening TLEF Item", item);
-        let openItem: boolean = true;
+        let doOpenItem: boolean = true;
         if (this.currentlyOpenTLEFItem) {
             if (this.changesMade) {
                 this._promptToSaveChanges = true;
                 this._stachedItem = item;
-                openItem = false;
+                doOpenItem = false;
             }
         }
-        if (openItem) {
+        if (doOpenItem) {
             this._changesMadeTLE$.next(null);
             this._setActiveItem(item);
             this._currentlyOpenTLEFItem$.next(item);
@@ -203,22 +257,17 @@ export class TLEFController {
         }
     }
     private _setActiveItem(activeItem: TLEFControllerItem) {
-        if (activeItem) {
-            let similarItemFound = false;
-            this._tlefItems.forEach(tlefItem => {
-                if (tlefItem.isSame(activeItem)) {
-                    tlefItem.setAsActive();
+        const index = this.tlefItems.indexOf(activeItem);
+        if (index >= 0) {
+            for (let i = 0; i < this.tlefItems.length; i++) {
+                if (i === index) {
+                    this.tlefItems[i].setAsActive();
                 } else {
-                    if (tlefItem.isSimilar(activeItem) && !similarItemFound) {
-                        tlefItem.setAsActive();
-                        similarItemFound = true;
-                    } else {
-                        tlefItem.setAsNotActive();
-                    }
+                    this.tlefItems[i].setAsNotActive();
                 }
-            });
+            }
         } else {
-            console.log("error: null activeItem provided")
+            console.log("Error setting active item: ", activeItem);
         }
     }
     private _buildItems() {
@@ -241,7 +290,7 @@ export class TLEFController {
                     sleepEntry = new SleepEntryItem(moment(), moment());
                 } else if (status === DaybookTimeScheduleStatus.ACTIVE) {
                     if (drawStart && drawEnd) {
-                        if (drawStart.time.isSame(startTime)) {isDrawing = true;}
+                        if (drawStart.time.isSame(startTime)) { isDrawing = true; }
                     }
                     if (isDrawing) {
                         timelogEntry = new TimelogEntryItem(drawStart.time, drawEnd.time);
@@ -265,7 +314,7 @@ export class TLEFController {
         const existingCurrent = items.find(item => item.formCase === TLEFFormCase.EXISTING_CURRENT);
         if (newCurrent) { newCurrent.setAsCurrent(); }
         else if (newCurrentFuture) { newCurrentFuture.setAsCurrent(); }
-        else if (existingCurrent) { existingCurrent.setAsActive(); }
+        else if (existingCurrent) { existingCurrent.setAsCurrent(); }
         this._tlefItems = items;
         // console.log("TLEF CONTROLLER ITEMS REBUILT")
         // this._tlefItems.forEach(item => console.log("   " + item.toString()))
@@ -298,7 +347,6 @@ export class TLEFController {
     private _closeForm() {
         this._changesMadeTLE$.next(null);
         this._currentlyOpenTLEFItem$.next(null);
-        // this._shakeTemporaryItems();
         this._formClosed$.next(true);
     }
     public get onFormClosed$(): Observable<boolean> { return this._formClosed$.asObservable(); }

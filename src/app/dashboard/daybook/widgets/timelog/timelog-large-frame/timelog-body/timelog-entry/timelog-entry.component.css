@@ -109,11 +109,13 @@
 }
 
 .note-text-small{
-
+    width: 100%;
+    min-width: 80px;
     max-width: 170px;
     flex-grow: 2;
 
     white-space:nowrap;
+    overflow-x: hidden;
     /* background-color: rgba(228, 101, 27, 0.336); */
 
     color: gray;

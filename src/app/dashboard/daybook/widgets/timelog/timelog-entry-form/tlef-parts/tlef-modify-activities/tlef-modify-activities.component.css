@@ -33,11 +33,3 @@
     cursor: pointer;
     border: 1px solid black;
 }
-
-.open-color-picker{
-    width:0px;
-    height:0px;
-    border: none;
-    position: absolute;
-    margin-left: -10px;
-}

@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
+import { TLEFController } from '../../TLEF-controller.class';
 
 @Component({
   selector: 'app-tlef-grid-items-bar',
@@ -19,10 +20,9 @@ export class TLEFGridItemsBarComponent implements OnInit, OnDestroy {
 
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;
+  private _tlefController: TLEFController;
 
-  private _items: TLEFGridBarItem[] = [];
-
-  public get items(): TLEFGridBarItem[] { return this.daybookDisplayService.tlefController.gridBarItems; }
+  public get items(): TLEFGridBarItem[] { return this._tlefController.gridBarItems; }
 
   public get startTime(): moment.Moment{ return this.daybookDisplayService.displayStartTime; }
   public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
@@ -30,17 +30,23 @@ export class TLEFGridItemsBarComponent implements OnInit, OnDestroy {
   public faArrowLeft = faArrowLeft;
   public faArrowRight = faArrowRight;
 
-  private _daybookSub: Subscription = new Subscription();
-  private _toolboxSub: Subscription = new Subscription();
+  private _subs: Subscription[] = [];
 
   ngOnInit() {
+    this._reload();
+    this._subs = [
+      this.daybookDisplayService.tlefController.currentlyOpenTLEFItem$.subscribe((change)=>{
+        if(change){ this._reload(); }
+      }),
+    ];
+    
   }
 
-  // private reload(){
-    // this._startTime = this.daybookDisplayService.displayStartTime;
-    // this._endTime = this.daybookDisplayService.displayEndTime;
-    // this._items = this.daybookDisplayService.gridBarItems;
-  // }
+  private _reload(){
+    this._startTime = this.daybookDisplayService.displayStartTime;
+    this._endTime = this.daybookDisplayService.displayEndTime;
+    this._tlefController = this.daybookDisplayService.tlefController;
+  }
 
 
   public ngOnDestroy(){

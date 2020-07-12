@@ -66,9 +66,9 @@ export class TLEFControllerItem {
     public get isSleepItem(): boolean { return this.formCase === TLEFFormCase.SLEEP; }
     public get isTLEItem(): boolean { return this.formCase !== TLEFFormCase.SLEEP; }
 
-    public setAsCurrent(){
+    public setAsCurrent() {
         this._isCurrent = true;
-            this._gridBarItem.isCurrent = true;
+        this._gridBarItem.isCurrent = true;
     }
     public getInitialTLEValue(): TimelogEntryItem {
         const newTLE = new TimelogEntryItem(this._initialTLEValue.startTime, this._initialTLEValue.endTime);
@@ -90,12 +90,8 @@ export class TLEFControllerItem {
         if (tle.isSavedEntry) { newTLE.setIsSaved(); }
         this._unsavedTLEChanges = newTLE;
     }
-    public getUnsavedTLEChanges(): TimelogEntryItem {
-        return this._unsavedTLEChanges;
-    }
-    public unsavedChanges(): boolean {
-        return this._unsavedChanges;
-    }
+    public get unsavedTLEChanges(): TimelogEntryItem { return this._unsavedTLEChanges; }
+    public get hasUnsavedChanges(): boolean { return this._unsavedChanges; }
 
     private _isActive: boolean = false;
     private _isCurrent: boolean = false;
@@ -103,6 +99,7 @@ export class TLEFControllerItem {
     private _isDrawing: boolean = false;
 
     public setAsActive() {
+        console.log("SETTING THIS ITEM AS ACTIVE  : " + this.toString())
         this._isActive = true;
         this._gridBarItem.isActive = true;
     }
@@ -112,6 +109,16 @@ export class TLEFControllerItem {
         this._gridBarItem.isActive = false;
     }
 
+    // public transposeFrom(otherItem: TLEFControllerItem){
+    //     console.log(" TRANS POSING ")
+    //     if(otherItem.isTLEItem){
+    //         const tleVal = otherItem.getInitialTLEValue();
+                
+    //     }else if(otherItem.isSleepItem){
+    //         console.log("WARNING:  unhandled.")
+    //     }
+    // }
+
     // public setAsDrawing() {
     //     this._isDrawing = true;
     // }
@@ -120,15 +127,17 @@ export class TLEFControllerItem {
     public isSame(otherItem: TLEFControllerItem): boolean {
         const sameStart = this.startTime.isSame(otherItem.startTime);
         const sameEnd = this.endTime.isSame(otherItem.endTime);
-        // const sameCase = this.formCase === otherItem.formCase;
-        // const sameAvailability = this.isAvailable === otherItem.isAvailable;
-        // return (sameStart && sameEnd && sameCase && sameAvailability);
-        return (sameStart && sameEnd);
+        const sameCase = this.formCase === otherItem.formCase;
+        const sameAvailability = this.isAvailable === otherItem.isAvailable;
+        const sameIsDrawing = this.isDrawing === otherItem.isDrawing;
+        return (sameStart && sameEnd && sameCase && sameAvailability && sameIsDrawing);
     }
     public isSimilar(otherItem: TLEFControllerItem): boolean {
         const sameStart = this.startTime.isSame(otherItem.startTime);
         const sameEnd = this.endTime.isSame(otherItem.endTime);
-        return sameStart || sameEnd;
+        const sameCase = this.formCase === otherItem.formCase;
+        const sameAvailability = this.isAvailable === otherItem.isAvailable;
+        return (sameStart || sameEnd) && sameCase && sameAvailability;
     }
 
 

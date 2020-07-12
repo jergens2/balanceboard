@@ -25,17 +25,19 @@ export class TimelogDisplayGrid {
 
   public ngStyle: any = {};
 
-  public update(schedule: DaybookTimeSchedule){
+  public update(schedule: DaybookTimeSchedule) {
     this._buildGrid(schedule);
   }
   public updateActiveItem(tlefItem: TLEFControllerItem) {
-    this.gridItems.forEach(gridItem => {
-      if (gridItem.startTime.isSame(tlefItem.startTime)) {
-        gridItem.isActiveFormItem = true;
-      } else {
-        gridItem.isActiveFormItem = false;
-      }
-    });
+    this.gridItems.forEach(gridItem => gridItem.isActiveFormItem = false);
+    const foundExactItem = this.gridItems.find(gridItem => { return gridItem.startTime.isSame(tlefItem.startTime) && gridItem.endTime.isSame(tlefItem.endTime) });
+    const foundStartItem = this.gridItems.find(gridItem => { return gridItem.startTime.isSame(tlefItem.startTime) });
+    const foundEndItem = this.gridItems.find(gridItem => { return gridItem.endTime.isSame(tlefItem.endTime) });
+    let foundItem: TimelogDisplayGridItem;
+    if (foundExactItem) { foundItem = foundExactItem; }
+    else if (foundStartItem) { foundItem = foundStartItem; }
+    else if (foundEndItem) { foundItem = foundEndItem };
+    if (foundItem) { foundItem.isActiveFormItem = true; }
   }
 
   private _buildGrid(schedule: DaybookTimeSchedule) {
@@ -79,6 +81,11 @@ export class TimelogDisplayGrid {
         }
         if (merge) {
           gridItems[i].timelogEntries.forEach((tle) => gridItems[i - 1].timelogEntries.push(tle));
+          gridItems[i-1].timelogEntries = gridItems[i-1].timelogEntries.sort((tle1, tle2)=>{
+            if(tle1.startTime.isBefore(tle2.startTime)){ return -1; }
+            else if(tle1.startTime.isAfter(tle2.startTime)){ return 1;}
+            return 0;
+          });
           gridItems[i - 1].percent = gridItems[i - 1].percent + gridItems[i].percent;
           gridItems[i - 1].changeEndTime(gridItems[i].endTime);
           gridItems[i - 1].isMerged = true;

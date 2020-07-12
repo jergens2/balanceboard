@@ -103,7 +103,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
 
 
     public onCreateNewTimelogEntry(drawStartDel: TimelogDelineator, drawEndDel: TimelogDelineator) {
-        console.log("creating TLE from drawing")
+        // console.log("creating TLE from drawing")
         this._drawDelineators = {
             start: drawStartDel,
             end: drawEndDel,
@@ -138,9 +138,15 @@ export class DaybookTimeSchedule extends TimeSchedule {
             TimelogDelineatorType.SAVED_DELINEATOR,
             TimelogDelineatorType.NOW,
         ];
-        const delineators: moment.Moment[] = this._displayDelineators
+        const midnightDelineators: moment.Moment[] = [
+            moment(this.dateYYYYMMDD).startOf('day'),
+            moment(this.dateYYYYMMDD).startOf('day').add(24, 'hours'),
+        ];
+        const delineators: moment.Moment[] = [...this._displayDelineators
             .filter(item => splitItemsByDelineatorType.indexOf(item.delineatorType) > -1)
-            .map(item => item.time);
+            .map(item => item.time),
+            ...midnightDelineators,
+        ];
         timeScheduleItems = this._populateAvailableScheduleItems(timeScheduleItems, delineators);
         timeScheduleItems = this._sortAndValidateScheduleItems(timeScheduleItems);
         timeScheduleItems = this._splitAvailableStatusItems(timeScheduleItems);
@@ -260,7 +266,8 @@ export class DaybookTimeSchedule extends TimeSchedule {
             const end = timeScheduleItems[i].endTime;
             const endOfDay = moment(start).startOf('day').add(24, 'hours');
             if (end.isAfter(endOfDay)) {
-                console.log('Danger: no item should ever cross midnight');
+                console.log('Danger: no item should ever cross midnight: ' + timeScheduleItems[i].toString());
+                // timeScheduleItems.forEach(item => console.log("  " + item.toString()))
             }
         }
         let overlappingItems: boolean = false;
@@ -355,6 +362,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
                         i--;
                     } else {
                         console.log("** Warning: duplicate DelineatorTypes");
+                        console.log( sortedDelineators[i].toString() + " , " + sortedDelineators[i - 1].toString())
                     }
                 }
             }

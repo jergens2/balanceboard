@@ -7,7 +7,7 @@ import { DaybookWidgetType } from './widgets/daybook-widget.class';
 import { TimelogZoomType } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-type.enum';
 import * as moment from 'moment';
 import { TimelogDisplayGrid } from './widgets/timelog/timelog-display-grid-class';
-import { TimelogDelineator } from './widgets/timelog/timelog-delineator.class';
+import { TimelogDelineator, TimelogDelineatorType } from './widgets/timelog/timelog-delineator.class';
 import { TimelogEntryItem } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { faSun, faList } from '@fortawesome/free-solid-svg-icons';
 import { TimelogDisplayGridItem } from './widgets/timelog/timelog-display-grid-item.class';
@@ -80,6 +80,7 @@ export class DaybookDisplayService {
 
   public onStartDrawingTLE(drawTLE: TimelogEntryItem) { this._drawTLE$.next(drawTLE); }
   public onCreateNewTimelogEntry(drawStartDel: TimelogDelineator, drawEndDel: TimelogDelineator) {
+
     this.daybookSchedule.onCreateNewTimelogEntry(drawStartDel, drawEndDel);
     this.tlefController.onCreateNewTimelogEntry(this.daybookSchedule);
     this.timelogDisplayGrid.update(this.daybookSchedule);
@@ -126,7 +127,7 @@ export class DaybookDisplayService {
     console.log("* * * * * Daybook Display update: " + update.controller.dateYYYYMMDD, update.type);
     this._updateDaybookSchedule(update);
     this._updateTimelogDisplayGrid();
-    this._updateTlefController();
+    this._updateTlefController(update);
     this._buildZoomItems();
     this._displayUpdated$.next(update);
   }
@@ -146,16 +147,23 @@ export class DaybookDisplayService {
       this._timelogDisplayGrid.update(this._daybookSchedule)
     }
   }
-  private _updateTlefController() {
+  private _updateTlefController(update: DaybookDisplayUpdate) {
     if (!this._tlefController) {
       this._tlefController = new TLEFController(this._daybookSchedule, this.activeDayController, this.toolBoxService, this.activitiesService);
     } else {
-      this._tlefController.update(this._daybookSchedule, this.activeDayController);
+      this._tlefController.update(update, this._daybookSchedule, this.activeDayController);
     }
     this._updateTLEFSubscriptions();
     if (this._tlefController.formIsOpen) {
       // console.log("* updating TLEF controller.  it was open, so updating active grid item.")
-      this.timelogDisplayGrid.updateActiveItem(this.tlefController.currentlyOpenTLEFItem);
+      if(this._tlefController.currentlyOpenTLEFItem.isDrawing){
+        const start = new TimelogDelineator(this.tlefController.currentlyOpenTLEFItem.startTime, TimelogDelineatorType.DRAWING_TLE_START);
+        const end = new TimelogDelineator(this.tlefController.currentlyOpenTLEFItem.endTime, TimelogDelineatorType.DRAWING_TLE_END);
+        this.onCreateNewTimelogEntry(start, end);
+      }else{
+        this.timelogDisplayGrid.updateActiveItem(this.tlefController.currentlyOpenTLEFItem);
+      }
+      
     }
   }
 

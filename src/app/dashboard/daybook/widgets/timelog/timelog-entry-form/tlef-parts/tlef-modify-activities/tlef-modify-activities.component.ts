@@ -44,13 +44,11 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    console.log("ON INIT ACTIVITIES ")
     this._reload();
     // this.tlefActivitiesChanged.emit(this.activityItems.map(item => item.toEntryActivity()));
   }
 
   ngOnDestroy() {
-    console.log("DESTROYING ACTIVITIES")
     this._timelogEntryActivities = [];
     this._activityItems = [];
     this._changeSubscriptions.forEach(s => s.unsubscribe());
@@ -78,7 +76,6 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
 
   /** This is the event of a new activity been added to the list */
   public onActivityValueChanged(activity: ActivityCategoryDefinition) {
-    console.log("Boom")
     activity = this.activitiesService.findActivityByTreeId(activity.treeId);
     let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length + 1);
     let durationPercent = durationMinutes / (this.timelogEntryMinutes) * 100;

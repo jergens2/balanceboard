@@ -47,6 +47,7 @@ export class TlefFooterComponent implements OnInit {
     this.daybookService.activeDayController.updateTimelogEntryItem$(this.controller.changesMadeTLE);
     // console.log("Saving changes")
     // this._close();
+
     this.controller.clearChanges();
   }
 

@@ -10,11 +10,7 @@ export class TLEFGridBarItem {
     private _isAvailable: boolean;
 
     private _formCase: TLEFFormCase;
-    /**
-     * An alternative name might be TimelogEntryFormDisplayGridBarItem or TLEFDisplayGridBarItem
-     * 
-     * The grid bar items are for the timelog entry form.
-     */
+
     constructor(startTime: moment.Moment, endTime: moment.Moment, isAvailable: boolean, formCase: TLEFFormCase, backgroundColor: string) {
         this._startTime = startTime;
         this._endTime = endTime;
