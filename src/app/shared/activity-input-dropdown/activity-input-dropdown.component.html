@@ -33,7 +33,7 @@
               <div *ngIf="newActivity.colorPickerIsOpen" 
               [(colorPicker)]="newActivity.color"
               [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'"
-              [style.background]="newActivity.color" [cpPosition]="'left'" [cpOKButton]="true" [cpOKButtonText]="'Save'"
+              [style.background]="newActivity.color" [cpPosition]="'top'" [cpOKButton]="true" [cpOKButtonText]="'Save'"
               [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
               [cpCancelButtonClass]="'small-button discard-button'"
               (colorPickerClose)="newActivity.onClickCancelColorPicker()"

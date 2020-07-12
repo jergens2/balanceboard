@@ -54,25 +54,16 @@ export class TLEFController {
             activeItem = this.currentlyOpenTLEFItem;
         }
         this._buildItems();
-
         if (activeItem) {
-
             if (!activeItem.isDrawing) {
-
                 if (!this.changesMade) {
-                    // console.log("No unsaved changes, so opening: ", activeItem)
                     const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
-                    this._openTLEFItem(newActiveItem);
+                    this._setActiveItem(newActiveItem);
                 } else {
                     if(update.type === DaybookDisplayUpdateType.CLOCK){
-                        // console.log("There are unsaved changes, so updating: ", activeItem)
                         const updateActiveItem = this._findActiveItemAfterUpdate(activeItem);
                         if (updateActiveItem) {
-                            // updateActiveItem.transposeFrom(activeItem);
-                            // this._currentlyOpenTLEFItem$.next(null);
-                            // this._changesMadeTLE$.next(null);
                             this._setActiveItem(updateActiveItem);
-                            // this._currentlyOpenTLEFItem$.next(updateActiveItem);
                         } else {
                             console.log("unable to find an active item...")
                         }

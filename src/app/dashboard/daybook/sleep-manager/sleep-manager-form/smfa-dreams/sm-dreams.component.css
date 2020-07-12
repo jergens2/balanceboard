@@ -33,8 +33,7 @@
     flex-direction: column;
     max-height: 68px;
     margin-bottom: 5px;
-    overflow-y: scroll;
-    max-width: 500px;
+    overflow-y: auto;
 }
 .dream{
     max-height: 33px;

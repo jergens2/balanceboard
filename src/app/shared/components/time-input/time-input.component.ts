@@ -49,6 +49,20 @@ export class TimeInputComponent implements OnInit {
     //     this.emitNewValue();
     //   }
     // });
+    if(!this.minValue){
+      console.log("Warning: no min value provided");
+    }else{
+      if(this.minValue.isSame(moment())){
+        console.log("Warning: min value not set properly")
+      }
+    }
+    if(!this.maxValue){
+      console.log("Warning: no max value provided");
+    }else{
+      if(this.maxValue.isSame(moment())){
+        console.log("Warning: max value not set properly")
+      }
+    }
 
   }
   

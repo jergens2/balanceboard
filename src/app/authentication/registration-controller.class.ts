@@ -2,14 +2,10 @@ import { RegistrationData } from "./auth-data.interface";
 
 export class RegistrationController {
     constructor(authData: RegistrationData) {
-        console.log("Constructing: ", authData)
+        // console.log("Constructing: ", authData)
         if (authData.email) {
             this._email = authData.email;
-        } else {
-            console.log("Application error: no email value provided");
         }
-
-
         if (authData.username) {
             this._username = authData.username;
             this._usernameStylized = authData.usernameStylized;

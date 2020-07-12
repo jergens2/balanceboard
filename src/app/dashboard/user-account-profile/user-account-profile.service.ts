@@ -48,7 +48,6 @@ export class UserAccountProfileService {
   }
 
   public setAppConfig$(config: UAPAppConfiguration): Observable<boolean> {
-    console.log("setting appconfig")
     const profile = this.userProfile;
     profile.setAppConfig(config);
     const _complete$: Subject<boolean> = new Subject();

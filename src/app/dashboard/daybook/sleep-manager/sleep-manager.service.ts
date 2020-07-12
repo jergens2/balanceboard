@@ -176,8 +176,8 @@ export class SleepManagerService {
     }else if(moment(prevFallAsleepTime).isAfter(startOfThisDay)){
       thisDaySleepItems.push(this._newSleepItem(moment(prevFallAsleepTime), moment(previousWakeupTime), durationPercent, energyAtWakeup));
     }
-    prevDayItem.sleepInputItems = prevDaySleepItems;
-    thisDayItem.sleepInputItems = thisDaySleepItems;
+    prevDayItem.sleepInputItems = this._validateSleepItems(prevDaySleepItems);
+    thisDayItem.sleepInputItems = this._validateSleepItems(thisDaySleepItems);
     const daysToUpdate = [prevDayItem, thisDayItem];
     forkJoin(daysToUpdate.map<Observable<DaybookDayItem>>((item: DaybookDayItem) =>
       this.daybookHTTPService.updateDaybookDayItem$(item)))
@@ -207,6 +207,30 @@ export class SleepManagerService {
         const appConfig = this.accountService.appConfig;
         return new SleepManager(response.data, items, appConfig);
       }));
+  }
+
+  private _validateSleepItems(sleepItems: DaybookSleepInputDataItem[]): DaybookSleepInputDataItem[]{
+    sleepItems = sleepItems.sort((item1, item2)=>{
+      if(item1.startSleepTimeISO < item2.startSleepTimeISO){ return -1; }
+      else if(item1.startSleepTimeISO > item2.startSleepTimeISO){ return 1; }
+      else return 0;
+    });
+    if(sleepItems.length > 0){
+      for(let i=1; i<sleepItems.length; i++){
+        let errorItem: boolean = false;
+        if(sleepItems[i].startSleepTimeISO === sleepItems[i-1].startSleepTimeISO){
+          errorItem = true;
+        }else if(sleepItems[i].startSleepTimeISO < sleepItems[i-1].endSleepTimeISO){
+          errorItem = true;
+        }
+        if(errorItem){
+          console.log("Warning:  error with input items.  rectifiying")
+          sleepItems.splice(i,1);
+          i--;
+        }
+      }
+    }
+    return sleepItems;
   }
 
   private _newSleepItem(startTime: moment.Moment, endTime: moment.Moment, duration = 100, energy = 100): DaybookSleepInputDataItem{

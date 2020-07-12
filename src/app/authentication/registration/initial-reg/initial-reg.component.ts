@@ -122,13 +122,13 @@ export class InitialRegComponent implements OnInit {
       codeIsPresent: boolean,
       registeredAt: string,
     }) => {
-      console.log("Response, ", response)
+      // console.log("Response, ", response)
       if (response.usernameIsUnique === true && response.emailIsUnique === true) {
         this.authService.setInitialRegistrationData(authData);
         this.continue.emit(true);
       } else {
         let message: string[] = [];
-        console.log("respnose: " , response)
+        // console.log("respnose: " , response)
         if(response.alreadyRegistered === true){
           if (response.usernameIsUnique === false) {
             message.push("Username already taken");

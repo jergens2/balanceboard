@@ -168,10 +168,11 @@ export class SleepManager {
 
 
             /**
-             * Under most circumstances (SleepCyclePosition.Active, which would probably capture about 80 % of cases)
-             * no action or input is required.
+             * Under most circumstances (SleepCyclePosition.Active, no action or input is required.
+             * 
              * However, otherwise we will either require to show the user a prompt to address the case,
              * and if the data is out of date, then new data is required.
+             * 
              */
             // console.log("Current position is ", this.currentPosition)
 

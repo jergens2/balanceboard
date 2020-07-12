@@ -16,7 +16,7 @@
         </div>
     </div>
     <textarea placeholder="Write about any dreams you had" class="dreams-textarea" formControlName="dreams"></textarea>
-    <div style="display:flex;flex-direction: row-reverse; align-items: center; width: 100%;" *ngIf="showAddButton">
+    <div style="display:flex;flex-direction: row-reverse; align-items: center; width: 100%;margin-top: 15px;" *ngIf="showAddButton">
         <button class="medium-button save-button add-button" style="margin-left: 10px;" (click)="onClickAddDream()">
             <fa-icon [icon]="faPlus"
                 style="display:flex;flex-direction: row; justify-content: center; align-items: center;"></fa-icon>
