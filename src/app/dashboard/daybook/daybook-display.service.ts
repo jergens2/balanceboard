@@ -106,7 +106,7 @@ export class DaybookDisplayService {
     this._subs = [];
     this._subs = [
       this.daybookControllerService.displayUpdated$.subscribe((update: DaybookDisplayUpdate) => {
-        console.log("  * DaybookControllerService.displayUpdated$: ", update.type)
+        // console.log("  * DaybookControllerService.displayUpdated$: ", update.type)
         if (update.type === DaybookDisplayUpdateType.CLOCK) {
           if (moment().format('YYYY-MM-DD') === update.controller.dateYYYYMMDD) {
             this._updateDisplay(update);
@@ -124,7 +124,7 @@ export class DaybookDisplayService {
   }
 
   private _updateDisplay(update: DaybookDisplayUpdate) {
-    console.log("* * * * * Daybook Display update: " + update.controller.dateYYYYMMDD, update.type);
+    // console.log("* * * * * Daybook Display update: " + update.controller.dateYYYYMMDD, update.type);
     this._updateDaybookSchedule(update);
     this._updateTimelogDisplayGrid();
     this._updateTlefController(update);
@@ -134,11 +134,14 @@ export class DaybookDisplayService {
 
 
   private _updateDaybookSchedule(update: DaybookDisplayUpdate) {
-    const sleepManager: SleepManager = this.sleepService.sleepManager;
-    const sleepCycle: DaybookSleepCycle = sleepManager.sleepCycle;
-    this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
-    // console.log("* DAYBOOK SCHEDULE HAS BEEN UPDATED")
-    // this._daybookSchedule.displayDelineators.forEach((del) => { console.log("   " + del.toString()) })
+    const isToday = update.controller.dateYYYYMMDD === moment().format('YYYY-MM-DD');
+    if(isToday){
+      const sleepCycle: DaybookSleepCycle = this.sleepService.sleepManager.currentSleepCycle;
+      this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
+    }else{
+      const sleepCycle: DaybookSleepCycle = this.sleepService.sleepManager.getSleepCycleForDate(update.controller.dateYYYYMMDD, update.controller.dayItems);
+      this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
+    }
   }
   private _updateTimelogDisplayGrid() {
     if (!this._timelogDisplayGrid) {

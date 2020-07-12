@@ -31,6 +31,10 @@ export class DaybookTimeSchedule extends TimeSchedule {
         this._sleepCycle = sleepCycle;
         this._activeDayController = activeDayController;
         this._rebuild();
+
+        // console.log("DAY BOOK SCHEDULE BUILT.  Wake up time and fall asleep time: ");
+        // console.log("  " + this.wakeupTime.format('YYYY-MM-DD hh:mm a'));
+        // console.log("  " + this.fallAsleepTime.format('YYYY-MM-DD hh:mm a'));
     }
 
     public get timeScheduleItems(): DaybookTimeScheduleItem[] { return this._timeScheduleItems; }
@@ -145,7 +149,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
         const delineators: moment.Moment[] = [...this._displayDelineators
             .filter(item => splitItemsByDelineatorType.indexOf(item.delineatorType) > -1)
             .map(item => item.time),
-            ...midnightDelineators,
+        ...midnightDelineators,
         ];
         timeScheduleItems = this._populateAvailableScheduleItems(timeScheduleItems, delineators);
         timeScheduleItems = this._sortAndValidateScheduleItems(timeScheduleItems);
@@ -362,14 +366,14 @@ export class DaybookTimeSchedule extends TimeSchedule {
                         i--;
                     } else {
                         console.log("** Warning: duplicate DelineatorTypes");
-                        console.log( sortedDelineators[i].toString() + " , " + sortedDelineators[i - 1].toString())
+                        console.log(sortedDelineators[i].toString() + " , " + sortedDelineators[i - 1].toString())
                     }
                 }
             }
         }
         // Remove any DAY_STRUCTURE delineators if they are within an hour of any other.
         for (let i = 0; i < sortedDelineators.length; i++) {
-            const thresholdMs = 1000 * 60 * 60 * 2; // 2 hours ;
+            const thresholdMs = 1000 * 60 * 60 * 1; // 2 hours ;
             const sd = sortedDelineators[i];
             if (sd.delineatorType === TimelogDelineatorType.DAY_STRUCTURE) {
                 let remove: boolean = false;
@@ -378,6 +382,10 @@ export class DaybookTimeSchedule extends TimeSchedule {
                     if (diff < thresholdMs) {
                         // console.log("Removing DAY_STRUCTURE delineator " + sd.time.format('YYYY-MM-DD hh:mm a')
                         //     + " because prev delineator is within an hour");
+                        remove = true;
+                    }
+                    if (sortedDelineators[i - 1].delineatorType === TimelogDelineatorType.DRAWING_TLE_END ||
+                        sortedDelineators[i - 1].delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_START) {
                         remove = true;
                     }
                 }
@@ -403,9 +411,13 @@ export class DaybookTimeSchedule extends TimeSchedule {
         const structureType = TimelogDelineatorType.DAY_STRUCTURE;
         const structureDelineators = [
             new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(0).startOf('hour'), structureType),
+            new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(3).startOf('hour'), structureType),
             new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(6).startOf('hour'), structureType),
+            new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(9).startOf('hour'), structureType),
             new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(12).startOf('hour'), structureType),
+            new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(15).startOf('hour'), structureType),
             new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(18).startOf('hour'), structureType),
+            new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(21).startOf('hour'), structureType),
             new TimelogDelineator(moment(this._activeDayController.dateYYYYMMDD).hour(24).startOf('hour'), structureType),
         ];
         return [...timelogDelineators, ...structureDelineators];

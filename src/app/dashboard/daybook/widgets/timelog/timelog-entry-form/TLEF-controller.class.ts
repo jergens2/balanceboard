@@ -44,7 +44,7 @@ export class TLEFController {
     }
 
     public update(update: DaybookDisplayUpdate, daybookSchedule: DaybookTimeSchedule, activeDayController: DaybookController) {
-        console.log("  *TLEF-Controller.class.update() ")
+        // console.log("  *TLEF-Controller.class.update() ")
         this._daybookSchedule = daybookSchedule;
         this._activeDayController = activeDayController;
         this._startTime = moment(this._daybookSchedule.startTime);
@@ -58,23 +58,28 @@ export class TLEFController {
         if (activeItem) {
 
             if (!activeItem.isDrawing) {
+
                 if (!this.changesMade) {
-                    console.log("No unsaved changes, so opening: ", activeItem)
+                    // console.log("No unsaved changes, so opening: ", activeItem)
                     const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
                     this._openTLEFItem(newActiveItem);
                 } else {
-                    console.log("There are unsaved changes, so updating: ", activeItem)
-                    const updateActiveItem = this._findActiveItemAfterUpdate(activeItem);
-                    if (updateActiveItem) {
-                        // updateActiveItem.transposeFrom(activeItem);
-                        // this._currentlyOpenTLEFItem$.next(null);
-                        // this._changesMadeTLE$.next(null);
-                        this._setActiveItem(updateActiveItem);
-                        // this._currentlyOpenTLEFItem$.next(updateActiveItem);
-                    } else {
-                        console.log("unable to find an active item...")
+                    if(update.type === DaybookDisplayUpdateType.CLOCK){
+                        // console.log("There are unsaved changes, so updating: ", activeItem)
+                        const updateActiveItem = this._findActiveItemAfterUpdate(activeItem);
+                        if (updateActiveItem) {
+                            // updateActiveItem.transposeFrom(activeItem);
+                            // this._currentlyOpenTLEFItem$.next(null);
+                            // this._changesMadeTLE$.next(null);
+                            this._setActiveItem(updateActiveItem);
+                            // this._currentlyOpenTLEFItem$.next(updateActiveItem);
+                        } else {
+                            console.log("unable to find an active item...")
+                        }
+                    }else{
+                        const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
+                        this._openTLEFItem(newActiveItem);
                     }
-
                 }
             }
         }
@@ -82,10 +87,13 @@ export class TLEFController {
 
     private _findActiveItemAfterUpdate(activeItem: TLEFControllerItem): TLEFControllerItem {
         const currentCase = activeItem.formCase;
-        if (currentCase === TLEFFormCase.NEW_CURRENT) {
-            return this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
-        } else if (currentCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
-            return this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+        if (currentCase === TLEFFormCase.NEW_CURRENT || currentCase === TLEFFormCase.NEW_CURRENT_FUTURE || currentCase === TLEFFormCase.EXISTING_CURRENT) {
+            const newCurrentItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+            const newCurrentFutureItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+            const existingCurrentItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.EXISTING_CURRENT);
+            if (newCurrentItem) { return newCurrentItem; }
+            else if (newCurrentFutureItem) { return newCurrentFutureItem; }
+            else if (existingCurrentItem) { return existingCurrentItem; }
         }
         const foundSameItem = this._tlefItems.find(item => item.isSame(activeItem));
         if (foundSameItem) { return foundSameItem; }

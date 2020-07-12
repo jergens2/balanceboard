@@ -6,6 +6,10 @@ import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookSleepCycle } from './sleep-cycle/daybook-sleep-cycle.class';
 import { UAPAppConfiguration } from '../../user-account-profile/api/uap-app-configuraiton.interface';
 import { SleepCyclePositionFinder } from './sleep-cycle/sleep-cycle-position-finder.class';
+import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookTimeScheduleItem } from '../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleStatus } from '../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { SleepCycleBuilder } from './sleep-cycle/sleep-cycle-builder.class';
 
 export class SleepManager {
 
@@ -32,7 +36,7 @@ export class SleepManager {
     private _sleepTimeMax: moment.Moment;
     private _sleepTimeMin: moment.Moment;
 
-    private _sleepCycle: DaybookSleepCycle;
+    private _currentSleepCycle: DaybookSleepCycle;
     private _appConfig: UAPAppConfiguration;
 
     private _currentPosition: SleepCyclePosition = SleepCyclePosition.ACTIVE;
@@ -68,7 +72,7 @@ export class SleepManager {
      *  and contains within it the sleepDataItems, thus we can make inferences from this.
      */
     public get relevantItems(): DaybookDayItem[] { return this._relevantPastSleepItems; }
-    public get sleepCycle(): DaybookSleepCycle { return this._sleepCycle; }
+    public get currentSleepCycle(): DaybookSleepCycle { return this._currentSleepCycle; }
 
     public updateConfig(config: UAPAppConfiguration) {
         this._appConfig = config;
@@ -100,7 +104,7 @@ export class SleepManager {
         const positionFinder = new SleepCyclePositionFinder(data);
         this._currentPosition = positionFinder.position;  //  null is permissable
         this._validateExistingData();
-        this._sleepCycle = new DaybookSleepCycle(this._dateYYYYMMDD, this._relevantPastSleepItems, appConfig,
+        this._currentSleepCycle = new DaybookSleepCycle(this._dateYYYYMMDD, this._relevantPastSleepItems, appConfig,
             moment(this.previousFallAsleepTime), moment(this.previousWakeupTime), moment(this.nextFallAsleepTime), moment(this.nextWakeupTime));
 
 
@@ -129,6 +133,16 @@ export class SleepManager {
         const currentEnergy = (durationFromStart / totalDurationMS) * this._energyAtWakeup;
         return currentEnergy;
     }
+
+    public getSleepCycleForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): DaybookSleepCycle {
+        const builder: SleepCycleBuilder = new SleepCycleBuilder();
+        return builder.buildSleepCycleForDate(dateYYYYMMDD, dayItems, this._appConfig)
+    }
+
+
+
+
+
 
     /**Returns an array of DaybookDayItems where the item has some sleep values */
     private get _relevantPastSleepItems(): DaybookDayItem[] {

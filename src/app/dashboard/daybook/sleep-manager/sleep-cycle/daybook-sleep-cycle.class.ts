@@ -13,7 +13,7 @@ export class DaybookSleepCycle {
 
     private _relevantItems: DaybookDayItem[] = [];
     private _appConfig: UAPAppConfiguration;
-
+    private _dateYYYYMMDD: string;
 
     private _previousFallAsleepTime: moment.Moment;
     private _previousWakeupTime: moment.Moment;
@@ -35,17 +35,18 @@ export class DaybookSleepCycle {
         prevFallAsleepTime: moment.Moment, prevWakeupTime: moment.Moment, nextFallAsleepTime: moment.Moment, nextWakeupTime: moment.Moment) {
         this._relevantItems = relevantItems;
         this._appConfig = appConfig;
+        this._dateYYYYMMDD = dateYYYYMMDD;
         // this._setDefaults();
         this._previousFallAsleepTime = moment(prevFallAsleepTime);
         this._previousWakeupTime = moment(prevWakeupTime);
         this._nextFallAsleepTime = moment(nextFallAsleepTime);
         this._nextWakeupTime = moment(nextWakeupTime);
 
-        // console.log("TIME VALUES SET: ")
-        // console.log("PREV FALL ASLEEP: " , this._previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
-        // console.log("PREV WAKE: " , this._previousWakeupTime.format('YYYY-MM-DD hh:mm a'))
-        // console.log("NEXT FALL ASLEEP: " , this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
-        // console.log("NEXT WAKE: " , this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("  ss  TIME VALUES SET: ")
+        // console.log("  ss  PREV FALL ASLEEP: " , this._previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("  ss  PREV WAKE: " , this._previousWakeupTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("  ss  NEXT FALL ASLEEP: " , this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("  ss  NEXT WAKE: " , this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'))
     }
 
     public get72HourSleepDataItems(dateYYYYMMDD: string, splitAtMidnight = true): DaybookTimeScheduleItem[] {
@@ -76,7 +77,7 @@ export class DaybookSleepCycle {
     }
 
     public getDayStartTime(dateYYYYMMDD: string): moment.Moment {
-        const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
+        const todayYYYYMMDD: string = moment(this._dateYYYYMMDD).format('YYYY-MM-DD');
         const isToday: boolean = dateYYYYMMDD === todayYYYYMMDD;
         const isTomorrow: boolean = dateYYYYMMDD === moment(todayYYYYMMDD).add(24, 'hours').format('YYYY-MM-DD');
         const isYesterday: boolean = dateYYYYMMDD === moment(todayYYYYMMDD).subtract(24, 'hours').format('YYYY-MM-DD');
@@ -89,7 +90,7 @@ export class DaybookSleepCycle {
         }
     }
     public getDayEndTime(dateYYYYMMDD: string): moment.Moment {
-        const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
+        const todayYYYYMMDD: string = moment(this._dateYYYYMMDD).format('YYYY-MM-DD');
         const isToday: boolean = dateYYYYMMDD === todayYYYYMMDD;
         const isTomorrow: boolean = dateYYYYMMDD === moment(todayYYYYMMDD).add(24, 'hours').format('YYYY-MM-DD');
         const isYesterday: boolean = dateYYYYMMDD === moment(todayYYYYMMDD).subtract(24, 'hours').format('YYYY-MM-DD');
@@ -121,7 +122,7 @@ export class DaybookSleepCycle {
      * Gives sleep time ranges for a 24 hour period only.
      */
     private _sleepTimeRangesForDate(dateYYYYMMDD: string): DaybookTimeScheduleItem[] {
-        const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
+        const todayYYYYMMDD: string = moment(this._dateYYYYMMDD).format('YYYY-MM-DD');
         const isToday: boolean = dateYYYYMMDD === todayYYYYMMDD;
         const isTomorrow: boolean = dateYYYYMMDD === moment(todayYYYYMMDD).add(24, 'hours').format('YYYY-MM-DD');
         const isYesterday: boolean = dateYYYYMMDD === moment(todayYYYYMMDD).subtract(24, 'hours').format('YYYY-MM-DD');
@@ -153,7 +154,7 @@ export class DaybookSleepCycle {
         return items
     }
     private _getYesterdaySleepTimeRanges(): DaybookTimeScheduleItem[] {
-        const yesterdate = moment().subtract(24, 'hours').format('YYYY-MM-DD');
+        const yesterdate = moment(this._dateYYYYMMDD).subtract(24, 'hours').format('YYYY-MM-DD');
         const foundItem = this._relevantItems.find(item => item.dateYYYYMMDD === yesterdate);
         if (foundItem) {
             // console.log("foundItem.sleepInputItems:")
@@ -171,7 +172,7 @@ export class DaybookSleepCycle {
 
     }
     private _getTodaySleepTimeRanges(): DaybookTimeScheduleItem[] {
-        const startOfThisDay = moment().startOf('day');
+        const startOfThisDay = moment(this._dateYYYYMMDD).startOf('day');
         const endOfThisDay = moment(startOfThisDay).add(24, 'hours');
         const sleepTimes: DaybookTimeScheduleItem[] = [];
         if (this._previousFallAsleepTime.isAfter(startOfThisDay)) {
@@ -192,7 +193,7 @@ export class DaybookSleepCycle {
         return sleepTimes;
     }
     private _getTomorrowSleepTimeRanges(): DaybookTimeScheduleItem[] {
-        const startOfThisDay = moment().add(24, 'hours').startOf('day');
+        const startOfThisDay = moment(this._dateYYYYMMDD).add(24, 'hours').startOf('day');
         const endOfThisDay = moment(startOfThisDay).add(24, 'hours');
         const sleepTimes: DaybookTimeScheduleItem[] = [];
         if (this._nextFallAsleepTime.isAfter(startOfThisDay)) {

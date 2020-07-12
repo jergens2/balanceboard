@@ -68,7 +68,7 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
       this._entryStartTime = moment();
       this._entryEndTime = moment();
     }
-    console.log("RELOADING:" + this.entryStartTime + " -- " + this.entryEndTime)
+    // console.log("RELOADING:" + this.entryStartTime + " -- " + this.entryEndTime)
   }
 
 

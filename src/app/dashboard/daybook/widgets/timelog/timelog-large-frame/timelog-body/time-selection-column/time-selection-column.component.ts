@@ -46,13 +46,15 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._rebuild();
     this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
-      console.log("  *TimeSelectionColumnComponent._rebuild() " + update.type )
+      // console.log("  *TimeSelectionColumnComponent._rebuild() " + update.type )
       this._rebuild();
     });
   }
 
   private _rebuild() {
     this._timeDelineators = Object.assign([], this.daybookDisplayService.timelogDelineators);
+    // console.log(" TIME DELINEATORS IN THE COLUMN: ")
+    // this._timeDelineators.forEach(t => console.log("  " + t.toString()))
     this._column = new TimeSelectionColumn(this.daybookDisplayService);
     this._subscribeToColumn();
   }
@@ -199,6 +201,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
     const maxDelineators = 16;
     let saveAllDelineators: moment.Moment[] = [];
+
     const existingValues = this.daybookDisplayService.activeDayController.savedTimeDelineators;
     existingValues.forEach((existingValue) => {
       if (this.daybookDisplayService.daybookSchedule.isAvailableAtTime(existingValue)) {

@@ -2,11 +2,11 @@
 
 .user-action-prompt{
     width: 100%;
-    height: 100%;
+    height: 100vh;
     /* background-color: cadetblue; */
     display:flex;
     flex-direction: column;
-    /* justify-content: center; */
+    justify-content: center;
     align-items: center;
 
 }

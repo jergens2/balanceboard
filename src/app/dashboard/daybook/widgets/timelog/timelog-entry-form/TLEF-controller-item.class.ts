@@ -99,7 +99,7 @@ export class TLEFControllerItem {
     private _isDrawing: boolean = false;
 
     public setAsActive() {
-        console.log("SETTING THIS ITEM AS ACTIVE  : " + this.toString())
+        // console.log("SETTING THIS ITEM AS ACTIVE  : " + this.toString())
         this._isActive = true;
         this._gridBarItem.isActive = true;
     }

@@ -98,7 +98,7 @@ export class TimeSelectionRow {
 
     public activate() { this._isActiveSection = true; }
     public deactivate() { this._isActiveSection = false; }
-    
+
     public toString(): string {
         let val: string = this.startTime.format('hh:mm a') + " to " + this.endTime.format('hh:mm a');
         val += "\n\tAvailability section index: " + this.sectionIndex;
@@ -167,11 +167,11 @@ export class TimeSelectionRow {
         if (this.markedDelineator) {
             if (this.markedDelineator.delineatorType === TimelogDelineatorType.SAVED_DELINEATOR) {
                 this.isEditing = true;
+            } else if (this.markedDelineator.delineatorType === TimelogDelineatorType.DAY_STRUCTURE) {
+                if (this.isAvailable) { this._startDragging$.next(this); }
             }
         } else {
-            if (this.isAvailable) {
-                this._startDragging$.next(this);
-            }
+            if (this.isAvailable) { this._startDragging$.next(this); }
         }
     }
     public onMouseUp(startRow: TimeSelectionRow) {
