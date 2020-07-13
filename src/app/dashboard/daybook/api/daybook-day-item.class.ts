@@ -10,10 +10,7 @@ import { ActivityTree } from '../../activities/api/activity-tree.class';
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from './data-items/daybook-day-item-scheduled-activity.class';
 
 import blankDaybookItemHttpShape from './data-items/blank-http-shape';
-import { TimeSpanItem } from '../../../shared/time-utilities/time-span-item.interface';
-import { SleepEnergyLevelInput } from './data-items/energy-level-input.interface';
 import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data-item.interface';
-import { SleepEntryItem } from '../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 
 
 export class DaybookDayItem {
@@ -75,17 +72,6 @@ export class DaybookDayItem {
     }
 
 
-    public getSleepEntryItem(): SleepEntryItem { 
-        // if(this.sleepInputItem.startSleepTimeISO && this.sleepInputItem.endSleepTimeISO){
-        //     const startTime = moment(this.sleepInputItem.startSleepTimeISO);
-        //     const endTime = moment(this.sleepInputItem.endSleepTimeISO);
-        //     return new SleepEntryItem(this.dateYYYYMMDD, startTime, endTime, this.sleepInputItem);
-        // }else{
-        //     return null;
-        // }
-        console.log("Warning: method disabled, returning NULL.  No sleep entry item.")
-        return null;
-    }
 
     public get isToday(): boolean { return this._isToday; }
     public setIsToday() { this._isToday = true; }
