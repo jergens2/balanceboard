@@ -52,10 +52,7 @@
     box-shadow: 0px 2px 8px hsla(0, 0%, 0%, 0.2);
     
 }
-.item-list-header{
-    font-size:1.1em; 
-    margin-bottom: 10px;
-}
+
 .list-item{
     width:100%;
 }

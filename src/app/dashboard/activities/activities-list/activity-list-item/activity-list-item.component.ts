@@ -1,13 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
+import { ActivityCategoryDefinition } from '../../api/activity-category-definition.class';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faEdit, faArrowAltCircleRight, faArrowAltCircleDown } from '@fortawesome/free-regular-svg-icons';
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
-import { Modal } from '../../../modal/modal.class';
-import { ModalComponentType } from '../../../modal/modal-component-type.enum';
-import { ModalService } from '../../../modal/modal.service';
-import { IModalOption } from '../../../modal/modal-option.interface';
-import { ActivityCategoryDefinitionService } from '../api/activity-category-definition.service';
+import { Modal } from '../../../../modal/modal.class';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
+import { ModalService } from '../../../../modal/modal.service';
+import { IModalOption } from '../../../../modal/modal-option.interface';
+import { ActivityCategoryDefinitionService } from '../../api/activity-category-definition.service';
 import { ActivityListItem } from './activity-list-item.class';
 
 @Component({
@@ -59,16 +59,16 @@ export class ActivityListItemComponent implements OnInit {
       }
     ]
     let modal: Modal = new Modal("Delect Activity: "+this.activity.name + "?", "", null, modalOptions, null, ModalComponentType.Confirm);
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
     this.modalService.modalResponse$.subscribe((response) => {
       if(response.value == "Delete"){
-        this.activitiesService.deleteActivity(this.activity);
+        this.activitiesService.permanentlyDeleteActivity$(this.activity);
       }
     });
   }
   onClickEditActivity(){
     let modal: Modal = new Modal("Edit Activity "+this.activity.name, "", this.activity, [], null, ModalComponentType.ActivityCategoryDefinition);
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
     this.modalService.modalResponse$.subscribe((response) => {
       console.log("modal response:", response);
     });

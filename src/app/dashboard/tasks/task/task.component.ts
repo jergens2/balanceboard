@@ -72,7 +72,7 @@ export class TaskComponent implements OnInit, OnDestroy {
           //error 
         }
       });
-      this.modalService.activeModal = modal;
+      this.modalService.openModal(modal);
     } else if (!this.task.isComplete) {
       this.task.markComplete(moment());
       this.taskService.updateTaskHTTP(this.task);
@@ -98,7 +98,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
       console.log("modal response:", selectedOption);
     });
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
   }
 
   onClickDelete() {
@@ -123,7 +123,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         //error 
       }
     });
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
   }
 
 

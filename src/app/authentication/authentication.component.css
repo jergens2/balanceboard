@@ -10,8 +10,7 @@
 }
 
 .authentication-body{
-    min-width: 360px;
-    /* margin-top:20px; */
+    /* min-height: 600px; */
     padding: 25px;
     min-width: 360px;
 
@@ -25,6 +24,7 @@
     display:flex;
     flex-direction: column;
     align-items: center;
+
 }
 .transparent{
     background-color: rgba(255, 255, 255, 0);

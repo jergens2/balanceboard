@@ -5,7 +5,7 @@
             <fa-icon [icon]="faTrash"></fa-icon>
         </button>
         <button class="medium-button delete-button" *ngIf="!confirmDelete && !smallMode && !isDiscard"
-            (click)="onClickDelete()">Delete</button>
+            (click)="onClickDelete()">{{label}}</button>
         <button class="medium-button delete-button" *ngIf="!confirmDelete && !smallMode && isDiscard"
             (click)="onClickDelete()">Discard</button>
         <button class="medium-button confirm-delete-button" *ngIf="confirmDelete"

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { ActivitiesComponent } from './activities.component';
 
-import { ActivityListItemComponent } from './activity-list-item/activity-list-item.component';
+import { ActivityListItemComponent } from './activities-list/activity-list-item/activity-list-item.component';
 import { RoutineComponent } from './routines/routine/routine.component';
 
 import { ActivityDisplayItemComponent } from './activity-display-item/activity-display-item.component';
@@ -22,6 +22,11 @@ import { WeekOccurrenceComponent } from './activity-display-item/activity-schedu
 import { MonthOccurrenceComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/month-occurrence/month-occurrence.component';
 import { YearOccurrenceComponent } from './activity-display-item/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/year-occurrence/year-occurrence.component';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { ActivitiesListComponent } from './activities-list/activities-list.component';
+import { ActivityDeleteOptionsComponent } from './activity-display-item/activity-delete-options/activity-delete-options.component';
+import { AdoMergeWithComponent } from './activity-display-item/activity-delete-options/ado-merge-with/ado-merge-with.component';
+import { AdoMoveToTrashComponent } from './activity-display-item/activity-delete-options/ado-move-to-trash/ado-move-to-trash.component';
+import { AdoPermanentlyDeleteComponent } from './activity-display-item/activity-delete-options/ado-permanently-delete/ado-permanently-delete.component';
 
 
 @NgModule({
@@ -43,6 +48,11 @@ import { ColorPickerModule } from 'ngx-color-picker';
     WeekOccurrenceComponent,
     MonthOccurrenceComponent,
     YearOccurrenceComponent,
+    ActivitiesListComponent,
+    ActivityDeleteOptionsComponent,
+    AdoMergeWithComponent,
+    AdoMoveToTrashComponent,
+    AdoPermanentlyDeleteComponent,
   ],
   imports: [
     CommonModule,

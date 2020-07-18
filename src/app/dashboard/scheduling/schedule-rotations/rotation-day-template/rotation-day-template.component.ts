@@ -96,7 +96,7 @@ export class RotationDayTemplateComponent implements OnInit, OnDestroy {
         }
       }
     });
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
   }
 
   get dayOfWeek(): string{ 

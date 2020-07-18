@@ -61,7 +61,7 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
         //error 
       }
     });
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
   }
 
   onClickEdit(){
@@ -72,7 +72,7 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
     this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
       console.log("modal Response, selectedOption")
     });
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
   }
 
   tags(): string{

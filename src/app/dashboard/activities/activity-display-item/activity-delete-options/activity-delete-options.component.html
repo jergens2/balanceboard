@@ -1,0 +1,41 @@
+<div class="delete-options-root">
+
+
+
+    <div style="display:flex;flex-direction: column; width: 100%;" *ngIf="activity.children.length > 0">
+        This activity has children and cannot be deleted. Remove children in order to delete.
+    </div>
+
+    <div style="display:flex;flex-direction: column; width: 100%;" *ngIf="activity.children.length === 0">
+
+        <div style="display:flex;flex-direction: column;justify-content: center;align-items: center;height: 80px;"
+            *ngIf="isLoading">
+            <app-spinner style="height: 40px; width: 40px;"></app-spinner>
+            <span style="color: gray;font-style: italic; font-size: 0.8em;">Finding all activity instances...</span>
+        </div>
+
+        <div style="display:flex;flex-direction: column;" *ngIf="!isLoading && activityItems.length > 0 ">
+            <div style="color: gray; margin-bottom: 10px;">Delete this activity? Select an action:</div>
+
+            <div style="display:flex;flex-direction: row; flex-wrap: wrap; margin-bottom: 10px;">
+                <button class="delete-option" (click)="onClickMergeOption()">Merge with...</button>
+                <button class="delete-option" (click)="onClickTrashOption()">Move to trash</button>
+                <button class="delete-option" (click)="onClickPermaDelOption()">Permanently Delete</button>
+            </div>
+
+            <app-ado-merge-with *ngIf="actionIsMerge"></app-ado-merge-with>
+            <app-ado-move-to-trash *ngIf="actionIsTrash"></app-ado-move-to-trash>
+            <app-ado-permanently-delete *ngIf="actionIsPermaDel"></app-ado-permanently-delete>
+
+
+        </div>
+
+        <div *ngIf="!isLoading && activityItems.length === 0" style="display:flex;flex-direction: column;justify-content: center; align-items: center;">
+            You haven't logged any entries with this activity.
+            <app-delete-confirm-button (delete)="onDeleteActivity()"></app-delete-confirm-button>
+        </div>
+    </div>
+    <div style="margin-top: 20px; display:flex;flex-direction: row-reverse; width: 100%;">
+        <button class="discard-button small-button" (click)="onClickCancel()">Cancel</button>
+    </div>
+</div>

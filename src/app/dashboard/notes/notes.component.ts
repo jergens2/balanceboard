@@ -10,11 +10,11 @@ import { faCog, faHashtag } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
-  selector: 'app-notebooks',
-  templateUrl: './notebooks.component.html',
-  styleUrls: ['./notebooks.component.css']
+  selector: 'app-notes',
+  templateUrl: './notes.component.html',
+  styleUrls: ['./notes.component.css']
 })
-export class NotebooksComponent implements OnInit {
+export class NotesComponent implements OnInit {
 
   faCog: IconDefinition = faCog;
   faHashtag = faHashtag;

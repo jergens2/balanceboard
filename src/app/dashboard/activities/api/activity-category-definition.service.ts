@@ -11,7 +11,7 @@ import { DefaultActivityCategoryDefinitions } from './default-activity-category-
 @Injectable({
   providedIn: 'root'
 })
-export class ActivityCategoryDefinitionService  {
+export class ActivityCategoryDefinitionService {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -20,7 +20,7 @@ export class ActivityCategoryDefinitionService  {
   private _userId: string = "";
 
   private _activitiesTree: ActivityTree = null;
-  private _activitiesTree$: BehaviorSubject<ActivityTree> = new BehaviorSubject<ActivityTree>(null);
+  private _activitiesTree$: Subject<ActivityTree> = new Subject<ActivityTree>();
 
   get activitiesTree$(): Observable<ActivityTree> {
     return this._activitiesTree$.asObservable();
@@ -95,7 +95,7 @@ export class ActivityCategoryDefinitionService  {
           this.saveDefaultActivities(DefaultActivityCategoryDefinitions.defaultActivities(this.userId));
         }
 
-      },(error)=>{
+      }, (error) => {
         console.log("Error fetching activities", error);
         this.loginComplete$.next(false);
       });
@@ -109,7 +109,7 @@ export class ActivityCategoryDefinitionService  {
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, defaultActivities.map((activity)=> {return activity.httpShape; }), httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl, defaultActivities.map((activity) => { return activity.httpShape; }), httpOptions)
       .pipe<ActivityCategoryDefinition[]>(map((response) => {
         return (response.data as any[]).map((dataObject) => {
           let activity: ActivityCategoryDefinition = this.buildActivityFromResponse(dataObject);
@@ -188,58 +188,76 @@ export class ActivityCategoryDefinitionService  {
       })
   }
 
-  deleteActivity(activity: ActivityCategoryDefinition) {
-    const deleteUrl = this._serverUrl + "/api/activity-category-definition/delete";
+
+
+  /**
+    2020-07-18
+    
+    Warning: this method works but there is a flaw:  if this activity has children, only this activity is deleted, and not its children
+    what happens then is that the children still exist as objects in the database because they were not explicitly destroyed.  
+    then every time all activities for a user are fetched, those parentless child activities are fetched but never displayed and are unusable and inaccessible.
+    
+    as a temporary solution, the front end prevents the deletion of any activity that has children - the delete button is only available if the activity has no children.
+
+*/
+  permanentlyDeleteActivity$(activity: ActivityCategoryDefinition): Observable<boolean> {
+    const isComplete$: Subject<boolean> = new Subject();
+    const deleteUrl = this._serverUrl + "/api/activity-category-definition/permanently-delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post(deleteUrl, activity.httpShape, httpOptions)
-      .subscribe((response: { message: string, status: string, data: any }) => {
-        if (response.status == "SUCCESS") {
-          this._activitiesTree.pruneActivityFromTree(activity);
-          this._activitiesTree$.next(this._activitiesTree);
-        }
-      });
+    this.httpClient.post<{ message: string, success: boolean, data: any }>(deleteUrl, activity.httpShape, httpOptions).subscribe((response)=>{
+      if(response.success === true){
+        this._activitiesTree.pruneActivityFromTree(activity);
+        this._activitiesTree$.next(this._activitiesTree);
+      }else{
+
+      }
+      isComplete$.next(true);
+    });
+
+
+    return isComplete$.asObservable();
   }
 
 
   private buildActivityFromResponse(data: any): ActivityCategoryDefinition {
-    const properties: string[] = [ 
-        "_id", 
-        "userId", 
-        "treeId", 
-        "parentTreeId", 
-        "name", 
-        "description", 
-        "color", 
-        "icon", 
-        "isRootLevel",
-        "isSleepActivity",
-        "canDelete",
-        "durationSetting", 
-        "specifiedDurationMinutes", 
-        "scheduleRepititions",
-        "currentPointsConfiguration", 
-        "pointsConfigurationHistory",
-        "isRoutine",
-        "routineMembersActivityIds", 
-        "isConfigured",
+    const properties: string[] = [
+      "_id",
+      "userId",
+      "treeId",
+      "parentTreeId",
+      "name",
+      "description",
+      "color",
+      "icon",
+      "isRootLevel",
+      "isSleepActivity",
+      "canDelete",
+      "durationSetting",
+      "specifiedDurationMinutes",
+      "scheduleRepititions",
+      "currentPointsConfiguration",
+      "pointsConfigurationHistory",
+      "isRoutine",
+      "routineMembersActivityIds",
+      "isConfigured",
     ];
-  
-    
+
+
     let dataErrors: boolean = false;
     properties.forEach(property => {
-      if(!(property in data)){
-        console.log("Error with activity data object: missing property: " , property); 
+      if (!(property in data)) {
+        console.log("Error with activity data object: missing property: ", property);
         dataErrors = true;
       }
     });
     // console.log("Warning: manual overriding")
     // dataErrors = false;
-    if(!dataErrors){
+    if (!dataErrors) {
       let buildActivityHttpShape: ActivityCategoryDefinitionHttpShape = {
         _id: data._id,
         userId: data.userId,
@@ -262,7 +280,7 @@ export class ActivityCategoryDefinitionService  {
         routineMembersActivityIds: data.routineMembersActivityIds,
       }
       return new ActivityCategoryDefinition(buildActivityHttpShape);
-    }else{
+    } else {
       console.log("Activity is not built because of missing property.");
       return null;
     }

@@ -199,7 +199,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
 
 
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
-    const maxDelineators = 16;
+    const maxDelineators = 48;
     let saveAllDelineators: moment.Moment[] = [];
 
     const existingValues = this.daybookDisplayService.activeDayController.savedTimeDelineators;

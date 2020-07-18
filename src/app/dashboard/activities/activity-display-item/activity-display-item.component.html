@@ -1,8 +1,8 @@
-<div class="activity-display-item-root font-family-open-sans" *ngIf="activity">
+<div class="activity-display-item-root font-family-open-sans">
     <div class="title-container">
-        <div style="width:0px;">
-            <input *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color" [cpSaveClickOutside]="false"
-                [cpToggle]="true" [cpOutputFormat]="'rgba'" [style.background]="activity.color" [cpPosition]="'left'"
+        <div style="height: 0px; width: 0px;">
+            <input class="clean-input" *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color" [cpSaveClickOutside]="false"
+                [cpToggle]="true" [cpOutputFormat]="'rgba'"  [cpPosition]="'bottom'"
                 [cpOKButton]="true" [cpOKButtonText]="'Save'" [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
                 [cpCancelButtonClass]="'small-button discard-button'" (colorPickerClose)="onClickCancelColorPicker()"
                 (colorPickerCancel)="onClickCancelColorPicker()" (colorPickerSelect)="onClickSaveColorPicker($event)"
@@ -15,23 +15,35 @@
             {{ activity.name }}
         </div>
 
+        <div class="delete-button" (click)="onClickDeleteButton()">
+            <fa-icon [icon]="faTrash"></fa-icon>
+        </div>
     </div>
     <div class="body">
-        <div class="body-property">
+        <div class="body-item">
 
         </div>
-        <div class="body-property">
+        <div class="body-item">
             Occurrence or duration: {{ activity.durationSetting }}
         </div>
 
-        <div class="scheduling-configuration" *ngIf="configuringSchedule">
+        <div class="body-item scheduling-configuration" *ngIf="configuringSchedule">
             <app-activity-schedule-configuration [activity]="activity"
                 (configurationSaved)="onConfigurationSaved($event)"></app-activity-schedule-configuration>
         </div>
-        <div class="scheduling-configuration" *ngIf="!configuringSchedule">
+        <div class="body-item scheduling-configuration" *ngIf="!configuringSchedule">
             <app-activity-schedule-display [activity]="activity"
                 (configure)="configuringSchedule = !configuringSchedule" (delete)="onConfigurationDeleted()">
             </app-activity-schedule-display>
         </div>
+
+        <app-activity-delete-options *ngIf="showDeleteOptions" class="body-item" (cancel)="onCloseDeleteOptions()" [activity]="activity"></app-activity-delete-options>
+
     </div>
 </div>
+<!-- 
+<div *ngIf="isLoading" style="width: 100%; display:flex;flex-direction: column; justify-content: center;height: 200px; align-items: center;">
+    <span style="font-weight: bold;">{{ activity.name }}</span>
+    {{ loadingMessage }}
+    <app-spinner style="height: 150px; width: 150px;"></app-spinner>
+</div> -->

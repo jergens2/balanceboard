@@ -1,13 +1,13 @@
 <div class="full-screen">
-  
+
   <div class="app-modal">
 
-    <div class="app-modal-header">
+    <div class="app-modal-header" *ngIf="!modalTypeIsLoading">
       <div style="display:flex;flex-direction: row; margin-right: 15px;">
         <fa-icon [icon]="modal.headerIcon" *ngIf="modal.headerIcon"></fa-icon>
         {{ modalHeader }}
       </div>
-      <div class="header-button" (click)="onClickCloseModal()">
+      <div class="header-button" (click)="onClickCloseModal()" >
         <fa-icon [icon]="faTimes" style="width:15px;height:15px;"></fa-icon>
       </div>
     </div>
@@ -20,12 +20,20 @@
       <app-action-item-form *ngIf="modal.modalComponentType == 'TASK'" [action]="modal.action"></app-action-item-form>
 
       <!-- <app-daybook-entry-form *ngIf="modal.modalComponentType == 'TIMELOG_ENTRY'" [timelogEntry]="modal.modalData"></app-daybook-entry-form> -->
-      <app-recurring-task-form *ngIf="modal.modalComponentType == 'RECURRING_TASK'" [updateTask]="modal.modalData"></app-recurring-task-form>
+      <app-recurring-task-form *ngIf="modal.modalComponentType == 'RECURRING_TASK'" [updateTask]="modal.modalData">
+      </app-recurring-task-form>
 
       <!-- <app-activity-category-definition-form 
         *ngIf="modal.modalComponentType == 'ACTIVITY_CATEGORY_DEFINITION'" 
         [activityCategoryDefinition]="modal.modalData">
       </app-activity-category-definition-form> -->
+
+      <div
+        style="width: 150px; height: 150px;display:flex;flex-direction: column;justify-content: center;align-items: center; text-align: center;"
+        *ngIf="modalTypeIsLoading">
+        <app-spinner style="width:100px; height: 100px;"></app-spinner>
+        {{message}}
+      </div>
     </div>
 
   </div>

@@ -1,46 +1,36 @@
 import { Injectable } from '@angular/core';
 import { Modal } from './modal.class';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { IModalOption } from './modal-option.interface';
+import { ModalComponentType } from './modal-component-type.enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ModalService {
 
-  private _activeModal: Modal;
 
-  private _activeModal$: Subject<Modal> = new Subject();
-  public get activeModal$(): Observable<Modal> {
-    return this._activeModal$.asObservable();
-  }
-
+  private _activeModal$: BehaviorSubject<Modal> = new BehaviorSubject(null);
   private _modalResponse$: Subject<IModalOption> = new Subject();
-  public get modalResponse$(): Observable<IModalOption>{ 
-    return this._modalResponse$.asObservable();
+
+  public get activeModal$(): Observable<Modal> { return this._activeModal$.asObservable(); }
+  public get activeModal(): Modal { return this._activeModal$.getValue(); }
+  public get modalResponse$(): Observable<IModalOption> { return this._modalResponse$.asObservable(); }
+
+  public openModal(modal: Modal) { this._activeModal$.next(modal); };
+  public openLoadingModal(loadingMessage: string){
+    const loadingModal: Modal = new Modal('Loading', loadingMessage, null, [], {}, ModalComponentType.LOADING);
+    this._activeModal$.next(loadingModal);
   }
 
-
-  set activeModal(modal: Modal){
-    this._activeModal = modal;
-    this._activeModal$.next(this._activeModal);
-  };
-
-  get activeModal(): Modal{
-    return this._activeModal;
-  }
-
-
-  optionClicked(option: IModalOption){
-    this._activeModal = null;
+  public optionClicked(option: IModalOption) {
     this._modalResponse$.next(option);
     this._activeModal$.next(null);
   }
 
 
-  closeModal(){
-    this._activeModal = null;
-    this._activeModal$.next(this._activeModal);
+  public closeModal() {
+    this._activeModal$.next(null);
   }
 
   constructor() { }

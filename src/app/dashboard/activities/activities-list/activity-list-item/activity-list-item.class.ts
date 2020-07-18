@@ -1,4 +1,4 @@
-import { ActivityCategoryDefinition } from "../api/activity-category-definition.class";
+import { ActivityCategoryDefinition } from "../../api/activity-category-definition.class";
 
 export class ActivityListItem{
 

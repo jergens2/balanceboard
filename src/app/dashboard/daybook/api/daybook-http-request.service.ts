@@ -141,4 +141,13 @@ export class DaybookHttpRequestService {
 
     return daybookDayItems;
   }
+
+
+  public getAllItems$(): Observable<DaybookDayItem[]> {
+    const getUrl = serverUrl + '/api/daybook-day-item/get-all/' + this._userId;
+    return this.httpClient.get<{ message: string, data: any }>(getUrl)
+      .pipe<DaybookDayItem[]>(map((response) => {
+        return this.buildDaybookDayItemsFromResponse(response.data as any[]);
+      }));
+  }
 }

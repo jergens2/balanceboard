@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
 import { faCaretDown, faCaretRight, faSitemap, faSearch, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { Subscription, Observable, fromEvent, Subject, timer } from 'rxjs';
@@ -16,7 +16,7 @@ import { CreateNewActivityItem } from './create-new-activity-item.class';
   templateUrl: './activity-input-dropdown.component.html',
   styleUrls: ['./activity-input-dropdown.component.css']
 })
-export class ActivityInputDropdownComponent implements OnInit {
+export class ActivityInputDropdownComponent implements OnInit, OnDestroy {
 
 
   faSpinner = faSpinner;
@@ -41,13 +41,9 @@ export class ActivityInputDropdownComponent implements OnInit {
   faCaretDown = faCaretDown;
   faCaretRight = faCaretRight;
 
-
   public placeHolder: string = "Search for activity";
 
-  // @Input('placeHolder') setPlaceHolderValue(value: string){
-  //   this.placeHolder = value;
-  // }
-
+  private _isReadOnly: boolean = false;
   @Output() valueChanged: EventEmitter<ActivityCategoryDefinition> = new EventEmitter<ActivityCategoryDefinition>();
   @Input('initialValue') set initialValue(providedParent: ActivityCategoryDefinition) {
     // if(providedParent != null){
@@ -55,6 +51,9 @@ export class ActivityInputDropdownComponent implements OnInit {
     // }
 
   };
+
+
+  @Input() public set readOnly(setting: boolean) { this._isReadOnly = setting };
 
   constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
 
@@ -74,6 +73,10 @@ export class ActivityInputDropdownComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(){
+    this._createNewSub.unsubscribe();
+  }
+
 
   activityTextInputValue: string = "";
 
@@ -90,7 +93,7 @@ export class ActivityInputDropdownComponent implements OnInit {
     this._itemState.startEditing();
     if(this.activityTextInputValue === ""){
       this.activityTextInputValue = "/";
-      this.searchForActivities("/");
+      this._searchForActivities("/");
     }
   }
 
@@ -127,7 +130,7 @@ export class ActivityInputDropdownComponent implements OnInit {
       }
   
       if (initiateSearch) {
-        this.searchForActivities(searchValue);
+        this._searchForActivities(searchValue);
       }
     }else{
       this.searchResults = [];
@@ -162,19 +165,23 @@ export class ActivityInputDropdownComponent implements OnInit {
 
 
 
-  private saveActivityChain: SaveActivityChain;
-  private searchForActivities(searchValue: string) {
+  private _saveActivityChain: SaveActivityChain;
+  private _createNewSub: Subscription = new Subscription();
+  private _searchForActivities(searchValue: string) {
     let activitySearch: ActivityInputSearch = new ActivityInputSearch(this.activityCategoryDefinitionService);
 
-    activitySearch.createNewActivity$.subscribe((createNewActivities: ActivityCategoryDefinition[]) => {
-      if (createNewActivities && createNewActivities.length > 0) {
-        this.createNewActivities = createNewActivities.map((newActivity)=>{ return new CreateNewActivityItem(newActivity)});
-        this.updateActivityChangeSubscriptions();
-      } else {
-        this.createNewActivities = [];
-        this.saveActivityChain = null;
-      }
-    });
+    this._createNewSub.unsubscribe();
+    if(!this._isReadOnly){
+      this._createNewSub = activitySearch.createNewActivity$.subscribe((createNewActivities: ActivityCategoryDefinition[]) => {
+        if (createNewActivities && createNewActivities.length > 0) {
+          this.createNewActivities = createNewActivities.map((newActivity)=>{ return new CreateNewActivityItem(newActivity)});
+          this.updateActivityChangeSubscriptions();
+        } else {
+          this.createNewActivities = [];
+          this._saveActivityChain = null;
+        }
+      });
+    }
 
     this.searchResults = activitySearch.searchForActivities(searchValue).map((searchResult) => {
       let result = {
@@ -212,7 +219,10 @@ export class ActivityInputDropdownComponent implements OnInit {
       /*
         In this case, a non-existent activity name was typed, e.g. "asdfasdf" and then the name in the list was clicked on
       */
-     this.onClickSaveNewActivities();
+     if(!this._isReadOnly){
+      this.onClickSaveNewActivities();
+     }
+
     }
   }
 
@@ -221,7 +231,7 @@ export class ActivityInputDropdownComponent implements OnInit {
   onClickSaveNewActivities() {
     this.savingActivity = true;
     let isCompleteSubscription: Subscription = new Subscription();
-    isCompleteSubscription = this.saveActivityChain.saveActivities$().subscribe((bottomActivity: ActivityCategoryDefinition)=>{
+    isCompleteSubscription = this._saveActivityChain.saveActivities$().subscribe((bottomActivity: ActivityCategoryDefinition)=>{
       if(bottomActivity != null){
         this.savingActivity = false;
         this.onClickSearchResult(bottomActivity);
@@ -243,13 +253,13 @@ export class ActivityInputDropdownComponent implements OnInit {
           if(foundIndex < this.createNewActivities.length-1){
             for(let i=foundIndex+1; i< this.createNewActivities.length; i++){
               this.createNewActivities[i].updateColor(this.createNewActivities[foundIndex].color);
-              this.saveActivityChain = new SaveActivityChain(this.createNewActivities.map((newActivityItem)=>{ return newActivityItem.activity; }), this.activityCategoryDefinitionService);
+              this._saveActivityChain = new SaveActivityChain(this.createNewActivities.map((newActivityItem)=>{ return newActivityItem.activity; }), this.activityCategoryDefinitionService);
             }
           }
         }
       }));
     });
-    this.saveActivityChain = new SaveActivityChain(this.createNewActivities.map((newActivityItem)=>{ return newActivityItem.activity; }), this.activityCategoryDefinitionService);
+    this._saveActivityChain = new SaveActivityChain(this.createNewActivities.map((newActivityItem)=>{ return newActivityItem.activity; }), this.activityCategoryDefinitionService);
   }
 
 

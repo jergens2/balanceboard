@@ -59,7 +59,7 @@ export class TaskQueueWidgetComponent implements OnInit {
 
       console.log("modal response:", selectedOption);
     });
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
   }
 
   // onClickEdit(task: Task){

@@ -202,7 +202,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
     this.confirmDelete = true;
   }
   onClickDeleteActivity() {
-    this.activityCategoryDefinitionService.deleteActivity(this.activity);
+    this.activityCategoryDefinitionService.permanentlyDeleteActivity$(this.activity);
     this.modalService.closeModal();
   }
 

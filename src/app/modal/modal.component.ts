@@ -15,13 +15,16 @@ export class ModalComponent implements OnInit {
 
   constructor(private modalService: ModalService) { }
 
-  modal: Modal = null;
+  private _modal: Modal = null;
+  public get modal(): Modal { return this._modal};
+  public get message(): string { return this._modal.message; }
+
+  public get modalTypeIsLoading(): boolean { return this.modal.modalComponentType === ModalComponentType.LOADING; }
 
 
 
   ngOnInit() {
-    this.modal = this.modalService.activeModal;
-    this.modal.modalComponentType
+    this._modal = this.modalService.activeModal;
   }
 
   onClickCloseModal(){

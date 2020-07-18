@@ -1,54 +1,36 @@
 import { MenuItem } from "./header/header-menu/menu-item.model";
-import { faHome, faSitemap, faCheckCircle, faProjectDiagram, faListOl, faDollarSign, faChartPie, faChartLine, faBriefcaseMedical, faWeight, faCogs, faSignOutAlt, faBookOpen, faCog, faAppleAlt, faTrophy, faBook, faCheck, faListUl, faClipboardCheck, faClipboardList, faCalendar, faUsers } from "@fortawesome/free-solid-svg-icons";
-import { faCalendarAlt, faLightbulb, faClock } from "@fortawesome/free-regular-svg-icons";
-import { Subscription } from "rxjs";
+import { faSitemap, faCheckCircle, faBookOpen, faBook, faListUl, faCalendar, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { HeaderMenu } from "./header/header-menu/header-menu.model";
 import { ToolType } from "../toolbox-menu/tool-type.enum";
 
 
-let menuItems: MenuItem[] = [];
+
 
 // menuItems.push(new MenuItem('Home', '/home', faHome));
 
-let daybookMenu = new MenuItem('Daybook', '/daybook', faBookOpen);
-daybookMenu.sidebarToolComponent = ToolType.TIMELOG_ENTRY;
-let daybookMenuItems: MenuItem[] = [new MenuItem('Daily Task List', '/daily-task-list', faListUl)];
-daybookMenu.subMenu = new HeaderMenu('Daybook submenu', daybookMenuItems);
-menuItems.push(daybookMenu);
+const daybookMenu = new MenuItem('Daybook', '/daybook', faBookOpen);
+const notebookItem: MenuItem = new MenuItem('Notes', '/notes', faBook);
+const tasksItem: MenuItem = new MenuItem('Tasks', '/tasks', faCheckCircle);
+const activityItem = new MenuItem('Activities', '/activities', faSitemap);
 
-
-
-
-menuItems.push(new MenuItem('Social', '/social', faUsers));
-
-let notebookItem: MenuItem = new MenuItem('Notebooks', '/notebooks', faBook);
 notebookItem.sidebarToolComponent = ToolType.NOTEBOOK_ENTRY;
-menuItems.push(notebookItem);
-
-
-
-
-let tasksItem: MenuItem = new MenuItem('Tasks', '/tasks', faCheckCircle);
+daybookMenu.sidebarToolComponent = ToolType.TIMELOG_ENTRY;
 tasksItem.sidebarToolComponent = ToolType.ACTION_ITEM;
-menuItems.push(tasksItem);
 
+// const daybookMenuItems: MenuItem[] = [new MenuItem('Daily Task List', '/daily-task-list', faListUl)];
+// daybookMenu.subMenu = new HeaderMenu('Daybook submenu', daybookMenuItems);
 
-
-let schedulingMenu = new MenuItem('Scheduling', '/scheduling', faCalendar);
-schedulingMenu.sidebarToolComponent = ToolType.FUTURE_EVENT;
-let schedulingMenuItems: MenuItem[] = [
-    new MenuItem('Schedule Rotations', '/schedule-rotations', faClock),
-    new MenuItem('Day Templates', '/day-templates', faClock),
-    new MenuItem('Reccurring Tasks', '/recurring-tasks', faClock),
-];
-schedulingMenu.subMenu = new HeaderMenu('Scheduling submenu', schedulingMenuItems);
-menuItems.push(schedulingMenu);
-
-
-
-menuItems.push(new MenuItem('Activities', '/activities', faSitemap));
-
-
+// menuItems.push(new MenuItem('Social', '/social', faUsers));
+// let schedulingMenu = new MenuItem('Scheduling', '/scheduling', faCalendar);
+// schedulingMenu.sidebarToolComponent = ToolType.FUTURE_EVENT;
+// let schedulingMenuItems: MenuItem[] = [
+//     new MenuItem('Schedule Rotations', '/schedule-rotations', faClock),
+//     new MenuItem('Day Templates', '/day-templates', faClock),
+//     new MenuItem('Reccurring Tasks', '/recurring-tasks', faClock),
+// ];
+// schedulingMenu.subMenu = new HeaderMenu('Scheduling submenu', schedulingMenuItems);
+// menuItems.push(schedulingMenu);
 // menuItems.push(new MenuItem('Goals', '/goals', faTrophy));
 // menuItems.push(new MenuItem('Meal Planning', '/meal-planning', faAppleAlt));
 
@@ -65,6 +47,16 @@ menuItems.push(new MenuItem('Activities', '/activities', faSitemap));
 // healthSubMenuItems.push(new MenuItem('Body Weight', '/body-weight', faWeight))
 // healthMenu.subMenu = new HeaderMenu('Health submenu', healthSubMenuItems);
 // menuItems.push(healthMenu);
+
+
+
+
+const menuItems: MenuItem[] = [
+    daybookMenu,
+    notebookItem,
+    tasksItem,
+    activityItem,
+];
 
 export const appMenuItems: MenuItem[] = menuItems;
 

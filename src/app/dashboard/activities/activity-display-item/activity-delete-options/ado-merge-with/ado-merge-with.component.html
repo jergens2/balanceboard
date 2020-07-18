@@ -1,0 +1,15 @@
+<div class="merge-root">
+
+    <div *ngIf="!mergeTo" style="color: gray; font-style: italic; text-align: center;">
+        This will change each existing instance of this current activity and change it to a different selected activity.
+        This will also move this activity definition to the trash.
+    </div>
+    
+    <div *ngIf="mergeTo" style="margin-top: 15px; font-weight: bold; display:flex;flex-direction: column;">
+        Merge all entries of {{mergeFrom.name}} to:  {{ mergeTo.name }}
+        <div style="margin-top: 10px; width: 100%; display:flex;flex-direction: row; justify-content: center;">
+            <app-delete-confirm-button [label]="'Merge'" (delete)="onExecuteMerge()"></app-delete-confirm-button>
+        </div>
+    </div>
+    <app-activity-input-dropdown *ngIf="!mergeTo" [readOnly]="true" (valueChanged)="onActivitySelected($event)"></app-activity-input-dropdown>
+</div>

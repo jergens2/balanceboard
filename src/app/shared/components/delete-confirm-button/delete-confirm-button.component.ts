@@ -15,6 +15,7 @@ export class DeleteConfirmButtonComponent implements OnInit {
 
   @Input() smallMode: boolean = false;
   @Input() isDiscard: boolean = false;
+  @Input() label: string = "Delete";
 
   private _confirmDelete = false;
   public get confirmDelete(): boolean { return this._confirmDelete; }

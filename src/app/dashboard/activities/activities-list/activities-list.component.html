@@ -1,0 +1,13 @@
+<div class="activities-list-root">
+    <div class="item-list-header">
+        Activities List
+    </div>
+    <app-activity-list-item *ngFor="let rootActivity of rootActivities" [activity]="rootActivity"
+        (activityOpened)="onActivityOpened($event)" class="list-item"></app-activity-list-item>
+    <div style="display:flex;flex-direction:row; margin-top: 10px;">
+        <button class="medium-button" (click)="onClickNewActivity()">
+            <fa-icon [icon]="faPlus" style="margin-right: 5px;"></fa-icon>
+            New Activity
+        </button>
+    </div>
+</div>

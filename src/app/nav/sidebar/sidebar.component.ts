@@ -137,7 +137,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
           //error 
         }
       });
-      this.modalService.activeModal = modal;
+      this.modalService.openModal(modal);
     }
     
 

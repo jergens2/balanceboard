@@ -10,7 +10,7 @@ import { ActivityCategoryDefinitionService } from './dashboard/activities/api/ac
 import { DaybookHttpRequestService } from './dashboard/daybook/api/daybook-http-request.service';
 import { DaybookControllerService } from './dashboard/daybook/controller/daybook-controller.service';
 import { UserActionPromptService } from './user-action-prompt/user-action-prompt.service';
-import { NotebooksService } from './dashboard/notebooks/notebooks.service';
+import { NotebooksService } from './dashboard/notes/notebooks.service';
 import * as moment from 'moment';
 import { KeydownService } from './shared/keydown.service';
 import { DaybookDisplayService } from './dashboard/daybook/daybook-display.service';

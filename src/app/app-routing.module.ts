@@ -7,7 +7,7 @@ import { DaybookComponent } from "./dashboard/daybook/daybook.component";
 
 
 import { DayTemplatesComponent } from "./dashboard/scheduling/day-templates/day-templates.component";
-import { NotebooksComponent } from "./dashboard/notebooks/notebooks.component";
+import { NotesComponent } from "./dashboard/notes/notes.component";
 import { TasksComponent } from "./dashboard/tasks/tasks.component";
 import { SchedulingComponent } from "./dashboard/scheduling/scheduling.component";
 import { ScheduleRotationsComponent } from "./dashboard/scheduling/schedule-rotations/schedule-rotations.component";
@@ -32,7 +32,7 @@ const appRoutes: Routes = [
 
     { path: 'social', component: SocialComponent }, 
 
-    { path: 'notebooks', component: NotebooksComponent },
+    { path: 'notes', component: NotesComponent },
 
     { path: 'activities', component: ActivitiesComponent },
     { path: 'activities/:activityIdentifier', component: ActivitiesComponent },

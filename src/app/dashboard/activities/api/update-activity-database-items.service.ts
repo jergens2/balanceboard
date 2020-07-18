@@ -9,15 +9,19 @@ import { ActivityDurationSetting } from './activity-duration.enum';
 
 
 export class UpdateActivityDatabaseItemsService {
-
-  constructor() { }
-
-
   /**
+   * This service is generally for development purposes only.
+   * 
+   * 
+   * 
    * This Service is for the purpose of updating existing documents in the database to a newer version.
    * For example, I add a property to activity called isSuperDuperActivity: boolean
    * this service can be used to add property 'isSuperDuperActivity' to each existing document in the DB.
    */
+  constructor() { }
+
+
+
   public updateActivities(oldActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition[] {
 
     let newActivities: ActivityCategoryDefinition[] = [];

@@ -1,37 +1,58 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { ActivityScheduleRepitition } from '../api/activity-schedule-repitition.interface';
 import { ActivityCategoryDefinitionService } from '../api/activity-category-definition.service';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { ActivityComponentService } from '../activity-component.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-activity-display-item',
   templateUrl: './activity-display-item.component.html',
   styleUrls: ['./activity-display-item.component.css']
 })
-export class ActivityDisplayItemComponent implements OnInit {
+export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
 
-  constructor(private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private activityService: ActivityComponentService, private activityDefService: ActivityCategoryDefinitionService) { }
 
   private _activity: ActivityCategoryDefinition;
-  @Input() public set activity(activity: ActivityCategoryDefinition) {
-    this._activity = activity;
-    this.color = this._activity.color;
-    this._originalColor = this._activity.color;
-    this.updateDisplay();
-  };
-  public get activity(): ActivityCategoryDefinition {
-    return this._activity;
-  }
+  private _showDeleteOptions: boolean = false;
 
+  private _color: string;
+  private _originalColor: string;
+
+  public get color(): string { return this._color; }
+
+  public get faTrash() { return faTrash };
+  public get activity(): ActivityCategoryDefinition { return this._activity; }
+  public get showDeleteOptions(): boolean { return this._showDeleteOptions; }
+
+  // public get isLoading(): boolean { return this.activityService.isLoading; }
+  // public get loadingMessage(): string { return this.activityService.loadingMessage; }
+
+  private _activitySubs: Subscription[] = [];
   ngOnInit() {
-    if (this.activity != null) {
-      this.updateDisplay();
-    }
+    this._activitySubs = [
+      this.activityService.currentActivity$.subscribe((activityChanged) => { this._updateDisplay(activityChanged); })
+    ];
+
+
+
+  }
+  ngOnDestroy(){
+    this._activitySubs.forEach(s => s.unsubscribe());
+    this._activitySubs = [];
   }
 
-  private updateDisplay() {
-    this._titleBorderBottom = { "border-bottom": "1px solid " + this.activity.color };
-    this.configuringSchedule = false;
+  private _updateDisplay(activity: ActivityCategoryDefinition) {
+    if(activity){
+      this._activity = activity;
+      this._color = this._activity.color;
+      this._originalColor = this._activity.color;
+      this._titleBorderBottom = { "border-bottom": "1px solid " + this.activity.color };
+      this._showDeleteOptions = false;
+      this.configuringSchedule = false;
+    }
   }
 
   public onConfigurationSaved(repititions: ActivityScheduleRepitition[]) {
@@ -39,8 +60,8 @@ export class ActivityDisplayItemComponent implements OnInit {
     if (repititions != null) {
       let activity = this.activity;
       activity.scheduleRepititions = repititions;
-      this.activitiesService.updateActivity(activity);
-      this.activity = activity;
+      this.activityDefService.updateActivity(activity);
+      this._activity = activity;
     } else {
       console.log("Repititions was null, so it was a discard.")
       console.log("activity:", this.activity);
@@ -51,8 +72,8 @@ export class ActivityDisplayItemComponent implements OnInit {
     console.log("onconfig deleted")
     let activity = this.activity;
     activity.scheduleRepititions = [];
-    this.activitiesService.updateActivity(activity);
-    this.activity = activity;
+    this.activityDefService.updateActivity(activity);
+    this._activity = activity;
     this.configuringSchedule = false;
   }
 
@@ -72,31 +93,30 @@ export class ActivityDisplayItemComponent implements OnInit {
 
 
 
-  color: string;
-
-  private _originalColor: string;
 
 
   public onClickSaveColorPicker(color: string) {
     // console.log("Saving color: ", color);
     this._originalColor = color;
-    this.color = color;
+    this._color = color;
     this.activity.color = color;
     this._colorPickerIsOpen = false;
 
-    this.activitiesService.updateActivity(this.activity);
+    this.activityDefService.updateActivity(this.activity);
   }
 
 
   public onClickCancelColorPicker() {
     // console.log("Color picker cancelled")
-    this.color = this._originalColor;
+    this._color = this._originalColor;
     this._colorPickerIsOpen = false;
   }
   public onColorChanged(color: string) {
     // console.log("Color changed (RGBA): ", color);
-    this.color = color;
+    this._color = color;
   }
 
+  public onClickDeleteButton() { this._showDeleteOptions = true; }
+  public onCloseDeleteOptions() { this._showDeleteOptions = false; }
 
 }

@@ -47,12 +47,12 @@ export class RecurringTasksComponent implements OnInit {
 
   onClickNewRecurringTask(){
     let recurringTaskModal: Modal = new Modal("Recurring Task", "", null, [], {}, ModalComponentType.RecurringTask);
-    this.modalService.activeModal = recurringTaskModal;
+    this.modalService.openModal(recurringTaskModal);
   }
 
   onClickEditTask(task: RecurringTaskDefinition){
     let editTaskModal: Modal = new Modal("Edit Recurring Task Definition", "", task, [], {}, ModalComponentType.RecurringTask);
-    this.modalService.activeModal = editTaskModal;
+    this.modalService.openModal(editTaskModal);
   }
   
   onClickDeleteTask(task: RecurringTaskDefinition){
@@ -77,7 +77,7 @@ export class RecurringTasksComponent implements OnInit {
         //error 
       }
     });
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
   }
 
 }

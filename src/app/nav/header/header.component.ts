@@ -135,7 +135,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
           //error 
         }
       });
-      this.modalService.activeModal = modal;
+      this.modalService.openModal(modal);
     });
     newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem('Settings', '/user-settings', faCogs), signOutMenuItem])));
 

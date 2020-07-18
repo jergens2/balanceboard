@@ -43,7 +43,7 @@ export class TaskGroupComponent implements OnInit {
 
       console.log("modal response:", selectedOption);
     });
-    this.modalService.activeModal = modal;
+    this.modalService.openModal(modal);
   }
 
   get squares(): any[] {
