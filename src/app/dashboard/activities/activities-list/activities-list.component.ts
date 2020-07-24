@@ -18,6 +18,7 @@ export class ActivitiesListComponent implements OnInit {
 
   private _activityTree: ActivityTree;
   public get rootActivities(): ActivityCategoryDefinition[] { return this._activityTree.rootActivities; }
+  public get trashedActivities(): ActivityCategoryDefinition[] { return this._activityTree.allTrashed; }
   @Output() public activityOpened: EventEmitter<ActivityCategoryDefinition> = new EventEmitter();
   
   ngOnInit(): void {

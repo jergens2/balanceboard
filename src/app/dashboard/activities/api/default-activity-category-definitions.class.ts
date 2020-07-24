@@ -23,9 +23,10 @@ export class DefaultActivityCategoryDefinitions {
             description: "description",
             color: "#eeeeee",
             icon: "",
-            isRootLevel: true,
+            // isRootLevel: true,
             isSleepActivity: false,
             canDelete: true,
+            isInTrash: false,
             durationSetting: ActivityDurationSetting.Duration,
             specifiedDurationMinutes: -1,
             scheduleRepititions: [],
@@ -53,7 +54,7 @@ export class DefaultActivityCategoryDefinitions {
         work.name = "Work";
         work.description = "Time spent on jobs, career"
         work.color = "#cee3ff";
-        work.isRootLevel = true;
+        // work.isRootLevel = true;
 
         activities.push(work);
 
@@ -83,7 +84,7 @@ export class DefaultActivityCategoryDefinitions {
         maintenance.name = "Maintenance";
         maintenance.description = "Time spent on routine, maintenance things, and other necessary activities"
         maintenance.color = "#d4ffcc";
-        maintenance.isRootLevel = true;
+        // maintenance.isRootLevel = true;
 
         activities.push(maintenance);
 
@@ -306,16 +307,13 @@ export class DefaultActivityCategoryDefinitions {
         exercise.description = "Excercise activities, e.g. walking, bicycling, etc."
         exercise.color = leisure.color;
 
-        activities.push(exercise);
-
-
 
         let sleep: ActivityCategoryDefinition = new ActivityCategoryDefinition(DefaultActivityCategoryDefinitions.blankActivity(userId));
         sleep.parentTreeId = leisure.treeId;
         sleep.name = "Sleeping";
         sleep.description = "Sleeping"
         sleep.color = leisure.color;
-        sleep.isRootLevel = true;
+        // sleep.isRootLevel = true;
         sleep.isSleepActivity = true;
         sleep.canDelete = false;
 

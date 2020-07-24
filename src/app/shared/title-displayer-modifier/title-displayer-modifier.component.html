@@ -1,0 +1,16 @@
+<div class="root" (mouseleave)="onMouseLeave()" (mouseenter)="onMouseEnter()">
+    <div class="read-only" *ngIf="isReadOnly" (click)="onClickTitle()">
+        {{ textValue }}
+    </div>
+    <div class="modify" *ngIf="!isReadOnly" [formGroup]="changeValueForm">
+        <input type="text" class="clean-input" value="textValue" formControlName="textValue" style="flex-grow: 2;">
+        <div style="display:flex;flex-direction: row; margin-left: 10px;">
+            <button class="small-button discard-button" (click)="onClickCancel()">
+                <fa-icon [icon]="faTimes" style="color: gray;"></fa-icon>
+            </button>
+            <button class="small-button save-button" (click)="onClickSaveChanges()">
+                <fa-icon [icon]="faCheck" style="color: limegreen;"></fa-icon>
+            </button>
+        </div>
+    </div>
+</div>

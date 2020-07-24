@@ -1,12 +1,9 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityCategoryDefinition } from '../../api/activity-category-definition.class';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faTrash, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { faEdit, faArrowAltCircleRight, faArrowAltCircleDown } from '@fortawesome/free-regular-svg-icons';
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
-import { Modal } from '../../../../modal/modal.class';
-import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
 import { ModalService } from '../../../../modal/modal.service';
-import { IModalOption } from '../../../../modal/modal-option.interface';
 import { ActivityCategoryDefinitionService } from '../../api/activity-category-definition.service';
 import { ActivityListItem } from './activity-list-item.class';
 
@@ -19,6 +16,7 @@ export class ActivityListItemComponent implements OnInit {
 
   faTimes = faTimes;
   faEdit = faEdit;
+  public get faTrashAlt() { return faTrashAlt; }
 
   constructor(private modalService: ModalService, private activitiesService: ActivityCategoryDefinitionService) { }
 
@@ -41,37 +39,4 @@ export class ActivityListItemComponent implements OnInit {
   faArrowAltCircleRight = faArrowAltCircleRight;
   faArrowAltCircleDown = faArrowAltCircleDown;
   faSyncAlt = faSyncAlt;
-
-
-
-
-
-
-  onClickDeleteActivity(){
-    let modalOptions: IModalOption[] = [
-      {
-        value: "Delete",
-        dataObject: null,
-      },
-      {
-        value: "Cancel",
-        dataObject: null,
-      }
-    ]
-    let modal: Modal = new Modal("Delect Activity: "+this.activity.name + "?", "", null, modalOptions, null, ModalComponentType.Confirm);
-    this.modalService.openModal(modal);
-    this.modalService.modalResponse$.subscribe((response) => {
-      if(response.value == "Delete"){
-        this.activitiesService.permanentlyDeleteActivity$(this.activity);
-      }
-    });
-  }
-  onClickEditActivity(){
-    let modal: Modal = new Modal("Edit Activity "+this.activity.name, "", this.activity, [], null, ModalComponentType.ActivityCategoryDefinition);
-    this.modalService.openModal(modal);
-    this.modalService.modalResponse$.subscribe((response) => {
-      console.log("modal response:", response);
-    });
-  }
-
 }

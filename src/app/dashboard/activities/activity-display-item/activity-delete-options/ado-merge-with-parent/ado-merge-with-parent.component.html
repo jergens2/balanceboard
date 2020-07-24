@@ -1,0 +1,14 @@
+<div class="root">
+    <div class="irreversible">
+        <fa-icon [icon]="faExclamationTriangle" style="margin-right: 10px;"></fa-icon>
+        Action is irreversible
+    </div> 
+    <ul style="color: gray; font-style: italic; text-align: left;">
+        <li>Merge this activity with its parent activity. All timelog instances of this activity will be changed to <span style="font-weight: bold;color: rgb(0, 110, 255);">{{ parentName }}</span></li>
+        <li>Permanently delete this activity definition from the activity tree. (irreversible)</li>
+    </ul>
+    <div style="margin-top: 10px; width: 100%; display:flex;flex-direction: row; justify-content: center;">
+        <app-delete-confirm-button [label]="'Merge and Delete'" (delete)="onDeleteActivity()"></app-delete-confirm-button>
+    </div>
+</div>
+

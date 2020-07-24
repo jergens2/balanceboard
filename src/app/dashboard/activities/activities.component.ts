@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked } from '@angular/core';
 import { ActivityCategoryDefinitionService } from './api/activity-category-definition.service';
 import { ActivityTree } from './api/activity-tree.class';
 import { ActivityCategoryDefinition } from './api/activity-category-definition.class';
@@ -7,6 +7,9 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ActivityComponentService } from './activity-component.service';
 import { Subscription } from 'rxjs';
+import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.service';
+import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
+import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
 
 @Component({
   selector: 'app-activities',
@@ -15,22 +18,23 @@ import { Subscription } from 'rxjs';
 })
 export class ActivitiesComponent implements OnInit, OnDestroy {
 
-
-
-
-
   constructor(private activityDefinitionService: ActivityCategoryDefinitionService,
-    private activityCompService: ActivityComponentService, private modalService: ModalService) { }
+    private activityCompService: ActivityComponentService, private modalService: ModalService,
+    private daybookHttpService: DaybookHttpRequestService) { }
 
+
+  private _isLoading: boolean = true;
   private _activityTree: ActivityTree;
   private _openActivity: ActivityCategoryDefinition;
   public get openActivity(): ActivityCategoryDefinition { return this._openActivity; }
+  public get isLoading(): boolean { return this._isLoading; }
 
 
   private _subs: Subscription[] = [];
 
   ngOnInit() {
-    this.activityCompService.initiate(this.activityDefinitionService, this.modalService);
+
+
     this._activityTree = this.activityDefinitionService.activitiesTree;
     this._subs = [
       this.activityCompService.currentActivity$.subscribe((activityChanged) => {
@@ -39,8 +43,15 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
       this.activityDefinitionService.activitiesTree$.subscribe((changedTree) => {
         this._activityTree = changedTree
       }),
+      this.activityCompService.initiate$(this.activityDefinitionService, this.modalService, this.daybookHttpService)
+        .subscribe(isComplete => {
+          this._isLoading = false;
+        }),
     ];
+
+
   }
+
 
   ngOnDestroy() {
     this._subs.forEach(s => s.unsubscribe());

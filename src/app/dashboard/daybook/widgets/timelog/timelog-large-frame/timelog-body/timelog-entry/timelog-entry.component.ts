@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { TimelogEntryItem } from './timelog-entry-item.class';
 import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
@@ -10,13 +10,14 @@ import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogEntryActivityDisplayItem } from './timelog-entry-activity-display-item.class';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-timelog-entry',
   templateUrl: './timelog-entry.component.html',
   styleUrls: ['./timelog-entry.component.css']
 })
-export class TimelogEntryComponent implements OnInit {
+export class TimelogEntryComponent implements OnInit, OnDestroy {
 
   constructor(
     private activitiesService: ActivityCategoryDefinitionService,
@@ -50,18 +51,26 @@ export class TimelogEntryComponent implements OnInit {
   public get noteTextSmall(): string { return this._noteTextSmall; }
 
 
+  private _subscriptions: Subscription[] = [];
+
   ngOnInit() {
     this.screenSize = this.screenSizeService.appScreenSize;
     this._rebuild(this._calculateMaxItems());
 
-    this.screenSizeService.appScreenSize$.subscribe((size) => {
-      this.screenSize = size;
-      this._rebuild(this._calculateMaxItems());
-    })
-    this.activitiesService.activitiesTree$.subscribe((treeChanged) => {
-      this._rebuild(this._calculateMaxItems());
-    });
+    this._subscriptions = [
+      this.screenSizeService.appScreenSize$.subscribe((size) => {
+        this.screenSize = size;
+        this._rebuild(this._calculateMaxItems());
+      }),
+      this.activitiesService.activitiesTree$.subscribe((treeChanged) => {
+        this._rebuild(this._calculateMaxItems());
+      }),
+    ];
+  }
 
+  ngOnDestroy(){
+    this._subscriptions.forEach(s => s.unsubscribe());
+    this._subscriptions = [];
   }
 
   public onClickOpenTimelogEntry() {

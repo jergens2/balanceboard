@@ -8,21 +8,17 @@
                 (colorPickerCancel)="onClickCancelColorPicker()" (colorPickerSelect)="onClickSaveColorPicker($event)"
                 (colorPickerChange)="onColorChanged($event)"/>
         </div>
-        <div class="title-color" [style.background-color]="activity.color" (click)="onClickOpenColorPicker()">
+        <div class="title-color" [style.background-color]="activity.color" (click)="onClickOpenColorPicker()"></div>
+        <app-title-displayer-modifier [value]="activity.name" (valueChanged)="onNameChanged($event)"></app-title-displayer-modifier>
 
-        </div>
-        <div class="title-text">
-            {{ activity.name }}
-        </div>
-
-        <div class="delete-button" (click)="onClickDeleteButton()">
+        <div class="delete-button" (click)="onClickDeleteButton()" *ngIf="!activity.isInTrash">
             <fa-icon [icon]="faTrash"></fa-icon>
         </div>
     </div>
-    <div class="body">
-        <div class="body-item">
+    <div class="body" *ngIf="!activity.isInTrash">
 
-        </div>
+
+         
         <div class="body-item">
             Occurrence or duration: {{ activity.durationSetting }}
         </div>
@@ -31,7 +27,7 @@
             <app-activity-schedule-configuration [activity]="activity"
                 (configurationSaved)="onConfigurationSaved($event)"></app-activity-schedule-configuration>
         </div>
-        <div class="body-item scheduling-configuration" *ngIf="!configuringSchedule">
+        <div class="body-item schedulin ng-configuration" *ngIf="!configuringSchedule">
             <app-activity-schedule-display [activity]="activity"
                 (configure)="configuringSchedule = !configuringSchedule" (delete)="onConfigurationDeleted()">
             </app-activity-schedule-display>
@@ -40,6 +36,21 @@
         <app-activity-delete-options *ngIf="showDeleteOptions" class="body-item" (cancel)="onCloseDeleteOptions()" [activity]="activity"></app-activity-delete-options>
 
     </div>
+
+
+    <div class="body" *ngIf="activity.isInTrash">
+        This activity is in the trash.
+        <div style="margin-top: 10px; padding: 3px; display:flex;flex-direction: column;">
+            <div>
+                <button class="medium-button save-button" (click)="onClickRestore()">Restore</button>
+            </div>
+
+            <app-delete-confirm-button [label]="'Permanently Delete'" (delete)="onPermanentlyDeleteActivity()"></app-delete-confirm-button>
+        </div>
+    </div>
+
+
+
 </div>
 <!-- 
 <div *ngIf="isLoading" style="width: 100%; display:flex;flex-direction: column; justify-content: center;height: 200px; align-items: center;">

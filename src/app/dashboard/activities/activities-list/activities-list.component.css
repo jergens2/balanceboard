@@ -1,4 +1,12 @@
+.activities-list-root{
+    width: 100%;
+    max-width: 320px;
+    overflow-x: auto;
+}
+
+
 .item-list-header{
-    font-size:1.1em; 
+    font-size:0.9em; 
     margin-bottom: 10px;
+    font-weight: bold;
 }

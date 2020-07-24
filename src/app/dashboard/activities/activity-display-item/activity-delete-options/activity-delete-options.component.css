@@ -6,22 +6,56 @@
     padding: 10px;
     border-radius: 10px;
 }
-.delete-option{
-    margin: 5px;
-    border: 1px solid gray;
+.delete-options{
+    display:flex;
+    flex-direction: column;
     padding: 5px;
     border-radius: 5px;
-    flex-grow: 2;
+    align-items: flex-end;
+    /* background-color: red; */
+}
+.delete-option-row{
+    display:flex;
+    width: 250px;
+    justify-content: space-between;
+    padding: 2px;
+    /* background-color: blue; */
+}
+.delete-option-button-container{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(252, 252, 252);
+    border: 1px solid gray;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+
+.delete-option-button{
+    height: 35px;
+    width: 35px;
+    border-radius: 35px;
+    margin: 2px;
+    margin-left: 15px;
     display:flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    min-width: 60px;
+    text-align: center;
+    background-color: white;
+    border: 1px solid gray;
+
 }
-.delete-option:hover{
+.delete-option-button:hover{
     cursor: pointer;
     border: 1px solid red;
+    
 }
+
 
 .relevant-daybook-items{
     max-height: 450px;

@@ -16,13 +16,9 @@ export class ActivityInputSearch {
         let searchResults: ActivityCategoryDefinition[] = [];
         if (searchValue.length === 1 && searchValue.charAt(0) === "/") {
             this.createNewActivity$.next();
-            return this.activitiesService.activitiesTree.allActivitiesAndRoutines.sort((activity1, activity2) => {
-                if (activity1.fullNamePath < activity2.fullNamePath) {
-                    return -1;
-                }
-                if (activity1.fullNamePath > activity2.fullNamePath) {
-                    return 1;
-                }
+            return this.activitiesService.activitiesTree.allExcludingTrashed.sort((activity1, activity2) => {
+                if (activity1.fullNamePath < activity2.fullNamePath) { return -1; }
+                if (activity1.fullNamePath > activity2.fullNamePath) { return 1; }
                 return 0;
             });
         } else {
@@ -55,13 +51,13 @@ export class ActivityInputSearch {
         let isSlasher: boolean = searchValue.charAt(searchValue.length - 1) === "/";
         let moreThanOne: boolean = pathNames.length > 1;
         if (!moreThanOne && !isSlasher) {
-            this.activitiesService.activitiesTree.allActivitiesAndRoutines.forEach((activity) => {
+            this.activitiesService.activitiesTree.allExcludingTrashed.forEach((activity) => {
                 if (activity.fullNamePathIndexOf(rootSearchWord) > -1) {
                     matches.push(activity);
                 }
             });
         } else {
-            this.activitiesService.activitiesTree.allActivitiesAndRoutines.forEach((activity) => {
+            this.activitiesService.activitiesTree.allExcludingTrashed.forEach((activity) => {
                 if (activity.fullNamePathIndexOf(rootSearchWord, true) > -1) {
                     matches.push(activity);
                 }

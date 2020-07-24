@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { DaybookController } from './daybook-controller.class';
 import { DaybookDisplayUpdateType, DaybookDisplayUpdate } from './items/daybook-display-update.interface';
+import { ActivityCategoryDefinitionService } from '../../activities/api/activity-category-definition.service';
 
 
 @Injectable({
@@ -14,6 +15,7 @@ export class DaybookControllerService {
 
   constructor(
     private daybookHttpRequestService: DaybookHttpRequestService,
+    private activitiesService: ActivityCategoryDefinitionService,
   ) { }
 
   private _userId: string;
@@ -30,6 +32,7 @@ export class DaybookControllerService {
 
   private _clockSubscriptions: Subscription[] = [];
   private _daybookItemSubs: Subscription[] = [];
+  private _activitySub: Subscription = new Subscription();
 
   public get clock(): moment.Moment { return this._clock; }
   // public get clockMinuteTicker$(): Observable<moment.Moment> { return this._clockMinuteTicker$.asObservable(); } 
@@ -44,12 +47,12 @@ export class DaybookControllerService {
 
   public get displayUpdated$(): Observable<DaybookDisplayUpdate> { return this._displayUpdated$.asObservable(); }
   // public getCurrentEnergy(): number { return this.todayController.getEnergyAtTime(this.clock) }
-  
 
-  public getLastActivityTime(): moment.Moment{ 
-    if(this.todayController){
+
+  public getLastActivityTime(): moment.Moment {
+    if (this.todayController) {
       return this.todayController.getLastActivityEndTime();
-    }else{
+    } else {
       console.log("Error, no todayController")
       return null;
     }
@@ -81,12 +84,17 @@ export class DaybookControllerService {
     this._clockSubscriptions = [];
     this._daybookItemSubs.forEach(s => s.unsubscribe());
     this._daybookItemSubs = [];
+    this._activitySub.unsubscribe();
   }
 
   private _initiate() {
     this._startClock();
     this._updateTodayFromDatabase(DaybookDisplayUpdateType.DEFAULT);
+    this._activitySub = this.activitiesService.activitiesTree$.subscribe((newTree) => {
+      this._updateTodayFromDatabase(DaybookDisplayUpdateType.ACTIVITIES_CHANGED);
+    });
   }
+
 
   private _startClock() {
     this._clockSubscriptions.forEach(s => s.unsubscribe());
@@ -122,7 +130,7 @@ export class DaybookControllerService {
       this._updateTodayFromDatabase(DaybookDisplayUpdateType.CLOCK);
     });
     this._clockSubscriptions = [clockSub, minuteSub];
-    
+
   }
 
 
@@ -133,11 +141,10 @@ export class DaybookControllerService {
         // console.log("Setting TODAY item")
         this._setTodayItem(items, updateType);
         this._loginComplete$.next(true);
-      },(error)=>{
+      }, (error) => {
         console.log("Error with daybook request, ", error);
         this._loginComplete$.next(false);
-      }
-      );
+      });
   }
 
   private _setTodayItem(items: DaybookDayItem[], updateType: DaybookDisplayUpdateType) {
@@ -235,7 +242,7 @@ export class DaybookControllerService {
       .subscribe((items: DaybookDayItem[]) => {
         const startTime = moment(this.todayYYYYMMDD).startOf('day').subtract(24, 'hours');
         const endTime = moment(this.todayYYYYMMDD).startOf('day').add(48, 'hours');
-    
+
         const newController = new DaybookController(dateYYYYMMDD, items, startTime, endTime, this.clock);
         this._updateActiveDay(DaybookDisplayUpdateType.CALENDAR, newController);
       });
@@ -284,8 +291,8 @@ export class DaybookControllerService {
           this._updateActiveDay(DaybookDisplayUpdateType.DATABASE_ACTION, controller);
         }
         isComplete$.next(true);
-      }, (err)=>{
-        console.log("error updating day items: " , err);
+      }, (err) => {
+        console.log("error updating day items: ", err);
         isComplete$.next(true);
       });
     return isComplete$.asObservable();

@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DaybookDayItem } from '../../../../daybook/api/daybook-day-item.class';
 import { ActivityCategoryDefinition } from '../../../api/activity-category-definition.class';
 import { ActivityComponentService } from '../../../activity-component.service';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-ado-merge-with',
@@ -10,6 +11,7 @@ import { ActivityComponentService } from '../../../activity-component.service';
 })
 export class AdoMergeWithComponent implements OnInit {
 
+  public get faExclamationTriangle() { return faExclamationTriangle; }
   constructor(private activityService: ActivityComponentService) { }
 
   private _mergeFrom: ActivityCategoryDefinition;
@@ -25,6 +27,9 @@ export class AdoMergeWithComponent implements OnInit {
   
   }
 
+  public onReset(){
+    this._mergeTo = null;
+  }
 
   public onActivitySelected(activity: ActivityCategoryDefinition){
     console.log("Activity! " + activity.name, activity)
@@ -33,7 +38,7 @@ export class AdoMergeWithComponent implements OnInit {
 
   public onExecuteMerge(){
     if(this._mergeTo && this._mergeFrom){
-      this.activityService.executeMerge(this._mergeTo);
+      this.activityService.executeMergeWithOther(this._mergeTo);
     }else{
       console.log("Error:  missing a value: " , this._mergeFrom, this._mergeTo);
     }

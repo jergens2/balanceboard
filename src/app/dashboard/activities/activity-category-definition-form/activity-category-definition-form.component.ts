@@ -177,7 +177,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
         modifyActivity.description = this.activityForm.controls['description'].value;
         modifyActivity.parentTreeId = parentActivityId;
         modifyActivity.color = this.activityForm.controls['color'].value;
-        this.activityCategoryDefinitionService.updateActivity(modifyActivity);
+        this.activityCategoryDefinitionService.updateActivity$(modifyActivity);
         // this.formClosed.emit("SAVE_EDIT");
       } else {
         console.log("Error : Form is invalid.")

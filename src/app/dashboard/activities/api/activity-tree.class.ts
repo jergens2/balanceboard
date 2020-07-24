@@ -3,79 +3,27 @@ import { DaybookDayItemScheduledActivityItem } from "../../daybook/api/data-item
 import { BehaviorSubject, Observable } from "rxjs";
 
 export class ActivityTree {
-    /*
-        The tree is strictly a model used by the front end and not something that has any data about it saved on the DB.
-    */
-
-
-    private _rootActivities: ActivityCategoryDefinition[];
-
-    get rootActivities(): ActivityCategoryDefinition[] {
-        return this._rootActivities;
-    }
-
-    get sleepActivity(): ActivityCategoryDefinition {
-        return this._allActivitiesAndRoutines.find((activity) => { return activity.isSleepActivity; });
-    }
-
-    private _allActivitiesAndRoutines: ActivityCategoryDefinition[];
-
-    get allActivities(): ActivityCategoryDefinition[] {
-        return this._allActivitiesAndRoutines.filter((activity) => {
-            return (!activity.isRoutine)
-        });
-    }
-    public get allActivitiesAndRoutines(): ActivityCategoryDefinition[] {
-        return this._allActivitiesAndRoutines;
-    }
-
-    private _activityRoutines: ActivityCategoryDefinition[] = [];
-    public get activityRoutines(): ActivityCategoryDefinition[] {
-        return this._activityRoutines;
-    }
-
     constructor(allActivities: ActivityCategoryDefinition[]) {
         this._allActivitiesAndRoutines = allActivities;
         this._buildActivityTree(allActivities);
     }
 
-    private _buildActivityTree(allActivities: ActivityCategoryDefinition[]) {
-        /*
-            Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
-        */
-        for (let activity of allActivities) {
-            activity.removeChildren();
-        }
-        let rootActivities: ActivityCategoryDefinition[] = [];
+    private _rootActivities: ActivityCategoryDefinition[];
+    private _activityRoutines: ActivityCategoryDefinition[] = [];
+    private _allActivitiesAndRoutines: ActivityCategoryDefinition[];
+    private _scheduleConfiguredActivities$: BehaviorSubject<ActivityCategoryDefinition[]> = new BehaviorSubject([]);
 
-        for (let activity of allActivities) {
-            if (activity.parentTreeId.endsWith("_TOP_LEVEL")) {
-                activity.setFullPath("/" + activity.name + "/");
-                rootActivities.push(activity)
-            }
-        }
+    public get rootActivities(): ActivityCategoryDefinition[] { return this._rootActivities; }
+    public get sleepActivity(): ActivityCategoryDefinition { return this._allActivitiesAndRoutines.find(activity => activity.isSleepActivity); }
+    public get allActivities(): ActivityCategoryDefinition[] { return this._allActivitiesAndRoutines.filter(activity => (!activity.isRoutine)); }
+    public get allActivitiesAndRoutines(): ActivityCategoryDefinition[] { return this._allActivitiesAndRoutines; }
+    public get activityRoutines(): ActivityCategoryDefinition[] { return this._activityRoutines; }
+    public get allExcludingTrashed(): ActivityCategoryDefinition[] { return this._allActivitiesAndRoutines.filter(item => !item.isInTrash); }
+    public get allTrashed(): ActivityCategoryDefinition[] { return this._allActivitiesAndRoutines.filter(item => item.isInTrash); }
+    public get scheduleConfigurationActivities(): ActivityCategoryDefinition[] { return this._scheduleConfiguredActivities$.getValue(); }
+    public get scheduleConfigurationActivities$(): Observable<ActivityCategoryDefinition[]> { return this._scheduleConfiguredActivities$.asObservable(); }
 
-        rootActivities.sort((a1, a2) => {
-            if (a1.name > a2.name) {
-                return 1;
-            }
-            if (a1.name < a2.name) {
-                return -1;
-            }
-            return 0;
-        });
-
-        for (let rootActivity of rootActivities) {
-            rootActivity = this.findChildActivities(rootActivity, allActivities);
-
-        }
-        this._rootActivities = rootActivities;
-
-        this._activityRoutines = rootActivities.filter((activity) => { return activity.isRoutine === true; });
-        this._scheduleConfiguredActivities$.next(allActivities.filter((item) => { return item.scheduleRepititions.length > 0; }));
-    }
-
-    findActivityByTreeId(treeId: string): ActivityCategoryDefinition {
+    public findActivityByTreeId(treeId: string): ActivityCategoryDefinition {
         // console.log("looking for activity by tree id: ", treeId);
         for (let activity of this._allActivitiesAndRoutines) {
             // console.log(activity);
@@ -84,29 +32,10 @@ export class ActivityTree {
                 return activity;
             }
         }
-
         return null;
     }
 
-    // findActivityByIdentifier(identifier: string): ActivityCategoryDefinition{
-    //     for(let activity of this._allActivitiesAndRoutines){
-    //         if(activity.treeId == identifier){
-    //             return activity;
-    //         }
-    //     }
-    //     for(let activity of this._allActivitiesAndRoutines){
-    //         if(activity.name == identifier){
-    //             return activity;
-    //         }
-    //     }
-    //     for(let activity of this._allActivitiesAndRoutines){
-    //         if(activity.id == identifier){
-    //             return activity;
-    //         }
-    //     }
-    // }
-
-    activityNameIsUnique(checkActivity: ActivityCategoryDefinition): boolean {
+    public activityNameIsUnique(checkActivity: ActivityCategoryDefinition): boolean {
         let namesCount: number = 0;
         for (let activity of this._allActivitiesAndRoutines) {
             if (activity.name == checkActivity.name) {
@@ -123,7 +52,7 @@ export class ActivityTree {
         }
     }
 
-    findChildActivities(activityNode: ActivityCategoryDefinition, allActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition {
+    public findChildActivities(activityNode: ActivityCategoryDefinition, allActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition {
         for (let activity of allActivities) {
             if (activity.parentTreeId == activityNode.treeId) {
                 activity.setFullPath(activityNode.fullNamePath + activity.name + "/");
@@ -145,12 +74,13 @@ export class ActivityTree {
         return activityNode;
     }
 
-    addActivityToTree(activity: ActivityCategoryDefinition) {
+    
+    public addActivityToTree(activity: ActivityCategoryDefinition) {
         this._allActivitiesAndRoutines.push(activity);
         this._buildActivityTree(this.allActivitiesAndRoutines);
     }
 
-    pruneActivityFromTree(activityRemove: ActivityCategoryDefinition) {
+    public pruneActivityFromTree(activityRemove: ActivityCategoryDefinition) {
         for (let activity of this._allActivitiesAndRoutines) {
             if (activity.treeId === activityRemove.treeId) {
                 this._allActivitiesAndRoutines.splice(this._allActivitiesAndRoutines.indexOf(activity), 1);
@@ -159,7 +89,36 @@ export class ActivityTree {
         this._buildActivityTree(this.allActivitiesAndRoutines);
     }
 
-    public _buildScheduledActivityItemsOnDate(dateYYYYMMDD: string): DaybookDayItemScheduledActivityItem[] {
+    private _buildActivityTree(allActivities: ActivityCategoryDefinition[]) {
+        /*
+            Returns an array of root-level activities.  each root-level activity object will have its children property populatated, recursively.
+        */
+        for (let activity of allActivities) {
+            activity.removeChildren();
+        }
+        let rootActivities: ActivityCategoryDefinition[] = [];
+        for (let activity of allActivities) {
+            if (activity.parentTreeId.endsWith("_TOP_LEVEL")) {
+                activity.setFullPath("/" + activity.name + "/");
+                rootActivities.push(activity)
+            }
+        }
+        rootActivities.sort((a1, a2) => {
+            if (a1.name > a2.name) {return 1;}
+            if (a1.name < a2.name) {return -1;}
+            return 0;
+        });
+
+        for (let rootActivity of rootActivities) {
+            rootActivity = this.findChildActivities(rootActivity, allActivities);
+        }
+        this._rootActivities = rootActivities;
+        this._activityRoutines = rootActivities.filter((activity) => { return activity.isRoutine === true; });
+        this._scheduleConfiguredActivities$.next(allActivities.filter((item) => { return item.scheduleRepititions.length > 0; }));
+    }
+
+    
+    private _buildScheduledActivityItemsOnDate(dateYYYYMMDD: string): DaybookDayItemScheduledActivityItem[] {
         return this.allActivitiesAndRoutines.filter((activity: ActivityCategoryDefinition) => {
             return activity.isScheduledOnDate(dateYYYYMMDD) === true;
 
@@ -192,13 +151,5 @@ export class ActivityTree {
     }
 
 
-
-    private _scheduleConfiguredActivities$: BehaviorSubject<ActivityCategoryDefinition[]> = new BehaviorSubject([]);
-    public get scheduleConfigurationActivities(): ActivityCategoryDefinition[] {
-        return this._scheduleConfiguredActivities$.getValue();
-    }
-    public get scheduleConfigurationActivities$(): Observable<ActivityCategoryDefinition[]> {
-        return this._scheduleConfiguredActivities$.asObservable();
-    }
 
 }

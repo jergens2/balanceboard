@@ -1,22 +1,25 @@
 import { ActivityDurationSetting } from "./activity-duration.enum";
-import { ActivityScheduleConfiguration } from "./activity-schedule-configuration.interface";
 import { ActivityCategoryDefinitionHttpShape } from "./activity-category-definition-http-shape.interface";
-
-import * as moment from 'moment';
-import { TimeUnit } from "../../../shared/time-utilities/time-unit.enum";
-import { ScheduleRepititionCalculator } from "../../../shared/time-utilities/schedule-repitition-calculator.class";
 import { ActivityPointsConfiguration } from "./activity-points-configuration.interface";
 import { ActivityScheduleRepitition } from "./activity-schedule-repitition.interface";
 
 export class ActivityCategoryDefinition {
 
-    private _httpShape: ActivityCategoryDefinitionHttpShape;
-    public get httpShape(): ActivityCategoryDefinitionHttpShape {
-        return this._httpShape;
+    constructor(httpShape: ActivityCategoryDefinitionHttpShape) {
+        this._httpShape = httpShape;
+        this._fullNamePath = "/" + this.name;
+        if(this.parentTreeId === this.userId + "_TOP_LEVEL"){
+            this._isRootLevel = true;
+        }
     }
 
+    private _httpShape: ActivityCategoryDefinitionHttpShape;
+    private _isRootLevel: boolean = false;
+
+    public get httpShape(): ActivityCategoryDefinitionHttpShape { return this._httpShape; }
     public get id(): string { return this._httpShape._id; }
     public get treeId(): string { return this._httpShape.treeId; }
+    public get isInTrash(): boolean { return this._httpShape.isInTrash }
     public get name(): string { return this._httpShape.name; }
     public get description(): string { return this._httpShape.description; }
     public get userId(): string { return this._httpShape.userId; }
@@ -30,7 +33,7 @@ export class ActivityCategoryDefinition {
     public get icon(): string { return this._httpShape.icon; }
     public get isSleepActivity(): boolean { return this._httpShape.isSleepActivity; }
     public get canDelete(): boolean { return this._httpShape.canDelete; }
-    public get isRootLevel(): boolean { return this._httpShape.isRootLevel; }
+    public get isRootLevel(): boolean { return this._isRootLevel; }
 
     public set id(id: string) { this._httpShape._id = id; }
     public set treeId(treeId: string) { this._httpShape.treeId = treeId; }
@@ -45,15 +48,16 @@ export class ActivityCategoryDefinition {
     public set pointsConfigurationHistory(pointsConfigurations: ActivityPointsConfiguration[]) { this._httpShape.pointsConfigurationHistory = pointsConfigurations; }
     public set color(color: string) { this._httpShape.color = color; }
     public set icon(icon: string) { this._httpShape.icon = icon; }
-    public set isSleepActivity(isSleep:boolean ) { this._httpShape.isSleepActivity = isSleep; }
+    public set isSleepActivity(isSleep: boolean) { this._httpShape.isSleepActivity = isSleep; }
     public set canDelete(canDelete: boolean) { this._httpShape.canDelete = canDelete; }
-    public set isRootLevel(isRoot: boolean) { this._httpShape.isRootLevel = isRoot; }
 
     public isScheduledOnDate(dateYYYYMMDD: string): boolean {
 
         // console.log("This method is disabled.");
         return false;
     }
+    public moveToTrash() { this._httpShape.isInTrash = true; }
+    public removeFromTrash() { this._httpShape.isInTrash = false; }
 
     public get isRoutine(): boolean { return this._httpShape.isRoutine; }
     public set isRoutine(isRoutine: boolean) { this._httpShape.isRoutine = isRoutine; }
@@ -64,17 +68,10 @@ export class ActivityCategoryDefinition {
     public get isConfigured(): boolean { return this._httpShape.isConfigured; }
     // public set isConfigured(isConfigured: boolean) { this._httpShape.isConfigured = isConfigured };
 
-
-
-
-
     private _children: ActivityCategoryDefinition[] = [];
     private _fullNamePath: string = "/";
 
-    constructor(httpShape: ActivityCategoryDefinitionHttpShape) {
-        this._httpShape = httpShape;
-        this._fullNamePath = "/" + this.name;
-    }
+
 
 
     public setFullPath(fullPath: string) {
@@ -83,15 +80,17 @@ export class ActivityCategoryDefinition {
     public get fullNamePath(): string {
         return this._fullNamePath;
     }
+
+    /**
+    * This method returns the position in the path where the searchValue is found.
+    * for example, full path is:
+    * /first/second/third/
+    * /[0]/[1]/[2]
+    * and searchValue is: "second"
+    * then the return value would be 1
+    */
     public fullNamePathIndexOf(searchValue: string, preciseMatch?: boolean): number {
-        /*
-            This method returns the position in the path where the searchValue is found.
-            for example, full path is:
-            /first/second/third/
-            /[0]/[1]/[2]
-            and searchValue is: "second"
-            then the return value would be 1
-        */
+
 
         let foundIndex: number = -1;
         this.fullNamePathSplit.forEach((pathName: string) => {

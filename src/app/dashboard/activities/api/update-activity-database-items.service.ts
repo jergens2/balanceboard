@@ -30,7 +30,7 @@ export class UpdateActivityDatabaseItemsService {
       let isRootLevel: boolean = false;
       let isSleepActivity: boolean = false;
       let canDelete: boolean = true;
-
+      let isInTrash: boolean = false;
 
 
       let sleepTreeId: string = "5b9c362dd71b00180a7cf701_default_sleep";
@@ -61,9 +61,10 @@ export class UpdateActivityDatabaseItemsService {
         color: oldActivity.color,
         icon: oldActivity.icon,
 
-        isRootLevel: isRootLevel,
+        // isRootLevel: isRootLevel,
         isSleepActivity: isSleepActivity,
         canDelete: canDelete,
+        isInTrash: isInTrash,
 
         durationSetting: ActivityDurationSetting.Duration,
         specifiedDurationMinutes: -1,

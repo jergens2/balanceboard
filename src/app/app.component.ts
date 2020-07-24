@@ -87,15 +87,8 @@ export class AppComponent implements OnInit {
     // console.log("Subscribing to subscriptions");
     this._appServiceSubs.forEach(sub => sub.unsubscribe());
     this._appServiceSubs = [
-
-      this.modalService.activeModal$.subscribe((modal: Modal) => {
-        if (modal) { this._showModal = true; }
-        else { this._showModal = false; }
-      }),
-
       this.authService.logout$.subscribe((onLogout) => { this._unloadApp(); }),
       this.authService.appComponentLogin$.subscribe((login: boolean) => {
-        // console.log("Boom Canon: ", login)
         if (login === true) {
           this._isAuthenticated = true;
           if (!this._loadingIsComplete) {
@@ -110,6 +103,10 @@ export class AppComponent implements OnInit {
         if (clear === true) { this._finishLoadingApp(); }
         else { console.log("error with user prompts."); }
         this._showUserActionPrompt = false;
+      }),
+      this.modalService.activeModal$.subscribe((modal: Modal) => {
+        if (modal) { this._showModal = true; }
+        else { this._showModal = false; }
       }),
     ];
   }

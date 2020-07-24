@@ -1,9 +1,14 @@
 
 
 <div class="root">
-    <div style="color: gray; font-style: italic; text-align: center;">
-        This will permanently delete all instances of this activity saved in the timelog and also delete this activity definition from the activity tree.
-    </div>
+    <div class="irreversible">
+        <fa-icon [icon]="faExclamationTriangle" style="margin-right: 10px;"></fa-icon>
+        Action is irreversible
+    </div> 
+    <ul style="color: gray; font-style: italic; text-align: left;">
+        <li>Permanently remove all timelog instances of this activity</li>
+        <li>Permanently delete this activity definition</li>
+    </ul>
     <div style="margin-top: 10px; width: 100%; display:flex;flex-direction: row; justify-content: center;">
         <app-delete-confirm-button [label]="'Permanently Delete'" (delete)="onDeleteActivity()"></app-delete-confirm-button>
     </div>

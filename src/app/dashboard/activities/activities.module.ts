@@ -27,6 +27,7 @@ import { ActivityDeleteOptionsComponent } from './activity-display-item/activity
 import { AdoMergeWithComponent } from './activity-display-item/activity-delete-options/ado-merge-with/ado-merge-with.component';
 import { AdoMoveToTrashComponent } from './activity-display-item/activity-delete-options/ado-move-to-trash/ado-move-to-trash.component';
 import { AdoPermanentlyDeleteComponent } from './activity-display-item/activity-delete-options/ado-permanently-delete/ado-permanently-delete.component';
+import { AdoMergeWithParentComponent } from './activity-display-item/activity-delete-options/ado-merge-with-parent/ado-merge-with-parent.component';
 
 
 @NgModule({
@@ -53,6 +54,7 @@ import { AdoPermanentlyDeleteComponent } from './activity-display-item/activity-
     AdoMergeWithComponent,
     AdoMoveToTrashComponent,
     AdoPermanentlyDeleteComponent,
+    AdoMergeWithParentComponent,
   ],
   imports: [
     CommonModule,

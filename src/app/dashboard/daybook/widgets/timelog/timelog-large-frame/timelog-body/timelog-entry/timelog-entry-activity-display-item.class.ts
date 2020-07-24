@@ -26,6 +26,9 @@ export class TimelogEntryActivityDisplayItem {
         if(this._name.length > 16){
             this._name = this._name.substr(0, 16) + "...";
         }
+        if(this._activity.isInTrash){
+            this._name = "Deleted activity";
+        }
         // console.log("Item built!:  " + this.toString())
     }
 

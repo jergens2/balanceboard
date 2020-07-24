@@ -15,7 +15,11 @@
 
       <div class="header-title" (click)="onClickActivity()">
         <div class="color-circle" [style.background-color]="activity.color"></div>
-        <div class="activity-name">{{ activity.name }}</div>
+
+        <div class="activity-name">
+          {{ activity.name }}
+          <fa-icon *ngIf="activity.isInTrash" [icon]="faTrashAlt" style="color:rgba(119, 90, 90, 0.5); margin-left: 5px; font-size: 0.7em;"></fa-icon>
+        </div>
         <fa-icon [icon]="faSyncAlt" style="margin-left:5px; color: rgba(0, 110, 255, 0.5);" *ngIf="activity.scheduleRepititions.length > 0"></fa-icon>
         <div *ngIf="activity.scheduleRepititions.length > 1" style="color:gray;font-size:0.8em;margin-left: 5px;">x{{ activity.scheduleRepititions.length }}</div>
       </div>
@@ -25,12 +29,6 @@
       </div>
 
     </div>
-
-    <!-- <div class="controls" *ngIf="mouseOverHeader">
-      <fa-icon [icon]="faEdit" class="icon-button" (click)="onClickEditActivity()"></fa-icon>
-      <fa-icon [icon]="faTimes" class="icon-button" (click)="onClickDeleteActivity()"></fa-icon>
-    </div> -->
-
   </div>
 
   <!-- <div class="expanded-activity" >

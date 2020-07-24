@@ -15,6 +15,7 @@ export class ModalService {
 
   public get activeModal$(): Observable<Modal> { return this._activeModal$.asObservable(); }
   public get activeModal(): Modal { return this._activeModal$.getValue(); }
+  public get modalIsOpen(): boolean { return this._activeModal$.getValue() !== null; } 
   public get modalResponse$(): Observable<IModalOption> { return this._modalResponse$.asObservable(); }
 
   public openModal(modal: Modal) { this._activeModal$.next(modal); };

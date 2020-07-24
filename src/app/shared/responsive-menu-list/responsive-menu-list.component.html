@@ -1,0 +1,5 @@
+<div class="menu-root">
+    <button *ngFor="let item of items" class="list-item-row" (click)="onSelectItem(item)">
+        {{ item.label }}
+    </button>
+</div>

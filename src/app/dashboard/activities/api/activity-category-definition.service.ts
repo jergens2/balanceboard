@@ -8,6 +8,8 @@ import { ActivityTree } from './activity-tree.class';
 import { Guid } from '../../../shared/utilities/guid.class';
 import { ActivityCategoryDefinitionHttpShape } from './activity-category-definition-http-shape.interface';
 import { DefaultActivityCategoryDefinitions } from './default-activity-category-definitions.class';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { ActivityBuilder } from './activity-builder.class';
 @Injectable({
   providedIn: 'root'
 })
@@ -15,23 +17,16 @@ export class ActivityCategoryDefinitionService {
 
   constructor(private httpClient: HttpClient) { }
 
-  private _serverUrl: string = serverUrl;
-
   private _userId: string = "";
-
   private _activitiesTree: ActivityTree = null;
   private _activitiesTree$: Subject<ActivityTree> = new Subject<ActivityTree>();
 
-  get activitiesTree$(): Observable<ActivityTree> {
-    return this._activitiesTree$.asObservable();
-  }
-  get activitiesTree(): ActivityTree {
-    return this._activitiesTree;
-  }
+  private _loginComplete$: Subject<boolean> = new Subject();
 
-  get userId(): string {
-    return this._userId;
-  }
+
+  get activitiesTree$(): Observable<ActivityTree> {return this._activitiesTree$.asObservable();}
+  get activitiesTree(): ActivityTree {return this._activitiesTree;}
+  get userId(): string {return this._userId;}
 
   /*
   private mergeAndDestroyThisActivity(destroyActivity: ActivityCategoryDefinition, mergeToActivity: ActivityCategoryDefinition){
@@ -42,14 +37,14 @@ export class ActivityCategoryDefinitionService {
   */
 
 
-  findActivityByTreeId(treeId: string): ActivityCategoryDefinition {
+  public findActivityByTreeId(treeId: string): ActivityCategoryDefinition {
     return this._activitiesTree.findActivityByTreeId(treeId);
   }
 
-  public loginComplete$: Subject<boolean> = new Subject();
+
 
   public synchronousLogin(userId: string) { return false; }
-  login$(userId: string): Observable<boolean> {
+  public login$(userId: string): Observable<boolean> {
     this._userId = userId;
     // this._loginComplete$.next({
     //   authenticated: true,
@@ -57,11 +52,11 @@ export class ActivityCategoryDefinitionService {
     // });
     // return this._loginComplete$.asObservable();
 
-    this.fetchActivities();
-    return this.loginComplete$.asObservable();
+    this._fetchActivities();
+    return this._loginComplete$.asObservable();
   }
 
-  logout() {
+  public logout() {
     this._userId = null;
     this._activitiesTree$.next(null);
   }
@@ -69,8 +64,8 @@ export class ActivityCategoryDefinitionService {
 
 
 
-  private fetchActivities() {
-    const getUrl = this._serverUrl + "/api/activity-category-definition/get/" + this._userId;
+  private _fetchActivities() {
+    const getUrl = serverUrl + "/api/activity-category-definition/get/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -80,7 +75,7 @@ export class ActivityCategoryDefinitionService {
     this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
       .pipe<ActivityCategoryDefinition[]>(map((response) => {
         return (response.data as any[]).map((dataObject) => {
-          return this.buildActivityFromResponse(dataObject);
+          return this._buildActivityFromResponse(dataObject);
         });
       }))
       .subscribe((activities: ActivityCategoryDefinition[]) => {
@@ -89,7 +84,7 @@ export class ActivityCategoryDefinitionService {
           this._activitiesTree = new ActivityTree(activities);
           // console.log("nexting ", this._activitiesTree);
           this._activitiesTree$.next(this._activitiesTree);
-          this.loginComplete$.next(true);
+          this._loginComplete$.next(true);
         } else if (activities.length == 0) {
           // console.log("response data was 0 or less... creating default activities")
           this.saveDefaultActivities(DefaultActivityCategoryDefinitions.defaultActivities(this.userId));
@@ -97,12 +92,12 @@ export class ActivityCategoryDefinitionService {
 
       }, (error) => {
         console.log("Error fetching activities", error);
-        this.loginComplete$.next(false);
+        this._loginComplete$.next(false);
       });
   }
 
-  saveDefaultActivities(defaultActivities: ActivityCategoryDefinition[]) {
-    const postUrl = this._serverUrl + "/api/activity-category-definition/createDefault";
+  public saveDefaultActivities(defaultActivities: ActivityCategoryDefinition[]) {
+    const postUrl = serverUrl + "/api/activity-category-definition/createDefault";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -112,14 +107,14 @@ export class ActivityCategoryDefinitionService {
     this.httpClient.post<{ message: string, data: any }>(postUrl, defaultActivities.map((activity) => { return activity.httpShape; }), httpOptions)
       .pipe<ActivityCategoryDefinition[]>(map((response) => {
         return (response.data as any[]).map((dataObject) => {
-          let activity: ActivityCategoryDefinition = this.buildActivityFromResponse(dataObject);
+          let activity: ActivityCategoryDefinition = this._buildActivityFromResponse(dataObject);
           return activity;
         });
       }))
       .subscribe((allActivities: ActivityCategoryDefinition[]) => {
         this._activitiesTree = new ActivityTree(allActivities);
         this._activitiesTree$.next(this._activitiesTree);
-        this.loginComplete$.next(true);
+        this._loginComplete$.next(true);
       })
   }
 
@@ -129,7 +124,7 @@ export class ActivityCategoryDefinitionService {
     let newActivity = activity;
     newActivity.userId = this._userId;
     newActivity.treeId = this._userId + "_" + Guid.newGuid();
-    const postUrl = this._serverUrl + "/api/activity-category-definition/create";
+    const postUrl = serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -138,7 +133,7 @@ export class ActivityCategoryDefinitionService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, newActivity.httpShape, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response) => {
-        return this.buildActivityFromResponse(response.data);
+        return this._buildActivityFromResponse(response.data);
       }))
       .subscribe((activity: ActivityCategoryDefinition) => {
         this._activitiesTree.addActivityToTree(activity);
@@ -148,11 +143,11 @@ export class ActivityCategoryDefinitionService {
     return saveActivityComplete$.asObservable();
   }
 
-  saveActivity(activity: ActivityCategoryDefinition) {
+  public saveActivity(activity: ActivityCategoryDefinition) {
     let newActivity = activity;
     newActivity.userId = this._userId;
     newActivity.treeId = this._userId + "_" + Guid.newGuid();
-    const postUrl = this._serverUrl + "/api/activity-category-definition/create";
+    const postUrl = serverUrl + "/api/activity-category-definition/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -161,7 +156,7 @@ export class ActivityCategoryDefinitionService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, newActivity.httpShape, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response) => {
-        return this.buildActivityFromResponse(response.data);
+        return this._buildActivityFromResponse(response.data);
       }))
       .subscribe((activity: ActivityCategoryDefinition) => {
         this._activitiesTree.addActivityToTree(activity);
@@ -169,23 +164,26 @@ export class ActivityCategoryDefinitionService {
       })
   }
 
-  updateActivity(unsentActivity: ActivityCategoryDefinition) {
-    const updateUrl = this._serverUrl + "/api/activity-category-definition/update";
+  public updateActivity$(unsentActivity: ActivityCategoryDefinition): Observable<boolean> {
+    const updateUrl = serverUrl + "/api/activity-category-definition/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
+    const isComplete$: Subject<boolean> = new Subject();
     this.httpClient.post(updateUrl, unsentActivity.httpShape, httpOptions)
       .pipe<ActivityCategoryDefinition>(map((response: { message: string, data: any }) => {
-        return this.buildActivityFromResponse(response.data);
+        return this._buildActivityFromResponse(response.data);
       }))
       .subscribe((updatedActivity: ActivityCategoryDefinition) => {
         this._activitiesTree.pruneActivityFromTree(unsentActivity);
         this._activitiesTree.addActivityToTree(updatedActivity);
         this._activitiesTree$.next(this._activitiesTree);
-      })
+        isComplete$.next(true);
+      });
+    return isComplete$.asObservable();
   }
 
 
@@ -200,90 +198,28 @@ export class ActivityCategoryDefinitionService {
     as a temporary solution, the front end prevents the deletion of any activity that has children - the delete button is only available if the activity has no children.
 
 */
-  permanentlyDeleteActivity$(activity: ActivityCategoryDefinition): Observable<boolean> {
+  public permanentlyDeleteActivity$(activity: ActivityCategoryDefinition): Observable<boolean> {
     const isComplete$: Subject<boolean> = new Subject();
-    const deleteUrl = this._serverUrl + "/api/activity-category-definition/permanently-delete";
+    const deleteUrl = serverUrl + "/api/activity-category-definition/permanently-delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, success: boolean, data: any }>(deleteUrl, activity.httpShape, httpOptions).subscribe((response)=>{
-      if(response.success === true){
+    this.httpClient.post<{ message: string, success: boolean, data: any }>(deleteUrl, activity.httpShape, httpOptions).subscribe((response) => {
+      if (response.success === true) {
         this._activitiesTree.pruneActivityFromTree(activity);
         this._activitiesTree$.next(this._activitiesTree);
-      }else{
-
+      } else {
+        console.log("Error with deleting activity definition.");
       }
       isComplete$.next(true);
     });
-
-
     return isComplete$.asObservable();
   }
 
 
-  private buildActivityFromResponse(data: any): ActivityCategoryDefinition {
-    const properties: string[] = [
-      "_id",
-      "userId",
-      "treeId",
-      "parentTreeId",
-      "name",
-      "description",
-      "color",
-      "icon",
-      "isRootLevel",
-      "isSleepActivity",
-      "canDelete",
-      "durationSetting",
-      "specifiedDurationMinutes",
-      "scheduleRepititions",
-      "currentPointsConfiguration",
-      "pointsConfigurationHistory",
-      "isRoutine",
-      "routineMembersActivityIds",
-      "isConfigured",
-    ];
-
-
-    let dataErrors: boolean = false;
-    properties.forEach(property => {
-      if (!(property in data)) {
-        console.log("Error with activity data object: missing property: ", property);
-        dataErrors = true;
-      }
-    });
-    // console.log("Warning: manual overriding")
-    // dataErrors = false;
-    if (!dataErrors) {
-      let buildActivityHttpShape: ActivityCategoryDefinitionHttpShape = {
-        _id: data._id,
-        userId: data.userId,
-        treeId: data.treeId,
-        parentTreeId: data.parentTreeId,
-        name: data.name,
-        description: data.description,
-        color: data.color,
-        icon: data.icon,
-        isRootLevel: data.isRootLevel,
-        isSleepActivity: data.isSleepActivity,
-        canDelete: data.canDelete,
-        durationSetting: data.durationSetting,
-        specifiedDurationMinutes: data.specifiedDurationMinutes,
-        scheduleRepititions: data.scheduleRepititions,
-        currentPointsConfiguration: data.currentPointsConfiguration,
-        pointsConfigurationHistory: data.pointsConfigurationHistory,
-        isConfigured: data.isConfigured,
-        isRoutine: data.isRoutine,
-        routineMembersActivityIds: data.routineMembersActivityIds,
-      }
-      return new ActivityCategoryDefinition(buildActivityHttpShape);
-    } else {
-      console.log("Activity is not built because of missing property.");
-      return null;
-    }
-  }
+  private _buildActivityFromResponse(data: any): ActivityCategoryDefinition { return new ActivityBuilder(data).constructedActivity; }
 
 }

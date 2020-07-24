@@ -19,6 +19,7 @@ import { SleepManagerService } from './sleep-manager/sleep-manager.service';
 import { DaybookSleepCycle } from './sleep-manager/sleep-cycle/daybook-sleep-cycle.class';
 import { SleepManager } from './sleep-manager/sleep-manager.class';
 import { DaybookTimeSchedule } from './api/daybook-time-schedule/daybook-time-schedule.class';
+import { ActivityTree } from '../activities/api/activity-tree.class';
 
 @Injectable({
   providedIn: 'root'
@@ -135,10 +136,10 @@ export class DaybookDisplayService {
 
   private _updateDaybookSchedule(update: DaybookDisplayUpdate) {
     const isToday = update.controller.dateYYYYMMDD === moment().format('YYYY-MM-DD');
-    if(isToday){
+    if (isToday) {
       const sleepCycle: DaybookSleepCycle = this.sleepService.sleepManager.currentSleepCycle;
       this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
-    }else{
+    } else {
       const sleepCycle: DaybookSleepCycle = this.sleepService.sleepManager.getSleepCycleForDate(update.controller.dateYYYYMMDD, update.controller.dayItems);
       this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
     }
@@ -159,14 +160,14 @@ export class DaybookDisplayService {
     this._updateTLEFSubscriptions();
     if (this._tlefController.formIsOpen) {
       // console.log("* updating TLEF controller.  it was open, so updating active grid item.")
-      if(this._tlefController.currentlyOpenTLEFItem.isDrawing){
+      if (this._tlefController.currentlyOpenTLEFItem.isDrawing) {
         const start = new TimelogDelineator(this.tlefController.currentlyOpenTLEFItem.startTime, TimelogDelineatorType.DRAWING_TLE_START);
         const end = new TimelogDelineator(this.tlefController.currentlyOpenTLEFItem.endTime, TimelogDelineatorType.DRAWING_TLE_END);
         this.onCreateNewTimelogEntry(start, end);
-      }else{
+      } else {
         this.timelogDisplayGrid.updateActiveItem(this.tlefController.currentlyOpenTLEFItem);
       }
-      
+
     }
   }
 

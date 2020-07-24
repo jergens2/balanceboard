@@ -16,10 +16,11 @@ export interface ActivityCategoryDefinitionHttpShape{
     color: string;
     icon: string; 
 
-    isRootLevel: boolean;
+    // isRootLevel: boolean;
     isSleepActivity: boolean;
     canDelete: boolean;
-    
+    isInTrash: boolean;
+
     durationSetting: ActivityDurationSetting;
     specifiedDurationMinutes: number;
     
