@@ -1,51 +1,64 @@
 <div class="activity-display-item-root font-family-open-sans">
     <div class="title-container">
         <div style="height: 0px; width: 0px;">
-            <input class="clean-input" *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color" [cpSaveClickOutside]="false"
-                [cpToggle]="true" [cpOutputFormat]="'rgba'"  [cpPosition]="'bottom'"
+            <input class="clean-input" *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color"
+                [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'" [cpPosition]="'bottom'"
                 [cpOKButton]="true" [cpOKButtonText]="'Save'" [cpOKButtonClass]="'small-button'" [cpCancelButton]="true"
                 [cpCancelButtonClass]="'small-button discard-button'" (colorPickerClose)="onClickCancelColorPicker()"
                 (colorPickerCancel)="onClickCancelColorPicker()" (colorPickerSelect)="onClickSaveColorPicker($event)"
-                (colorPickerChange)="onColorChanged($event)"/>
+                (colorPickerChange)="onColorChanged($event)" />
         </div>
         <div class="title-color" [style.background-color]="activity.color" (click)="onClickOpenColorPicker()"></div>
-        <app-title-displayer-modifier [value]="activity.name" (valueChanged)="onNameChanged($event)"></app-title-displayer-modifier>
-
-        <div class="delete-button" (click)="onClickDeleteButton()" *ngIf="!activity.isInTrash">
-            <fa-icon [icon]="faTrash"></fa-icon>
-        </div>
+        <app-title-displayer-modifier [value]="activity.name" (valueChanged)="onNameChanged($event)">
+        </app-title-displayer-modifier>
     </div>
     <div class="body" *ngIf="!activity.isInTrash">
-
-
-         
         <div class="body-item">
-            Occurrence or duration: {{ activity.durationSetting }}
-        </div>
+            <div class="body-item-header no-select" (click)="onClickHeader('ANALYSIS')">
+                Data analysis
+            </div>
+            <div class="body-item-content" *ngIf="showAnalysisContent">
+                <app-adi-analysis></app-adi-analysis>
+            </div>
 
-        <div class="body-item scheduling-configuration" *ngIf="configuringSchedule">
-            <app-activity-schedule-configuration [activity]="activity"
-                (configurationSaved)="onConfigurationSaved($event)"></app-activity-schedule-configuration>
         </div>
-        <div class="body-item schedulin ng-configuration" *ngIf="!configuringSchedule">
-            <app-activity-schedule-display [activity]="activity"
+        <div class="body-item">
+            <div class="body-item-header no-select" (click)="onClickHeader('CONFIG')">
+                Configuration
+            </div>
+            <div class="body-item-content" *ngIf="showConfigContent">
+                <app-activity-schedule-configuration [activity]="activity" *ngIf="configuringSchedule"
+                (configurationSaved)="onConfigurationSaved($event)"></app-activity-schedule-configuration>
+            <app-activity-schedule-display [activity]="activity" *ngIf="!configuringSchedule"
                 (configure)="configuringSchedule = !configuringSchedule" (delete)="onConfigurationDeleted()">
             </app-activity-schedule-display>
+            <div>
+                Occurrence or duration: {{ activity.durationSetting }}
+            </div>
+            </div>
+
         </div>
 
-        <app-activity-delete-options *ngIf="showDeleteOptions" class="body-item" (cancel)="onCloseDeleteOptions()" [activity]="activity"></app-activity-delete-options>
+        <div class="body-item">
+            <div class="body-item-header no-select" (click)="onClickHeader('DELETE')">Delete</div>
+            <div class="body-item-content" *ngIf="showDeleteContent">
+                <app-activity-delete-options (cancel)="onCloseDeleteOptions()" [activity]="activity">
+                </app-activity-delete-options>
+            </div>
 
+        </div>
     </div>
 
 
     <div class="body" *ngIf="activity.isInTrash">
         This activity is in the trash.
         <div style="margin-top: 10px; padding: 3px; display:flex;flex-direction: column;">
-            <div>
+            <div style="margin-bottom: 5px;">
                 <button class="medium-button save-button" (click)="onClickRestore()">Restore</button>
             </div>
 
-            <app-delete-confirm-button [label]="'Permanently Delete'" (delete)="onPermanentlyDeleteActivity()"></app-delete-confirm-button>
+            <app-delete-confirm-button [label]="'Permanently Delete'" (delete)="onPermanentlyDeleteActivity()">
+            </app-delete-confirm-button>
         </div>
     </div>
 

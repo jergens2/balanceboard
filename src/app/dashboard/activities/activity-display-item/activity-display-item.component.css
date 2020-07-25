@@ -9,7 +9,7 @@
     border-radius: 10px;
 }
 .title-container{
-    font-size: 1.1em;
+    font-size: 1.3em;
     font-weight: bold;
     border-radius: 10px;
 
@@ -66,12 +66,24 @@
     
 }
 .body-item{
+    padding: 10px;
     display:flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 10px;
-    
+    flex-direction: column;
+    margin-bottom: 25px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid rgb(243, 243, 243);
 }
-.scheduling-configuration{
+.body-item-header{
+    font-size: 1.1em;
+    /* font-weight: bold; */
 
+}
+.body-item-header:hover{
+    cursor: pointer;
+    font-weight: bold;
+    background-color: rgb(240, 240, 240);
+}
+.body-item-content{
+    margin-top: 10px;
 }

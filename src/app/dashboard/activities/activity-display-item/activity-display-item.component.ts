@@ -16,7 +16,6 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   constructor(private activityService: ActivityComponentService, private activityDefService: ActivityCategoryDefinitionService) { }
 
   private _activity: ActivityCategoryDefinition;
-  private _showDeleteOptions: boolean = false;
 
   private _color: string;
   private _originalColor: string;
@@ -24,15 +23,22 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   private _titleBorderBottom: any = {};
   private _colorPickerIsOpen: boolean = false;
 
+  private _showAnalysisContent: boolean = true;
+  private _showConfigContent: boolean = false;
+  private _showDeleteContent: boolean = false;
+
   public get color(): string { return this._color; }
 
   public get faTrash() { return faTrash };
   public get activity(): ActivityCategoryDefinition { return this._activity; }
-  public get showDeleteOptions(): boolean { return this._showDeleteOptions; }
 
   public get titleBorderBottom(): any { return this._titleBorderBottom; }
   public get colorPickerIsOpen(): boolean { return this._colorPickerIsOpen; };
   public configuringSchedule: boolean = false;
+
+  public get showAnalysisContent(): boolean { return this._showAnalysisContent; }
+  public get showConfigContent(): boolean { return this._showConfigContent; }
+  public get showDeleteContent(): boolean { return this._showDeleteContent; }
 
   // public get isLoading(): boolean { return this.activityService.isLoading; }
   // public get loadingMessage(): string { return this.activityService.loadingMessage; }
@@ -52,6 +58,17 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   public onNameChanged(newName: string){
     this._activity.name = newName;
     this.activityDefService.updateActivity$(this._activity);
+  }
+  public onClickHeader(value: 'ANALYSIS' | 'CONFIG' | 'DELETE'){
+    if(value === 'ANALYSIS'){
+      this._showAnalysisContent = !this._showAnalysisContent;
+    }
+    if(value === 'CONFIG'){
+      this._showConfigContent = !this._showConfigContent;
+    }
+    if(value === 'DELETE'){
+      this._showDeleteContent = !this._showDeleteContent;
+    }
   }
 
   public onConfigurationSaved(repititions: ActivityScheduleRepitition[]) {
@@ -100,8 +117,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
     this._color = color;
   }
 
-  public onClickDeleteButton() { this._showDeleteOptions = true; }
-  public onCloseDeleteOptions() { this._showDeleteOptions = false; }
+
 
   public onClickRestore(){
     this._activity.removeFromTrash();
@@ -114,7 +130,6 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
       this._color = this._activity.color;
       this._originalColor = this._activity.color;
       this._titleBorderBottom = { "border-bottom": "1px solid " + this.activity.color };
-      this._showDeleteOptions = false;
       this.configuringSchedule = false;
     }
   }

@@ -1,0 +1,16 @@
+<div class="year-view-root">
+    <div *ngFor="let month of months" class="month-container">
+
+        <div>{{ month.name }}</div>
+        <div class="month-body">
+            <div *ngFor="let day of month.days" class="day-container">
+                <div class="day-body" *ngIf="day.isVisibleMonthItem" >  
+                    <div *ngIf="day.value !== ''" style="font-size: 0.5em;">
+                        {{ day.value }}
+                    </div>
+                </div>
+
+            </div>
+        </div>        
+    </div>
+</div>

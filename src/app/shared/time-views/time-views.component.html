@@ -1,28 +1,13 @@
 <div class="time-views-root">
-
-  <div class="zoom-controls-container">
-    <div class="zoom-controls">
-      <button class="zoom-button" style="border-top-left-radius: 4px;border-bottom-left-radius: 4px;"
-        (click)="onClickZoom('DAY')">Day</button>
-      <button class="zoom-button" (click)="onClickZoom('WEEK')">Week</button>
-      <button class="zoom-button" (click)="onClickZoom('SIX_WEEKS')">6 Weeks</button>
-      <button class="zoom-button" (click)="onClickZoom('YEAR')">Year</button>
-      <button class="zoom-button"
-        style="border-top-right-radius: 4px;border-bottom-right-radius: 4px;border-right:1px solid rgb(0, 153, 255);"
-        (click)="onClickZoom('MULTIPLE_YEARS')">Years</button>
+    <div class="time-views-header">
+        <div class="view-controls">
+            <app-button-menu [menu]="timeFrameMenu"></app-button-menu>
+        </div>
     </div>
-  </div>
-
-
-  <div class="time-view-container">
-    <app-single-day-view *ngIf="timeView == 'DAY'" [configuration]="configuration"></app-single-day-view>
-    <app-week-view *ngIf="timeView == 'WEEK'" [configuration]="configuration"></app-week-view>
-    <app-six-week-view *ngIf="timeView == 'SIX_WEEKS'" [configuration]="configuration"></app-six-week-view>
-    <app-year-view *ngIf="timeView == 'YEAR'" [configuration]="configuration" (dateClicked)="onDateClicked($event)"></app-year-view>
-    <app-multi-year-view *ngIf="timeView == 'MULTIPLE_YEARS'" [configuration]="configuration"></app-multi-year-view>
-    <!-- <app-custom-range-time-view [timeRange]="customViewTimeRange" *ngIf="timeView == 'CUSTOM'"></app-custom-range-time-view> -->
-  </div>
-
-
-
+    <div class="time-views-body">
+        <app-tv-month-view *ngIf="viewIsMonth"></app-tv-month-view>
+        <app-tv-week-view *ngIf="viewIsWeek"></app-tv-week-view>
+        <app-tv-year-view *ngIf="viewIsYear" [manager]="manager"></app-tv-year-view>
+        <app-tv-specify-view *ngIf="viewIsSpecify"></app-tv-specify-view>
+    </div>
 </div>

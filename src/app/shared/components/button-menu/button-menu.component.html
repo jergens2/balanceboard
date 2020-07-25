@@ -1,0 +1,4 @@
+<div class="button-menu-root">
+    <button *ngFor="let item of menuItems" class="button-menu-item" [ngClass]="item.ngClass"
+        (click)="onClickItem(item)">{{item.label}}</button>
+</div>

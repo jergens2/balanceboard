@@ -14,13 +14,19 @@ export class ActivityBuilder {
         let dataErrors: boolean = false;
         properties.forEach(property => {
             if (!(property in data)) {
-                console.log("Error with activity data object: missing property: ", property);
+                console.log("Warning with activity data object: missing property: ", property);
                 dataErrors = true;
             }
         });
+        let isInTrash: boolean = false;
+        if(data.isInTrash !== null){
+            if(data.isInTrash === true){
+                isInTrash = true;
+            }
+        }
         // console.log("Warning: manual overriding")
         // dataErrors = false;
-        if (!dataErrors) {
+        // if (!dataErrors) {
             let buildActivityHttpShape: ActivityCategoryDefinitionHttpShape = {
                 _id: data._id,
                 userId: data.userId,
@@ -33,7 +39,7 @@ export class ActivityBuilder {
                 // isRootLevel: data.isRootLevel,
                 isSleepActivity: data.isSleepActivity,
                 canDelete: data.canDelete,
-                isInTrash: data.isInTrash,
+                isInTrash: isInTrash,
                 durationSetting: data.durationSetting,
                 specifiedDurationMinutes: data.specifiedDurationMinutes,
                 scheduleRepititions: data.scheduleRepititions,
@@ -44,10 +50,10 @@ export class ActivityBuilder {
                 routineMembersActivityIds: data.routineMembersActivityIds,
             }
             this._activity = new ActivityCategoryDefinition(buildActivityHttpShape);
-        } else {
-            console.log("Activity is not built because of missing property.");
-            return null;
-        }
+        // } else {
+        //     console.log("Activity is not built because of missing property.");
+        //     return null;
+        // }
     }
 
     public get constructedActivity(): ActivityCategoryDefinition { return this._activity; }

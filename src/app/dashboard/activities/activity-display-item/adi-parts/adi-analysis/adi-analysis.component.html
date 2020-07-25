@@ -1,0 +1,8 @@
+<div class="analysis-root">
+    <div class="spinner-container" *ngIf="isLoading">
+        <app-spinner style="width: 100px;height:100px;"></app-spinner>
+    </div>
+    <div *ngIf="!isLoading">
+        <app-time-views [manager]="timeViewsManager"></app-time-views>
+    </div>
+</div>

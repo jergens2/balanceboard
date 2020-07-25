@@ -1,9 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { TimeViewsService } from './time-views.service';
-import * as moment from 'moment';
-
-import { TimeViewConfiguration } from './time-view-configuration.interface';
-import { TimeViewDayData } from './time-view-day-data-interface';
+import { TimeViewsManager } from './time-views-manager.class';
+import { ButtonMenu } from '../components/button-menu/button-menu.class';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-time-views',
@@ -12,36 +10,39 @@ import { TimeViewDayData } from './time-view-day-data-interface';
 })
 export class TimeViewsComponent implements OnInit {
 
-  constructor(private timeViewsService: TimeViewsService) { }
+  constructor() { }
+  
+  private _manager: TimeViewsManager; 
+  private _timeFrameMenu: ButtonMenu;
+  private _currentView: 'WEEK' | 'MONTH' | 'YEAR' | 'SPECIFY' = 'MONTH';
 
+  @Input() public set manager(manager: TimeViewsManager){
+    this._manager = manager;
+  }
+  public get manager(): TimeViewsManager { return this._manager; }
+  public get timeFrameMenu(): ButtonMenu { return this._timeFrameMenu; }
+  public get viewIsMonth(): boolean { return this._currentView === 'MONTH'; }
+  public get viewIsWeek(): boolean { return this._currentView === 'WEEK'; }
+  public get viewIsYear(): boolean { return this._currentView === 'YEAR'; }
+  public get viewIsSpecify(): boolean { return this._currentView === 'SPECIFY'; }
 
-  @Input() configuration: TimeViewConfiguration;
+  private _subscriptions: Subscription[] = [];
 
-  timeView: string = "YEAR";
-  customViewTimeRange: any = null;
-  // 'DAY', 'WEEK', 'SIX_WEEKS', 'YEAR', 'MULTIPLE_YEARS'
-
-  rangeStartDate: moment.Moment;
-  rangeEndDate: moment.Moment;
-  rangeDayCount: number = 0;
-
-  ngOnInit() {
-
-    // if(this.configuration){
-    //   console.log("Configuration:", this.configuration);
-    // }else{
-    //   console.log("No configuration was provided.")
-    // }
+  ngOnInit(): void {
+    this._timeFrameMenu = new ButtonMenu();
+    this._subscriptions = [
+      this._timeFrameMenu.addItem$('Week').subscribe(s => this._selectTimeFrame('WEEK')),
+      this._timeFrameMenu.addItem$('Month').subscribe(s => this._selectTimeFrame('MONTH')),
+      this._timeFrameMenu.addItem$('Year').subscribe(s => this._selectTimeFrame('YEAR')),
+      this._timeFrameMenu.addItem$('Specify').subscribe(s => this._selectTimeFrame('SPECIFY')),
+    ];
+    this._timeFrameMenu.openItem('Month');
+    
   }
 
-  onDateClicked(day: TimeViewDayData){
-    console.log("Date clicked: ", day);
+  private _selectTimeFrame(value: 'WEEK' | 'MONTH' | 'YEAR' | 'SPECIFY'){
+    console.log("Setting current value: " , value);
+    this._currentView = value;
   }
-
-
-  onClickZoom(zoomLevel: string){
-    this.timeView = zoomLevel;
-  }
-
 
 }

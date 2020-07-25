@@ -6,6 +6,7 @@ import { ModalService } from '../../modal/modal.service';
 import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.service';
 import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
 import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
+import { ActivityDataAnalyzer } from './activity-display-item/adi-parts/adi-analysis/activity-data-analyzer.class';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class ActivityComponentService {
   private _modalService: ModalService;
   private _daybookHttpService: DaybookHttpRequestService;
   private _daybookActivityUpdater: DaybookActivityUpdater;
+  private _activityDataAnalyzer: ActivityDataAnalyzer;
 
   public initiate$(activityDefinitionService: ActivityCategoryDefinitionService,
     modalService: ModalService, daybookHttpService: DaybookHttpRequestService): Observable<boolean> {
@@ -27,6 +29,7 @@ export class ActivityComponentService {
     this._daybookHttpService = daybookHttpService;
     this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
       this._daybookActivityUpdater = new DaybookActivityUpdater(items);
+      this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
       isLoading$.next(true);
     });
     return isLoading$.asObservable();
@@ -45,6 +48,7 @@ export class ActivityComponentService {
   public get loadingMessage$(): Observable<string> { return this._loadingMessage$.asObservable(); }
 
   public get updater(): DaybookActivityUpdater { return this._daybookActivityUpdater; }
+  public get analyzer(): ActivityDataAnalyzer { return this._activityDataAnalyzer; }
   public get daybookDayItems(): DaybookDayItem[] { return this.updater.daybookDayItems; }
 
   public openActivity(activity: ActivityCategoryDefinition) {

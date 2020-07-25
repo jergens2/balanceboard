@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NotebookEntry } from './notebook-entry/notebook-entry.model';
 import { NotebooksService } from './notebooks.service';
 import { ITagFilter } from './tag-filter.interface';
-import { YearViewData } from '../../shared/time-views/year-view/year-view-data.interface';
-import { YearViewDataType } from '../../shared/time-views/year-view/year-view-data-type.enum';
 import * as moment from 'moment';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCog, faHashtag } from '@fortawesome/free-solid-svg-icons';
@@ -32,7 +30,6 @@ export class NotesComponent implements OnInit {
 
   tagFilters: ITagFilter[] = [];
 
-  yearViewData: YearViewData;
 
   loadingStart: moment.Moment = moment();
   loadingEnd: moment.Moment = moment();
@@ -124,14 +121,7 @@ export class NotesComponent implements OnInit {
       });
     })
 
-    let yearViewData: YearViewData = {
-      dataType: YearViewDataType.Note,
-      data: yearData,
-      maxValue: maxValue,
-      options: options
-    };
-  
-    this.yearViewData = yearViewData;
+
     // console.log("yearViewData is", yearViewData)
     this.loadingEnd = moment();
     console.log("Build year view data, Loading: " + this.loadingEnd.diff(this.loadingStart, "milliseconds") + " ms")
