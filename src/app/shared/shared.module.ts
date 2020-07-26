@@ -3,7 +3,6 @@ import { CommonModule } from "@angular/common";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 
-import { ColorPickerComponent } from './color-picker/color-picker.component';
 import { ReactiveFormsModule } from "@angular/forms";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { DirectoryInputComponent } from './directory/directory-input/directory-input.component';
@@ -39,6 +38,7 @@ import { TvMonthViewComponent } from './time-views/tv-month-view/tv-month-view.c
 import { TvYearViewComponent } from './time-views/tv-year-view/tv-year-view.component';
 import { TvWeekViewComponent } from './time-views/tv-week-view/tv-week-view.component';
 import { TvSpecifyViewComponent } from './time-views/tv-specify-view/tv-specify-view.component';
+import { ColorPickerComponent } from "./color-picker/color-picker.component";
 
 
 

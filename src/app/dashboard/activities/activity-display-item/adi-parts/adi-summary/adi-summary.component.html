@@ -4,22 +4,41 @@
         <div style="margin-left: 15px; margin-right: 15px; font-size: 0.8em;color: gray;">Range</div>
     </div>
     <div class="summary-body">
-        <div>
-            Occurrences total in range: {{ occurrencesTotal }}
+        <div class="property-row">
+            <div class="property-label">
+                Occurrences total in range
+            </div>
+            <div class="property-value">
+                {{ occurrencesTotal }}
+            </div>
         </div>
-        <div>
-            Duration total [hours] in range: {{ durationHoursTotal }}
+        <div class="property-row">
+            <div class="property-label">
+                Duration total [hours] in range
+            </div>
+            <div class="property-value">
+                {{ durationHoursTotal }}
+            </div>
         </div>
-        <div>
-            Median [occurrences] per [7] days: {{ medianOccurrencesPerWeek }}
+        <div class="property-row">
+            <div class="property-label">
+                Median [occurrences] per [7] days
+            </div>
+            <div class="property-value">
+                {{ medianOccurrencesPerWeek }}
+            </div>
         </div>
-        <div>
-            Median total [hours] per [7] days: {{ medianHoursPerWeek}}
+        <div class="property-row">
+            <div class="property-label">
+                Median total [hours] per [7] days
+            </div>
+            <div class="property-value">
+                {{ medianHoursPerWeek}}
+            </div>
         </div>
 
-        
-        <app-adi-cumulative-hours></app-adi-cumulative-hours>
-        <app-adi-average-hours></app-adi-average-hours>
+        <app-adi-cumulative-hours [weekDataItems]="weekHourData"></app-adi-cumulative-hours>
+        <app-adi-average-hours [weekDataItems]="weekHourData"></app-adi-average-hours>
     </div>
 
 

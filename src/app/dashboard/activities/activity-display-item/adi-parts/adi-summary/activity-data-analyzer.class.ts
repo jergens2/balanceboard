@@ -1,27 +1,31 @@
-import { DaybookDayItem } from "../../daybook/api/daybook-day-item.class";
-import { ActivityTree } from "../api/activity-tree.class";
-import { ActivityCategoryDefinition } from "../api/activity-category-definition.class";
+import { DaybookDayItem } from "../../../../daybook/api/daybook-day-item.class";
+import { ActivityTree } from "../../../api/activity-tree.class";
+import { ActivityCategoryDefinition } from "../../../api/activity-category-definition.class";
 import * as moment from 'moment';
-import { ActivityCategoryDefinitionService } from "../api/activity-category-definition.service";
+import { ActivityCategoryDefinitionService } from "../../../api/activity-category-definition.service";
+import { ADIWeekDataChartItem } from "./adi-week-data-chart-item.class";
 
 export class ActivityDataAnalyzer {
 
     private _daybookItems: DaybookDayItem[] = [];
-    private _definitionService: ActivityCategoryDefinitionService;
 
     private _summaryValOccurrencesTotal: string = '';
     private _summaryValDurationHoursTotal: string = '';
     private _summaryValMedianHoursPerWeek: string = '';
     private _summaryValMedianOccurrencesPerWeek: string = '';
 
+    private _weekHourData: ADIWeekDataChartItem[] = [];
+
     public get occurrencesTotal(): string { return this._summaryValOccurrencesTotal; }
     public get durationHoursTotal(): string { return this._summaryValDurationHoursTotal; }
     public get medianHoursPerWeek(): string { return this._summaryValMedianHoursPerWeek; }
     public get medianOccurrencesPerWeek(): string { return this._summaryValMedianOccurrencesPerWeek; }
 
-    constructor(daybookItems: DaybookDayItem[], definitionService: ActivityCategoryDefinitionService) {
+    public get weekHourData(): ADIWeekDataChartItem[] { return this._weekHourData; }
+
+    constructor(daybookItems: DaybookDayItem[],) {
         this._daybookItems = daybookItems;
-        this._definitionService = definitionService;
+        this.analyzeActivity
     }
 
     private get _defaultQuery(): { startTime: moment.Moment, endTime: moment.Moment, } {
@@ -44,9 +48,9 @@ export class ActivityDataAnalyzer {
             .find(tledi => tledi.timelogEntryActivities.find(tlea => childIds.find(id => id === tlea.activityTreeId))));
         const startDateYYYYMMDD: string = moment(query.startTime).format('YYYY-MM-DD');
         let currentDateYYYYMMDD: string = moment(startDateYYYYMMDD).format('YYYY-MM-DD');
-        let dayOfSeven = 0;
+
         let occurrencesPerWeek: number[] = [];
-        let msPerWeek: number[] = [];
+        let msPerWeek: { startDateYYYYMMDD: string, ms: number }[] = [];
         let currentWeekMs: number = 0;
         let currentWeekOccurrences: number = 0;
         while (currentDateYYYYMMDD < moment(query.endTime).format('YYYY-MM-DD')) {
@@ -66,11 +70,11 @@ export class ActivityDataAnalyzer {
                     });
                 });
             }
-            if (dayOfSeven <= 6) {
-                dayOfSeven++;
-            } else {
-                dayOfSeven = 0;
-                msPerWeek.push(currentWeekMs);
+            if (moment(currentDateYYYYMMDD).day() === 6) {
+                msPerWeek.push({
+                    startDateYYYYMMDD: moment(currentDateYYYYMMDD).startOf('week').format('YYYY-MM-DD'),
+                    ms: currentWeekMs,
+                });
                 occurrencesPerWeek.push(currentWeekOccurrences);
                 currentWeekMs = 0;
                 currentWeekOccurrences = 0;
@@ -78,25 +82,41 @@ export class ActivityDataAnalyzer {
             currentDateYYYYMMDD = moment(currentDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
         }
         let sumMs = 0;
-        msPerWeek.forEach(ms => sumMs += ms);
+        msPerWeek.forEach(ms => sumMs += ms.ms);
         this._summaryValDurationHoursTotal = (sumMs / (1000 * 60 * 60)).toFixed(1);
-        const sortedMs = msPerWeek.sort((m1, m2)=>{
-            if(m1 < m2) { return -1;}
-            if(m1 > m2) { return 1;}
+        const sortedMs = msPerWeek.sort((m1, m2) => {
+            if (m1 < m2) { return -1; }
+            if (m1 > m2) { return 1; }
             return 0;
         });
-        
-        if(sortedMs.length > 0){
-            let half = ((sortedMs.length-1) / 2);
-            if(sortedMs.length % 2 === 0){
+
+        if (sortedMs.length > 0) {
+            let half = ((sortedMs.length - 1) / 2);
+            if (sortedMs.length % 2 === 0) {
                 half = (sortedMs.length / 2);
             }
-            if(half > 0){ half--;}
+            if (half > 0) { half--; }
             console.log(sortedMs)
             console.log(sortedMs[half])
-            this._summaryValMedianHoursPerWeek = (sortedMs[half] / (1000 * 60 * 60)).toFixed(1);
+            this._summaryValMedianHoursPerWeek = (sortedMs[half].ms / (1000 * 60 * 60)).toFixed(1);
         }
-        
+        let cumulativePercent: number = 0;
+        this._weekHourData = msPerWeek.map(item => {
+            const hours = item.ms / (1000 * 60 * 60);
+            const percent: number = (item.ms / sumMs) * 100;
+            cumulativePercent += percent;
+            const color = activity.color;
+            return new ADIWeekDataChartItem(item.startDateYYYYMMDD, hours, percent, cumulativePercent);
+        });
+        let largestHours = 0;
+        this._weekHourData.forEach(item => {
+            if(item.hours > largestHours){ largestHours = item.hours; }
+        })
+        this._weekHourData.forEach(item => {
+            const alpha = (item.hours / largestHours).toFixed(2);
+            item.setColor(activity.color, alpha);
+        });
+
     }
 
 

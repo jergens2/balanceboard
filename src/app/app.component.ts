@@ -14,6 +14,7 @@ import { NotebooksService } from './dashboard/notes/notebooks.service';
 import * as moment from 'moment';
 import { KeydownService } from './shared/keydown.service';
 import { DaybookDisplayService } from './dashboard/daybook/daybook-display.service';
+import { ActivityComponentService } from './dashboard/activities/activity-component.service';
 
 @Component({
   selector: 'app-root',
@@ -55,7 +56,8 @@ export class AppComponent implements OnInit {
     private daybookControllerService: DaybookControllerService,
     private daybookDisplayService: DaybookDisplayService,
     private notebookService: NotebooksService,
-    private keydownService: KeydownService
+    private keydownService: KeydownService,
+    private activityComponentService: ActivityComponentService,
   ) { }
 
   @HostListener('window:resize', ['$event']) onResize(event) {
@@ -228,6 +230,7 @@ export class AppComponent implements OnInit {
   private _unloadServices() {
     // console.log("Unloading services")
     this.activitiesService.logout();
+    this.activityComponentService.unload();
     this.daybookHttpService.logout();
     this.daybookControllerService.logout();
 

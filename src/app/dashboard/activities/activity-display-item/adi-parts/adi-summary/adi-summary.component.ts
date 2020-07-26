@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivityDataAnalyzer } from '../../activity-data-analyzer.class';
+import { ActivityDataAnalyzer } from './activity-data-analyzer.class';
 import { ActivityComponentService } from '../../../activity-component.service';
 import { ButtonMenu } from '../../../../../shared/components/button-menu/button-menu.class';
+import * as moment from 'moment';
+import { ADIWeekDataChartItem } from './adi-week-data-chart-item.class';
 
 @Component({
   selector: 'app-adi-summary',
@@ -20,6 +22,7 @@ export class AdiSummaryComponent implements OnInit {
   public get medianHoursPerWeek(): string { return this.analyzer.medianHoursPerWeek; }
   public get medianOccurrencesPerWeek(): string { return this.analyzer.medianOccurrencesPerWeek; } 
   public get rangeMenu(): ButtonMenu { return this._rangeMenu; }
+  public get weekHourData(): ADIWeekDataChartItem[] { return this.analyzer.weekHourData; }
 
   ngOnInit(): void {
     this._rangeMenu.addItem$('7').subscribe(s => this._setRange('7'))
@@ -31,15 +34,21 @@ export class AdiSummaryComponent implements OnInit {
 
   private _setRange(range: '7' | '30' | '90' | '365' | 'Specify'){
     if(range === '7'){
-      this.analyzer.analyzeActivity
+      const query = {startTime: moment().subtract(7, 'days'),endTime: moment()};
+      this.analyzer.analyzeActivity(this.activitiesService.currentActivity, query);
     }else if(range === '30'){
-
+      const query = {startTime: moment().subtract(30, 'days'),endTime: moment()};
+      this.analyzer.analyzeActivity(this.activitiesService.currentActivity, query);
     }else if(range === '90'){
-
+      const query = {startTime: moment().subtract(90, 'days'),endTime: moment()};
+      this.analyzer.analyzeActivity(this.activitiesService.currentActivity, query);
     }else if(range === '365'){
-
+      const query = {startTime: moment().subtract(365, 'days'),endTime: moment()};
+      this.analyzer.analyzeActivity(this.activitiesService.currentActivity, query);
     }else if(range === 'Specify'){
-
+      console.log("Specify clicked:  not implemented")
+      const query = {startTime: moment().subtract(365, 'days'),endTime: moment()};
+      this.analyzer.analyzeActivity(this.activitiesService.currentActivity, query);
     }
 
   }

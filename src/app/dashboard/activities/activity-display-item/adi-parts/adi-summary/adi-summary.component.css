@@ -7,3 +7,24 @@
     display:flex;
     flex-direction: column;
 }
+
+.property-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 35px;
+    margin-bottom:5px;
+    background-color: white;
+    padding-left: 8px;
+}
+.property-label{
+    width: 260px;
+    font-size: 0.8em;
+    color: rgb(0, 0, 0);
+    /* font-style: italic; */
+}
+.property-value{
+    font-size: 1.0em;
+    font-weight: bold;
+    color: rgb(0, 37, 105);
+}

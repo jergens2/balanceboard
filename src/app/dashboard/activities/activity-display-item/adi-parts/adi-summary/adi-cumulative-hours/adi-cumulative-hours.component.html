@@ -1,1 +1,25 @@
-<p>adi-cumulative-hours works!</p>
+<div class="cumulative-hours-root">
+    <div style="font-size: 0.8em; margin-bottom: 5px;">Cumulative hours</div>
+
+    <div class="items">
+        <div class="item-container" *ngFor="let item of weekDataItems">
+            <div [ngStyle]="item.ngStyle" class="chart-item" (mouseenter)="item.onMouseEnter()"
+                (mouseleave)="item.onMouseLeave()">
+    
+                <div class="popup-display-container">
+                    <div *ngIf="item.mouseIsOver" class="popup-display">
+                        <div class="text-above">Week of {{ item.displayTime }}</div>
+                        <div style="align-self: center;">
+                            + {{ item.hours.toFixed(1) }} hours
+                        </div>
+    
+                    </div>
+                </div>
+    
+    
+            </div>
+        </div>
+    </div>
+    
+
+</div>

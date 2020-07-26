@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { ActivityCategoryDefinition } from './api/activity-category-definition.class';
-import { BehaviorSubject, Observable, Subject, forkJoin } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, forkJoin, Subscription } from 'rxjs';
 import { ActivityCategoryDefinitionService } from './api/activity-category-definition.service';
 import { ModalService } from '../../modal/modal.service';
 import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.service';
 import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
 import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
-import { ActivityDataAnalyzer } from './activity-display-item/activity-data-analyzer.class';
+import { ActivityDataAnalyzer } from './activity-display-item/adi-parts/adi-summary/activity-data-analyzer.class';
 
 @Injectable({
   providedIn: 'root'
@@ -46,18 +46,40 @@ export class ActivityComponentService {
   public get componentSize(): 'SMALL' | 'MEDIUM' | 'LARGE' { return this._componentSize$.getValue(); }
   public get componentSize$(): Observable<'SMALL' | 'MEDIUM' | 'LARGE'> { return this._componentSize$.asObservable(); }
 
+  private _activitySub: Subscription = new Subscription();
+
   public initiate$(activityDefinitionService: ActivityCategoryDefinitionService,
     modalService: ModalService, daybookHttpService: DaybookHttpRequestService): Observable<boolean> {
     const isLoading$: Subject<boolean> = new Subject();
+    console.log("Reinitiang")
     this._activityDefinitionService = activityDefinitionService;
     this._modalService = modalService;
     this._daybookHttpService = daybookHttpService;
     this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
       this._daybookActivityUpdater = new DaybookActivityUpdater(items);
-      this._activityDataAnalyzer = new ActivityDataAnalyzer(items, this._activityDefinitionService);
+      this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
+      if(this.currentActivity){
+        this._activityDataAnalyzer.analyzeActivity(this.currentActivity)
+      }
+      this._activitySub = this._activityDefinitionService.activitiesTree$.subscribe(changedTree =>{ 
+        if(this.currentActivity){
+          const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);
+          this._activityDataAnalyzer.analyzeActivity(foundExisting)
+          this._currentActivity$.next(foundExisting);
+        }
+        
+      });
+
       isLoading$.next(true);
     });
     return isLoading$.asObservable();
+  }
+
+  public unload(){
+    this._activitySub.unsubscribe();
+    this._daybookHttpService = null;
+    this._activityDefinitionService = null;
+    this._currentActivity$.next(null);
   }
 
   public openList(){ this._listIsOpen$.next(true); }

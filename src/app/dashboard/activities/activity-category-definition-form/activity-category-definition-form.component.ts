@@ -5,9 +5,6 @@ import { ActivityCategoryDefinitionService } from '../api/activity-category-defi
 import { ActivityTree } from '../api/activity-tree.class';
 import { faCheckCircle, faCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
-import { ActivityCategoryDefinitionHttpShape } from '../api/activity-category-definition-http-shape.interface';
-import { Guid } from '../../../shared/utilities/guid.class';
-import { ActivityDurationSetting } from '../api/activity-duration.enum';
 import { DefaultActivityCategoryDefinitions } from '../api/default-activity-category-definitions.class';
 
 
