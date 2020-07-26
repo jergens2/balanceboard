@@ -1,0 +1,26 @@
+<div class="summary-root">
+    <div style="display:flex;flex-direction: row-reverse; align-items: center;">
+        <app-button-menu [menu]="rangeMenu" style="width: 250px;"></app-button-menu>
+        <div style="margin-left: 15px; margin-right: 15px; font-size: 0.8em;color: gray;">Range</div>
+    </div>
+    <div class="summary-body">
+        <div>
+            Occurrences total in range: {{ occurrencesTotal }}
+        </div>
+        <div>
+            Duration total [hours] in range: {{ durationHoursTotal }}
+        </div>
+        <div>
+            Median [occurrences] per [7] days: {{ medianOccurrencesPerWeek }}
+        </div>
+        <div>
+            Median total [hours] per [7] days: {{ medianHoursPerWeek}}
+        </div>
+
+        
+        <app-adi-cumulative-hours></app-adi-cumulative-hours>
+        <app-adi-average-hours></app-adi-average-hours>
+    </div>
+
+
+</div>

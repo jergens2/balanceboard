@@ -17,7 +17,6 @@ export class TimeViewsManager{
     public get timeViewMonths(): TimeViewMonth[] { return this._timeViewMonths;  }
 
     public buildActivityViews(daybookItems: DaybookDayItem[], activity: ActivityCategoryDefinition){
-        console.log("BUILDING!")
         const instances: { startTime: moment.Moment, durationMs: number }[] = [];
         daybookItems.forEach(dayBookItem =>{
             dayBookItem.timelogEntryDataItems.forEach(tledi =>{ 

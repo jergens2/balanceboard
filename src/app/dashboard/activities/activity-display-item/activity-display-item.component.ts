@@ -23,7 +23,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   private _titleBorderBottom: any = {};
   private _colorPickerIsOpen: boolean = false;
 
-  private _showAnalysisContent: boolean = true;
+  private _showSummaryContent: boolean = true;
   private _showConfigContent: boolean = false;
   private _showDeleteContent: boolean = false;
 
@@ -36,7 +36,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   public get colorPickerIsOpen(): boolean { return this._colorPickerIsOpen; };
   public configuringSchedule: boolean = false;
 
-  public get showAnalysisContent(): boolean { return this._showAnalysisContent; }
+  public get showSummaryContent(): boolean { return this._showSummaryContent; }
   public get showConfigContent(): boolean { return this._showConfigContent; }
   public get showDeleteContent(): boolean { return this._showDeleteContent; }
 
@@ -61,7 +61,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   }
   public onClickHeader(value: 'ANALYSIS' | 'CONFIG' | 'DELETE'){
     if(value === 'ANALYSIS'){
-      this._showAnalysisContent = !this._showAnalysisContent;
+      this._showSummaryContent = !this._showSummaryContent;
     }
     if(value === 'CONFIG'){
       this._showConfigContent = !this._showConfigContent;

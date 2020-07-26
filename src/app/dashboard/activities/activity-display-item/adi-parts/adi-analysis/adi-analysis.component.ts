@@ -35,7 +35,6 @@ export class AdiAnalysisComponent implements OnInit {
 
   private _rebuild(){
     this._isLoading = true;
-    const start = moment();
     /**
      * Put a clause in here to get an array of all child activity Ids, recursively.
      * and then add that data to the cumulative data.

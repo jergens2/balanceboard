@@ -6,7 +6,7 @@ import { ModalService } from '../../modal/modal.service';
 import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.service';
 import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
 import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
-import { ActivityDataAnalyzer } from './activity-display-item/adi-parts/adi-analysis/activity-data-analyzer.class';
+import { ActivityDataAnalyzer } from './activity-display-item/activity-data-analyzer.class';
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +54,7 @@ export class ActivityComponentService {
     this._daybookHttpService = daybookHttpService;
     this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
       this._daybookActivityUpdater = new DaybookActivityUpdater(items);
-      this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
+      this._activityDataAnalyzer = new ActivityDataAnalyzer(items, this._activityDefinitionService);
       isLoading$.next(true);
     });
     return isLoading$.asObservable();
@@ -67,6 +67,7 @@ export class ActivityComponentService {
 
   public openActivity(activity: ActivityCategoryDefinition) {
     this._currentActivity$.next(activity);
+    this.analyzer.analyzeActivity(activity);
 
     // do some stuff like load daybook history.
 
@@ -78,17 +79,17 @@ export class ActivityComponentService {
     const updatedItems: DaybookDayItem[] = this.updater.executePermanentlyDelete(this.currentActivity);
     if (updatedItems.length > 0) {
 
-      console.log("UPDATED ITEMS: " , updatedItems)
+      // console.log("UPDATED ITEMS: " , updatedItems)
 
       const updatesComplete$: Subject<boolean> = new Subject();
       updatesComplete$.subscribe(isComplete => {
         this._permanentlyDeleteActivityDefintion();
       });
-      console.log("Executing permanent delete: ", updatedItems.length)
+      // console.log("Executing permanent delete: ", updatedItems.length)
       forkJoin(updatedItems.map<Observable<DaybookDayItem>>((item: DaybookDayItem) =>
         this._daybookHttpService.updateDaybookDayItem$(item)))
         .subscribe((updatedItems: DaybookDayItem[]) => {
-          console.log("Successfully updated " + updatedItems.length + " items");
+          // console.log("Successfully updated " + updatedItems.length + " items");
           updatesComplete$.next(true);
         }, (err) => {
           console.log("error updating day items: ", err);

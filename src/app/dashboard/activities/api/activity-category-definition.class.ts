@@ -74,12 +74,8 @@ export class ActivityCategoryDefinition {
 
 
 
-    public setFullPath(fullPath: string) {
-        this._fullNamePath = fullPath;
-    }
-    public get fullNamePath(): string {
-        return this._fullNamePath;
-    }
+    public setFullPath(fullPath: string) {this._fullNamePath = fullPath;}
+    public get fullNamePath(): string {return this._fullNamePath;}
 
     /**
     * This method returns the position in the path where the searchValue is found.
@@ -132,6 +128,21 @@ export class ActivityCategoryDefinition {
     // set children(children: CategorizedActivity[]) {
     //     this._children = children;
     // }
+
+    /**
+     * Gets all child tree ids, recursively.
+     * 
+     */
+    public getAllChildActivities(): string[] { 
+        let childIds: string[] = [];
+        if(this.children.length > 0){
+            this.children.forEach(child => { 
+                childIds.push(child.treeId);
+                childIds = [...childIds, ...child.getAllChildActivities()];
+            });
+        }
+        return childIds;
+    }
 
     addChild(childCategory: ActivityCategoryDefinition) {
         this._children.push(childCategory);

@@ -17,8 +17,9 @@
             <div class="body-item-header no-select" (click)="onClickHeader('ANALYSIS')">
                 Data analysis
             </div>
-            <div class="body-item-content" *ngIf="showAnalysisContent">
-                <app-adi-analysis></app-adi-analysis>
+            <div class="body-item-content" *ngIf="showSummaryContent">
+                <app-adi-summary></app-adi-summary>
+                <!-- <app-adi-analysis></app-adi-analysis> -->
             </div>
 
         </div>

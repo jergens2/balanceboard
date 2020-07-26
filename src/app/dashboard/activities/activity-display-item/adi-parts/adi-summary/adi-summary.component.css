@@ -1,0 +1,9 @@
+.summary-root{
+    display:flex;
+    flex-direction: column;
+}
+.summary-body{
+    margin-top: 10px;
+    display:flex;
+    flex-direction: column;
+}
