@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ToolboxService } from './toolbox.service';
 import { ToolType } from './tool-type.enum';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { ScreenSizeService } from '../shared/screen-size/screen-size.service';
-import { ScreenSizes } from '../shared/screen-size/screen-sizes-enum';
+import { AppScreenSizeService } from '../shared/app-screen-size/app-screen-size.service';
+import { AppScreenSizeLabel } from '../shared/app-screen-size/app-screen-size-label.enum';
 import * as moment from 'moment';
 import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
+import { AppScreenSize } from '../shared/app-screen-size/app-screen-size.class';
 
 @Component({
   selector: 'app-toolbox',
@@ -16,21 +17,21 @@ export class ToolsComponent implements OnInit {
 
   public faTimes = faTimes;
 
-  constructor(private toolsService: ToolboxService, private sizeService: ScreenSizeService) { }
+  constructor(private toolsService: ToolboxService, private sizeService: AppScreenSizeService) { }
 
   // public ifNotepad: boolean = false;
   // public ifActionItem: boolean = false;
   // public ifTimelogEntry: boolean = false;
 
   public toolName: string = "";
-  public screenSize: ScreenSizes;
+  public screenSize: AppScreenSizeLabel;
 
   ngOnInit() {
     // console.log("Tools component init");
-    this.sizeService.appScreenSize$.subscribe((size: ScreenSizes) => {
-      this.screenSize = size;
+    this.sizeService.appScreenSize$.subscribe((size: AppScreenSize) => {
+      this.screenSize = size.label;
     })
-    this.screenSize = this.sizeService.appScreenSize;
+    this.screenSize = this.sizeService.appScreenSize.label;
 
     this.toolsService.currentToolQueue$.subscribe((tools: ToolType[]) => {
       // console.log("Tool queue subscription: ", tools)

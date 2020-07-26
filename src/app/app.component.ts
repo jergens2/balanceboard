@@ -3,8 +3,8 @@ import { AuthenticationService } from './authentication/authentication.service';
 import { ModalService } from './modal/modal.service';
 import { Modal } from './modal/modal.class';
 import { ToolboxService } from './toolbox-menu/toolbox.service';
-import { ScreenSizeService } from './shared/screen-size/screen-size.service';
-import { ScreenSizes } from './shared/screen-size/screen-sizes-enum';
+import { AppScreenSizeService } from './shared/app-screen-size/app-screen-size.service';
+import { AppScreenSizeLabel } from './shared/app-screen-size/app-screen-size-label.enum';
 import { Subscription, Observable, Subject, BehaviorSubject, timer } from 'rxjs';
 import { ActivityCategoryDefinitionService } from './dashboard/activities/api/activity-category-definition.service';
 import { DaybookHttpRequestService } from './dashboard/daybook/api/daybook-http-request.service';
@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private authService: AuthenticationService,
-    private sizeService: ScreenSizeService,
+    private sizeService: AppScreenSizeService,
     private userPromptService: UserActionPromptService,
     // private userSettingsService: UserSettingsService,
     private modalService: ModalService,

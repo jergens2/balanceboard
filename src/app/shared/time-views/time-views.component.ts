@@ -36,7 +36,7 @@ export class TimeViewsComponent implements OnInit {
       this._timeFrameMenu.addItem$('Year').subscribe(s => this._selectTimeFrame('YEAR')),
       this._timeFrameMenu.addItem$('Specify').subscribe(s => this._selectTimeFrame('SPECIFY')),
     ];
-    this._timeFrameMenu.openItem('Month');
+    this._timeFrameMenu.openItem('Year');
     
   }
 

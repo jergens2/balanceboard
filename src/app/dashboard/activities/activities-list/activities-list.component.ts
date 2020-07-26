@@ -4,6 +4,10 @@ import { ToolboxService } from '../../../toolbox-menu/toolbox.service';
 import { ActivityTree } from '../api/activity-tree.class';
 import { ActivityCategoryDefinitionService } from '../api/activity-category-definition.service';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
+import { AppScreenSizeService } from '../../../shared/app-screen-size/app-screen-size.service';
+import { ActivityComponentService } from '../activity-component.service';
+import { AppScreenSizeLabel } from '../../../shared/app-screen-size/app-screen-size-label.enum';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-activities-list',
@@ -14,26 +18,44 @@ export class ActivitiesListComponent implements OnInit {
 
   public faPlus = faPlus;
 
-  constructor(private toolboxService: ToolboxService, private activityService: ActivityCategoryDefinitionService) { }
+  constructor(private toolboxService: ToolboxService, private activityDefService: ActivityCategoryDefinitionService,
+    private activityService: ActivityComponentService, private sizeService: AppScreenSizeService) { }
 
   private _activityTree: ActivityTree;
+  private _containerNgClass: string[] = [];
   public get rootActivities(): ActivityCategoryDefinition[] { return this._activityTree.rootActivities; }
   public get trashedActivities(): ActivityCategoryDefinition[] { return this._activityTree.allTrashed; }
+
+  public get containerNgClass(): string[] { return this._containerNgClass; }
   @Output() public activityOpened: EventEmitter<ActivityCategoryDefinition> = new EventEmitter();
   
   ngOnInit(): void {
-    this._activityTree = this.activityService.activitiesTree;
-    
+    this._activityTree = this.activityDefService.activitiesTree;
   }
 
 
-  public onClickNewActivity() {
-    console.log("New activity: method disabled.")
-    //open the toolbox
-  }
+
 
   public onActivityOpened(activity: ActivityCategoryDefinition){
-    this.activityOpened.emit(activity);
+    this.activityService.openActivity(activity);
+    if(this.sizeService.appScreenSize.label !== AppScreenSizeLabel.VERY_LARGE){
+      this.activityService.closeList();
+    }
   }
+
+  private _mouseIsInList: boolean = true;
+  public onMouseLeaveList(){
+    this._mouseIsInList = false;
+    timer(2500).subscribe(s =>{
+      if(!this._mouseIsInList){
+        if(this.activityService.componentSize === 'MEDIUM'){
+          if(this.activityService.currentActivity){
+            this.activityService.closeList();
+          }
+        }
+      }
+    });
+  }
+  public onMouseEnterList(){this._mouseIsInList = true;  }
 
 }

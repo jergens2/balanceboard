@@ -8,8 +8,9 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ActivityComponentService } from './activity-component.service';
 import { Subscription } from 'rxjs';
 import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.service';
-import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
-import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
+import { AppScreenSizeService } from '../../shared/app-screen-size/app-screen-size.service';
+import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.class';
+import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size-label.enum';
 
 @Component({
   selector: 'app-activities',
@@ -20,23 +21,52 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   constructor(private activityDefinitionService: ActivityCategoryDefinitionService,
     private activityCompService: ActivityComponentService, private modalService: ModalService,
-    private daybookHttpService: DaybookHttpRequestService) { }
+    private daybookHttpService: DaybookHttpRequestService, private sizeService: AppScreenSizeService) { }
 
 
   private _isLoading: boolean = true;
   private _activityTree: ActivityTree;
   private _openActivity: ActivityCategoryDefinition;
-  public get openActivity(): ActivityCategoryDefinition { return this._openActivity; }
-  public get isLoading(): boolean { return this._isLoading; }
-
+  private _rootNgClass: string[] = [];
 
   private _subs: Subscription[] = [];
 
+  public get faCalendarAlt() { return faCalendarAlt };
+  public get faPlus() { return faPlus };
+  public get maxHeightPx(): string { return (this.sizeService.maxComponentHeightPx-40) + "px"; }
+
+  public get openActivity(): ActivityCategoryDefinition { return this._openActivity; }
+  public get isLoading(): boolean { return this._isLoading; }
+  public get rootNgClass(): string[] { return this._rootNgClass; }
+
+  public get size(): 'SMALL' | 'MEDIUM' | 'LARGE' { return this.activityCompService.componentSize; }
+  public get sizeIsSmall(): boolean { return this.size === 'SMALL'; }
+  public get sizeIsMedium(): boolean { return this.size === 'MEDIUM'; }
+  public get sizeIsLarge(): boolean { return this.size === 'LARGE'; }
+  public get listIsOpen(): boolean { return this.activityCompService.listIsOpen; }
+
+  public get screenSize(): AppScreenSize { return this.sizeService.appScreenSize; }
+
+  public onActivityOpened(activity: ActivityCategoryDefinition) {
+    this.activityCompService.openActivity(activity);
+  }
+
+  public get rootActivities(): ActivityCategoryDefinition[] {
+    if (this._activityTree) {
+      return this._activityTree.rootActivities;
+    } else {
+      return [];
+    }
+  }
+
+  public onClickNewRoutine() {
+    console.log("New routine button clicked");
+  }
+
   ngOnInit() {
-
-
     this._activityTree = this.activityDefinitionService.activitiesTree;
     this._subs = [
+      this.sizeService.appScreenSize$.subscribe(s => this._resize()),
       this.activityCompService.currentActivity$.subscribe((activityChanged) => {
         this._openActivity = activityChanged;
       }),
@@ -48,60 +78,30 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
           this._isLoading = false;
         }),
     ];
-
-
   }
-
 
   ngOnDestroy() {
     this._subs.forEach(s => s.unsubscribe());
     this._subs = [];
   }
 
-  public onActivityOpened(activity: ActivityCategoryDefinition) {
-    this.activityCompService.openActivity(activity);
-  }
-
-
-  // private _activityRoutines: ActivityCategoryDefinition[] = [];
-  // public get activityRoutines(): ActivityCategoryDefinition[] {
-  //   return this._activityRoutines;
-  // }
-
-  public get rootActivities(): ActivityCategoryDefinition[] {
-    if (this._activityTree) {
-      return this._activityTree.rootActivities;
-    } else {
-      return [];
+  private _resize() {
+    let size: 'SMALL' | 'MEDIUM' | 'LARGE' = 'MEDIUM';
+    if (this.screenSize.label === AppScreenSizeLabel.VERY_LARGE) {
+      size = 'LARGE';
+      this.activityCompService.openList();
+    } else if (this.screenSize.label === AppScreenSizeLabel.MOBILE) {
+      size = 'SMALL';
     }
+    this.activityCompService.setComponentSize(size);
+    if(size === 'SMALL' || size === 'MEDIUM'){
+      if (this.activityCompService.currentActivity) {
+        this.activityCompService.closeList();
+      } else {
+        this.activityCompService.openList();
+      }
+    }
+    
   }
 
-
-  public onClickNewRoutine() {
-    console.log("New routine button clicked");
-  }
-
-  //   private _timeViewConfiguration: TimeViewConfiguration;
-  //   private buildTimeViewConfiguration() {
-
-  //     function hexToRGB(hex: string, alpha: number) {
-  //       var r = parseInt(hex.slice(1, 3), 16),
-  //         g = parseInt(hex.slice(3, 5), 16),
-  //         b = parseInt(hex.slice(5, 7), 16);
-
-  //       if (alpha) {
-  //         return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
-  //       } else {
-  //         return "rgb(" + r + ", " + g + ", " + b + ")";
-  //       }
-  //     }
-  //   }
-
-
-  //   public get timeViewConfiguration(): TimeViewConfiguration {
-  //     return this._timeViewConfiguration;
-  //   }
-
-  faCalendarAlt = faCalendarAlt;
-  faPlus = faPlus;
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ScreenSizeService } from '../../../shared/screen-size/screen-size.service';
-import { ScreenSizes } from '../../../shared/screen-size/screen-sizes-enum';
+import { AppScreenSizeService } from '../../../shared/app-screen-size/app-screen-size.service';
+import { AppScreenSizeLabel } from '../../../shared/app-screen-size/app-screen-size-label.enum';
 import * as moment from 'moment';
 import { ITimeBlock } from './time-block.interface';
 import { ScheduleItem } from './schedule-item.class';
@@ -16,11 +16,11 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 })
 export class SchedulePlannerComponent implements OnInit {
 
-  constructor(private sizeService: ScreenSizeService, private schedulingService: SchedulingService, private dayTemplateService: DayTemplatesService) { }
+  constructor(private sizeService: AppScreenSizeService, private schedulingService: SchedulingService, private dayTemplateService: DayTemplatesService) { }
 
   faSpinner = faSpinner;
 
-  size: ScreenSizes;
+  size: AppScreenSizeLabel;
   scheduleItems: ScheduleItem[] = [];
 
   plannerGraphic: {
@@ -34,9 +34,9 @@ export class SchedulePlannerComponent implements OnInit {
   loading: boolean = true;;
 
   ngOnInit() {
-    this.size = this.sizeService.appScreenSize;
-    this.sizeService.appScreenSize$.subscribe((size: ScreenSizes) => {
-      this.size = size;
+    this.size = this.sizeService.appScreenSize.label;
+    this.sizeService.appScreenSize$.subscribe((size) => {
+      this.size = size.label;
     });
     
 

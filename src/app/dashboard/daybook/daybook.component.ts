@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, Observable } from 'rxjs';
-import { ScreenSizeService } from '../../shared/screen-size/screen-size.service';
-import { ScreenSizes } from '../../shared/screen-size/screen-sizes-enum';
+import { AppScreenSizeService } from '../../shared/app-screen-size/app-screen-size.service';
+import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size-label.enum';
 import { DaybookControllerService } from './controller/daybook-controller.service';
 import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
 import { DaybookDayItem } from './api/daybook-day-item.class';
@@ -18,7 +18,7 @@ import { DaybookDisplayService } from './daybook-display.service';
 export class DaybookComponent implements OnInit, OnDestroy {
 
   constructor(
-    private screenScreenSizeService: ScreenSizeService, 
+    private screenScreenSizeService: AppScreenSizeService, 
     private daybookDisplayService: DaybookDisplayService,
     // private daybookControllerService: DaybookControllerService
     ) { }
@@ -26,7 +26,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
   private _widgets: DaybookWidget[] = [];
 
   private _widgetSubscriptions: Subscription[] = [];
-  private _screenSize: ScreenSizes;
+  private _screenSize: AppScreenSizeLabel;
   private _screenSizeSubscription: Subscription = new Subscription();
 
   private _isLoading: boolean = true;
@@ -53,7 +53,7 @@ export class DaybookComponent implements OnInit, OnDestroy {
     return moment(this.daybookDisplayService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
   }
 
-  public get appScreenSize(): ScreenSizes { return this._screenSize; }
+  public get appScreenSize(): AppScreenSizeLabel { return this._screenSize; }
 
   public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
@@ -61,10 +61,10 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const widget = this.daybookDisplayService.widgetChanged;
-    this._screenSize = this.screenScreenSizeService.appScreenSize;
+    this._screenSize = this.screenScreenSizeService.appScreenSize.label;
     this._subscriptions = [
       this.screenScreenSizeService.appScreenSize$.subscribe((changedSize) => {
-        this._screenSize = changedSize;
+        this._screenSize = changedSize.label;
         // console.log("Screensize changed to: " , this._screenSize)
       }),
       // this.daybookDisplayService.isLoading$.subscribe((isLoading)=>{

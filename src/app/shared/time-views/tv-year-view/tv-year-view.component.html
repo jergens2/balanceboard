@@ -1,4 +1,4 @@
-<div class="year-view-root">
+<div class="year-view-root" [ngClass]="screenSizeNgClass">
     <div *ngFor="let month of months" class="month-container">
 
         <div>{{ month.name }}</div>

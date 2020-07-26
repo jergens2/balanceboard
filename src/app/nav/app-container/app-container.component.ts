@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ToolboxService } from '../../toolbox-menu/toolbox.service';
 import { Subscription } from 'rxjs';
-import { ScreenSizes } from '../../shared/screen-size/screen-sizes-enum';
-import { ScreenSizeService } from '../../shared/screen-size/screen-size.service';
+import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size-label.enum';
+import { AppScreenSizeService } from '../../shared/app-screen-size/app-screen-size.service';
+import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.class';
 
 @Component({
   selector: 'app-app-container',
@@ -11,14 +12,15 @@ import { ScreenSizeService } from '../../shared/screen-size/screen-size.service'
 })
 export class AppContainerComponent implements OnInit, OnDestroy {
 
-  constructor(private toolsService: ToolboxService, private sizeService:ScreenSizeService) { }
+  constructor(private toolsService: ToolboxService, private sizeService:AppScreenSizeService) { }
 
   private _sidebarIsOpen: boolean = true;
   private _showTools: boolean = false;
-  private _appScreenSize: ScreenSizes;
+  private _appScreenSize: AppScreenSize;
 
   public get showTools(): boolean { return this._showTools; }
-  public get appScreenSize(): ScreenSizes { return this._appScreenSize; }
+  public get appScreenSize(): AppScreenSize { return this._appScreenSize; }
+  public get sizeLabel(): AppScreenSizeLabel { return this.appScreenSize.label; }
   public get sidebarIsOpen(): boolean { return this._sidebarIsOpen; }
 
   private _subscriptions: Subscription[];
@@ -31,11 +33,11 @@ export class AppContainerComponent implements OnInit, OnDestroy {
       this.toolsService.onFormClosed$.subscribe((formClosed: boolean) => {
         if (formClosed === true) { this._showTools = false; }
       }),
-      this.sizeService.appScreenSize$.subscribe((appScreenSize: ScreenSizes) => {
+      this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize) => {
         this._onScreenSizeChanged(appScreenSize);
       }),
     ]
-    this._onScreenSizeChanged(this.sizeService.updateSize(window.innerWidth, window.innerHeight));
+    this._onScreenSizeChanged(this.sizeService.appScreenSize);
   }
 
   
@@ -45,11 +47,11 @@ export class AppContainerComponent implements OnInit, OnDestroy {
   }
 
   
-  private _onScreenSizeChanged(appScreenSize: ScreenSizes) {
+  private _onScreenSizeChanged(appScreenSize: AppScreenSize) {
     this._appScreenSize = appScreenSize;
-    if (this._appScreenSize < 2) {
+    if (this._appScreenSize.label < 2) {
       this._sidebarIsOpen = false;
-    } else if (this._appScreenSize >= 2) {
+    } else if (this._appScreenSize.label >= 2) {
       if (localStorage.getItem("sidebar_is_open") === "true") {
         this._sidebarIsOpen = true;
       }

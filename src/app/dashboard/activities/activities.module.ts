@@ -25,6 +25,7 @@ import { WeekOccurrenceComponent } from './activity-display-item/adi-parts/activ
 import { MonthOccurrenceComponent } from './activity-display-item/adi-parts/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/month-occurrence/month-occurrence.component';
 import { YearOccurrenceComponent } from './activity-display-item/adi-parts/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/year-occurrence/year-occurrence.component';
 import { AdiAnalysisComponent } from './activity-display-item/adi-parts/adi-analysis/adi-analysis.component';
+import { ActivitiesToolbarComponent } from './activities-toolbar/activities-toolbar.component';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { AdiAnalysisComponent } from './activity-display-item/adi-parts/adi-anal
     AdoPermanentlyDeleteComponent,
     AdoMergeWithParentComponent,
     AdiAnalysisComponent,
+    ActivitiesToolbarComponent,
   ],
   imports: [
     CommonModule,

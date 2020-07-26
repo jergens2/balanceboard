@@ -5,8 +5,8 @@ import { timer } from 'rxjs';
 import { SleepManagerService } from './sleep-manager.service';
 import { SleepCyclePosition } from './sleep-cycle/sleep-cycle-position.enum';
 import { faCloudMoon } from '@fortawesome/free-solid-svg-icons';
-import { ScreenSizeService } from '../../../shared/screen-size/screen-size.service';
-import { ScreenSizes } from '../../../shared/screen-size/screen-sizes-enum';
+import { AppScreenSizeService } from '../../../shared/app-screen-size/app-screen-size.service';
+import { AppScreenSizeLabel } from '../../../shared/app-screen-size/app-screen-size-label.enum';
 
 @Component({
   selector: 'app-sleep-manager',
@@ -17,7 +17,7 @@ export class SleepManagerComponent implements OnInit {
 
   constructor(
     private sleepService: SleepManagerService, 
-    private screenService: ScreenSizeService) { }
+    private screenService: AppScreenSizeService) { }
 
 
   public faCloudMoon = faCloudMoon;
@@ -31,7 +31,7 @@ export class SleepManagerComponent implements OnInit {
   public get currentTime(): string { return this._currentTime.format('h:mm:ss a'); }
   public get currentDate(): string { return this._currentTime.format('dddd, MMM Do, YYYY') }
 
-  private _screenSize: ScreenSizes
+  private _screenSize: AppScreenSizeLabel
 
   public get isNearBedtime(): boolean { return this.sleepCyclePosition === SleepCyclePosition.BEFORE_BEDTIME; }
   public get isAfterBedtime(): boolean { return this.sleepCyclePosition === SleepCyclePosition.AFTER_BEDTIME; }
@@ -39,9 +39,9 @@ export class SleepManagerComponent implements OnInit {
   public get isEarlyWakeup(): boolean { return this.sleepCyclePosition === SleepCyclePosition.EARLY_WAKEUP; }
   public get newDataRequired(): boolean { return this.sleepService.sleepManager.dataUpdateRequired; }
 
-  public get screenSize(): ScreenSizes { return this._screenSize;}
-  public get isMobile(): boolean { return this.screenSize === ScreenSizes.MOBILE; }
-  public get isTablet(): boolean { return this.screenSize === ScreenSizes.TABLET; }
+  public get screenSize(): AppScreenSizeLabel { return this._screenSize;}
+  public get isMobile(): boolean { return this.screenSize === AppScreenSizeLabel.MOBILE; }
+  public get isTablet(): boolean { return this.screenSize === AppScreenSizeLabel.TABLET; }
   public get rootNgClass(): any { 
     return {
       'root-mobile': this.isMobile,
@@ -60,9 +60,9 @@ export class SleepManagerComponent implements OnInit {
    */
   ngOnInit(): void {
     this._startClock();
-    this._screenSize = this.screenService.appScreenSize;
+    this._screenSize = this.screenService.appScreenSize.label;
     this.screenService.appScreenSize$.subscribe((size)=>{
-      this._screenSize = size;
+      this._screenSize = size.label;
     });
 
     this.sleepService.formComplete$.subscribe((complete)=>{

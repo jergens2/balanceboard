@@ -3,6 +3,7 @@ import { TimeViewsManager } from '../time-views-manager.class';
 import { TimeViewYear } from '../tv-year.class';
 import * as moment from 'moment';
 import { TimeViewMonth } from '../tv-month.class';
+import { AppScreenSizeService } from '../../app-screen-size/app-screen-size.service';
 
 @Component({
   selector: 'app-tv-year-view',
@@ -11,8 +12,9 @@ import { TimeViewMonth } from '../tv-month.class';
 })
 export class TvYearViewComponent implements OnInit {
 
-  constructor() { }
+  constructor(private screenSizeService: AppScreenSizeService) { }
 
+  public get screenSizeNgClass(): string[] { return this.screenSizeService.screenSizeNgClass; }
   @Input() public manager: TimeViewsManager;
   public get months(): TimeViewMonth[] { return this.manager.timeViewMonths; }
 

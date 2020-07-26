@@ -2,8 +2,8 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { TimelogEntryItem } from './timelog-entry-item.class';
 import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
-import { ScreenSizeService } from '../../../../../../../shared/screen-size/screen-size.service';
-import { ScreenSizes } from '../../../../../../../shared/screen-size/screen-sizes-enum';
+import { AppScreenSizeService } from '../../../../../../../shared/app-screen-size/app-screen-size.service';
+import { AppScreenSizeLabel } from '../../../../../../../shared/app-screen-size/app-screen-size-label.enum';
 import { ColorConverter } from '../../../../../../../shared/utilities/color-converter.class';
 import { ColorType } from '../../../../../../../shared/utilities/color-type.enum';
 import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
@@ -21,7 +21,7 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
 
   constructor(
     private activitiesService: ActivityCategoryDefinitionService,
-    private screenSizeService: ScreenSizeService,
+    private screenSizeService: AppScreenSizeService,
     private daybookService: DaybookDisplayService) { }
 
   private _activityItems: TimelogEntryActivityDisplayItem[] = [];
@@ -30,7 +30,7 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
   private _noteTextSmall: string = "";
   private _hasText: boolean = false;
 
-  public screenSize: ScreenSizes;
+  public screenSize: AppScreenSizeLabel;
 
   @Input() public gridItem: TimelogDisplayGridItem;
 
@@ -54,12 +54,12 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
   private _subscriptions: Subscription[] = [];
 
   ngOnInit() {
-    this.screenSize = this.screenSizeService.appScreenSize;
+    this.screenSize = this.screenSizeService.appScreenSize.label;
     this._rebuild(this._calculateMaxItems());
 
     this._subscriptions = [
       this.screenSizeService.appScreenSize$.subscribe((size) => {
-        this.screenSize = size;
+        this.screenSize = size.label;
         this._rebuild(this._calculateMaxItems());
       }),
       this.activitiesService.activitiesTree$.subscribe((treeChanged) => {
@@ -79,30 +79,30 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
 
   private _calculateMaxItems(): number {
     const table: {
-      screenSize: ScreenSizes,
+      screenSize: AppScreenSizeLabel,
       itemSize: 'VERY_SMALL' | 'SMALL' | 'NORMAL' | 'LARGE',
       maxItems: number
     }[] = [
-        { screenSize: ScreenSizes.MOBILE, itemSize: 'VERY_SMALL', maxItems: 2 },
-        { screenSize: ScreenSizes.MOBILE, itemSize: 'SMALL', maxItems: 2 },
-        { screenSize: ScreenSizes.MOBILE, itemSize: 'NORMAL', maxItems: 2 },
-        { screenSize: ScreenSizes.MOBILE, itemSize: 'LARGE', maxItems: 2 },
-        { screenSize: ScreenSizes.TABLET, itemSize: 'VERY_SMALL', maxItems: 3 },
-        { screenSize: ScreenSizes.TABLET, itemSize: 'SMALL', maxItems: 3 },
-        { screenSize: ScreenSizes.TABLET, itemSize: 'NORMAL', maxItems: 4 },
-        { screenSize: ScreenSizes.TABLET, itemSize: 'LARGE', maxItems: 4 },
-        { screenSize: ScreenSizes.NORMAL, itemSize: 'VERY_SMALL', maxItems: 2 },
-        { screenSize: ScreenSizes.NORMAL, itemSize: 'SMALL', maxItems: 2 },
-        { screenSize: ScreenSizes.NORMAL, itemSize: 'NORMAL', maxItems: 2 },
-        { screenSize: ScreenSizes.NORMAL, itemSize: 'LARGE', maxItems: 4 },
-        { screenSize: ScreenSizes.LARGE, itemSize: 'VERY_SMALL', maxItems: 3 },
-        { screenSize: ScreenSizes.LARGE, itemSize: 'SMALL', maxItems: 3 },
-        { screenSize: ScreenSizes.LARGE, itemSize: 'NORMAL', maxItems: 4 },
-        { screenSize: ScreenSizes.LARGE, itemSize: 'LARGE', maxItems: 6 },
-        { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'VERY_SMALL', maxItems: 3 },
-        { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'SMALL', maxItems: 3 },
-        { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'NORMAL', maxItems: 6 },
-        { screenSize: ScreenSizes.VERY_LARGE, itemSize: 'LARGE', maxItems: 6 },
+        { screenSize: AppScreenSizeLabel.MOBILE, itemSize: 'VERY_SMALL', maxItems: 2 },
+        { screenSize: AppScreenSizeLabel.MOBILE, itemSize: 'SMALL', maxItems: 2 },
+        { screenSize: AppScreenSizeLabel.MOBILE, itemSize: 'NORMAL', maxItems: 2 },
+        { screenSize: AppScreenSizeLabel.MOBILE, itemSize: 'LARGE', maxItems: 2 },
+        { screenSize: AppScreenSizeLabel.TABLET, itemSize: 'VERY_SMALL', maxItems: 3 },
+        { screenSize: AppScreenSizeLabel.TABLET, itemSize: 'SMALL', maxItems: 3 },
+        { screenSize: AppScreenSizeLabel.TABLET, itemSize: 'NORMAL', maxItems: 4 },
+        { screenSize: AppScreenSizeLabel.TABLET, itemSize: 'LARGE', maxItems: 4 },
+        { screenSize: AppScreenSizeLabel.NORMAL, itemSize: 'VERY_SMALL', maxItems: 2 },
+        { screenSize: AppScreenSizeLabel.NORMAL, itemSize: 'SMALL', maxItems: 2 },
+        { screenSize: AppScreenSizeLabel.NORMAL, itemSize: 'NORMAL', maxItems: 2 },
+        { screenSize: AppScreenSizeLabel.NORMAL, itemSize: 'LARGE', maxItems: 4 },
+        { screenSize: AppScreenSizeLabel.LARGE, itemSize: 'VERY_SMALL', maxItems: 3 },
+        { screenSize: AppScreenSizeLabel.LARGE, itemSize: 'SMALL', maxItems: 3 },
+        { screenSize: AppScreenSizeLabel.LARGE, itemSize: 'NORMAL', maxItems: 4 },
+        { screenSize: AppScreenSizeLabel.LARGE, itemSize: 'LARGE', maxItems: 6 },
+        { screenSize: AppScreenSizeLabel.VERY_LARGE, itemSize: 'VERY_SMALL', maxItems: 3 },
+        { screenSize: AppScreenSizeLabel.VERY_LARGE, itemSize: 'SMALL', maxItems: 3 },
+        { screenSize: AppScreenSizeLabel.VERY_LARGE, itemSize: 'NORMAL', maxItems: 6 },
+        { screenSize: AppScreenSizeLabel.VERY_LARGE, itemSize: 'LARGE', maxItems: 6 },
       ];
     let itemSize: 'VERY_SMALL' | 'SMALL' | 'NORMAL' | 'LARGE';
     if (this.isVerySmallSize) { itemSize = 'VERY_SMALL'; }

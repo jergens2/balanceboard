@@ -20,6 +20,31 @@ export class ActivityComponentService {
   private _daybookHttpService: DaybookHttpRequestService;
   private _daybookActivityUpdater: DaybookActivityUpdater;
   private _activityDataAnalyzer: ActivityDataAnalyzer;
+  private _listIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  private _componentSize$: BehaviorSubject<'SMALL' | 'MEDIUM' | 'LARGE'> = new BehaviorSubject('MEDIUM');
+
+  private _currentActivity$: BehaviorSubject<ActivityCategoryDefinition> = new BehaviorSubject(null);
+  private _isLoading$: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  private _loadingMessage$: BehaviorSubject<string> = new BehaviorSubject('');
+  
+
+  public get currentActivity(): ActivityCategoryDefinition { return this._currentActivity$.getValue(); }
+  public get currentActivity$(): Observable<ActivityCategoryDefinition> { return this._currentActivity$.asObservable(); }
+
+  public get isLoading(): boolean { return this._isLoading$.getValue(); }
+  public get isLoading$(): Observable<boolean> { return this._isLoading$.asObservable(); }
+  public get loadingMessage(): string { return this._loadingMessage$.getValue(); }
+  public get loadingMessage$(): Observable<string> { return this._loadingMessage$.asObservable(); }
+
+  public get listIsOpen(): boolean { return this._listIsOpen$.getValue(); }
+  public get listIsOpen$(): Observable<boolean> { return this._listIsOpen$.asObservable(); }
+  
+  public get updater(): DaybookActivityUpdater { return this._daybookActivityUpdater; }
+  public get analyzer(): ActivityDataAnalyzer { return this._activityDataAnalyzer; }
+  public get daybookDayItems(): DaybookDayItem[] { return this.updater.daybookDayItems; }
+
+  public get componentSize(): 'SMALL' | 'MEDIUM' | 'LARGE' { return this._componentSize$.getValue(); }
+  public get componentSize$(): Observable<'SMALL' | 'MEDIUM' | 'LARGE'> { return this._componentSize$.asObservable(); }
 
   public initiate$(activityDefinitionService: ActivityCategoryDefinitionService,
     modalService: ModalService, daybookHttpService: DaybookHttpRequestService): Observable<boolean> {
@@ -35,21 +60,10 @@ export class ActivityComponentService {
     return isLoading$.asObservable();
   }
 
-  private _currentActivity$: BehaviorSubject<ActivityCategoryDefinition> = new BehaviorSubject(null);
-  private _isLoading$: BehaviorSubject<boolean> = new BehaviorSubject(true);
-  private _loadingMessage$: BehaviorSubject<string> = new BehaviorSubject('');
-
-  public get currentActivity(): ActivityCategoryDefinition { return this._currentActivity$.getValue(); }
-  public get currentActivity$(): Observable<ActivityCategoryDefinition> { return this._currentActivity$.asObservable(); }
-
-  public get isLoading(): boolean { return this._isLoading$.getValue(); }
-  public get isLoading$(): Observable<boolean> { return this._isLoading$.asObservable(); }
-  public get loadingMessage(): string { return this._loadingMessage$.getValue(); }
-  public get loadingMessage$(): Observable<string> { return this._loadingMessage$.asObservable(); }
-
-  public get updater(): DaybookActivityUpdater { return this._daybookActivityUpdater; }
-  public get analyzer(): ActivityDataAnalyzer { return this._activityDataAnalyzer; }
-  public get daybookDayItems(): DaybookDayItem[] { return this.updater.daybookDayItems; }
+  public openList(){ this._listIsOpen$.next(true); }
+  public toggleList() { this._listIsOpen$.next(!this.listIsOpen); }
+  public closeList() { this._listIsOpen$.next(false); }
+  public setComponentSize(size: 'SMALL' | 'MEDIUM' | 'LARGE'){this._componentSize$.next(size);}
 
   public openActivity(activity: ActivityCategoryDefinition) {
     this._currentActivity$.next(activity);

@@ -91,7 +91,9 @@ export class DaybookControllerService {
     this._startClock();
     this._updateTodayFromDatabase(DaybookDisplayUpdateType.DEFAULT);
     this._activitySub = this.activitiesService.activitiesTree$.subscribe((newTree) => {
-      this._updateTodayFromDatabase(DaybookDisplayUpdateType.ACTIVITIES_CHANGED);
+      if(newTree){
+        this._updateTodayFromDatabase(DaybookDisplayUpdateType.ACTIVITIES_CHANGED);
+      }
     });
   }
 

@@ -3,6 +3,10 @@
     grid-template-rows: repeat(3, 1fr);
     grid-template-columns: repeat(4, 1fr);
 }
+.app-size-small, .app-size-very-small{
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+}
 .month-container{
     padding: 3px;
     display:flex;
@@ -21,6 +25,8 @@
     border-radius: 5px;
     flex-grow: 2;
     background-color: rgb(250, 250, 250);
+    min-width: 200px;
+    min-height: 200px;
 }
 .day-container{
     padding: 2px;
