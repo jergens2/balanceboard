@@ -131,6 +131,7 @@ export class SleepManager {
         const durationFromStart = moment(now).diff(moment(this.previousWakeupTime), 'milliseconds');
         let energy = this._energyAtWakeup;
         const currentEnergy = (durationFromStart / totalDurationMS) * this._energyAtWakeup;
+        // console.log("Returning energy:  ", currentEnergy);
         return currentEnergy;
     }
 

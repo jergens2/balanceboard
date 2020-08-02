@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ITagFilter } from '../tag-filter.interface';
 import { faCheckCircle, faCircle } from '@fortawesome/free-regular-svg-icons';
-import { NotebookEntry } from '../notebook-entry/notebook-entry.model';
+import { NotebookEntry } from '../notebook-entry/notebook-entry.class';
 import { NotebooksService } from '../notebooks.service';
 
 
@@ -17,7 +16,7 @@ export class NotebookTagsComponent implements OnInit {
 
   constructor(private notebooksService: NotebooksService) { }
 
-  tagFilters: ITagFilter[];
+  tagFilters: any[];
   @Output() notesFiltered: EventEmitter<NotebookEntry[]> = new EventEmitter();
 
 
@@ -133,7 +132,7 @@ export class NotebookTagsComponent implements OnInit {
 
   }
 
-  onClickTagCheck(tagFilter: ITagFilter) {
+  onClickTagCheck(tagFilter: any) {
     tagFilter.isChecked = !tagFilter.isChecked;
 
     this.filterNotebookEntries();

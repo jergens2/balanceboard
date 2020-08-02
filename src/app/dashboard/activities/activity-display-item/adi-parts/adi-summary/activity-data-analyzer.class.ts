@@ -1,61 +1,62 @@
 import { DaybookDayItem } from "../../../../daybook/api/daybook-day-item.class";
-import { ActivityTree } from "../../../api/activity-tree.class";
 import { ActivityCategoryDefinition } from "../../../api/activity-category-definition.class";
 import * as moment from 'moment';
-import { ActivityCategoryDefinitionService } from "../../../api/activity-category-definition.service";
 import { ADIWeekDataChartItem } from "./adi-week-data-chart-item.class";
+import { ActivityDataSleepAnalyzer } from "./activity-data-sleep-analyzer.class";
+import { ActivityAnalysis } from "./activity-analysis.interface";
 
 export class ActivityDataAnalyzer {
 
     private _daybookItems: DaybookDayItem[] = [];
-
-    private _summaryValOccurrencesTotal: string = '';
-    private _summaryValDurationHoursTotal: string = '';
-    private _summaryValMedianHoursPerWeek: string = '';
-    private _summaryValMedianOccurrencesPerWeek: string = '';
-
     private _weekHourData: ADIWeekDataChartItem[] = [];
 
-    public get occurrencesTotal(): string { return this._summaryValOccurrencesTotal; }
-    public get durationHoursTotal(): string { return this._summaryValDurationHoursTotal; }
-    public get medianHoursPerWeek(): string { return this._summaryValMedianHoursPerWeek; }
-    public get medianOccurrencesPerWeek(): string { return this._summaryValMedianOccurrencesPerWeek; }
+    // public get occurrencesTotal(): string { return this._summaryValOccurrencesTotal; }
+    // public get durationHoursTotal(): string { return this._summaryValDurationHoursTotal; }
+    // public get medianHoursPerWeek(): string { return this._summaryValMedianHoursPerWeek; }
+    // public get medianOccurrencesPerWeek(): string { return this._summaryValMedianOccurrencesPerWeek; }
 
     public get weekHourData(): ADIWeekDataChartItem[] { return this._weekHourData; }
 
     constructor(daybookItems: DaybookDayItem[],) {
         this._daybookItems = daybookItems;
-        this.analyzeActivity
+        this._analyzeInitial(90);
     }
 
-    private get _defaultQuery(): { startTime: moment.Moment, endTime: moment.Moment, } {
-        const now = moment();
-        const defaultRangeDays: number = 365;
-        const start = moment(now).subtract(defaultRangeDays, 'days');
-        const end = moment(now);
-        return {
-            startTime: start,
-            endTime: end,
-        }
+
+    private _analyzeInitial(days: number = 90) {
+        this._analyzeSleep();
+
     }
+    private _analyzeSleep() {
+
+    }
+
+
+
 
     public get daybookItems(): DaybookDayItem[] { return this._daybookItems; }
 
-    public analyzeActivity(activity: ActivityCategoryDefinition, query = this._defaultQuery) {
-
+    public getAnalysis(activity: ActivityCategoryDefinition,
+        query: { startTime: moment.Moment, endTime: moment.Moment },
+        includeChildren: boolean): ActivityAnalysis {
         const childIds: string[] = [activity.treeId, ...activity.getAllChildActivities()];
+        const allIds: string[] = includeChildren === true ? childIds : [activity.treeId];
         const relevantItems = this.daybookItems.filter(daybookItem => daybookItem.timelogEntryDataItems
-            .find(tledi => tledi.timelogEntryActivities.find(tlea => childIds.find(id => id === tlea.activityTreeId))));
+            .find(tledi => tledi.timelogEntryActivities.find(tlea => allIds.find(id => id === tlea.activityTreeId))));
         const startDateYYYYMMDD: string = moment(query.startTime).format('YYYY-MM-DD');
         let currentDateYYYYMMDD: string = moment(startDateYYYYMMDD).format('YYYY-MM-DD');
 
-        let occurrencesPerWeek: number[] = [];
-        let msPerWeek: { startDateYYYYMMDD: string, ms: number }[] = [];
-        let currentWeekMs: number = 0;
-        let currentWeekOccurrences: number = 0;
+        let occurrenceData: {
+            dateYYYYMMDD: string,
+            occurrences: number,
+            ms: number
+        }[] = [];
         while (currentDateYYYYMMDD < moment(query.endTime).format('YYYY-MM-DD')) {
             const foundDayItem = relevantItems.find(item => item.dateYYYYMMDD === currentDateYYYYMMDD);
             if (foundDayItem) {
+
+                let ms: number = 0;
+                let occurrences: number = 0;
                 foundDayItem.timelogEntryDataItems.forEach(tledi => {
                     const startTime: moment.Moment = moment(tledi.startTimeISO);
                     const endTime: moment.Moment = moment(tledi.endTimeISO);
@@ -63,61 +64,109 @@ export class ActivityDataAnalyzer {
                     tledi.timelogEntryActivities.forEach(tlea => {
                         childIds.forEach(childId => {
                             if (tlea.activityTreeId === childId) {
-                                currentWeekMs += (durationMs * (tlea.percentage / 100));
-                                currentWeekOccurrences++;
+                                ms += (durationMs * (tlea.percentage / 100));
+                                occurrences++;
                             }
                         });
                     });
                 });
-            }
-            if (moment(currentDateYYYYMMDD).day() === 6) {
-                msPerWeek.push({
-                    startDateYYYYMMDD: moment(currentDateYYYYMMDD).startOf('week').format('YYYY-MM-DD'),
-                    ms: currentWeekMs,
+                occurrenceData.push({
+                    dateYYYYMMDD: foundDayItem.dateYYYYMMDD,
+                    occurrences: occurrences,
+                    ms: ms,
                 });
-                occurrencesPerWeek.push(currentWeekOccurrences);
-                currentWeekMs = 0;
-                currentWeekOccurrences = 0;
             }
             currentDateYYYYMMDD = moment(currentDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
         }
-        let sumMs = 0;
-        msPerWeek.forEach(ms => sumMs += ms.ms);
-        this._summaryValDurationHoursTotal = (sumMs / (1000 * 60 * 60)).toFixed(1);
-        const sortedMs = msPerWeek.sort((m1, m2) => {
-            if (m1 < m2) { return -1; }
-            if (m1 > m2) { return 1; }
-            return 0;
-        });
 
-        if (sortedMs.length > 0) {
-            let half = ((sortedMs.length - 1) / 2);
-            if (sortedMs.length % 2 === 0) {
-                half = (sortedMs.length / 2);
-            }
-            if (half > 0) { half--; }
-            console.log(sortedMs)
-            console.log(sortedMs[half])
-            this._summaryValMedianHoursPerWeek = (sortedMs[half].ms / (1000 * 60 * 60)).toFixed(1);
-        }
-        let cumulativePercent: number = 0;
-        this._weekHourData = msPerWeek.map(item => {
-            const hours = item.ms / (1000 * 60 * 60);
-            const percent: number = (item.ms / sumMs) * 100;
-            cumulativePercent += percent;
-            const color = activity.color;
-            return new ADIWeekDataChartItem(item.startDateYYYYMMDD, hours, percent, cumulativePercent);
-        });
-        let largestHours = 0;
-        this._weekHourData.forEach(item => {
-            if(item.hours > largestHours){ largestHours = item.hours; }
-        })
-        this._weekHourData.forEach(item => {
-            const alpha = (item.hours / largestHours).toFixed(2);
-            item.setColor(activity.color, alpha);
-        });
 
+        return this._calculateAnalysis(occurrenceData, activity);
+        // let cumulativePercent: number = 0;
+        // this._weekHourData = msPerWeek.map(item => {
+        //     const hours = item.ms / (1000 * 60 * 60);
+        //     const percent: number = (item.ms / weeklySumMs) * 100;
+        //     cumulativePercent += percent;
+        //     const color = activity.color;
+        //     const percentOfLargest: number = item.ms / largestWeeklyMs * 100;
+        //     return new ADIWeekDataChartItem(item.startDateYYYYMMDD, hours, percent, cumulativePercent, percentOfLargest);
+        // });
+        // let largestHours = 0;
+        // this._weekHourData.forEach(item => {
+        //     if (item.hours > largestHours) { largestHours = item.hours; }
+        // })
+        // this._weekHourData.forEach(item => {
+        //     let alpha: number = (item.hours / largestHours);
+        //     if(alpha < 0.1){ 
+        //         alpha = 0.1;
+        //     }
+        //     item.setColor(activity.color, alpha.toFixed(2));
+        // });
     }
 
+    private _calculateAnalysis(occurrenceData: { dateYYYYMMDD: string, occurrences: number, ms: number }[], activity: ActivityCategoryDefinition): ActivityAnalysis {
+        let analysis = {
+            definition: activity,
+            averageMsPerWeek: 0,
+            averageMsPerDay: 0,
+            averageOccurrencesPerWeek: 0,
+            averageOccurrencesPerDay: 0,
+            averageMsPerOccurrence: 0,
+            medianMsPerWeek: 0,
+            medianMsPerDay: 0,
+            medianOccurrencesPerWeek: 0,
+            medianOccurrencesPerDay: 0,
+            // medianMsPerOccurrence: 0,
+            totalOccurrences: 0,
+            totalMs: 0,
+        };
+        if (occurrenceData.length > 0) {
+            let currentDateYYYYMMDD: string = moment(occurrenceData[0].dateYYYYMMDD).startOf('week').format('YYYY-MM-DD');
+            let weekOccurrenceData: { startDateYYYYMMDD: string, occurrences: number, ms: number }[] = [];
+            let currentWeekData: { startDateYYYYMMDD: string, occurrences: number, ms: number } = {
+                startDateYYYYMMDD: currentDateYYYYMMDD, occurrences: 0, ms: 0,
+            };
+            for (let i = 0; i < occurrenceData.length; i++) {
+                currentWeekData.ms += occurrenceData[i].ms;
+                currentWeekData.occurrences += occurrenceData[i].occurrences;
+                if (moment(occurrenceData[i].dateYYYYMMDD).day() === 6) {
+                    weekOccurrenceData.push(currentWeekData);
+                    currentWeekData = { startDateYYYYMMDD: currentDateYYYYMMDD, occurrences: 0, ms: 0, };
+                } else if (i === occurrenceData.length - 1) {
+                    weekOccurrenceData.push(currentWeekData);
+                }
+            }
+            const sortedDayOccurrenceData = occurrenceData.sort((day1, day2) => {
+                if (day1.ms > day2.ms) { return -1; }
+                else if (day1.ms < day2.ms) { return 1; }
+                return 0;
+            });
+            const sortedWeekOccurrenceData = weekOccurrenceData.sort((week1, week2) => {
+                if (week1.ms > week2.ms) { return -1; }
+                else if (week1.ms < week2.ms) { return 1; }
+                return 0;
+            });
+            let sumMs: number = 0;
+            let sumOccurrences: number = 0;
+            sortedDayOccurrenceData.forEach(d => { sumMs += d.ms; sumOccurrences += d.occurrences; });
+            const weekHalfIndex = sortedWeekOccurrenceData.length % 2 === 0 ? sortedWeekOccurrenceData.length / 2 : (sortedWeekOccurrenceData.length - 1) / 2;
+            const dayHalfIndex = sortedDayOccurrenceData.length % 2 === 0 ? sortedDayOccurrenceData.length / 2 : (sortedDayOccurrenceData.length - 1) / 2;
+
+            analysis = {
+                definition: activity,
+                averageMsPerWeek: sumMs / sortedWeekOccurrenceData.length,
+                averageMsPerDay: sumMs / sortedDayOccurrenceData.length,
+                averageOccurrencesPerWeek: sumOccurrences / sortedWeekOccurrenceData.length,
+                averageOccurrencesPerDay: sumOccurrences / sortedDayOccurrenceData.length,
+                averageMsPerOccurrence: sumMs / sumOccurrences,
+                medianMsPerWeek: sortedWeekOccurrenceData[weekHalfIndex].ms,
+                medianMsPerDay: sortedDayOccurrenceData[dayHalfIndex].ms,
+                medianOccurrencesPerWeek: sortedWeekOccurrenceData[weekHalfIndex].occurrences,
+                medianOccurrencesPerDay: sortedDayOccurrenceData[dayHalfIndex].occurrences,
+                totalOccurrences: sumOccurrences,
+                totalMs: sumMs,
+            };
+        }
+        return analysis;
+    }
 
 }

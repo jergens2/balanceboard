@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faList } from '@fortawesome/free-solid-svg-icons';
+import { faList, faRedo } from '@fortawesome/free-solid-svg-icons';
 import { ActivityComponentService } from '../activity-component.service';
 
 @Component({
@@ -10,6 +10,7 @@ import { ActivityComponentService } from '../activity-component.service';
 export class ActivitiesToolbarComponent implements OnInit {
 
   public get faList() { return faList; }
+  public get faRedo() { return faRedo; }
   public get isNotLarge(): boolean { return this.activityService.componentSize !== 'LARGE'; }
 
   constructor(private activityService: ActivityComponentService, ) { }
@@ -19,6 +20,9 @@ export class ActivitiesToolbarComponent implements OnInit {
 
   public onClickList(){
     this.activityService.toggleList();
+  }
+  public onClickRestart(){
+    this.activityService.restart();
   }
 
 }

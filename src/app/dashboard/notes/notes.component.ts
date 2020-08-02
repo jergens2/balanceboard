@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NotebookEntry } from './notebook-entry/notebook-entry.model';
+import { NotebookEntry } from './notebook-entry/notebook-entry.class';
 import { NotebooksService } from './notebooks.service';
-import { ITagFilter } from './tag-filter.interface';
 import * as moment from 'moment';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCog, faHashtag } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
+import { TimeViewsManager } from '../../shared/time-views/time-views-manager.class';
 
 @Component({
   selector: 'app-notes',
@@ -23,146 +23,64 @@ export class NotesComponent implements OnInit {
 
   private _isLoading: boolean = true;
   private _allNotebookEntries: NotebookEntry[] = [];
+  private _timeViewsManager: TimeViewsManager;
+  private _filteredNotebookEntries: NotebookEntry[] = [];
 
   public get isLoading(): boolean { return this._isLoading; }
+  public get timeViewsManager(): TimeViewsManager { return this._timeViewsManager; }
 
-  filteredNotebookEntries: NotebookEntry[] = [];
-
-  tagFilters: ITagFilter[] = [];
+  public get filteredNotebookEntries(): NotebookEntry[] { return this._filteredNotebookEntries; };
 
 
   loadingStart: moment.Moment = moment();
   loadingEnd: moment.Moment = moment();
 
   ngOnInit() {
-
-
-    let year: number = 2019;
-
-
-    this.notebooksService.fetchNotebookEntries$().subscribe((isComplete)=>{
-      if(isComplete){
-        this._allNotebookEntries = this.notebooksService.notebookEntries;
-        this.notebooksService.notebookEntries$.subscribe((entries: NotebookEntry[]) => {
-          if (entries.length > 0) {
-            this._allNotebookEntries = entries;
-            this.filteredNotebookEntries = this.buildFilteredNotebookEntries(entries);
-          }
-          this.buildYearViewData(year);
+    this._isLoading = true;
+    this._timeViewsManager = new TimeViewsManager();
+    this.notebooksService.fetchNotebookEntries$().subscribe(entries => {
+      if(entries){
+        this._allNotebookEntries = entries.sort((n1, n2) => {
+          if (n1.journalDate > n2.journalDate) { return -1; }
+          else if (n1.journalDate < n2.journalDate) { return 1; }
+          else { return 0; }
         });
+        this._timeViewsManager.setNotebooksView(entries);
+        if (this._allNotebookEntries.length > 10) {
+          this._filteredNotebookEntries = this._allNotebookEntries.slice(0, 9);
+        } else {
+          this._filteredNotebookEntries = this._allNotebookEntries;
+        }
+        console.log("IS LOADING?  ", this._isLoading);
         this._isLoading = false;
       }
-    });
-  }
 
-
-  private buildFilteredNotebookEntries(entries: NotebookEntry[]): NotebookEntry[]{
-    let filteredEntries: NotebookEntry[] = [];
-
-    filteredEntries = entries.sort((entry1, entry2)=>{
-      if(entry1.journalDate.isBefore(entry2.journalDate)){
-        return 1;
-      }
-      if(entry1.journalDate.isAfter(entry2.journalDate)){
-        return -1;
-      }
-      return 0;
     });
 
-
-    // let entryLimit: number = 10;
-
-    // filteredEntries = filteredEntries.filter((entry)=>{
-    //   if(filteredEntries.indexOf(entry) < entryLimit){
-    //     return entry;
-    //   }
-    // });
-
-    console.log("filtered entries:", filteredEntries);
-    this.loadingEnd = moment();
-    console.log("Filtered Entries Loading: " + this.loadingEnd.diff(this.loadingStart, "milliseconds") + " ms")
-    return filteredEntries;
   }
 
 
 
-  private buildYearViewData(year: number){
-    let notesData: {dateYYYYMMDD: string, notes: NotebookEntry[]}[] = [];
-    let maxValue: number = 0;
-    let options: any = { 
-
-    }
-
-    let startDate: moment.Moment = moment().year(year).startOf("year");
-    let endDate: moment.Moment = moment(startDate).endOf('year');
-    let currentDate: moment.Moment = moment(startDate);
 
 
-    //this following method is about 10 times faster than the previous method of trying to find the max value.
-    this._allNotebookEntries.forEach((notebookEntry)=>{
-      let dataEntry = notesData.find((data)=>{
-        return data.dateYYYYMMDD == notebookEntry.journalDate.format("YYYY-MM-DD");
-      });
-      if(dataEntry){
-        dataEntry.notes.push(notebookEntry);
-      }else{
-        let noteData: {dateYYYYMMDD: string, notes: NotebookEntry[]} = { dateYYYYMMDD: notebookEntry.journalDate.format('YYYY-MM-DD'), notes: [notebookEntry]};
-        notesData.push(noteData);
-      }
-    });
-
-    console.log("notesData:", notesData);
-
-    let yearData: { dateYYYYMMDD: string, value: number}[] = [];
-    notesData.forEach((noteData)=>{
-      yearData.push({
-        dateYYYYMMDD: noteData.dateYYYYMMDD,
-        value: noteData.notes.length,
-      });
-    })
 
 
-    // console.log("yearViewData is", yearViewData)
-    this.loadingEnd = moment();
-    console.log("Build year view data, Loading: " + this.loadingEnd.diff(this.loadingStart, "milliseconds") + " ms")
+  onNotesFiltered(notes: NotebookEntry[]) {
+    this._filteredNotebookEntries = notes;
   }
 
-  onYearViewDateClicked(day: any){
-    console.log("day clicked:", day);
-
-    let filteredEntries: NotebookEntry[] = [];
-    for(let notebookEntry of this._allNotebookEntries){
-      if(notebookEntry.journalDate.format('YYYY-MM-DD') == day.dayDate.format('YYYY-MM-DD')){
-        filteredEntries.push(notebookEntry);
-      }
-    }
-    this.filteredNotebookEntries = filteredEntries;
-  }
-
-  
-
-  yearView: boolean = false;
-  onClickYearView(){
-    this.yearView = !this.yearView;
-  }
-
-  
-  onNotesFiltered(notes: NotebookEntry[]){
-    this.filteredNotebookEntries = notes;
-  }
- 
   tagsMenu: boolean = false;
   timeViewsMenu: boolean = false;
 
-  onToggleTagsMenu(){
+  onToggleTagsMenu() {
     this.tagsMenu = !this.tagsMenu;
-    if(!this.tagsMenu){
-      this.filteredNotebookEntries = this._allNotebookEntries;
+    if (!this.tagsMenu) {
+      this._filteredNotebookEntries = this._allNotebookEntries;
     }
-    
+
   }
-  
-  onToggleTimeViewsMenu(){
+
+  onToggleTimeViewsMenu() {
     this.timeViewsMenu = !this.timeViewsMenu;
   }
 

@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { TimeViewMonth } from './tv-month.class';
-import { TimeViewItem } from './time-view-item.class';
+import { TimeViewDayItem } from './time-view-day-item.class';
 
 export class TimeViewYear{
     
@@ -9,7 +9,7 @@ export class TimeViewYear{
 
     public get months(): TimeViewMonth[] { return this._months; }
 
-    constructor(startDateYYYYMMDD: string, items: TimeViewItem[]){
+    constructor(startDateYYYYMMDD: string, items: TimeViewDayItem[]){
         this._startDateYYYYMMDD = moment(startDateYYYYMMDD).startOf('year').format('YYYY-MM-DD');
         const lastDateYYYYMMDD = moment(this._startDateYYYYMMDD).endOf('year').format('YYYY-MM-DD');
         let months: TimeViewMonth[] = [];

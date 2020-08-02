@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TLEFController } from '../../TLEF-controller.class';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-tlef-prompt',
@@ -12,6 +14,8 @@ export class TlefPromptComponent implements OnInit {
   constructor(private daybookService: DaybookDisplayService) { }
 
   private _controller: TLEFController;
+
+  public get faArrowRight(): IconDefinition { return faArrowRight; }
 
   ngOnInit() {
     this._controller = this.daybookService.tlefController;
@@ -28,11 +32,14 @@ export class TlefPromptComponent implements OnInit {
       this.daybookService.activeDayController.saveTimelogEntryItem(changesMadeTLE);
     }
     
-    this._controller.closeTLEFPrompt();
+    this._controller.promptContinue();
     // console.log("Saving changes")
     
   }
   public onClickDiscard(){
+    this._controller.promptContinue();
+  }
+  public onClickReturn(){
     this._controller.closeTLEFPrompt();
   }
 

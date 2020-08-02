@@ -7,6 +7,7 @@ import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.s
 import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
 import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
 import { ActivityDataAnalyzer } from './activity-display-item/adi-parts/adi-summary/activity-data-analyzer.class';
+import { ActivityDataSummarizer } from './activity-display-item/adi-parts/adi-summary/activity-data-summarizer.class';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +20,8 @@ export class ActivityComponentService {
   private _modalService: ModalService;
   private _daybookHttpService: DaybookHttpRequestService;
   private _daybookActivityUpdater: DaybookActivityUpdater;
-  private _activityDataAnalyzer: ActivityDataAnalyzer;
-  private _listIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  private _activitiesSummarizer: ActivityDataSummarizer;
+  private _listIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private _componentSize$: BehaviorSubject<'SMALL' | 'MEDIUM' | 'LARGE'> = new BehaviorSubject('MEDIUM');
 
   private _currentActivity$: BehaviorSubject<ActivityCategoryDefinition> = new BehaviorSubject(null);
@@ -40,7 +41,7 @@ export class ActivityComponentService {
   public get listIsOpen$(): Observable<boolean> { return this._listIsOpen$.asObservable(); }
   
   public get updater(): DaybookActivityUpdater { return this._daybookActivityUpdater; }
-  public get analyzer(): ActivityDataAnalyzer { return this._activityDataAnalyzer; }
+  public get summarizer(): ActivityDataSummarizer { return this._activitiesSummarizer; }
   public get daybookDayItems(): DaybookDayItem[] { return this.updater.daybookDayItems; }
 
   public get componentSize(): 'SMALL' | 'MEDIUM' | 'LARGE' { return this._componentSize$.getValue(); }
@@ -57,16 +58,20 @@ export class ActivityComponentService {
     this._daybookHttpService = daybookHttpService;
     this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
       this._daybookActivityUpdater = new DaybookActivityUpdater(items);
-      this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
+      // this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
+      this._activitiesSummarizer = new ActivityDataSummarizer(items, this._activityDefinitionService.activitiesTree);
       if(this.currentActivity){
-        this._activityDataAnalyzer.analyzeActivity(this.currentActivity)
+        this._activitiesSummarizer.analyzeActivityAndChildren(this.currentActivity)
       }
       this._activitySub = this._activityDefinitionService.activitiesTree$.subscribe(changedTree =>{ 
-        if(this.currentActivity){
-          const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);
-          this._activityDataAnalyzer.analyzeActivity(foundExisting)
-          this._currentActivity$.next(foundExisting);
+        if(changedTree){
+          if(this.currentActivity){
+            const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);
+            this._activitiesSummarizer.analyzeActivityAndChildren(foundExisting)
+            this._currentActivity$.next(foundExisting);
+          }
         }
+
         
       });
 
@@ -87,9 +92,13 @@ export class ActivityComponentService {
   public closeList() { this._listIsOpen$.next(false); }
   public setComponentSize(size: 'SMALL' | 'MEDIUM' | 'LARGE'){this._componentSize$.next(size);}
 
+  public restart(){
+    this._currentActivity$.next(null);
+  }
+
   public openActivity(activity: ActivityCategoryDefinition) {
     this._currentActivity$.next(activity);
-    this.analyzer.analyzeActivity(activity);
+    this.summarizer.analyzeActivityAndChildren(activity);
 
     // do some stuff like load daybook history.
 

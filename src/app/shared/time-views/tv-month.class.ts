@@ -1,15 +1,19 @@
 import * as moment from 'moment';
-import { TimeViewDay } from './tv-day.class';
-import { TimeViewItem } from './time-view-item.class';
+import { TimeViewDayItem } from './time-view-day-item.class';
 
 export class TimeViewMonth{
 
-    private _days: TimeViewDay[] = [];
+    private _days: TimeViewDayItem[] = [];
     private _name: string = "";
 
-    public get days(): TimeViewDay[] { return this._days;}
+    public get days(): TimeViewDayItem[] { return this._days;}
     public get name(): string { return this._name; }
-    constructor(startDateYYYYMMDD: string, monthItems: TimeViewItem[]){ 
+    constructor(startDateYYYYMMDD: string, monthItems: TimeViewDayItem[]){
+        console.log("MONTH START DATE: " , startDateYYYYMMDD) 
+        let viewMode: 'NOTEBOOK' | 'ACTIVITY' = 'NOTEBOOK'
+        if(monthItems.length >0){
+            viewMode = monthItems[0].viewMode;
+        }
         let currentDateYYYYMMDD = startDateYYYYMMDD;
         let currentDayOfWeek = moment(currentDateYYYYMMDD).day();
 
@@ -18,14 +22,16 @@ export class TimeViewMonth{
         if(currentDayOfWeek !== 0){
             currentDateYYYYMMDD = moment(currentDateYYYYMMDD).subtract(currentDayOfWeek, 'days').format('YYYY-MM-DD');
         }
-        let days: TimeViewDay[] = [];
+        let days: TimeViewDayItem[] = [];
         for(let i=0; i<42; i++){
-            const dayItems = monthItems.filter(item => item.dateYYYYMMDD === currentDateYYYYMMDD);
-            const newDay = new TimeViewDay(currentDateYYYYMMDD, dayItems);
-            if(moment(currentDateYYYYMMDD).month() !== month){
-                newDay.isVisibleMonthItem = false;
+            let day = monthItems.find(item => item.dateYYYYMMDD === currentDateYYYYMMDD);
+            if(!day){
+                day = new TimeViewDayItem(currentDateYYYYMMDD, 0, 0, viewMode);
             }
-            days.push(newDay);
+            if(moment(day.dateYYYYMMDD).month() !== month){
+                day.setInvisibleMonthDay();
+            }
+            days.push(day);
             currentDateYYYYMMDD = moment(currentDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
         }
         this._days = days;  

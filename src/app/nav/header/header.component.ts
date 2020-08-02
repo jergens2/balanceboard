@@ -175,6 +175,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   private _setBattery() {
+    // console.log("Setting the battery.  value from sleep service:")
+    // console.log(this.sleepService.sleepManager.getEnergyLevel())
     const batteryLevel = 100 - this.sleepService.sleepManager.getEnergyLevel();
     // console.log("Battery level: " , batteryLevel)
     if (batteryLevel >= 0 && batteryLevel < 12.5) {

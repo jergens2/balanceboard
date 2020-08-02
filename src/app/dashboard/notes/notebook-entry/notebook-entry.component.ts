@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { NotebookEntry } from './notebook-entry.model';
+import { NotebookEntry } from './notebook-entry.class';
 import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../modal/modal-option.interface';

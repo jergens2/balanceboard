@@ -60,14 +60,14 @@ export class TLEFController {
                     const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
                     this._setActiveItem(newActiveItem);
                 } else {
-                    if(update.type === DaybookDisplayUpdateType.CLOCK){
+                    if (update.type === DaybookDisplayUpdateType.CLOCK) {
                         const updateActiveItem = this._findActiveItemAfterUpdate(activeItem);
                         if (updateActiveItem) {
                             this._setActiveItem(updateActiveItem);
                         } else {
                             console.log("unable to find an active item...")
                         }
-                    }else{
+                    } else {
                         const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
                         this._openTLEFItem(newActiveItem);
                     }
@@ -223,17 +223,19 @@ export class TLEFController {
         this._changesMadeTLE$.next(changedItem);
     }
     public clearChanges() { this._changesMadeTLE$.next(null); }
-    public closeTLEFPrompt() {
-        // console.log("Closing prompt");
-        this._promptToSaveChanges = false;
-        this._changesMadeTLE$.next(null);
-        if (this._stachedItem) {
+
+    public promptContinue(){
+        if(this._stachedItem){
+            this._changesMadeTLE$.next(null);
             this._openTLEFItem(this._stachedItem);
-        } else {
-            console.log("Error: no stached item");
         }
-        this._stachedItem = null;
+        this.closeTLEFPrompt();
     }
+    public closeTLEFPrompt(){
+        this._stachedItem = null;
+        this._promptToSaveChanges = false;
+    }
+
     private _openTLEFItem(item: TLEFControllerItem) {
         // console.log("Opening TLEF Item", item);
         let doOpenItem: boolean = true;
@@ -256,7 +258,7 @@ export class TLEFController {
         }
     }
     private _setActiveItem(activeItem: TLEFControllerItem) {
-        const index = this.tlefItems.indexOf(activeItem);
+        const index = this.tlefItems.indexOf(activeItem)
         if (index >= 0) {
             for (let i = 0; i < this.tlefItems.length; i++) {
                 if (i === index) {
@@ -267,6 +269,7 @@ export class TLEFController {
             }
         } else {
             console.log("Error setting active item: ", activeItem);
+            this.tlefItems.forEach(i => console.log("  " + i.toString()))
         }
     }
     private _buildItems() {

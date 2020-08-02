@@ -1,37 +1,43 @@
 <div class="notebook-root">
-  <div class="header">
-    <div class="header-title">
-      Notes
-    </div>
-    <div class="header-buttons">
 
-      <div class="icon-button" (click)="onToggleTagsMenu()" [ngClass]="{'toggled-button':tagsMenu}">
-        <fa-icon [icon]="faHashtag"></fa-icon>
-      </div>
-      <div class="icon-button" (click)="onToggleTimeViewsMenu()" [ngClass]="{'toggled-button':timeViewsMenu}">
-        <fa-icon [icon]="faCalendarAlt"></fa-icon>
-      </div>
-    </div>
-
-  </div>
-  <div class="controls">
-
-    <div class="time-view-container" *ngIf="timeViewsMenu">
-      <app-time-views></app-time-views>
-    </div>
-
-    <div class="tag-controls" *ngIf="tagsMenu">
-      <app-notebook-tags (notesFiltered)="onNotesFiltered($event)"></app-notebook-tags>
-    </div>
-
-
-  </div>
-  <div class="notebook-entries" *ngIf="!isLoading">
-    <div *ngFor="let notebookEntry of filteredNotebookEntries" class="notebook-entry">
-      <app-notebook-entry [notebookEntry]="notebookEntry"></app-notebook-entry>
-    </div>
-  </div>
   <div *ngIf="isLoading" class="spinner-container">
     <app-spinner style="width: 200px; height: 200px;"></app-spinner>
   </div>
+
+  <div *ngIf="!isLoading" style="display:flex;flex-direction: column;">
+    <div class="header">
+      <div class="header-title">
+        Notes
+      </div>
+      <div class="header-buttons">
+
+        <div class="icon-button" (click)="onToggleTagsMenu()" [ngClass]="{'toggled-button':tagsMenu}">
+          <fa-icon [icon]="faHashtag"></fa-icon>
+        </div>
+        <div class="icon-button" (click)="onToggleTimeViewsMenu()" [ngClass]="{'toggled-button':timeViewsMenu}">
+          <fa-icon [icon]="faCalendarAlt"></fa-icon>
+        </div>
+      </div>
+
+    </div>
+    <div class="controls">
+
+      <div class="time-view-container" *ngIf="timeViewsMenu">
+        <app-time-views [manager]="timeViewsManager"></app-time-views>
+      </div>
+
+      <div class="tag-controls" *ngIf="tagsMenu">
+        <!-- <app-notebook-tags (notesFiltered)="onNotesFiltered($event)"></app-notebook-tags> -->
+      </div>
+
+
+    </div>
+    <div class="notebook-entries" >
+      <div *ngFor="let notebookEntry of filteredNotebookEntries" class="notebook-entry">
+        <app-notebook-entry [notebookEntry]="notebookEntry"></app-notebook-entry>
+      </div>
+    </div>
+  </div>
+
+
 </div>

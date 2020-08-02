@@ -4,8 +4,8 @@
         <div>{{ month.name }}</div>
         <div class="month-body">
             <div *ngFor="let day of month.days" class="day-container">
-                <div class="day-body" *ngIf="day.isVisibleMonthItem" >  
-                    <div *ngIf="day.value !== ''" style="font-size: 0.5em;">
+                <div class="day-body" [ngClass]="{'invisible-day':!day.isVisible}" [style.background-color]="day.color">  
+                    <div class="day-value">
                         {{ day.value }}
                     </div>
                 </div>

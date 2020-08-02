@@ -24,7 +24,6 @@ import { DayOccurrenceComponent } from './activity-display-item/adi-parts/activi
 import { WeekOccurrenceComponent } from './activity-display-item/adi-parts/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/week-occurrence/week-occurrence.component';
 import { MonthOccurrenceComponent } from './activity-display-item/adi-parts/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/month-occurrence/month-occurrence.component';
 import { YearOccurrenceComponent } from './activity-display-item/adi-parts/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/year-occurrence/year-occurrence.component';
-import { AdiAnalysisComponent } from './activity-display-item/adi-parts/adi-analysis/adi-analysis.component';
 import { ActivitiesToolbarComponent } from './activities-toolbar/activities-toolbar.component';
 import { AdiSummaryComponent } from './activity-display-item/adi-parts/adi-summary/adi-summary.component';
 import { AdiCumulativeHoursComponent } from './activity-display-item/adi-parts/adi-summary/adi-cumulative-hours/adi-cumulative-hours.component';
@@ -53,7 +52,6 @@ import { AdiAverageHoursComponent } from './activity-display-item/adi-parts/adi-
     AdoMoveToTrashComponent,
     AdoPermanentlyDeleteComponent,
     AdoMergeWithParentComponent,
-    AdiAnalysisComponent,
     ActivitiesToolbarComponent,
     AdiSummaryComponent,
     AdiCumulativeHoursComponent,

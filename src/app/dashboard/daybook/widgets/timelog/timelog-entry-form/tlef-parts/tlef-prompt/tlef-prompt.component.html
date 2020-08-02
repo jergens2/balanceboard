@@ -4,10 +4,33 @@
             You made changes to this timelog entry.
         </div>
         <div class="buttons">
-            <div class="large-button save-button" (click)="onClickSave()">Save Changes</div>
-            <div class="large-button discard-button" (click)="onClickDiscard()">Discard Changes</div>
+            <div class="button-row">
+                <div>
+                    Save changes and continue
+                </div>
+
+                <button class="circle-button" (click)="onClickSave()">
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                </button>
+            </div>
+            <div class="button-row">
+                <div>
+                    Discard changes and continue
+                </div>
+                <button class="circle-button" (click)="onClickDiscard()">
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                </button>
+            </div>
+            <div class="button-row">
+                <div>
+                    Return
+                </div>
+                <button class="circle-button" (click)="onClickReturn()">
+                    <fa-icon [icon]="faArrowRight"></fa-icon>
+                </button>
+            </div>
         </div>
     </div>
-    
+
 
 </div>

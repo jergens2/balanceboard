@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NotebookEntry } from './notebook-entry/notebook-entry.model';
+import { NotebookEntry } from './notebook-entry/notebook-entry.class';
 import { serverUrl } from '../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
@@ -25,7 +25,7 @@ export class NotebooksService{
     this._userId = null;
   }
 
-  private _notebookEntries$: BehaviorSubject<NotebookEntry[]> = new BehaviorSubject([]);
+  private _notebookEntries$: BehaviorSubject<NotebookEntry[]> = new BehaviorSubject(null);
   public get notebookEntries$(): Observable<NotebookEntry[]> {
     return this._notebookEntries$.asObservable();
   }
@@ -48,8 +48,7 @@ export class NotebooksService{
 
 
 
-  public fetchNotebookEntries$(): Observable<boolean> {
-    const _isComplete$: Subject<boolean> = new Subject();
+  public fetchNotebookEntries$(): Observable<NotebookEntry[]> {
     let requestUrl: string = this.serverUrl + "/api/notebook/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -57,18 +56,15 @@ export class NotebooksService{
         // 'Authorization': 'my-auth-token'
       })
     };
-
     this.httpClient.get<{ message: string, data: any }>(requestUrl, httpOptions)
       .pipe<NotebookEntry[]>(map((response: { message: string, data: any }) => {
         let rd: any[] = response.data;
         let notebookEntries: NotebookEntry[] = [];
         rd.forEach((data: any) => {
           let notebookEntry: NotebookEntry = new NotebookEntry(data._id, data.userId, data.dateCreatedISO, data.type, data.textContent, data.title, data.tags);
-
           notebookEntry.dateModified = moment(data.dateModifiedISO);
           notebookEntry.journalDate = moment(data.journalDateISO);
           notebookEntry.data = data.data;
-
           if(data.journalDateISO){
 
           }else{
@@ -82,9 +78,8 @@ export class NotebooksService{
       .subscribe((notebookEntries: NotebookEntry[]) => {
         this.getTags(notebookEntries);
         this._notebookEntries$.next(this.sortNotesByDate(notebookEntries));
-        _isComplete$.next(true);
       });
-      return _isComplete$.asObservable();
+      return this._notebookEntries$.asObservable();
   }
 
 

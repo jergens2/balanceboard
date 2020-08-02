@@ -1,8 +1,8 @@
 <div class="toolbar-root">
-    Activities Toolbah
-    <div>
-        <button class="toolbar-button" (click)="onClickList()" *ngIf="isNotLarge">
-            <fa-icon [icon]="faList"></fa-icon>
-        </button>
-    </div>
+    <button class="toolbar-button" (click)="onClickList()" *ngIf="isNotLarge">
+        <fa-icon [icon]="faList"></fa-icon>
+    </button>
+    <button class="toolbar-button" (click)="onClickRestart()">
+        <fa-icon [icon]="faRedo"></fa-icon>
+    </button>
 </div>
