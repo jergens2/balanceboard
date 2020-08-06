@@ -15,7 +15,7 @@
 
 .spinner-container{
     display:flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
@@ -36,6 +36,15 @@
     display:flex;
     flex-direction: row;
     align-items: center;
+}
+.date{
+    font-weight: 500;
+    font-size: 1.2em;
+    margin: 10px;
+
+}
+.days-ago{
+    font-size: 0.9em;
 }
 .toggled-button{
     color:rgb(51, 131, 255);
@@ -72,3 +81,11 @@
 }
 
 
+.show-more-button{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4em;
+}

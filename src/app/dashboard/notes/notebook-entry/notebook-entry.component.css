@@ -2,29 +2,60 @@
     display:flex;
     flex-direction: column;
     
-    padding:5px;
+    padding:10px;
     margin: 5px;
-    margin-top: 0px;
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.897);
-
-    border: 1px solid rgba(255, 255, 255, 0);
+    background-color: rgb(249, 249, 249);
+    border: 1px solid gray;
 }
 .notebook-entry-root:hover{
-    -webkit-box-shadow: 0px 0px 5px 5px rgba(0,78,255,0.1); 
-    box-shadow: 0px 0px 5px 5px rgba(0,78,255,0.1);
+    /* -webkit-box-shadow: 0px 0px 5px 5px rgba(0,78,255,0.1); 
+    box-shadow: 0px 0px 5px 5px rgba(0,78,255,0.1); */
+    border: 1px solid rgb(0, 45, 129);
 }
 .note-header{
     display:flex;
     flex-direction: row;
     justify-content: space-between;
 }
+.note-title-container{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+}
+.note-title{
+    font-weight:550;
+    font-size: 1.3em;
+    margin-left: 10px;
+
+}
+.note-date{
+    color: gray;
+    width: 75px;
+    font-size: 0.8em;
+}
+.word-count{
+    font-size: 0.9em;
+    color: gray;
+    font-style: italic;
+    margin-left: 20px;
+}
 
 .note-text{
     flex-grow:2;
+    font-size: 1.1em;
     border:none;
     resize: none;
+    padding: 10px;
+    width: 100%;
+ 
 }
+
+.is-shrunk:hover{
+    background-color: rgb(240, 240, 240);
+    cursor: pointer;
+}
+
 .tags{
     font-weight:bold;
     color:rgb(18, 110, 67);
@@ -32,9 +63,10 @@
     display:flex;
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: center;
 }
 .tag{
+    margin-left: 3px;
     padding-left:3px;
     padding-right:3px;
 }
-

@@ -1,16 +1,36 @@
-<div class="year-view-root" [ngClass]="screenSizeNgClass">
-    <div *ngFor="let month of months" class="month-container">
+<div class="year-view-root" [ngClass]="ngClass" (mouseleave)="onMouseLeaveRoot()" (mouseup)="onMouseUpRoot()">
+    <div *ngFor="let month of months" class="month-frame">
+        <div class="month-container">
+            <div style="margin: 3px;">{{ month.name }}</div>
 
-        <div>{{ month.name }}</div>
-        <div class="month-body">
-            <div *ngFor="let day of month.days" class="day-container">
-                <div class="day-body" [ngClass]="{'invisible-day':!day.isVisible}" [style.background-color]="day.color">  
-                    <div class="day-value">
-                        {{ day.value }}
+            <div class="month-body no-select">
+                <div class="week-day-names">S</div>
+                <div class="week-day-names">M</div>
+                <div class="week-day-names">T</div>
+                <div class="week-day-names">W</div>
+                <div class="week-day-names">T</div>
+                <div class="week-day-names">F</div>
+                <div class="week-day-names">S</div>
+                <div *ngFor="let day of month.days" class="day-container">
+                    <div class="day-body" *ngIf="day.isVisible" [ngClass]="{'selected': day.isSelected }"
+                        (mouseenter)="onMouseEnter(day)" (mouseleave)="onMouseLeave(day)" (mousedown)="onMouseDown(day)"
+                        [style.background-color]="day.color">
+                        <!-- <div class="day-value">
+                            {{ day.value }}
+                        </div> -->
+                        <div class="popup-container" *ngIf="day.showPopup">
+                            <div class="popup" *ngIf="!day.hasPopupVal">
+                                <div>{{ day.displayDate }}</div>
+                                <div>Notes: {{ day.count }}</div>
+                            </div>
+                            <div class="popup" *ngIf="day.hasPopupVal">
+                                <div *ngFor="let val of day.popupVals">{{val}}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
-        </div>        
+        </div>
+
     </div>
 </div>

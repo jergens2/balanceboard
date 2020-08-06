@@ -15,8 +15,6 @@
     <div class="app-modal-body">
       <app-default-modal *ngIf="modal.modalComponentType == 'DEFAULT'"></app-default-modal>
       <app-confirm-modal *ngIf="modal.modalComponentType == 'CONFIRM'" style="width: 100%;"></app-confirm-modal>
-
-      <app-notepad-modal *ngIf="modal.modalComponentType == 'NOTE'"></app-notepad-modal>
       <app-action-item-form *ngIf="modal.modalComponentType == 'TASK'" [action]="modal.action"></app-action-item-form>
 
       <!-- <app-daybook-entry-form *ngIf="modal.modalComponentType == 'TIMELOG_ENTRY'" [timelogEntry]="modal.modalData"></app-daybook-entry-form> -->

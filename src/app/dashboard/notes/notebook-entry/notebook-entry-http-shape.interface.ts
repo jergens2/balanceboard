@@ -1,4 +1,4 @@
-export interface NotebookEntryHTTPShape{
+export interface NotebookEntryHttpShape{
     id: string,
     userId: string,
     journalDate: string,

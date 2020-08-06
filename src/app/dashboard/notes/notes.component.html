@@ -1,42 +1,29 @@
+
 <div class="notebook-root">
 
+
   <div *ngIf="isLoading" class="spinner-container">
+    <div style="color: gray; font-style: italic;">Loading notes...</div>
     <app-spinner style="width: 200px; height: 200px;"></app-spinner>
+    
   </div>
-
   <div *ngIf="!isLoading" style="display:flex;flex-direction: column;">
-    <div class="header">
-      <div class="header-title">
-        Notes
-      </div>
-      <div class="header-buttons">
-
-        <div class="icon-button" (click)="onToggleTagsMenu()" [ngClass]="{'toggled-button':tagsMenu}">
-          <fa-icon [icon]="faHashtag"></fa-icon>
+    <div class="notes-query-bar">
+      <app-notes-query-bar class="header"></app-notes-query-bar>
+    </div>
+    <div class="notebook-entries">
+      <div *ngFor="let day of filteredNotebookEntries" style="display:flex;flex-direction: column; margin-bottom: 10px;">
+        <div style="display:flex; flex-direction: row; align-items: center;">
+          <div class="date">{{ day.dateYYYYMMDD }}</div>
+          <div class="days-ago">{{ day.daysAgo }} days ago</div>
         </div>
-        <div class="icon-button" (click)="onToggleTimeViewsMenu()" [ngClass]="{'toggled-button':timeViewsMenu}">
-          <fa-icon [icon]="faCalendarAlt"></fa-icon>
-        </div>
-      </div>
 
-    </div>
-    <div class="controls">
-
-      <div class="time-view-container" *ngIf="timeViewsMenu">
-        <app-time-views [manager]="timeViewsManager"></app-time-views>
-      </div>
-
-      <div class="tag-controls" *ngIf="tagsMenu">
-        <!-- <app-notebook-tags (notesFiltered)="onNotesFiltered($event)"></app-notebook-tags> -->
-      </div>
-
-
-    </div>
-    <div class="notebook-entries" >
-      <div *ngFor="let notebookEntry of filteredNotebookEntries" class="notebook-entry">
-        <app-notebook-entry [notebookEntry]="notebookEntry"></app-notebook-entry>
+        <app-notebook-entry *ngFor="let note of day.notes" [notebookEntry]="note"></app-notebook-entry>
       </div>
     </div>
+    <!-- <div *ngIf="showMoreButton" class="show-more-button">
+      <button class="medium-button" style="margin: 20px;" (click)="onClickShowMore()">Show more</button>
+    </div> -->
   </div>
 
 

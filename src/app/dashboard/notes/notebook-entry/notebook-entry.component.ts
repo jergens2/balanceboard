@@ -6,7 +6,7 @@ import { IModalOption } from '../../../modal/modal-option.interface';
 import { Modal } from '../../../modal/modal.class';
 import { ModalService } from '../../../modal/modal.service';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
-import { NotebooksService } from '../notebooks.service';
+import { NotesService } from '../notes.service';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 
 @Component({
@@ -21,13 +21,41 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
 
   @Input() notebookEntry: NotebookEntry;
 
-  constructor(private modalService: ModalService, private notebooksService: NotebooksService) { }
+  constructor(private modalService: ModalService, private notebooksService: NotesService) { }
 
   mouseOver: boolean = false;
   private _modalSubscription: Subscription = new Subscription();
+  private _noteText: string = "";
+  private _isMinimized: boolean = false;
+  private _isExpanded: boolean = false;
+  private _wordCount: number = 0;
+
+  private get _initialCharacters(): number { return 250; }
+
+  public get noteText(): string { return this._noteText; }
+  public get isMinimized(): boolean { return this._isMinimized; }
+  public get isExpanded():boolean { return this._isExpanded; }
+  public get wordCount(): number { return this._wordCount; }
 
   ngOnInit() {
+    if(this.notebookEntry){
+      let text = this.notebookEntry.textContent;
+      if(text.length > this._initialCharacters ){
+        text = text.substr(0, this._initialCharacters) + "...";
+        this._isMinimized = true;
+      }
+      this._noteText = text;
+      this._wordCount = this.notebookEntry.textContent.split(' ').length;
+    }
   }
+
+  public onClickNoteText(){
+    if(this._isMinimized){
+      this._isExpanded = true;
+      this._noteText = this.notebookEntry.textContent;
+    }
+  }
+
   ngOnDestroy(){
     this._modalSubscription.unsubscribe();
   }
@@ -40,28 +68,6 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
   }
 
   onClickDelete(){
-    this._modalSubscription.unsubscribe();
-    let modalOptions: IModalOption[] = [
-      {
-        value: "Yes",
-        dataObject: null
-      },
-      {
-        value: "No",
-        dataObject: null
-      }
-    ];
-    let modal: Modal = new Modal("Note", "Confirm: Delete Note?", null, modalOptions, {}, ModalComponentType.Default);
-    this._modalSubscription = this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
-      if (selectedOption.value == "Yes") {
-        this.notebooksService.deleteNotebookEntryHTTP(this.notebookEntry);
-      } else if (selectedOption.value == "No") {
-
-      } else {
-        //error 
-      }
-    });
-    this.modalService.openModal(modal);
   }
 
   onClickEdit(){
@@ -73,15 +79,6 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
       console.log("modal Response, selectedOption")
     });
     this.modalService.openModal(modal);
-  }
-
-  tags(): string{
-    let tags = "";
-    
-    this.notebookEntry.tags.forEach((tag)=>{
-      tags += tag + " ";
-    })
-    return tags;
   }
 
 }

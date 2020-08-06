@@ -8,6 +8,7 @@ import { NotebookEntry } from "../../dashboard/notes/notebook-entry/notebook-ent
 import { ButtonMenu } from "../components/button-menu/button-menu.class";
 import { ColorConverter } from "../utilities/color-converter.class";
 import { ColorType } from "../utilities/color-type.enum";
+import { Subject, Observable } from "rxjs";
 
 export class TimeViewsManager {
     constructor() {
@@ -27,11 +28,21 @@ export class TimeViewsManager {
     private _daybookDayItems: DaybookDayItem[] = [];
     private _activity: ActivityCategoryDefinition;
     private _currentView: 'WEEK' | 'MONTH' | 'NINETY' | 'YEAR' | 'SPECIFY' = 'MONTH';
+    private _queryChanged$: Subject<{ startDateYYYYMMDD: string, endDateYYYYMMDD: string,}> = new Subject();
 
     public get items(): TimeViewDayItem[] { return this._items; }
     public get timeViewMonths(): TimeViewMonth[] { return this._timeViewMonths; }
     public get timeFrameMenu(): ButtonMenu { return this._timeFrameMenu; }
     public get currentView(): 'WEEK' | 'MONTH' | 'NINETY' | 'YEAR' | 'SPECIFY' { return this._currentView; }
+
+    public queryChanged$(): Observable<{ startDateYYYYMMDD: string, endDateYYYYMMDD: string,}> { return this._queryChanged$.asObservable(); }
+       
+
+
+    public updateQueryDates(startDateYYYYMMDD: string, endDateYYYYMMDD: string){
+        console.log("QUERY: " , startDateYYYYMMDD, endDateYYYYMMDD)
+        this._queryChanged$.next({ startDateYYYYMMDD: startDateYYYYMMDD, endDateYYYYMMDD: endDateYYYYMMDD,})
+    }
 
     public setNotebooksView(notes: NotebookEntry[]) {
         this._currentAppMode = 'NOTEBOOK';
@@ -104,7 +115,6 @@ export class TimeViewsManager {
                         alpha = 0.2;
                     }
                     item.color = ColorConverter.convert('rgb(0, 89, 255)', ColorType.RGBA, alpha );
-                    console.log("Item.color = " + item.color)
                 }
             });
             this._items = items;

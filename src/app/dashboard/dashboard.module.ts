@@ -24,8 +24,6 @@ import { RotationFormComponent } from './scheduling/schedule-rotations/rotation-
 import { DayTemplateWidgetComponent } from './scheduling/day-templates/day-template-widget/day-template-widget.component';
 
 import { ColorPickerModule } from 'ngx-color-picker';
-import { NotesComponent } from './notes/notes.component';
-import { NotebookEntryComponent } from './notes/notebook-entry/notebook-entry.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { TaskComponent } from './tasks/task/task.component';
 import { SchedulingComponent } from './scheduling/scheduling.component';
@@ -37,7 +35,6 @@ import { CategoriesViewComponent } from './tasks/views/categories-view/categorie
 import { ListViewComponent } from './tasks/views/list-view/list-view.component';
 import { EisenhowerViewComponent } from './tasks/views/eisenhower-view/eisenhower-view.component';
 import { TaskGroupComponent } from './tasks/task-group/task-group.component';
-import { NotebookTagsComponent } from './notes/notebook-tags/notebook-tags.component';
 import { TreemapViewComponent } from './tasks/views/treemap-view/treemap-view.component';
 import { CategoriesTaskGroupComponent } from './tasks/views/categories-view/categories-task-group/categories-task-group.component';
 import { TreemapTaskGroupComponent } from './tasks/views/treemap-view/treemap-task-group/treemap-task-group.component';
@@ -48,6 +45,7 @@ import { PointsComponent } from './points/points.component';
 import { UserAccountProfileComponent } from './user-account-profile/user-account-profile.component';
 import { PersonalInfoComponent } from './user-account-profile/personal-info/personal-info.component';
 import { AppSettingsComponent } from './user-account-profile/app-settings/app-settings.component';
+import { NotesModule } from './notes/notes.module';
 
 
 
@@ -59,7 +57,9 @@ import { AppSettingsComponent } from './user-account-profile/app-settings/app-se
     ColorPickerModule,
     DaybookModule,
     ActivitiesModule,
+    NotesModule,
     SharedModule,
+    
   ],
   declarations: [
 
@@ -76,8 +76,7 @@ import { AppSettingsComponent } from './user-account-profile/app-settings/app-se
 
     DayTemplateWidgetComponent,
 
-    NotesComponent,
-    NotebookEntryComponent,
+
     TasksComponent,
     TaskComponent,
     SchedulingComponent,
@@ -88,7 +87,6 @@ import { AppSettingsComponent } from './user-account-profile/app-settings/app-se
     ListViewComponent,
     EisenhowerViewComponent,
     TaskGroupComponent,
-    NotebookTagsComponent,
     TreemapViewComponent,
     CategoriesTaskGroupComponent,
     TreemapTaskGroupComponent,
@@ -100,6 +98,7 @@ import { AppSettingsComponent } from './user-account-profile/app-settings/app-se
 
     PersonalInfoComponent,
     AppSettingsComponent,
+
 
   ],
   providers: [],

@@ -2,74 +2,70 @@
 
 import * as moment from 'moment';
 import { NotebookEntryTypes } from './notebook-entry-types.enum';
-import { NotebookEntryHTTPShape } from './notebook-entry-http-shape.interface';
+import { NotebookEntryHttpShape } from './notebook-entry-http-shape.interface';
+import { NoteTag } from '../notes-query-bar/note-tag.class';
 
 export class NotebookEntry {
     constructor(id: string, userId: string, dateCreated: moment.Moment, type: NotebookEntryTypes, textContent: string, title: string, tags: string[]) {
-        this.id = id;
-        this.userId = userId;
-        this.dateCreated = moment(dateCreated);
-        this.dateModified = moment(dateCreated);
-        this.journalDate = moment(dateCreated);
-        this.type = type;
-        this.textContent = textContent;
-        this.title = title;
-        this.tags = tags;
+        this._id = id;
+        this._userId = userId;
+        this._dateCreated = moment(dateCreated);
+        this._dateModified = moment(dateCreated);
+        this._journalDate = moment(dateCreated);
+        this._type = type;
+        this._textContent = textContent;
+        this._title = title;
+        this._tags = tags.map(t => new NoteTag(t));
+        this._displayTime = this._journalDate.format('h:mm a');
     }
 
-    public get httpSave(): NotebookEntryHTTPShape {
+    public get httpShape(): NotebookEntryHttpShape {
         return {
             id: '',
-            userId: this.userId,
-            journalDate: this.journalDate.toISOString(),
-            dateCreated: this.dateCreated.toISOString(),
-            dateModified: this.dateModified.toISOString(),
-            type: this.type,
-            textContent: this.textContent,
-            title: this.title,
-            tags: this.tags,
-            data: this.data,
-        };
-    }
-    public get httpUpdate(): NotebookEntryHTTPShape {
-        return {
-            id: this.id,
-            userId: this.userId,
-            journalDate: this.journalDate.toISOString(),
-            dateCreated: this.dateCreated.toISOString(),
-            dateModified: this.dateModified.toISOString(),
-            type: this.type,
-            textContent: this.textContent,
-            title: this.title,
-            tags: this.tags,
-            data: this.data,
+            userId: this._userId,
+            journalDate: this._journalDate.toISOString(),
+            dateCreated: this._dateCreated.toISOString(),
+            dateModified: this._dateModified.toISOString(),
+            type: this._type,
+            textContent: this._textContent,
+            title: this._title,
+            tags: this._tags.map(t => t.toString()),
+            data: {},
         };
     }
 
-    id: string;
-    userId: string;
 
+    private _id: string;
+    private _userId: string;
+    private _journalDate: moment.Moment;
+    private _dateCreated: moment.Moment;
+    private _dateModified: moment.Moment;
 
-    journalDate: moment.Moment;
-    public get journalDateYYYYMMDD(): string { return moment(this.journalDate).format('YYYY-MM-DD'); }
-    dateCreated: moment.Moment;
-    dateModified: moment.Moment;
+    private _type: NotebookEntryTypes;
+    private _textContent: string = "";
+    private _title: string = "";
+    private _tags: NoteTag[] = [];
+    private _data: any = {};
+    private _displayTime: string = "";
 
-    type: NotebookEntryTypes;
+    public get id(): string { return this._id; }
+    public get journalDateYYYYMMDD(): string { return moment(this._journalDate).format('YYYY-MM-DD'); }
+    public get journalDate(): moment.Moment { return this._journalDate; }
+    public get tags(): NoteTag[] { return this._tags; }
+    public get textContent(): string { return this._textContent; }
+    public get title(): string { return this._title; }
+    public get time(): string { return this._displayTime; }
 
-    textContent: string = "";
-    title: string = "";
-    tags: string[] = [];
-    data: any = {};
-    /*
-        Data is for future object things or miscellaneous properties.  For example...
-        links to other notes, / other note's noteId
-        maybe votes.  vote by property
-        e.g. maybe I could vote "cool" ,
-        or maybe if I have special notes like maybe an Idea note, it does more things than a regular note,
-        you can vote it up or down in terms of how you feel about it
+    public set userId(userId: string) { this._userId = userId; }
+    public set dateModified(time: moment.Moment) { this._dateModified = time; }
+    public set journalDate(time: moment.Moment) {
+        this._journalDate = time;
+        this._displayTime = this._journalDate.format('h:mm a');
+    }
+    public set data(data: any) { this._data = data; }
 
-    */
-
+    public tagsMatch(tags: NoteTag[]): boolean {
+        return (this._tags.find(noteTag => tags.find(tag => tag.tagValue === noteTag.tagValue)) !== null);
+    }
 
 }

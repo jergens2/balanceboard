@@ -24,7 +24,6 @@ import { ModalComponent } from './modal/modal.component';
 import { DefaultModalComponent } from './modal/custom-modals/default-modal/default-modal.component';
 
 import { ConfirmModalComponent } from './modal/custom-modals/confirm-modal/confirm-modal.component';
-import { NotepadModalComponent } from './modal/custom-modals/notepad-modal/notepad-modal.component';
 import { SharedModule } from './shared/shared.module';
 import { SearchBarComponent } from './nav/search-bar/search-bar.component';
 import { ToolsMenuModule } from './toolbox-menu/tools-menu.module';
@@ -55,7 +54,6 @@ import { UserAccountProfileModule } from './dashboard/user-account-profile/user-
     ModalComponent,
     DefaultModalComponent,
     ConfirmModalComponent,
-    NotepadModalComponent,
     SearchBarComponent,
     RegistrationComponent,
     LoginComponent,

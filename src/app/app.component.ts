@@ -10,11 +10,12 @@ import { ActivityCategoryDefinitionService } from './dashboard/activities/api/ac
 import { DaybookHttpRequestService } from './dashboard/daybook/api/daybook-http-request.service';
 import { DaybookControllerService } from './dashboard/daybook/controller/daybook-controller.service';
 import { UserActionPromptService } from './user-action-prompt/user-action-prompt.service';
-import { NotebooksService } from './dashboard/notes/notebooks.service';
+import { NotesService } from './dashboard/notes/notes.service';
 import * as moment from 'moment';
 import { KeydownService } from './shared/keydown.service';
 import { DaybookDisplayService } from './dashboard/daybook/daybook-display.service';
 import { ActivityComponentService } from './dashboard/activities/activity-component.service';
+import { NotesHttpService } from './dashboard/notes/api/notes-http.service';
 
 @Component({
   selector: 'app-root',
@@ -55,7 +56,7 @@ export class AppComponent implements OnInit {
     private daybookHttpService: DaybookHttpRequestService,
     private daybookControllerService: DaybookControllerService,
     private daybookDisplayService: DaybookDisplayService,
-    private notebookService: NotebooksService,
+    private notebookService: NotesHttpService,
     private keydownService: KeydownService,
     private activityComponentService: ActivityComponentService,
   ) { }

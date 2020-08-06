@@ -1,87 +1,110 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NotebookEntry } from './notebook-entry/notebook-entry.class';
-import { NotebooksService } from './notebooks.service';
+import { NotesService } from './notes.service';
 import * as moment from 'moment';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCog, faHashtag } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { TimeViewsManager } from '../../shared/time-views/time-views-manager.class';
+import { Subscription } from 'rxjs';
+import { NotesHttpService } from './api/notes-http.service';
 
 @Component({
   selector: 'app-notes',
   templateUrl: './notes.component.html',
   styleUrls: ['./notes.component.css']
 })
-export class NotesComponent implements OnInit {
+export class NotesComponent implements OnInit, OnDestroy {
 
   faCog: IconDefinition = faCog;
   faHashtag = faHashtag;
   faCalendarAlt = faCalendarAlt;
 
 
-  constructor(private notebooksService: NotebooksService) { }
+  constructor(private notesService: NotesService, private httpService: NotesHttpService) { }
 
   private _isLoading: boolean = true;
   private _allNotebookEntries: NotebookEntry[] = [];
-  private _timeViewsManager: TimeViewsManager;
-  private _filteredNotebookEntries: NotebookEntry[] = [];
+
+  private _filteredNotebookEntries: { dateYYYYMMDD: string, daysAgo: string, notes: NotebookEntry[] }[] = [];
+  private _showMoreButton: boolean = false;
 
   public get isLoading(): boolean { return this._isLoading; }
-  public get timeViewsManager(): TimeViewsManager { return this._timeViewsManager; }
+  public get timeViewsManager(): TimeViewsManager { return this.notesService.timeViewsManager; }
+  public get showMoreButton(): boolean { return this._showMoreButton; }
 
-  public get filteredNotebookEntries(): NotebookEntry[] { return this._filteredNotebookEntries; };
+  public get filteredNotebookEntries(): { dateYYYYMMDD: string, daysAgo: string, notes: NotebookEntry[] }[] { return this._filteredNotebookEntries; };
 
+  private get _maxResults(): number { return 25; };
 
-  loadingStart: moment.Moment = moment();
-  loadingEnd: moment.Moment = moment();
+  private _subscriptions: Subscription[] = [];
 
   ngOnInit() {
-    this._isLoading = true;
-    this._timeViewsManager = new TimeViewsManager();
-    this.notebooksService.fetchNotebookEntries$().subscribe(entries => {
-      if(entries){
-        this._allNotebookEntries = entries.sort((n1, n2) => {
-          if (n1.journalDate > n2.journalDate) { return -1; }
-          else if (n1.journalDate < n2.journalDate) { return 1; }
-          else { return 0; }
-        });
-        this._timeViewsManager.setNotebooksView(entries);
-        if (this._allNotebookEntries.length > 10) {
-          this._filteredNotebookEntries = this._allNotebookEntries.slice(0, 9);
-        } else {
-          this._filteredNotebookEntries = this._allNotebookEntries;
-        }
-        console.log("IS LOADING?  ", this._isLoading);
+    let currentNoteSub: Subscription = new Subscription();
+    this._subscriptions = [this.httpService.fetchNotebookEntriesHTTP$().subscribe(notes => {
+      this._allNotebookEntries = notes.sort((note1, note2) => {
+        if (note1.journalDate.isAfter(note2.journalDate)) { return -1; }
+        else if (note1.journalDate.isBefore(note2.journalDate)) { return 1; }
+        return 0;
+      });
+      // this._filteredNotebookEntries = this._allNotebookEntries;
+      this.notesService.reInitiate(this._allNotebookEntries);
+      currentNoteSub = this.notesService.currentNotes$.subscribe(currentNotes => {
+        this._setFilteredEntries(currentNotes);
         this._isLoading = false;
+      });
+
+
+    }),
+      currentNoteSub,
+    ];
+  }
+
+  private _setFilteredEntries(notes: NotebookEntry[]) {
+    let filteredEntries: { dateYYYYMMDD: string, daysAgo: string, notes: NotebookEntry[] }[] = [];
+    if (notes.length > 0) {
+      let currentDateYYYYMMDD: string = notes[0].journalDateYYYYMMDD;
+      let i = 0;
+      let currentEntry: { dateYYYYMMDD: string, daysAgo: string, notes: NotebookEntry[] } = {
+        dateYYYYMMDD: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
+        daysAgo: moment().diff(moment(currentDateYYYYMMDD), 'days').toFixed(0),
+        notes: [],
+      };
+      while (i < notes.length) {
+        if (notes[i].journalDateYYYYMMDD === currentDateYYYYMMDD) {
+          currentEntry.notes.push(notes[i]);
+        } else {
+          filteredEntries.push(currentEntry);
+          currentDateYYYYMMDD = notes[i].journalDateYYYYMMDD;
+          currentEntry = {
+            dateYYYYMMDD: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
+            daysAgo: moment().diff(moment(currentDateYYYYMMDD), 'days').toFixed(0),
+            notes: [notes[i]],
+          };
+        }
+        i++;
       }
-
-    });
-
-  }
-
-
-
-
-
-
-
-  onNotesFiltered(notes: NotebookEntry[]) {
-    this._filteredNotebookEntries = notes;
-  }
-
-  tagsMenu: boolean = false;
-  timeViewsMenu: boolean = false;
-
-  onToggleTagsMenu() {
-    this.tagsMenu = !this.tagsMenu;
-    if (!this.tagsMenu) {
-      this._filteredNotebookEntries = this._allNotebookEntries;
+      filteredEntries.push(currentEntry);
     }
-
+    this._filteredNotebookEntries = filteredEntries;
   }
 
-  onToggleTimeViewsMenu() {
-    this.timeViewsMenu = !this.timeViewsMenu;
+
+
+  ngOnDestroy() {
+    this._subscriptions.forEach(s => s.unsubscribe());
   }
 
+  public onClickShowMore() {
+    const additional = 10;
+    const maxResults = this._filteredNotebookEntries.length + additional;
+    if (this._allNotebookEntries.length > maxResults) {
+      // this._filteredNotebookEntries = this._allNotebookEntries.slice(0, maxResults - 1);
+      this._showMoreButton = true;
+
+    } else {
+      // this._filteredNotebookEntries = this._allNotebookEntries;
+      this._showMoreButton = false;
+    }
+  }
 }

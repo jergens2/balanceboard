@@ -6,8 +6,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { NotebookEntry } from '../../../../dashboard/notes/notebook-entry/notebook-entry.class';
 import { NotebookEntryTypes } from '../../../../dashboard/notes/notebook-entry/notebook-entry-types.enum';
-import { NotebooksService } from '../../../../dashboard/notes/notebooks.service';
+import { NotesService } from '../../../../dashboard/notes/notes.service';
 import { ModalService } from '../../../../modal/modal.service';
+import { NotesHttpService } from '../../../../dashboard/notes/api/notes-http.service';
 
 
 
@@ -22,7 +23,7 @@ export class NotebookEntryFormComponent implements OnInit {
 
   constructor(
     private toolsService: ToolboxService,
-    private notebooksService: NotebooksService,
+    private notesHttpService: NotesHttpService,
     private modalService: ModalService
   ) { }
 
@@ -73,7 +74,7 @@ export class NotebookEntryFormComponent implements OnInit {
     let notebookEntry: NotebookEntry = new NotebookEntry('','', journalDate, NotebookEntryTypes.Note, textContent, title, tags);
 
     // console.log("Saving note:", notebookEntry);
-    this.notebooksService.saveNotebookEntry(notebookEntry);
+    this.notesHttpService.saveNotebookEntry(notebookEntry);
     this.toolsService.closeTool();
   }
 

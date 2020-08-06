@@ -5,9 +5,9 @@
         </div>
     </div>
     <div class="time-views-body">
-        <app-tv-month-view *ngIf="viewIsMonth"></app-tv-month-view>
-        <app-tv-week-view *ngIf="viewIsWeek"></app-tv-week-view>
-        <app-tv-year-view *ngIf="viewIsYear" [manager]="manager"></app-tv-year-view>
-        <app-tv-specify-view *ngIf="viewIsSpecify"></app-tv-specify-view>
+        <app-tv-month-view *ngIf="viewIsMonth" style="flex-shrink: 2;"></app-tv-month-view>
+        <app-tv-week-view *ngIf="viewIsWeek" style="flex-shrink: 2;"></app-tv-week-view>
+        <app-tv-year-view *ngIf="viewIsYear" [manager]="manager" style="flex-shrink: 2;"></app-tv-year-view>
+        <app-tv-specify-view *ngIf="viewIsSpecify" style="flex-shrink: 2;"></app-tv-specify-view>
     </div>
 </div>
