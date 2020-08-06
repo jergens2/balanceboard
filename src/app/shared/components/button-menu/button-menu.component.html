@@ -1,4 +1,8 @@
-<div class="button-menu-root">
+<div class="button-menu-root" *ngIf="modeIsMerged">
     <button *ngFor="let item of menuItems" class="button-menu-item" [ngClass]="item.ngClass"
+        (click)="onClickItem(item)">{{item.label}}</button>
+</div>
+<div class="button-menu-root-separated" *ngIf="modeIsSeparated">
+    <button *ngFor="let item of menuItems" class="button-menu-item separated"
         (click)="onClickItem(item)">{{item.label}}</button>
 </div>

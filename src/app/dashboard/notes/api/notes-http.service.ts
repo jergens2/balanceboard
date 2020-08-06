@@ -74,7 +74,7 @@ export class NotesHttpService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, note, httpOptions)
       .subscribe((response) => {
-        // console.log("Response from HTTP delete request:", response)
+        console.log("Response from HTTP delete request:", response)
         isComplete$.next(true);
       });
     return isComplete$.asObservable();

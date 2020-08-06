@@ -43,13 +43,7 @@ export class NotesService{
     this._query = query;
     let filteredNotes = this._allNotes.filter(note => {
       const isInRange = note.journalDate.isSameOrAfter(moment(query.rangeStartYYYYMMDD).startOf('day')) 
-        && note.journalDate.isSameOrBefore(moment(query.rangeEndYYYYMMDD).endOf('day'));
-      if(isInRange){
-        console.log("IN RANGE BOYO:" + note.journalDate.format('YYYY-MM-DD hh:mm a')) 
-      }else{
-        console.log("NOT   IN RANGE BOYO:" + note.journalDate.format('YYYY-MM-DD hh:mm a')) 
-      }
-        
+        && note.journalDate.isSameOrBefore(moment(query.rangeEndYYYYMMDD).endOf('day'));      
       let tagsMatch: boolean = true;
       if(query.tags.length > 0){
         tagsMatch = note.tagsMatch(query.tags);
@@ -75,7 +69,14 @@ export class NotesService{
 
 
   
-
+  public deleteNote(deleteNote: NotebookEntry){
+    const foundIndex = this.currentNotes.findIndex(currentNote => currentNote.id === deleteNote.id);
+    if(foundIndex >= 0){
+      const currentNotes = this.currentNotes;
+      currentNotes.splice(foundIndex, 1);
+      this._currentNotes$.next(currentNotes);
+    }
+  }
   
 
   

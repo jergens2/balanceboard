@@ -11,6 +11,11 @@
     border: 1px solid rgba(79,77,158,0.3);
     cursor: pointer;
 }
+.button-menu-root-separated{
+    display:flex;
+    flex-direction: row;
+    border: none;
+}
 .button-menu-item{
     flex-grow: 2;
     padding: 4px;
@@ -21,6 +26,11 @@
 }
 .button-menu-item:hover{
     border: 1px solid rgba(0, 89, 255, 0.63);
+}
+.separated{
+    border-radius: 5px;
+    margin-right: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .is-first{

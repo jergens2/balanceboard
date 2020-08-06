@@ -10,10 +10,12 @@
       </div>
     </div>
 
-    <div *ngIf="mouseOver">
+    <div *ngIf="mouseOver" style="display:flex;flex-direction: row; align-items: center;">
       <fa-icon class="icon-button" style="margin-right: 5px;" [icon]="faEdit" (click)="onClickEdit()"
         style="margin-right:5px;"></fa-icon>
-      <fa-icon class="icon-button" style="margin-right: 5px;" [icon]="faTrash" (click)="onClickDelete()"></fa-icon>
+      <!-- <fa-icon class="icon-button" style="margin-right: 5px;" [icon]="faTrash" (click)="onClickDelete()"></fa-icon> -->
+      <app-delete-confirm-button style="margin-right: 5px;" (delete)="onDeleteNote()" [smallMode]="true">
+      </app-delete-confirm-button>
     </div>
   </div>
 

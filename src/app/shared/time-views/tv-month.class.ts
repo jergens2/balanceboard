@@ -9,7 +9,6 @@ export class TimeViewMonth{
     public get days(): TimeViewDayItem[] { return this._days;}
     public get name(): string { return this._name; }
     constructor(startDateYYYYMMDD: string, monthItems: TimeViewDayItem[]){
-        console.log("MONTH START DATE: " , startDateYYYYMMDD) 
         let viewMode: 'NOTEBOOK' | 'ACTIVITY' = 'NOTEBOOK';
         if(monthItems.length >0){
             viewMode = monthItems[0].viewMode;

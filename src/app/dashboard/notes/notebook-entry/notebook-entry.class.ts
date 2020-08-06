@@ -3,7 +3,7 @@
 import * as moment from 'moment';
 import { NotebookEntryTypes } from './notebook-entry-types.enum';
 import { NotebookEntryHttpShape } from './notebook-entry-http-shape.interface';
-import { NoteTag } from '../notes-query-bar/note-tag.class';
+import { NoteTag } from '../notes-query-bar/nqb-tag-search/note-tag.class';
 
 export class NotebookEntry {
     constructor(id: string, userId: string, dateCreated: moment.Moment, type: NotebookEntryTypes, textContent: string, title: string, tags: string[]) {
@@ -16,12 +16,12 @@ export class NotebookEntry {
         this._textContent = textContent;
         this._title = title;
         this._tags = tags.map(t => new NoteTag(t));
-        this._displayTime = this._journalDate.format('h:mm a');
+        this._displayTime = this._journalDate.format('YYYY-MM-DD h:mm a');
     }
 
     public get httpShape(): NotebookEntryHttpShape {
         return {
-            id: '',
+            _id: this._id,
             userId: this._userId,
             journalDate: this._journalDate.toISOString(),
             dateCreated: this._dateCreated.toISOString(),
@@ -60,7 +60,7 @@ export class NotebookEntry {
     public set dateModified(time: moment.Moment) { this._dateModified = time; }
     public set journalDate(time: moment.Moment) {
         this._journalDate = time;
-        this._displayTime = this._journalDate.format('h:mm a');
+        this._displayTime = this._journalDate.format('YYYY-MM-DD h:mm a');
     }
     public set data(data: any) { this._data = data; }
 

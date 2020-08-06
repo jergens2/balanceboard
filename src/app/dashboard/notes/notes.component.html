@@ -12,8 +12,8 @@
       <app-notes-query-bar class="header"></app-notes-query-bar>
     </div>
     <div class="notebook-entries">
-      <div *ngFor="let day of filteredNotebookEntries" style="display:flex;flex-direction: column; margin-bottom: 10px;">
-        <div style="display:flex; flex-direction: row; align-items: center;">
+      <div *ngFor="let day of filteredNotebookEntries" class="notebook-day">
+        <div class="date-container">
           <div class="date">{{ day.dateYYYYMMDD }}</div>
           <div class="days-ago">{{ day.daysAgo }} days ago</div>
         </div>

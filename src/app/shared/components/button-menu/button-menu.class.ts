@@ -4,35 +4,39 @@ import { ButtonMenuItem } from "./button-menu-item.class";
 export class ButtonMenu {
 
     private _items: ButtonMenuItem[] = [];
+    private _mode: 'MERGED' | 'SEPARATED' = 'MERGED';
 
-    constructor() {
-
+    constructor(mode: 'MERGED' | 'SEPARATED' = 'MERGED') {
+        this._mode = mode;
     }
 
     public get menuItems(): ButtonMenuItem[] { return this._items; }
+    public get mode(): 'MERGED' | 'SEPARATED' { return this._mode};
+    public get modeIsMerged(): boolean { return this._mode === 'MERGED'; }
+    public get modeIsSeparated(): boolean { return this._mode === 'SEPARATED'; }
 
     public addItem$(label: string): Observable<boolean> {
         const newItem = new ButtonMenuItem(label);
+        
         this._items.push(newItem);
         this._updateItemsNgClass();
         return newItem.itemSelected$;
     }
 
-    public openItem(label: string){
+    public openItem(label: string) {
         const foundItem = this.menuItems.find(item => item.label === label);
-        if(foundItem){
+        if (foundItem) {
             this.openItemClicked(foundItem);
         }
     }
-    public openItemClicked(itemClicked: ButtonMenuItem){
-        console.log("Opening item: " + itemClicked.label)
+    public openItemClicked(itemClicked: ButtonMenuItem) {
         this.menuItems.forEach(menuItem => {
-            if(menuItem.label === itemClicked.label){
-              menuItem.selectItem();
-            }else{
-              menuItem.deselectItem();
+            if (menuItem.label === itemClicked.label) {
+                menuItem.selectItem();
+            } else {
+                menuItem.deselectItem();
             }
-          });
+        });
     }
 
     private _updateItemsNgClass() {

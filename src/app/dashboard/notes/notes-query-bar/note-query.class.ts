@@ -1,4 +1,4 @@
-import { NoteTag } from "./note-tag.class";
+import { NoteTag } from "./nqb-tag-search/note-tag.class";
 import * as moment from 'moment';
 
 export class NoteQuery{

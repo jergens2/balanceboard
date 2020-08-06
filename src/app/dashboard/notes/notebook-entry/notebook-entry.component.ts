@@ -8,6 +8,7 @@ import { ModalService } from '../../../modal/modal.service';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 import { NotesService } from '../notes.service';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { NotesHttpService } from '../api/notes-http.service';
 
 @Component({
   selector: 'app-notebook-entry',
@@ -21,7 +22,7 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
 
   @Input() notebookEntry: NotebookEntry;
 
-  constructor(private modalService: ModalService, private notebooksService: NotesService) { }
+  constructor(private modalService: ModalService, private notebooksService: NotesService, private httpService: NotesHttpService) { }
 
   mouseOver: boolean = false;
   private _modalSubscription: Subscription = new Subscription();
@@ -67,7 +68,10 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
     this.mouseOver = false;
   }
 
-  onClickDelete(){
+
+  onDeleteNote(){
+    this.httpService.deleteNotebookEntryHTTP$(this.notebookEntry);
+    this.notebooksService.deleteNote(this.notebookEntry);
   }
 
   onClickEdit(){

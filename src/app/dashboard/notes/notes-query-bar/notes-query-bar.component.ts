@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { faHashtag } from '@fortawesome/free-solid-svg-icons';
@@ -16,6 +16,7 @@ export class NotesQueryBarComponent implements OnInit {
   constructor(private notesService: NotesService) { }
 
   private _queryExpanded: 'DATE' | 'TAGS' | null  = null;
+  private _mouseIsOver: boolean = false;
 
   public get faCalendarAlt(): IconDefinition { return faCalendarAlt; }
   public get faHashtag(): IconDefinition { return faHashtag; }
@@ -28,18 +29,37 @@ export class NotesQueryBarComponent implements OnInit {
   public get queryIsDate(): boolean { return this._queryExpanded === 'DATE'; }
   public get queryIsTags(): boolean { return this._queryExpanded === 'TAGS'; }
 
+  @HostListener('window:click') onClick(){
+    if(!this._mouseIsOver){
+      console.log("CLICK.  but mouse is not over.")
+      this._queryExpanded = null;
+    }
+  }
+
   ngOnInit(): void {
   
   }
 
   public onClickDates(){
-    this._queryExpanded = 'DATE';
+    if(this._queryExpanded === 'DATE'){
+      this._queryExpanded = null;
+    }else{
+      this._queryExpanded = 'DATE';
+    }
   }
   public onClickTags(){
-    this._queryExpanded = 'TAGS';
+    if(this._queryExpanded === 'TAGS'){
+      this._queryExpanded = null;
+    }else{
+      this._queryExpanded = 'TAGS';
+    }
+    
   }
   public onMouseLeave(){
-    this._queryExpanded = null;
+    this._mouseIsOver = false;
+  }
+  public onMouseEnter(){
+    this._mouseIsOver = true;
   }
 
 }

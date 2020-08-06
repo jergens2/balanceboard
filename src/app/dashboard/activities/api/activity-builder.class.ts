@@ -14,7 +14,7 @@ export class ActivityBuilder {
         let dataErrors: boolean = false;
         properties.forEach(property => {
             if (!(property in data)) {
-                console.log("Warning with activity data object: missing property: ", property);
+                // console.log("Warning with activity data object: missing property: ", property);
                 dataErrors = true;
             }
         });

@@ -118,8 +118,9 @@
 }
 
 .popup{
+    font-size: 0.9em;
     position: relative;
-    top: -75px;
+    top: -85px;
     border: 1px solid gray;
     background-color: white;
     min-width: 160px;

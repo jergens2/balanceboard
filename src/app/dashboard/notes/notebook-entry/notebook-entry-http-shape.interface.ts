@@ -1,5 +1,5 @@
 export interface NotebookEntryHttpShape{
-    id: string,
+    _id: string,
     userId: string,
     journalDate: string,
     dateCreated: string,

@@ -17,6 +17,8 @@ export class ButtonMenuComponent implements OnInit {
 
   public get menu(): ButtonMenu { return this._menu; }
   public get menuItems(): ButtonMenuItem[] { return this._menu.menuItems; }
+  public get modeIsSeparated(): boolean { return this._menu.modeIsSeparated; }
+  public get modeIsMerged(): boolean { return this._menu.modeIsMerged; }
 
 
   ngOnInit(): void {
