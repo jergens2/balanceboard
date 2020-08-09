@@ -5,7 +5,7 @@ import { Subscription, Observable, fromEvent, Subject, timer } from 'rxjs';
 import { ActivityDropdownListItem } from './activity-dropdown-list-item.interface';
 import { ActivityTree } from '../../dashboard/activities/api/activity-tree.class';
 import { ActivityCategoryDefinition } from '../../dashboard/activities/api/activity-category-definition.class';
-import { ActivityCategoryDefinitionService } from '../../dashboard/activities/api/activity-category-definition.service';
+import { ActivityHttpService } from '../../dashboard/activities/api/activity-http.service';
 import { ActivityInputSearch } from './activity-input-search.class';
 import { ActivityChainLink, SaveActivityChain } from './save-activity-chain.class';
 import { ItemState } from '../utilities/item-state.class';
@@ -55,12 +55,12 @@ export class ActivityInputDropdownComponent implements OnInit, OnDestroy {
 
   @Input() public set readOnly(setting: boolean) { this._isReadOnly = setting };
 
-  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService) { }
+  constructor(private activityCategoryDefinitionService: ActivityHttpService) { }
 
   ngOnInit() {
     this._itemState = new ItemState(null);
-    this.activitiesTree = this.activityCategoryDefinitionService.activitiesTree;
-    this.activityCategoryDefinitionService.activitiesTree$.subscribe((newTree) => {
+    this.activitiesTree = this.activityCategoryDefinitionService.activityTree;
+    this.activityCategoryDefinitionService.activityTree$.subscribe((newTree) => {
       // console.log("Updating tree");
       this.activitiesTree = newTree;
     });

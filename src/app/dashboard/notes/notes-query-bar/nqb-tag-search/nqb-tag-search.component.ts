@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { NotesService } from '../../notes.service';
+import { NoteQueryService } from '../../note-query.service';
 import { Subscription } from 'rxjs';
 import { NoteTag } from './note-tag.class';
 import { NoteTagBuilder } from './note-tag-builder';
@@ -14,7 +14,7 @@ import { NoteQuery } from '../note-query.class';
 })
 export class NqbTagSearchComponent implements OnInit, OnDestroy {
 
-  constructor(private noteService: NotesService) { }
+  constructor(private noteService: NoteQueryService) { }
 
 
   private _subscription: Subscription = new Subscription();

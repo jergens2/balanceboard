@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SleepManagerService } from '../../sleep-manager.service';
+import { SleepService } from '../../sleep.service';
 import * as moment from 'moment';
 import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 
@@ -10,7 +10,7 @@ import { DurationString } from '../../../../../shared/time-utilities/duration-st
 })
 export class SmSleepDurationComponent implements OnInit {
 
-  constructor(private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepService) { }
   private _durationString: string = "";
   private _totalDuration: string = "";
   private _sleepPercent: number = 100;

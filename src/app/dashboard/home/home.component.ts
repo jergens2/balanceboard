@@ -6,13 +6,12 @@ import { AuthenticationService } from '../../authentication/authentication.servi
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { RelativeMousePosition } from '../../shared/utilities/relative-mouse-position.class';
 import { AdmintoolsService } from './admintools.service';
-import { DaybookControllerService } from '../daybook/controller/daybook-controller.service';
 import { TimelogEntryItem } from '../daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { TimelogEntryActivity } from '../daybook/api/data-items/timelog-entry-activity.interface';
 import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
-import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.service';
+import { DaybookHttpService } from '../daybook/api/daybook-http.service';
 import { ActivityCategoryDefinition } from '../activities/api/activity-category-definition.class';
-import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
+import { ActivityHttpService } from '../activities/api/activity-http.service';
 import { UpdateActivityDatabaseItemsService } from '../activities/api/update-activity-database-items.service';
 
 
@@ -27,9 +26,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthenticationService,
     private specialService: AdmintoolsService,
-    private daybookControllerService: DaybookControllerService,
-    private daybookHttpService: DaybookHttpRequestService,
-    private activitiesService: ActivityCategoryDefinitionService,
+    private activitiesService: ActivityHttpService,
     private updateActivitiesService: UpdateActivityDatabaseItemsService) { }
 
   faHome = faHome;

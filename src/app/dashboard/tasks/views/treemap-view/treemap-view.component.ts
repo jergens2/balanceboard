@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, HostListener, AfterViewInit } from '@angular/core';
 import { Task } from '../../task/task.model';
-import { TaskService } from '../../task.service';
+import { TaskHttpService } from '../../task-http.service';
 import { Directory } from '../../../../shared/directory/directory.class';
 import { TaskGroup } from '../../task-group/task-group.class';
 import { TreeMap } from './treemap/treemap.class';
@@ -14,7 +14,7 @@ import { TreeMap } from './treemap/treemap.class';
 })
 export class TreemapViewComponent implements OnInit {
 
-  constructor(private taskService: TaskService) { }
+  constructor(private taskService: TaskHttpService) { }
 
   private _allTasks: Task[] = [];
   public completeTasks: Task[] = [];

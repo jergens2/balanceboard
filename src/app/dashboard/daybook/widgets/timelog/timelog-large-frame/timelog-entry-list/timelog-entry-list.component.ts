@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
 import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
 import { TimelogEntryItem } from '../timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
@@ -8,7 +7,7 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
 import { TimelogEntryActivity } from '../../../../api/data-items/timelog-entry-activity.interface';
 import { ActivityCategoryDefinition } from '../../../../../activities/api/activity-category-definition.class';
-import { ActivityCategoryDefinitionService } from '../../../../../activities/api/activity-category-definition.service';
+import { ActivityHttpService } from '../../../../../activities/api/activity-http.service';
 
 
 
@@ -19,7 +18,7 @@ import { ActivityCategoryDefinitionService } from '../../../../../activities/api
 })
 export class TimelogEntryListComponent implements OnInit {
 
-  constructor(private daybookService: DaybookDisplayService, private activityService: ActivityCategoryDefinitionService) { }
+  constructor(private daybookService: DaybookDisplayService, private activityService: ActivityHttpService) { }
 
   private _timelogEntryItems: TimelogEntryItem[] = [];
   public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
@@ -36,13 +35,13 @@ export class TimelogEntryListComponent implements OnInit {
     //   this._timelogEntryItems = this.daybookControllerService.activeDayController.timelogEntryItems;
     // });
     this._update();
-    this.daybookService.displayUpdated$.subscribe((change)=>{
-      this._update();
-    });
+    // this.daybookService.displayUpdated$.subscribe((change)=>{
+    //   this._update();
+    // });
   }
 
   private _update(){
-    this._timelogEntryItems = this.daybookService.activeDayController.timelogEntryItems.filter((item)=>{
+    this._timelogEntryItems = this.daybookService.daybookManager.tleController.timelogEntryItems.filter((item)=>{
       return item.startTime.isSameOrAfter(this.daybookService.displayStartTime) && item.endTime.isSameOrBefore(this.daybookService.displayEndTime);
     });
   }
@@ -50,7 +49,7 @@ export class TimelogEntryListComponent implements OnInit {
   public onClickEdit(entry: TimelogEntryItem){
   }
   public onClickDelete(entry: TimelogEntryItem){
-    this.daybookService.activeDayController.deleteTimelogEntryItem$(entry);
+    this.daybookService.daybookManager.tleController.deleteTimelogEntryItem(entry.startTime.format('YYYY-MM-DD'), entry);
   }
 
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserPromptType } from '../../user-action-prompt/user-prompt-type.enum';
+import { UserPromptType } from '../../nav/user-action-prompt/user-prompt-type.enum';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { serverUrl } from '../../serverurl';
@@ -16,7 +16,6 @@ export class UserAccountProfileService {
 
   constructor(private httpClient: HttpClient) { }
 
-  public get allGood(): boolean { return true; }
 
   private _userId: string = '';
   private _userProfile$: BehaviorSubject<UserAccountProfile>;
@@ -27,6 +26,24 @@ export class UserAccountProfileService {
   public get appConfig(): UAPAppConfiguration { return this.userProfile.uapAppConfig; }
   public get appPreferences(): UAPAppPreferences { return this.userProfile.uapAppPreferences; }
   public get personalInfo(): UAPPersonalInformation { return this.userProfile.uapPersonalInfo; }
+
+  public login$(userId: string):Observable<boolean> {
+    this._userId = userId;
+    const isComplete$: Subject<boolean> = new Subject();
+    this._getUserAccountProfile$()
+    .subscribe({
+      next: (profile) => {
+        this._userProfile$ = new BehaviorSubject(profile);
+        isComplete$.next(true);
+      },
+      error: e => console.log("Error", e),
+      complete: () => isComplete$.complete()
+    });
+    return isComplete$.asObservable();
+  }
+
+
+
 
   public initiate$(userId: string): Observable<UserPromptType> {
     this._userId = userId;

@@ -8,7 +8,7 @@ import { TimeViewsManager } from '../../shared/time-views/time-views-manager.cla
 @Injectable({
   providedIn: 'root'
 })
-export class NotesService{
+export class NoteQueryService{
 
   constructor() { }
 

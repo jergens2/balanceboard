@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActivityCategoryDefinitionService } from '../api/activity-category-definition.service';
+import { ActivityHttpService } from '../api/activity-http.service';
 import { ActivityTree } from '../api/activity-tree.class';
 import { faCheckCircle, faCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
@@ -59,7 +59,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
   // @Output() formClosed: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private activityCategoryDefinitionService: ActivityCategoryDefinitionService, private modalService: ModalService) { }
+  constructor(private activityCategoryDefinitionService: ActivityHttpService, private modalService: ModalService) { }
 
   activityForm: FormGroup = null;
   private activityTree: ActivityTree = null;
@@ -69,7 +69,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
 
 
   ngOnInit() {
-    this.activityTree = this.activityCategoryDefinitionService.activitiesTree;
+    this.activityTree = this.activityCategoryDefinitionService.activityTree;
     if (this._action == "new") {
       this.activityForm = new FormGroup({
         'name': new FormControl(null, Validators.required),

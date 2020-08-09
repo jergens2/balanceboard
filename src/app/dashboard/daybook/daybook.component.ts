@@ -1,13 +1,11 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, Observable } from 'rxjs';
 import { AppScreenSizeService } from '../../shared/app-screen-size/app-screen-size.service';
 import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size-label.enum';
-import { DaybookControllerService } from './controller/daybook-controller.service';
 import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
 import { DaybookDayItem } from './api/daybook-day-item.class';
 import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
-import { DaybookController } from './controller/daybook-controller.class';
 import { DaybookDisplayService } from './daybook-display.service';
 
 @Component({
@@ -50,12 +48,11 @@ export class DaybookComponent implements OnInit, OnDestroy {
 
 
   public get daybookHeader(): string {
-    return moment(this.daybookDisplayService.activeDayController.dateYYYYMMDD).format("dddd, MMM DD, YYYY");
+    return moment().format("dddd, MMM DD, YYYY") + " change this";
   }
 
   public get appScreenSize(): AppScreenSizeLabel { return this._screenSize; }
 
-  public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
   private _subscriptions: Subscription[] = [];
 

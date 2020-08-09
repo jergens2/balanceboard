@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { UserAccountProfileService } from '../user-account-profile.service';
 import { UAPAppConfiguration } from '../api/uap-app-configuraiton.interface';
-import { SleepManagerService } from '../../daybook/sleep-manager/sleep-manager.service';
+import { SleepService } from '../../daybook/sleep-manager/sleep.service';
 
 @Component({
   selector: 'app-first-time-config',
@@ -12,7 +12,7 @@ import { SleepManagerService } from '../../daybook/sleep-manager/sleep-manager.s
 })
 export class FirstTimeConfigComponent implements OnInit {
 
-  constructor(private userProfileService: UserAccountProfileService, private sleepService: SleepManagerService) { }
+  constructor(private userProfileService: UserAccountProfileService, private sleepService: SleepService) { }
 
   public faCheck = faCheck;
 

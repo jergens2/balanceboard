@@ -7,24 +7,21 @@ import { serverUrl } from '../../serverurl';
 import { AuthStatus } from '../../authentication/auth-status.class';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { error } from 'protractor';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TaskService {
+export class TaskHttpService {
 
   constructor(private httpClient: HttpClient) { }
 
-  private _serverUrl = serverUrl;
   private _userId: string;
-  synchronousLogin(userId: string){ return false;}
-  login$(userId: string): Observable<any> {
+  login$(userId: string): Observable<boolean> {
     this._userId = userId;
-    this.getTasksHTTP();
-    return this._loginComplete$.asObservable();
+    return this.getTasksHTTP$();
   }
 
-  private _loginComplete$: Subject<any> = new Subject();
 
   logout() {
     this._userId = null;
@@ -38,7 +35,7 @@ export class TaskService {
 
   */
 
-  public get userId(): string{
+  public get userId(): string {
     return this._userId;
   }
 
@@ -46,7 +43,7 @@ export class TaskService {
   public get tasks$(): Observable<Task[]> {
     return this._tasks$.asObservable();
   }
-  public get tasks(): Task[]{
+  public get tasks(): Task[] {
     return this._tasks$.getValue();
   }
 
@@ -60,18 +57,18 @@ export class TaskService {
   }
   // public get taskQueue$(): Subject<Task[]> {}
 
-  private updateTaskQueue(allTasks: Task[]){
-    
+  private updateTaskQueue(allTasks: Task[]) {
+
     //
     //  rebuild the task Queue as per algorithm, based on priority.
     //
 
-    let tasks: Task[] = allTasks.filter((task)=>{ if(!task.isComplete){ return task }})
-    tasks.sort((task1, task2)=>{
-      if(task1.createdDate.isBefore(task2.createdDate)){
+    let tasks: Task[] = allTasks.filter((task) => { if (!task.isComplete) { return task } })
+    tasks.sort((task1, task2) => {
+      if (task1.createdDate.isBefore(task2.createdDate)) {
         return -1;
       }
-      if(task1.createdDate.isAfter(task2.createdDate)){
+      if (task1.createdDate.isAfter(task2.createdDate)) {
         return 1;
       }
       return 0;
@@ -79,45 +76,48 @@ export class TaskService {
 
     let taskQueue: Task[] = [];
 
-    for(let i=0; i<6; i++){
+    for (let i = 0; i < 6; i++) {
       taskQueue.push(tasks[i]);
     }
-    
+
     this._taskQueue = taskQueue;
     this._taskQueue$.next(this._taskQueue);
 
   }
 
-  
-  private getTasksHTTP(){
-    const getUrl = this._serverUrl + "/api/task/" + this._userId;
+
+  private getTasksHTTP$(): Observable<boolean> {
+    const getUrl = serverUrl + "/api/task/" + this._userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'  
       })
     };
+    const isComplete$: Subject<boolean> = new Subject();
     this.httpClient.get<{ message: string, data: any }>(getUrl, httpOptions)
       .pipe<Task[]>(map((response: { message: string, data: any }) => {
 
         let tasks: Task[] = [];
-        for(let taskData of (response.data as any[]) ){        
+        for (let taskData of (response.data as any[])) {
           tasks.push(this.buildTaskFromHttp(taskData));
         }
         return tasks;
       }))
-      .subscribe((tasks: Task[])=>{
-        this.updateTaskQueue(tasks);
-        this._tasks$.next(this.sortTasksByDate(tasks));
-        this._loginComplete$.next({
-          authenticated: true,
-          message: 'Successfully logged in to TaskService'
-        });
-      })
+      .subscribe({
+        next: (tasks: Task[]) => {
+          this.updateTaskQueue(tasks);
+          this._tasks$.next(this.sortTasksByDate(tasks));
+          isComplete$.next(true);
+        },
+        error: e => console.log("Error", e),
+        complete: () => isComplete$.complete()
+      });
+    return isComplete$.asObservable();
   }
 
   public getTaskByIdHTTP$(id: string): Observable<Task> {
-    const getUrl = this._serverUrl + "/api/task/" + this._userId + "/" + id;
+    const getUrl = serverUrl + "/api/task/" + this._userId + "/" + id;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -131,13 +131,13 @@ export class TaskService {
 
   }
 
-  public createTaskHTTP(task: Task){
-    
+  public createTaskHTTP(task: Task) {
+
     let requestBody: any = task.httpRequestBody;
     console.log("Saving task:", requestBody);
 
 
-    const postUrl = this._serverUrl + "/api/task/create";
+    const postUrl = serverUrl + "/api/task/create";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -149,7 +149,7 @@ export class TaskService {
       .pipe<Task>(map((response: any) => {
         return this.buildTaskFromHttp(response.data);
       }))
-      .subscribe((task: Task)=>{
+      .subscribe((task: Task) => {
         let currentTasks = this._tasks$.getValue();
         currentTasks.push(task);
         this._tasks$.next(this.sortTasksByDate(currentTasks));
@@ -164,7 +164,7 @@ export class TaskService {
 
 
 
-    const postUrl = this._serverUrl + "/api/task/update";
+    const postUrl = serverUrl + "/api/task/update";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -176,11 +176,11 @@ export class TaskService {
       .pipe<Task>(map((response: any) => {
         return this.buildTaskFromHttp(response.data);;
       }))
-      .subscribe((updatedTask: Task)=>{
+      .subscribe((updatedTask: Task) => {
         let currentTasks = this._tasks$.getValue();
         let index: number = 0;
-        for(let currentTask of currentTasks){
-          if(currentTask.id == updatedTask.id){
+        for (let currentTask of currentTasks) {
+          if (currentTask.id == updatedTask.id) {
             index = currentTasks.indexOf(currentTask);
           }
         }
@@ -191,8 +191,8 @@ export class TaskService {
 
 
 
-  deleteTaskHTTP(task: Task){
-    const postUrl = this._serverUrl + "/api/task/delete";
+  deleteTaskHTTP(task: Task) {
+    const postUrl = serverUrl + "/api/task/delete";
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -204,7 +204,7 @@ export class TaskService {
       .subscribe((response) => {
         // console.log("Response from HTTP delete request:", response)
         let tasks = this._tasks$.getValue();
-        tasks.splice(tasks.indexOf(task),1);
+        tasks.splice(tasks.indexOf(task), 1);
         this._tasks$.next(this.sortTasksByDate(tasks));
       })
   };
@@ -212,23 +212,23 @@ export class TaskService {
 
 
   private sortTasksByDate(tasks: Task[]): Task[] {
-    return tasks.sort((task1, task2)=>{
-      if(task1.createdDate.isAfter(task2.createdDate)){
+    return tasks.sort((task1, task2) => {
+      if (task1.createdDate.isAfter(task2.createdDate)) {
         return -1;
       }
-      if(task1.createdDate.isBefore(task2.createdDate)){
+      if (task1.createdDate.isBefore(task2.createdDate)) {
         return 1;
       }
       return 0;
     });
   }
 
-  private buildTaskFromHttp(data: any): Task{
+  private buildTaskFromHttp(data: any): Task {
     let task = new Task(data._id, data.userId, data.title, data.description, data.directoryPath, data.priority, moment(data.createdDateISO), moment(data.dueDateISO))
     if (data.isComplete as boolean) {
       task.markComplete(moment(data.completionDateISO));
     }
-    
+
     return task;
   }
 

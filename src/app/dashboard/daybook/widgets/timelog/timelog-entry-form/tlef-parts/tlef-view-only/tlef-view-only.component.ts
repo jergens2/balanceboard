@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
-import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
+import { ActivityHttpService } from '../../../../../../activities/api/activity-http.service';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { DurationString } from '../../../../../../../shared/time-utilities/duration-string.class';
@@ -36,7 +36,7 @@ export class TlefViewOnlyComponent implements OnInit {
   // private _isEditing: boolean = false;
 
   @Output() public editing: EventEmitter<boolean> = new EventEmitter();
-  constructor(private daybookService: DaybookDisplayService, private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private daybookService: DaybookDisplayService, private activitiesService: ActivityHttpService) { }
 
   // public get isEditing(): boolean { return this._isEditing; }
 

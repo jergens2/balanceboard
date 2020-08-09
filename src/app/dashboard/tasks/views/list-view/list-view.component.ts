@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Task } from '../../task/task.model';
-import { TaskService } from '../../task.service';
+import { TaskHttpService } from '../../task-http.service';
 
 @Component({
   selector: 'app-list-view',
@@ -9,7 +9,7 @@ import { TaskService } from '../../task.service';
 })
 export class ListViewComponent implements OnInit {
 
-  constructor(private taskService: TaskService) { }
+  constructor(private taskService: TaskHttpService) { }
 
   private _allTasks: Task[] = [];
 

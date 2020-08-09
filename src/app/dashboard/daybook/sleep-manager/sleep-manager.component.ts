@@ -2,8 +2,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { timer } from 'rxjs';
-import { SleepManagerService } from './sleep-manager.service';
-import { SleepCyclePosition } from './sleep-cycle/sleep-cycle-position.enum';
+import { SleepService } from './sleep.service';
+import { SleepCyclePosition } from './sleep-profile/sleep-cycle-position.enum';
 import { faCloudMoon } from '@fortawesome/free-solid-svg-icons';
 import { AppScreenSizeService } from '../../../shared/app-screen-size/app-screen-size.service';
 import { AppScreenSizeLabel } from '../../../shared/app-screen-size/app-screen-size-label.enum';
@@ -16,7 +16,7 @@ import { AppScreenSizeLabel } from '../../../shared/app-screen-size/app-screen-s
 export class SleepManagerComponent implements OnInit {
 
   constructor(
-    private sleepService: SleepManagerService, 
+    private sleepService: SleepService, 
     private screenService: AppScreenSizeService) { }
 
 

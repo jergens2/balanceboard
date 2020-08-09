@@ -1,11 +1,10 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { DaybookControllerService } from '../../../../../controller/daybook-controller.service';
 import { TLEFGridBarItem } from './tlef-grid-bar-item.class';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
+import { ActivityHttpService } from '../../../../../../activities/api/activity-http.service';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { TLEFController } from '../../TLEF-controller.class';
 
@@ -16,7 +15,7 @@ import { TLEFController } from '../../TLEF-controller.class';
 })
 export class TLEFGridItemsBarComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookDisplayService: DaybookDisplayService, private activitiesService: ActivityCategoryDefinitionService ) { }
+  constructor(private daybookDisplayService: DaybookDisplayService, private activitiesService: ActivityHttpService ) { }
 
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;

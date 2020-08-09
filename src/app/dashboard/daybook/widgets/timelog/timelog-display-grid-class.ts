@@ -2,7 +2,6 @@ import * as moment from 'moment';
 import { TimelogDelineator, TimelogDelineatorType } from "./timelog-delineator.class";
 import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { DaybookController } from '../../controller/daybook-controller.class';
 import { TLEFControllerItem } from './timelog-entry-form/TLEF-controller-item.class';
 import { DaybookTimeSchedule } from '../../api/daybook-time-schedule/daybook-time-schedule.class';
 
@@ -48,7 +47,9 @@ export class TimelogDisplayGrid {
     let gridItems: TimelogDisplayGridItem[] = this._daybookSchedule.getItemsInRange(this.startTime, this.endTime)
       .map(item => {
         const percent: number = (item.durationMs / this.totalViewMilliseconds) * 100;
-        let timelogEntry: TimelogEntryItem = item.timelogEntry;
+        // let timelogEntry: TimelogEntryItem = item.timelogEntry;
+        console.log("FIX THIS")
+        let timelogEntry = new TimelogEntryItem(item.startTime, item.endTime);
         const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, percent, item.status, timelogEntry);
         return newGridItem;
       });

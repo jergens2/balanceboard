@@ -2,8 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
-import { DaybookControllerService } from '../../../controller/daybook-controller.service';
-import { DaybookController } from '../../../controller/daybook-controller.class';
+import { DaybookManager } from '../../../api/daybook-manager.class';
+import { DaybookDisplayService } from '../../../daybook-display.service';
 
 @Component({
   selector: 'app-calendar-small',
@@ -12,7 +12,7 @@ import { DaybookController } from '../../../controller/daybook-controller.class'
 })
 export class CalendarSmallComponent implements OnInit {
 
-  constructor(private daybookControllerService: DaybookControllerService) { }
+  constructor(private daybookService: DaybookDisplayService) { }
 
   faExpand = faExpand;
 
@@ -23,13 +23,13 @@ export class CalendarSmallComponent implements OnInit {
     this.expand.emit(true);
   }
 
-  private activeDayController: DaybookController;
+  private _daybookManager: DaybookManager;
   public daysOfCalendar: CalendarDay[] = [];
 
   public isLarge: boolean = false;
 
   ngOnInit() {
-    this.activeDayController = this.daybookControllerService.activeDayController;
+    this._daybookManager = this.daybookService.daybookManager;
 
     if (this.date) {
       // Large calendar
@@ -37,15 +37,15 @@ export class CalendarSmallComponent implements OnInit {
       this.buildDaysOfCalendar(this.date, "LARGE");
     } else {
       // Small calendar
-      this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
+      this.buildDaysOfCalendar(moment(this._daybookManager.dateYYYYMMDD), "SMALL");
 
-      this.daybookControllerService.activeDayController$.subscribe((activeDayChanged) => {
-        if(activeDayChanged){
-          this.activeDayController = activeDayChanged;
-          this.buildDaysOfCalendar(moment(this.activeDayController.dateYYYYMMDD), "SMALL");
-        }
+      // this.daybookService.mana$.subscribe((activeDayChanged) => {
+      //   if(activeDayChanged){
+      //     this._daybookManager = activeDayChanged;
+      //     this.buildDaysOfCalendar(moment(this._daybookManager.dateYYYYMMDD), "SMALL");
+      //   }
 
-      });
+      // });
     }
 
 
@@ -54,7 +54,7 @@ export class CalendarSmallComponent implements OnInit {
   }
 
   public onClickCalendarDay(dayOfCalendar: CalendarDay) {
-    this.daybookControllerService.setActiveDayYYYYMMDD(dayOfCalendar.date.format("YYYY-MM-DD"));
+    // this.daybookControllerService.setActiveDayYYYYMMDD(dayOfCalendar.date.format("YYYY-MM-DD"));
   }
 
   private buildDaysOfCalendar(date: moment.Moment, size: "SMALL" | "LARGE") {
@@ -76,7 +76,7 @@ export class CalendarSmallComponent implements OnInit {
     while (currentDate.isSameOrBefore(lastDate)) {
       let isThisMonth: boolean = moment(date).month() == moment(currentDate).month();
       let isToday: boolean = moment(currentDate).format("YYYY-MM-DD") == moment().format("YYYY-MM-DD");
-      let isActiveDay: boolean = moment(this.activeDayController.dateYYYYMMDD).format("YYYY-MM-DD") == moment(currentDate).format("YYYY-MM-DD");
+      let isActiveDay: boolean = moment(this._daybookManager.dateYYYYMMDD).format("YYYY-MM-DD") == moment(currentDate).format("YYYY-MM-DD");
 
 
       let season: "WINTER" | "SPRING" | "SUMMER" | "AUTUMN" = "WINTER";

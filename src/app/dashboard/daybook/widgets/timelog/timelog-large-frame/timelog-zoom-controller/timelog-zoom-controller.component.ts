@@ -1,7 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { TimelogZoomControllerItem } from './timelog-zoom-controller-item.class';
-import { DaybookControllerService } from '../../../../controller/daybook-controller.service';
 import { faWrench, faSun, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { Subscription, timer } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
@@ -24,9 +23,9 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._buildZoomButtons();
-    this._daybookSub = this.daybookDisplayService.displayUpdated$.subscribe((update)=>{
-      this._buildZoomButtons();
-    });
+    // this._daybookSub = this.daybookDisplayService.displayUpdated$.subscribe((update)=>{
+    //   this._buildZoomButtons();
+    // });
   }
   ngOnDestroy(){
     this._daybookSub.unsubscribe();

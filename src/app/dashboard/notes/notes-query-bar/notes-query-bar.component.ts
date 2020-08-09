@@ -3,7 +3,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { faHashtag } from '@fortawesome/free-solid-svg-icons';
 import { NoteQuery } from './note-query.class';
-import { NotesService } from '../notes.service';
+import { NoteQueryService } from '../note-query.service';
 import * as moment from 'moment';
 
 @Component({
@@ -13,7 +13,7 @@ import * as moment from 'moment';
 })
 export class NotesQueryBarComponent implements OnInit {
 
-  constructor(private notesService: NotesService) { }
+  constructor(private notesService: NoteQueryService) { }
 
   private _queryExpanded: 'DATE' | 'TAGS' | null  = null;
   private _mouseIsOver: boolean = false;

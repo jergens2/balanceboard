@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
-import { DaybookControllerService } from '../../../../dashboard/daybook/controller/daybook-controller.service';
 
 @Component({
   selector: 'app-weightlog-entry-input',
@@ -10,7 +9,7 @@ import { DaybookControllerService } from '../../../../dashboard/daybook/controll
 })
 export class WeightlogEntryInputComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookControllerService: DaybookControllerService) { }
+  constructor() { }
   @Input() onClickSave$: Observable<boolean>
 
   public weightInputForm: FormGroup;

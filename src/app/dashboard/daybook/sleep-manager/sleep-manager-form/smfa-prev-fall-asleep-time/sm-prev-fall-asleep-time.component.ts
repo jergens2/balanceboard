@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SleepManagerService } from '../../sleep-manager.service';
+import { SleepService } from '../../sleep.service';
 import * as moment from 'moment';
 import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 import { TimelogEntryItem } from '../../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
@@ -12,7 +12,7 @@ import { TimelogEntryBuilder } from '../../../widgets/timelog/timelog-large-fram
 })
 export class SmPrevFallAsleepTimeComponent implements OnInit {
 
-  constructor(private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepService) { }
 
   private _fallAsleepTime: moment.Moment;
   private _maxVal: moment.Moment;

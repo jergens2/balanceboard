@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserActionPromptService } from './user-action-prompt.service';
 import { UserPromptType } from './user-prompt-type.enum';
-import { AuthenticationService } from '../authentication/authentication.service';
+import { AuthenticationService } from '../../authentication/authentication.service';
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { TimelogZoomControllerItem } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-controller-item.class';
-import { DaybookControllerService } from './controller/daybook-controller.service';
-import { DaybookController } from './controller/daybook-controller.class';
 import { DaybookWidgetType } from './widgets/daybook-widget.class';
 import { TimelogZoomType } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-type.enum';
 import * as moment from 'moment';
@@ -13,13 +11,13 @@ import { faSun, faList } from '@fortawesome/free-solid-svg-icons';
 import { TimelogDisplayGridItem } from './widgets/timelog/timelog-display-grid-item.class';
 import { ToolboxService } from '../../toolbox-menu/toolbox.service';
 import { TLEFController } from './widgets/timelog/timelog-entry-form/TLEF-controller.class';
-import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from './controller/items/daybook-display-update.interface';
-import { ActivityCategoryDefinitionService } from '../activities/api/activity-category-definition.service';
-import { SleepManagerService } from './sleep-manager/sleep-manager.service';
-import { DaybookSleepCycle } from './sleep-manager/sleep-cycle/daybook-sleep-cycle.class';
+import { DaybookDisplayUpdateType } from './api/daybook-display-update.interface';
+import { ActivityHttpService } from '../activities/api/activity-http.service';
+import { SleepService } from './sleep-manager/sleep.service';
 import { SleepManager } from './sleep-manager/sleep-manager.class';
 import { DaybookTimeSchedule } from './api/daybook-time-schedule/daybook-time-schedule.class';
 import { ActivityTree } from '../activities/api/activity-tree.class';
+import { DaybookManager } from './api/daybook-manager.class';
 
 @Injectable({
   providedIn: 'root'
@@ -27,18 +25,20 @@ import { ActivityTree } from '../activities/api/activity-tree.class';
 export class DaybookDisplayService {
 
   constructor(
-    private daybookControllerService: DaybookControllerService,
-    private activitiesService: ActivityCategoryDefinitionService,
+    private activitiesService: ActivityHttpService,
     private toolBoxService: ToolboxService,
-    private sleepService: SleepManagerService) { }
+    private sleepService: SleepService) { }
 
   private _widgetChanged$: BehaviorSubject<DaybookWidgetType> = new BehaviorSubject(DaybookWidgetType.TIMELOG);
-  private _displayUpdated$: Subject<DaybookDisplayUpdate> = new Subject();
 
   private _currentZoom: TimelogZoomControllerItem;
   private _zoomItems: TimelogZoomControllerItem[] = [];
 
+  // prepare to kill this property
   private _daybookSchedule: DaybookTimeSchedule;
+
+  private _daybookManager: DaybookManager;
+
   private _tlefController: TLEFController;
   private _timelogDisplayGrid: TimelogDisplayGrid;
 
@@ -47,16 +47,16 @@ export class DaybookDisplayService {
 
   private _subs: Subscription[] = [];
 
-  public get dateYYYYMMDD(): string { return this.daybookControllerService.activeDayController.dateYYYYMMDD; }
-  public get activeDayController(): DaybookController { return this.daybookControllerService.activeDayController; }
-  public get todayController(): DaybookController { return this.daybookControllerService.todayController; }
-  public get clock(): moment.Moment { return this.daybookControllerService.clock; }
+  public get dateYYYYMMDD(): string { return this._daybookManager.dateYYYYMMDD; }
+  public get clock(): moment.Moment { return this._daybookManager.clock; }
+  public get daybookManager(): DaybookManager { return this._daybookManager; }
 
   // public get isLoading$(): Observable<boolean> { return this._serviceIsLoading$.asObservable(); }
 
   public get widgetChanged$(): Observable<DaybookWidgetType> { return this._widgetChanged$.asObservable(); }
   public get widgetChanged(): DaybookWidgetType { return this._widgetChanged$.getValue(); }
-  public get displayUpdated$(): Observable<DaybookDisplayUpdate> { return this._displayUpdated$.asObservable(); }
+
+  
 
   public get displayStartTime(): moment.Moment { return this._daybookSchedule.startTime; }
   public get displayEndTime(): moment.Moment { return this._daybookSchedule.endTime; }
@@ -96,53 +96,56 @@ export class DaybookDisplayService {
 
   public onZoomChanged(newZoomValue: TimelogZoomControllerItem) {
     this._currentZoom = newZoomValue;
-    this._updateDisplay({
-      type: DaybookDisplayUpdateType.ZOOM,
-      controller: this.activeDayController,
-    });
+    // this._updateDisplay({
+    //   type: DaybookDisplayUpdateType.ZOOM,
+    //   controller: this.activeDayController,
+    // });
   }
 
   public reinitiate() {
-    this._subs.forEach(sub => sub.unsubscribe());
-    this._subs = [];
-    this._subs = [
-      this.daybookControllerService.displayUpdated$.subscribe((update: DaybookDisplayUpdate) => {
-        // console.log("  * DaybookControllerService.displayUpdated$: ", update.type)
-        if (update.type === DaybookDisplayUpdateType.CLOCK) {
-          if (moment().format('YYYY-MM-DD') === update.controller.dateYYYYMMDD) {
-            this._updateDisplay(update);
-          }
-        } else {
-          this._updateDisplay(update);
-        }
-      }),
-    ];
-    this._updateDisplay({
-      type: DaybookDisplayUpdateType.DEFAULT,
-      controller: this.daybookControllerService.activeDayController,
-    });
-    this._currentZoom = this.zoomItems[0];
+    console.log("REINITIATING DAYBOOK DISPLAY SERVICE")
+    console.log(" Going to reubild the Daybook Manager now.")
+    
+    // this._subs.forEach(sub => sub.unsubscribe());
+    // this._subs = [];
+    // this._subs = [
+    //   this.daybookControllerService.displayUpdated$.subscribe((update: DaybookDisplayUpdate) => {
+    //     // console.log("  * DaybookControllerService.displayUpdated$: ", update.type)
+    //     if (update.type === DaybookDisplayUpdateType.CLOCK) {
+    //       if (moment().format('YYYY-MM-DD') === update.controller.dateYYYYMMDD) {
+    //         this._updateDisplay(update);
+    //       }
+    //     } else {
+    //       this._updateDisplay(update);
+    //     }
+    //   }),
+    // ];
+    // this._updateDisplay({
+    //   type: DaybookDisplayUpdateType.DEFAULT,
+    //   controller: this.daybookControllerService.activeDayController,
+    // });
+    // this._currentZoom = this.zoomItems[0];
   }
 
-  private _updateDisplay(update: DaybookDisplayUpdate) {
+  private _updateDisplay(update: any) {
     // console.log("* * * * * Daybook Display update: " + update.controller.dateYYYYMMDD, update.type);
-    this._updateDaybookSchedule(update);
-    this._updateTimelogDisplayGrid();
-    this._updateTlefController(update);
-    this._buildZoomItems();
-    this._displayUpdated$.next(update);
+    // this._updateDaybookSchedule(update);
+    // this._updateTimelogDisplayGrid();
+    // this._updateTlefController(update);
+    // this._buildZoomItems();
+    // this._displayUpdated$.next(update);
   }
 
 
-  private _updateDaybookSchedule(update: DaybookDisplayUpdate) {
+  private _updateDaybookSchedule(update: any) {
     const isToday = update.controller.dateYYYYMMDD === moment().format('YYYY-MM-DD');
-    if (isToday) {
-      const sleepCycle: DaybookSleepCycle = this.sleepService.sleepManager.currentSleepCycle;
-      this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
-    } else {
-      const sleepCycle: DaybookSleepCycle = this.sleepService.sleepManager.getSleepCycleForDate(update.controller.dateYYYYMMDD, update.controller.dayItems);
-      this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
-    }
+    // if (isToday) {
+    //   const sleepCycle: DaybookSleepCycle = this.sleepService.sleepManager.currentSleepCycle;
+    //   this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
+    // } else {
+    //   const sleepCycle: DaybookSleepCycle = this.sleepService.sleepManager.getSleepCycleForDate(update.controller.dateYYYYMMDD, update.controller.dayItems);
+    //   this._daybookSchedule = new DaybookTimeSchedule(this.dateYYYYMMDD, sleepCycle, update.controller);
+    // }
   }
   private _updateTimelogDisplayGrid() {
     if (!this._timelogDisplayGrid) {
@@ -151,24 +154,24 @@ export class DaybookDisplayService {
       this._timelogDisplayGrid.update(this._daybookSchedule)
     }
   }
-  private _updateTlefController(update: DaybookDisplayUpdate) {
-    if (!this._tlefController) {
-      this._tlefController = new TLEFController(this._daybookSchedule, this.activeDayController, this.toolBoxService, this.activitiesService);
-    } else {
-      this._tlefController.update(update, this._daybookSchedule, this.activeDayController);
-    }
-    this._updateTLEFSubscriptions();
-    if (this._tlefController.formIsOpen) {
-      // console.log("* updating TLEF controller.  it was open, so updating active grid item.")
-      if (this._tlefController.currentlyOpenTLEFItem.isDrawing) {
-        const start = new TimelogDelineator(this.tlefController.currentlyOpenTLEFItem.startTime, TimelogDelineatorType.DRAWING_TLE_START);
-        const end = new TimelogDelineator(this.tlefController.currentlyOpenTLEFItem.endTime, TimelogDelineatorType.DRAWING_TLE_END);
-        this.onCreateNewTimelogEntry(start, end);
-      } else {
-        this.timelogDisplayGrid.updateActiveItem(this.tlefController.currentlyOpenTLEFItem);
-      }
+  private _updateTlefController(update: any) {
+    // if (!this._tlefController) {
+    //   this._tlefController = new TLEFController(this._daybookSchedule, this.activeDayController, this.toolBoxService, this.activitiesService);
+    // } else {
+    //   this._tlefController.update(update, this._daybookSchedule, this.activeDayController);
+    // }
+    // this._updateTLEFSubscriptions();
+    // if (this._tlefController.formIsOpen) {
+    //   // console.log("* updating TLEF controller.  it was open, so updating active grid item.")
+    //   if (this._tlefController.currentlyOpenTLEFItem.isDrawing) {
+    //     const start = new TimelogDelineator(this.tlefController.currentlyOpenTLEFItem.startTime, TimelogDelineatorType.DRAWING_TLE_START);
+    //     const end = new TimelogDelineator(this.tlefController.currentlyOpenTLEFItem.endTime, TimelogDelineatorType.DRAWING_TLE_END);
+    //     this.onCreateNewTimelogEntry(start, end);
+    //   } else {
+    //     this.timelogDisplayGrid.updateActiveItem(this.tlefController.currentlyOpenTLEFItem);
+    //   }
 
-    }
+    // }
   }
 
   private _buildZoomItems() {
@@ -184,22 +187,22 @@ export class DaybookDisplayService {
 
   private _tlefSubscriptions: Subscription[] = [];
   private _updateTLEFSubscriptions() {
-    this._tlefSubscriptions.forEach(s => s.unsubscribe());
-    this._tlefSubscriptions = [
-      this.tlefController.onFormClosed$.subscribe((formIsClosed: boolean) => {
-        if (formIsClosed) {
-          this._updateDisplay({
-            type: DaybookDisplayUpdateType.DEFAULT,
-            controller: this.daybookControllerService.activeDayController,
-          });
-        }
-      }),
-      this.tlefController.currentlyOpenTLEFItem$.subscribe((tlefItem) => {
-        if (tlefItem) {
-          this.timelogDisplayGrid.updateActiveItem(tlefItem);
-        }
-      })
-    ];
+    // this._tlefSubscriptions.forEach(s => s.unsubscribe());
+    // this._tlefSubscriptions = [
+    //   this.tlefController.onFormClosed$.subscribe((formIsClosed: boolean) => {
+    //     if (formIsClosed) {
+    //       this._updateDisplay({
+    //         type: DaybookDisplayUpdateType.DEFAULT,
+    //         controller: this.daybookControllerService.activeDayController,
+    //       });
+    //     }
+    //   }),
+    //   this.tlefController.currentlyOpenTLEFItem$.subscribe((tlefItem) => {
+    //     if (tlefItem) {
+    //       this.timelogDisplayGrid.updateActiveItem(tlefItem);
+    //     }
+    //   })
+    // ];
   }
 
 

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivityCategoryDefinition } from './api/activity-category-definition.class';
 import { BehaviorSubject, Observable, Subject, forkJoin, Subscription } from 'rxjs';
-import { ActivityCategoryDefinitionService } from './api/activity-category-definition.service';
+import { ActivityHttpService } from './api/activity-http.service';
 import { ModalService } from '../../modal/modal.service';
-import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.service';
+import { DaybookHttpService } from '../daybook/api/daybook-http.service';
 import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
 import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
 import { ActivityDataAnalyzer } from './activity-display-item/adi-parts/adi-summary/activity-data-analyzer.class';
@@ -16,9 +16,9 @@ export class ActivityComponentService {
   /**   * The purpose of this service is to facilitate the navigating of the activities component.*/
   constructor() { }
 
-  private _activityDefinitionService: ActivityCategoryDefinitionService;
+  private _activityDefinitionService: ActivityHttpService;
   private _modalService: ModalService;
-  private _daybookHttpService: DaybookHttpRequestService;
+  private _daybookHttpService: DaybookHttpService;
   private _daybookActivityUpdater: DaybookActivityUpdater;
   private _activitiesSummarizer: ActivityDataSummarizer;
   private _listIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -49,8 +49,8 @@ export class ActivityComponentService {
 
   private _activitySub: Subscription = new Subscription();
 
-  public initiate$(activityDefinitionService: ActivityCategoryDefinitionService,
-    modalService: ModalService, daybookHttpService: DaybookHttpRequestService): Observable<boolean> {
+  public initiate$(activityDefinitionService: ActivityHttpService,
+    modalService: ModalService, daybookHttpService: DaybookHttpService): Observable<boolean> {
     const isLoading$: Subject<boolean> = new Subject();
     console.log("Reinitiang")
     this._activityDefinitionService = activityDefinitionService;
@@ -59,11 +59,11 @@ export class ActivityComponentService {
     this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
       this._daybookActivityUpdater = new DaybookActivityUpdater(items);
       // this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
-      this._activitiesSummarizer = new ActivityDataSummarizer(items, this._activityDefinitionService.activitiesTree);
+      this._activitiesSummarizer = new ActivityDataSummarizer(items, this._activityDefinitionService.activityTree);
       if(this.currentActivity){
         this._activitiesSummarizer.analyzeActivityAndChildren(this.currentActivity)
       }
-      this._activitySub = this._activityDefinitionService.activitiesTree$.subscribe(changedTree =>{ 
+      this._activitySub = this._activityDefinitionService.activityTree$.subscribe(changedTree =>{ 
         if(changedTree){
           if(this.currentActivity){
             const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);

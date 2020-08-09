@@ -1,100 +1,63 @@
 import { Injectable } from '@angular/core';
 import { ActivityCategoryDefinition } from './activity-category-definition.class';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { ActivityTree } from './activity-tree.class';
 import { Guid } from '../../../shared/utilities/guid.class';
-import { ActivityCategoryDefinitionHttpShape } from './activity-category-definition-http-shape.interface';
-import { DefaultActivityCategoryDefinitions } from './default-activity-category-definitions.class';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { ActivityBuilder } from './activity-builder.class';
+
 @Injectable({
   providedIn: 'root'
 })
-export class ActivityCategoryDefinitionService {
+export class ActivityHttpService {
 
   constructor(private httpClient: HttpClient) { }
 
-  private _userId: string = "";
-  private _activitiesTree: ActivityTree = null;
-  private _activitiesTree$: Subject<ActivityTree> = new Subject<ActivityTree>();
+  private _userId: string = '';
+  private _activityTree$: BehaviorSubject<ActivityTree> = new BehaviorSubject(null);
 
-  private _loginComplete$: Subject<boolean> = new Subject();
+  public get userId(): string { return this._userId; }
+  public get activityTree(): ActivityTree { return this._activityTree$.getValue(); }
+  public get activityTree$(): Observable<ActivityTree> { return this._activityTree$.asObservable(); }
+  public findActivityByTreeId(id: string) { return this.activityTree.findActivityByTreeId(id); }
 
-
-  get activitiesTree$(): Observable<ActivityTree> {return this._activitiesTree$.asObservable();}
-  get activitiesTree(): ActivityTree {return this._activitiesTree;}
-  get userId(): string {return this._userId;}
-
-  /*
-  private mergeAndDestroyThisActivity(destroyActivity: ActivityCategoryDefinition, mergeToActivity: ActivityCategoryDefinition){
-    //todo: implement
-  } 
-  
-  
-  */
-
-
-  public findActivityByTreeId(treeId: string): ActivityCategoryDefinition {
-    return this._activitiesTree.findActivityByTreeId(treeId);
-  }
-
-
-
-  public synchronousLogin(userId: string) { return false; }
   public login$(userId: string): Observable<boolean> {
     this._userId = userId;
-    // this._loginComplete$.next({
-    //   authenticated: true,
-    //   message: 'Successfully logged in to DaybookHttpRequestService',
-    // });
-    // return this._loginComplete$.asObservable();
-
-    this._fetchActivities();
-    return this._loginComplete$.asObservable();
+    const isComplete$: Subject<boolean> = new Subject();
+    this._fetchActivitiesHttp$(this._userId)
+      .subscribe({
+        next: activities => {
+          this._activityTree$.next(new ActivityTree(activities));
+          isComplete$.next(true);
+        },
+        error: e => console.log("Error", e),
+        complete: () => isComplete$.complete()
+      });
+    return isComplete$.asObservable();
   }
-
   public logout() {
-    this._userId = null;
-    this._activitiesTree$.next(null);
+    this._userId = '';
+    this._activityTree$.next(null);
   }
 
-
-
-
-  private _fetchActivities() {
-    const getUrl = serverUrl + "/api/activity-category-definition/get/" + this._userId;
+  private _fetchActivitiesHttp$(userId): Observable<ActivityCategoryDefinition[]> {
+    const getUrl = serverUrl + "/api/activity-category-definition/get/" + userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'  
       })
     };
-    this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
+    return this.httpClient.get<{ message: string, data: Array<any> }>(getUrl, httpOptions)
       .pipe<ActivityCategoryDefinition[]>(map((response) => {
         return (response.data as any[]).map((dataObject) => {
           return this._buildActivityFromResponse(dataObject);
         });
-      }))
-      .subscribe((activities: ActivityCategoryDefinition[]) => {
-
-        if (activities.length > 0) {
-          this._activitiesTree = new ActivityTree(activities);
-          // console.log("nexting ", this._activitiesTree);
-          this._activitiesTree$.next(this._activitiesTree);
-          this._loginComplete$.next(true);
-        } else if (activities.length == 0) {
-          // console.log("response data was 0 or less... creating default activities")
-          this.saveDefaultActivities(DefaultActivityCategoryDefinitions.defaultActivities(this.userId));
-        }
-
-      }, (error) => {
-        console.log("Error fetching activities", error);
-        this._loginComplete$.next(false);
-      });
+      }));
   }
+
 
   public saveDefaultActivities(defaultActivities: ActivityCategoryDefinition[]) {
     const postUrl = serverUrl + "/api/activity-category-definition/createDefault";
@@ -111,11 +74,6 @@ export class ActivityCategoryDefinitionService {
           return activity;
         });
       }))
-      .subscribe((allActivities: ActivityCategoryDefinition[]) => {
-        this._activitiesTree = new ActivityTree(allActivities);
-        this._activitiesTree$.next(this._activitiesTree);
-        this._loginComplete$.next(true);
-      })
   }
 
 
@@ -136,10 +94,11 @@ export class ActivityCategoryDefinitionService {
         return this._buildActivityFromResponse(response.data);
       }))
       .subscribe((activity: ActivityCategoryDefinition) => {
-        this._activitiesTree.addActivityToTree(activity);
-        this._activitiesTree$.next(this._activitiesTree);
+        const tree = this.activityTree;
+        tree.addActivityToTree(activity);
+        this._activityTree$.next(tree);
         saveActivityComplete$.next(activity);
-      })
+      });
     return saveActivityComplete$.asObservable();
   }
 
@@ -159,9 +118,10 @@ export class ActivityCategoryDefinitionService {
         return this._buildActivityFromResponse(response.data);
       }))
       .subscribe((activity: ActivityCategoryDefinition) => {
-        this._activitiesTree.addActivityToTree(activity);
-        this._activitiesTree$.next(this._activitiesTree);
-      })
+        const tree = this.activityTree;
+        tree.addActivityToTree(activity);
+        this._activityTree$.next(tree);
+      });
   }
 
   public updateActivity$(unsentActivity: ActivityCategoryDefinition): Observable<boolean> {
@@ -178,9 +138,10 @@ export class ActivityCategoryDefinitionService {
         return this._buildActivityFromResponse(response.data);
       }))
       .subscribe((updatedActivity: ActivityCategoryDefinition) => {
-        this._activitiesTree.pruneActivityFromTree(unsentActivity);
-        this._activitiesTree.addActivityToTree(updatedActivity);
-        this._activitiesTree$.next(this._activitiesTree);
+        const tree = this.activityTree;
+        tree.pruneActivityFromTree(unsentActivity);
+        tree.addActivityToTree(updatedActivity);
+        this._activityTree$.next(tree);
         isComplete$.next(true);
       });
     return isComplete$.asObservable();
@@ -209,8 +170,9 @@ export class ActivityCategoryDefinitionService {
     };
     this.httpClient.post<{ message: string, success: boolean, data: any }>(deleteUrl, activity.httpShape, httpOptions).subscribe((response) => {
       if (response.success === true) {
-        this._activitiesTree.pruneActivityFromTree(activity);
-        this._activitiesTree$.next(this._activitiesTree);
+        const tree = this.activityTree;
+        tree.pruneActivityFromTree(activity);
+        this._activityTree$.next(tree);
       } else {
         console.log("Error with deleting activity definition.");
       }

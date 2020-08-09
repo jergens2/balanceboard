@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { TimelogEntryItem } from './timelog-entry-item.class';
-import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
+import { ActivityHttpService } from '../../../../../../activities/api/activity-http.service';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { AppScreenSizeService } from '../../../../../../../shared/app-screen-size/app-screen-size.service';
 import { AppScreenSizeLabel } from '../../../../../../../shared/app-screen-size/app-screen-size-label.enum';
@@ -20,7 +20,7 @@ import { Subscription } from 'rxjs';
 export class TimelogEntryComponent implements OnInit, OnDestroy {
 
   constructor(
-    private activitiesService: ActivityCategoryDefinitionService,
+    private activitiesService: ActivityHttpService,
     private screenSizeService: AppScreenSizeService,
     private daybookService: DaybookDisplayService) { }
 
@@ -62,7 +62,7 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
         this.screenSize = size.label;
         this._rebuild(this._calculateMaxItems());
       }),
-      this.activitiesService.activitiesTree$.subscribe((treeChanged) => {
+      this.activitiesService.activityTree$.subscribe((treeChanged) => {
         this._rebuild(this._calculateMaxItems());
       }),
     ];

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { SleepManagerService } from '../../sleep-manager.service';
+import { SleepService } from '../../sleep.service';
 import { faPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 
@@ -15,7 +15,7 @@ export class SmDreamsComponent implements OnInit {
   public faEdit = faEdit;
   public faTrash = faTrash;
 
-  constructor(private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepService) { }
 
   public dreamsForm: FormGroup;
 

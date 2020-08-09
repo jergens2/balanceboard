@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TaskService } from './task.service';
+import { TaskHttpService } from './task-http.service';
 import { Task } from './task/task.model';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCog, faSitemap, faList, faThLarge, faPercentage } from '@fortawesome/free-solid-svg-icons';
@@ -19,7 +19,7 @@ export class TasksComponent implements OnInit {
   faThlarge = faThLarge;
 
 
-  constructor(private taskService: TaskService) { }
+  constructor(private taskService: TaskHttpService) { }
 
   private _allTasks: Task[] = [];
 

@@ -2,8 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { DailyTaskListDataItem } from '../../../api/data-items/daily-task-list-data-item.interface';
 // import { RecurringTasksService } from '../../../../activities/routines/routine-definition/api/routine-definition.service';
 // import { RecurringTaskDefinition } from '../../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
-import { DaybookControllerService } from '../../../controller/daybook-controller.service';
-import { DaybookController } from '../../../controller/daybook-controller.class';
+
 
 @Component({
   selector: 'app-daily-task-list-small',
@@ -12,21 +11,16 @@ import { DaybookController } from '../../../controller/daybook-controller.class'
 })
 export class DailyTaskListSmallComponent implements OnInit {
 
-  constructor(private daybookControllerService: DaybookControllerService) { }
+  constructor() { }
 
 
-
-  activeDayController: DaybookController;
 
   private _dailyTaskListItems: DailyTaskListDataItem[];
   public get dailyTaskListItems(): DailyTaskListDataItem[]{
     return this._dailyTaskListItems;
   }
   ngOnInit() {
-    this.activeDayController = this.daybookControllerService.activeDayController;
-    this.daybookControllerService.activeDayController$.subscribe((dayChanged)=>{
-      this.activeDayController = dayChanged;
-    });
+
   }
 
   // public recurringTask(dtlItem: DailyTaskListDataItem): RecurringTaskDefinition{

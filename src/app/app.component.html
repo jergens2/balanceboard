@@ -1,17 +1,4 @@
-<div *ngIf="!isAuthenticated">
-    <app-authentication></app-authentication>
-</div>
 
-<div *ngIf="isAuthenticated && loading" class="background-image-3 loading">
-    <app-spinner style="width:200px;height:200px;"></app-spinner>
-</div>
+<app-authentication  *ngIf="!isAuthenticated"></app-authentication>
+<app-app-container *ngIf="isAuthenticated"></app-app-container>
 
-<div class="user-action-prompt background-image-1" *ngIf="showUserActionPrompt">
-    <app-user-action-prompt></app-user-action-prompt>
-</div>
-
-<app-app-container *ngIf="showAppContainer"></app-app-container>
-
-<div class="app-modal-container" *ngIf="showModal">
-    <app-modal></app-modal>
-</div>

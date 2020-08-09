@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { SleepManagerService } from '../../../../sleep-manager/sleep-manager.service';
-import { SleepCyclePosition } from '../../../../sleep-manager/sleep-cycle/sleep-cycle-position.enum';
+import { SleepService } from '../../../../sleep-manager/sleep.service';
+import { SleepCyclePosition } from '../../../../sleep-manager/sleep-profile/sleep-cycle-position.enum';
 
 @Component({
   selector: 'app-energy-chart',
@@ -10,7 +10,7 @@ import { SleepCyclePosition } from '../../../../sleep-manager/sleep-cycle/sleep-
 })
 export class EnergyChartComponent implements OnInit {
 
-  constructor(private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepService) { }
 
   private _chartItems: {
     time: moment.Moment,

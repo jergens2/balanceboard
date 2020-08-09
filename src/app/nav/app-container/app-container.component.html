@@ -1,7 +1,4 @@
-<div class="app-container"
-    [ngClass]="{'app-container-mobile': sizeLabel === 0, 'app-container-tablet': sizeLabel === 1, 'app-container-normal': sizeLabel === 2, 'app-container-large': (sizeLabel === 3 || sizeLabel === 4)}">
-
-
+<div *ngIf="showAppContainer" class="app-container" [ngClass]="appContainerNgClass">
     <div class="header">
         <app-header (sidebarButtonClicked)="onHeaderSidebarButtonClicked()"></app-header>
     </div>
@@ -19,4 +16,18 @@
         *ngIf="showTools">
         <app-toolbox></app-toolbox>
     </div>
+</div>
+
+<div *ngIf="showUserActionPrompt" class="user-action-prompt background-image-1">
+    <app-user-action-prompt></app-user-action-prompt>
+</div>
+
+
+<div *ngIf="isLoading" class="background-image-3 loading">
+    <app-spinner style="width:200px;height:200px;"></app-spinner>
+</div>
+
+
+<div *ngIf="showModal" class="app-modal-container">
+    <app-modal></app-modal>
 </div>

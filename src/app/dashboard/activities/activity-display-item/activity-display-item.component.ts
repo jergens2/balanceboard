@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { ActivityScheduleRepitition } from '../api/activity-schedule-repitition.interface';
-import { ActivityCategoryDefinitionService } from '../api/activity-category-definition.service';
+import { ActivityHttpService } from '../api/activity-http.service';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ActivityComponentService } from '../activity-component.service';
 import { Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
 
-  constructor(private activityService: ActivityComponentService, private activityDefService: ActivityCategoryDefinitionService) { }
+  constructor(private activityService: ActivityComponentService, private activityDefService: ActivityHttpService) { }
 
   private _activity: ActivityCategoryDefinition;
 

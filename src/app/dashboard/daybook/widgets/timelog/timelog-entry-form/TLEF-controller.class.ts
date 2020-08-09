@@ -2,38 +2,34 @@ import { TimelogEntryItem } from "../timelog-large-frame/timelog-body/timelog-en
 import { TLEFFormCase } from "./tlef-form-case.enum";
 import * as moment from 'moment';
 import { Observable, BehaviorSubject, Subject } from "rxjs";
-import { DaybookController } from "../../../controller/daybook-controller.class";
 import { TimelogDelineator, TimelogDelineatorType } from "../timelog-delineator.class";
 import { ToolboxService } from "../../../../../toolbox-menu/toolbox.service";
 import { TimelogDisplayGridItem } from "../timelog-display-grid-item.class";
 import { TLEFControllerItem } from "./TLEF-controller-item.class";
 import { SleepEntryItem } from "./sleep-entry-form/sleep-entry-item.class";
 import { TLEFGridBarItem } from "./tlef-parts/tlef-grid-items-bar/tlef-grid-bar-item.class";
-import { ActivityCategoryDefinitionService } from "../../../../activities/api/activity-category-definition.service";
+import { ActivityHttpService } from "../../../../activities/api/activity-http.service";
 import { DaybookTimeScheduleStatus } from "../../../api/daybook-time-schedule/daybook-time-schedule-status.enum";
 import { TimelogEntryBuilder } from "../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class";
 import { DaybookTimeSchedule } from "../../../api/daybook-time-schedule/daybook-time-schedule.class";
-import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from "../../../controller/items/daybook-display-update.interface";
 
 export class TLEFController {
 
     private _changesMadeTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
     private _promptToSaveChanges: boolean = false;
     private _tlefItems: TLEFControllerItem[] = [];
-    private _activeDayController: DaybookController;
     private _currentlyOpenTLEFItem$: BehaviorSubject<TLEFControllerItem> = new BehaviorSubject(null);
     private _daybookSchedule: DaybookTimeSchedule;
-    private _activitiesService: ActivityCategoryDefinitionService;
+    private _activitiesService: ActivityHttpService;
     private _stachedItem: TLEFControllerItem;
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
     private _toolboxService: ToolboxService;
 
-    constructor(daybookSchedule: DaybookTimeSchedule, activeDayController: DaybookController,
-        toolboxService: ToolboxService, activitiesService: ActivityCategoryDefinitionService) {
+    constructor(daybookSchedule: DaybookTimeSchedule, toolboxService: ToolboxService, activitiesService: ActivityHttpService) {
 
         this._daybookSchedule = daybookSchedule;
-        this._activeDayController = activeDayController;
+
         this._toolboxService = toolboxService;
         this._activitiesService = activitiesService;
         this._startTime = moment(this._daybookSchedule.startTime);
@@ -43,10 +39,9 @@ export class TLEFController {
 
     }
 
-    public update(update: DaybookDisplayUpdate, daybookSchedule: DaybookTimeSchedule, activeDayController: DaybookController) {
+    public update() {
         // console.log("  *TLEF-Controller.class.update() ")
-        this._daybookSchedule = daybookSchedule;
-        this._activeDayController = activeDayController;
+        // this._daybookSchedule = daybookSchedule;
         this._startTime = moment(this._daybookSchedule.startTime);
         this._endTime = moment(this._daybookSchedule.endTime);
         let activeItem: TLEFControllerItem;
@@ -60,17 +55,18 @@ export class TLEFController {
                     const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
                     this._setActiveItem(newActiveItem);
                 } else {
-                    if (update.type === DaybookDisplayUpdateType.CLOCK) {
+                    console.log("REMOVED UPDATE CHECK")
+                    // if (update.type === DaybookDisplayUpdateType.CLOCK) {
                         const updateActiveItem = this._findActiveItemAfterUpdate(activeItem);
                         if (updateActiveItem) {
                             this._setActiveItem(updateActiveItem);
                         } else {
                             console.log("unable to find an active item...")
                         }
-                    } else {
-                        const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
-                        this._openTLEFItem(newActiveItem);
-                    }
+                    // } else {
+                        // const newActiveItem = this._findActiveItemAfterUpdate(activeItem);
+                        // this._openTLEFItem(newActiveItem);
+                    // }
                 }
             }
         }
@@ -298,7 +294,8 @@ export class TLEFController {
                         timelogEntry = new TimelogEntryItem(drawStart.time, drawEnd.time);
                         formCase = this._determineCase(timelogEntry);
                     } else {
-                        timelogEntry = this._activeDayController.getTimelogEntryItem(startTime, endTime);
+                        // timelogEntry = this._activeDayController.getTimelogEntryItem(startTime, endTime);
+                        console.log("NO TIMELOG ENTRY ITEM WHOOPS")
                         formCase = this._determineCase(timelogEntry);
                     }
                 } else if (status === DaybookTimeScheduleStatus.AVAILABLE) {
@@ -307,7 +304,7 @@ export class TLEFController {
                     formCase = this._determineCase(timelogEntry);
                 }
                 const tleBuilder: TimelogEntryBuilder = new TimelogEntryBuilder();
-                const backgroundColor: string = tleBuilder.getBackgroundColor(timelogEntry, this._activitiesService.activitiesTree);
+                const backgroundColor: string = tleBuilder.getBackgroundColor(timelogEntry, this._activitiesService.activityTree);
                 let newItem: TLEFControllerItem = new TLEFControllerItem(startTime, endTime, isAvailable, isDrawing, formCase, timelogEntry, sleepEntry, backgroundColor);
                 return newItem;
             });

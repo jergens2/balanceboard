@@ -8,6 +8,7 @@ export class UserAccountProfile {
 
     private _isValid: boolean = true;
     public get isValid(): boolean { return this._isValid; }
+    public get promptUser(): boolean { return !this._isValid; }
 
     private _id: string = '';
 

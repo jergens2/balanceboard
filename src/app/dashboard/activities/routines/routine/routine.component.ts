@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { RoutineDefinition } from '../api/routine-definition.class';
-import { ActivityCategoryDefinitionService } from '../../api/activity-category-definition.service';
+import { ActivityHttpService } from '../../api/activity-http.service';
 import { ActivityCategoryDefinition } from '../../api/activity-category-definition.class';
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 
@@ -12,7 +12,7 @@ import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 export class RoutineComponent implements OnInit {
 
   @Input() routine: ActivityCategoryDefinition;
-  constructor(private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private activitiesService: ActivityHttpService) { }
 
 
   private _activities: ActivityCategoryDefinition[] = [];

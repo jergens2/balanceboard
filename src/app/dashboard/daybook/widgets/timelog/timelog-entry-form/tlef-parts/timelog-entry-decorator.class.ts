@@ -1,4 +1,4 @@
-import { ActivityCategoryDefinitionService } from "../../../../../activities/api/activity-category-definition.service";
+import { ActivityHttpService } from "../../../../../activities/api/activity-http.service";
 import { TimelogEntryItem } from "../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class";
 import { ActivityCategoryDefinition } from "../../../../../activities/api/activity-category-definition.class";
 import { ColorConverter } from "../../../../../../shared/utilities/color-converter.class";
@@ -8,9 +8,9 @@ import { TimelogEntryActivity } from "../../../../api/data-items/timelog-entry-a
 
 export class TimelogEntryDecorator {
 
-    private activitiesService: ActivityCategoryDefinitionService;
+    private activitiesService: ActivityHttpService;
 
-    constructor(activitiesService: ActivityCategoryDefinitionService) {
+    constructor(activitiesService: ActivityHttpService) {
         this.activitiesService = activitiesService;
     }
 

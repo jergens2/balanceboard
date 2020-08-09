@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { SleepManagerService } from '../../sleep-manager.service';
+import { SleepService } from '../../sleep.service';
 import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
 import { timer, Subscription } from 'rxjs';
 
@@ -11,7 +11,7 @@ import { timer, Subscription } from 'rxjs';
 })
 export class SmBedtimeComponent implements OnInit, OnDestroy {
 
-  constructor(private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepService) { }
 
   private _durationFromNow: string = "";
   private _nextSleepDuration: string = "";

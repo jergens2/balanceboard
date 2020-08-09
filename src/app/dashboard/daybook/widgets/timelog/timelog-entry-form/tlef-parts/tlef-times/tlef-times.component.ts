@@ -5,7 +5,7 @@ import { TLEFController } from '../../TLEF-controller.class';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
 import { TLEFFormCase } from '../../tlef-form-case.enum';
-import { DaybookDisplayUpdateType } from '../../../../../controller/items/daybook-display-update.interface';
+import { DaybookDisplayUpdateType } from '../../../../../api/daybook-display-update.interface';
 
 @Component({
   selector: 'app-tlef-times',
@@ -32,9 +32,7 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
     this._reload();
     this._subs = [
       this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe(s => this._reload()),
-      this.daybookService.displayUpdated$.subscribe((update)=>{
-        this._reload();
-      })
+
     ];
   }
 

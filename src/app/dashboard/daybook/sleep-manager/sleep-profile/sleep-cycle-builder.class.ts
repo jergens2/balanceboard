@@ -5,6 +5,7 @@ import { DaybookSleepInputDataItem } from "../../api/data-items/daybook-sleep-in
 import * as moment from 'moment';
 import { DaybookTimeScheduleItem } from "../../api/daybook-time-schedule/daybook-time-schedule-item.class";
 import { DaybookTimeScheduleStatus } from "../../api/daybook-time-schedule/daybook-time-schedule-status.enum";
+import { DaybookTimeScheduleSleepItem } from "../../api/daybook-time-schedule/daybook-time-schedule-sleep-item.class";
 
 
 export class SleepCycleBuilder {
@@ -129,7 +130,7 @@ export class SleepCycleBuilder {
         let sleepItems: DaybookSleepInputDataItem[] = [];
         dayItems.forEach((dayItem) => { sleepItems = [...sleepItems, ...dayItem.sleepInputItems] });
         let schedItems = sleepItems.map(item => {
-            return new DaybookTimeScheduleItem(moment(item.startSleepTimeISO), moment(item.endSleepTimeISO), DaybookTimeScheduleStatus.SLEEP, null, item);
+            return new DaybookTimeScheduleSleepItem(moment(item.startSleepTimeISO), moment(item.endSleepTimeISO), item);
         }).sort((item1, item2) => {
             if (item1.startTime.isBefore(item2.startTime)) { return -1; }
             else if (item1.startTime.isAfter(item2.startTime)) { return 1; }

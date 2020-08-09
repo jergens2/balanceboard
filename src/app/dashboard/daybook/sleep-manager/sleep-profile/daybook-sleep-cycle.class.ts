@@ -7,6 +7,8 @@ import { TimeSchedule } from '../../../../shared/time-utilities/time-schedule.cl
 import { DaybookTimeScheduleItem } from '../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { DaybookTimeScheduleStatus } from '../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
 import { TimeUtilities } from '../../../../shared/time-utilities/time-utilities';
+import { DaybookTimeScheduleSleepItem } from '../../api/daybook-time-schedule/daybook-time-schedule-sleep-item.class';
+import { DaybookTimeScheduleActiveItem } from '../../api/daybook-time-schedule/daybook-time-schedule-active-item.class';
 
 export class DaybookSleepCycle {
 
@@ -30,7 +32,12 @@ export class DaybookSleepCycle {
     /**
      * The purpose of this class is to be able to try and determine a sleep pattern based on previous sleep items.
      * see daybook-sleep-cycle.jpg
+     * 
+     * For example, 
+     *  -when is bed time
+     *  -what is the energy level
      */
+
     constructor(dateYYYYMMDD: string, relevantItems: DaybookDayItem[], appConfig: UAPAppConfiguration,
         prevFallAsleepTime: moment.Moment, prevWakeupTime: moment.Moment, nextFallAsleepTime: moment.Moment, nextWakeupTime: moment.Moment) {
         this._relevantItems = relevantItems;
@@ -138,7 +145,7 @@ export class DaybookSleepCycle {
             if (foundItem) {
                 if (foundItem.hasSleepItems) {
                     items = foundItem.sleepInputItems.map((sleepItem) => {
-                        return new DaybookTimeScheduleItem(moment(sleepItem.startSleepTimeISO), moment(sleepItem.endSleepTimeISO), this._statusSleep, null, sleepItem);
+                        return new DaybookTimeScheduleSleepItem(moment(sleepItem.startSleepTimeISO), moment(sleepItem.endSleepTimeISO), sleepItem);
                     });
                
                 }else{
@@ -160,7 +167,7 @@ export class DaybookSleepCycle {
             // console.log("foundItem.sleepInputItems:")
             // foundItem.sleepInputItems.forEach(item => { console.log(item)})
             const items = foundItem.sleepInputItems.map((sleepItem) => {
-                return new DaybookTimeScheduleItem(moment(sleepItem.startSleepTimeISO), moment(sleepItem.endSleepTimeISO), this._statusSleep, null, sleepItem);
+                return new DaybookTimeScheduleSleepItem(moment(sleepItem.startSleepTimeISO), moment(sleepItem.endSleepTimeISO), sleepItem);
             });
             // console.log("Returning YESTERDAY ITEMS: " )
             // items.forEach(item => console.log("  " + item.toString()))
@@ -176,16 +183,16 @@ export class DaybookSleepCycle {
         const endOfThisDay = moment(startOfThisDay).add(24, 'hours');
         const sleepTimes: DaybookTimeScheduleItem[] = [];
         if (this._previousFallAsleepTime.isAfter(startOfThisDay)) {
-            sleepTimes.push(new DaybookTimeScheduleItem(this._previousFallAsleepTime, this._previousWakeupTime, this._statusSleep, null, null));
+            sleepTimes.push(new DaybookTimeScheduleSleepItem(this._previousFallAsleepTime, this._previousWakeupTime, null));
         } else {
-            sleepTimes.push(new DaybookTimeScheduleItem(startOfThisDay, this._previousWakeupTime, this._statusSleep, null, null));
+            sleepTimes.push(new DaybookTimeScheduleSleepItem(startOfThisDay, this._previousWakeupTime, null));
         }
         if (this._nextFallAsleepTime.isBefore(endOfThisDay)) {
             if (this._nextWakeupTime.isAfter(endOfThisDay)) {
-                sleepTimes.push(new DaybookTimeScheduleItem(this._nextFallAsleepTime, endOfThisDay, this._statusSleep, null, null));
+                sleepTimes.push(new DaybookTimeScheduleSleepItem(this._nextFallAsleepTime, endOfThisDay, null));
             } else {
                 console.log("Unusual circumstance: ", this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - " + this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'));
-                sleepTimes.push(new DaybookTimeScheduleItem(this._nextFallAsleepTime, this._nextWakeupTime, this._statusSleep, null, null))
+                sleepTimes.push(new DaybookTimeScheduleSleepItem(this._nextFallAsleepTime, this._nextWakeupTime, null))
             }
         }
         // console.log("TODAY ITEMS " )
@@ -197,13 +204,13 @@ export class DaybookSleepCycle {
         const endOfThisDay = moment(startOfThisDay).add(24, 'hours');
         const sleepTimes: DaybookTimeScheduleItem[] = [];
         if (this._nextFallAsleepTime.isAfter(startOfThisDay)) {
-            sleepTimes.push(new DaybookTimeScheduleItem(this._nextFallAsleepTime, this._nextWakeupTime, this._statusSleep, null, null));
+            sleepTimes.push(new DaybookTimeScheduleSleepItem(this._nextFallAsleepTime, this._nextWakeupTime, null));
         } else {
-             sleepTimes.push(new DaybookTimeScheduleItem(startOfThisDay, this._nextWakeupTime, this._statusSleep, null, null));
+             sleepTimes.push(new DaybookTimeScheduleSleepItem(startOfThisDay, this._nextWakeupTime, null));
         }
         const tomorrowFallAsleepTime = moment(this._nextFallAsleepTime).add(24, 'hours');
         if (tomorrowFallAsleepTime.isBefore(endOfThisDay)) {
-            sleepTimes.push(new DaybookTimeScheduleItem(tomorrowFallAsleepTime, endOfThisDay, this._statusSleep, null, null));
+            sleepTimes.push(new DaybookTimeScheduleSleepItem(tomorrowFallAsleepTime, endOfThisDay, null));
         }
         // console.log("TOMORRWO ITEMS " )
         // sleepTimes.forEach(item => console.log("  " + item.toString()))
@@ -219,20 +226,20 @@ export class DaybookSleepCycle {
         const defaultSleepTime = this._defaultFallAsleepTime(dateYYYYMMDD);
         const items: DaybookTimeScheduleItem[] = [];
         if (defaultWakeupTime.isAfter(dateStartTime) && defaultWakeupTime.isBefore(dateEndTime)) {
-            items.push(new DaybookTimeScheduleItem(dateStartTime, defaultWakeupTime, this._statusSleep, null, null));
+            items.push(new DaybookTimeScheduleSleepItem(dateStartTime, defaultWakeupTime, null));
         
         } else if (defaultWakeupTime.isBefore(dateStartTime)) {
             const sleepEndTime = moment(defaultWakeupTime).add(1, 'days');
             const defaultFallAsleepTime = moment(this._defaultFallAsleepTime(dateYYYYMMDD));
             let sleepStartTime = moment(defaultFallAsleepTime);
             if (defaultFallAsleepTime.isBefore(dateEndTime)) {
-                items.push(new DaybookTimeScheduleItem(defaultFallAsleepTime, sleepEndTime, this._statusSleep, null, null));
+                items.push(new DaybookTimeScheduleSleepItem(defaultFallAsleepTime, sleepEndTime, null));
             } else {
                 console.log("Error or rare situation (wake up before start of day and go to sleep after end of day) - no sleep time within 24 hrs");
             }
         }
         if (defaultSleepTime.isBefore(dateEndTime)) {
-            items.push(new DaybookTimeScheduleItem(defaultSleepTime, dateEndTime, this._statusSleep, null, null));
+            items.push(new DaybookTimeScheduleSleepItem(defaultSleepTime, dateEndTime, null));
         }
         return items;
     }
@@ -323,7 +330,7 @@ export class DaybookSleepCycle {
             return crossesStart || crossesEnd || isInside || encapsulates;
         });
         thisDaywakeItems.forEach((item) => { console.log("   " + item.toString()) })
-        return thisDaywakeItems.map(item => new DaybookTimeScheduleItem(item.startTime, item.endTime, DaybookTimeScheduleStatus.ACTIVE, null, null));
+        return thisDaywakeItems.map(item => new DaybookTimeScheduleActiveItem(item.startTime, item.endTime, null));
     }
 
     private _findLargestWakeItem(thisDayWakeItems: DaybookTimeScheduleItem[], dateYYYYMMDD: string): DaybookTimeScheduleItem {

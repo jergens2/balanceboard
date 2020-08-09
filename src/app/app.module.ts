@@ -35,7 +35,7 @@ import { InitialRegComponent } from './authentication/registration/initial-reg/i
 import { ConfirmPasswordComponent } from './authentication/registration/confirm-password/confirm-password.component';
 import { TermsComponent } from './authentication/registration/terms/terms.component';
 import { SuccessConfirmationComponent } from './authentication/registration/success-confirmation/success-confirmation.component';
-import { UserActionPromptComponent } from './user-action-prompt/user-action-prompt.component';
+import { UserActionPromptComponent } from './nav/user-action-prompt/user-action-prompt.component';
 import { SleepManagerModule } from './dashboard/daybook/sleep-manager/sleep-manager.module';
 import { LockScreenComponent } from './authentication/lock-screen/lock-screen.component';
 import { AppContainerComponent } from './nav/app-container/app-container.component';

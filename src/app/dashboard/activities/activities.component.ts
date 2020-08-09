@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, AfterViewChecked } from '@angular/core';
-import { ActivityCategoryDefinitionService } from './api/activity-category-definition.service';
+import { ActivityHttpService } from './api/activity-http.service';
 import { ActivityTree } from './api/activity-tree.class';
 import { ActivityCategoryDefinition } from './api/activity-category-definition.class';
 import { ModalService } from '../../modal/modal.service';
@@ -7,7 +7,7 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ActivityComponentService } from './activity-component.service';
 import { Subscription } from 'rxjs';
-import { DaybookHttpRequestService } from '../daybook/api/daybook-http-request.service';
+import { DaybookHttpService } from '../daybook/api/daybook-http.service';
 import { AppScreenSizeService } from '../../shared/app-screen-size/app-screen-size.service';
 import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.class';
 import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size-label.enum';
@@ -19,9 +19,9 @@ import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size
 })
 export class ActivitiesComponent implements OnInit, OnDestroy {
 
-  constructor(private activityDefinitionService: ActivityCategoryDefinitionService,
+  constructor(private activityDefinitionService: ActivityHttpService,
     private activityCompService: ActivityComponentService, private modalService: ModalService,
-    private daybookHttpService: DaybookHttpRequestService, private sizeService: AppScreenSizeService) { }
+    private daybookHttpService: DaybookHttpService, private sizeService: AppScreenSizeService) { }
 
 
   private _isLoading: boolean = true;
@@ -64,13 +64,13 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._activityTree = this.activityDefinitionService.activitiesTree;
+    this._activityTree = this.activityDefinitionService.activityTree;
     this._subs = [
       this.sizeService.appScreenSize$.subscribe(s => this._resize()),
       this.activityCompService.currentActivity$.subscribe((activityChanged) => {
         this._openActivity = activityChanged;
       }),
-      this.activityDefinitionService.activitiesTree$.subscribe((changedTree) => {
+      this.activityDefinitionService.activityTree$.subscribe((changedTree) => {
         this._activityTree = changedTree
       }),
       this.activityCompService.initiate$(this.activityDefinitionService, this.modalService, this.daybookHttpService)

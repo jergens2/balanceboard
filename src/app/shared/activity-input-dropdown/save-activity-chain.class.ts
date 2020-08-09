@@ -1,12 +1,12 @@
 import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
 import { Subject, Observable } from "rxjs";
-import { ActivityCategoryDefinitionService } from "../../dashboard/activities/api/activity-category-definition.service";
+import { ActivityHttpService } from "../../dashboard/activities/api/activity-http.service";
 
 export class SaveActivityChain{
 
     private activitiesToSave: ActivityCategoryDefinition[] = [];
-    private activitiesService: ActivityCategoryDefinitionService;
-    constructor(activitiesToSave: ActivityCategoryDefinition[], activitiesService: ActivityCategoryDefinitionService){
+    private activitiesService: ActivityHttpService;
+    constructor(activitiesToSave: ActivityCategoryDefinition[], activitiesService: ActivityHttpService){
         this.activitiesToSave = activitiesToSave;
         this.activitiesService = activitiesService;
         this.startLink = this.buildChain();
@@ -51,8 +51,8 @@ export class SaveActivityChain{
 }
 export class ActivityChainLink{
 
-    private activitiesService: ActivityCategoryDefinitionService;
-    constructor(thisActivity:ActivityCategoryDefinition, nextChainLink: ActivityChainLink, activitiesService: ActivityCategoryDefinitionService){
+    private activitiesService: ActivityHttpService;
+    constructor(thisActivity:ActivityCategoryDefinition, nextChainLink: ActivityChainLink, activitiesService: ActivityHttpService){
         
         this.activity = thisActivity;
         this.activitiesService = activitiesService;

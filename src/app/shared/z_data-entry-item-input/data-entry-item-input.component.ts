@@ -3,8 +3,8 @@ import { DataEntryItemType } from './data-entry-item-type.enum';
 import { DataEntryInput } from './data-entry-input.class';
 import { faListUl, faDollarSign, faSortNumericUpAlt, faCheck, faWeight, faAppleAlt, faTable } from '@fortawesome/free-solid-svg-icons';
 import { faBell, faClock, faSmile } from '@fortawesome/free-regular-svg-icons';
-import { DaybookControllerService } from '../../dashboard/daybook/controller/daybook-controller.service';
 import { Subject, Observable } from 'rxjs';
+import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
 
 @Component({
   selector: 'app-data-entry-item-input',
@@ -13,7 +13,7 @@ import { Subject, Observable } from 'rxjs';
 })
 export class DataEntryItemInputComponent implements OnInit {
 
-  constructor(private daybookControllerService: DaybookControllerService) { }
+  constructor(private daybookService: DaybookDisplayService) { }
 
   inputItemTypes: DataEntryInput[] = []; 
 

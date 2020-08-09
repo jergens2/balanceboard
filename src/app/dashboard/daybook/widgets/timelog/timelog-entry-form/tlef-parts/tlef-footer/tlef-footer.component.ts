@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
-import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
 
@@ -37,14 +37,16 @@ export class TlefFooterComponent implements OnInit {
 
   public onClickSaveNew() {
     console.log("Saving new")
-    this.daybookService.activeDayController.saveTimelogEntryItem(this.controller.changesMadeTLE);
+    const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
+    this.daybookService.daybookManager.tleController.saveTimelogEntryItem(dateYYYYMMDD, this.controller.changesMadeTLE);
     this._close();
   }
 
   public onClickSaveChanges() {
 
     // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
-    this.daybookService.activeDayController.updateTimelogEntryItem$(this.controller.changesMadeTLE);
+    const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
+    this.daybookService.daybookManager.tleController.updateTimelogEntryItem(dateYYYYMMDD, this.controller.changesMadeTLE);
     // console.log("Saving changes")
     // this._close();
 
@@ -53,7 +55,8 @@ export class TlefFooterComponent implements OnInit {
 
   public onDelete() {
     // console.log("Deleting: ", this.entryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.entryItem.endTime.format('YYYY-MM-DD hh:mm a') )
-    this.daybookService.activeDayController.deleteTimelogEntryItem$(this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
+    const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
+    this.daybookService.daybookManager.tleController.deleteTimelogEntryItem(dateYYYYMMDD, this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
     this._close();
   }
 

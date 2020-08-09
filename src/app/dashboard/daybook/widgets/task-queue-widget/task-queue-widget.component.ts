@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
 import { Task } from '../../../tasks/task/task.model';
-import { TaskService } from '../../../tasks/task.service';
+import { TaskHttpService } from '../../../tasks/task-http.service';
 import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 
@@ -25,7 +25,7 @@ export class TaskQueueWidgetComponent implements OnInit {
   faExpand = faExpand;
   // faEdit = faEdit;
 
-  constructor(private taskService: TaskService, private modalService: ModalService) { }
+  constructor(private taskService: TaskHttpService, private modalService: ModalService) { }
 
   private _modalSubscription: Subscription = new Subscription();
 

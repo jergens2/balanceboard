@@ -1,15 +1,15 @@
 import * as moment from 'moment';
-import { SleepCyclePosition } from './sleep-cycle/sleep-cycle-position.enum';
+import { SleepCyclePosition } from './sleep-profile/sleep-cycle-position.enum';
 import { timer } from 'rxjs';
-import { SleepProfileHTTPData } from './sleep-profile-http-data.interface';
+import { SleepProfileHTTPData } from './sleep-profile/sleep-profile-http-data.interface';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
-import { DaybookSleepCycle } from './sleep-cycle/daybook-sleep-cycle.class';
+import { DaybookSleepCycle } from './sleep-profile/daybook-sleep-cycle.class';
 import { UAPAppConfiguration } from '../../user-account-profile/api/uap-app-configuraiton.interface';
-import { SleepCyclePositionFinder } from './sleep-cycle/sleep-cycle-position-finder.class';
+import { SleepCycleData } from './sleep-profile/sleep-cycle-data.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 import { DaybookTimeScheduleItem } from '../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { DaybookTimeScheduleStatus } from '../api/daybook-time-schedule/daybook-time-schedule-status.enum';
-import { SleepCycleBuilder } from './sleep-cycle/sleep-cycle-builder.class';
+import { SleepCycleBuilder } from './sleep-profile/sleep-cycle-builder.class';
 
 export class SleepManager {
 
@@ -101,7 +101,7 @@ export class SleepManager {
         this.updateConfig(appConfig)
         this._currentDbValue = data;
         this._daybookDayItems = dayItems;
-        const positionFinder = new SleepCyclePositionFinder(data);
+        const positionFinder = new SleepCycleData(data);
         this._currentPosition = positionFinder.position;  //  null is permissable
         this._validateExistingData();
         this._currentSleepCycle = new DaybookSleepCycle(this._dateYYYYMMDD, this._relevantPastSleepItems, appConfig,

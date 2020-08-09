@@ -11,7 +11,7 @@ import { ModalComponentType } from '../../../../modal/modal-component-type.enum'
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
-import { TaskService } from '../../../tasks/task.service';
+import { TaskHttpService } from '../../../tasks/task-http.service';
 import { PrimaryObjectiveService } from './primary-objective.service';
 
 @Component({
@@ -21,7 +21,7 @@ import { PrimaryObjectiveService } from './primary-objective.service';
 })
 export class PrimaryTaskWidgetComponent implements OnInit, OnDestroy {
 
-  constructor(private modalService: ModalService, private tasksService: TaskService, private primaryObjectiveService: PrimaryObjectiveService) { }
+  constructor(private modalService: ModalService, private tasksService: TaskHttpService, private primaryObjectiveService: PrimaryObjectiveService) { }
   faSpinner = faSpinner;
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;

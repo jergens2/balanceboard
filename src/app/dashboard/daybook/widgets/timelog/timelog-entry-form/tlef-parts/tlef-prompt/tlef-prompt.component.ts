@@ -26,10 +26,11 @@ export class TlefPromptComponent implements OnInit {
     
     // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
     const changesMadeTLE = this._controller.changesMadeTLE;
+    console.log("Method disabled")
     if(changesMadeTLE.isSavedEntry){
-      this.daybookService.activeDayController.updateTimelogEntryItem$(changesMadeTLE);
+      // this.daybookService.activeDayController.updateTimelogEntryItem$(changesMadeTLE);
     }else{
-      this.daybookService.activeDayController.saveTimelogEntryItem(changesMadeTLE);
+      // this.daybookService.activeDayController.saveTimelogEntryItem(changesMadeTLE);
     }
     
     this._controller.promptContinue();

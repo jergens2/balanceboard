@@ -13,11 +13,10 @@ import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { Modal } from '../../modal/modal.class';
 import { ModalService } from '../../modal/modal.service';
 import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
-import { DaybookControllerService } from '../../dashboard/daybook/controller/daybook-controller.service';
 import * as moment from 'moment';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
 import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
-import { SleepManagerService } from '../../dashboard/daybook/sleep-manager/sleep-manager.service';
+import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
 
 @Component({
   selector: 'app-header',
@@ -31,7 +30,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private toolsService: ToolboxService,
     private modalService: ModalService,
     private daybookDisplayService: DaybookDisplayService,
-    private sleepService: SleepManagerService,
+    private sleepService: SleepService,
     private router: Router) { }
 
   faBars = faBars;
@@ -53,7 +52,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public get batteryIcon(): IconDefinition { return this._batteryIcon; }
   public get batteryPercent(): string { return this._batteryPercent; }
   public get batteryNgClass(): string { return this._batteryNgClass; }
-  public get clock(): moment.Moment { return this.daybookDisplayService.clock; }
+  public get clock(): moment.Moment { return this.clock; }
 
   @Output() sidebarButtonClicked: EventEmitter<boolean> = new EventEmitter();
 

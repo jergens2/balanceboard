@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import * as moment from 'moment';
 
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +13,7 @@ export class SleepProfileFormComponent implements OnInit {
 
   faExclamationTriangle = faExclamationTriangle;
 
-  constructor(private daybookControllerService: DaybookControllerService) { }
+  constructor() { }
 
   // public wakeupTime: moment.Moment;
   // public wakeupTimeMin: moment.Moment;
@@ -47,9 +46,7 @@ export class SleepProfileFormComponent implements OnInit {
 
   ngOnInit() {
     this.reInitiate();
-    this.daybookControllerService.activeDayController$.subscribe((dayChanged) => {
-      this.reInitiate();
-    });
+
   }
 
 

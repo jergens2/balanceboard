@@ -6,9 +6,9 @@ import { IModalOption } from '../../../modal/modal-option.interface';
 import { Modal } from '../../../modal/modal.class';
 import { ModalService } from '../../../modal/modal.service';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
-import { NotesService } from '../notes.service';
+import { NoteQueryService } from '../note-query.service';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import { NotesHttpService } from '../api/notes-http.service';
+import { NoteHttpService } from '../api/note-http.service';
 
 @Component({
   selector: 'app-notebook-entry',
@@ -22,7 +22,7 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
 
   @Input() notebookEntry: NotebookEntry;
 
-  constructor(private modalService: ModalService, private notebooksService: NotesService, private httpService: NotesHttpService) { }
+  constructor(private modalService: ModalService, private notebooksService: NoteQueryService, private httpService: NoteHttpService) { }
 
   mouseOver: boolean = false;
   private _modalSubscription: Subscription = new Subscription();

@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class';
-import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogDelineatorType, TimelogDelineator } from '../../../timelog-delineator.class';
 import { Subscription, Subject, Observable, range } from 'rxjs';
 import { DaybookTimeScheduleStatus } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
@@ -75,7 +75,7 @@ export class TimeSelectionColumn {
             this._deleteDelineator$.next(del);
         }));
         const editSubscriptions = this.rows.map(row => row.editDelineator$.subscribe((saveNewDelineator: moment.Moment) => {
-            this._daybookService.activeDayController.updateDelineator(row.markedDelineator.time, saveNewDelineator);
+            this._daybookService.daybookManager.delineatorController.updateDelineator(row.markedDelineator.time, saveNewDelineator);
         }));
         const startDragSubs = this.rows.map(row => row.startDragging$.subscribe((startDragging: TimeSelectionRow) => {
             if (startDragging) { this._startDragging$.next(startDragging); }

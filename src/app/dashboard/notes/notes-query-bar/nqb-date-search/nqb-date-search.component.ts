@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TimeViewsManager } from '../../../../shared/time-views/time-views-manager.class';
-import { NotesService } from '../../notes.service';
+import { NoteQueryService } from '../../note-query.service';
 
 @Component({
   selector: 'app-nqb-date-search',
@@ -9,7 +9,7 @@ import { NotesService } from '../../notes.service';
 })
 export class NqbDateSearchComponent implements OnInit {
 
-  constructor(private noteService: NotesService) { }
+  constructor(private noteService: NoteQueryService) { }
 
   public get timeViewsManager(): TimeViewsManager{ return this.noteService.timeViewsManager; }
 

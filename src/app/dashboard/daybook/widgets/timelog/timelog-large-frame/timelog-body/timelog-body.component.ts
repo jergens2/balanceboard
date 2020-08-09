@@ -5,7 +5,6 @@ import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
 import { TimelogDelineator } from '../../timelog-delineator.class';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { DaybookController } from '../../../../controller/daybook-controller.class';
 import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
 import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
@@ -34,7 +33,6 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public get gridItems(): TimelogDisplayGridItem[] { return this.timelogDisplayGrid.gridItems; }
   public get gridItemsNgStyle(): any { return this.timelogDisplayGrid.ngStyle; }
   public get timeDelineators(): TimelogDelineator[] { return this.daybookDisplayService.timelogDelineators; }
-  public get activeDayController(): DaybookController { return this.daybookDisplayService.activeDayController; }
 
   private _isDrawingNewTLE: boolean = false;
   public get isDrawingNewTLE(): boolean { return this._isDrawingNewTLE; }
@@ -60,9 +58,9 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._update();
-    this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
-      this._update();
-    });
+    // this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
+    //   this._update();
+    // });
   }
   ngOnDestroy() {
     this._updateDisplaySub.unsubscribe();

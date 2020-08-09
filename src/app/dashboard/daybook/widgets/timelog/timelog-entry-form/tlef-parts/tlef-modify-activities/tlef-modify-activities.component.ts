@@ -8,9 +8,9 @@ import { DurationString } from '../../../../../../../shared/time-utilities/durat
 
 import { DaybookTimelogEntryDataItem } from '../../../../../api/data-items/daybook-timelog-entry-data-item.interface';
 import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
-import { ActivityCategoryDefinitionService } from '../../../../../../activities/api/activity-category-definition.service';
+import { ActivityHttpService } from '../../../../../../activities/api/activity-http.service';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { DaybookDisplayService } from '../../../../../../daybook/daybook-display.service';
+import { DaybookDisplayService } from '../../../../../daybook-display.service';
 
 
 @Component({
@@ -20,7 +20,7 @@ import { DaybookDisplayService } from '../../../../../../daybook/daybook-display
 })
 export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
 
-  constructor(private activitiesService: ActivityCategoryDefinitionService, private daybookService: DaybookDisplayService) { }
+  constructor(private activitiesService: ActivityHttpService, private daybookService: DaybookDisplayService) { }
 
   private _timelogEntry: TimelogEntryItem;
   private _timelogEntryActivities: TimelogEntryActivity[] = [];

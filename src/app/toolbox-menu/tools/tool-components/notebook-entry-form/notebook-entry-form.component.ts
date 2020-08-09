@@ -6,9 +6,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { NotebookEntry } from '../../../../dashboard/notes/notebook-entry/notebook-entry.class';
 import { NotebookEntryTypes } from '../../../../dashboard/notes/notebook-entry/notebook-entry-types.enum';
-import { NotesService } from '../../../../dashboard/notes/notes.service';
+import { NoteQueryService } from '../../../../dashboard/notes/note-query.service';
 import { ModalService } from '../../../../modal/modal.service';
-import { NotesHttpService } from '../../../../dashboard/notes/api/notes-http.service';
+import { NoteHttpService } from '../../../../dashboard/notes/api/note-http.service';
 
 
 
@@ -23,7 +23,7 @@ export class NotebookEntryFormComponent implements OnInit {
 
   constructor(
     private toolsService: ToolboxService,
-    private notesHttpService: NotesHttpService,
+    private notesHttpService: NoteHttpService,
     private modalService: ModalService
   ) { }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivityComponentService } from '../../../../activity-component.service';
-import { ActivityCategoryDefinitionService } from '../../../../api/activity-category-definition.service';
+import { ActivityHttpService } from '../../../../api/activity-http.service';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { ActivityCategoryDefinition } from '../../../../api/activity-category-definition.class';
 
@@ -13,7 +13,7 @@ export class AdoMergeWithParentComponent implements OnInit {
 
   public get faExclamationTriangle() { return faExclamationTriangle; }
 
-  constructor(private activitiesService: ActivityComponentService, private definitionService: ActivityCategoryDefinitionService) { }
+  constructor(private activitiesService: ActivityComponentService, private definitionService: ActivityHttpService) { }
 
   private _parent: ActivityCategoryDefinition;
   private _parentName: string = "";

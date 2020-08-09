@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { DaybookControllerService } from '../../../controller/daybook-controller.service';
 import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
-import { SleepManagerService } from '../../../sleep-manager/sleep-manager.service';
+import { SleepService } from '../../../sleep-manager/sleep.service';
 import { timer } from 'rxjs';
 
 @Component({
@@ -12,7 +11,7 @@ import { timer } from 'rxjs';
 })
 export class SleepProfileLargeComponent implements OnInit {
 
-  constructor(private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepService) { }
 
   private _bedtime: moment.Moment;
 

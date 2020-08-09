@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SleepManagerService } from '../../sleep-manager.service';
+import { SleepService } from '../../sleep.service';
 
 @Component({
   selector: 'app-smfa-energy',
@@ -8,7 +8,7 @@ import { SleepManagerService } from '../../sleep-manager.service';
 })
 export class SmfaEnergyComponent implements OnInit {
 
-  constructor(private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepService) { }
 
   private _percent: number = 100;
   public get percent(): number { return this._percent; }

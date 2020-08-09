@@ -5,7 +5,7 @@ import { ToolType } from '../../../tool-type.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { faCircle, faCheckCircle, IconDefinition } from '@fortawesome/free-regular-svg-icons';
 import { Task } from '../../../../dashboard/tasks/task/task.model';
-import { TaskService } from '../../../../dashboard/tasks/task.service';
+import { TaskHttpService } from '../../../../dashboard/tasks/task-http.service';
 import { ModalService } from '../../../../modal/modal.service';
 import * as moment from 'moment';
 
@@ -20,7 +20,7 @@ export class ActionItemFormComponent implements OnInit {
   faCircle = faCircle;
   faCheckCircle = faCheckCircle;
 
-  constructor(private toolsService: ToolboxService, private taskService: TaskService, private modalService: ModalService) { }
+  constructor(private toolsService: ToolboxService, private taskService: TaskHttpService, private modalService: ModalService) { }
 
 
   taskForm: FormGroup;

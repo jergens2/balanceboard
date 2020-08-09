@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { DaybookDisplayUpdateType } from '../../../../../controller/items/daybook-display-update.interface';
+import { DaybookDisplayUpdateType } from '../../../../../api/daybook-display-update.interface';
 import { TimeSelectionColumn } from './time-selection-column.class';
 import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
 
@@ -45,10 +45,10 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._rebuild();
-    this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
+    // this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
       // console.log("  *TimeSelectionColumnComponent._rebuild() " + update.type )
-      this._rebuild();
-    });
+    //   this._rebuild();
+    // });
   }
 
   private _rebuild() {
@@ -166,7 +166,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
           else { return 0; }
         });
         this._rebuild();
-        this.daybookDisplayService.activeDayController.deleteDelineator(deleteTime);
+        this.daybookDisplayService.daybookManager.delineatorController.deleteDelineator(deleteTime);
       } else {
         console.log("Error: could not delete delineator because time was not found: " + deleteTime.format('hh:mm a'));
       }
@@ -202,7 +202,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     const maxDelineators = 48;
     let saveAllDelineators: moment.Moment[] = [];
 
-    const existingValues = this.daybookDisplayService.activeDayController.savedTimeDelineators;
+    const existingValues = this.daybookDisplayService.daybookManager.delineatorController.savedTimeDelineators;
     existingValues.forEach((existingValue) => {
       if (this.daybookDisplayService.daybookSchedule.isAvailableAtTime(existingValue)) {
         saveAllDelineators.push(moment(existingValue));
@@ -217,7 +217,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
       else { return 0; }
     });
 
-    this.daybookDisplayService.activeDayController.saveTimeDelineators(saveAllDelineators);
+    // this.daybookDisplayService.activeDayController.saveTimeDelineators(saveAllDelineators);
     this._rebuild();
   }
 

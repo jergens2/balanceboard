@@ -4,7 +4,7 @@ import { faTimes, faTrash, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { faEdit, faArrowAltCircleRight, faArrowAltCircleDown } from '@fortawesome/free-regular-svg-icons';
 import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 import { ModalService } from '../../../../modal/modal.service';
-import { ActivityCategoryDefinitionService } from '../../api/activity-category-definition.service';
+import { ActivityHttpService } from '../../api/activity-http.service';
 import { ActivityListItem } from './activity-list-item.class';
 
 @Component({
@@ -18,7 +18,7 @@ export class ActivityListItemComponent implements OnInit {
   faEdit = faEdit;
   public get faTrashAlt() { return faTrashAlt; }
 
-  constructor(private modalService: ModalService, private activitiesService: ActivityCategoryDefinitionService) { }
+  constructor(private modalService: ModalService, private activitiesService: ActivityHttpService) { }
 
   @Input() activity: ActivityCategoryDefinition;
   @Output() activityOpened: EventEmitter<ActivityCategoryDefinition> = new EventEmitter();

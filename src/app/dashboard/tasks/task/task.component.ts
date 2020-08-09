@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { IModalOption } from '../../../modal/modal-option.interface';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
 import { Modal } from '../../../modal/modal.class';
-import { TaskService } from '../task.service';
+import { TaskHttpService } from '../task-http.service';
 import { faCircle, faCheckCircle, faEdit } from '@fortawesome/free-regular-svg-icons';
 import * as moment from 'moment';
 
@@ -17,7 +17,7 @@ import * as moment from 'moment';
 })
 export class TaskComponent implements OnInit, OnDestroy {
 
-  constructor(private modalService: ModalService, private taskService: TaskService) { }
+  constructor(private modalService: ModalService, private taskService: TaskHttpService) { }
 
   faEdit = faEdit;
   faTimes = faTimes;

@@ -5,7 +5,6 @@ import { DaybookDisplayService } from '../../../../daybook-display.service';
 import * as moment from 'moment';
 import { Subscription, from } from 'rxjs';
 import { DurationString } from '../../../../../../shared/time-utilities/duration-string.class';
-import { DaybookDisplayUpdate, DaybookDisplayUpdateType } from '../../../../controller/items/daybook-display-update.interface';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faBed } from '@fortawesome/free-solid-svg-icons'; 
 
@@ -51,11 +50,11 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     this._update();
     // this.tlefService.formChanged$.subscribe(change => this._update());
     this._dbSubs = [
-      this.daybookService.displayUpdated$.subscribe((change: DaybookDisplayUpdate) => {
-        if(change){
-          this._update();
-        }
-      }),
+      // this.daybookService.displayUpdated$.subscribe((change: DaybookDisplayUpdate) => {
+      //   if(change){
+      //     this._update();
+      //   }
+      // }),
       this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((item)=>{
         if(item){
           if(item.isSleepItem){

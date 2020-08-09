@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { SleepManagerForm } from './sleep-manager-form.class';
-import { SleepManagerService } from '../sleep-manager.service';
+import { SleepService } from '../sleep.service';
 import { SleepManagerFormActions } from './smfa-actions.enum';
-import { SleepProfileHTTPData } from '../sleep-profile-http-data.interface';
+import { SleepProfileHTTPData } from '../sleep-profile/sleep-profile-http-data.interface';
 import * as moment from 'moment';
 import { DaybookSleepInputDataItem } from '../../api/data-items/daybook-sleep-input-data-item.interface';
 
@@ -48,7 +48,7 @@ export class SleepManagerFormComponent implements OnInit {
 
 
 
-  constructor(private sleepService: SleepManagerService) { }
+  constructor(private sleepService: SleepService) { }
 
   ngOnInit(): void {
 

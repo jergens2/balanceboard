@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
-import { DaybookHttpRequestService } from '../../../../daybook/api/daybook-http-request.service';
+import { DaybookHttpService } from '../../../../daybook/api/daybook-http.service';
 import { ActivityCategoryDefinition } from '../../../api/activity-category-definition.class';
 import { DaybookDayItem } from '../../../../daybook/api/daybook-day-item.class';
 import * as moment from 'moment';
@@ -20,7 +20,7 @@ import { ResponsiveMenuList } from '../../../../../shared/components/responsive-
 })
 export class ActivityDeleteOptionsComponent implements OnInit, OnDestroy {
 
-  constructor(private daybookHttpService: DaybookHttpRequestService, private activityService: ActivityComponentService) { }
+  constructor(private daybookHttpService: DaybookHttpService, private activityService: ActivityComponentService) { }
 
   public get faArrowRight() { return faArrowRight; }
 

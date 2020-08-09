@@ -1,14 +1,14 @@
 import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
 import { Subject } from "rxjs";
-import { ActivityCategoryDefinitionService } from "../../dashboard/activities/api/activity-category-definition.service";
+import { ActivityHttpService } from "../../dashboard/activities/api/activity-http.service";
 import { DefaultActivityCategoryDefinitions } from "../../dashboard/activities/api/default-activity-category-definitions.class";
 
 
 
 export class ActivityInputSearch {
 
-    private activitiesService: ActivityCategoryDefinitionService;
-    constructor(activitiesService: ActivityCategoryDefinitionService) {
+    private activitiesService: ActivityHttpService;
+    constructor(activitiesService: ActivityHttpService) {
         this.activitiesService = activitiesService;
     }
 
@@ -16,7 +16,7 @@ export class ActivityInputSearch {
         let searchResults: ActivityCategoryDefinition[] = [];
         if (searchValue.length === 1 && searchValue.charAt(0) === "/") {
             this.createNewActivity$.next();
-            return this.activitiesService.activitiesTree.allExcludingTrashed.sort((activity1, activity2) => {
+            return this.activitiesService.activityTree.allExcludingTrashed.sort((activity1, activity2) => {
                 if (activity1.fullNamePath < activity2.fullNamePath) { return -1; }
                 if (activity1.fullNamePath > activity2.fullNamePath) { return 1; }
                 return 0;
@@ -51,13 +51,13 @@ export class ActivityInputSearch {
         let isSlasher: boolean = searchValue.charAt(searchValue.length - 1) === "/";
         let moreThanOne: boolean = pathNames.length > 1;
         if (!moreThanOne && !isSlasher) {
-            this.activitiesService.activitiesTree.allExcludingTrashed.forEach((activity) => {
+            this.activitiesService.activityTree.allExcludingTrashed.forEach((activity) => {
                 if (activity.fullNamePathIndexOf(rootSearchWord) > -1) {
                     matches.push(activity);
                 }
             });
         } else {
-            this.activitiesService.activitiesTree.allExcludingTrashed.forEach((activity) => {
+            this.activitiesService.activityTree.allExcludingTrashed.forEach((activity) => {
                 if (activity.fullNamePathIndexOf(rootSearchWord, true) > -1) {
                     matches.push(activity);
                 }
