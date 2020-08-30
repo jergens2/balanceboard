@@ -20,7 +20,9 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
 
   private _guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
-  private _isFresh: boolean = true;
+  private _isFresh = true;
+  private _updateDisplaySub: Subscription = new Subscription();
+  private _drawTLESub: Subscription = new Subscription();
 
   public faTimes = faTimes;
   public faClock = faClock;
@@ -32,9 +34,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public get timelogDisplayGrid(): TimelogDisplayGrid { return this.daybookDisplayService.timelogDisplayGrid; }
   public get gridItems(): TimelogDisplayGridItem[] { return this.timelogDisplayGrid.gridItems; }
   public get gridItemsNgStyle(): any { return this.timelogDisplayGrid.ngStyle; }
-  public get timeDelineators(): TimelogDelineator[] { return this.daybookDisplayService.timelogDelineators; }
-
-  private _isDrawingNewTLE: boolean = false;
+  private _isDrawingNewTLE = false;
   public get isDrawingNewTLE(): boolean { return this._isDrawingNewTLE; }
 
   public get isFresh(): boolean { return this._isFresh; }
@@ -52,8 +52,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   //   return false;
   // }
 
-  private _updateDisplaySub: Subscription = new Subscription();
-  private _drawTLESub: Subscription = new Subscription();
+
 
 
   ngOnInit() {
@@ -70,9 +69,12 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   private _update() {
     this._buildTimelog();
     this._drawTLESub.unsubscribe();
-    this._drawTLESub = this.daybookDisplayService.currentlyDrawingTLE$.subscribe((drawTLE)=>{
-      if(drawTLE){this._isDrawingNewTLE = true;}
-      else{this._isDrawingNewTLE = false;}
+    this._drawTLESub = this.daybookDisplayService.currentlyDrawingTLE$.subscribe((drawTLE) => {
+      if (drawTLE) {
+        this._isDrawingNewTLE = true;
+      } else {
+        this._isDrawingNewTLE = false;
+      }
     });
   }
 
@@ -84,60 +86,60 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
     const now = moment();
     if (now.isSameOrAfter(gridItem.startTime) && now.isSameOrBefore(gridItem.endTime)) {
-      return gridItem.isAvailable;
+      return gridItem.isAvailableItem;
       // return true;
     }
     return false;
   }
 
   private _buildTimelog() {
-    
+
     this._buildGuideLineHours();
 
   }
 
   private _buildGuideLineHours() {
-    let guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
+    const guideLineHours: { label: string, ngStyle: any, lineNgClass: any }[] = [];
     let startTime: moment.Moment = moment(this.startTime);
-    if (!(startTime.minute() == 0 || startTime.minute() == 30)) {
+    if (!(startTime.minute() === 0 || startTime.minute() === 30)) {
       if (startTime.minute() >= 0 && startTime.minute() < 30) {
-        startTime = moment(startTime).startOf("hour")
+        startTime = moment(startTime).startOf('hour');
       } else if (startTime.minute() > 30) {
-        startTime = moment(startTime).startOf("hour").add(30, "minutes");
+        startTime = moment(startTime).startOf('hour').add(30, 'minutes');
       }
     }
     let endTime: moment.Moment = moment(this.endTime);
 
-    if (!(endTime.minute() == 0 || endTime.minute() == 30)) {
+    if (!(endTime.minute() === 0 || endTime.minute() === 30)) {
       if (endTime.minute() >= 0 && endTime.minute() < 30) {
         endTime = moment(endTime).minute(30);
       } else if (endTime.minute() > 30) {
-        endTime = moment(endTime).startOf("hour").add(1, "hour");
+        endTime = moment(endTime).startOf('hour').add(1, 'hour');
       }
     }
 
     let currentTime: moment.Moment = moment(startTime);
     while (currentTime.isSameOrBefore(endTime)) {
-      let amPm: "a" | "p" = currentTime.hour() >= 12 ? "p" : "a";
+      const amPm: 'a' | 'p' = currentTime.hour() >= 12 ? 'p' : 'a';
       let ngStyle: any = {};
-      let lineNgClass: any = "";
+      let lineNgClass: any = '';
       if (currentTime.isSame(endTime)) {
         ngStyle = {
-          "height": "1px",
-          "flex-grow": "0",
-        }
+          'height': '1px',
+          'flex-grow': '0',
+        };
       }
-      let label: string = "";
-      if (currentTime.minute() == 0) {
-        label = currentTime.format("h") + amPm;
+      let label = '';
+      if (currentTime.minute() === 0) {
+        label = currentTime.format('h') + amPm;
         lineNgClass = ['label-line-hour'];
-      } else if (currentTime.minute() == 30) {
+      } else if (currentTime.minute() === 30) {
         lineNgClass = ['label-line-half-hour'];
       }
 
 
       guideLineHours.push({ label: label, ngStyle: ngStyle, lineNgClass: lineNgClass });
-      currentTime = moment(currentTime).add(30, "minutes");
+      currentTime = moment(currentTime).add(30, 'minutes');
     }
     this._guideLineHours = guideLineHours;
   }

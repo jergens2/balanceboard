@@ -1,0 +1,34 @@
+<div class="item-root">
+    <div style="display:flex;flex-direction: column; align-items: center;">
+        <div>When is bed time?</div>
+
+        <div style="font-size: 0.8em; color: gray; font-style: italic;">The time at which you turn off the lights and
+            begin falling asleep</div>
+
+        <div style="display:flex;flex-direction: row; justify-content: center; font-size: 1.3em;">
+            <!-- <app-time-input [timeValue]="bedtime" (timeChanged)="onBedtimeChanged($event)" [minValue]="minBedtime"
+                [maxValue]="maxBedtime">
+            </app-time-input> -->
+        </div>
+        <div
+            style="display:flex;flex-direction: row; justify-content: center; font-size: 1.1em; color: rgb(0, 89, 255); height: 30px;margin-top: 20px;">
+            {{ durationFromNow }}
+        </div>
+    </div>
+
+
+    <div style="display:flex;flex-direction: column; align-items: center; margin-top: 30px;">
+        <div>Next wakeup time</div>
+
+        <div style="display:flex;flex-direction: row; justify-content: center; font-size: 1.3em;">
+            <!-- <app-time-input [timeValue]="nextWakeup" (timeChanged)="onNextWakeupChanged($event)" [minValue]="minNextWakeup"
+                [maxValue]="maxNextWakeup">
+            </app-time-input> -->
+        </div>
+        <div
+            style="display:flex;flex-direction: row; justify-content: center; font-size: 1.1em; color: rgb(0, 89, 255); height: 30px;margin-top: 20px;">
+            {{ nextSleepDuration }}
+        </div>
+    </div>
+
+</div>

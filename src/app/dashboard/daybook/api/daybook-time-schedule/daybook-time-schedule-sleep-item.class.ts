@@ -1,46 +1,29 @@
-import { DaybookTimeScheduleItem } from "./daybook-time-schedule-item.class";
+import { DaybookTimeScheduleItem } from './daybook-time-schedule-item.class';
 import * as moment from 'moment';
-import { DaybookTimeScheduleStatus } from "./daybook-time-schedule-status.enum";
-import { SleepEntryItem } from "../../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class";
-import { DaybookSleepInputDataItem } from "../data-items/daybook-sleep-input-data-item.interface";
+import { DaybookTimeScheduleStatus } from './daybook-time-schedule-status.enum';
+import { SleepEntryItem } from '../../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
+import { DaybookSleepInputDataItem } from '../data-items/daybook-sleep-input-data-item.interface';
+import { TimelogDelineator, TimelogDelineatorType } from '../../widgets/timelog/timelog-delineator.class';
 
-export class DaybookTimeScheduleSleepItem extends DaybookTimeScheduleItem{
-    constructor(startTime: moment.Moment, endTime: moment.Moment, sleepEntry: DaybookSleepInputDataItem){
+export class DaybookTimeScheduleSleepItem extends DaybookTimeScheduleItem {
+    constructor(startTime: moment.Moment, endTime: moment.Moment, sleepEntry: DaybookSleepInputDataItem) {
         super(startTime, endTime);
-        this._status = DaybookTimeScheduleStatus.SLEEP;
-        if(sleepEntry){
+        this._scheduleStatus = DaybookTimeScheduleStatus.SLEEP;
+        if (sleepEntry) {
             this._buildSleepEntry(sleepEntry);
-        }else{
-            console.log("No sleep entry provided.  TO DO:  BUild a default one.")
-        }   
-        
-    }
-
-    private _sleepEntry: SleepEntryItem;
-    public get sleepEntry(): SleepEntryItem { return this._sleepEntry; }
-
-    public exportToSleepDataItem(): DaybookSleepInputDataItem {
-        if (this._sleepEntry) {
-            return this._sleepEntry.exportToDataItem();
         } else {
-            return {
-                startSleepTimeISO: this.startTime.toISOString(),
-                startSleepTimeUtcOffsetMinutes: this.startTime.utcOffset(),
-                endSleepTimeISO: this.endTime.toISOString(),
-                endSleepTimeUtcOffsetMinutes: this.endTime.utcOffset(),
-                percentAsleep: 100,
-                embeddedNote: '',
-                activities: [],
-                energyAtEnd: 100,
-            }
+            console.log('No sleep entry provided.  TO DO:  BUild a default one.')
         }
+
     }
 
     private _buildSleepEntry(sleepEntry: DaybookSleepInputDataItem) {
-        if(sleepEntry){
+        if (sleepEntry) {
             const startTime = moment(sleepEntry.startSleepTimeISO);
             const endTime = moment(sleepEntry.endSleepTimeISO);
             this._sleepEntry = new SleepEntryItem(startTime, endTime, sleepEntry);
+            this._startDelineator = new TimelogDelineator(this._sleepEntry.startTime, TimelogDelineatorType.FALLASLEEP_TIME);
+            this._endDelineator = new TimelogDelineator(this._sleepEntry.startTime, TimelogDelineatorType.WAKEUP_TIME);
         }
     }
 }

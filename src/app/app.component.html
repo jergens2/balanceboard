@@ -1,4 +1,3 @@
-
-<app-authentication  *ngIf="!isAuthenticated"></app-authentication>
-<app-app-container *ngIf="isAuthenticated"></app-app-container>
-
+<app-authentication *ngIf="!isAuthenticated"></app-authentication>
+<app-app-container *ngIf="isAuthenticated" style="height: 100%;display:flex;flex-direction: column;">
+</app-app-container>

@@ -1,12 +1,11 @@
-import { NoteHttpService } from "../../dashboard/notes/api/note-http.service";
-import { ActivityHttpService } from "../../dashboard/activities/api/activity-http.service";
-import { DaybookHttpService } from "../../dashboard/daybook/api/daybook-http.service";
-import { TaskHttpService } from "../../dashboard/tasks/task-http.service";
-import { Observable, Subject, Subscription, BehaviorSubject, forkJoin } from "rxjs";
-import { ActivityTree } from "../../dashboard/activities/api/activity-tree.class";
-import { AppServiceList } from "./async-data-service-list.interface";
-import { SleepService } from "../../dashboard/daybook/sleep-manager/sleep.service";
-import { UserAccountProfileService } from "../../dashboard/user-account-profile/user-account-profile.service";
+import { NoteHttpService } from '../../dashboard/notes/api/note-http.service';
+import { ActivityHttpService } from '../../dashboard/activities/api/activity-http.service';
+import { DaybookHttpService } from '../../dashboard/daybook/api/daybook-http.service';
+import { TaskHttpService } from '../../dashboard/tasks/task-http.service';
+import { Observable, BehaviorSubject, forkJoin } from 'rxjs';
+import { AppAsyncServiceList } from './async-data-service-list.interface';
+import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
+import { UserAccountProfileService } from '../../dashboard/user-account-profile/user-account-profile.service';
 
 export class AsyncDataServiceLoader {
 
@@ -23,7 +22,7 @@ export class AsyncDataServiceLoader {
     public get loadingIsComplete$(): Observable<boolean> { return this._loadingIsComplete$.asObservable(); }
     public get loadingIsComplete(): boolean { return this._loadingIsComplete$.getValue(); }
 
-    constructor(userId: string, serviceList: AppServiceList) {
+    constructor(userId: string, serviceList: AppAsyncServiceList) {
         this._userId = userId;
         this._userProfileService = serviceList.userProfileService;
         this._activityHttpService = serviceList.activityService;
@@ -34,7 +33,7 @@ export class AsyncDataServiceLoader {
         this._loadServices();
     }
 
-    private _loadServices() {   
+    private _loadServices() {
         forkJoin([
             this._userProfileService.login$(this._userId),
             this._activityHttpService.login$(this._userId),
@@ -43,12 +42,12 @@ export class AsyncDataServiceLoader {
             this._noteHttpService.login$(this._userId),
             this._taskHttpService.login$(this._userId),
         ]).subscribe({
-            next: (a) => {let thisIsGood = true;},
-            error: (e) => console.log("Error loading: ", e),
+            next: (a) => { },
+            error: (e) => console.log('Error loading: ', e),
             complete: () => {
                 // console.log("ForkJoin is COMPLETE")
                 this._loadingIsComplete$.next(true);
-                this._loadingIsComplete$.complete();
+
             }
         });
     }
@@ -64,6 +63,8 @@ export class AsyncDataServiceLoader {
         this._daybookHttpService.logout();
         this._noteHttpService.logout();
         this._taskHttpService.logout();
+
         this._loadingIsComplete$.next(false);
+        this._loadingIsComplete$.complete();
     }
 }

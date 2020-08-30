@@ -84,8 +84,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     //   }
     // });
     this.headerMenus = Object.assign([], this._buildHeaderMenus());
-    this._timerSub = timer(0, 30000).subscribe((tick) => { this._setBattery(); });
     this._setBattery();
+    this.sleepService.sleepManager.energyLevel$.subscribe(energy => { 
+      this._setBattery();
+    });
   }
 
   ngOnDestroy() {
@@ -176,7 +178,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private _setBattery() {
     // console.log("Setting the battery.  value from sleep service:")
     // console.log(this.sleepService.sleepManager.getEnergyLevel())
-    const batteryLevel = 100 - this.sleepService.sleepManager.getEnergyLevel();
+    const batteryLevel = 100 - this.sleepService.sleepManager.energyLevel;
     // console.log("Battery level: " , batteryLevel)
     if (batteryLevel >= 0 && batteryLevel < 12.5) {
       this._batteryIcon = faBatteryEmpty;

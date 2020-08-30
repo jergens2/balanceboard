@@ -6,7 +6,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { DaybookDayItem } from './daybook-day-item.class';
 import { map } from 'rxjs/operators';
 import { DaybookDayItemBuilder } from './daybook-day-item-builder.class';
-import { DaybookManager } from './daybook-manager.class';
+import { DaybookDayItemController } from './daybook-day-item-controller';
 
 
 @Injectable({
@@ -35,40 +35,28 @@ export class DaybookHttpService {
     this._dayItems$.next([]);
   }
 
-  public saveManagerChanges$() {
-    const unsavedManager = this.dayItems;
-    console.log("To do:  save daybookDayItem changes");
-  }
-
   private _reinitiate$(): Observable<boolean> {
-    const startDateYYYYMMDD: string = moment().add(1, 'days').format('YYYY-MM-DD');
-    const endDateYYYYMMDD: string = moment().subtract(30, 'days').format('YYYY-MM-DD');
+    const rangeDayCount: number = 30;
+    const startDateYYYYMMDD: string = moment().subtract(rangeDayCount, 'days').format('YYYY-MM-DD');
+    const endDateYYYYMMDD: string = moment().add(1, 'days').format('YYYY-MM-DD');
     const isComplete$: Subject<boolean> = new Subject();
     this.getDaybookDayItemByDate$(startDateYYYYMMDD, endDateYYYYMMDD)
       .subscribe({
         next: (days: DaybookDayItem[]) => {
+          console.log("WE GOT THE DAYS:", days)
           this._dayItems$.next(days);
-          this._startClock();
           isComplete$.next(true);
         },
         error: e => console.log("Error", e),
-        complete: () => isComplete$.complete()
+        complete: () => isComplete$.complete(),
       });
     return isComplete$.asObservable();
   }
 
-  private _timerSub: Subscription = new Subscription();
-  private _startClock() {
-    this._timerSub.unsubscribe();
-    const msToMidnight: number = moment().startOf('day').add(1, 'day').diff(moment(), 'milliseconds');
-    this._timerSub = timer(msToMidnight).subscribe(tick => {
-      this._reinitiate$();
-    });
-  }
-
-
-
-
+  /**
+   * This method receives a daybookDayItem to be saved-updated. 
+   * Returns an observable with the saved item.
+   */
   public updateDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
     // console.log(' $ updating daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
     // console.log(daybookDayItem)
@@ -76,10 +64,22 @@ export class DaybookHttpService {
     daybookDayItem.userId = this._userId;
     return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape)
       .pipe<DaybookDayItem>(map((response) => {
-        const responseItem: DaybookDayItem = this._itemBuilder.buildItemFromResponse(response.data as any);
-        // console.log("Response item is ", responseItem);
-        return responseItem;
+        const updatedItem: DaybookDayItem = this._itemBuilder.buildItemFromResponse(response.data as any);
+        this._updateCurrentValues(updatedItem);
+        return updatedItem;
       }));
+  }
+
+  public updateDaybookDayItems$(daybookDayItems: DaybookDayItem[]): Observable<DaybookDayItem[]> {
+    // console.log(' $ updating daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
+    // console.log(daybookDayItem)
+    const updatedItems$: Subject<DaybookDayItem[]> = new Subject();
+    forkJoin([ ...daybookDayItems.map(item => this.updateDaybookDayItem$(item))]).subscribe({
+      next: (items) =>  updatedItems$.next(items),
+      error: (e) => console.log('updating items: ', e),
+      complete: () => updatedItems$.complete()
+    });
+    return updatedItems$.asObservable();
   }
 
 
@@ -96,23 +96,15 @@ export class DaybookHttpService {
 
 
   /**
-   *  get an array of all daybook Day Items in range.
+   *  get an array of all daybook Day Items in range, populating any missing items with a new blank object.
    */
   public getDaybookDayItemByDate$(rangeStartYYYYMMDD: string, rangeEndYYYYMMDD: string, populateRemainder: boolean = true)
     : Observable<DaybookDayItem[]> {
-
-    // const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
-    // const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-    // let rangeStartYYYYMMDD: string = prevDateYYYYMMDD;
-    // let rangeEndYYYYMMDD: string = nextDateYYYYMMDD;
-    // if (rangeDiff > 1) {
-    //   rangeStartYYYYMMDD = moment(thisDateYYYYMMDD).subtract(rangeDiff, 'days').format('YYYY-MM-DD');
-    //   rangeEndYYYYMMDD = moment(thisDateYYYYMMDD).add(rangeDiff, 'days').format('YYYY-MM-DD');
-    // }
     const getUrl = serverUrl + '/api/daybook-day-item/' + this._userId + '/' + rangeStartYYYYMMDD + '/' + rangeEndYYYYMMDD;
-    // const dayItems$: Subject<DaybookDayItem[]> = new Subject();
+    console.log(" TO DO:  when populating remainder, need to actually SAVE the item into the database.")
     return this.httpClient.get<{ message: string, data: any }>(getUrl)
       .pipe<DaybookDayItem[]>(map((response) => {
+        console.log("Response la: ", response)
         let currentDateYYYYMMDD = rangeStartYYYYMMDD;
         let responseItems: DaybookDayItem[] = this._buildDaybookDayItemsFromResponse(response.data as any[]);
         if (populateRemainder) {
@@ -129,26 +121,60 @@ export class DaybookHttpService {
           else { return 0; }
         });
         return responseItems;
-      }))
-    //   .subscribe((responseItems: DaybookDayItem[]) => {
-    //     const prevDayItem = responseItems.find(i => i.dateYYYYMMDD === prevDateYYYYMMDD);
-    //     const nextDayItem = responseItems.find(i => i.dateYYYYMMDD === nextDateYYYYMMDD);
-    //     const thisDayItem = responseItems.find(i => i.dateYYYYMMDD === thisDateYYYYMMDD);
-    //     const saveItems: DaybookDayItem[] = [];
-    //     if (!prevDayItem) { saveItems.push(new DaybookDayItem(prevDateYYYYMMDD)); }
-    //     if (!nextDayItem) { saveItems.push(new DaybookDayItem(nextDateYYYYMMDD)); }
-    //     if (!thisDayItem) { saveItems.push(new DaybookDayItem(thisDateYYYYMMDD)); }
-    //     if (saveItems.length > 0) {
-    //       this._saveMultipleItems$(saveItems).subscribe(savedItems => {
-    //         dayItems$.next(this._populateRemainder(rangeStartYYYYMMDD, rangeEndYYYYMMDD, responseItems.concat(savedItems)));
-    //       });
-    //     } else {
-    //       dayItems$.next(this._populateRemainder(rangeStartYYYYMMDD, rangeEndYYYYMMDD, responseItems.concat(responseItems)))
-    //     }
-    //   });
-    // return dayItems$.asObservable();
+      }));
   }
 
+  /**
+   * this method is used by DaybookDisplayService to send a synchronous update command.
+   *
+   * This method will check for updates for the 3 day range surrounding the given date,
+   * and update the items currently stored in this service in the this._dayItems$ property.
+   *
+   * This method performs an async action which optionally provides an observable to subscribe to.
+   */
+  public getUpdate$(thisDateYYYYMMDD: string): Observable<boolean> {
+    const isComplete$: Subject<boolean> = new Subject();
+    const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
+    const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+    this.getDaybookDayItemByDate$(prevDateYYYYMMDD, nextDateYYYYMMDD).subscribe(updatedItems => {
+      const currentItems = this.dayItems;
+      updatedItems.forEach(updatedItem => {
+        const index = currentItems.findIndex(currentItem => currentItem.dateYYYYMMDD === updatedItem.dateYYYYMMDD);
+        let reSort = false;
+        if (index > -1) {
+          currentItems.splice(index, 1, updatedItem);
+        } else {
+          currentItems.push(updatedItem);
+          reSort = true;
+        }
+        if (reSort) {
+          const sortedItems = currentItems.sort((d1, d2) => {
+            if (d1.dateYYYYMMDD < d2.dateYYYYMMDD) { return -1; }
+            else if (d1.dateYYYYMMDD > d2.dateYYYYMMDD) { return 1; }
+            else { return 0; }
+          });
+          this._dayItems$.next(sortedItems);
+        } else {
+          this._dayItems$.next(currentItems);
+        }
+        isComplete$.next(true);
+        isComplete$.complete();
+      });
+    });
+    return isComplete$.asObservable();
+  }
+
+  /**
+   *  Will check the existing array to see if prev day, this day, and next day are present. 
+   */
+  public hasDateItems(dateYYYYMMDD: string): boolean {
+    const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
+    const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+    const hasPrevDate: boolean = this.dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD) !== null;
+    const hasThisDate: boolean = this.dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD) !== null;
+    const hasNextDate: boolean = this.dayItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD) !== null;
+    return hasPrevDate && hasThisDate && hasNextDate;
+  }
 
 
   private _saveDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
@@ -164,38 +190,18 @@ export class DaybookHttpService {
       }));
   }
 
-  /**
-   *  Creates an array of DaybookDayItem objects from a start date to an end date, populating any missing items
-   */
-  private _populateRemainder(startDateYYYYMMDD: string, endDateYYYYMMDD: string, currentItems: DaybookDayItem[]): DaybookDayItem[] {
-    const allItems: DaybookDayItem[] = [];
-    for (let currentDateYYYYMMDD = startDateYYYYMMDD;
-      currentDateYYYYMMDD <= endDateYYYYMMDD;
-      currentDateYYYYMMDD = moment(currentDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD')) {
-      const foundItem = currentItems.find(item => item.dateYYYYMMDD === currentDateYYYYMMDD);
-      if (foundItem) {
-        allItems.push(foundItem);
-      } else {
-        allItems.push(new DaybookDayItem(currentDateYYYYMMDD))
-      }
-    }
-    return allItems.sort((item1, item2) => {
-      if (item1.dateYYYYMMDD < item2.dateYYYYMMDD) { return -1; }
-      else if (item1.dateYYYYMMDD > item2.dateYYYYMMDD) { return 1; }
-      else { return 0; }
-    });
-  }
+  
 
+  /**
+ * https://www.learnrxjs.io/learn-rxjs/operators/combination/forkjoin
+ * forkJoin: This operator is best used when you have a group of observables and only care about the final emitted value of each. 
+ * 
+ * The following takes each item in the savedItems array and saves them to the database.
+ * Each of these save actions returns an observable, and is mapped to an array of observables which is the input variable for forkJoin
+ * forkJoin joins each observable and subscribes to the final output of all completed values.
+ * 
+ */
   private _saveMultipleItems$(saveItems: DaybookDayItem[]): Observable<DaybookDayItem[]> {
-    /**
-     * https://www.learnrxjs.io/learn-rxjs/operators/combination/forkjoin
-     * forkJoin: This operator is best used when you have a group of observables and only care about the final emitted value of each. 
-     * 
-     * The following takes each item in the savedItems array and saves them to the database.
-     * Each of these save actions returns an observable, and is mapped to an array of observables which is the input variable for forkJoin
-     * forkJoin joins each observable and subscribes to the final output of all completed values.
-     * 
-     */
     return forkJoin(saveItems.map<Observable<DaybookDayItem>>(item => this._saveDaybookDayItem$(item)));
   }
 
@@ -208,5 +214,14 @@ export class DaybookHttpService {
     });
 
     return daybookDayItems;
+  }
+
+  private _updateCurrentValues(updatedItem: DaybookDayItem) {
+    const currentItems = this.dayItems;
+    const currentIndex = currentItems.findIndex(item => item.dateYYYYMMDD === updatedItem.dateYYYYMMDD);
+    if (currentIndex > -1) {
+      currentItems.splice(currentIndex, 1, updatedItem);
+    }
+    this._dayItems$.next(currentItems);
   }
 }

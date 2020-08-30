@@ -5,8 +5,10 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
 export enum TimelogDelineatorType {
-    FRAME_START = 'FRAME_START',
-    FRAME_END = 'FRAME_END',
+    SCHEDULE_START = 'FRAME_START',
+    SCHEDULE_END = 'FRAME_END',
+    DISPLAY_START = 'DISPLAY_START',
+    DISPLAY_END = 'DISPLAY_END',
     WAKEUP_TIME = 'WAKEUP_TIME',
     FALLASLEEP_TIME = 'FALLASLEEP_TIME',
     NOW = 'NOW',
@@ -14,6 +16,7 @@ export enum TimelogDelineatorType {
     TIMELOG_ENTRY_END = 'TIMELOG_ENTRY_END',
     SAVED_DELINEATOR = 'SAVED_DELINEATOR',
     DAY_STRUCTURE = 'DAY_STRUCTURE',
+    DAY_STRUCTURE_MIDNIGHT = 'DAY_STRUCTURE_MIDNIGHT',
     CUSTOM = 'CUSTOM',
     DRAWING_TLE_START = 'DRAWING_TLE_START',
     DRAWING_TLE_END = 'DRAWING_TLE_END'
@@ -36,6 +39,7 @@ export class TimelogDelineator {
     private _delineatorType: TimelogDelineatorType;
 
     private _nowLineCrossesTLE: boolean = false;
+    private _splitBehavior: 'NONE' | 'SOFT' | 'HARD' = 'NONE';
 
     public ngStyle: any = {};
     public timelogEntryStart: TimelogEntryItem;
@@ -46,20 +50,23 @@ export class TimelogDelineator {
     public nextDelineator: TimelogDelineator;
     public previousDelineator: TimelogDelineator;
 
-    /** Used for when drawing TimelogEntry  */
-    public isTemporary: boolean = false;
 
     public get time(): moment.Moment { return this._time; }
     public set time(time: moment.Moment) { this._time = moment(time); }
     public get icon(): IconDefinition { return this._icon; }
-    public get delineatorType(): TimelogDelineatorType { return this._delineatorType; };
+    public get delineatorType(): TimelogDelineatorType { return this._delineatorType; }
+    public get splitBehavior(): 'NONE' | 'SOFT' | 'HARD' { return this._splitBehavior; }
 
-    public setNowLineCrossesTLE(){ 
+    public setNowLineCrossesTLE() {
         // console.log("Now line crosses timelog entry")
-        this._nowLineCrossesTLE = true; }
+        this._nowLineCrossesTLE = true;
+    }
     public get nowLineCrossesTLE(): boolean { return this._nowLineCrossesTLE; }
 
-    public get isSleepDelineator(): boolean { return this._delineatorType === TimelogDelineatorType.WAKEUP_TIME || this._delineatorType === TimelogDelineatorType.FALLASLEEP_TIME; }
+    public get isSleepDelineator(): boolean {
+        return this._delineatorType === TimelogDelineatorType.WAKEUP_TIME
+            || this._delineatorType === TimelogDelineatorType.FALLASLEEP_TIME;
+    }
 
     public get isSaved(): boolean { return this._delineatorType === TimelogDelineatorType.SAVED_DELINEATOR; }
     private _setIcon() {

@@ -1,0 +1,108 @@
+<div class="root" *ngIf="!isLoading">
+    <div style="font-size: 0.9em; font-weight: bold; color: gray; margin-bottom: 10px;">Sleep data</div>
+
+
+    <div class="sleep-manager-data-input" *ngIf="showFormList">
+
+        <div class="time-input-row" *ngIf="hasPreviousActivity">
+            <div class="time-input-row-label">Previous activity</div>
+            <div class="time-input-row-time">
+                {{ previousActivityTime.format('h:mm a') }}
+            </div>
+        </div>
+        <div class="duration-row" *ngIf="hasPreviousActivity">
+            <div>
+                <span class="duration-row-label">time until sleep</span>
+                <span class="duration-row-duration">{{ previousVacantDuration }}</span>
+            </div>
+            <app-sdf-hour-count [itemCount]="previousVacantDurationHours"></app-sdf-hour-count>
+        </div>
+        <div class="time-input-row no-select">
+            <div class="time-input-row-label">Last night I fell asleep at</div>
+            <div class="time-input-row-time">
+                <!-- {{ previousFallAsleepTime.format('h:mm a') }} -->
+                <app-time-input [timeInput]="prevFallAsleepTimeInput"></app-time-input>
+            </div>
+        </div>
+        <div class="duration-row">
+            <div>
+                <span class="duration-row-label">Slept for: </span>
+                <span class="duration-row-duration">{{ previousSleepDuration }}</span>
+            </div>
+            <app-sdf-hour-count [itemCount]="previousSleepDurationHours"></app-sdf-hour-count>
+        </div>
+        <div class="time-input-row">
+            <div class="time-input-row-label">Today I woke up at</div>
+            <div class="time-input-row-time">
+                <!-- {{ previousWakeupTime.format('h:mm a') }} -->
+                <app-time-input [timeInput]="prevWakeupTimeInput"></app-time-input>
+            </div>
+        </div>
+        <div class="duration-row">
+            <div>
+                <span class="duration-row-label">Awake for: </span>
+                <span class="duration-row-duration">{{ awakeForDuration }}</span>
+            </div>
+            <app-sdf-hour-count [itemCount]="awakeForDurationHours"></app-sdf-hour-count>
+        </div>
+        <div class="time-input-row">
+            <div class="time-input-row-label">It is currently</div>
+            <div class="time-input-row-time" style="color: rgb(255, 122, 122);">{{ nowTime.format('h:mm') }}
+                <span style="font-size: 0.8em;">{{ nowTime.format(':ss a') }}</span></div>
+        </div>
+        <div class="duration-row">
+            <div>
+                <span class="duration-row-label">Time until sleep: </span>
+                <span class="duration-row-duration">{{ timeUntilSleepDuration }}</span>
+            </div>
+            <app-sdf-hour-count [itemCount]="timeUntilSleepDurationHours"></app-sdf-hour-count>
+        </div>
+
+        <div class="time-input-row">
+            <div class="time-input-row-label">Bed time (fall asleep time)</div>
+            <div class="time-input-row-time">
+                <!-- {{ nextFallAsleepTime.format('h:mm a') }} -->
+                <app-time-input [timeInput]="nextFallAsleepTimeInput"></app-time-input>
+            </div>
+        </div>
+
+        <div class="duration-row">
+            <div>
+                <span class="duration-row-label">Sleep duration: </span>
+                <span class="duration-row-duration">{{ nextSleepDuration }}</span>
+            </div>
+            <app-sdf-hour-count [itemCount]="nextSleepDurationHours"></app-sdf-hour-count>
+        </div>
+
+        <div class="time-input-row">
+            <div class="time-input-row-label">Next wakeup time</div>
+            <div class="time-input-row-time">
+                <!-- {{ nextWakeupTime.format('h:mm a') }} -->
+                <app-time-input [timeInput]="nextWakeupTimeInput"></app-time-input>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="buttons-container">
+        <div style="width: 50px;">
+            <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickBack()"
+                *ngIf="showBackButton">
+                <fa-icon [icon]="faArrowLeft"></fa-icon>
+            </button>
+        </div>
+        <div style="width: 50px; display:flex;flex-direction: row-reverse;">
+            <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickForward()">
+                <fa-icon [icon]="faArrowRight" *ngIf="proceedNormally"></fa-icon>
+                <fa-icon [icon]="faCheck" style='color: rgb(0, 201, 0)' *ngIf="finalAction"></fa-icon>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="isLoading" class="sleep-manager-data-input loading-container">
+    <app-spinner style="width: 150px; height: 150px;"></app-spinner>
+</div>

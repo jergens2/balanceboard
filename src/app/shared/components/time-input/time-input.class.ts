@@ -1,0 +1,62 @@
+import * as moment from 'moment';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { runInThisContext } from 'vm';
+export class TimeInput {
+
+    private _timeValue$: BehaviorSubject<moment.Moment>;
+    private _minValue: moment.Moment;
+    private _maxValue: moment.Moment;
+
+    public showButtons: boolean;
+    public showDate: boolean;
+    public incrementMinutes: number;
+    public hideBorders: boolean;
+    public color: string;
+    public isBold: boolean;
+
+    public get maxValue(): moment.Moment { return this._maxValue; }
+    public get minValue(): moment.Moment { return this._minValue; }
+    public set maxValue(val: moment.Moment) {
+        this._maxValue = moment(val);
+        if (this.timeValue.isAfter(val)) {
+            this._timeValue$.next(val);
+        }
+    }
+    public setMinValue(val: moment.Moment) {
+        this._minValue = moment(val);
+        if (this.timeValue.isBefore(val)) {
+            this._timeValue$.next(val);
+        }
+    }
+
+    public get timeValue(): moment.Moment { return this._timeValue$.getValue(); }
+    public get timeValue$(): Observable<moment.Moment> { return this._timeValue$.asObservable(); }
+
+    constructor(timeValue: moment.Moment, maxValue?: moment.Moment, minValue?: moment.Moment) {
+        if (maxValue) {
+            this._maxValue = moment(maxValue);
+        } else {
+            this._maxValue = moment(timeValue).add(12, 'hours');
+        }
+        if (minValue) {
+            this._minValue = moment(minValue);
+        } else {
+            this._minValue = moment(timeValue).subtract(12, 'hours');
+        }
+        this._timeValue$ = new BehaviorSubject(timeValue);
+        this.configure();
+    }
+    public configure(showButtons = true, hideBorders = true, showDate = true, incrementMinutes = 15, color = 'black', isBold = false) {
+        this.showButtons = showButtons;
+        this.showDate = showDate;
+        this.hideBorders = hideBorders;
+        this.incrementMinutes = incrementMinutes;
+        this.color = color;
+        this.isBold = isBold;
+    }
+
+    public changeTime(time: moment.Moment) {
+        this._timeValue$.next(time);
+    }
+
+}

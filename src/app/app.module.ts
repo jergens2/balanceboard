@@ -40,6 +40,7 @@ import { SleepManagerModule } from './dashboard/daybook/sleep-manager/sleep-mana
 import { LockScreenComponent } from './authentication/lock-screen/lock-screen.component';
 import { AppContainerComponent } from './nav/app-container/app-container.component';
 import { UserAccountProfileModule } from './dashboard/user-account-profile/user-account-profile.module';
+import { UapFooterComponent } from './nav/user-action-prompt/uap-footer/uap-footer.component';
 
 
 
@@ -65,6 +66,7 @@ import { UserAccountProfileModule } from './dashboard/user-account-profile/user-
     UserActionPromptComponent,
     LockScreenComponent,
     AppContainerComponent,
+    UapFooterComponent,
 
   ],
   imports: [

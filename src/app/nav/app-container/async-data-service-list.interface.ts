@@ -5,7 +5,7 @@ import { TaskHttpService } from "../../dashboard/tasks/task-http.service";
 import { UserAccountProfileService } from "../../dashboard/user-account-profile/user-account-profile.service";
 import { SleepService } from "../../dashboard/daybook/sleep-manager/sleep.service";
 
-export interface AppServiceList{
+export interface AppAsyncServiceList{
     userProfileService: UserAccountProfileService,
     activityService: ActivityHttpService,
     sleepService: SleepService,

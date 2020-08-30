@@ -27,44 +27,46 @@ export class UserAccountProfileService {
   public get appPreferences(): UAPAppPreferences { return this.userProfile.uapAppPreferences; }
   public get personalInfo(): UAPPersonalInformation { return this.userProfile.uapPersonalInfo; }
 
-  public login$(userId: string):Observable<boolean> {
+  public get hasPrompt(): boolean { return !this.userProfile.isValid; }
+
+  public login$(userId: string): Observable<boolean> {
     this._userId = userId;
     const isComplete$: Subject<boolean> = new Subject();
     this._getUserAccountProfile$()
-    .subscribe({
-      next: (profile) => {
-        this._userProfile$ = new BehaviorSubject(profile);
-        isComplete$.next(true);
-      },
-      error: e => console.log("Error", e),
-      complete: () => isComplete$.complete()
-    });
+      .subscribe({
+        next: (profile) => {
+          this._userProfile$ = new BehaviorSubject(profile);
+          isComplete$.next(true);
+        },
+        error: e => console.log("Error", e),
+        complete: () => isComplete$.complete()
+      });
     return isComplete$.asObservable();
   }
 
 
 
 
-  public initiate$(userId: string): Observable<UserPromptType> {
-    this._userId = userId;
-    const _prompt$: Subject<UserPromptType> = new Subject();
-    this._getUserAccountProfile$().subscribe((profile) => {
-      this._userProfile$ = new BehaviorSubject(profile);
-      // console.log("Profile!" , profile.isValid, profile);
-      if (profile.isValid) {
-        _prompt$.next();
-      } else {
-        _prompt$.next(UserPromptType.USER_PROFILE);
-      }
-    }, (error) => {
-      console.log("Error with user profile: ", error);
-      _prompt$.next();
-    });
+  // public initiate$(userId: string): Observable<UserPromptType> {
+  //   this._userId = userId;
+  //   const _prompt$: Subject<UserPromptType> = new Subject();
+  //   this._getUserAccountProfile$().subscribe((profile) => {
+  //     this._userProfile$ = new BehaviorSubject(profile);
+  //     // console.log("Profile!" , profile.isValid, profile);
+  //     if (profile.isValid) {
+  //       _prompt$.next();
+  //     } else {
+  //       _prompt$.next(UserPromptType.USER_PROFILE);
+  //     }
+  //   }, (error) => {
+  //     console.log("Error with user profile: ", error);
+  //     _prompt$.next();
+  //   });
 
-    return _prompt$.asObservable();
-  }
+  //   return _prompt$.asObservable();
+  // }
 
-  public setAppConfig$(config: UAPAppConfiguration): Observable<boolean> {
+  public saveAppConfigChanges$(config: UAPAppConfiguration): Observable<boolean> {
     const profile = this.userProfile;
     profile.setAppConfig(config);
     const _complete$: Subject<boolean> = new Subject();
@@ -77,7 +79,7 @@ export class UserAccountProfileService {
     this.httpClient.post<{ message: string, data: any, success: boolean }>(url, body)
       .subscribe((response) => {
         // console.log("Respoinse is: ", response)
-        if(response.success === true){          
+        if (response.success === true) {
           const newProfile = new UserAccountProfile(response.data);
           this._userProfile$.next(newProfile);
         }
@@ -100,9 +102,9 @@ export class UserAccountProfileService {
         data: any,
       }) => {
         // console.log("Building : ", response)
-        if(response.success === true){
+        if (response.success === true) {
           return new UserAccountProfile(response.data);
-        }else{
+        } else {
           return new UserAccountProfile(null);
         }
       }));

@@ -85,8 +85,8 @@ export class TimeSelectionRow {
         if (!this.markedDelineator) {
             return false;
         } else {
-            if (this.markedDelineator.delineatorType === TimelogDelineatorType.FRAME_START ||
-                this.markedDelineator.delineatorType === TimelogDelineatorType.FRAME_END) {
+            if (this.markedDelineator.delineatorType === TimelogDelineatorType.DISPLAY_START ||
+                this.markedDelineator.delineatorType === TimelogDelineatorType.DISPLAY_END) {
                 return false;
             } else {
                 return true;

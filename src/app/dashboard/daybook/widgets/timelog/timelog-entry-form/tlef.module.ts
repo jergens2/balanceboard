@@ -17,7 +17,7 @@ import { TlefNewCurrentFutureComponent } from './tlef-cases/tlef-new-current-fut
 import { TlefExistingCurrentComponent } from './tlef-cases/tlef-existing-current/tlef-existing-current.component';
 import { ActivitySliderBarComponent } from './tlef-parts/tlef-modify-activities/tlef-activity-slider-bar/activity-slider-bar.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TLEFGridItemsBarComponent } from './tlef-parts/tlef-grid-items-bar/tlef-grid-items-bar.component';
+import { TLEFCircleButtonsBarComponent } from './tlef-parts/tlef-circle-buttons-bar/tlef-circle-buttons-bar.component';
 import { SharedModule } from '../../../../../shared/shared.module';
 import { TlefTimesComponent } from './tlef-parts/tlef-times/tlef-times.component';
 import { ColorPickerModule } from 'ngx-color-picker';
@@ -46,7 +46,7 @@ import { FallAsleepTimeComponent } from './sleep-entry-form/fall-asleep-time/fal
     TlefFooterComponent,
     TlefNewCurrentFutureComponent,
     TlefExistingCurrentComponent,
-    TLEFGridItemsBarComponent,
+    TLEFCircleButtonsBarComponent,
     TlefTimesComponent,
     TlefPromptComponent,
     TlefEmbeddedNoteComponent,

@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import * as moment from 'moment';
 import { FormGroup, FormControl } from '@angular/forms';
+import { TimeInput } from './time-input.class';
 
 @Component({
   selector: 'app-time-input',
@@ -11,74 +12,43 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 export class TimeInputComponent implements OnInit {
 
+  public readonly faPlusCircle = faPlusCircle;
+  public readonly faMinusCircle = faMinusCircle;
+
   constructor() { }
 
-  private _timeValue: moment.Moment;
-  @Input() public set timeValue(value: moment.Moment) {
-    this._timeValue = moment(value);
-    if (this.timeInputForm) {
-      this.timeInputForm.patchValue({ "timeValue": this._timeValue.format("HH:mm") });
-    }
-  }
-  public get timeValue(): moment.Moment {
-    return this._timeValue;
-  }
-  @Input() maxValue: moment.Moment;
-  @Input() minValue: moment.Moment;
-  @Input() buttons: boolean = true;
-  @Input() showDate: boolean = true;
-  @Input() minimal: boolean = false;
-  @Input() incrementMinutes: number = 15;
+  private _timeInput: TimeInput;
+  private _timeInputForm: FormGroup;
 
-  @Output() timeChanged: EventEmitter<moment.Moment> = new EventEmitter();
-
-
-  public timeInputForm: FormGroup;
-
-  public get date(): string{ 
-    return this.timeValue.format('dddd, MMM Do');
+  @Input() public set timeInput(timeInput: TimeInput) {
+    this._timeInput = timeInput;
   }
 
+  public get maxValue(): moment.Moment { return this._timeInput.maxValue; }
+  public get minValue(): moment.Moment { return this._timeInput.minValue; }
+  public get showButtons(): boolean { return this._timeInput.showButtons; }
+  public get showDate(): boolean { return this._timeInput.showDate; }
+  public get hideBorders(): boolean { return this._timeInput.hideBorders; }
+  public get isBold(): boolean { return this._timeInput.isBold; }
+  public get incrementMinutes(): number { return this._timeInput.incrementMinutes; }
+  public get timeInputForm(): FormGroup { return this._timeInputForm; }
+  public get color(): string { return this._timeInput.color; }
+
+  public get date(): string { return this.timeValue.format('dddd, MMM Do'); }
+  public get timeValue(): moment.Moment { return this._timeInput.timeValue; }
 
   ngOnInit() {
-    this.timeInputForm = new FormGroup({
-      timeValue: new FormControl(this._timeValue.format('HH:mm')),
+    this._timeInputForm = new FormGroup({
+      timeValue: new FormControl(this.timeValue.format('HH:mm')),
     });
-    // this.timeInputForm.valueChanges.subscribe((valueChange) => {
-    //   if (this.timeInputForm.controls['timeValue'].value && this._changeIsTextInput) {
-    //     this.emitNewValue();
-    //   }
-    // });
-    if(!this.minValue){
-      console.log("Warning: no min value provided");
-    }else{
-      if(this.minValue.isSame(moment())){
-        console.log("Warning: min value not set properly")
-      }
-    }
-    if(!this.maxValue){
-      console.log("Warning: no max value provided");
-    }else{
-      if(this.maxValue.isSame(moment())){
-        console.log("Warning: max value not set properly")
-      }
-    }
-
   }
-  
-  // private emitNewValue(){
-  //   let formInputValue = this.parseFormTimeInput(this.timeInputForm.controls['timeValue'].value);
-  //   this._timeValue = moment(this.timeValue).hour(formInputValue.hour).minute(formInputValue.minute).second(0).millisecond(0);
-  //   this.timeChanged.emit(this.timeValue);
-  // }
 
-
-  public onClickChangeTime(action: "ADD" | "SUBTRACT", time: string) {
+  public onClickChangeTime(action: 'ADD' | 'SUBTRACT') {
     let newValue: moment.Moment;
-    if (action == "ADD") {
-      newValue = moment(this.timeValue).add(this.incrementMinutes, "minutes");
-    } else if (action == "SUBTRACT") {
-      newValue = moment(this.timeValue).subtract(this.incrementMinutes, "minutes");
+    if (action === 'ADD') {
+      newValue = moment(this.timeValue).add(this.incrementMinutes, 'minutes');
+    } else if (action === 'SUBTRACT') {
+      newValue = moment(this.timeValue).subtract(this.incrementMinutes, 'minutes');
     }
 
     if (this.maxValue) {
@@ -91,49 +61,45 @@ export class TimeInputComponent implements OnInit {
         newValue = moment(this.minValue);
       }
     }
-    this._timeValue = moment(newValue);
-    this.timeInputForm.patchValue({ "timeValue": this.timeValue.format("HH:mm") });
-    this.timeChanged.emit(this.timeValue);
-    // this.emitNewValue();
+    this._timeInput.changeTime(moment(newValue));
+    this.timeInputForm.patchValue({ 'timeValue': newValue.format('HH:mm') });
   }
 
 
 
   public onChangeTimeValueInput() {
-    let formInputValue = this.parseFormTimeInput(this.timeInputForm.controls['timeValue'].value);
-    this._timeValue = moment(this.timeValue).hour(formInputValue.hour).minute(formInputValue.minute).second(0).millisecond(0);
+    const formInputValue = this.parseFormTimeInput(this.timeInputForm.controls['timeValue'].value);
+    let newValue: moment.Moment = moment(this.timeValue).hour(formInputValue.hour).minute(formInputValue.minute).second(0).millisecond(0);
 
-    if (this.maxValue) {
-      if (this._timeValue.isAfter(this.maxValue)) {
-        this._timeValue = moment(this.maxValue);
-      }
+    if (newValue.isAfter(this.maxValue)) {
+      newValue = moment(this.maxValue);
     }
-    if (this.minValue) {
-      if (this._timeValue.isBefore(this.minValue)) {
-        this._timeValue = moment(this.minValue);
-      }
+
+    if (newValue.isBefore(this.minValue)) {
+      newValue = moment(this.minValue);
     }
-    this.timeInputForm.patchValue({ "timeValue": this.timeValue.format("HH:mm") });
-    this.timeChanged.emit(this.timeValue);
+    this.timeInput.changeTime(newValue);
+    this.timeInputForm.patchValue({ 'timeValue': newValue.format('HH:mm') });
   }
 
 
   private parseFormTimeInput(formInput: string): { hour: number, minute: number } {
     if (formInput) {
-      let hours: number = Number(formInput.substring(0, 2));
-      let minutes: number = Number(formInput.substring(3, 5));
+      const hours: number = Number(formInput.substring(0, 2));
+      const minutes: number = Number(formInput.substring(3, 5));
       return {
         hour: hours,
         minute: minutes,
-      }
+      };
     } else {
-      return null;
+      return {
+        hour: 0,
+        minute: 0,
+      };
     }
   }
 
 
-  faPlusCircle = faPlusCircle;
-  faMinusCircle = faMinusCircle;
 
 
 }

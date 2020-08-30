@@ -22,8 +22,8 @@ export class TimelogLargeFrameComponent implements OnInit {
     console.log("header item clicked: ", item);
   }
 
-  public get showTimelogBody(): boolean { return this.daybookService.currentZoom.zoomType === TimelogZoomType.AWAKE; } 
-  public get showTimelogList(): boolean { return this.daybookService.currentZoom.zoomType === TimelogZoomType.LIST; }
+  public get showTimelogBody(): boolean { return this.daybookService.currentZoom.zoomType === TimelogZoomType.AWAKE_PERIOD; } 
+  public get showTimelogList(): boolean { return this.daybookService.currentZoom.zoomType === TimelogZoomType.LIST_VIEW; }
 
   
   faCog = faCog;

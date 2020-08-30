@@ -19,7 +19,7 @@ export class SleepProfileLargeComponent implements OnInit {
   public get bedtime(): moment.Moment { return this._bedtime; }
   public get fallAsleepTime(): moment.Moment { return this.sleepService.sleepManager.nextFallAsleepTime;}
   public get prevDayFallAsleepTime(): moment.Moment{ return this.sleepService.sleepManager.previousFallAsleepTime; }
-  public get currentEnergy(): number { return (100-this.sleepService.sleepManager.getEnergyLevel()); }
+  public get currentEnergy(): number { return (100-this.sleepService.sleepManager.energyLevel); }
 
   public get awakeForString(): string {
     let now = moment();

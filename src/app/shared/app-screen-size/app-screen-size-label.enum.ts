@@ -1,5 +1,5 @@
 
-export enum AppScreenSizeLabel{
+export enum AppScreenSizeLabel {
     MOBILE,
     TABLET,
     NORMAL,

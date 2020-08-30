@@ -160,18 +160,7 @@ export class DayTemplatesService  {
   private generateDefaultDayTemplate(): DayTemplate{
     console.log("*** DayTemplatesService: Generating default day template");
     let defaultDayTemplate: DayTemplate = new DayTemplate("", this._userId, "Default Day");
-    defaultDayTemplate.delineations = [
-      {
-        name: "Wake up",
-        startAt: {hour: 7, minute: 30, second: 0},
-        endAt: null,
-      },
-      {
-        name: "Bed time",
-        startAt: {hour: 10, minute: 30, second: 0},
-        endAt: null,
-      }
-    ];
+    defaultDayTemplate.delineations = [];
     this.saveDayTemplateHTTP(defaultDayTemplate);
     return defaultDayTemplate;
   }

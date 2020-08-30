@@ -1,5 +1,7 @@
 export enum TimelogZoomType{
     TWENTY_FOUR_HOURS = 'TWENTY_FOUR_HOURS',
-    AWAKE = 'AWAKE',
-    LIST = 'LIST',
+    EIGHT_HOUR_WINDOW = 'EIGHT_HOUR-WINDOW',
+    AWAKE_PERIOD = 'AWAKE_PERIOD',
+    LIST_VIEW = 'LIST_VIEW',
+    CUSTOM = 'CUSTOM',
 }

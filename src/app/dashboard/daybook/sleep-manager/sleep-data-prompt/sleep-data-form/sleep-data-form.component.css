@@ -1,0 +1,124 @@
+.root{
+    flex-grow: 2;
+    height: 100%;
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+
+    /* background-color: rgba(0, 0, 255, 0.123); */
+    /* border: 1px solid blue; */
+}
+.sleep-manager-data-input{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+
+.time-input-row{
+    border-top: 1px solid rgb(185, 185, 185);
+    border-bottom: 1px solid rgb(185, 185, 185);
+    padding: 10px;
+    background-color: white;
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.time-input-row-label{
+    color: gray;
+
+}
+.time-input-row-time{
+    color: rgb(0, 89, 255);
+    font-weight: bold;
+    padding: 3px;
+}
+.time-input-row-time:hover{
+
+}
+
+.duration-row{
+    height: 60px;
+    width: 100%;
+    /* width: 200px; */
+    /* border: 1px solid blue; */
+        /* background-color: rgb(241, 241, 241); */
+    padding: 10px;
+
+    margin: 3px;
+    color: gray;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.duration-row-label{
+    margin-right: 5px;
+    font-size: 0.8em;
+}
+.duration-row-duration{
+    /* font-weight: bold; */
+
+}
+
+
+
+
+
+
+
+.loading-container{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.buttons-container{
+
+    align-self: flex-end;
+    margin-top: 25px;
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+
+.property-item{
+    display:flex;
+    flex-direction: row;
+
+    align-items: center;
+}
+.property-name{
+    color: rgb(119, 142, 185);
+    font-size: 0.8em;
+    margin-left: 15px;
+    margin-right: 15px;
+    font-style: italic;
+}
+.property-value{
+    color: rgb(0, 89, 255);
+}
+
+.medium-button{
+    width: 45px;
+    height: 45px;
+    border-radius: 45px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}

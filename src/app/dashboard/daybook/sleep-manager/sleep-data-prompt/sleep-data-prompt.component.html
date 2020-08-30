@@ -1,0 +1,43 @@
+<div class="sleep-data-root" [ngClass]="rootNgClass">
+
+    <!-- <div class="clock-container">
+
+        <div style="color: rgb(77, 77, 77); font-size: 0.9em; font-weight: bold; align-self: center;">
+            Today is {{ currentDate }}
+        </div>
+        <div class="current-time">
+            <span>{{ currentTime }}</span>
+            <span style="font-size: 0.7em; margin-left: 3px;">{{currentTimeSS}}</span>
+            <span style="margin-left: 12px;">{{ currentTimeAMPM}}</span>
+        </div>
+
+    </div> -->
+
+
+
+    <div *ngIf="isNearBedtime" class="content">
+        It's nearly bedtime.
+        <button (click)="onClickContinue()" class="medium-button save-button">Okay!</button>
+    </div>
+
+    <div *ngIf="isAfterBedtime" class="content">
+        It's after bedtime.
+    </div>
+
+    <div *ngIf="isSleepTime" class="content">
+        Sleep time.
+        <fa-icon [icon]="faCloudMoon" style="color: rgb(0, 27, 78); font-size: 2.0em;"></fa-icon>
+    </div>
+
+    <div *ngIf="isEarlyWakeup" class="content">
+        Early wakeup!
+    </div>
+
+    <app-sleep-data-form *ngIf="newDataRequired" class="content"></app-sleep-data-form>
+
+
+
+
+
+    <app-smp-footer style="width: 100%;"></app-smp-footer>
+</div>

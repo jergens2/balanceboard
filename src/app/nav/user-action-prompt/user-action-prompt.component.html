@@ -1,25 +1,21 @@
 
-<div class="user-action-prompt-root">
-    
 
-        <app-sleep-manager *ngIf="promptIsSleep" class="item" (complete)="onSleepManagerComplete()"></app-sleep-manager>
-        <app-first-time-config *ngIf="promptIsConfig" class="item" (complete)="onConfigComplete()"></app-first-time-config>
-        
+<app-sleep-data-prompt *ngIf="promptIsSleep" (complete)="onSleepManagerComplete()" class="root background-image-1">
+</app-sleep-data-prompt>
+<app-first-time-config *ngIf="promptIsConfig" (complete)="onConfigComplete()" class="root background-image-1">
+</app-first-time-config>
 
-        <div *ngIf="promptIsInfo" class="item">
-            Info screen.  <button (click)="onClickContinue()">Okay!</button>
-        </div>   
-    
- 
 
-    <!-- <div class="bottom-section" (mouseleave)="onMouseLeaveButtons()">
-        <div>
-            <button class="small-button discard-button" *ngIf="!confirmLogout" (click)="onClickLogout()">Logout</button>
-            <button class="small-button discard-button confirm-logout" *ngIf="confirmLogout" (click)="onClickConfirmLogout()">Confirm</button>
-        </div>
-        <div>
-            <button class="small-button discard-button" *ngIf="showSkipButton" (click)="onClickSkip()">Skip</button>
-        </div>
-    </div> -->
+<div *ngIf="promptIsInfo" class="root background-image-1">
+    Info screen. <button (click)="onClickContinue()">Okay!</button>
 </div>
 
+
+
+
+
+
+
+
+
+<!-- <app-uap-footer class="footer"></app-uap-footer> -->

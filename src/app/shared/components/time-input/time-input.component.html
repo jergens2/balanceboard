@@ -1,13 +1,14 @@
 <div class="time-input-root no-select" [formGroup]="timeInputForm">
     <span class="date" *ngIf="showDate">{{ date }}</span>
     <div style="display:flex;flex-direction: row; justify-content: center;">
-        <fa-icon [icon]="faMinusCircle" class="icon-button" (click)="onClickChangeTime('SUBTRACT')" *ngIf="buttons">
+        <fa-icon [icon]="faMinusCircle" class="icon-button" (click)="onClickChangeTime('SUBTRACT')" *ngIf="showButtons">
         </fa-icon>
 
-        <input type="time" formControlName="timeValue" class="time-input" [ngClass]="{'minimal':minimal}"
+        <input type="time" formControlName="timeValue" class="time-input"
+            [ngClass]="{'hide-borders':hideBorders, 'is-bold':isBold}" [style.color]="color"
             (change)="onChangeTimeValueInput()" required>
 
-        <fa-icon [icon]="faPlusCircle" class="icon-button" (click)="onClickChangeTime('ADD')" *ngIf="buttons">
+        <fa-icon [icon]="faPlusCircle" class="icon-button" (click)="onClickChangeTime('ADD')" *ngIf="showButtons">
         </fa-icon>
     </div>
 

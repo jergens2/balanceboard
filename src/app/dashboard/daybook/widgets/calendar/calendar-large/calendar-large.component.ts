@@ -15,7 +15,7 @@ export class CalendarLargeComponent implements OnInit {
 
   ngOnInit() {
 
-    let day: moment.Moment = moment(this.daybookService.daybookManager.dateYYYYMMDD).startOf("year");
+    let day: moment.Moment = moment(this.daybookService.daybookController.dateYYYYMMDD).startOf("year");
     let months = [];
     for(let i=0; i< 12; i++){
       months.push(moment(day));

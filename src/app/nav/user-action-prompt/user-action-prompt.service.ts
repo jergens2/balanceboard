@@ -22,20 +22,27 @@ export class UserActionPromptService {
 
 
   private _prompts$: BehaviorSubject<UserPromptType[]> = new BehaviorSubject([]);
+  private _promptsCleared$: Subject<boolean> = new Subject();
 
-  public initiate(): UserPromptType[]  {
-    const isComplete$: Subject<boolean> = new Subject();
+  public initiate(): boolean {
+    // const isComplete$: Subject<boolean> = new Subject();
     const prompts: UserPromptType[] = [];
-    if (this.accountService.userProfile.promptUser) { prompts.push(UserPromptType.USER_PROFILE); }
-    if (this.sleepService.sleepCycleData.promptUser) { prompts.push(UserPromptType.SLEEP_MANAGER); }
+    if (this.accountService.hasPrompt) { 
+
+      console.log("ACCOUNT SERVIEC HAS PROMPT>")
+      prompts.push(UserPromptType.USER_PROFILE); 
+    
+    
+    }
+    if (this.sleepService.hasPrompt) { prompts.push(UserPromptType.SLEEP_MANAGER); }
     this._prompts$.next(prompts);
-    return prompts;
+    return prompts.length > 0;
   }
 
   public get prompts$(): Observable<UserPromptType[]> { return this._prompts$.asObservable(); }
   public get prompts(): UserPromptType[] { return this._prompts$.getValue(); }
-  public hasPrompts(): boolean { return this.prompts ? this.prompts.length > 0 : false; }
-  private _promptsCleared$: Subject<boolean> = new Subject();
+  public get hasPrompts(): boolean { return this.prompts ? this.prompts.length > 0 : false; }
+
   public get promptsCleared$() { return this._promptsCleared$.asObservable(); }
 
   public clearPrompts() {

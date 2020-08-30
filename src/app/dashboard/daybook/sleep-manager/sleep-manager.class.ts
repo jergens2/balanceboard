@@ -1,121 +1,127 @@
 import * as moment from 'moment';
-import { SleepCyclePosition } from './sleep-profile/sleep-cycle-position.enum';
-import { timer } from 'rxjs';
-import { SleepProfileHTTPData } from './sleep-profile/sleep-profile-http-data.interface';
+import { SleepCyclePosition } from './sleep-cycle/sleep-cycle-position.enum';
+import { timer, Subscription, BehaviorSubject, Observable } from 'rxjs';
+import { SleepCycleHTTPData } from './sleep-cycle/sleep-cycle-http-data.interface';
 import { DaybookDayItem } from '../api/daybook-day-item.class';
-import { DaybookSleepCycle } from './sleep-profile/daybook-sleep-cycle.class';
+import { SleepCycleScheduleItemsBuilder } from './sleep-cycle/sleep-cycle-schedule-items-builder.class';
 import { UAPAppConfiguration } from '../../user-account-profile/api/uap-app-configuraiton.interface';
-import { SleepCycleData } from './sleep-profile/sleep-cycle-data.class';
+import { SleepCycleData } from './sleep-cycle/sleep-cycle-data.class';
 import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
 import { DaybookTimeScheduleItem } from '../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { DaybookTimeScheduleStatus } from '../api/daybook-time-schedule/daybook-time-schedule-status.enum';
-import { SleepCycleBuilder } from './sleep-profile/sleep-cycle-builder.class';
+import { SleepCycleBuilder } from './sleep-cycle/sleep-cycle-builder.class';
+import { SleepCycleDaybookAnalyzer } from './sleep-cycle/sleep-cycle-daybook-analyzer.class';
+import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
 
 export class SleepManager {
 
+    /**
+     * This class is the master class for Sleep data.
+     * 
+     * 
+     * Flow goes like this:
+     * 
+     */
+    constructor(data: SleepCycleData, dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration) {
+        this._sleepData = data;
+        this._daybookDayItems = dayItems;
+        this._appConfig = appConfig;
+        this._setDefaults();
+        this._sleepAnalysis = new SleepCycleDaybookAnalyzer(this._daybookDayItems, this._appConfig);
+        const isValid = !data.hasPrompt;
+        if (isValid) {
+            this._setValues();
+            this._updateEnergyLevel();
+            this._startClock();
+        }
+    }
 
-    private _currentDbValue: SleepProfileHTTPData;
 
-    private _id: string;
-    private _userActionRequired = false;
-    private _dataUpdateRequired = false;
+    private _previousActivity: DaybookTimelogEntryDataItem = null;
+
+    private _previousActivityTime: moment.Moment;
     private _previousFallAsleepTime: moment.Moment;
     private _previousWakeupTime: moment.Moment;
     private _nextFallAsleepTime: moment.Moment;
     private _nextWakeupTime: moment.Moment;
-    private _energyAtWakeup: number;
 
+
+
+    private _clockSubs: Subscription[] = [];
+    private _clock$: BehaviorSubject<moment.Moment>;
+    private _id: string;
+
+
+    private _sleepData: SleepCycleData;
     private _daybookDayItems: DaybookDayItem[] = [];
-
-    // private _previousWakeTimeIsSet: boolean = false;
-    // private _nextFallAsleepTimeIsSet: boolean = false;
-    private _dateYYYYMMDD: string;
 
     private _wakeupTimeMax: moment.Moment;
     // private _wakeupTimeMin: moment.Moment;
     private _sleepTimeMax: moment.Moment;
     private _sleepTimeMin: moment.Moment;
 
-    private _currentSleepCycle: DaybookSleepCycle;
+    // private _currentSleepCycle: SleepCycleScheduleItemsBuilder;
     private _appConfig: UAPAppConfiguration;
+    private _energyLevel$: BehaviorSubject<number> = new BehaviorSubject(100);
 
-    private _currentPosition: SleepCyclePosition = SleepCyclePosition.ACTIVE;
+    private _sleepAnalysis: SleepCycleDaybookAnalyzer;
 
-    public get userActionRequired(): boolean { return this._userActionRequired; }
-    public get dataUpdateRequired(): boolean { return this._dataUpdateRequired; }
+    private _defaultWakeupTime: moment.Moment;
+    private _defaultFallAsleepTime: moment.Moment;
+
+
+    public get clock(): moment.Moment { return this._clock$.getValue(); }
+    public get clock$(): Observable<moment.Moment> { return this._clock$.asObservable(); }
+    public get sleepData(): SleepCycleData { return this._sleepData; }
+    public get position(): SleepCyclePosition { return this.sleepData.position; }
+    public get positionIsActive(): boolean { return this.sleepData.positionIsActive; }
+    public get dataRequired(): boolean { return this.sleepData.dataRequired; }
+
+
+    public get dataUpdateRequired(): boolean { return this.sleepData.dataRequired; }
+
+    public get hasPreviousActivity(): boolean { return this._previousActivity !== null; }
+    public get previousActivity(): DaybookTimelogEntryDataItem { return this._previousActivity; }
+    public get previousActivityTime(): moment.Moment { return this._previousActivityTime; }
     public get previousFallAsleepTime(): moment.Moment { return this._previousFallAsleepTime; }
     public get previousWakeupTime(): moment.Moment { return this._previousWakeupTime; }
     public get nextFallAsleepTime(): moment.Moment { return this._nextFallAsleepTime; }
     public get nextWakeupTime(): moment.Moment { return this._nextWakeupTime; }
-    public get energyAtWakeup(): number { return this._energyAtWakeup; }
+
     public get id(): string { return this._id; }
     public get dayItems(): DaybookDayItem[] { return this._daybookDayItems; }
 
-
-
-    // public get previousWakeTimeIsSet(): boolean { return this._previousWakeTimeIsSet; }
-    // public get nextFallAsleepTimeIsSet(): boolean { return this._nextFallAsleepTimeIsSet; }
-
-    public get currentPosition(): SleepCyclePosition { return this._currentPosition; }
-
-    // public get wakeupTimeMax(): moment.Moment { return this._wakeupTimeMax; }
-    // public get wakeupTimeMin(): moment.Moment { return this._wakeupTimeMin; }
     public get sleepTimeMax(): moment.Moment { return this._sleepTimeMax; }
     public get sleepTimeMin(): moment.Moment { return this._sleepTimeMin; }
 
-    public get prevSleepDurationMs(): number { return moment(this._previousWakeupTime).diff(moment(this._previousFallAsleepTime), 'milliseconds'); }
+    public get prevSleepDurationMs(): number {
+        return moment(this.previousWakeupTime).diff(moment(this.previousFallAsleepTime), 'milliseconds');
+    }
+    public get analysis(): SleepCycleDaybookAnalyzer { return this._sleepAnalysis; }
 
+    public get energyAtWakeup(): number { return this._sleepData.energyAtWakeup; }
+    public get energyLevel(): number { return this._energyLevel$.getValue(); }
+    public get energyLevel$(): Observable<number> { return this._energyLevel$.asObservable(); }
 
     /**
      *  Ths purpose of this method is to hold relevant DaybookDayItems.
      *  Relevant in this context means it is an some item between today and 14 days ago,
      *  and contains within it the sleepDataItems, thus we can make inferences from this.
      */
-    public get relevantItems(): DaybookDayItem[] { return this._relevantPastSleepItems; }
-    public get currentSleepCycle(): DaybookSleepCycle { return this._currentSleepCycle; }
-
-    public updateConfig(config: UAPAppConfiguration) {
-        this._appConfig = config;
-        this._setDefaults();
-    }
-
-
-    /**
-     * 
-     * @param data 
-     * response data from http request
-     * can be null, and SleepManager will handle this assuming this means data is required.
-     * 
-     * @param dayItems
-     */
-    constructor(data: SleepProfileHTTPData, dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration) {
-        // console.log("Constructing sleep manager: ", data);
-        this._rebuild(data, dayItems, appConfig);
-        const now = moment();
-        const msToNextMinute = moment(now).add(1, 'minutes').startOf('minute').diff(now, 'milliseconds');
-        timer(msToNextMinute, 60000).subscribe(s => this._rebuild(data, dayItems, appConfig));
-    }
-
-    private _rebuild(data: SleepProfileHTTPData, dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration) {
-        this._dateYYYYMMDD = moment().format('YYYY-MM-DD');
-        this.updateConfig(appConfig)
-        this._currentDbValue = data;
-        this._daybookDayItems = dayItems;
-        const positionFinder = new SleepCycleData(data);
-        this._currentPosition = positionFinder.position;  //  null is permissable
-        this._validateExistingData();
-        this._currentSleepCycle = new DaybookSleepCycle(this._dateYYYYMMDD, this._relevantPastSleepItems, appConfig,
-            moment(this.previousFallAsleepTime), moment(this.previousWakeupTime), moment(this.nextFallAsleepTime), moment(this.nextWakeupTime));
-
-
-    }
-
-
-    private _defaultWakeupTime: moment.Moment;
-    private _defaultFallAsleepTime: moment.Moment;
+    public get relevantSleepItems(): DaybookDayItem[] { return this._daybookDayItems.filter(item => item.hasSleepItems); }
+    // public get currentSleepCycle(): SleepCycleScheduleItemsBuilder { return this._currentSleepCycle; }
 
     public get defaultWakeupTimeToday(): moment.Moment { return this._defaultWakeupTime; }
     public get defaultSleepTimeToday(): moment.Moment { return this._defaultFallAsleepTime; }
+
+    /**
+     *  This method is used by the daybook display service
+     */
+    public getSleepCycleForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): SleepCycleScheduleItemsBuilder {
+        const builder: SleepCycleBuilder = new SleepCycleBuilder();
+        console.log("BUILDER THING.  Day items: ", dayItems)
+        return builder.buildSleepCycleForDate(dateYYYYMMDD, dayItems, this._appConfig);
+    }
 
     private _setDefaults() {
         const startOfDay = moment().startOf('day');
@@ -123,105 +129,73 @@ export class SleepManager {
             .add(this._appConfig.defaultWakeupHour, 'hours').add(this._appConfig.defaultWakeupMinute, 'minutes');
         this._defaultFallAsleepTime = moment(startOfDay)
             .add(this._appConfig.defaultFallAsleepHour, 'hours').add(this._appConfig.defaultFallAsleepMinute, 'minutes');
+        this._clock$ = new BehaviorSubject(moment());
+        this._previousFallAsleepTime = moment(this._defaultFallAsleepTime).subtract(24, 'hours');
+        this._previousActivityTime = moment(this._previousFallAsleepTime);
+        this._previousWakeupTime = moment(this._defaultWakeupTime);
+        this._nextFallAsleepTime = moment(this._defaultFallAsleepTime);
+        this._nextWakeupTime = moment(this._defaultWakeupTime).add(24, 'hours');
     }
 
-    public getEnergyLevel(): number {
-        const now = moment();
-        const totalDurationMS = moment(this.nextFallAsleepTime).diff(moment(this.previousWakeupTime), 'milliseconds');
-        const durationFromStart = moment(now).diff(moment(this.previousWakeupTime), 'milliseconds');
-        let energy = this._energyAtWakeup;
-        const currentEnergy = (durationFromStart / totalDurationMS) * this._energyAtWakeup;
-        // console.log("Returning energy:  ", currentEnergy);
-        return currentEnergy;
+    private _setValues() {
+        this._previousFallAsleepTime = moment(this._sleepData.previousFallAsleepTime);
+        this._previousWakeupTime = moment(this._sleepData.previousWakeupTime);
+        this._nextFallAsleepTime = moment(this._sleepData.nextFallAsleepTime);
+        this._nextWakeupTime = moment(this._sleepData.nextWakeupTime);
+        this._setPreviousActivityValue();
     }
 
-    public getSleepCycleForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): DaybookSleepCycle {
-        const builder: SleepCycleBuilder = new SleepCycleBuilder();
-        return builder.buildSleepCycleForDate(dateYYYYMMDD, dayItems, this._appConfig)
-    }
-
-
-
-
-
-
-    /**Returns an array of DaybookDayItems where the item has some sleep values */
-    private get _relevantPastSleepItems(): DaybookDayItem[] {
-        return this._daybookDayItems.filter(item => item.hasSleepItems);
-    }
 
     /**
-     * Validates existing data provided upon construction, and will determine if user input is required.
+     * Determine the end time of the last activity.
+     * 
+     * When sleep data form prompt comes up, it necessarily implies that the sleep position is a new day, 
+     * therefore the sleep data has all changed.
+     * 
+     * The previous activity will be the most recent one from now.
+     * There might not be a previous activity, in which case set the value to the same as previous fall asleep time.
      */
-    private _validateExistingData() {
-        // console.log("Validating")
-        let userActionRequired: boolean = false;
-        let dataUpdateRequired: boolean = false;
-        const dataExists = this._currentDbValue.previousFallAsleepTime && this._currentDbValue.previousWakeupTime && this._currentDbValue.nextFallAsleepTime && this._currentDbValue.nextWakeupTime;
-        const now = moment();
-        if (dataExists && this.currentPosition !== null) {
-            this._previousFallAsleepTime = moment(this._currentDbValue.previousFallAsleepTime);
-            this._previousWakeupTime = moment(this._currentDbValue.previousWakeupTime);
-            this._nextFallAsleepTime = moment(this._currentDbValue.nextFallAsleepTime);
-            this._nextWakeupTime = moment(this._currentDbValue.nextWakeupTime);
-            // console.log("Setting energy value: ", this._currentDbValue.energyAtWakeup)
-            this._energyAtWakeup = this._currentDbValue.energyAtWakeup;
-
-
-            /**
-             * Under most circumstances (SleepCyclePosition.Active, no action or input is required.
-             * 
-             * However, otherwise we will either require to show the user a prompt to address the case,
-             * and if the data is out of date, then new data is required.
-             * 
-             */
-            // console.log("Current position is ", this.currentPosition)
-
-            if (this._currentPosition === SleepCyclePosition.ACTIVE) {
-                userActionRequired = false;
-                dataUpdateRequired = false;
-            } else if (this._currentPosition === SleepCyclePosition.BEFORE_BEDTIME || this._currentPosition === SleepCyclePosition.AFTER_BEDTIME || this._currentPosition === SleepCyclePosition.SLEEP) {
-                userActionRequired = true;
-                dataUpdateRequired = false;
-            } else if (this._currentPosition === SleepCyclePosition.EARLY_WAKEUP || this._currentPosition === SleepCyclePosition.NEXT_DAY) {
-                // Shift forward by 1 day, now requiring user input.
-                let prevFallAsleepTime = moment(this._nextFallAsleepTime);
-                let previousWakeupTime = moment(this._nextWakeupTime);
-                if (previousWakeupTime.isAfter(now)) {
-                    previousWakeupTime = moment(now);
-                }
-                const daysAgo = moment().diff(previousWakeupTime, 'days');
-                if (daysAgo > 0) {
-                    this._previousFallAsleepTime = moment(this._defaultFallAsleepTime).subtract(24, 'hours');
-                    this._previousWakeupTime = moment(this._defaultWakeupTime);
-                    this._nextFallAsleepTime = moment(this._defaultFallAsleepTime);
-                    this._nextWakeupTime = moment(this._defaultWakeupTime).add(24, 'hours');
-                } else {
-                    this._previousFallAsleepTime = prevFallAsleepTime;
-                    this._previousWakeupTime = previousWakeupTime;
-                    this._nextFallAsleepTime = moment(prevFallAsleepTime).add(24, 'hours');
-                    this._nextWakeupTime = moment(previousWakeupTime).add(24, 'hours');
-                }
-                userActionRequired = true;
-                dataUpdateRequired = true;
-            }
+    private _setPreviousActivityValue() {
+        const now: moment.Moment = moment();
+        const todayYYYYMMDD: string = now.format('YYYY-MM-DD');
+        const yesterdayYYYYMMDD: string = moment(now).subtract(1, 'days').format('YYYY-MM-DD');
+        let allActivities: DaybookTimelogEntryDataItem[];
+        this.dayItems
+            .filter(item => item.dateYYYYMMDD === todayYYYYMMDD || item.dateYYYYMMDD === yesterdayYYYYMMDD)
+            .forEach(item => allActivities.concat(item.timelogEntryDataItems));
+        allActivities = allActivities.sort((a1, a2) => {
+            if (a1.startTimeISO < a2.startTimeISO) { return -1; }
+            else if (a1.startTimeISO > a2.startTimeISO) { return 1; }
+            return 0;
+        });
+        if (allActivities.length > 0) {
+            this._previousActivity = allActivities[allActivities.length - 1];
+            this._previousActivityTime = moment(this._previousActivity.endTimeISO);
         } else {
-            // console.log("No data")
-            this._previousFallAsleepTime = moment(this._defaultFallAsleepTime).subtract(24, 'hours');
-            this._previousWakeupTime = moment(this._defaultWakeupTime);
-            if (this._previousWakeupTime.isAfter(now)) {
-                this._previousWakeupTime = moment(now);
-            }
-            this._nextFallAsleepTime = moment(this._defaultFallAsleepTime);
-            this._nextWakeupTime = moment(this._defaultWakeupTime).add(24, 'hours');
-
-            userActionRequired = true;
-            dataUpdateRequired = true
+            this._previousActivityTime = moment(this.previousFallAsleepTime);
+            this._previousActivity = null;
         }
-
-        // console.log("Usraction required, dataupdate required: ", userActionRequired, dataUpdateRequired)
-        this._userActionRequired = userActionRequired;
-        this._dataUpdateRequired = dataUpdateRequired;
-
+        console.log("DOES THIS HAVE AN ACTIVITY? ", this.hasPreviousActivity)
     }
+
+
+
+
+
+    private _startClock() {
+        this._clock$.next(moment());
+        const msToNextMinute = moment().add(1, 'minutes').startOf('minute').diff(moment(), 'milliseconds');
+        this._clockSubs = [
+            timer(1000, 1000).subscribe(tick => this._clock$.next(moment())),
+            timer(msToNextMinute, 60000).subscribe(tick => this._updateEnergyLevel()),
+        ];
+    }
+    private _updateEnergyLevel() {
+        const totalDurationMS = moment(this.nextFallAsleepTime).diff(moment(this.previousWakeupTime), 'milliseconds');
+        const durationFromStart = moment().diff(moment(this.previousWakeupTime), 'milliseconds');
+        const currentEnergy = (durationFromStart / totalDurationMS) * this.energyAtWakeup;
+        console.log(currentEnergy, " <== Energy level updated");
+        this._energyLevel$.next(currentEnergy);
+    }
+
 }

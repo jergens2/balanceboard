@@ -1,4 +1,4 @@
-import { AppScreenSizeLabel } from "./app-screen-size-label.enum";
+import { AppScreenSizeLabel } from './app-screen-size-label.enum';
 
 export class AppScreenSize {
 
@@ -19,7 +19,7 @@ export class AppScreenSize {
         if (width <= 400) {
             this._label = AppScreenSizeLabel.MOBILE;
             this._ngClass = ['app-size-very-small'];
-        };
+        }
         if (innerWidth > 400 && innerWidth <= 768) {
             this._label = AppScreenSizeLabel.TABLET;
             this._ngClass = ['app-size-small'];

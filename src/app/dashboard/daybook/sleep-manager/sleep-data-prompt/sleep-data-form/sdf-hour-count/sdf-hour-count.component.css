@@ -1,0 +1,11 @@
+.items{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.item{
+    margin: 3px;
+}

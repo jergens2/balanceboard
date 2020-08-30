@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import * as moment from 'moment';
 import { DurationString } from '../../../../../../../shared/time-utilities/duration-string.class';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimeInput } from '../../../../../../../shared/components/time-input/time-input.class';
 
 @Component({
   selector: 'app-tlef-modify-times',
@@ -12,8 +13,10 @@ export class TlefModifyTimesComponent implements OnInit {
 
   constructor() { }
 
-
-
+  private _startTime: moment.Moment;
+  private _endTime: moment.Moment;
+  private _startTimeInput: TimeInput;
+  private _endTimeInput: TimeInput;
 
   @Input() public entryItem: TimelogEntryItem;
   @Input() public startTimeBoundary: moment.Moment;
@@ -22,18 +25,33 @@ export class TlefModifyTimesComponent implements OnInit {
 
   @Output() timesModified: EventEmitter<{ startTime: moment.Moment, endTime: moment.Moment }> = new EventEmitter();
 
+  public get startTime(): moment.Moment { return this._startTime; }
+  public get endTime(): moment.Moment { return this._endTime; }
+  public get startTimeInput(): TimeInput { return this._startTimeInput; }
+  public get endTimeInput(): TimeInput { return this._endTimeInput; }
+
   ngOnInit() {
 
     this._startTime = moment(this.entryItem.startTime);
     this._endTime = moment(this.entryItem.endTime);
-
+    console.log("WARNING: INCOMPLETE");
+    this._startTimeInput = new TimeInput(this._startTime, null, null);
+    this._startTimeInput.configure(true, false, true, 1);
+    this._endTimeInput = new TimeInput(this._startTime, null, null);
+    this._endTimeInput.configure(true, false, true, 1);
+    this._startTimeInput.timeValue$.subscribe(time => {
+      this._startTime = moment(time);
+      this.updateTimes();
+    });
+    this._endTimeInput.timeValue$.subscribe(time => {
+      this._endTime = moment(time);
+      this.updateTimes();
+    });
     this.updateTimes();
   }
 
-  private _startTime: moment.Moment;
-  private _endTime: moment.Moment;
-  public get startTime(): moment.Moment { return this._startTime; };
-  public get endTime(): moment.Moment { return this._endTime; };
+
+
 
   public minValStart: moment.Moment;
   public maxValStart: moment.Moment;

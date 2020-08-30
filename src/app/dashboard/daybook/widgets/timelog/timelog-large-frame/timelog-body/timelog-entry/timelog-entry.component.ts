@@ -26,23 +26,23 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
 
   private _activityItems: TimelogEntryActivityDisplayItem[] = [];
   private _remainingItems: TimelogEntryActivityDisplayItem[] = [];
-  private _noteText: string = "";
-  private _noteTextSmall: string = "";
-  private _hasText: boolean = false;
+  private _noteText = '';
+  private _noteTextSmall = '';
+  private _hasText = false;
 
   public screenSize: AppScreenSizeLabel;
 
   @Input() public gridItem: TimelogDisplayGridItem;
 
-  private _backgroundColor: string = "";
+  private _backgroundColor = '';
 
-  public get isLargeSize(): boolean { return this.gridItem.isLargeGridItem; }
-  public get isSmallSize(): boolean { return this.gridItem.isSmallGridItem; }
+  public get isLargeSize(): boolean { return this.gridItem.isLargeItem; }
+  public get isSmallSize(): boolean { return this.gridItem.isSmallItem; }
   public get isVerySmallSize(): boolean { return this.gridItem.isVerySmallItem; }
   public get isNormalSize(): boolean { return !this.isSmallSize && !this.isVerySmallSize && !this.isLargeSize; }
 
   public get hasText(): boolean { return this._hasText; }
-  public get backgroundColor(): string { return this._backgroundColor; };
+  public get backgroundColor(): string { return this._backgroundColor; }
 
   public get activityItems(): TimelogEntryActivityDisplayItem[] { return this._activityItems; }
   public get remainingItems(): TimelogEntryActivityDisplayItem[] { return this._remainingItems; }
@@ -68,7 +68,7 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
     ];
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this._subscriptions.forEach(s => s.unsubscribe());
     this._subscriptions = [];
   }
@@ -105,10 +105,15 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
         { screenSize: AppScreenSizeLabel.VERY_LARGE, itemSize: 'LARGE', maxItems: 6 },
       ];
     let itemSize: 'VERY_SMALL' | 'SMALL' | 'NORMAL' | 'LARGE';
-    if (this.isVerySmallSize) { itemSize = 'VERY_SMALL'; }
-    else if (this.isSmallSize) { itemSize = 'SMALL'; }
-    else if (this.isNormalSize) { itemSize = 'NORMAL'; }
-    else if (this.isLargeSize) { itemSize = 'LARGE'; }
+    if (this.isVerySmallSize) {
+      itemSize = 'VERY_SMALL';
+    } else if (this.isSmallSize) {
+      itemSize = 'SMALL';
+    } else if (this.isNormalSize) {
+      itemSize = 'NORMAL';
+    } else if (this.isLargeSize) {
+      itemSize = 'LARGE';
+    }
     const foundItem = table.find(item => item.itemSize === itemSize && item.screenSize === this.screenSize);
     if (foundItem) {
       return foundItem.maxItems;
@@ -119,8 +124,8 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
   }
 
   private _rebuild(maxItems: number) {
-    let activityItems: TimelogEntryActivityDisplayItem[] = [];
-    let remainingItems: TimelogEntryActivityDisplayItem[] = [];
+    const activityItems: TimelogEntryActivityDisplayItem[] = [];
+    const remainingItems: TimelogEntryActivityDisplayItem[] = [];
     this._setNoteText();
     if (this.gridItem.timelogEntries.length > 0) {
       let mergedTimelogEntry = this.gridItem.timelogEntries[0];
@@ -147,24 +152,26 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
           return {
             activityTreeId: activity.activityTreeId,
             percentage: percentage,
-          }
+          };
         });
       }
       const entryDurationMS: number = mergedTimelogEntry.durationMilliseconds;
       let itemsRemainingCount = maxItems;
-      let backgroundColorSet: boolean = false;
+      let backgroundColorSet = false;
       mergedTimelogEntry.timelogEntryActivities.sort((a1, a2) => {
-        if (a1.percentage > a2.percentage) return -1;
-        else if (a1.percentage < a2.percentage) return 1;
-        else return 0;
+        if (a1.percentage > a2.percentage) {
+          return -1;
+        } else if (a1.percentage < a2.percentage) {
+          return 1;
+        } else { return 0; }
       }).forEach((activityEntry) => {
-        let foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
+        const foundActivity: ActivityCategoryDefinition = this.activitiesService.findActivityByTreeId(activityEntry.activityTreeId);
         if (!backgroundColorSet) {
           const alpha = 0.04;
           this._backgroundColor = ColorConverter.convert(foundActivity.color, ColorType.RGBA, alpha);
           backgroundColorSet = true;
         }
-        let durationMS: number = (activityEntry.percentage * entryDurationMS) / 100;
+        const durationMS: number = (activityEntry.percentage * entryDurationMS) / 100;
 
         const activityDisplayItem: TimelogEntryActivityDisplayItem = new TimelogEntryActivityDisplayItem(durationMS, foundActivity);
         if (itemsRemainingCount > 0) {
@@ -175,15 +182,15 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      console.log("no timelog entry")
+      console.log('no timelog entry');
     }
     this._activityItems = activityItems;
     this._remainingItems = remainingItems;
   }
 
   private _setNoteText() {
-    let noteText: string = "";
-    let textFound: boolean = false;
+    let noteText = '';
+    let textFound = false;
     this.gridItem.timelogEntries.sort((tle1, tle2) => {
       if (tle1.durationMilliseconds > tle2.durationMilliseconds) {
         return -1;
@@ -203,18 +210,18 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
     if (textFound) {
       if (this.isNormalSize || this.isLargeSize) {
         if (noteText.length > 80) {
-          this._noteText = noteText.substring(0, 80) + "...";
+          this._noteText = noteText.substring(0, 80) + '...';
         } else {
           this._noteText = noteText;
         }
-        this._noteTextSmall = "";
+        this._noteTextSmall = '';
       } else {
         if (noteText.length > 30) {
-          this._noteTextSmall = noteText.substring(0, 30) + "...";
+          this._noteTextSmall = noteText.substring(0, 30) + '...';
         } else {
           this._noteTextSmall = noteText;
         }
-        this._noteText = "";
+        this._noteText = '';
       }
       this._hasText = true;
     } else {

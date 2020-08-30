@@ -16,7 +16,7 @@ import { UserAccountProfileService } from '../../dashboard/user-account-profile/
 import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
 import { AsyncDataServiceLoader } from './async-data-service-loader.class';
 import { AuthenticationService } from '../../authentication/authentication.service';
-import { AppServiceList } from './async-data-service-list.interface';
+import { AppAsyncServiceList } from './async-data-service-list.interface';
 import { Modal } from '../../modal/modal.class';
 
 @Component({
@@ -31,14 +31,9 @@ export class AppContainerComponent implements OnInit, OnDestroy {
     private toolsService: ToolboxService,
     private sizeService: AppScreenSizeService,
     private userPromptService: UserActionPromptService,
-
     private modalService: ModalService,
-
     private daybookDisplayService: DaybookDisplayService,
-
-
     private activityComponentService: ActivityComponentService,
-
     private activityHttpService: ActivityHttpService,
     private daybookHttpService: DaybookHttpService,
     private noteHttpService: NoteHttpService,
@@ -52,7 +47,8 @@ export class AppContainerComponent implements OnInit, OnDestroy {
   private _appScreenSize: AppScreenSize;
 
 
-  private _subscriptions: Subscription[];
+  private _subscriptions: Subscription[] = [];
+  private _promptSub: Subscription = new Subscription();
   private _asyncDataLoader: AsyncDataServiceLoader;
   private _isLoading: boolean = true;
   // private _loadingIsComplete: boolean = false;
@@ -84,40 +80,24 @@ export class AppContainerComponent implements OnInit, OnDestroy {
   }
 
 
-
   ngOnInit(): void {
     this._subscriptions = [
       this.toolsService.currentToolQueue$.subscribe((queue) => { if (queue.length > 0) { this._showTools = true; } }),
       this.toolsService.onFormClosed$.subscribe((formClosed: boolean) => { if (formClosed === true) { this._showTools = false; } }),
       this.sizeService.appScreenSize$.subscribe((appScreenSize: AppScreenSize) => { this._onScreenSizeChanged(appScreenSize); }),
-      this.userPromptService.promptsCleared$.subscribe((clear) => { this._showUserActionPrompt = false; }),
       this.modalService.activeModal$.subscribe((modal: Modal) => { this._showModal = !(modal === null); }),
     ];
     this._onScreenSizeChanged(this.sizeService.appScreenSize);
-    this._loadAsyncData();
-  }
-
-
-  public onHeaderSidebarButtonClicked() {
-    this._sidebarIsOpen = !this._sidebarIsOpen;
-    // localStorage.setItem("sidebar_is_open", this._sidebarIsOpen.toString());
+    this._step2LoadAsyncData();
+    // _loadAsyncData() data method calls _finishLoadingApp()
   }
 
 
 
-  private _onScreenSizeChanged(appScreenSize: AppScreenSize) {
-    this._appScreenSize = appScreenSize;
-    if (this._appScreenSize.label < 2) {
-      this._sidebarIsOpen = false;
-    } else if (this._appScreenSize.label >= 2) {
-      if (localStorage.getItem("sidebar_is_open") === "true") {
-        this._sidebarIsOpen = true;
-      }
-    }
-  }
-
-  private _loadAsyncData() {
-    const serviceList: AppServiceList = {
+  /** Refer to app-load-sequence.md */
+  private _step2LoadAsyncData() {
+    console.log('2. **   Loading async data');
+    const serviceList: AppAsyncServiceList = {
       noteService: this.noteHttpService,
       activityService: this.activityHttpService,
       daybookService: this.daybookHttpService,
@@ -126,28 +106,39 @@ export class AppContainerComponent implements OnInit, OnDestroy {
       userProfileService: this.userProfileService,
     };
     this._asyncDataLoader = new AsyncDataServiceLoader(this.authService.userId, serviceList);
-    this._asyncDataLoader.loadingIsComplete$.subscribe(isComplete => { if (isComplete === true) { this._finishLoadingApp(); } });
+    this._asyncDataLoader.loadingIsComplete$.subscribe(isComplete => {
+      if (isComplete === true) { this._step3FinishSynchronousLoading(); }
+    });
   }
-  private _finishLoadingApp() {
-    console.log("Finishing loading app")
-    this.sleepService.buildSleepManager();
-    this.daybookDisplayService.reinitiate();
-    this._checkForPrompts();
+
+  /** Refer to app-load-sequence.md */
+  private _step3FinishSynchronousLoading() {
+    // sleep service loads sleep manager
+    this.sleepService.step3InitiateSleepManager();
+    this._step4CheckForPrompts();
   }
-  private _checkForPrompts() {
-    console.log("Checking for prompts")
-    this.userPromptService.initiate();
-    if (this.userPromptService.hasPrompts()) {
-      console.log("We have prompts.")
+
+  /** Refer to app-load-sequence.md */
+  private _step4CheckForPrompts() {
+    console.log('4. **   Checking for prompts');
+    const hasPrompts: boolean = this.userPromptService.initiate();
+    if (hasPrompts) {
       this._showUserActionPrompt = true;
       this._isLoading = false;
+      this._promptSub = this.userPromptService.promptsCleared$.subscribe(clear => this._step5InitiateApp());
     } else {
-      console.log("We do not have prompts")
       this._showUserActionPrompt = false;
-      this.daybookDisplayService.reinitiate();
-      this._isLoading = false;
+      this._step5InitiateApp();
     }
   }
+
+  /** Refer to app-load-sequence.md */
+  private _step5InitiateApp() {
+    this._promptSub.unsubscribe();
+    this.daybookDisplayService.reinitiate();
+    this._isLoading = false;
+  }
+
 
   ngOnDestroy() {
     this._subscriptions.forEach(sub => sub.unsubscribe());
@@ -163,7 +154,20 @@ export class AppContainerComponent implements OnInit, OnDestroy {
     this.userPromptService.logout();
   }
 
+  public onHeaderSidebarButtonClicked() {
+    this._sidebarIsOpen = !this._sidebarIsOpen;
+    // localStorage.setItem("sidebar_is_open", this._sidebarIsOpen.toString());
+  }
 
-
+  private _onScreenSizeChanged(appScreenSize: AppScreenSize) {
+    this._appScreenSize = appScreenSize;
+    if (this._appScreenSize.label < 2) {
+      this._sidebarIsOpen = false;
+    } else if (this._appScreenSize.label >= 2) {
+      if (localStorage.getItem('sidebar_is_open') === 'true') {
+        this._sidebarIsOpen = true;
+      }
+    }
+  }
 
 }

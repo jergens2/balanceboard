@@ -25,6 +25,7 @@ export class AppScreenSizeService {
   public get screenSizeNgClass(): string[] { return this.appScreenSize.ngClass; }
 
   public updateSize(innerWidth: number, innerHeight: number): AppScreenSize {
+    console.log("SIZE UPDATED: W, H: ", innerWidth, innerHeight)
     const appScreenSize: AppScreenSize = new AppScreenSize(innerWidth, innerHeight);
     this._appScreenSize$.next(appScreenSize);
     return appScreenSize;

@@ -79,8 +79,8 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
     if(this.daybookService.tlefController.formIsOpen){
       this._sleepItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialSleepValue();
 
-      this._wakeupTime = moment(this.daybookService.wakeupTime);
-      this._fallAsleepTime = moment(this.daybookService.fallAsleepTime);
+      this._wakeupTime = moment(this.daybookService.displayManager.wakeupTime);
+      this._fallAsleepTime = moment(this.daybookService.displayManager.fallAsleepTime);
   
       this._setNewWakeupTime = moment(this._wakeupTime);
       this._setNewFallAsleepTime = moment(this._fallAsleepTime);

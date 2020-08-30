@@ -18,9 +18,10 @@
     </div>
 </div>
 
-<div *ngIf="showUserActionPrompt" class="user-action-prompt background-image-1">
-    <app-user-action-prompt></app-user-action-prompt>
-</div>
+<!-- class="user-action-prompt background-image-1" -->
+<app-user-action-prompt *ngIf="showUserActionPrompt" style="height: 100%; width: 100%;" >
+</app-user-action-prompt>
+
 
 
 <div *ngIf="isLoading" class="background-image-3 loading">

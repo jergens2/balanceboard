@@ -2,57 +2,57 @@ import { TimeUnit } from "./time-unit.enum";
 
 export class TimeUnitConverter {
 
-    public static convertToString(timeUnit: TimeUnit, lowerCase?: boolean){
-        if(timeUnit == TimeUnit.Day){
-            if(lowerCase){
+    public static convertToString(timeUnit: TimeUnit, lowerCase?: boolean) {
+        if (timeUnit == TimeUnit.Day) {
+            if (lowerCase) {
                 return "day";
-            }else{
+            } else {
                 return "Day";
             }
-        }else if(timeUnit == TimeUnit.Week){
-            if(lowerCase){
+        } else if (timeUnit == TimeUnit.Week) {
+            if (lowerCase) {
                 return "week";
-            }else{
+            } else {
                 return "Week";
-            } 
-        }else if(timeUnit == TimeUnit.Month){
-            if(lowerCase){
+            }
+        } else if (timeUnit == TimeUnit.Month) {
+            if (lowerCase) {
                 return "month";
-            }else{
+            } else {
                 return "Month";
-            } 
-        }else if(timeUnit == TimeUnit.Year){
-            if(lowerCase){
+            }
+        } else if (timeUnit == TimeUnit.Year) {
+            if (lowerCase) {
                 return "year";
-            }else{
+            } else {
                 return "Year";
-            } 
-        }else if(timeUnit == TimeUnit.Hour){
-            if(lowerCase){
+            }
+        } else if (timeUnit == TimeUnit.Hour) {
+            if (lowerCase) {
                 return "hour";
-            }else{
+            } else {
                 return "Hour";
-            } 
-        }else if(timeUnit == TimeUnit.Minute){
-            if(lowerCase){
+            }
+        } else if (timeUnit == TimeUnit.Minute) {
+            if (lowerCase) {
                 return "minute";
-            }else{
+            } else {
                 return "Minute";
-            } 
+            }
         }
-        else if(timeUnit == TimeUnit.Second){
-            if(lowerCase){
+        else if (timeUnit == TimeUnit.Second) {
+            if (lowerCase) {
                 return "second";
-            }else{
+            } else {
                 return "Second";
-            } 
+            }
         }
-        else if(timeUnit == TimeUnit.Millisecond){
-            if(lowerCase){
+        else if (timeUnit == TimeUnit.Millisecond) {
+            if (lowerCase) {
                 return "millisecond";
-            }else{
+            } else {
                 return "Millisecond";
-            } 
+            }
         }
     }
 
@@ -61,7 +61,7 @@ export class TimeUnitConverter {
          * The Gregorian (western) solar calendar has on average 365.2425 days per year.
          */
         const averageDaysPerYear: number = 365.2425;
-        const averageDaysPerMonth: number = averageDaysPerYear/12;
+        const averageDaysPerMonth: number = averageDaysPerYear / 12;
 
         function convertToMilliseconds(value: number, fromUnit: TimeUnit): number {
             if (fromUnit == TimeUnit.Millisecond) {

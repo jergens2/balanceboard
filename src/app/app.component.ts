@@ -25,10 +25,8 @@ export class AppComponent implements OnInit {
 
   ) { }
 
-  @HostListener('window:resize', ['$event']) onResize(event) {
-    let innerWidth = event.target.innerWidth;
-    let innerHeight = event.target.innerHeight;
-    this.sizeService.updateSize(innerWidth, innerHeight);
+  @HostListener('window:resize', ['$event']) onResize(e) {
+    this.sizeService.updateSize(window.innerWidth, window.innerHeight);
     this._resetUserInactiveTimer();
   }
 
@@ -45,6 +43,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     // console.log("APP COMPONENT NG ON INIT")
+    this.sizeService.updateSize(window.innerWidth, window.innerHeight);
     this._resetUserInactiveTimer();
     this._authSubs.forEach(sub => sub.unsubscribe());
     this._authSubs = [
@@ -61,12 +60,14 @@ export class AppComponent implements OnInit {
 
   private _inactivityStartTime: moment.Moment;
   private _resetUserInactiveTimer() {
+    const lockAtMinutes: number = 15;
     this._inactivityStartTime = moment();
     this._userActivitySub.unsubscribe();
     this._userActivitySub = timer(0, 3000).subscribe((tick) => {
       const diffMin = moment().diff(this._inactivityStartTime, "minutes");
-      if (diffMin > 15) {
+      if (diffMin > lockAtMinutes) {
         this.authService.lock();
+        this._userActivitySub.unsubscribe();
       }
     });
   }

@@ -41,7 +41,7 @@ export class TimelogEntryListComponent implements OnInit {
   }
 
   private _update(){
-    this._timelogEntryItems = this.daybookService.daybookManager.tleController.timelogEntryItems.filter((item)=>{
+    this._timelogEntryItems = this.daybookService.daybookController.tleController.timelogEntryItems.filter((item)=>{
       return item.startTime.isSameOrAfter(this.daybookService.displayStartTime) && item.endTime.isSameOrBefore(this.daybookService.displayEndTime);
     });
   }
@@ -49,7 +49,7 @@ export class TimelogEntryListComponent implements OnInit {
   public onClickEdit(entry: TimelogEntryItem){
   }
   public onClickDelete(entry: TimelogEntryItem){
-    this.daybookService.daybookManager.tleController.deleteTimelogEntryItem(entry.startTime.format('YYYY-MM-DD'), entry);
+    this.daybookService.daybookController.tleController.deleteTimelogEntryItem(entry.startTime.format('YYYY-MM-DD'), entry);
   }
 
 

@@ -3,63 +3,41 @@ import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-en
 import { TLEFFormCase } from './tlef-form-case.enum';
 import { SleepEntryItem } from './sleep-entry-form/sleep-entry-item.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../timelog-delineator.class';
-import { TLEFGridBarItem } from './tlef-parts/tlef-grid-items-bar/tlef-grid-bar-item.class';
+import { TLEFCircleButton } from './tlef-parts/tlef-circle-buttons-bar/tlef-circle-button.class';
+import { DaybookTimeScheduleItem } from '../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleStatus } from '../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
 
-export class TLEFControllerItem {
+export class TLEFControllerItem extends DaybookTimeScheduleItem {
 
     private _unsavedChanges: boolean = false;
-
     private _initialTLEValue: TimelogEntryItem;
     private _initialSleepValue: SleepEntryItem;
     private _formCase: TLEFFormCase;
     private _isAvailable: boolean;
 
-    private _startTime: moment.Moment;
-    private _endTime: moment.Moment;
+    private _isActive: boolean = false;
+    private _isCurrent: boolean = false;
+    private _isDrawing: boolean = false;
 
     // private _startDelineator: TimelogDelineator;
     // private _endDelineator: TimelogDelineator;
 
-    private _gridBarItem: TLEFGridBarItem;
+    private _circleButtonItem: TLEFCircleButton;
 
-    constructor(
-        startTime: moment.Moment,
-        endTime: moment.Moment,
-        isAvailable: boolean,
-        isDrawing: boolean,
-        formCase: TLEFFormCase,
-        timelogEntry: TimelogEntryItem,
-        sleepEntry: SleepEntryItem,
-        backgroundColor: string) {
-
-        this._startTime = moment(startTime);
-        this._endTime = moment(endTime);
+    constructor(startTime: moment.Moment, endTime: moment.Moment, itemIndex: number,
+        formCase: TLEFFormCase, scheduleStatus: DaybookTimeScheduleStatus, backgroundColor: string,
+        timelogEntry: TimelogEntryItem, sleepEntry: SleepEntryItem) {
+        super(startTime, endTime);
+        this._itemIndex = itemIndex;
+        this._scheduleStatus = scheduleStatus;
         this._formCase = formCase;
-        this._isAvailable = isAvailable;
-        this._isDrawing = isDrawing;
-        this._gridBarItem = new TLEFGridBarItem(startTime, endTime, isAvailable, formCase, backgroundColor);
-
-        // this._startDelineator = startDelineator;
-        // this._endDelineator = endDelineator;
-
+        this._circleButtonItem = new TLEFCircleButton(itemIndex, scheduleStatus, formCase, backgroundColor);
         this._initialSleepValue = sleepEntry;
         this._initialTLEValue = timelogEntry;
-
-
-        if (this._isDrawing) {
-            // console.log("TLEF controller item: isDrawing === true")
-            this._isDrawing = true;
-            this._gridBarItem.isDrawing = true;
-        }
     }
 
-    public get gridBarItem(): TLEFGridBarItem { return this._gridBarItem; }
-    public get isAvailable(): boolean { return this._isAvailable; }
+    public get gridBarItem(): TLEFCircleButton { return this._circleButtonItem; }
     public get formCase(): TLEFFormCase { return this._formCase; }
-    public get startTime(): moment.Moment { return this._startTime; }
-    public get endTime(): moment.Moment { return this._endTime; }
-    // public get startDelineator(): TimelogDelineator { return this._startDelineator; }
-    // public get endDelineator(): TimelogDelineator { return this._endDelineator; }
 
     public get isActive(): boolean { return this._isActive; }
 
@@ -68,7 +46,7 @@ export class TLEFControllerItem {
 
     public setAsCurrent() {
         this._isCurrent = true;
-        this._gridBarItem.isCurrent = true;
+        this._circleButtonItem.setAsCurrent();
     }
     public getInitialTLEValue(): TimelogEntryItem {
         const newTLE = new TimelogEntryItem(this._initialTLEValue.startTime, this._initialTLEValue.endTime);
@@ -92,55 +70,7 @@ export class TLEFControllerItem {
     }
     public get unsavedTLEChanges(): TimelogEntryItem { return this._unsavedTLEChanges; }
     public get hasUnsavedChanges(): boolean { return this._unsavedChanges; }
-
-    private _isActive: boolean = false;
-    private _isCurrent: boolean = false;
-
-    private _isDrawing: boolean = false;
-
-    public setAsActive() {
-        // console.log("SETTING THIS ITEM AS ACTIVE  : " + this.toString())
-        this._isActive = true;
-        this._gridBarItem.isActive = true;
-    }
-
-    public setAsNotActive() {
-        this._isActive = false;
-        this._gridBarItem.isActive = false;
-    }
-
-    // public transposeFrom(otherItem: TLEFControllerItem){
-    //     console.log(" TRANS POSING ")
-    //     if(otherItem.isTLEItem){
-    //         const tleVal = otherItem.getInitialTLEValue();
-                
-    //     }else if(otherItem.isSleepItem){
-    //         console.log("WARNING:  unhandled.")
-    //     }
-    // }
-
-    // public setAsDrawing() {
-    //     this._isDrawing = true;
-    // }
     public get isDrawing(): boolean { return this._isDrawing; }
-
-    public isSame(otherItem: TLEFControllerItem): boolean {
-        const sameStart = this.startTime.isSame(otherItem.startTime);
-        const sameEnd = this.endTime.isSame(otherItem.endTime);
-        const sameCase = this.formCase === otherItem.formCase;
-        const sameAvailability = this.isAvailable === otherItem.isAvailable;
-        const sameIsDrawing = this.isDrawing === otherItem.isDrawing;
-        return (sameStart && sameEnd && sameCase && sameAvailability && sameIsDrawing);
-    }
-    public isSimilar(otherItem: TLEFControllerItem): boolean {
-        const sameStart = this.startTime.isSame(otherItem.startTime);
-        const sameEnd = this.endTime.isSame(otherItem.endTime);
-        const sameCase = this.formCase === otherItem.formCase;
-        const sameAvailability = this.isAvailable === otherItem.isAvailable;
-        return (sameStart || sameEnd) && sameCase && sameAvailability;
-    }
-
-
     public toString(): string {
 
         return this.startTime.format('hh:mm a') + " to " + this.endTime.format('hh:mm a') + " : " + this.formCase + " ";

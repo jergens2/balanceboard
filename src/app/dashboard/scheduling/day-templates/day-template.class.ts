@@ -1,5 +1,4 @@
 import * as moment from 'moment';
-import { Delineation } from './delineation.interface';
 
 
 export class DayTemplate{
@@ -40,7 +39,7 @@ export class DayTemplate{
     color:string = "#ffffff";
 
 
-    delineations: Delineation[] = [];
+    delineations: moment.Moment[] = [];
 
 
     constructor(id: string, userId: string, name: string){

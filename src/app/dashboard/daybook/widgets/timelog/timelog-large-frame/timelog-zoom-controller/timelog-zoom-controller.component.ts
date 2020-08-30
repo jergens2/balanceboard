@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
-import { TimelogZoomControllerItem } from './timelog-zoom-controller-item.class';
+import { TimelogZoomItem } from './timelog-zoom-item.class';
 import { faWrench, faSun, faListUl } from '@fortawesome/free-solid-svg-icons';
 import { Subscription, timer } from 'rxjs';
 import { ItemState } from '../../../../../../shared/utilities/item-state.class';
@@ -16,7 +16,7 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
   constructor(private daybookDisplayService: DaybookDisplayService) { }
 
-  private _currentZoomLevel: TimelogZoomControllerItem;
+  private _currentZoomLevel: TimelogZoomItem;
   private _currentTime: moment.Moment = moment();
 
   private _daybookSub: Subscription = new Subscription();
@@ -35,12 +35,12 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
     this._zoomButtons = this.daybookDisplayService.zoomItems;
   }
 
-  public onClickButton(zoomItem: TimelogZoomControllerItem){
-    this.daybookDisplayService.onZoomChanged(zoomItem);
+  public onClickButton(zoomItem: TimelogZoomItem){
+    this.daybookDisplayService.onZoomChanged(zoomItem.zoomType);
   }
 
-  private _zoomButtons: TimelogZoomControllerItem[] = [];
-  public get zoomButtons(): TimelogZoomControllerItem[] { return this._zoomButtons; }
+  private _zoomButtons: TimelogZoomItem[] = [];
+  public get zoomButtons(): TimelogZoomItem[] { return this._zoomButtons; }
 
 
   faSun = faSun;

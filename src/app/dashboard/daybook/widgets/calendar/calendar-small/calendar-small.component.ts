@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
-import { DaybookManager } from '../../../api/daybook-manager.class';
+import { DaybookDayItemController } from '../../../api/daybook-day-item-controller';
 import { DaybookDisplayService } from '../../../daybook-display.service';
 
 @Component({
@@ -23,13 +23,13 @@ export class CalendarSmallComponent implements OnInit {
     this.expand.emit(true);
   }
 
-  private _daybookManager: DaybookManager;
+  private _daybookManager: DaybookDayItemController;
   public daysOfCalendar: CalendarDay[] = [];
 
   public isLarge: boolean = false;
 
   ngOnInit() {
-    this._daybookManager = this.daybookService.daybookManager;
+    this._daybookManager = this.daybookService.daybookController;
 
     if (this.date) {
       // Large calendar
@@ -54,7 +54,7 @@ export class CalendarSmallComponent implements OnInit {
   }
 
   public onClickCalendarDay(dayOfCalendar: CalendarDay) {
-    // this.daybookControllerService.setActiveDayYYYYMMDD(dayOfCalendar.date.format("YYYY-MM-DD"));
+    this.daybookService.changeCalendarDate$(dayOfCalendar.date.format("YYYY-MM-DD"));
   }
 
   private buildDaysOfCalendar(date: moment.Moment, size: "SMALL" | "LARGE") {

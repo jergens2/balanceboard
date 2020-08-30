@@ -1,14 +1,14 @@
-import { UAPPersonalInformation } from "./uap-personal-information.interface";
-import { UAPAppPreferences } from "./uap-app-preferences.interface";
-import { UAPAppConfiguration } from "./uap-app-configuraiton.interface";
+import { UAPPersonalInformation } from './uap-personal-information.interface';
+import { UAPAppPreferences } from './uap-app-preferences.interface';
+import { UAPAppConfiguration } from './uap-app-configuraiton.interface';
 import * as moment from 'moment';
-import { UAPHttpShape } from "./uap-http-shape.interface";
+import { UAPHttpShape } from './uap-http-shape.interface';
 
 export class UserAccountProfile {
 
     private _isValid: boolean = true;
     public get isValid(): boolean { return this._isValid; }
-    public get promptUser(): boolean { return !this._isValid; }
+    public get hasPrompt(): boolean { return !this._isValid; }
 
     private _id: string = '';
 
@@ -110,7 +110,7 @@ export class UserAccountProfile {
             dateOfBirthYYYYMMDD: '',
             givenName: '',
             familyName: '',
-        }
+        };
         if (data) {
             if (data.personalInfo) {
                 const pi = data.personalInfo;
@@ -125,7 +125,7 @@ export class UserAccountProfile {
                             dateOfBirthYYYYMMDD: dob ? dob : '',
                             givenName: gn ? gn : '',
                             familyName: fn ? gn : '',
-                        }
+                        };
                     }
                 }
             }

@@ -38,7 +38,7 @@ export class TlefFooterComponent implements OnInit {
   public onClickSaveNew() {
     console.log("Saving new")
     const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
-    this.daybookService.daybookManager.tleController.saveTimelogEntryItem(dateYYYYMMDD, this.controller.changesMadeTLE);
+    this.daybookService.daybookController.tleController.saveTimelogEntryItem(dateYYYYMMDD, this.controller.changesMadeTLE);
     this._close();
   }
 
@@ -46,7 +46,7 @@ export class TlefFooterComponent implements OnInit {
 
     // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
     const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
-    this.daybookService.daybookManager.tleController.updateTimelogEntryItem(dateYYYYMMDD, this.controller.changesMadeTLE);
+    this.daybookService.daybookController.tleController.updateTimelogEntryItem(dateYYYYMMDD, this.controller.changesMadeTLE);
     // console.log("Saving changes")
     // this._close();
 
@@ -56,7 +56,7 @@ export class TlefFooterComponent implements OnInit {
   public onDelete() {
     // console.log("Deleting: ", this.entryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.entryItem.endTime.format('YYYY-MM-DD hh:mm a') )
     const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
-    this.daybookService.daybookManager.tleController.deleteTimelogEntryItem(dateYYYYMMDD, this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
+    this.daybookService.daybookController.tleController.deleteTimelogEntryItem(dateYYYYMMDD, this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
     this._close();
   }
 

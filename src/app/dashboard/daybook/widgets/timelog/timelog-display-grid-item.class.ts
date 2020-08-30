@@ -1,46 +1,66 @@
 import * as moment from 'moment';
 import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { DaybookTimeScheduleStatus } from '../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
-import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
+import { DaybookTimeScheduleItem } from '../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 
 
-export class TimelogDisplayGridItem extends TimeScheduleItem{
+export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment, percent: number, status: DaybookTimeScheduleStatus, timelogEntry?: TimelogEntryItem) {
-        super(startTime.toISOString(), endTime.toISOString());
-        this.percent = percent;
 
-        this._timeScheduleStatus = status;
-        if(timelogEntry){
-            this.timelogEntries = [timelogEntry];
+    constructor(startTime: moment.Moment, endTime: moment.Moment, displayPercent: number,
+        itemIndex: number, status: DaybookTimeScheduleStatus, timelogEntry?: TimelogEntryItem) {
+        super(startTime, endTime);
+        this._itemIndex = itemIndex;
+        this._itemIndexes = [this._itemIndex];
+        this._scheduleStatus = status;
+        this._displayPercent = displayPercent;
+        if (timelogEntry) {
+            this._timelogEntries = [timelogEntry];
         }
     }
-    private _timeScheduleStatus: DaybookTimeScheduleStatus;
-    // private _itemIndex: number = -1;
-    private _isDrawing: boolean = false;
 
+    private _timelogEntries: TimelogEntryItem[] = [];
+    private _itemIndexes: number[] = [];
+    private _isMerged: boolean = false;
 
-    public percent: number;
-    public isLargeGridItem: boolean = false;
-    public isSmallGridItem: boolean = false;
-    public isVerySmallItem: boolean = false;
-    public isActiveFormItem: boolean = false;
-    public isMerged: boolean = false;
-    public get durationMS(): number { return moment(this.endTime).diff(moment(this.startTime), 'milliseconds'); }
-    // public get itemIndex(): number { return this._itemIndex; }
-    public get timeScheduleStatus(): DaybookTimeScheduleStatus { return this._timeScheduleStatus; }
-    public get isAvailable(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.AVAILABLE };
-    public get isTimelogEntry(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.ACTIVE; }
-    public get isSleepEntry(): boolean { return this._timeScheduleStatus === DaybookTimeScheduleStatus.SLEEP; }
-    public get isDrawing(): boolean { return this._isDrawing; }
+    public readonly verySmallPercent = 2.5;
+    public readonly smallPercent = 6;
+    public readonly largePercent = 15;
 
-    // public setItemIndex(index: number) { this._itemIndex = index; }
-    public setIsDrawing(){ this._isDrawing = true; }
-    public timelogEntries: TimelogEntryItem[] = [];
+    public get isVerySmallItem(): boolean { return this.displayPercent < this.verySmallPercent; }
+    public get isSmallItem(): boolean { return this.displayPercent >= this.verySmallPercent && this.displayPercent < this.smallPercent; }
+    public get isNormalItem(): boolean { return this.displayPercent >= this.smallPercent && this.displayPercent < this.largePercent; }
+    public get isLargeItem(): boolean { return this.displayPercent >= this.largePercent; }
 
-    public toString(): string{
-        return this.timeScheduleStatus + "  " + this.percent.toFixed(0) + " % " 
-        + "\n\t " + this.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this.endTime.format('YYYY-MM-DD hh:mm a');
+    public get isMerged(): boolean { return this._isMerged; }
+    public get timelogEntries(): TimelogEntryItem[] { return this._timelogEntries; }
+    public get itemIndexes(): number[] { return this._itemIndexes; }
+
+    /**
+     * take the incoming item and merge it into this object.
+     */
+    public mergeItem(otherItem: TimelogDisplayGridItem) {
+        this._displayPercent = this._displayPercent + otherItem.displayPercent;
+        this._timelogEntries = [...this._timelogEntries, ...otherItem.timelogEntries].sort((tle1, tle2) => {
+            if (tle1.startTime.isBefore(tle2.startTime)) { return -1; }
+            else if (tle1.startTime.isAfter(tle2.startTime)) { return 1; }
+            return 0;
+        });
+        this._itemIndexes = [this._itemIndex, otherItem.itemIndex].sort((i1, i2) => {
+            if (i1 < i2) { return -1; }
+            else if (i1 > i2) { return 1; }
+            return 0;
+        });
+
+        const firstStartTime: moment.Moment = this.startTime.isBefore(otherItem.startTime) ? this.startTime : otherItem.startTime;
+        const lastEndTime: moment.Moment = this.endTime.isAfter(otherItem.endTime) ? this.endTime : otherItem.endTime;
+        this.changeStartTime(firstStartTime);
+        this.changeEndTime(lastEndTime);
+        this._isMerged = true;
+    }
+
+    public toString(): string {
+        return this.scheduleStatus + '  ' + this.displayPercent.toFixed(0) + ' % '
+            + '\n\t ' + this.startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + this.endTime.format('YYYY-MM-DD hh:mm a');
     }
 }
