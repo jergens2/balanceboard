@@ -22,7 +22,7 @@ export class TimeInput {
             this._timeValue$.next(val);
         }
     }
-    public setMinValue(val: moment.Moment) {
+    public set minValue(val: moment.Moment) {
         this._minValue = moment(val);
         if (this.timeValue.isBefore(val)) {
             this._timeValue$.next(val);

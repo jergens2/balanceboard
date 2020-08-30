@@ -28,6 +28,7 @@ export class SleepManager {
         this._appConfig = appConfig;
         this._setDefaults();
         this._sleepAnalysis = new SleepCycleDaybookAnalyzer(this._daybookDayItems, this._appConfig);
+        console.log("TO DO:  if sleep analysis has good value, then use it to calculate approximate sleep and wakeup times.")
         const isValid = !data.hasPrompt;
         if (isValid) {
             this._setValues();
@@ -175,7 +176,6 @@ export class SleepManager {
             this._previousActivityTime = moment(this.previousFallAsleepTime);
             this._previousActivity = null;
         }
-        console.log("DOES THIS HAVE AN ACTIVITY? ", this.hasPreviousActivity)
     }
 
 
