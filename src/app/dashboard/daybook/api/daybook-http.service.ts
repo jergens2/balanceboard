@@ -36,20 +36,26 @@ export class DaybookHttpService {
   }
 
   private _reinitiate$(): Observable<boolean> {
-    const rangeDayCount: number = 30;
-    const startDateYYYYMMDD: string = moment().subtract(rangeDayCount, 'days').format('YYYY-MM-DD');
-    const endDateYYYYMMDD: string = moment().add(1, 'days').format('YYYY-MM-DD');
     const isComplete$: Subject<boolean> = new Subject();
-    this.getDaybookDayItemByDate$(startDateYYYYMMDD, endDateYYYYMMDD)
-      .subscribe({
-        next: (days: DaybookDayItem[]) => {
-          console.log("WE GOT THE DAYS:", days)
-          this._dayItems$.next(days);
-          isComplete$.next(true);
-        },
-        error: e => console.log("Error", e),
-        complete: () => isComplete$.complete(),
-      });
+    const rangeDayCount: number = 30;
+
+    const yesterdayYYYYMMDD: string = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
+    const tomorrowYYYYMMDD: string = moment().add(1, 'days').format('YYYY-MM-DD');
+    const rangeStartDateYYYYMMDD: string = moment(todayYYYYMMDD).subtract(rangeDayCount, 'days').format('YYYY-MM-DD');
+    const rangeEndDateYYYYMMDD: string = moment(todayYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+
+    const saveDatesYYYYMMDD: string[] = [yesterdayYYYYMMDD, todayYYYYMMDD, tomorrowYYYYMMDD];
+
+    this.getDaybookDayItemByRange$(rangeStartDateYYYYMMDD, rangeEndDateYYYYMMDD, saveDatesYYYYMMDD).subscribe({
+      next: (days: DaybookDayItem[]) => {
+        // console.log("WE GOT THE DAYS:", days)
+        this._dayItems$.next(days);
+        isComplete$.next(true);
+      },
+      error: e => console.log("Error", e),
+      complete: () => isComplete$.complete(),
+    });
     return isComplete$.asObservable();
   }
 
@@ -71,11 +77,12 @@ export class DaybookHttpService {
   }
 
   public updateDaybookDayItems$(daybookDayItems: DaybookDayItem[]): Observable<DaybookDayItem[]> {
-    // console.log(' $ updating daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
-    // console.log(daybookDayItem)
+    console.log(' $ updating daybook day items: ');
+    daybookDayItems.forEach(i => console.log("  ", i.dateYYYYMMDD, i.id, i));
+
     const updatedItems$: Subject<DaybookDayItem[]> = new Subject();
-    forkJoin([ ...daybookDayItems.map(item => this.updateDaybookDayItem$(item))]).subscribe({
-      next: (items) =>  updatedItems$.next(items),
+    forkJoin([...daybookDayItems.map(item => this.updateDaybookDayItem$(item))]).subscribe({
+      next: (items) => updatedItems$.next(items),
       error: (e) => console.log('updating items: ', e),
       complete: () => updatedItems$.complete()
     });
@@ -96,32 +103,43 @@ export class DaybookHttpService {
 
 
   /**
-   *  get an array of all daybook Day Items in range, populating any missing items with a new blank object.
+   *  get an array of all daybook Day Items in range.
+   * 
+   *  Optionally provide an array of dates for which to SAVE the items into the database if not already present.
    */
-  public getDaybookDayItemByDate$(rangeStartYYYYMMDD: string, rangeEndYYYYMMDD: string, populateRemainder: boolean = true)
+  public getDaybookDayItemByRange$(rangeStartYYYYMMDD: string, rangeEndYYYYMMDD: string, saveDatesYYYYMMDD?: string[])
     : Observable<DaybookDayItem[]> {
+    const isComplete$: Subject<DaybookDayItem[]> = new Subject();
     const getUrl = serverUrl + '/api/daybook-day-item/' + this._userId + '/' + rangeStartYYYYMMDD + '/' + rangeEndYYYYMMDD;
-    console.log(" TO DO:  when populating remainder, need to actually SAVE the item into the database.")
-    return this.httpClient.get<{ message: string, data: any }>(getUrl)
+    this.httpClient.get<{ message: string, data: any }>(getUrl)
       .pipe<DaybookDayItem[]>(map((response) => {
-        console.log("Response la: ", response)
-        let currentDateYYYYMMDD = rangeStartYYYYMMDD;
-        let responseItems: DaybookDayItem[] = this._buildDaybookDayItemsFromResponse(response.data as any[]);
-        if (populateRemainder) {
-          while (currentDateYYYYMMDD <= rangeEndYYYYMMDD) {
-            if (!responseItems.find(item => item.dateYYYYMMDD === currentDateYYYYMMDD)) {
-              responseItems.push(new DaybookDayItem(currentDateYYYYMMDD));
+        return this._buildDaybookDayItemsFromResponse(response.data as any[]);
+      })).subscribe((items: DaybookDayItem[]) => {
+        const daysToSave: DaybookDayItem[] = [];
+        if (saveDatesYYYYMMDD) {
+          saveDatesYYYYMMDD.forEach(saveDateYYYYMMDD => {
+            const foundExistingDayItem: DaybookDayItem = items.find(reponseItem => reponseItem.dateYYYYMMDD === saveDateYYYYMMDD);
+            if (!foundExistingDayItem) {
+              daysToSave.push(new DaybookDayItem(saveDateYYYYMMDD));
             }
-            currentDateYYYYMMDD = moment(currentDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-          }
+          });
         }
-        responseItems = responseItems.sort((d1, d2) => {
-          if (d1.dateYYYYMMDD < d2.dateYYYYMMDD) { return -1; }
-          else if (d1.dateYYYYMMDD > d2.dateYYYYMMDD) { return 1; }
-          else { return 0; }
-        });
-        return responseItems;
-      }));
+        if (daysToSave.length > 0) {
+          this._saveMultipleItems$(daysToSave).subscribe((savedDays) => {
+            items = [...items, ...savedDays].sort((d1, d2) => {
+              if (d1.dateYYYYMMDD < d2.dateYYYYMMDD) { return -1; }
+              else if (d1.dateYYYYMMDD > d2.dateYYYYMMDD) { return 1; }
+              else { return 0; }
+            });
+            isComplete$.next(items);
+            isComplete$.complete();
+          })
+        } else {
+          isComplete$.next(items);
+          isComplete$.complete();
+        }
+      });
+    return isComplete$.asObservable();
   }
 
   /**
@@ -136,7 +154,7 @@ export class DaybookHttpService {
     const isComplete$: Subject<boolean> = new Subject();
     const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
     const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-    this.getDaybookDayItemByDate$(prevDateYYYYMMDD, nextDateYYYYMMDD).subscribe(updatedItems => {
+    this.getDaybookDayItemByRange$(prevDateYYYYMMDD, nextDateYYYYMMDD).subscribe(updatedItems => {
       const currentItems = this.dayItems;
       updatedItems.forEach(updatedItem => {
         const index = currentItems.findIndex(currentItem => currentItem.dateYYYYMMDD === updatedItem.dateYYYYMMDD);
@@ -190,7 +208,7 @@ export class DaybookHttpService {
       }));
   }
 
-  
+
 
   /**
  * https://www.learnrxjs.io/learn-rxjs/operators/combination/forkjoin
@@ -206,13 +224,17 @@ export class DaybookHttpService {
   }
 
   private _buildDaybookDayItemsFromResponse(responseDataItems: any[]): DaybookDayItem[] {
-    const daybookDayItems: DaybookDayItem[] = [];
+    let daybookDayItems: DaybookDayItem[] = [];
     responseDataItems.forEach((responseDataItem: any) => {
       const responseItem: DaybookDayItem = this._itemBuilder.buildItemFromResponse(responseDataItem as any);
       // console.log("Built item is ", responseItem);
       daybookDayItems.push(responseItem);
     });
-
+    daybookDayItems = daybookDayItems.sort((d1, d2) => {
+      if (d1.dateYYYYMMDD < d2.dateYYYYMMDD) { return -1; }
+      else if (d1.dateYYYYMMDD > d2.dateYYYYMMDD) { return 1; }
+      else { return 0; }
+    });
     return daybookDayItems;
   }
 

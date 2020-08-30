@@ -4,6 +4,7 @@
 
     <div class="sleep-manager-data-input" *ngIf="showFormList">
 
+
         <div class="time-input-row" *ngIf="hasPreviousActivity">
             <div class="time-input-row-label">Previous activity</div>
             <div class="time-input-row-time">
@@ -87,18 +88,15 @@
 
 
     <div class="buttons-container">
-        <div style="width: 50px;">
-            <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickBack()"
-                *ngIf="showBackButton">
-                <fa-icon [icon]="faArrowLeft"></fa-icon>
-            </button>
-        </div>
-        <div style="width: 50px; display:flex;flex-direction: row-reverse;">
-            <button class="medium-button discard-button" style="font-size: 1.5em;" (click)="onClickForward()">
-                <fa-icon [icon]="faArrowRight" *ngIf="proceedNormally"></fa-icon>
-                <fa-icon [icon]="faCheck" style='color: rgb(0, 201, 0)' *ngIf="finalAction"></fa-icon>
-            </button>
-        </div>
+        <button class="medium-button discard-button" (click)="onClickLogout()">
+            <fa-icon [icon]="faArrowLeft" style="font-size: 1.3em;"></fa-icon><span
+                style="margin-left: 10px;">Logout</span>
+        </button>
+
+        <button class="circle-button" style="font-size: 1.5em;" (click)="onClickFinish()">
+            <!-- <fa-icon [icon]="faArrowRight"></fa-icon> -->
+            <fa-icon [icon]="faCheck" style='color: rgb(0, 201, 0)'></fa-icon>
+        </button>
     </div>
 </div>
 

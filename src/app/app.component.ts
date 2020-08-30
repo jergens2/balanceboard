@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
     this._resetUserInactiveTimer();
     this._authSubs.forEach(sub => sub.unsubscribe());
     this._authSubs = [
-      this.authService.logout$.subscribe(onLogout => this._isAuthenticated = false),
+      this.authService.onLogout$.subscribe(onLogout => this._isAuthenticated = false),
       this.authService.appComponentLogin$.subscribe(login => {
         if (login === true) {
           this._isAuthenticated = true;

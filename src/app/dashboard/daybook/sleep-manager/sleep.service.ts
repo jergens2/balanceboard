@@ -11,7 +11,6 @@ import { DaybookDayItem } from '../api/daybook-day-item.class';
 import { UserAccountProfileService } from '../../user-account-profile/user-account-profile.service';
 import { UAPAppConfiguration } from '../../user-account-profile/api/uap-app-configuraiton.interface';
 import { SleepCycleData } from './sleep-cycle/sleep-cycle-data.class';
-import { SleepDataForm } from './sleep-data-prompt/sleep-data-form/sleep-data-form.class';
 
 @Injectable({
   providedIn: 'root'
@@ -37,10 +36,8 @@ export class SleepService {
 
   private _userId: string;
   private _sleepManager: SleepManager;
-  private _sleepDataForm: SleepDataForm;
   private _sleepCycleData: SleepCycleData;
   public get sleepManager(): SleepManager { return this._sleepManager; }
-  public get sleepDataForm(): SleepDataForm { return this._sleepDataForm; }
   public get clock(): moment.Moment { return this.sleepManager.clock; }
   public get clock$(): Observable<moment.Moment> { return this.sleepManager.clock$; }
   public get sleepCycleData(): SleepCycleData { return this._sleepCycleData; }
@@ -71,7 +68,6 @@ export class SleepService {
     const dayItems: DaybookDayItem[] = this.daybookHTTPService.dayItems;
     const appConfig: UAPAppConfiguration = this.accountService.appConfig;
     this._sleepManager = new SleepManager(sleepData, dayItems, appConfig);
-    this._sleepDataForm = new SleepDataForm();
   }
 
   private _step2loadSleepCycleAsyncData$(): Observable<boolean> {

@@ -1,10 +1,8 @@
 import * as moment from 'moment';
 import { DaybookDayItem } from '../../../api/daybook-day-item.class';
-import { SleepDataForm } from './sleep-data-form.class';
-import { Observable, Subject, forkJoin } from 'rxjs';
 import { DaybookSleepInputDataItem } from '../../../api/data-items/daybook-sleep-input-data-item.interface';
 import { UserAccountProfile } from '../../../../user-account-profile/api/user-account-profile.class';
-import { DaybookHttpService } from '../../../api/daybook-http.service';
+import { SleepDataForm } from './sleep-data-form.class';
 
 export class SleepDaybookItemUpdater {
 
@@ -30,20 +28,18 @@ export class SleepDaybookItemUpdater {
             console.log('Error:  no daybookDayItems found.');
         } else {
 
-            const prevFallAsleepTime: string = sleepForm.formInputPrevFallAsleep.toISOString();
-            const prevFallAsleepUTCOffset: number = sleepForm.formInputPrevFallAsleep.utcOffset();
-            const previousWakeupTime: string = sleepForm.formInputWakeupTime.toISOString();
-            const previousWakeupUTCOffset: number = sleepForm.formInputWakeupTime.utcOffset();
-            const energyAtWakeup: number = sleepForm.formInputStartEnergyPercent;
-            const nextFallAsleepTime: string = sleepForm.formInputFallAsleepTime.toISOString();
-            const nextFallAsleepTimeUTCOffset: number = sleepForm.formInputFallAsleepTime.utcOffset();
-            const nextWakeupTime: string = sleepForm.formInputNextWakeup.toISOString();
-            const nextWakeupUTCOffset: number = sleepForm.formInputNextWakeup.utcOffset();
-            const durationPercent: number = sleepForm.formInputDurationPercent;
+            const prevFallAsleepTime: string = sleepForm.previousFallAsleepTime.toISOString();
+            const prevFallAsleepUTCOffset: number = sleepForm.previousFallAsleepTime.utcOffset();
+            const previousWakeupTime: string = sleepForm.previousWakeupTime.toISOString();
+            const previousWakeupUTCOffset: number = sleepForm.previousWakeupTime.utcOffset();
+            const energyAtWakeup: number = sleepForm.energyAtWakeup;
+            const nextFallAsleepTime: string = sleepForm.nextFallAsleepTime.toISOString();
+            const nextFallAsleepTimeUTCOffset: number = sleepForm.nextFallAsleepTime.utcOffset();
+            const nextWakeupTime: string = sleepForm.nextWakeupTime.toISOString();
+            const nextWakeupUTCOffset: number = sleepForm.nextWakeupTime.utcOffset();
+            const durationPercent: number = sleepForm.sleepDurationPercent;
 
-
-
-            let prevDaySleepItems: DaybookSleepInputDataItem[] = Object.assign([], prevDayItem.sleepInputItems);
+            const prevDaySleepItems: DaybookSleepInputDataItem[] = Object.assign([], prevDayItem.sleepInputItems);
             const startOfThisDay = moment().startOf('day');
             const yesterDateYYYYMMDD: string = moment().startOf('day').subtract(24, 'hours').format('YYYY-MM-DD');
 
@@ -52,10 +48,10 @@ export class SleepDaybookItemUpdater {
                 const yesterdayDefaultWakeup = userProfile.defaultWakeupTime(yesterDateYYYYMMDD);
                 prevDaySleepItems.push(this._newSleepItem(moment(yesterDateYYYYMMDD).startOf('day'), moment(yesterdayDefaultWakeup)));
             }
-            let thisDaySleepItems: DaybookSleepInputDataItem[] = [];
+            const thisDaySleepItems: DaybookSleepInputDataItem[] = [];
 
             if (moment(prevFallAsleepTime).isBefore(startOfThisDay)) {
-                let startTime = moment(prevFallAsleepTime);
+                const startTime = moment(prevFallAsleepTime);
                 let endTime = moment(startOfThisDay);
                 if (moment(previousWakeupTime).isBefore(startOfThisDay)) {
                     endTime = moment(previousWakeupTime);

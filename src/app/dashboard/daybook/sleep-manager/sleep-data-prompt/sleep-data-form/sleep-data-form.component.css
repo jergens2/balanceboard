@@ -23,7 +23,7 @@
 
 
 .time-input-row{
-    border: 1px solid rgb(228, 228, 228);
+    border: 1px solid rgb(250, 250, 250);
     padding: 10px;
     background-color: white;
     border-radius: 10px;
@@ -32,9 +32,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
-.time-input-row:hover{
-    border: 1px solid rgb(192, 192, 192);
 }
 .time-input-row-label{
     color: gray;
@@ -89,9 +86,11 @@
 }
 
 
+
+
 .buttons-container{
 
-    align-self: flex-end;
+    padding: 20px;
     margin-top: 25px;
     width: 100%;
     display:flex;
@@ -118,7 +117,7 @@
     color: rgb(0, 89, 255);
 }
 
-.medium-button{
+.circle-button{
     width: 45px;
     height: 45px;
     border-radius: 45px;
@@ -126,4 +125,17 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0);
+}
+.circle-button:hover{
+    border: 1px solid rgb(0, 201, 0);
+    cursor: pointer;
+}
+
+.medium-button{
+    display: flex;
+    flex-direction: row;
+    border-radius: 45px;
+    height: 45px;
+    font-size: 1.0em;
 }

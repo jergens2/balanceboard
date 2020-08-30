@@ -14,7 +14,7 @@ export class AuthenticationService {
 
   // private _authStatusSubject$: BehaviorSubject<AuthStatus> = new BehaviorSubject<AuthStatus>(null);
   private _loginAttempt$: Subject<boolean> = new Subject();
-  private _logout$: Subject<boolean> = new Subject();
+  private _onLogout$: Subject<boolean> = new Subject();
   private _appComponentLogin$: Subject<boolean> = new Subject();
   private _unlockAttempts: number = 0;
 
@@ -42,7 +42,7 @@ export class AuthenticationService {
   public get loginAttempt$(): Observable<boolean> { return this._loginAttempt$.asObservable(); }
   public get lockApp$(): Observable<boolean> { return this._lockApp$.asObservable(); }
 
-  public get logout$(): Observable<boolean> { return this._logout$.asObservable(); }
+  public get onLogout$(): Observable<boolean> { return this._onLogout$.asObservable(); }
   public get appComponentLogin$(): Observable<boolean> { return this._appComponentLogin$.asObservable(); }
   public get hasUsername(): boolean {
     if (this.username) {
@@ -261,7 +261,7 @@ export class AuthenticationService {
     // this._authStatusSubject$.next(null);
     this._loginAttempt$.next(false);
     this._registrationContoller = null;
-    this._logout$.next();
+    this._onLogout$.next();
     this._unlockAttempts = 0;
   }
 

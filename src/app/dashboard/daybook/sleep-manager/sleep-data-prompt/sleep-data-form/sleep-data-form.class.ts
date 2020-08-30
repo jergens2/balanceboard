@@ -1,107 +1,154 @@
-import { SleepDataFormActions } from './sleep-data-form-actions.enum';
-import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { TimeInput } from '../../../../../shared/components/time-input/time-input.class';
 import { SleepManager } from '../../sleep-manager.class';
-import { TimelogEntryActivity } from '../../../api/data-items/timelog-entry-activity.interface';
 import * as moment from 'moment';
+import { timer } from 'rxjs';
+import { TimeUnitConverter } from '../../../../../shared/time-utilities/time-unit-converter.class';
 import { DurationString } from '../../../../../shared/time-utilities/duration-string.class';
+import { TimeUnit } from '../../../../../shared/time-utilities/time-unit.enum';
 
 export class SleepDataForm {
-    constructor() { }
 
-    private _formInputWakeupTime: moment.Moment;
-    private _formInputPrevFallAsleep: moment.Moment;
-    private _formInputStartEnergyPercent: number;
-    private _formInputDreams: string[] = [];
-    private _formInputDurationPercent: number;
-    private _formInputActivities: TimelogEntryActivity[] = [];
-    private _formInputBedTime: moment.Moment;
-    private _formInputNextWakeup: moment.Moment;
 
-    private _wakeupTimeIsSet: boolean = false;
-    private _prevFallAsleepSet: boolean = false;
-    private _durationSet: boolean = false;
-    private _durationString: string = '';
-    private _sleepPeriodDurationString: string = '';
-    private _energyIsSet: boolean = false;
-    private _dreamsSet: boolean = false;
+    private _previousActivityTime: moment.Moment;
+    private _previousFallAsleepTime: moment.Moment;
+    private _previousWakeupTime: moment.Moment;
+    private _nowTime: moment.Moment;
+    private _nextFallAsleepTime: moment.Moment;
+    private _nextWakeupTime: moment.Moment;
 
-    private _formAction$: BehaviorSubject<SleepDataFormActions> = new BehaviorSubject(SleepDataFormActions.WAKEUP_TIME);
-    private _finalize$: Subject<boolean> = new Subject();
+    private _energyAtWakeup: number;
+    private _sleepDurationPercent: number;
 
-    public get wakeupTimeIsSet(): boolean { return this._wakeupTimeIsSet; }
-    public get prevFallAsleepTimeIsSet(): boolean { return this._prevFallAsleepSet; }
-    public get durationIsSet(): boolean { return this._durationSet; }
-    public get energyIsSet(): boolean { return this._energyIsSet; }
-    public get dreamsSet(): boolean { return this._dreamsSet; }
+    private _previousVacantDuration: string;
+    private _previousSleepDuration: string;
+    private _awakeForDuration: string;
+    private _timeUntilSleepDuration: string;
+    private _nextSleepDuration: string;
 
-    public get formInputWakeupTime(): moment.Moment { return this._formInputWakeupTime; }
-    public get formInputPrevFallAsleep(): moment.Moment { return this._formInputPrevFallAsleep; }
-    public get formInputStartEnergyPercent(): number { return this._formInputStartEnergyPercent; }
-    public get formInputDreams(): string[] { return this._formInputDreams; }
-    public get formInputDurationPercent(): number { return this._formInputDurationPercent; }
-    public get formInputActivities(): TimelogEntryActivity[] { return this._formInputActivities; }
-    public get formInputFallAsleepTime(): moment.Moment { return moment(this._formInputBedTime).add(20, 'minutes'); }
-    public get formInputNextWakeup(): moment.Moment { return this._formInputNextWakeup; }
+    private _previousVacantDurationHours: number;
+    private _previousSleepDurationHours: number;
+    private _awakeForHours: number;
+    private _timeUntilSleepHours: number;
+    private _nextSleepDurationHours: number;
 
-    public get durationString(): string { return this._durationString; }
-    public get sleepPeriodDurationString(): string { return this._sleepPeriodDurationString; }
+    private _prevFallAsleepTimeInput: TimeInput;
+    private _prevWakeupTimeInput: TimeInput;
+    private _nextFallAsleepTimeInput: TimeInput;
+    private _nextWakeupTimeInput: TimeInput;
 
-    public get formActionChanged$(): Observable<SleepDataFormActions> { return this._formAction$.asObservable(); }
-    public get formAction(): SleepDataFormActions { return this._formAction$.getValue(); }
-    public get finalize$(): Observable<boolean> { return this._finalize$.asObservable(); }
+    private _sleepManager: SleepManager;
 
-    public setAction(formAction: SleepDataFormActions) { this._formAction$.next(formAction); }
+    public get previousActivityTime(): moment.Moment { return this._previousActivityTime; }
+    public get previousFallAsleepTime(): moment.Moment { return this._previousFallAsleepTime; }
+    public get previousWakeupTime(): moment.Moment { return this._previousWakeupTime; }
+    public get nowTime(): moment.Moment { return this._nowTime; }
+    public get nextFallAsleepTime(): moment.Moment { return this._nextFallAsleepTime; }
+    public get nextWakeupTime(): moment.Moment { return this._nextWakeupTime; }
 
-    public setformInputWakeupTime(time: moment.Moment) { this._formInputWakeupTime = moment(time); }
-    public setformInputPrevFallAsleep(time: moment.Moment) { this._formInputPrevFallAsleep = moment(time); }
-    public setformInputDurationPercent(percent: number) { this._formInputDurationPercent = percent; }
-    public setStartEnergy(percent: number) { this._formInputStartEnergyPercent = percent; }
-    public setformInputDreams(dreams: string[]) { this._formInputDreams = dreams; }
-    public setformInputBedtime(bedtime: moment.Moment) { this._formInputBedTime = moment(bedtime); }
-    public setformInputNextWakeup(nextWakeup: moment.Moment) { this._formInputNextWakeup = moment(nextWakeup); }
+    public get previousVacantDuration(): string { return this._previousVacantDuration; }
+    public get previousSleepDuration(): string { return this._previousSleepDuration; }
+    public get awakeForDuration(): string { return this._awakeForDuration; }
+    public get timeUntilSleepDuration(): string { return this._timeUntilSleepDuration; }
+    public get nextSleepDuration(): string { return this._nextSleepDuration; }
 
-    public onClickForward() {
-        if (this.formAction === SleepDataFormActions.WAKEUP_TIME) {
-            this._wakeupTimeIsSet = true;
-            this._formAction$.next(SleepDataFormActions.PREV_SLEEP_TIME);
-        } else if (this.formAction === SleepDataFormActions.PREV_SLEEP_TIME) {
-            this._prevFallAsleepSet = true;
-            const start = moment(this.formInputPrevFallAsleep);
-            const end = moment(this.formInputWakeupTime);
-            const durationMs = moment(end).diff(start, 'milliseconds');
-            const durationString = DurationString.getDurationStringFromMS(durationMs, true);
-            this._sleepPeriodDurationString = durationString;
-            this._formAction$.next(SleepDataFormActions.SLEEP_DURATION);
-        } else if (this.formAction === SleepDataFormActions.SLEEP_DURATION) {
-            this._durationSet = true;
-            const durationMS = this.formInputWakeupTime.diff(this.formInputPrevFallAsleep, 'milliseconds')
-                * (this._formInputDurationPercent / 100)
-            this._durationString = DurationString.getDurationStringFromMS(durationMS, true);
-            this._formAction$.next(SleepDataFormActions.ENERGY);
-        } else if (this.formAction === SleepDataFormActions.ENERGY) {
-            this._energyIsSet = true;
-            this._formAction$.next(SleepDataFormActions.DREAMS);
-        } else if (this.formAction === SleepDataFormActions.DREAMS) {
-            this._dreamsSet = true;
-            this._formAction$.next(SleepDataFormActions.BEDTIME);
-            // } else if (this.formAction === SleepManagerFormActions.NEXT_WAKEUP_TIME) {
-            //     this._formAction$.next(SleepManagerFormActions.BEDTIME);
-            // 
-        } else if (this.formAction === SleepDataFormActions.BEDTIME) {
-            this._finalize$.next(true);
-        }
+    public get previousVacantDurationHours(): number { return this._previousVacantDurationHours; }
+    public get previousSleepDurationHours(): number { return this._previousSleepDurationHours; }
+    public get awakeForDurationHours(): number { return this._awakeForHours; }
+    public get timeUntilSleepDurationHours(): number { return this._timeUntilSleepHours; }
+    public get nextSleepDurationHours(): number { return this._nextSleepDurationHours; }
+
+
+    public get prevFallAsleepTimeInput(): TimeInput { return this._prevFallAsleepTimeInput; }
+    public get prevWakeupTimeInput(): TimeInput { return this._prevWakeupTimeInput; }
+    public get nextFallAsleepTimeInput(): TimeInput { return this._nextFallAsleepTimeInput; }
+    public get nextWakeupTimeInput(): TimeInput { return this._nextWakeupTimeInput; }
+
+    public get energyAtWakeup(): number { return this._energyAtWakeup; }
+    public get sleepDurationPercent(): number { return this._sleepDurationPercent; }
+
+    constructor(sleepManager: SleepManager) {
+        this._sleepManager = sleepManager;
+        this._previousActivityTime = moment(this._sleepManager.previousActivityTime);
+        this._previousFallAsleepTime = moment(this._sleepManager.previousFallAsleepTime);
+        this._previousWakeupTime = moment(this._sleepManager.previousWakeupTime);
+        this._nextFallAsleepTime = moment(this._sleepManager.nextFallAsleepTime);
+        this._nextWakeupTime = moment(this._sleepManager.nextWakeupTime);
+        this._energyAtWakeup = 100;
+        this._sleepDurationPercent = 100;
+
+        const wakeupColor = 'rgb(255, 179, 0)';
+        const sleepColor = 'rgb(0, 43, 99)';
+
+        this._prevFallAsleepTimeInput = new TimeInput(this.previousFallAsleepTime);
+        this._prevFallAsleepTimeInput.color = sleepColor;
+        this._prevFallAsleepTimeInput.isBold = true;
+        this._prevWakeupTimeInput = new TimeInput(this.previousWakeupTime);
+        this._prevWakeupTimeInput.color = wakeupColor;
+        this._prevWakeupTimeInput.isBold = true;
+        this._nextFallAsleepTimeInput = new TimeInput(this.nextFallAsleepTime);
+        this._nextFallAsleepTimeInput.color = sleepColor;
+        this._nextFallAsleepTimeInput.isBold = true;
+        this._nextWakeupTimeInput = new TimeInput(this.nextWakeupTime);
+        this._nextWakeupTimeInput.color = wakeupColor;
+        this._nextWakeupTimeInput.isBold = true;
+
+        this._prevFallAsleepTimeInput.timeValue$.subscribe(time => {
+            this._previousFallAsleepTime = moment(time);
+            this._recalculateTimeValues();
+        });
+        this._prevWakeupTimeInput.timeValue$.subscribe(time => {
+            this._previousWakeupTime = moment(time);
+            this._recalculateTimeValues();
+        });
+        this._nextFallAsleepTimeInput.timeValue$.subscribe(time => {
+            this._nextFallAsleepTime = moment(time);
+            this._recalculateTimeValues();
+        });
+        this._nextWakeupTimeInput.timeValue$.subscribe(time => {
+            this._nextWakeupTime = moment(time);
+            this._recalculateTimeValues();
+        });
+
+        this._startClock();
+        this._recalculateTimeValues();
     }
-    public onClickBack() {
-        if (this.formAction === SleepDataFormActions.PREV_SLEEP_TIME) {
-            this._formAction$.next(SleepDataFormActions.WAKEUP_TIME);
-        } else if (this.formAction === SleepDataFormActions.SLEEP_DURATION) {
-            this._formAction$.next(SleepDataFormActions.PREV_SLEEP_TIME);
-        } else if (this.formAction === SleepDataFormActions.ENERGY) {
-            this._formAction$.next(SleepDataFormActions.SLEEP_DURATION);
-        } else if (this.formAction === SleepDataFormActions.DREAMS) {
-            this._formAction$.next(SleepDataFormActions.ENERGY);
-        } else if (this.formAction === SleepDataFormActions.BEDTIME) {
-            this._formAction$.next(SleepDataFormActions.DREAMS);
+
+    private _recalculateTimeValues() {
+        const previousVacantMs = moment(this.previousFallAsleepTime).diff(this.previousActivityTime, 'milliseconds');
+        const previousSleepMs = moment(this.previousWakeupTime).diff(this.previousFallAsleepTime, 'milliseconds');
+        const awakeForMs = moment().diff(this.previousWakeupTime, 'milliseconds');
+        const timeUntilSleepMs = moment(this.nextFallAsleepTime).diff(moment(), 'milliseconds');
+        const nextSleepDuratoin = moment(this.nextWakeupTime).diff(this.nextFallAsleepTime, 'milliseconds');
+
+        this._previousVacantDuration = DurationString.getDurationStringFromMS(previousVacantMs, true);
+        this._previousSleepDuration = DurationString.getDurationStringFromMS(previousSleepMs, true);
+        this._awakeForDuration = DurationString.getDurationStringFromMS(awakeForMs, true);
+        this._timeUntilSleepDuration = DurationString.getDurationStringFromMS(timeUntilSleepMs, true);
+        this._nextSleepDuration = DurationString.getDurationStringFromMS(nextSleepDuratoin, true);
+
+        this._previousVacantDurationHours = TimeUnitConverter.convert(previousVacantMs, TimeUnit.Millisecond, TimeUnit.Hour);
+        this._previousSleepDurationHours = TimeUnitConverter.convert(previousSleepMs, TimeUnit.Millisecond, TimeUnit.Hour);
+        this._awakeForHours = TimeUnitConverter.convert(awakeForMs, TimeUnit.Millisecond, TimeUnit.Hour);
+        this._timeUntilSleepHours = TimeUnitConverter.convert(timeUntilSleepMs, TimeUnit.Millisecond, TimeUnit.Hour);
+        this._nextSleepDurationHours = TimeUnitConverter.convert(nextSleepDuratoin, TimeUnit.Millisecond, TimeUnit.Hour);
+
+        if (this._sleepManager.hasPreviousActivity) {
+            this._prevFallAsleepTimeInput.minValue = moment(this.previousActivityTime);
+        } else {
+            this._prevFallAsleepTimeInput.minValue = moment(this.previousActivityTime).subtract(6, 'hours');
         }
+        this._prevFallAsleepTimeInput.maxValue = moment(this.previousWakeupTime).subtract(1, 'hours');
+        this._prevWakeupTimeInput.maxValue = moment(this._nowTime);
+        this._prevWakeupTimeInput.minValue = moment(this.previousFallAsleepTime).add(1, 'hours');
+        this._nextFallAsleepTimeInput.maxValue = moment(this.nextWakeupTime).subtract(1, 'hours');
+        this._nextFallAsleepTimeInput.minValue = moment(this._nowTime).add(20, 'minutes');
+        this._nextWakeupTimeInput.maxValue = moment(this.nextFallAsleepTime).add(18, 'hours');
+        this._nextWakeupTimeInput.minValue = moment(this.nextFallAsleepTime).add(1, 'hours');
+    }
+
+    private _startClock() {
+        this._nowTime = moment();
+        const msToNextSecond: number = moment(this._nowTime).startOf('second').add(1, 'seconds').diff(this._nowTime, 'milliseconds');
+        timer(msToNextSecond, 1000).subscribe(t => this._nowTime = moment());
     }
 }
