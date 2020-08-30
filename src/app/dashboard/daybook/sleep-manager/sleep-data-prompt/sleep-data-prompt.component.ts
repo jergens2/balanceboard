@@ -44,13 +44,13 @@ export class SleepDataPromptComponent implements OnInit {
   public get screenSize(): AppScreenSizeLabel { return this._screenSize; }
   public get isMobile(): boolean { return this.screenSize === AppScreenSizeLabel.MOBILE; }
   public get isTablet(): boolean { return this.screenSize === AppScreenSizeLabel.TABLET; }
-  public get rootNgClass(): any {
-    return {
-      'root-mobile': this.isMobile,
-      'root-tablet': this.isTablet,
-      'root-large': (!this.isMobile && !this.isTablet),
-    };
-  }
+  // public get rootNgClass(): any {
+  //   return {
+  //     'root-mobile': this.isMobile,
+  //     'root-tablet': this.isTablet,
+  //     'root-large': (!this.isMobile && !this.isTablet),
+  //   };
+  // }
 
 
   /**

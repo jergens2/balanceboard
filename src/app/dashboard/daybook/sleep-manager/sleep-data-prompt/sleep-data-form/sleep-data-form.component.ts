@@ -82,7 +82,7 @@ export class SleepDataFormComponent implements OnInit {
   public get awakeForDuration(): string { return this._awakeForDuration; }
   public get timeUntilSleepDuration(): string { return this._timeUntilSleepDuration; }
   public get nextSleepDuration(): string { return this._nextSleepDuration; }
-  
+
   public get previousVacantDurationHours(): number { return this._previousVacantDurationHours; }
   public get previousSleepDurationHours(): number { return this._previousSleepDurationHours; }
   public get awakeForDurationHours(): number { return this._awakeForHours; }
@@ -237,8 +237,6 @@ export class SleepDataFormComponent implements OnInit {
     this._awakeForHours = TimeUnitConverter.convert(awakeForMs, TimeUnit.Millisecond, TimeUnit.Hour);
     this._timeUntilSleepHours = TimeUnitConverter.convert(timeUntilSleepMs, TimeUnit.Millisecond, TimeUnit.Hour);
     this._nextSleepDurationHours = TimeUnitConverter.convert(nextSleepDuratoin, TimeUnit.Millisecond, TimeUnit.Hour);
-
-    console.log("AWAKE FOR HOURS IS " , this._awakeForHours)
   }
 
   private _startClock() {

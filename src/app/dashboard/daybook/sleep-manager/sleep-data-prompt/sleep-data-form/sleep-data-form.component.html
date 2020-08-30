@@ -15,7 +15,7 @@
                 <span class="duration-row-label">time until sleep</span>
                 <span class="duration-row-duration">{{ previousVacantDuration }}</span>
             </div>
-            <app-sdf-hour-count [itemCount]="previousVacantDurationHours"></app-sdf-hour-count>
+            <app-sdf-hour-count [itemCount]="previousVacantDurationHours" [color]="'AWAKE'"></app-sdf-hour-count>
         </div>
         <div class="time-input-row no-select">
             <div class="time-input-row-label">Last night I fell asleep at</div>
@@ -29,7 +29,7 @@
                 <span class="duration-row-label">Slept for: </span>
                 <span class="duration-row-duration">{{ previousSleepDuration }}</span>
             </div>
-            <app-sdf-hour-count [itemCount]="previousSleepDurationHours"></app-sdf-hour-count>
+            <app-sdf-hour-count [itemCount]="previousSleepDurationHours" [color]="'ASLEEP'"></app-sdf-hour-count>
         </div>
         <div class="time-input-row">
             <div class="time-input-row-label">Today I woke up at</div>
@@ -43,7 +43,7 @@
                 <span class="duration-row-label">Awake for: </span>
                 <span class="duration-row-duration">{{ awakeForDuration }}</span>
             </div>
-            <app-sdf-hour-count [itemCount]="awakeForDurationHours"></app-sdf-hour-count>
+            <app-sdf-hour-count [itemCount]="awakeForDurationHours" [color]="'AWAKE'"></app-sdf-hour-count>
         </div>
         <div class="time-input-row">
             <div class="time-input-row-label">It is currently</div>
@@ -55,7 +55,7 @@
                 <span class="duration-row-label">Time until sleep: </span>
                 <span class="duration-row-duration">{{ timeUntilSleepDuration }}</span>
             </div>
-            <app-sdf-hour-count [itemCount]="timeUntilSleepDurationHours"></app-sdf-hour-count>
+            <app-sdf-hour-count [itemCount]="timeUntilSleepDurationHours" [color]="'AWAKE'"></app-sdf-hour-count>
         </div>
 
         <div class="time-input-row">
@@ -71,7 +71,7 @@
                 <span class="duration-row-label">Sleep duration: </span>
                 <span class="duration-row-duration">{{ nextSleepDuration }}</span>
             </div>
-            <app-sdf-hour-count [itemCount]="nextSleepDurationHours"></app-sdf-hour-count>
+            <app-sdf-hour-count [itemCount]="nextSleepDurationHours" [color]="'ASLEEP'"></app-sdf-hour-count>
         </div>
 
         <div class="time-input-row">

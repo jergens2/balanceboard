@@ -9,30 +9,44 @@ export class SdfHourCountComponent implements OnInit {
 
   constructor() { }
   private _count: number = 0;
-
+  private _color: string = '';
 
   private _items: any[] = [];
 
-  @Input() public set itemCount(count: number) { this._count = count; }
+  @Input() public set itemCount(count: number) {
+    this._count = count;
+    this._rebuild();
+  }
+  @Input() public set color(val: 'AWAKE' | 'ASLEEP') {
+    if (val === 'AWAKE') {
+      this._color = 'rgb(255, 179, 0)';
+    } else if (val === 'ASLEEP') {
+      this._color = 'rgba(0, 0, 255, 0.6)';
+    }
+  }
   public get items(): any[] { return this._items; }
 
 
   ngOnInit(): void {
-    const items: any[] = [];
+    this._rebuild();
 
+  }
+
+  private _rebuild() {
+    const items: any[] = [];
     let hours = this._count;
     const maxDiameterPx = 20;
-
     while (hours > 0) {
-      if (hours > 1) {
+      if (hours >= 1) {
         items.push({
           ngStyle: {
             'width': maxDiameterPx + 'px',
             'height': maxDiameterPx + 'px',
             'border-radius': maxDiameterPx + 'px',
-            'background-color': 'rgba(0, 0, 255, 0.6)',
+            'background-color': this._color,
           }
         });
+        hours--;
       } else if (hours < 1) {
         const diameterPx = (hours * maxDiameterPx).toFixed(0);
         items.push({
@@ -40,17 +54,13 @@ export class SdfHourCountComponent implements OnInit {
             'width': diameterPx + 'px',
             'height': diameterPx + 'px',
             'border-radius': diameterPx + 'px',
-            'background-color': 'rgba(0, 0, 255, 0.6)',
+            'background-color': this._color,
           }
         });
+        hours = 0;
       }
-      hours--;
-    }
-    for (let i = 0; i < this._count; i++) {
-      items.push(i);
     }
     this._items = items;
-    console.log("ITEMS IS ", this._items)
   }
 
 }
