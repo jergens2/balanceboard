@@ -16,33 +16,24 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
   constructor(private daybookDisplayService: DaybookDisplayService) { }
 
-  private _currentZoomLevel: TimelogZoomItem;
-  private _currentTime: moment.Moment = moment();
+  private _zoomButtons: TimelogZoomItem[] = [];
 
   private _daybookSub: Subscription = new Subscription();
 
+  public get zoomButtons(): TimelogZoomItem[] { return this._zoomButtons; }
+
   ngOnInit() {
-    this._buildZoomButtons();
-    // this._daybookSub = this.daybookDisplayService.displayUpdated$.subscribe((update)=>{
-    //   this._buildZoomButtons();
-    // });
+    this._zoomButtons = this.daybookDisplayService.zoomItems;
+    console.log("THIS ZOOM BUITTONS IS ", this._zoomButtons)
   }
-  ngOnDestroy(){
+  ngOnDestroy() {
     this._daybookSub.unsubscribe();
   }
-
-  private _buildZoomButtons(){
-    this._zoomButtons = this.daybookDisplayService.zoomItems;
-  }
-
-  public onClickButton(zoomItem: TimelogZoomItem){
+  public onClickButton(zoomItem: TimelogZoomItem) {
     this.daybookDisplayService.onZoomChanged(zoomItem.zoomType);
   }
 
-  private _zoomButtons: TimelogZoomItem[] = [];
-  public get zoomButtons(): TimelogZoomItem[] { return this._zoomButtons; }
 
 
-  faSun = faSun;
 
 }

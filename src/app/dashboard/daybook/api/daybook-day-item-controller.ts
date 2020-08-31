@@ -2,7 +2,7 @@ import { DaybookDayItem } from './daybook-day-item.class';
 import * as moment from 'moment';
 import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
 import { DaybookTimeDelineatorController } from './daybook-time-delineator-controller.class';
-import { TimelogDelineator } from '../widgets/timelog/timelog-delineator.class';
+import { TimelogDelineator } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
 export class DaybookDayItemController {

@@ -5,7 +5,7 @@ import { faEdit, faTrash, faCheck, faSun, faMoon } from '@fortawesome/free-solid
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import * as moment from 'moment';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
+import { TimelogDelineator, TimelogDelineatorType } from '../timelog-delineator.class';
 
 @Component({
   selector: 'app-time-selection-row',

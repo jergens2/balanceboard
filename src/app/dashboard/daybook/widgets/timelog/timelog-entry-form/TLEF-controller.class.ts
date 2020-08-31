@@ -2,14 +2,11 @@ import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-en
 import { TLEFFormCase } from './tlef-form-case.enum';
 import * as moment from 'moment';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
-import { TimelogDelineator, TimelogDelineatorType } from '../timelog-delineator.class';
+import { TimelogDelineator } from '../timelog-large-frame/timelog-body/timelog-delineator.class';
 import { ToolboxService } from '../../../../../toolbox-menu/toolbox.service';
-import { TimelogDisplayGridItem } from '../timelog-display-grid-item.class';
+import { TimelogDisplayGridItem } from '../timelog-large-frame/timelog-body/timelog-display-grid-item.class';
 import { TLEFControllerItem } from './TLEF-controller-item.class';
-import { SleepEntryItem } from './sleep-entry-form/sleep-entry-item.class';
 import { TLEFCircleButton } from './tlef-parts/tlef-circle-buttons-bar/tlef-circle-button.class';
-import { DaybookTimeScheduleStatus } from '../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
-import { TimelogEntryBuilder } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class';
 import { DaybookTimeSchedule } from '../../../api/daybook-time-schedule/daybook-time-schedule.class';
 import { DaybookTimeScheduleItem } from '../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { ActivityTree } from '../../../../activities/api/activity-tree.class';
@@ -24,21 +21,6 @@ export class TLEFController {
 
     private _activityTree: ActivityTree;
     private _stachedItem: TLEFControllerItem;
-
-    private _toolboxService: ToolboxService;
-    private _scheduleItems: DaybookTimeScheduleItem[] = [];
-
-
-    constructor(scheduleDisplayItems: DaybookTimeScheduleItem[], activityTree: ActivityTree) {
-        this._scheduleItems = scheduleDisplayItems;
-        this._activityTree = activityTree;
-        const builder: TLEFBuilder = new TLEFBuilder();
-        this._tlefItems = builder.buildItems(this._scheduleItems, this._activityTree);
-    }
-
-    public update() {
-        console.log("update() NOT implemented.")
-    }
 
 
     public get formIsOpen(): boolean { return this._currentlyOpenTLEFItem$.getValue() !== null; }
@@ -60,6 +42,29 @@ export class TLEFController {
             TLEFFormCase.NEW_PREVIOUS
         ].indexOf(this.currentlyOpenTLEFItem.formCase) > -1;
     }
+
+    constructor(scheduleDisplayItems: DaybookTimeScheduleItem[], activityTree: ActivityTree) {
+        this._activityTree = activityTree;
+        const builder: TLEFBuilder = new TLEFBuilder();
+        this._tlefItems = builder.buildItems(scheduleDisplayItems, this._activityTree);
+    }
+
+
+    public update(scheduleDisplayItems: DaybookTimeScheduleItem[]) {
+        const builder: TLEFBuilder = new TLEFBuilder();
+        this._tlefItems = builder.buildItems(scheduleDisplayItems, this._activityTree);
+    }
+    public openItemByIndex(itemIndex: number) {
+        const indexItem = this._tlefItems.find(item => item.itemIndex === itemIndex);
+        if (indexItem) {
+            this._openTLEFItem(indexItem);
+        } else {
+            console.log("Error opening TLEF Item by index: " + itemIndex);
+        }
+    }
+
+
+
 
     public openWakeupTime() { this._openTLEFItem(this._tlefItems[0]); }
     public openFallAsleepTime() { this._openTLEFItem(this._tlefItems[this._tlefItems.length - 1]); }
@@ -133,7 +138,7 @@ export class TLEFController {
     }
 
     private _openTLEFItem(item: TLEFControllerItem) {
-        // console.log("Opening TLEF Item", item);
+        console.log("Opening TLEF Item", item);
         let doOpenItem: boolean = true;
         if (this.currentlyOpenTLEFItem) {
             if (this.changesMade) {
@@ -144,22 +149,24 @@ export class TLEFController {
         }
         if (doOpenItem) {
             this._changesMadeTLE$.next(null);
-            this._setActiveItem(item);
+            this._setItemCurrentlyOpen(item.itemIndex);
             this._currentlyOpenTLEFItem$.next(item);
-            if (item.formCase === TLEFFormCase.SLEEP) {
-                this._toolboxService.openSleepEntryForm();
-            } else {
-                this._toolboxService.openTimelogEntryForm();
-            }
+            // if (item.formCase === TLEFFormCase.SLEEP) {
+            //     this._toolboxService.openSleepEntryForm();
+            // } else {
+            //     this._toolboxService.openTimelogEntryForm();
+            // }
         }
     }
-    private _setActiveItem(activeItem: TLEFControllerItem) {
-        
+    private _setItemCurrentlyOpen(itemIndex: number) {
+        this._tlefItems.forEach(item => {
+            if (item.itemIndex === itemIndex) {
+                item.isCurrentlyOpen = true;
+            } else {
+                item.isCurrentlyOpen = false;
+            }
+        });
     }
-
-
-
-
 
     private _formClosed$: Subject<boolean> = new Subject();
     private _closeForm() {
@@ -171,11 +178,11 @@ export class TLEFController {
     /**
      * Subscribe to the toolbox Close (X) button.
      */
-    private _setToolboxSub() {
-        this._toolboxService.onFormClosed$.subscribe((formClosed: boolean) => {
-            if (formClosed === true) {
-                this._closeForm();
-            }
-        });
-    }
+    // private _setToolboxSub() {
+    //     this._toolboxService.onFormClosed$.subscribe((formClosed: boolean) => {
+    //         if (formClosed === true) {
+    //             this._closeForm();
+    //         }
+    //     });
+    // }
 }

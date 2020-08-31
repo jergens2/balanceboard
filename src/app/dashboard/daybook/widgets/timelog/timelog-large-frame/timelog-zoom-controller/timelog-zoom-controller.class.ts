@@ -1,5 +1,5 @@
 import { TimelogZoomItem } from './timelog-zoom-item.class';
-import { faSun, faList } from '@fortawesome/free-solid-svg-icons';
+import { faSun, faList, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { DaybookTimeSchedule } from '../../../../api/daybook-time-schedule/daybook-time-schedule.class';
 import * as moment from 'moment';
 import { TimelogZoomType } from './timelog-zoom-type.enum';
@@ -8,6 +8,10 @@ import { SleepCycleScheduleItemsBuilder } from '../../../../sleep-manager/sleep-
 import { TimeRounder } from '../../../../../../shared/time-utilities/time-rounder';
 
 export class TimelogZoomController {
+
+    public readonly faList = faList;
+    public readonly faSun = faSun;
+    public readonly faSearch = faSearch;
 
     private _schedule: DaybookTimeSchedule;
     private _zoomItems: TimelogZoomItem[] = [];
@@ -39,8 +43,8 @@ export class TimelogZoomController {
 
     public get zoomItems(): TimelogZoomItem[] { return this._zoomItems; }
 
-    public get displayStartTime(): moment.Moment { return this._currentZoom.endTime; }
-    public get displayEndTime(): moment.Moment { return this._currentZoom.startTime; }
+    public get displayStartTime(): moment.Moment { return this._currentZoom.startTime; }
+    public get displayEndTime(): moment.Moment { return this._currentZoom.endTime; }
     public get displayDurationMs(): number { return moment(this.displayEndTime).diff(this.displayStartTime, 'milliseconds'); }
 
     public get currentZoom(): TimelogZoomItem { return this._currentZoom; }
@@ -70,11 +74,11 @@ export class TimelogZoomController {
         this._customStartTime = moment(wakeupTime);
         this._customEndTime = moment(fallAsleepTime);
         this._zoomItems = [
-            new TimelogZoomItem(startOfThisDay, endOfThisDay, TimelogZoomType.TWENTY_FOUR_HOURS),
-            new TimelogZoomItem(minus4Hours, plus4Hours, TimelogZoomType.EIGHT_HOUR_WINDOW),
-            new TimelogZoomItem(wakeupTime, fallAsleepTime, TimelogZoomType.AWAKE_PERIOD),
-            new TimelogZoomItem(startOfThisDay, endOfThisDay, TimelogZoomType.LIST_VIEW),
-            new TimelogZoomItem(this._customStartTime, this._customEndTime, TimelogZoomType.CUSTOM),
+            new TimelogZoomItem(startOfThisDay, endOfThisDay, TimelogZoomType.TWENTY_FOUR_HOURS, null, '24'),
+            new TimelogZoomItem(minus4Hours, plus4Hours, TimelogZoomType.EIGHT_HOUR_WINDOW, null, '8'),
+            new TimelogZoomItem(wakeupTime, fallAsleepTime, TimelogZoomType.AWAKE_PERIOD, faSun, 'AWAKE'),
+            new TimelogZoomItem(startOfThisDay, endOfThisDay, TimelogZoomType.LIST_VIEW, faList, 'LIST'),
+            new TimelogZoomItem(this._customStartTime, this._customEndTime, TimelogZoomType.CUSTOM, faSearch, 'CUSTOM'),
         ];
     }
 

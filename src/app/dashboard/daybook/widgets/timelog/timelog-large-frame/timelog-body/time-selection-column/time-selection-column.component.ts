@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class';
 import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
-import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
+import { TimelogDelineator, TimelogDelineatorType } from '../timelog-delineator.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { DaybookDisplayUpdateType } from '../../../../../api/daybook-display-update.interface';
 import { TimeSelectionColumn } from './time-selection-column.class';
@@ -24,7 +24,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   private _timeDelineators: TimelogDelineator[] = [];
   private _isDrawing: boolean = false;
 
-  private _column: TimeSelectionColumn;
+  // private _column: TimeSelectionColumn;
 
   private _displaySub: Subscription = new Subscription();
   private _columnSubs: Subscription[] = [];
@@ -35,7 +35,8 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     }
   }
 
-  public get rows(): TimeSelectionRow[] { return this._column.rows; }
+  public get column(): TimeSelectionColumn { return this.daybookDisplayService.displayManager.timeSelectionColumn; }
+  public get rows(): TimeSelectionRow[] { return this.column.rows; }
   public get startTime(): moment.Moment { return this.daybookDisplayService.displayStartTime; }
   public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
   public get startRow(): TimeSelectionRow { return this._startRow; }
@@ -54,20 +55,20 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   }
 
   private _rebuild() {
-    this._timeDelineators = Object.assign([], this.daybookDisplayService.displayManager.getDelineators());
-    // console.log(" TIME DELINEATORS IN THE COLUMN: ")
-    // this._timeDelineators.forEach(t => console.log("  " + t.toString()))
-    this._column = new TimeSelectionColumn(this.daybookDisplayService);
+    this._timeDelineators = Object.assign([], this.daybookDisplayService.displayManager.displayDelineators);
+    console.log(" TIME DELINEATORS IN THE COLUMN: ")
+    this._timeDelineators.forEach(t => console.log("  " + t.toString()))
+
     this._subscribeToColumn();
   }
 
   private _subscribeToColumn() {
     this._columnSubs.forEach(sub => sub.unsubscribe());
     this._columnSubs = [
-      this._column.deleteDelineator$.subscribe((deleteDelineator) => { this._onDeleteDelineator(deleteDelineator); }),
-      this._column.startDragging$.subscribe((startRow) => { this._startDragging(startRow); }),
-      this._column.updateDragging$.subscribe((updateRow) => { this._updateDragging(updateRow); }),
-      this._column.stopDragging$.subscribe((stopRow) => { this._updateDragging(stopRow, true); })
+      this.column.deleteDelineator$.subscribe((deleteDelineator) => { this._onDeleteDelineator(deleteDelineator); }),
+      this.column.startDragging$.subscribe((startRow) => { this._startDragging(startRow); }),
+      this.column.updateDragging$.subscribe((updateRow) => { this._updateDragging(updateRow); }),
+      this.column.stopDragging$.subscribe((stopRow) => { this._updateDragging(stopRow, true); })
     ];
   }
 
@@ -179,7 +180,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
 
   private _reset() {
     this._isDrawing = false;
-    this._column.reset();
+    this.column.reset();
     this._startRow = null;
     this._endRow = null;
     // this._mouseUpRow = null;

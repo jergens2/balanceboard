@@ -2,12 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
-import { TimelogDelineator } from '../../timelog-delineator.class';
+import { TimelogDelineator } from './timelog-delineator.class';
 import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { TimelogDisplayGrid } from '../../timelog-display-grid-class';
-import { TimelogDisplayGridItem } from '../../timelog-display-grid-item.class';
+import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
+import { TimelogDisplayGrid } from './timelog-display-grid-class';
 
 @Component({
   selector: 'app-timelog-body',
@@ -80,7 +80,7 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
 
   public onClickGridItem(gridItem: TimelogDisplayGridItem) {
-    this.daybookDisplayService.openTimelogGridItem(gridItem);
+    this.daybookDisplayService.displayManager.openItemByIndex(gridItem.itemIndex);
   }
 
   public showNowLine(gridItem: TimelogDisplayGridItem): boolean {

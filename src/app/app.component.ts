@@ -13,10 +13,13 @@ import { KeydownService } from './shared/keydown.service';
 export class AppComponent implements OnInit {
 
   private _authSubs: Subscription[] = [];
-  private _isAuthenticated: boolean = false;
+  private _isAuthenticated: boolean;
   private _userActivitySub: Subscription = new Subscription();
+  private _inactivityStartTime: moment.Moment;
+  private _keyDown$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   public get isAuthenticated(): boolean { return this._isAuthenticated; }
+  public get keyDown$(): Observable<string> { return this._keyDown$.asObservable(); }
 
   constructor(
     private authService: AuthenticationService,
@@ -30,19 +33,17 @@ export class AppComponent implements OnInit {
     this._resetUserInactiveTimer();
   }
 
-  @HostListener('window:mousemove') refreshUserState() {
+  @HostListener('window:mousemove') mouseMove() {
     this._resetUserInactiveTimer();
   }
 
-  private _keyDown$: BehaviorSubject<string> = new BehaviorSubject(null);
-  public get keyDown$(): Observable<string> { return this._keyDown$.asObservable(); }
   @HostListener('window:keydown', ['$event']) onKeyDown(event: KeyboardEvent) {
     this.keydownService.keyDown(event.key);
     this._resetUserInactiveTimer();
   }
 
   ngOnInit() {
-    // console.log("APP COMPONENT NG ON INIT")
+    this._isAuthenticated = false;
     this.sizeService.updateSize(window.innerWidth, window.innerHeight);
     this._resetUserInactiveTimer();
     this._authSubs.forEach(sub => sub.unsubscribe());
@@ -58,13 +59,14 @@ export class AppComponent implements OnInit {
     ];
   }
 
-  private _inactivityStartTime: moment.Moment;
+
   private _resetUserInactiveTimer() {
-    const lockAtMinutes: number = 15;
+    const diffMin = moment().diff(this._inactivityStartTime, 'minutes');
+    // console.log("RESETTING INACTIVITY TIMER (prev val: " + diffMin + " minutes")
+    const lockAtMinutes = 15;
     this._inactivityStartTime = moment();
     this._userActivitySub.unsubscribe();
     this._userActivitySub = timer(0, 3000).subscribe((tick) => {
-      const diffMin = moment().diff(this._inactivityStartTime, "minutes");
       if (diffMin > lockAtMinutes) {
         this.authService.lock();
         this._userActivitySub.unsubscribe();

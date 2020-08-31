@@ -13,17 +13,17 @@
 
         <div *ngIf="gridItems.length > 0 " [ngStyle]="gridItemsNgStyle" class="grid-items">
             <div *ngFor="let gridItem of gridItems" class="grid-item"
-                [ngClass]="{'active-tlef': gridItem.isActiveFormItem}">
+                [ngClass]="{'currently-open-item': gridItem.isCurrentlyOpen}">
 
                 <div *ngIf="showNowLine(gridItem)" class="now-line"></div>
 
-                <app-available-timelog-item *ngIf="gridItem.isAvailable" class='available-item'
+                <app-available-timelog-item *ngIf="gridItem.isAvailableItem" class='available-item'
                     [gridItem]="gridItem"></app-available-timelog-item>
 
-                <app-timelog-entry *ngIf="gridItem.isTimelogEntry" style="flex-grow: 2;" 
+                <app-timelog-entry *ngIf="gridItem.isActiveItem" style="flex-grow: 2;" 
                     [gridItem]="gridItem"></app-timelog-entry>
 
-                <div *ngIf="gridItem.isSleepEntry" class='sleep-item' (click)="onClickGridItem(gridItem)">
+                <div *ngIf="gridItem.isSleepItem" class='sleep-item' (click)="onClickGridItem(gridItem)">
                 </div>
             </div>
         </div>

@@ -63,7 +63,7 @@ export class SleepService {
    *
    * if it is the first time config, user sets initial values and this method is reloaded.
   */
-  public step3InitiateSleepManager() {
+  public step3And5InitiateSleepManager() {
     const sleepData: SleepCycleData = this.sleepCycleData;
     const dayItems: DaybookDayItem[] = this.daybookHTTPService.dayItems;
     const appConfig: UAPAppConfiguration = this.accountService.appConfig;

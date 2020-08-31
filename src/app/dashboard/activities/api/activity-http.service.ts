@@ -32,7 +32,7 @@ export class ActivityHttpService {
           this._activityTree$.next(new ActivityTree(activities));
           isComplete$.next(true);
         },
-        error: e => console.log("Error", e),
+        error: e => console.log('Error A', e),
         complete: () => isComplete$.complete()
       });
     return isComplete$.asObservable();
@@ -43,7 +43,7 @@ export class ActivityHttpService {
   }
 
   private _fetchActivitiesHttp$(userId): Observable<ActivityCategoryDefinition[]> {
-    const getUrl = serverUrl + "/api/activity-category-definition/get/" + userId;
+    const getUrl = serverUrl + '/api/activity-category-definition/get/' + userId;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -60,17 +60,18 @@ export class ActivityHttpService {
 
 
   public saveDefaultActivities(defaultActivities: ActivityCategoryDefinition[]) {
-    const postUrl = serverUrl + "/api/activity-category-definition/createDefault";
+    const postUrl = serverUrl + '/api/activity-category-definition/createDefault';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, data: any }>(postUrl, defaultActivities.map((activity) => { return activity.httpShape; }), httpOptions)
+    this.httpClient.post<{ message: string, data: any }>(postUrl,
+      defaultActivities.map((activity) => activity.httpShape), httpOptions)
       .pipe<ActivityCategoryDefinition[]>(map((response) => {
         return (response.data as any[]).map((dataObject) => {
-          let activity: ActivityCategoryDefinition = this._buildActivityFromResponse(dataObject);
+          const activity: ActivityCategoryDefinition = this._buildActivityFromResponse(dataObject);
           return activity;
         });
       }))
@@ -78,11 +79,11 @@ export class ActivityHttpService {
 
 
   public saveActivity$(activity: ActivityCategoryDefinition): Observable<ActivityCategoryDefinition> {
-    let saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
-    let newActivity = activity;
+    const saveActivityComplete$: Subject<ActivityCategoryDefinition> = new Subject();
+    const newActivity = activity;
     newActivity.userId = this._userId;
-    newActivity.treeId = this._userId + "_" + Guid.newGuid();
-    const postUrl = serverUrl + "/api/activity-category-definition/create";
+    newActivity.treeId = this._userId + '_' + Guid.newGuid();
+    const postUrl = serverUrl + '/api/activity-category-definition/create';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -103,10 +104,10 @@ export class ActivityHttpService {
   }
 
   public saveActivity(activity: ActivityCategoryDefinition) {
-    let newActivity = activity;
+    const newActivity = activity;
     newActivity.userId = this._userId;
-    newActivity.treeId = this._userId + "_" + Guid.newGuid();
-    const postUrl = serverUrl + "/api/activity-category-definition/create";
+    newActivity.treeId = this._userId + '_' + Guid.newGuid();
+    const postUrl = serverUrl + '/api/activity-category-definition/create';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -125,7 +126,7 @@ export class ActivityHttpService {
   }
 
   public updateActivity$(unsentActivity: ActivityCategoryDefinition): Observable<boolean> {
-    const updateUrl = serverUrl + "/api/activity-category-definition/update";
+    const updateUrl = serverUrl + '/api/activity-category-definition/update';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -151,33 +152,36 @@ export class ActivityHttpService {
 
   /**
     2020-07-18
-    
+
     Warning: this method works but there is a flaw:  if this activity has children, only this activity is deleted, and not its children
     what happens then is that the children still exist as objects in the database because they were not explicitly destroyed.  
-    then every time all activities for a user are fetched, those parentless child activities are fetched but never displayed and are unusable and inaccessible.
-    
-    as a temporary solution, the front end prevents the deletion of any activity that has children - the delete button is only available if the activity has no children.
+    then every time all activities for a user are fetched, 
+    those parentless child activities are fetched but never displayed and are unusable and inaccessible.
+
+    as a temporary solution, the front end prevents the deletion of any activity that has children - 
+    the delete button is only available if the activity has no children.
 
 */
   public permanentlyDeleteActivity$(activity: ActivityCategoryDefinition): Observable<boolean> {
     const isComplete$: Subject<boolean> = new Subject();
-    const deleteUrl = serverUrl + "/api/activity-category-definition/permanently-delete";
+    const deleteUrl = serverUrl + '/api/activity-category-definition/permanently-delete';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
-    this.httpClient.post<{ message: string, success: boolean, data: any }>(deleteUrl, activity.httpShape, httpOptions).subscribe((response) => {
-      if (response.success === true) {
-        const tree = this.activityTree;
-        tree.pruneActivityFromTree(activity);
-        this._activityTree$.next(tree);
-      } else {
-        console.log("Error with deleting activity definition.");
-      }
-      isComplete$.next(true);
-    });
+    this.httpClient.post<{ message: string, success: boolean, data: any }>(deleteUrl, activity.httpShape, httpOptions)
+      .subscribe((response) => {
+        if (response.success === true) {
+          const tree = this.activityTree;
+          tree.pruneActivityFromTree(activity);
+          this._activityTree$.next(tree);
+        } else {
+          console.log('Error with deleting activity definition.');
+        }
+        isComplete$.next(true);
+      });
     return isComplete$.asObservable();
   }
 

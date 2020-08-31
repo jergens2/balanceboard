@@ -5,10 +5,12 @@ import { TimelogZoomType } from './timelog-zoom-type.enum';
 
 export class TimelogZoomItem{
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment, type: TimelogZoomType){ 
+    constructor(startTime: moment.Moment, endTime: moment.Moment, type: TimelogZoomType, icon: IconDefinition, label: string){ 
         this.zoomType = type;
         this.startTime = moment(startTime);
         this.endTime = moment(endTime);
+        this.icon = icon;
+        this.label = label;
     }
 
 
@@ -19,4 +21,5 @@ export class TimelogZoomItem{
     public zoomType: TimelogZoomType;
     public startTime: moment.Moment;
     public endTime: moment.Moment;
+    public label: string = '';
 }

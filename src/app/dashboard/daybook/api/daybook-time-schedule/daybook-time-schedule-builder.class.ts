@@ -4,7 +4,7 @@ import { DaybookDayItemController } from '../daybook-day-item-controller';
 import { DaybookTimeScheduleSleepItem } from './daybook-time-schedule-sleep-item.class';
 import { DaybookTimeScheduleActiveItem } from './daybook-time-schedule-active-item.class';
 import { DaybookTimeScheduleItem } from './daybook-time-schedule-item.class';
-import { TimelogDelineator, TimelogDelineatorType } from '../../widgets/timelog/timelog-delineator.class';
+import { TimelogDelineator, TimelogDelineatorType } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 import * as moment from 'moment';
 import { DaybookTimeScheduleAvailableItem } from './daybook-time-schedule-available-item.class';
 
@@ -15,15 +15,13 @@ export class DaybookTimeScheduleBuilder {
      * The purpose of this class is to export all code related to the construction of the DaybookTimeSchedule,
      * so that the DaybookTimeSchedule class can be focused on the actual behavior and properties.
      */
-    constructor() {
-    }
+    constructor() { }
 
     private _dateYYYYMMDD: string;
     private _sleepCycleBuilder: SleepCycleScheduleItemsBuilder;
     private _daybookController: DaybookDayItemController;
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
-
 
 
     /**
@@ -51,15 +49,15 @@ export class DaybookTimeScheduleBuilder {
         const activeItems: DaybookTimeScheduleActiveItem[] = daybookController.timelogEntryItems.map(item => {
             return new DaybookTimeScheduleActiveItem(item.startTime, item.endTime, item.toDataEntryItem());
         });
-        console.log("***   SLEEP ITEMS ARE:")
-        sleepItems.forEach(si => console.log("   " + si.toString()))
-        console.log("***   ACTIVE TLE ITEMS ARE:")
-        activeItems.forEach(si => console.log("   " + si.toString()))
-        const availableItems: DaybookTimeScheduleAvailableItem[] = this._populateAvailableScheduleItems([...sleepItems, ...activeItems]);
-        console.log("***   AVBAILABLE ITEMS ARE:")
-        availableItems.forEach(si => console.log("   " + si.toString()))
+        // console.log("***   SLEEP ITEMS ARE:")
+        // sleepItems.forEach(si => console.log("   " + si.toString()))
+        // console.log("***   ACTIVE TLE ITEMS ARE:")
+        // activeItems.forEach(si => console.log("   " + si.toString()))
+        const availableItems: DaybookTimeScheduleAvailableItem[] = this._populateAvailableScheduleItems(
+            this._sortAndValidateScheduleItems([...sleepItems, ...activeItems]));
+        // console.log("***   AVBAILABLE ITEMS ARE:")
+        // availableItems.forEach(si => console.log("   " + si.toString()))
         const scheduleItems = this._sortAndValidateScheduleItems([...sleepItems, ...activeItems, ...availableItems]);
-
         for (let i = 0; i < scheduleItems.length; i++) {
             if (i > 0) {
                 scheduleItems[i].setItemIndex(i, scheduleItems[i - 1]);
@@ -67,10 +65,6 @@ export class DaybookTimeScheduleBuilder {
                 scheduleItems[i].setItemIndex(i);
             }
         }
-        console.log("SCHEDULE ITEMS BUILT");
-        scheduleItems.forEach(item => { console.log("   " + item.toString()) })
-
-
         return new DaybookTimeSchedule(dateYYYYMMDD, startTime, endTime, scheduleItems, sleepCycle);
     }
 
@@ -86,43 +80,43 @@ export class DaybookTimeScheduleBuilder {
         const splitThisAvailableItem = function (startTime: moment.Moment, endTime: moment.Moment,
             delineators: TimelogDelineator[]): DaybookTimeScheduleAvailableItem[] {
             const relevantDelineators: TimelogDelineator[] = delineators.filter(item => {
-                const isInRange: boolean = item.time.isAfter(startTime) && item.time.isBefore(endTime);
-                const isDayStructure: boolean = item.delineatorType === TimelogDelineatorType.DAY_STRUCTURE;
+                const isInRange = item.time.isSameOrAfter(startTime) && item.time.isSameOrBefore(endTime);
                 if (isInRange) {
-                    if (!isDayStructure) {
-                        return;
+                    if (item.delineatorType === TimelogDelineatorType.DAY_STRUCTURE) {
+                        const thresholdStart = moment(startTime).add(60, 'minutes');
+                        const thresholdEnd = moment(endTime).subtract(60, 'minutes');
+                        if (item.time.isSameOrAfter(thresholdStart) && item.time.isSameOrBefore(thresholdEnd)) {
+                            return true;
+                        }
                     } else {
-                        // if there is a day structure delineator, and it is within an hour of start or end time, ignore it.
-                        const structureItemsThresholdMinutes = 60;
-                        const structureItemsStartTime = moment(startTime).add(structureItemsThresholdMinutes, 'minutes');
-                        const structureItemsEndTime = moment(endTime).subtract(structureItemsThresholdMinutes, 'minutes');
-                        const structureItemIsInRange: boolean = item.time.isSameOrAfter(structureItemsStartTime)
-                            && item.time.isSameOrBefore(structureItemsEndTime);
-                        return structureItemIsInRange;
+                        return true;
                     }
                 }
+                return false;
             });
-            const startItem = new TimelogDelineator(startTime, TimelogDelineatorType.SCHEDULE_START);
-            const endItem = new TimelogDelineator(endTime, TimelogDelineatorType.SCHEDULE_END);
+            const startDelineator = new TimelogDelineator(startTime, TimelogDelineatorType.AVAILABLE_ITEM_START);
+            const endDelineator = new TimelogDelineator(endTime, TimelogDelineatorType.AVALABLE_ITEM_END);
             if (relevantDelineators.length === 0) {
-                return [new DaybookTimeScheduleAvailableItem(startItem, endItem)];
+                return [new DaybookTimeScheduleAvailableItem(startDelineator, endDelineator)];
             } else if (relevantDelineators.length === 1) {
                 return [
-                    new DaybookTimeScheduleAvailableItem(startItem, relevantDelineators[0]),
-                    new DaybookTimeScheduleAvailableItem(relevantDelineators[0], endItem),
+                    new DaybookTimeScheduleAvailableItem(startDelineator, relevantDelineators[0]),
+                    new DaybookTimeScheduleAvailableItem(relevantDelineators[0], endDelineator),
                 ];
             } else if (relevantDelineators.length > 1) {
-                let currentItem: TimelogDelineator = startItem;
+                let currentItem: TimelogDelineator = startDelineator;
                 const splitAvailableItems: DaybookTimeScheduleAvailableItem[] = [];
                 for (let i = 0; i < relevantDelineators.length; i++) {
                     splitAvailableItems.push(new DaybookTimeScheduleAvailableItem(currentItem, relevantDelineators[i]));
                     currentItem = relevantDelineators[i];
                 }
-                splitAvailableItems.push(new DaybookTimeScheduleAvailableItem(currentItem, endItem));
+                splitAvailableItems.push(new DaybookTimeScheduleAvailableItem(currentItem, endDelineator));
                 return splitAvailableItems;
             }
         };
         const splitDelineators: TimelogDelineator[] = this._getSplitDelineators();
+        // console.log("SPLIT DELINEATORS")
+        // splitDelineators.forEach(item => console.log("  " + item.toString()))
         let currentTime: moment.Moment = moment(this._startTime);
         let allItems: DaybookTimeScheduleAvailableItem[] = [];
         if (timeScheduleItems.length === 0) {
@@ -138,6 +132,8 @@ export class DaybookTimeScheduleBuilder {
                 allItems = [...allItems, ...splitThisAvailableItem(currentTime, this._endTime, splitDelineators)];
             }
         }
+        // console.log("ALL AVAILABLE ITEMS: ")
+        // allItems.forEach(item => console.log(item.startDelineator, item.endDelineator))
         return allItems;
     }
 
@@ -193,7 +189,7 @@ export class DaybookTimeScheduleBuilder {
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(24, 'hours'), typeMidnight),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(48, 'hours'), typeMidnight),
         ];
-        const nowDelineator: TimelogDelineator = new TimelogDelineator(moment(), TimelogDelineatorType.NOW);
+        const nowDelineator: TimelogDelineator = new TimelogDelineator(moment().startOf('minute'), TimelogDelineatorType.NOW);
         const savedDelineators: TimelogDelineator[] = this._daybookController.savedDelineatorTimes.map(item => {
             return new TimelogDelineator(item, TimelogDelineatorType.SAVED_DELINEATOR);
         });
@@ -205,171 +201,19 @@ export class DaybookTimeScheduleBuilder {
             } else {
                 return 0;
             }
+        }).filter(item => {
+            if (item.delineatorType === TimelogDelineatorType.DAY_STRUCTURE) {
+                const thresholdStart = moment(nowDelineator.time).subtract(59, 'minutes');
+                const thresholdEnd = moment(nowDelineator.time).add(59, 'minutes');
+                if (item.time.isSameOrAfter(thresholdStart) && item.time.isSameOrBefore(thresholdEnd)) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return true;
+            }
         });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Start by building all conceivable delineators of the schedule.
-     *      e.g.
-     *      --start time & end time,
-     *      --Timelog Entry start and end times,
-     *      --Sleep entry start and end times,
-     *      --saved delineators,
-     *      --day structure (0, 6, 12, 18, 24/midnight)
-     *
-     */
-    // private _updateDelineators() {
-    //     let nowLineCrossesTLE: boolean = false;
-
-    //     const nowTime = moment().startOf('minute');
-    //     const timelogDelineators: TimelogDelineator[] = [];
-    //     this._daybookController.savedDelineatorTimes.forEach((time: moment.Moment) => {
-    //         timelogDelineators.push(new TimelogDelineator(time, TimelogDelineatorType.SAVED_DELINEATOR));
-    //     });
-    //     if (this._daybookController.isToday) {
-    //         const nowDelineator = new TimelogDelineator(nowTime, TimelogDelineatorType.NOW);
-    //         if (nowLineCrossesTLE) { nowDelineator.setNowLineCrossesTLE(); }
-    //         timelogDelineators.push(nowDelineator);
-    //     }
-    //     // const frameStartDelineator = new TimelogDelineator(this.startTime, TimelogDelineatorType.SCHEDULE_START);
-    //     // const fameEndDelineator = new TimelogDelineator(this.endTime, TimelogDelineatorType.SCHEDULE_START);
-
-
-    //     // const wakeupDelineator = new TimelogDelineator(this.wakeupTime, TimelogDelineatorType.WAKEUP_TIME);
-    //     // const fallAsleepDelineator = new TimelogDelineator(this.fallAsleepTime, TimelogDelineatorType.FALLASLEEP_TIME);
-
-    //     // timelogDelineators.push(frameStartDelineator);
-    //     // timelogDelineators.push(wakeupDelineator);
-    //     // timelogDelineators.push(fallAsleepDelineator);
-    //     // timelogDelineators.push(fameEndDelineator);
-
-    //     // console.log("Disabled the DRAW delineators on this class for now.")
-    //     // if (this._drawDelineators) {
-    //     //     timelogDelineators.push(this._drawDelineators.start);
-    //     //     timelogDelineators.push(this._drawDelineators.end);
-    //     // }
-
-
-
-
-    //     // this._daybookController.timelogEntryItems.forEach((timelogEntryItem) => {
-    //     //     const timeDelineatorStart = new TimelogDelineator(timelogEntryItem.startTime, TimelogDelineatorType.TIMELOG_ENTRY_START);
-    //     //     const timeDelineatorEnd = new TimelogDelineator(timelogEntryItem.endTime, TimelogDelineatorType.TIMELOG_ENTRY_END);
-    //     //     timeDelineatorStart.nextDelineator = timeDelineatorEnd;
-    //     //     timeDelineatorStart.timelogEntryStart = timelogEntryItem;
-    //     //     timeDelineatorEnd.previousDelineator = timeDelineatorStart;
-    //     //     timeDelineatorEnd.timelogEntryEnd = timelogEntryItem;
-    //     //     timelogDelineators.push(timeDelineatorStart);
-    //     //     timelogDelineators.push(timeDelineatorEnd);
-    //     //     if (nowTime.isSameOrAfter(timelogEntryItem.startTime) && nowTime.isBefore(timelogEntryItem.endTime)) {
-    //     //         nowLineCrossesTLE = true;
-    //     //     }
-    //     // });
-
-
-
-    //     const structureItems = this._addDayStructureDelineators(timelogDelineators);
-    //     const sortedDelineators = this._sortDelineators(structureItems);
-    //     this._scheduleDelineators = sortedDelineators;
-    // }
-
-
-
-
-
-    // private _sortDelineators(timelogDelineators: TimelogDelineator[]): TimelogDelineator[] {
-    //     let sortedDelineators = timelogDelineators.filter((delineator) => {
-    //         return delineator.time.isSameOrAfter(this.startTime) && delineator.time.isSameOrBefore(this.endTime);
-    //     }).sort((td1, td2) => {
-    //         if (td1.time.isBefore(td2.time)) { return -1; }
-    //         else if (td1.time.isAfter(td2.time)) { return 1; }
-    //         else { return 0; }
-    //     });
-    //     const priority = [
-    //         TimelogDelineatorType.SCHEDULE_START,
-    //         TimelogDelineatorType.SCHEDULE_END,
-    //         TimelogDelineatorType.DISPLAY_START,
-    //         TimelogDelineatorType.DISPLAY_END,
-    //         TimelogDelineatorType.DRAWING_TLE_START,
-    //         TimelogDelineatorType.DRAWING_TLE_END,
-    //         TimelogDelineatorType.WAKEUP_TIME,
-    //         TimelogDelineatorType.FALLASLEEP_TIME,
-    //         TimelogDelineatorType.TIMELOG_ENTRY_START,
-    //         TimelogDelineatorType.TIMELOG_ENTRY_END,
-    //         TimelogDelineatorType.NOW,
-    //         TimelogDelineatorType.SAVED_DELINEATOR,
-    //         TimelogDelineatorType.DAY_STRUCTURE,
-    //     ];
-    //     if (sortedDelineators.length > 0) {
-    //         for (let i = 1; i < sortedDelineators.length; i++) {
-    //             if (sortedDelineators[i].time.isSame(sortedDelineators[i - 1].time)) {
-    //                 const thisPriorityIndex = priority.indexOf(sortedDelineators[i].delineatorType);
-    //                 const prevPriorityIndex = priority.indexOf(sortedDelineators[i - 1].delineatorType);
-    //                 // lower priority index is higher priority
-    //                 if (thisPriorityIndex < prevPriorityIndex) {
-    //                     sortedDelineators.splice(i - 1, 1);
-    //                     i--;
-    //                 } else if (thisPriorityIndex > prevPriorityIndex) {
-    //                     sortedDelineators.splice(i, 1);
-    //                     i--;
-    //                 } else {
-    //                     console.log("** Warning: duplicate DelineatorTypes");
-    //                     sortedDelineators.splice(i, 1);
-    //                     console.log(sortedDelineators[i].toString() + " , " + sortedDelineators[i - 1].toString())
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     // Remove any DAY_STRUCTURE delineators if they are within an hour of any other.
-    //     for (let i = 0; i < sortedDelineators.length; i++) {
-    //         const thresholdMs = 1000 * 60 * 60 * 1; // 2 hours ;
-    //         const sd = sortedDelineators[i];
-    //         if (sd.delineatorType === TimelogDelineatorType.DAY_STRUCTURE) {
-    //             let remove: boolean = false;
-    //             if (i > 0) {
-    //                 const diff = moment(sd.time).diff(sortedDelineators[i - 1].time, 'milliseconds');
-    //                 if (diff < thresholdMs) {
-    //                     // console.log("Removing DAY_STRUCTURE delineator " + sd.time.format('YYYY-MM-DD hh:mm a')
-    //                     //     + " because prev delineator is within an hour");
-    //                     remove = true;
-    //                 }
-    //                 if (sortedDelineators[i - 1].delineatorType === TimelogDelineatorType.DRAWING_TLE_END ||
-    //                     sortedDelineators[i - 1].delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_START) {
-    //                     remove = true;
-    //                 }
-    //             }
-    //             if (!remove) {
-    //                 if (i < sortedDelineators.length - 1) {
-    //                     const diff = moment(sortedDelineators[i + 1].time).diff(sd.time, 'milliseconds');
-    //                     if (diff < thresholdMs) {
-    //                         // console.log("Removing DAY_STRUCTURE delineator " + sd.time.format('YYYY-MM-DD hh:mm a')
-    //                         //     + "because next delineator is within an hour");
-    //                         remove = true;
-    //                     }
-    //                 }
-    //             }
-    //             if (remove) {
-    //                 sortedDelineators.splice(i, 1);
-    //                 i--;
-    //             }
-    //         }
-    //     }
-    //     return sortedDelineators;
-    // }
-
 
 }

@@ -2,7 +2,6 @@ import * as moment from 'moment';
 import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { TLEFFormCase } from './tlef-form-case.enum';
 import { SleepEntryItem } from './sleep-entry-form/sleep-entry-item.class';
-import { TimelogDelineator, TimelogDelineatorType } from '../timelog-delineator.class';
 import { TLEFCircleButton } from './tlef-parts/tlef-circle-buttons-bar/tlef-circle-button.class';
 import { DaybookTimeScheduleItem } from '../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { DaybookTimeScheduleStatus } from '../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
@@ -13,9 +12,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     private _initialTLEValue: TimelogEntryItem;
     private _initialSleepValue: SleepEntryItem;
     private _formCase: TLEFFormCase;
-    private _isAvailable: boolean;
 
-    private _isActive: boolean = false;
     private _isCurrent: boolean = false;
     private _isDrawing: boolean = false;
 
@@ -39,7 +36,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     public get gridBarItem(): TLEFCircleButton { return this._circleButtonItem; }
     public get formCase(): TLEFFormCase { return this._formCase; }
 
-    public get isActive(): boolean { return this._isActive; }
+    public isCurrentlyOpen: boolean = false;
 
     public get isSleepItem(): boolean { return this.formCase === TLEFFormCase.SLEEP; }
     public get isTLEItem(): boolean { return this.formCase !== TLEFFormCase.SLEEP; }

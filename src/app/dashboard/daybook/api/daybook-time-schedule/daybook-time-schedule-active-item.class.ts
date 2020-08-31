@@ -4,7 +4,7 @@ import { DaybookTimeScheduleStatus } from './daybook-time-schedule-status.enum';
 import { DaybookTimelogEntryDataItem } from '../data-items/daybook-timelog-entry-data-item.interface';
 import { TimelogEntryBuilder } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class';
 import { TimelogEntryItem } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { TimelogDelineator, TimelogDelineatorType } from '../../widgets/timelog/timelog-delineator.class';
+import { TimelogDelineator, TimelogDelineatorType } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 
 export class DaybookTimeScheduleActiveItem extends DaybookTimeScheduleItem {
     constructor(startTime: moment.Moment, endTime: moment.Moment, timelogEntry: DaybookTimelogEntryDataItem) {

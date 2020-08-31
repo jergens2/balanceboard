@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { DaybookTimeScheduleStatus } from './daybook-time-schedule-status.enum';
 import { DaybookTimeScheduleItem } from './daybook-time-schedule-item.class';
-import { TimelogDelineator } from '../../widgets/timelog/timelog-delineator.class';
+import { TimelogDelineator } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 import { TimeSchedule } from '../../../../shared/time-utilities/time-schedule.class';
 import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
 import { TimeRangeRelationship } from '../../../../shared/time-utilities/time-range-relationship.enum';
@@ -40,20 +40,20 @@ export class DaybookTimeSchedule extends TimeSchedule {
     public get endOfThisDay(): moment.Moment { return moment(this.startOfThisDay).add(24, 'hours'); }
     public get sleepCycle(): SleepCycleScheduleItemsBuilder { return this._sleepCycle; }
 
-    public getItemsInRange(startTime: moment.Moment, endTime: moment.Moment): DaybookTimeScheduleItem[] {
+    public getItemsInRange(startTime: moment.Moment, endTime: moment.Moment, trim = true): DaybookTimeScheduleItem[] {
         const checkRange = new TimeScheduleItem(startTime.toISOString(), endTime.toISOString());
         let inRangeItems: DaybookTimeScheduleItem[] = [];
         if (startTime.isSameOrAfter(this.startTime) && endTime.isSameOrBefore(this.endTime)) {
             inRangeItems = Object.assign([], this.timeScheduleItems.filter(item => {
                 const relationship = item.getRelationshipTo(checkRange);
-                return relationship === TimeRangeRelationship.OVERLAPS
+                return relationship === TimeRangeRelationship.OVERLAPS;
             }));
             for (let i = 0; i < inRangeItems.length; i++) {
-                if (inRangeItems[i].startTime.isBefore(this.startTime)) {
-                    inRangeItems[i].changeStartTime(this.startTime);
+                if (inRangeItems[i].startTime.isBefore(startTime)) {
+                    inRangeItems[i].changeStartTime(startTime);
                 }
-                if (inRangeItems[i].endTime.isAfter(this.endTime)) {
-                    inRangeItems[i].changeEndTime(this.endTime);
+                if (inRangeItems[i].endTime.isAfter(endTime)) {
+                    inRangeItems[i].changeEndTime(endTime);
                 }
             }
         } else {

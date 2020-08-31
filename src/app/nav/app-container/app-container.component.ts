@@ -50,6 +50,7 @@ export class AppContainerComponent implements OnInit, OnDestroy {
   private _subscriptions: Subscription[] = [];
   private _promptSub: Subscription = new Subscription();
   private _asyncDataLoader: AsyncDataServiceLoader;
+  private _asyncSub: Subscription = new Subscription();
   private _isLoading: boolean = true;
   // private _loadingIsComplete: boolean = false;
   private _showModal: boolean = false;
@@ -106,15 +107,18 @@ export class AppContainerComponent implements OnInit, OnDestroy {
       userProfileService: this.userProfileService,
     };
     this._asyncDataLoader = new AsyncDataServiceLoader(this.authService.userId, serviceList);
-    this._asyncDataLoader.loadingIsComplete$.subscribe(isComplete => {
+    this._asyncSub = this._asyncDataLoader.loadingIsComplete$.subscribe(isComplete => {
       if (isComplete === true) { this._step3FinishSynchronousLoading(); }
     });
   }
 
   /** Refer to app-load-sequence.md */
   private _step3FinishSynchronousLoading() {
+    console.log('3. **   Finish synchronously');
     // sleep service loads sleep manager
-    this.sleepService.step3InitiateSleepManager();
+    this._asyncSub.unsubscribe();
+    this._asyncDataLoader.finishLoading();
+    this.sleepService.step3And5InitiateSleepManager();
     this._step4CheckForPrompts();
   }
 
@@ -134,7 +138,9 @@ export class AppContainerComponent implements OnInit, OnDestroy {
 
   /** Refer to app-load-sequence.md */
   private _step5InitiateApp() {
+    console.log("5.** Initiating app")
     this._promptSub.unsubscribe();
+    this.sleepService.step3And5InitiateSleepManager();
     this.daybookDisplayService.reinitiate();
     this._isLoading = false;
   }

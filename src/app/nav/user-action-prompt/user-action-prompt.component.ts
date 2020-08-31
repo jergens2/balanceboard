@@ -42,6 +42,6 @@ export class UserActionPromptComponent implements OnInit, OnDestroy {
   public onClickContinue() { this.promptService.clearPrompts(); }
   public onConfigComplete() {
     this.promptService.clearConfigPrompt();
-    this.sleepService.step3InitiateSleepManager();
+    this.sleepService.step3And5InitiateSleepManager();
   }
 }

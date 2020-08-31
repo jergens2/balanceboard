@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
-import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
+import { TimelogDisplayGridItem } from '../timelog-display-grid-item.class';
 import * as moment from 'moment';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
@@ -46,7 +46,7 @@ export class AvailableTimelogItemComponent implements OnInit {
   }
 
   public onClickItem() {
-    this.daybookService.openTimelogGridItem(this.gridItem);
+    this.daybookService.displayManager.openItemByIndex(this.gridItem.itemIndex);
     // if(this.daybookService.activeDayController.isNewDay){
     //   this.tlefService.openStartNewDay();
     // }else{

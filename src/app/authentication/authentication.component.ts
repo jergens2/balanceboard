@@ -14,12 +14,12 @@ import { Subject, Observable, BehaviorSubject, Subscription } from 'rxjs';
 export class AuthenticationComponent implements OnInit, OnDestroy {
 
 
-  faKey = faKey;
-  faUser = faUser;
-  faUnlock = faUnlock;
-  faSpinner = faSpinner;
-  faSignInAlt = faSignInAlt;
-  faUserPlus = faUserPlus;
+  public readonly faKey = faKey;
+  public readonly faUser = faUser;
+  public readonly faUnlock = faUnlock;
+  public readonly faSpinner = faSpinner;
+  public readonly faSignInAlt = faSignInAlt;
+  public readonly faUserPlus = faUserPlus;
 
   constructor(private authService: AuthenticationService) { }
 
@@ -38,7 +38,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._reload();
-    console.log("Action: ", this._action)
+    console.log('Action: ', this._action)
   }
 
   public onClickLogin() {
@@ -68,7 +68,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     this._lockSub.unsubscribe();
     this._lockSub = this.authService.lockApp$.subscribe((lock) => {
       if (lock === true) {
-        console.log("received lock signal")
+        console.log('received lock signal')
         this._action = 'LOCK_SCREEN'
       }
     });

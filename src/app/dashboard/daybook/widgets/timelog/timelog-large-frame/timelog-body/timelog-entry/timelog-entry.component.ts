@@ -6,7 +6,7 @@ import { AppScreenSizeService } from '../../../../../../../shared/app-screen-siz
 import { AppScreenSizeLabel } from '../../../../../../../shared/app-screen-size/app-screen-size-label.enum';
 import { ColorConverter } from '../../../../../../../shared/utilities/color-converter.class';
 import { ColorType } from '../../../../../../../shared/utilities/color-type.enum';
-import { TimelogDisplayGridItem } from '../../../timelog-display-grid-item.class';
+import { TimelogDisplayGridItem } from '../timelog-display-grid-item.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogEntryActivityDisplayItem } from './timelog-entry-activity-display-item.class';
 import * as moment from 'moment';
@@ -74,7 +74,7 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
   }
 
   public onClickOpenTimelogEntry() {
-    this.daybookService.openTimelogGridItem(this.gridItem);
+    this.daybookService.displayManager.openItemByIndex(this.gridItem.itemIndex);
   }
 
   private _calculateMaxItems(): number {

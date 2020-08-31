@@ -1,10 +1,12 @@
 import { DaybookTimeScheduleStatus } from './daybook-time-schedule-status.enum';
 import * as moment from 'moment';
 import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
-import { TimelogDelineator } from '../../widgets/timelog/timelog-delineator.class';
+import { TimelogDelineator } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 import { SleepEntryItem } from '../../widgets/timelog/timelog-entry-form/sleep-entry-form/sleep-entry-item.class';
 import { DaybookSleepInputDataItem } from '../data-items/daybook-sleep-input-data-item.interface';
 import { TimelogEntryItem } from '../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
+import { DaybookTimeScheduleSleepItem } from './daybook-time-schedule-sleep-item.class';
+import { DaybookTimeScheduleActiveItem } from './daybook-time-schedule-active-item.class';
 
 export class DaybookTimeScheduleItem extends TimeScheduleItem {
 
@@ -24,6 +26,8 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
 
     public get startDelineator(): TimelogDelineator { return this._startDelineator; }
     public get endDelineator(): TimelogDelineator { return this._endDelineator; }
+    public set startDelineator(delineator: TimelogDelineator) { this._startDelineator = delineator; }
+    public set endDelineator(delineator: TimelogDelineator) { this._endDelineator = delineator; }
 
     public get displayPercent(): number { return this._displayPercent; }
 
@@ -41,7 +45,7 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
             }
         }
     }
-    
+
     constructor(startTime: moment.Moment, endTime: moment.Moment) {
         super(startTime.toISOString(), endTime.toISOString(), startTime.utcOffset(), endTime.utcOffset());
     }
@@ -49,12 +53,31 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
     public setDisplayPercent(totalViewMs: number) { this._displayPercent = (this.durationMs / totalViewMs) * 100; }
 
     public toString(): string {
-        let val = 'DaybookTimeScheduleItem:  \t' + this.scheduleStatus + '\n';
-        val += '\t' + this.startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + this.endTime.format('YYYY-MM-DD hh:mm a') + '\n';
+        const val = this.itemIndex + "\t" + this.startTime.format('YYYY-MM-DD hh:mm a')
+            + ' to ' + this.endTime.format('YYYY-MM-DD hh:mm a') +
+            '\t' + this.scheduleStatus + '\n';
         return val;
     }
 
+    public changeStartTime(time: moment.Moment) {
+        super.changeStartTime(time);
+        this._startDelineator.time = moment(time);
+    }
 
+    public changeEndTime(time: moment.Moment) {
+        super.changeEndTime(time);
+        this._endDelineator.time = moment(time);
+    }
+
+    public clone(): DaybookTimeScheduleItem {
+        const clonedItem = new DaybookTimeScheduleItem(this.startTime, this.endTime);
+        clonedItem.startDelineator = new TimelogDelineator(this.startDelineator.time,
+            this.startDelineator.delineatorType, this.startDelineator.scheduleIndex);
+        clonedItem.endDelineator = new TimelogDelineator(this.endDelineator.time, 
+            this.endDelineator.delineatorType, this.endDelineator.scheduleIndex);
+        clonedItem.setItemIndex(this.itemIndex);
+        return clonedItem;
+    }
 
 
     public exportToSleepDataItem(): DaybookSleepInputDataItem {
@@ -70,7 +93,7 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
                 embeddedNote: '',
                 activities: [],
                 energyAtEnd: 100,
-            }
+            };
         }
     }
 }

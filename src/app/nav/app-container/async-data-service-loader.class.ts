@@ -2,7 +2,7 @@ import { NoteHttpService } from '../../dashboard/notes/api/note-http.service';
 import { ActivityHttpService } from '../../dashboard/activities/api/activity-http.service';
 import { DaybookHttpService } from '../../dashboard/daybook/api/daybook-http.service';
 import { TaskHttpService } from '../../dashboard/tasks/task-http.service';
-import { Observable, BehaviorSubject, forkJoin } from 'rxjs';
+import { Observable, BehaviorSubject, forkJoin, Subscription } from 'rxjs';
 import { AppAsyncServiceList } from './async-data-service-list.interface';
 import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
 import { UserAccountProfileService } from '../../dashboard/user-account-profile/user-account-profile.service';
@@ -33,8 +33,9 @@ export class AsyncDataServiceLoader {
         this._loadServices();
     }
 
+    private _loadSub: Subscription = new Subscription();
     private _loadServices() {
-        forkJoin([
+        this._loadSub = forkJoin([
             this._userProfileService.login$(this._userId),
             this._activityHttpService.login$(this._userId),
             this._sleepService.login$(this._userId),
@@ -44,13 +45,11 @@ export class AsyncDataServiceLoader {
         ]).subscribe({
             next: (a) => { },
             error: (e) => console.log('Error loading: ', e),
-            complete: () => {
-                // console.log("ForkJoin is COMPLETE")
-                this._loadingIsComplete$.next(true);
-
-            }
+            complete: () => { this._loadingIsComplete$.next(true); }
         });
     }
+
+    public finishLoading() { this._loadSub.unsubscribe(); }
 
     public unloadServices() {
         this._activityHttpService.logout();

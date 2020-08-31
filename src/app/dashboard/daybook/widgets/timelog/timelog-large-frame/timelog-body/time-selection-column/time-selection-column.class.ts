@@ -1,20 +1,23 @@
 import * as moment from 'moment';
 import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { TimelogDelineatorType, TimelogDelineator } from '../../../timelog-delineator.class';
+import { TimelogDelineatorType, TimelogDelineator } from '../timelog-delineator.class';
 import { Subscription, Subject, Observable, range } from 'rxjs';
 import { DaybookTimeScheduleStatus } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
 import { DaybookTimeScheduleItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { TimeRangeRelationship } from '../../../../../../../shared/time-utilities/time-range-relationship.enum';
 import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
+import { DaybookTimeScheduleAvailableItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-available-item.class';
 
 export class TimeSelectionColumn {
 
+
+    private _displayDelineators: TimelogDelineator[];
+    private _availableItems: DaybookTimeScheduleAvailableItem[];
     private _startTime: moment.Moment;
     private _endTime: moment.Moment;
     private _divisorMinutes: number = 5;
     private _rows: TimeSelectionRow[] = [];
-    private _daybookService: DaybookDisplayService;
 
     private _deleteDelineator$: Subject<moment.Moment> = new Subject();
     private _startDragging$: Subject<TimeSelectionRow> = new Subject();
@@ -33,11 +36,11 @@ export class TimeSelectionColumn {
     public get stopDragging$(): Observable<TimeSelectionRow> { return this._stopDragging$.asObservable(); }
 
 
-    constructor(daybookService: DaybookDisplayService) {
-        // console.log("** Construction TimeSelectionColumn")
-        this._daybookService = daybookService;
-        this._startTime = moment(this._daybookService.displayStartTime);
-        this._endTime = moment(this._daybookService.displayEndTime);
+    constructor(delineators: TimelogDelineator[], availableItems: DaybookTimeScheduleAvailableItem[]) {
+        this._availableItems = Object.assign([], availableItems);
+        this._displayDelineators = delineators;
+        this._startTime = moment(delineators[0].time);
+        this._endTime = moment(delineators[delineators.length - 1].time);
         this._calculateDivisorMinutes();
         this._buildRows();
     }
@@ -76,7 +79,7 @@ export class TimeSelectionColumn {
             this._deleteDelineator$.next(del);
         }));
         const editSubscriptions = this.rows.map(row => row.editDelineator$.subscribe((saveNewDelineator: moment.Moment) => {
-            this._daybookService.daybookController.delineatorController.updateDelineator(row.markedDelineator.time, saveNewDelineator);
+            // this._daybookService.daybookController.delineatorController.updateDelineator(row.markedDelineator.time, saveNewDelineator);
         }));
         const startDragSubs = this.rows.map(row => row.startDragging$.subscribe((startDragging: TimeSelectionRow) => {
             if (startDragging) { this._startDragging$.next(startDragging); }
@@ -104,6 +107,29 @@ export class TimeSelectionColumn {
         });
     }
 
+    private _findSectionIndex(startTime: moment.Moment, endTime: moment.Moment, availableItems: DaybookTimeScheduleItem[]): number {
+        if (availableItems.length === 0) {
+            console.log('Error: no item found')
+            return -1;
+        } else if (availableItems.length === 1) {
+            return 0;
+        } else if (availableItems.length > 1) {
+            const foundIndex = availableItems.findIndex(availableItem => {
+                const sameStart = startTime.isSame(availableItem.startTime);
+                const isDuring = startTime.isSameOrAfter(availableItem.startTime) && endTime.isSameOrBefore(availableItem.endTime);
+                if (sameStart || isDuring) {
+                    return true;
+                } else {
+                    const sameEnd = startTime.isBefore(availableItem.endTime) && endTime.isSame(availableItem.endTime);
+                    return sameEnd;
+                }
+            });
+            return foundIndex;
+        }
+    }
+
+
+
     private _findDelineator(newRow: TimeSelectionRow): TimelogDelineator {
         const priority = [
             TimelogDelineatorType.DISPLAY_START,
@@ -121,7 +147,7 @@ export class TimeSelectionColumn {
         // const rangeMS = totalViewMS * percentThreshold;
         // const rangeStart = moment(newRow.startTime).subtract(rangeMS, 'milliseconds');
         // const rangeEnd = moment(newRow.startTime).add(rangeMS, 'milliseconds');
-        const delineators = this._daybookService.displayManager.getDelineators();
+        const delineators = this._displayDelineators;
         const foundRangeItems = delineators.filter(item => {
             return item.time.isSameOrAfter(newRow.startTime) && item.time.isSameOrBefore(newRow.endTime);
         });
@@ -145,27 +171,6 @@ export class TimeSelectionColumn {
         return foundDelineator;
     }
 
-    private _findSectionIndex(startTime: moment.Moment, endTime: moment.Moment, availableItems: DaybookTimeScheduleItem[]): number {
-        if (availableItems.length === 0) {
-            console.log('Error: no item found')
-            return -1;
-        } else if (availableItems.length === 1) {
-            return 0;
-        } else if (availableItems.length > 1) {
-            const foundIndex = availableItems.findIndex(availableItem => {
-                const sameStart = startTime.isSame(availableItem.startTime);
-                const isDuring = startTime.isSameOrAfter(availableItem.startTime) && endTime.isSameOrBefore(availableItem.endTime);
-                if (sameStart || isDuring) {
-                    return true;
-                } else {
-                    const sameEnd = startTime.isBefore(availableItem.endTime) && endTime.isSame(availableItem.endTime);
-                    return sameEnd;
-                }
-            });
-            return foundIndex;
-        }
-    }
-
 
     /**
      * If there are 2 Available TimeScheduleItems, 1 that starts immediately after the other,
@@ -173,33 +178,37 @@ export class TimeSelectionColumn {
      * then merge the 2 items.
      */
     private _getMergedAvailableItems(): DaybookTimeScheduleItem[] {
-        let allAvailableItems = this._daybookService.daybookSchedule.getAvailableScheduleItems();
-        if (allAvailableItems.length > 1) {
-            const mergeDelineators: TimelogDelineator[] = this._daybookService.displayManager.getDelineators().filter(item => {
+        const existingItems: DaybookTimeScheduleAvailableItem[] = this._availableItems;
+        console.log("EXISTING ITEMS: " , existingItems.length, existingItems)
+        const mergedItems: DaybookTimeScheduleItem[] = [];
+        if (existingItems.length > 1) {
+            const mergeDelineators: TimelogDelineator[] = this._displayDelineators.filter(item => {
                 return (item.delineatorType === TimelogDelineatorType.NOW
                     || item.delineatorType === TimelogDelineatorType.DAY_STRUCTURE);
             });
-            for (let i = 1; i < allAvailableItems.length; i++) {
-                const item1 = allAvailableItems[i - 1];
-                const item2 = allAvailableItems[i];
+            for (let i = 1; i < existingItems.length; i++) {
+                const item1 = existingItems[i - 1].clone();
+                const item2 = existingItems[i].clone();
                 const itemsAreContinuous: boolean = item1.getRelationshipTo(item2) === TimeRangeRelationship.IMMEDIATELY_BEFORE;
+                let mergeOver: boolean = false;
                 if (itemsAreContinuous) {
-                    let mergeOver: boolean = false;
                     for (let j = 0; j < mergeDelineators.length; j++) {
                         if (item2.startTime.isSame(mergeDelineators[j].time)) {
                             // console.log("ITS THE SAME, BABY!" + mergeDelineators[j].toString())
                             mergeOver = true;
                         }
                     }
-                    if (mergeOver) {
-                        item1.changeEndTime(item2.endTime);
-                        allAvailableItems.splice(i, 1);
-                        i--;
-                    }
+                }
+                if (mergeOver) {
+                    item1.changeEndTime(item2.endTime);
+                    mergedItems.push(item1);
+                } else {
+                    mergedItems.push(item1);
+                    mergedItems.push(item2);
                 }
             }
         }
-        return allAvailableItems;
+        return mergedItems;
     }
 
     private _calculateDivisorMinutes() {

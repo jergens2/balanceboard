@@ -6,7 +6,6 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { DaybookDayItem } from './daybook-day-item.class';
 import { map } from 'rxjs/operators';
 import { DaybookDayItemBuilder } from './daybook-day-item-builder.class';
-import { DaybookDayItemController } from './daybook-day-item-controller';
 
 
 @Injectable({
@@ -78,7 +77,7 @@ export class DaybookHttpService {
 
   public updateDaybookDayItems$(daybookDayItems: DaybookDayItem[]): Observable<DaybookDayItem[]> {
     console.log(' $ updating daybook day items: ');
-    daybookDayItems.forEach(i => console.log("  ", i.dateYYYYMMDD, i.id, i));
+    daybookDayItems.forEach(i => console.log("  ", i.dateYYYYMMDD, i.id,));
 
     const updatedItems$: Subject<DaybookDayItem[]> = new Subject();
     forkJoin([...daybookDayItems.map(item => this.updateDaybookDayItem$(item))]).subscribe({

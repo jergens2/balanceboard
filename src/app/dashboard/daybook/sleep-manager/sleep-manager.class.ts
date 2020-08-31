@@ -17,10 +17,9 @@ export class SleepManager {
 
     /**
      * This class is the master class for Sleep data.
-     * 
-     * 
+     *
      * Flow goes like this:
-     * 
+     *
      */
     constructor(data: SleepCycleData, dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration) {
         this._sleepData = data;
@@ -29,8 +28,12 @@ export class SleepManager {
         this._setDefaults();
         this._sleepAnalysis = new SleepCycleDaybookAnalyzer(this._daybookDayItems, this._appConfig);
         console.log("TO DO:  if sleep analysis has good value, then use it to calculate approximate sleep and wakeup times.")
-        const isValid = !data.hasPrompt;
-        if (isValid) {
+        if (this._sleepAnalysis.isValid) {
+
+        } else {
+
+        }
+        if (!this._sleepData.hasPrompt) {
             this._setValues();
             this._updateEnergyLevel();
             this._startClock();
@@ -160,7 +163,7 @@ export class SleepManager {
         const now: moment.Moment = moment();
         const todayYYYYMMDD: string = now.format('YYYY-MM-DD');
         const yesterdayYYYYMMDD: string = moment(now).subtract(1, 'days').format('YYYY-MM-DD');
-        let allActivities: DaybookTimelogEntryDataItem[];
+        let allActivities: DaybookTimelogEntryDataItem[] = [];
         this.dayItems
             .filter(item => item.dateYYYYMMDD === todayYYYYMMDD || item.dateYYYYMMDD === yesterdayYYYYMMDD)
             .forEach(item => allActivities.concat(item.timelogEntryDataItems));
@@ -178,23 +181,20 @@ export class SleepManager {
         }
     }
 
-
-
-
-
     private _startClock() {
         this._clock$.next(moment());
+        const msToNextSecond = moment().startOf('second').add(1, 'second').diff(moment(), 'milliseconds');
         const msToNextMinute = moment().add(1, 'minutes').startOf('minute').diff(moment(), 'milliseconds');
         this._clockSubs = [
-            timer(1000, 1000).subscribe(tick => this._clock$.next(moment())),
+            timer(msToNextSecond, 1000).subscribe(tick => this._clock$.next(moment())),
             timer(msToNextMinute, 60000).subscribe(tick => this._updateEnergyLevel()),
         ];
     }
     private _updateEnergyLevel() {
         const totalDurationMS = moment(this.nextFallAsleepTime).diff(moment(this.previousWakeupTime), 'milliseconds');
         const durationFromStart = moment().diff(moment(this.previousWakeupTime), 'milliseconds');
-        const currentEnergy = (durationFromStart / totalDurationMS) * this.energyAtWakeup;
-        console.log(currentEnergy, " <== Energy level updated");
+        const currentEnergy = 100 - (durationFromStart / totalDurationMS) * this.energyAtWakeup;
+        // console.log(currentEnergy, " <== Energy level updated");
         this._energyLevel$.next(currentEnergy);
     }
 

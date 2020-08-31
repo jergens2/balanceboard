@@ -4,10 +4,10 @@ import { TimeRangeRelationship } from './time-range-relationship.enum';
 
 export class TimeScheduleItem {
 
-    private _startTimeUTCOffset: number;
-    private _endTimeUTCOffset: number;
-    private _startTime: moment.Moment;
-    private _endTime: moment.Moment;
+    protected _startTimeUTCOffset: number;
+    protected _endTimeUTCOffset: number;
+    protected _startTime: moment.Moment;
+    protected _endTime: moment.Moment;
 
     constructor(startTimeISO: string, endTimeISO: string, startTimeUTCOffset?: number, endTimeUTCOffset?: number) {
         this._startTime = moment(startTimeISO);

@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
-import { DaybookTimeSchedule } from '../../api/daybook-time-schedule/daybook-time-schedule.class';
-import { DaybookTimeScheduleItem } from '../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeSchedule } from '../../../../api/daybook-time-schedule/daybook-time-schedule.class';
+import { DaybookTimeScheduleItem } from '../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 
 export class TimelogDisplayGrid {
 
@@ -21,13 +21,22 @@ export class TimelogDisplayGrid {
 
   public ngStyle: any = {};
 
-  public update(scheduleItems: DaybookTimeScheduleItem[]) {
-    this._buildGrid(scheduleItems);
+  public update(scheduleItems: DaybookTimeScheduleItem[], currentlyOpenItemIndex?: number) {
+    this._buildGrid(scheduleItems, currentlyOpenItemIndex);
   }
 
+  public openItemByIndex(openItemIndex: number) {
+    this.gridItems.forEach(item => {
+      if(item.itemIndexes.find(i => i === openItemIndex)){
+        item.isCurrentlyOpen = true;
+      }else{
+        item.isCurrentlyOpen = false;
+      }
+    });
+  }
 
-  private _buildGrid(scheduleItems: DaybookTimeScheduleItem[]) {
-    let displayGridNgStyle: any = {};
+  private _buildGrid(scheduleItems: DaybookTimeScheduleItem[], currentlyOpenItemIndex?: number) {
+    const displayGridNgStyle: any = {};
 
 
     const gridItems: TimelogDisplayGridItem[] = scheduleItems.map(item => {
@@ -61,7 +70,12 @@ export class TimelogDisplayGrid {
     displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
     this.ngStyle = displayGridNgStyle;
     this._gridItems = gridItems;
+    console.log("   * GRID ITEMS")
+    this._gridItems.forEach(item => console.log("   " + item.toString()))
 
+    if(currentlyOpenItemIndex){
+      this._gridItems.find(item => item.itemIndex === currentlyOpenItemIndex).setAsActiveItem();
+    }
 
   }
 

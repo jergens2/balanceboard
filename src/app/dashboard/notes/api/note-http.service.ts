@@ -25,26 +25,27 @@ export class NoteHttpService {
 
 
 
-  public login$(userId: string): Observable<boolean> { 
-    this._userId = userId; 
+  public login$(userId: string): Observable<boolean> {
+    this._userId = userId;
     const startTime: moment.Moment = moment().subtract(365, 'days').startOf('day');
     return this.fetchNotebookEntriesHTTP$(startTime);
   }
-  public logout() { 
-    this._userId = null; 
+  public logout() {
+    this._userId = null;
     this._rangeStart = null;
     this._allNotes$.next([]);
   }
-  public saveNotebookEntry(notebookEntry: NotebookEntry) {1
+  public saveNotebookEntry(notebookEntry: NotebookEntry) {
+
     notebookEntry.userId = this._userId;
-    let requestUrl: string = serverUrl + "/api/notebook/create";
+    const requestUrl: string = serverUrl + '/api/notebook/create';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
         // 'Authorization': 'my-auth-token'
       })
     };
-    let requestBody: NotebookEntryHttpShape = notebookEntry.httpShape;
+    const requestBody: NotebookEntryHttpShape = notebookEntry.httpShape;
     return this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
       .pipe<NotebookEntry[]>(map((response: { message: string, data: any[] }) => {
         return response.data.map(d => NoteBuilder.buildNoteFromData(d));
@@ -52,13 +53,13 @@ export class NoteHttpService {
   }
 
   /**
-   * 
+   *
    * @param startISO the range start time. will get all notes between start and now
    */
   public fetchNotebookEntriesHTTP$(startTime: moment.Moment): Observable<boolean> {
     this._rangeStart = moment(startTime);
     const isComplete$: Subject<boolean> = new Subject();
-    let requestUrl: string = serverUrl + "/api/notebook/" + this._userId +"/" + startTime.toISOString();
+    const requestUrl: string = serverUrl + '/api/notebook/' + this._userId + '/' + startTime.toISOString();
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -69,18 +70,18 @@ export class NoteHttpService {
         return response.data.map(d => NoteBuilder.buildNoteFromData(d));
       }))
       .subscribe({
-        next: (notes)=>{
+        next: (notes) => {
           this._allNotes$.next(notes);
-          isComplete$.next(true)
+          isComplete$.next(true);
         },
-        error: e => console.log("Error", e),
+        error: e => console.log('Error with notebooks', e),
         complete: () => isComplete$.complete()
       });
     return isComplete$.asObservable();
   }
 
   updateNotebookEntryHTTP$(notebookEntry: NotebookEntry): Observable<boolean> {
-    let requestUrl: string = serverUrl + "/api/notebook/update";
+    const requestUrl: string = serverUrl + '/api/notebook/update';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -92,21 +93,21 @@ export class NoteHttpService {
     const isComplete$: Subject<boolean> = new Subject();
     this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
       .pipe<NotebookEntry>(map(response => NoteBuilder.buildNoteFromData(response.data)))
-      .subscribe(note =>{
+      .subscribe(note => {
         const allNotes = this.allNotes;
         const index = this.allNotes.indexOf(notebookEntry);
-        if(index >= 0){
+        if (index >= 0) {
           allNotes.splice(index, 1, note);
         }
         this._allNotes$.next(allNotes);
         isComplete$.next(true);
-      })
-      return isComplete$.asObservable();
+      });
+    return isComplete$.asObservable();
   }
 
   public deleteNotebookEntryHTTP$(note: NotebookEntry): Observable<boolean> {
     const isComplete$: Subject<boolean> = new Subject();
-    const postUrl = serverUrl + "/api/notebook/delete";
+    const postUrl = serverUrl + '/api/notebook/delete';
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -115,10 +116,10 @@ export class NoteHttpService {
     };
     this.httpClient.post<{ message: string, data: any }>(postUrl, note, httpOptions)
       .subscribe((response) => {
-        console.log("Response from HTTP delete request:", response)
+        console.log('Response from HTTP delete request:', response);
         const allNotes = this.allNotes;
         const index = this.allNotes.indexOf(note);
-        if(index >= 0){
+        if (index >= 0) {
           allNotes.splice(index, 1);
         }
         this._allNotes$.next(allNotes);

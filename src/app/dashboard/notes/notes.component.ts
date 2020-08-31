@@ -42,6 +42,7 @@ export class NotesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._subscriptions = [this.noteHttpService.allNotes$.subscribe((allNotes)=>{
       this.noteQueryService.reInitiate(allNotes);
+      this._isLoading = false ;
     })];
   }
 

@@ -1,7 +1,7 @@
 import * as moment from 'moment';
-import { TimelogEntryItem } from './timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { DaybookTimeScheduleStatus } from '../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
-import { DaybookTimeScheduleItem } from '../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
+import { DaybookTimeScheduleStatus } from '../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleItem } from '../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 
 
 export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
@@ -23,9 +23,11 @@ export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
     private _itemIndexes: number[] = [];
     private _isMerged: boolean = false;
 
-    public readonly verySmallPercent = 2.5;
-    public readonly smallPercent = 6;
-    public readonly largePercent = 15;
+    private readonly verySmallPercent = 2.5;
+    private readonly smallPercent = 6;
+    private readonly largePercent = 15;
+
+    public isCurrentlyOpen: boolean = false;
 
     public get isVerySmallItem(): boolean { return this.displayPercent < this.verySmallPercent; }
     public get isSmallItem(): boolean { return this.displayPercent >= this.verySmallPercent && this.displayPercent < this.smallPercent; }
@@ -59,8 +61,12 @@ export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
         this._isMerged = true;
     }
 
+    public setAsActiveItem() {
+        console.log("SETTING THIS ITEM AS ACTIVE, " + this.itemIndex)
+    }
+
     public toString(): string {
-        return this.scheduleStatus + '  ' + this.displayPercent.toFixed(0) + ' % '
+        return this.itemIndex + "\t" + this.scheduleStatus + '  ' + this.displayPercent.toFixed(0) + ' % '
             + '\n\t ' + this.startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + this.endTime.format('YYYY-MM-DD hh:mm a');
     }
 }

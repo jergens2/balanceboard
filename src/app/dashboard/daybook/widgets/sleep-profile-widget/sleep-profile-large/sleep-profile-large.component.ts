@@ -17,41 +17,41 @@ export class SleepProfileLargeComponent implements OnInit {
 
   public get wakeupTime(): moment.Moment { return this.sleepService.sleepManager.previousWakeupTime; }
   public get bedtime(): moment.Moment { return this._bedtime; }
-  public get fallAsleepTime(): moment.Moment { return this.sleepService.sleepManager.nextFallAsleepTime;}
-  public get prevDayFallAsleepTime(): moment.Moment{ return this.sleepService.sleepManager.previousFallAsleepTime; }
-  public get currentEnergy(): number { return (100-this.sleepService.sleepManager.energyLevel); }
+  public get fallAsleepTime(): moment.Moment { return this.sleepService.sleepManager.nextFallAsleepTime; }
+  public get prevDayFallAsleepTime(): moment.Moment { return this.sleepService.sleepManager.previousFallAsleepTime; }
+  public get currentEnergy(): number { return this.sleepService.sleepManager.energyLevel; }
 
   public get awakeForString(): string {
     let now = moment();
-    if(now.isBefore(this.wakeupTime)){
+    if (now.isBefore(this.wakeupTime)) {
       return "Just woke up";
-    }else{
+    } else {
       return DurationString.calculateDurationString(this.wakeupTime, now);
     }
   }
 
-  public get timeUntilSleepString(): string { 
+  public get timeUntilSleepString(): string {
     let now = moment();
-    if(now.isBefore(this.bedtime)){
+    if (now.isBefore(this.bedtime)) {
       return DurationString.calculateDurationString(now, this.bedtime) + ' from now';
-    }else{
+    } else {
       "It's time to go to sleep."
     }
   }
-  
+
   ngOnInit() {
-    
+
     this._updateBedtime();
-    timer(0, 10000).subscribe((tick)=>{
+    timer(0, 10000).subscribe((tick) => {
       this._updateBedtime();
     });
 
   }
 
-  private _updateBedtime(){
+  private _updateBedtime() {
     this._bedtime = moment(this.fallAsleepTime).subtract(20, 'minutes');
     const currentMinute = this._bedtime.minute();
-    this._bedtime = moment(this._bedtime).minute(currentMinute-(currentMinute%5));
+    this._bedtime = moment(this._bedtime).minute(currentMinute - (currentMinute % 5));
   }
 
 

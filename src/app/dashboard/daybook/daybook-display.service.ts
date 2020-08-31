@@ -4,24 +4,20 @@ import { TimelogZoomItem } from './widgets/timelog/timelog-large-frame/timelog-z
 import { DaybookWidgetType } from './widgets/daybook-widget.class';
 import { TimelogZoomType } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-type.enum';
 import * as moment from 'moment';
-import { TimelogDisplayGrid } from './widgets/timelog/timelog-display-grid-class';
-import { TimelogDelineator, TimelogDelineatorType } from './widgets/timelog/timelog-delineator.class';
+import { TimelogDelineator } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 import { TimelogEntryItem } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
-import { faSun, faList } from '@fortawesome/free-solid-svg-icons';
-import { TimelogDisplayGridItem } from './widgets/timelog/timelog-display-grid-item.class';
+import { TimelogDisplayGridItem } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-display-grid-item.class';
 import { ToolboxService } from '../../toolbox-menu/toolbox.service';
 import { TLEFController } from './widgets/timelog/timelog-entry-form/TLEF-controller.class';
-import { DaybookDisplayUpdateType } from './api/daybook-display-update.interface';
 import { ActivityHttpService } from '../activities/api/activity-http.service';
 import { SleepService } from './sleep-manager/sleep.service';
-import { SleepManager } from './sleep-manager/sleep-manager.class';
 import { DaybookTimeSchedule } from './api/daybook-time-schedule/daybook-time-schedule.class';
-import { ActivityTree } from '../activities/api/activity-tree.class';
 import { DaybookDayItemController } from './api/daybook-day-item-controller';
 import { DaybookDayItem } from './api/daybook-day-item.class';
 import { DaybookHttpService } from './api/daybook-http.service';
 import { DaybookDisplayManager } from './daybook-display-manager.class';
 import { DaybookTimeScheduleBuilder } from './api/daybook-time-schedule/daybook-time-schedule-builder.class';
+import { TimelogDisplayGrid } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-display-grid-class';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +32,6 @@ export class DaybookDisplayService {
 
   private _widgetChanged$: BehaviorSubject<DaybookWidgetType> = new BehaviorSubject(DaybookWidgetType.TIMELOG);
 
-  private _zoomItems: TimelogZoomItem[] = [];
   private _clock$: BehaviorSubject<moment.Moment>;
 
   // prepare to kill this property
@@ -61,11 +56,12 @@ export class DaybookDisplayService {
   public get displayStartTime(): moment.Moment { return this._daybookDisplayManager.displayStartTime; }
   public get displayEndTime(): moment.Moment { return this._daybookDisplayManager.displayEndTime; }
 
-  public get zoomItems(): TimelogZoomItem[] { return this._zoomItems; }
+  public get zoomItems(): TimelogZoomItem[] { return this._daybookDisplayManager.zoomController.zoomItems; }
   public get currentZoom(): TimelogZoomItem { return this._daybookDisplayManager.zoomController.currentZoom; }
 
   public get daybookSchedule(): DaybookTimeSchedule { return this._daybookSchedule; }
   public get displayManager(): DaybookDisplayManager { return this._daybookDisplayManager; }
+
   public onZoomChanged(zoom: TimelogZoomType) { this.displayManager.onZoomChanged(zoom); }
 
   public changeCalendarDate$(dateYYYYMMDD: string): Observable<boolean> {
@@ -114,28 +110,32 @@ export class DaybookDisplayService {
 
 
   public reinitiate() {
-    console.log("REINITIATING DAYBOOK DISPLAY SERVICE")
-    console.log(" Going to reubild the Daybook Manager now.")
+    console.log('   * DDS.reinitiate()')
+    console.log('   * REINITIATING DAYBOOK DISPLAY SERVICE')
+    console.log('   * Going to reubild the Daybook Manager now.')
     this._daybookDisplayManager = new DaybookDisplayManager(this.toolBoxService, this.activitiesService);
     this._startClock();
     this._updateDisplay(this.dateYYYYMMDD);
   }
 
-  /**
-   *  
-   */
+
+
   private _updateDisplay(dateYYYYMMDD: string) {
+    console.log('******** DaybookDisplayService._updateDisplay()');
     const dayItems: DaybookDayItem[] = this.httpService.dayItems;
-    console.log("DAY ITEMS FROM HTTP: " , dayItems)
+    console.log('DAY ITEMS FROM HTTP: ' , dayItems);
     const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
     const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
     const controllerItems: DaybookDayItem[] = dayItems.filter(d => {
       return d.dateYYYYMMDD >= prevDateYYYYMMDD && d.dateYYYYMMDD <= nextDateYYYYMMDD;
     });
+    console.log('   * DDS._updateDisplay() constructing controller')
     const controller: DaybookDayItemController = new DaybookDayItemController(dateYYYYMMDD, controllerItems);
+    console.log('   * DDS._updateDisplay() getting sleep cycle')
     const sleepCycle = this.sleepService.sleepManager.getSleepCycleForDate(dateYYYYMMDD, dayItems);
 
     const scheduleBuilder: DaybookTimeScheduleBuilder = new DaybookTimeScheduleBuilder();
+    console.log('   * DDS._updateDisplay() DaybookTimeScheduleBuilder built.  constructing schedule now.')
     const schedule: DaybookTimeSchedule = scheduleBuilder.buildDaybookSchedule(dateYYYYMMDD, controller.controllerStartTime,
       controller.controllerEndTime, sleepCycle, controller);
     this._daybookDisplayManager.updateDisplayManager(schedule, sleepCycle);
@@ -151,6 +151,7 @@ export class DaybookDisplayService {
   private _clockSubs: Subscription[] = [];
 
   private _startClock() {
+    console.log('   * DDS._startClock()')
     const msToNextMinute = moment().startOf('minute').add(1, 'minute').diff(moment(), 'milliseconds');
     let msToNextHttpUpdate = moment().startOf('minute').add(45, 'seconds').diff(moment(), 'milliseconds');
     if (msToNextHttpUpdate < 0) {
@@ -169,7 +170,7 @@ export class DaybookDisplayService {
 
   public logout() {
     this._clockSubs.forEach(s => s.unsubscribe());
-    console.log("to do:  kill other things")
+    console.log('to do:  kill other things')
   }
 
 }

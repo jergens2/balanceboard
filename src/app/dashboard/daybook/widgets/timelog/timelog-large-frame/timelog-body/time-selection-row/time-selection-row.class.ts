@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
-import { TimelogDelineator, TimelogDelineatorType } from '../../../timelog-delineator.class';
+import { TimelogDelineator, TimelogDelineatorType } from '../timelog-delineator.class';
 import { TSRDrawStatus } from './tsr-draw-status.enum';
 import { DaybookTimeScheduleItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
