@@ -26,7 +26,6 @@ export class DaybookDisplayManager {
      *  -TimelogBody component / (TimelogDisplayGrid)
      *  -Timelog Entry Form Controller, AKA TLEF component / TLEF controller
      *
-     *
      *  This class has a DaybookTimeScheduleProperty which it receives from DaybookDisplayService
      *  This class is a property of DaybookDisplayService
      *
@@ -36,9 +35,10 @@ export class DaybookDisplayManager {
     constructor(toolboxService: ToolboxService, activityService: ActivityHttpService) {
         this._toolboxService = toolboxService;
         this._activityService = activityService;
+        this._setToolboxSub();
     }
 
-
+    private _toolboxSub: Subscription;
 
     private _tlefController: TLEFController;
     private _timelogDisplayGrid: TimelogDisplayGrid;
@@ -52,6 +52,8 @@ export class DaybookDisplayManager {
 
     private _displayItems: DaybookTimeScheduleItem[] = [];
     private _displayDelineators: TimelogDelineator[] = [];
+
+    private _currentlyOpenItemIndex: number = -1;
     // private _currentlyOpenItemIndex$: BehaviorSubject<number> = new BehaviorSubject(-1);
 
     public get displayItems(): DaybookTimeScheduleItem[] { return this._displayItems; }
@@ -78,23 +80,41 @@ export class DaybookDisplayManager {
     public get zoomController(): TimelogZoomController { return this._zoomController; }
 
     public openNewCurrentTimelogEntry() { this.tlefController.openNewCurrentTimelogEntry(); }
-
-
     public openTLEDelineator(delineator: TimelogDelineator) { this.tlefController.openTLEDelineator(delineator); }
 
     public openItemByIndex(itemIndex: number) {
         console.log("Opening item: " + itemIndex);
+        this._currentlyOpenItemIndex = itemIndex;
         this.timelogDisplayGrid.openItemByIndex(itemIndex);
         this.tlefController.openItemByIndex(itemIndex);
         const foundItem = this.displayItems.find(item => item.itemIndex === itemIndex);
-        if(foundItem){
-            if(foundItem.isSleepItem){
+        if (foundItem) {
+            if (foundItem.isSleepItem) {
                 this._toolboxService.openSleepEntryForm();
-            }else{
+            } else {
                 this._toolboxService.openTimelogEntryForm();
             }
-        }else{
+        } else {
             console.log("Error opening item by index: " + itemIndex);
+        }
+    }
+    public openItemToTheLeft() {
+        this._currentlyOpenItemIndex -= 1;
+        if (this._currentlyOpenItemIndex < 0) {
+            console.log("We've reached the end.")
+            this._currentlyOpenItemIndex = 0;
+        } else {
+            this.openItemByIndex(this._currentlyOpenItemIndex);
+        }
+    }
+    public openItemToTheRight() {
+        this._currentlyOpenItemIndex += 1;
+        if (this._currentlyOpenItemIndex >= this.displayItems.length) {
+
+            this._currentlyOpenItemIndex = this.displayItems.length - 1;
+            console.log("We've reached the end.")
+        } else {
+            this.openItemByIndex(this._currentlyOpenItemIndex);
         }
     }
     // public get currentlyOpenItemIndex(): number { return this._currentlyOpenItemIndex$.getValue(); }
@@ -117,11 +137,14 @@ export class DaybookDisplayManager {
         this._updateTimeSelectionColumn();
         this._updateTimelogDisplayGrid();
         this._updateTlefController();
+        this._reopenItem();
     }
     public onZoomChanged(zoom: TimelogZoomType) {
         this._zoomController.setZoom(zoom);
         this._displayItems = this._schedule.getItemsInRange(this.displayStartTime, this.displayEndTime);
     }
+
+
 
     private _updateTimeSelectionColumn() {
         console.log('DaybookDisplayManager._updateTimeSelectionColumn()')
@@ -152,17 +175,28 @@ export class DaybookDisplayManager {
 
 
     private _setDisplayDelineators() {
-        console.log("* Delineators")
+        // console.log("* Delineators")
         const delineatorSetter = new DaybookDelineatorSetter(this._displayItems);
         this._displayDelineators = delineatorSetter.displayDelineators;
         this._displayItems = delineatorSetter.displayItems;
         // console.log("YEA BRO")
-        this._displayDelineators.forEach(item => console.log("  " + item.toString()))
+        // this._displayDelineators.forEach(item => console.log("  " + item.toString()))
         // console.log('\n');
         // console.log('DISPLAY ITEMS BRAH');
         // this._displayItems.forEach(item => console.log('  ' + item.toString()));
     }
-
-
+    private _closeItem() {
+        this._currentlyOpenItemIndex = -1;
+        this.tlefController.close();
+        this.timelogDisplayGrid.closeItem();
+    }
+    private _reopenItem() {
+        if (this._currentlyOpenItemIndex >= 0) {
+            this.openItemByIndex(this._currentlyOpenItemIndex);
+        }
+    }
+    private _setToolboxSub() {
+        this._toolboxSub = this._toolboxService.onFormClosed$.subscribe(closed => this._closeItem());
+    }
 
 }

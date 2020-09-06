@@ -34,6 +34,9 @@ export class TimelogDisplayGrid {
       }
     });
   }
+  public closeItem(){
+    this.gridItems.forEach(item => item.isCurrentlyOpen = false);
+  }
 
   private _buildGrid(scheduleItems: DaybookTimeScheduleItem[], currentlyOpenItemIndex?: number) {
     const displayGridNgStyle: any = {};

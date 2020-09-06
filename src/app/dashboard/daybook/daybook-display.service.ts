@@ -107,7 +107,10 @@ export class DaybookDisplayService {
   public openWakeupTime() { this.tlefController.openWakeupTime(); }
   public openFallAsleepTime() { this.tlefController.openFallAsleepTime(); }
 
+  /** * This method is for committing all changes to the database and then updating the display manager.  */
+  public saveChanges$(){
 
+  }
 
   public reinitiate() {
     console.log('   * DDS.reinitiate()')

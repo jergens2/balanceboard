@@ -46,7 +46,7 @@
     background-color: rgb(146, 146, 255);
     border: 1px solid rgb(146, 146, 255);
 }
-.active-item{
+.currently-open-item{
     -webkit-box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);
     -moz-box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);
     box-shadow: 0px 0px 5px 0px rgba(79,77,158,0.57);

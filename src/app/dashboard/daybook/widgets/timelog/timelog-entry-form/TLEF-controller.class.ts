@@ -27,7 +27,7 @@ export class TLEFController {
     public get currentlyOpenTLEFItem$(): Observable<TLEFControllerItem> { return this._currentlyOpenTLEFItem$.asObservable(); }
     public get changesMade(): boolean { return this._changesMadeTLE$.getValue() !== null; }
     public get tlefItems(): TLEFControllerItem[] { return this._tlefItems; }
-    public get gridBarItems(): TLEFCircleButton[] { return this.tlefItems.map(item => item.gridBarItem); }
+    public get gridBarItems(): TLEFCircleButton[] { return this.tlefItems.map(item => item.circleButton); }
     public get changesMadeTLE$(): Observable<TimelogEntryItem> { return this._changesMadeTLE$.asObservable(); }
     public get changesMadeTLE(): TimelogEntryItem { return this._changesMadeTLE$.getValue(); }
     public get currentlyOpenTLEFItem(): TLEFControllerItem { return this._currentlyOpenTLEFItem$.getValue(); }
@@ -57,10 +57,22 @@ export class TLEFController {
     public openItemByIndex(itemIndex: number) {
         const indexItem = this._tlefItems.find(item => item.itemIndex === itemIndex);
         if (indexItem) {
-            this._openTLEFItem(indexItem);
+            if(this.formIsOpen){
+                console.log("Form was already open")
+            }else{
+                this._openTLEFItem(indexItem);
+            }
+           
         } else {
             console.log("Error opening TLEF Item by index: " + itemIndex);
         }
+
+
+
+    }
+    public close(){
+        this.tlefItems.forEach(item => item.isCurrentlyOpen = false);
+        
     }
 
 
@@ -151,11 +163,6 @@ export class TLEFController {
             this._changesMadeTLE$.next(null);
             this._setItemCurrentlyOpen(item.itemIndex);
             this._currentlyOpenTLEFItem$.next(item);
-            // if (item.formCase === TLEFFormCase.SLEEP) {
-            //     this._toolboxService.openSleepEntryForm();
-            // } else {
-            //     this._toolboxService.openTimelogEntryForm();
-            // }
         }
     }
     private _setItemCurrentlyOpen(itemIndex: number) {

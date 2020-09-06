@@ -14,6 +14,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     private _formCase: TLEFFormCase;
 
     private _isCurrent: boolean = false;
+    private _isCurrentlyOpen: boolean = false;
     private _isDrawing: boolean = false;
 
     // private _startDelineator: TimelogDelineator;
@@ -33,10 +34,15 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
         this._initialTLEValue = timelogEntry;
     }
 
-    public get gridBarItem(): TLEFCircleButton { return this._circleButtonItem; }
+    public get circleButton(): TLEFCircleButton { return this._circleButtonItem; }
     public get formCase(): TLEFFormCase { return this._formCase; }
 
-    public isCurrentlyOpen: boolean = false;
+    public set isCurrentlyOpen(isOpen: boolean) {
+        this._isCurrentlyOpen = isOpen;
+        this._circleButtonItem.isCurrentlyOpen = isOpen;
+    }
+
+    public get isCurrentlyOpen(): boolean { return this._isCurrentlyOpen; }
 
     public get isSleepItem(): boolean { return this.formCase === TLEFFormCase.SLEEP; }
     public get isTLEItem(): boolean { return this.formCase !== TLEFFormCase.SLEEP; }

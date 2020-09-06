@@ -61,6 +61,7 @@ export class UserActionPromptService {
       this.clearPrompts();
     }
   }
+  
   public clearConfigPrompt() {
     const currentArray = Object.assign([], this.prompts);
     const configIndex = currentArray.findIndex(item => item === UserPromptType.USER_PROFILE);

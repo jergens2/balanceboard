@@ -114,6 +114,7 @@ export class SleepDataFormComponent implements OnInit {
       error: (e) => console.log('Error loading: ', e),
       complete: () => {
         console.log('We are complete.');
+        this._userPromptService.clearSleepPrompt();
       }
     });
 

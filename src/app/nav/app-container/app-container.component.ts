@@ -131,7 +131,6 @@ export class AppContainerComponent implements OnInit, OnDestroy {
       this._isLoading = false;
       this._promptSub = this.userPromptService.promptsCleared$.subscribe(clear => this._step5InitiateApp());
     } else {
-      this._showUserActionPrompt = false;
       this._step5InitiateApp();
     }
   }
@@ -140,21 +139,25 @@ export class AppContainerComponent implements OnInit, OnDestroy {
   private _step5InitiateApp() {
     console.log("5.** Initiating app")
     this._promptSub.unsubscribe();
+    this._showUserActionPrompt = false;
     this.sleepService.step3And5InitiateSleepManager();
     this.daybookDisplayService.reinitiate();
     this._isLoading = false;
+    console.log("5.** complete")
   }
 
 
   ngOnDestroy() {
     this._subscriptions.forEach(sub => sub.unsubscribe());
     this._subscriptions = [];
+    this._promptSub.unsubscribe();
     this.modalService.closeModal();
     this._isLoading = true;
     // this._loadingIsComplete = false;
     this._showModal = false;
     this._showUserActionPrompt = false;
     this._asyncDataLoader.unloadServices();
+    this._asyncDataLoader = null;
     //this should probably be moved or delegated to the activity component.
     this.activityComponentService.unload();
     this.userPromptService.logout();

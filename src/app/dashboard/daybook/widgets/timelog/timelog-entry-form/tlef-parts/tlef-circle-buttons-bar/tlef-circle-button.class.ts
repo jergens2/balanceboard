@@ -25,6 +25,8 @@ export class TLEFCircleButton {
     public get clickedIndex$() { return this._clickedIndex$.asObservable(); }
     public get isCurrent(): boolean { return this._isCurrent; }
 
+    public isCurrentlyOpen: boolean = false;
+
     // public isDrawing: boolean = false;
 
     constructor(itemIndex: number, scheduleStatus: DaybookTimeScheduleStatus, formCase: TLEFFormCase, backgroundColor: string) {
