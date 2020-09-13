@@ -19,21 +19,6 @@ export class DTSTimeLimiterSetter {
     }
 
     public get finalizedItems(): DaybookTimeScheduleItem[] { return this._finalizedItems; }
-    /**
-     *
-     *
-     *  if it is the first or last item in the display, then they are fixed,
-     *
-     * otherwise, all limiters are fixed except for on available items or AROUND available items.
-     *
-     * e.g. a timelog entry can be modified if the time it is being modified around is available.
-     *
-     * otherwise, if not available, then it is the limit.  in the future this can be expanded to include better modification functionality.
-     *
-     *
-     *
-     *
-     */
     private _setLimiters(items: DaybookTimeScheduleItem[]) {
         for (let i = 0; i < items.length; i++) {
             const item = items[i];
