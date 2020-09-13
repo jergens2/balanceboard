@@ -57,7 +57,7 @@ export class AuthenticationService {
 
   public attemptLogin(authData: RegistrationData) {
     // console.log("Login attempt:", authData);
-    this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/authenticate", authData)
+    this.http.post<{ message: string, data: any }>(serverUrl + '/api/authentication/authenticate', authData)
 
       .pipe<AuthStatus>(map((response: {
         message: string,
@@ -78,7 +78,7 @@ export class AuthenticationService {
         const email: string = response.data.email;
         const expiresAt = moment().add(response.data.expiresIn, 'seconds');
         // console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
-        let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
+        const responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
@@ -98,7 +98,7 @@ export class AuthenticationService {
       email: email,
       pin: pin,
     }
-    this.http.post<any>(serverUrl + "/api/authentication/pin-unlock", data)
+    this.http.post<any>(serverUrl + '/api/authentication/pin-unlock', data)
       .pipe<AuthStatus>(map((response: {
         message: string,
         success: boolean,
@@ -118,7 +118,7 @@ export class AuthenticationService {
         const email: string = response.data.email;
         const expiresAt = moment().add(response.data.expiresIn, 'seconds');
         // console.log("Login attempt:  expiration is " + expiresAt.format('YYYY-MM-DD hh:mm a'))
-        let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
+        const responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
         return responseAuthStatus;
       }))
       .subscribe((authStatus: AuthStatus) => {
@@ -148,7 +148,7 @@ export class AuthenticationService {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Authorization': "Bearer " + token
+        'Authorization': 'Bearer ' + token
       })
     };
     const data = {
@@ -156,7 +156,7 @@ export class AuthenticationService {
       userId: userId
     }
 
-    this.http.post<{ message: string, data: any }>(serverUrl + "/api/authentication/refresh-token", data, httpOptions).subscribe((response: {
+    this.http.post<{ message: string, data: any }>(serverUrl + '/api/authentication/refresh-token', data, httpOptions).subscribe((response: {
       message: string,
       success: boolean,
       data: {
@@ -172,11 +172,11 @@ export class AuthenticationService {
       const username: string = response.data.username;
       const email: string = response.data.email;
       const expiresAt = moment().add(response.data.expiresIn, 'seconds');
-      let responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
+      const responseAuthStatus = new AuthStatus(token, userId, username, email, moment(expiresAt));
       this._loginRoutine(responseAuthStatus, 'REFRESH_TOKEN');
       _result$.next(true);
     }, (error) => {
-      console.log("Token refresh error: ", error);
+      console.log('Token refresh error: ', error);
       _result$.next(false);
     });
 
@@ -184,18 +184,18 @@ export class AuthenticationService {
   }
 
   public checkForExistingAccount$(email: string, username: string): Observable<Object> {
-    return this.http.get(serverUrl + "/api/authentication/check-for-existing/" + email + "/" + username);
+    return this.http.get(serverUrl + '/api/authentication/check-for-existing/' + email + '/' + username);
   }
 
   public finalizeRegistration$(data: { email: string, code: string }): Observable<any> {
-    return this.http.post<any>(serverUrl + "/api/authentication/finalize-registration", data);
+    return this.http.post<any>(serverUrl + '/api/authentication/finalize-registration', data);
   }
   public resendRegistrationCode$(): Observable<any> {
     if (this._registrationContoller) {
       const authData = this.registrationController.getAuthData();
-      return this.http.post<any>(serverUrl + "/api/authentication/resend-code", authData);
+      return this.http.post<any>(serverUrl + '/api/authentication/resend-code', authData);
     } else {
-      console.log("Application errror: no registration controller object");
+      console.log('Application errror: no registration controller object');
       return null;
     }
 
@@ -211,13 +211,13 @@ export class AuthenticationService {
   public checkLocalStorage$: Subject<boolean> = new Subject();
 
   public registerNewUserAccount$(authData: RegistrationData): Observable<Object> {
-    return this.http.post(serverUrl + "/api/authentication/register", authData)
+    return this.http.post(serverUrl + '/api/authentication/register', authData)
   }
 
   private _registrationContoller: RegistrationController;
 
   public setInitialRegistrationData(authData: RegistrationData) {
-    let controller = new RegistrationController(authData);
+    const controller = new RegistrationController(authData);
     this._registrationContoller = controller;
   }
   public get registrationController(): RegistrationController { return this._registrationContoller; }
@@ -237,13 +237,13 @@ export class AuthenticationService {
    * why?  for the purpose of telling the server.  Why though?
    */
   public lock() {
-    console.log("locking")
+    console.log('locking')
     this._isAuthenticated = false;
     this._appComponentLogin$.next(false);
     this._timerSubs.forEach(s => s.unsubscribe());
     this._timerSubs = [];
     this._authStatus = null;
-    localStorage.setItem("token", "LOCKED_TOKEN")
+    localStorage.setItem('token', 'LOCKED_TOKEN')
     this._unlockAttempts = 0;
     this._lockApp$.next(true);
   }
@@ -288,11 +288,11 @@ export class AuthenticationService {
       // console.log("Auth status IS authenticated.")
       this._authStatus = authStatus;
       localStorage.clear();
-      localStorage.setItem("token", authStatus.token);
-      localStorage.setItem("userId", authStatus.userId);
-      localStorage.setItem("username", authStatus.username);
-      localStorage.setItem("email", authStatus.email);
-      localStorage.setItem("expiration", authStatus.expiresAt.valueOf().toString());
+      localStorage.setItem('token', authStatus.token);
+      localStorage.setItem('userId', authStatus.userId);
+      localStorage.setItem('username', authStatus.username);
+      localStorage.setItem('email', authStatus.email);
+      localStorage.setItem('expiration', authStatus.expiresAt.valueOf().toString());
 
 
 
@@ -302,7 +302,7 @@ export class AuthenticationService {
       const requestNew = (expiresAt.diff(now, 'milliseconds') - (60 * 1000));
       this._timerSubs.forEach(s => s.unsubscribe());
       const tokenExpiredSub = timer(dueTime).subscribe((tokenHasExpired) => {
-        console.log("WARNING: THE TOKEN IS EXPIRED.")
+        console.log('WARNING: THE TOKEN IS EXPIRED.')
         this._isAuthenticated = false;
         // console.log(" ** _appComponentLogin$.next(false)");
         this._appComponentLogin$.next(false);

@@ -1,9 +1,9 @@
 import { DaybookDayItem } from './daybook-day-item.class';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
-import { DaybookTimeDelineatorController } from './daybook-time-delineator-controller.class';
-import { TimelogDelineator } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
+import { DaybookTimeDelineatorController } from './daybook-time-delineator-controller.class';
 
 export class DaybookDayItemController {
     /**
@@ -80,6 +80,7 @@ export class DaybookDayItemController {
             };
             this._timeDelineatorController = new DaybookTimeDelineatorController(dateYYYYMMDD, delineators);
             this._timelogEntryController = new DaybookTimelogEntryController(dateYYYYMMDD, relevantTLEItems);
+            this._subscribeToChanges();
         } else {
             console.log('Error constructing DaybookScheduleManager')
         }
@@ -96,5 +97,18 @@ export class DaybookDayItemController {
             isValid = false;
         }
         return isValid;
+    }
+
+    private _subs: Subscription[] = [];
+    private _subscribeToChanges(){
+        this._subs = [
+            this._timeDelineatorController.saveChanges$.subscribe((delineators: moment.Moment[]) => {
+                this.thisDay.timeDelineators = delineators;
+            }),
+            this._timelogEntryController.timelogUpdated$.subscribe(update => {
+                this.thisDay.timelogEntryDataItems = update.items;
+            })
+        ];
+
     }
 }

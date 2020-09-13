@@ -1,9 +1,9 @@
 import * as moment from 'moment';
-import { DaybookDayItem } from '../../api/daybook-day-item.class';
+import { DaybookDayItem } from '../../daybook-day-item/daybook-day-item.class';
 import { UAPAppConfiguration } from '../../../user-account-profile/api/uap-app-configuraiton.interface';
 import { TimeSchedule } from '../../../../shared/time-utilities/time-schedule.class';
-import { DaybookTimeScheduleActiveItem } from '../../api/daybook-time-schedule/daybook-time-schedule-active-item.class';
-import { DaybookTimeScheduleSleepItem } from '../../api/daybook-time-schedule/daybook-time-schedule-sleep-item.class';
+import { DaybookTimeScheduleActiveItem } from '../../display-manager/daybook-time-schedule/daybook-time-schedule-active-item.class';
+import { DaybookTimeScheduleSleepItem } from '../../display-manager/daybook-time-schedule/daybook-time-schedule-sleep-item.class';
 
 export class SleepCycleScheduleItemsBuilder {
 
@@ -41,7 +41,7 @@ export class SleepCycleScheduleItemsBuilder {
         // console.log("  ss  NEXT WAKE: " , this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'))
     }
 
-    public get72HourSleepDataItems(dateYYYYMMDD: string, splitAtMidnight = true): DaybookTimeScheduleSleepItem[] {
+    public get72HourSleepDataItems(dateYYYYMMDD: string, splitAtMidnight = false): DaybookTimeScheduleSleepItem[] {
         let sleepItems: DaybookTimeScheduleSleepItem[] = [
             ...this._sleepTimeRangesForDate(moment(dateYYYYMMDD).subtract(24, 'hours').format('YYYY-MM-DD')),
             ...this._sleepTimeRangesForDate(dateYYYYMMDD),
@@ -93,8 +93,8 @@ export class SleepCycleScheduleItemsBuilder {
     private _mergeSleepItems(sleepItems: DaybookTimeScheduleSleepItem[]): DaybookTimeScheduleSleepItem[] {
         for (let i = 0; i < sleepItems.length; i++) {
             if (i < sleepItems.length - 1) {
-                if (sleepItems[i].endTime.isSame(sleepItems[i + 1].startTime)) {
-                    sleepItems[i].changeEndTime(sleepItems[i + 1].endTime);
+                if (sleepItems[i].schedItemEndTime.isSame(sleepItems[i + 1].schedItemStartTime)) {
+                    sleepItems[i].mergeItemAfter(sleepItems[i + 1]);
                     sleepItems.splice(i + 1, 1);
                     i--;
                 }
@@ -242,7 +242,7 @@ export class SleepCycleScheduleItemsBuilder {
             const sleepItems = this.get72HourSleepDataItems(dateYYYYMMDD, false);
             const awakeItems = this._get72HAwakeItemsFromSleepItems(sleepItems, dateYYYYMMDD);
             const largest = this._findLargestWakeItem(awakeItems, dateYYYYMMDD);
-            return largest.startTime;
+            return largest.schedItemStartTime;
         } else {
             return this._defaultWakeupTime(dateYYYYMMDD);
         }
@@ -253,7 +253,7 @@ export class SleepCycleScheduleItemsBuilder {
             const sleepItems = this.get72HourSleepDataItems(dateYYYYMMDD, false);
             const awakeItems = this._get72HAwakeItemsFromSleepItems(sleepItems, dateYYYYMMDD);
             const largest = this._findLargestWakeItem(awakeItems, dateYYYYMMDD);
-            return largest.endTime;
+            return largest.schedItemEndTime;
         } else {
             return this._defaultFallAsleepTime(dateYYYYMMDD);
         }
@@ -271,34 +271,34 @@ export class SleepCycleScheduleItemsBuilder {
         const endOfThisDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(24, 'hours');
 
         const thisDaywakeItems = wakeItems.filter((wakeItem) => {
-            const crossesStart = wakeItem.startTime.isBefore(startOfThisDay) && wakeItem.endTime.isAfter(startOfThisDay);
-            const crossesEnd = wakeItem.startTime.isBefore(endOfThisDay) && wakeItem.endTime.isAfter(endOfThisDay);
-            const isInside = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
-            const encapsulates = wakeItem.startTime.isSameOrBefore(startOfThisDay) && wakeItem.endTime.isSameOrAfter(endOfThisDay);
+            const crossesStart = wakeItem.schedItemStartTime.isBefore(startOfThisDay) && wakeItem.schedItemEndTime.isAfter(startOfThisDay);
+            const crossesEnd = wakeItem.schedItemStartTime.isBefore(endOfThisDay) && wakeItem.schedItemEndTime.isAfter(endOfThisDay);
+            const isInside = wakeItem.schedItemStartTime.isSameOrAfter(startOfThisDay) && wakeItem.schedItemEndTime.isSameOrBefore(endOfThisDay);
+            const encapsulates = wakeItem.schedItemStartTime.isSameOrBefore(startOfThisDay) && wakeItem.schedItemEndTime.isSameOrAfter(endOfThisDay);
             return crossesStart || crossesEnd || isInside || encapsulates;
         });
         thisDaywakeItems.forEach((item) => { console.log("   " + item.toString()) })
-        return thisDaywakeItems.map(item => new DaybookTimeScheduleActiveItem(item.startTime, item.endTime, null));
+        return thisDaywakeItems.map(item => new DaybookTimeScheduleActiveItem(item.schedItemStartTime, item.schedItemEndTime, null));
     }
 
     private _findLargestWakeItem(thisDayWakeItems: DaybookTimeScheduleActiveItem[], dateYYYYMMDD: string): DaybookTimeScheduleActiveItem {
         const startOfThisDay: moment.Moment = moment(dateYYYYMMDD);
         const endOfThisDay: moment.Moment = moment(dateYYYYMMDD);
         const getMilliseconds = function (wakeItem: DaybookTimeScheduleActiveItem): number {
-            const crossesStart = wakeItem.startTime.isBefore(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
-            const crossesEnd = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isAfter(endOfThisDay);
-            const isInside = wakeItem.startTime.isSameOrAfter(startOfThisDay) && wakeItem.endTime.isSameOrBefore(endOfThisDay);
-            const encapsulates = wakeItem.startTime.isSameOrBefore(startOfThisDay) && wakeItem.endTime.isSameOrAfter(endOfThisDay);
+            const crossesStart = wakeItem.schedItemStartTime.isBefore(startOfThisDay) && wakeItem.schedItemEndTime.isSameOrBefore(endOfThisDay);
+            const crossesEnd = wakeItem.schedItemStartTime.isSameOrAfter(startOfThisDay) && wakeItem.schedItemEndTime.isAfter(endOfThisDay);
+            const isInside = wakeItem.schedItemStartTime.isSameOrAfter(startOfThisDay) && wakeItem.schedItemEndTime.isSameOrBefore(endOfThisDay);
+            const encapsulates = wakeItem.schedItemStartTime.isSameOrBefore(startOfThisDay) && wakeItem.schedItemEndTime.isSameOrAfter(endOfThisDay);
             let startTime: moment.Moment;
             let endTime: moment.Moment;
             if (crossesStart) {
                 startTime = moment(startOfThisDay);
-                endTime = moment(wakeItem.endTime);
+                endTime = moment(wakeItem.schedItemEndTime);
             } else if (isInside) {
-                startTime = moment(wakeItem.startTime);
-                endTime = moment(wakeItem.endTime)
+                startTime = moment(wakeItem.schedItemStartTime);
+                endTime = moment(wakeItem.schedItemEndTime)
             } else if (crossesEnd) {
-                startTime = moment(wakeItem.startTime);
+                startTime = moment(wakeItem.schedItemStartTime);
                 endTime = moment(endOfThisDay);
             } else if (encapsulates) {
                 console.log('Big badaboom.  Bada big boom.');

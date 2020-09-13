@@ -1,11 +1,11 @@
-import { DaybookTimeScheduleItem } from '../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleItem } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
 import { ActivityTree } from '../../../../activities/api/activity-tree.class';
 import { TLEFControllerItem } from './TLEF-controller-item.class';
 import { TLEFFormCase } from './tlef-form-case.enum';
 import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { SleepEntryItem } from './sleep-entry-form/sleep-entry-item.class';
 import { TimelogEntryBuilder } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class';
-import { DaybookTimeScheduleStatus } from '../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleStatus } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
 import * as moment from 'moment';
 
 export class TLEFBuilder {
@@ -15,8 +15,8 @@ export class TLEFBuilder {
 
     public buildItems(scheduleDisplayItems: DaybookTimeScheduleItem[], activityTree: ActivityTree): TLEFControllerItem[] {
         const tlefItems: TLEFControllerItem[] = scheduleDisplayItems.map(scheduleDisplayItem => {
-            const startTime = scheduleDisplayItem.startTime;
-            const endTime = scheduleDisplayItem.endTime;
+            const startTime = scheduleDisplayItem.schedItemStartTime;
+            const endTime = scheduleDisplayItem.schedItemEndTime;
             const itemIndex = scheduleDisplayItem.itemIndex;
             const scheduleStatus: DaybookTimeScheduleStatus = scheduleDisplayItem.scheduleStatus;
             let formCase: TLEFFormCase;
@@ -51,6 +51,9 @@ export class TLEFBuilder {
         }
         return tlefItems;
     }
+
+
+    
 
     private _determineFormCase(entry: TimelogEntryItem): TLEFFormCase {
         let formCase: TLEFFormCase;

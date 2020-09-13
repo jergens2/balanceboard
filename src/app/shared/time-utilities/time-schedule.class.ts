@@ -37,22 +37,22 @@ export class TimeSchedule{
     getInverseItems(scheduleItems: TimeScheduleItem[]): TimeScheduleItem[]{
         // console.log("Getting inverse items: " , scheduleItems)
         scheduleItems = scheduleItems.sort((item1, item2)=>{
-            if(item1.startTime.isBefore(item2.startTime)){ return -1; }
-            else if(item1.startTime.isAfter(item2.startTime)) { return 1;}
+            if(item1.schedItemStartTime.isBefore(item2.schedItemStartTime)){ return -1; }
+            else if(item1.schedItemStartTime.isAfter(item2.schedItemStartTime)) { return 1;}
             else return 0;
         });
         let inverseValueItems: TimeScheduleItem[] = [];
         let currentTime = moment(this.startTime);
         if(scheduleItems.length > 0){
-            if(currentTime.isBefore(scheduleItems[0].startTime)){
-                inverseValueItems.push(new TimeScheduleItem(this.startTimeISO, scheduleItems[0].startTimeISO));
-                currentTime = moment(scheduleItems[0].endTime);
+            if(currentTime.isBefore(scheduleItems[0].schedItemStartTime)){
+                inverseValueItems.push(new TimeScheduleItem(this.startTimeISO, scheduleItems[0].schedItemStartTimeISO));
+                currentTime = moment(scheduleItems[0].schedItemEndTime);
             }
             if(scheduleItems.length > 1){
                 for(let i=1; i<scheduleItems.length; i++){
-                    if(currentTime.isBefore(scheduleItems[i].startTime)){
-                        inverseValueItems.push(new TimeScheduleItem(currentTime.toISOString(), scheduleItems[i].startTimeISO));
-                        currentTime = moment(scheduleItems[i].endTime);
+                    if(currentTime.isBefore(scheduleItems[i].schedItemStartTime)){
+                        inverseValueItems.push(new TimeScheduleItem(currentTime.toISOString(), scheduleItems[i].schedItemStartTimeISO));
+                        currentTime = moment(scheduleItems[i].schedItemEndTime);
                     }
                 }
             }

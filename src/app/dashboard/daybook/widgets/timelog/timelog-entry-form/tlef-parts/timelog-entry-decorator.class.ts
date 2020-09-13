@@ -4,7 +4,7 @@ import { ActivityCategoryDefinition } from "../../../../../activities/api/activi
 import { ColorConverter } from "../../../../../../shared/utilities/color-converter.class";
 import { ColorType } from "../../../../../../shared/utilities/color-type.enum";
 import { TimelogEntryDisplayItemUnit } from "../../timelog-large-frame/timelog-body/timelog-entry/tle-display-item-unit.class";
-import { TimelogEntryActivity } from "../../../../api/data-items/timelog-entry-activity.interface";
+import { TimelogEntryActivity } from "../../../../daybook-day-item/data-items/timelog-entry-activity.interface";
 
 export class TimelogEntryDecorator {
 

@@ -7,7 +7,8 @@ export class DaybookTimeDelineatorController {
         this._dateYYYYMMDD = dateYYYYMMDD;
         // console.log("Delinator Controller: timeDelineators: " + timeDelineations.length, timeDelineations )
         this._allDayDelineators = Object.assign([], timeDelineations);
-        // console.log("THIS.TIMEDELINEATORS: " ,this._timeDelineations)
+        // console.log("all saved delineators for day: " + dateYYYYMMDD)
+        // timeDelineations.forEach(item => console.log("    " + item.format('YYYY-MM-DD hh:mm:ss a')))
     }
 
     private _dateYYYYMMDD: string;
@@ -39,7 +40,7 @@ export class DaybookTimeDelineatorController {
     }
 
     public updateDelineator(originalTime, saveNewDelineator: moment.Moment) {
-        // console.log("UPDATING DELINEATOR: " + originalTime.format('hh:mm a') + " changed to " + saveNewDelineator.format('hh:mm a'))
+        console.log("UPDATING DELINEATOR: " + originalTime.format('hh:mm a') + " changed to " + saveNewDelineator.format('hh:mm a'))
         const foundOriginal = this._allDayDelineators.find(item => item.isSame(originalTime));
         if (foundOriginal) {
             this._allDayDelineators.splice(this._allDayDelineators.indexOf(foundOriginal), 1, saveNewDelineator);

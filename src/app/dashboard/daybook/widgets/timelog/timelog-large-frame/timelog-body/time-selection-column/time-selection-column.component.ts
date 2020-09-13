@@ -5,9 +5,10 @@ import { Subscription } from 'rxjs';
 import { TimelogEntryItem } from '../timelog-entry/timelog-entry-item.class';
 import { TimelogDelineator, TimelogDelineatorType } from '../timelog-delineator.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { DaybookDisplayUpdateType } from '../../../../../api/daybook-display-update.interface';
+import { DaybookDisplayUpdateType } from '../../../../../display-manager/daybook-display-update.interface';
 import { TimeSelectionColumn } from './time-selection-column.class';
 import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
+import { DaybookUpdateAction } from '../../../../../display-manager/daybook-update-action.enum';
 
 @Component({
   selector: 'app-time-selection-column',
@@ -48,10 +49,10 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._rebuild();
-    // this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
-    // console.log("  *TimeSelectionColumnComponent._rebuild() " + update.type )
-    //   this._rebuild();
-    // });
+    this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
+      console.log("REBUILDING AFTER UPDATE")
+      this._rebuild();
+    });
   }
 
   private _rebuild() {
@@ -66,6 +67,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     this._columnSubs.forEach(sub => sub.unsubscribe());
     this._columnSubs = [
       this.column.deleteDelineator$.subscribe((deleteDelineator) => { this._onDeleteDelineator(deleteDelineator); }),
+      this.column.updateDelineator$.subscribe(update => this._updateSavedDelineator(update)),
       this.column.startDragging$.subscribe((startRow) => { this._startDragging(startRow); }),
       this.column.updateDragging$.subscribe((updateRow) => { this._updateDragging(updateRow); }),
       this.column.stopDragging$.subscribe((stopRow) => { this._updateDragging(stopRow, true); })
@@ -89,10 +91,10 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   }
 
   private _startDragging(row: TimeSelectionRow) {
-    // console.log("_startDragging " + row.startTime.format("hh:mm a") + " ---- " + row.sectionIndex)
+    console.log("_startDragging " + row.startTime.format("hh:mm a") + " ---- " + row.sectionIndex)
     this._startRow = row;
     this._activateSection(this._startRow);
-    this._startRow.isDrawing
+    // this._startRow.isDrawing
     if (!this._startRow.markedDelineator) {
       this._startRow.onDrawTLEDelineators(this.startRow.startTime);
     }
@@ -168,8 +170,9 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
           else if (item1.time.isAfter(item2.time)) { return 1; }
           else { return 0; }
         });
-        this._rebuild();
+        // this._rebuild();
         this.daybookDisplayService.daybookController.delineatorController.deleteDelineator(deleteTime);
+        this.daybookDisplayService.saveChanges$(DaybookUpdateAction.DELINEATOR);
       } else {
         console.log("Error: could not delete delineator because time was not found: " + deleteTime.format('hh:mm a'));
       }
@@ -183,11 +186,8 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     this.column.reset();
     this._startRow = null;
     this._endRow = null;
-    // this._mouseUpRow = null;
-    // this._mouseOverRow = null;
     this.daybookDisplayService.onStartDrawingTLE(null);
   }
-
 
   private _activateSection(activateRow: TimeSelectionRow) {
     this._isDrawing = true;
@@ -199,7 +199,6 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
       }
     });
   }
-
 
   private _saveNewTimeDelineator(actionRow: TimeSelectionRow) {
     const maxDelineators = 48;
@@ -220,8 +219,16 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
       else { return 0; }
     });
 
-    // this.daybookDisplayService.activeDayController.saveTimeDelineators(saveAllDelineators);
-    this._rebuild();
+    this.daybookDisplayService.daybookController.delineatorController.saveTimeDelineators(saveAllDelineators);
+    this.daybookDisplayService.saveChanges$(DaybookUpdateAction.DELINEATOR);
+  }
+
+  private _updateSavedDelineator(update: { prevVal: moment.Moment, nextVal: moment.Moment }) {
+
+    console.log("UPDATING DELINEATOR VALUE FROM")
+
+    this.daybookDisplayService.daybookController.delineatorController.updateDelineator(update.prevVal, update.nextVal);
+    this.daybookDisplayService.saveChanges$(DaybookUpdateAction.DELINEATOR);
   }
 
   private _createNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
@@ -230,8 +237,5 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
     this.daybookDisplayService.onCreateNewTimelogEntry(drawStartDel, drawEndDel);
     this._reset();
   }
-
-
-
 
 }

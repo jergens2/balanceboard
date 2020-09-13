@@ -1,4 +1,4 @@
-import { DaybookDayItem } from "../../../../daybook/api/daybook-day-item.class";
+import { DaybookDayItem } from "../../../../daybook/daybook-day-item/daybook-day-item.class";
 import { ActivityCategoryDefinition } from "../../../api/activity-category-definition.class";
 import * as moment from 'moment';
 import { ADIWeekDataChartItem } from "./adi-week-data-chart-item.class";

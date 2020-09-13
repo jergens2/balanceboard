@@ -1,6 +1,6 @@
 import { NoteHttpService } from '../../dashboard/notes/api/note-http.service';
 import { ActivityHttpService } from '../../dashboard/activities/api/activity-http.service';
-import { DaybookHttpService } from '../../dashboard/daybook/api/daybook-http.service';
+import { DaybookHttpService } from '../../dashboard/daybook/daybook-day-item/daybook-http.service';
 import { TaskHttpService } from '../../dashboard/tasks/task-http.service';
 import { Observable, BehaviorSubject, forkJoin, Subscription } from 'rxjs';
 import { AppAsyncServiceList } from './async-data-service-list.interface';

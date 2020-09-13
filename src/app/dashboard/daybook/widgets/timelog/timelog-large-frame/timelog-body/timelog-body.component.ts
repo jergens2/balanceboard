@@ -83,15 +83,6 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
     this.daybookDisplayService.displayManager.openItemByIndex(gridItem.itemIndex);
   }
 
-  public showNowLine(gridItem: TimelogDisplayGridItem): boolean {
-    const now = moment();
-    if (now.isSameOrAfter(gridItem.startTime) && now.isSameOrBefore(gridItem.endTime)) {
-      return gridItem.isAvailableItem;
-      // return true;
-    }
-    return false;
-  }
-
   private _buildTimelog() {
 
     this._buildGuideLineHours();

@@ -1,5 +1,5 @@
-import { DaybookSleepInputDataItem } from "../api/data-items/daybook-sleep-input-data-item.interface";
-import { DaybookDayItem } from "../api/daybook-day-item.class";
+import { DaybookSleepInputDataItem } from "../daybook-day-item/data-items/daybook-sleep-input-data-item.interface";
+import { DaybookDayItem } from "../daybook-day-item/daybook-day-item.class";
 import { SleepEntryInputItem } from "./sleep-entry-input-item.class";
 
 export class SleepEntryItem{

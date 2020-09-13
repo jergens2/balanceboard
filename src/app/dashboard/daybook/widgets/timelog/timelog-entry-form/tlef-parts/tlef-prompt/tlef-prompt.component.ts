@@ -3,6 +3,7 @@ import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TLEFController } from '../../TLEF-controller.class';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { DaybookUpdateAction } from '../../../../../display-manager/daybook-update-action.enum';
 
 @Component({
   selector: 'app-tlef-prompt',
@@ -27,13 +28,15 @@ export class TlefPromptComponent implements OnInit {
     // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
     const changesMadeTLE = this._controller.changesMadeTLE;
     console.log("Method disabled")
+    const dateYYYYMMDD: string = changesMadeTLE.startTime.format('YYYY-MM-DD');
     if(changesMadeTLE.isSavedEntry){
-      // this.daybookService.activeDayController.updateTimelogEntryItem$(changesMadeTLE);
+      this.daybookService.daybookController.tleController.updateTimelogEntryItem(dateYYYYMMDD, changesMadeTLE);
     }else{
-      // this.daybookService.activeDayController.saveTimelogEntryItem(changesMadeTLE);
+      this.daybookService.daybookController.tleController.saveTimelogEntryItem(dateYYYYMMDD, changesMadeTLE);
     }
-    
-    this._controller.promptContinue();
+    this._controller.saveChanges();
+    this.daybookService.saveChanges$(DaybookUpdateAction.TIMELOG_ENTRY).subscribe(complete =>    this._controller.promptContinue());
+    // this._controller.promptContinue();
     // console.log("Saving changes")
     
   }

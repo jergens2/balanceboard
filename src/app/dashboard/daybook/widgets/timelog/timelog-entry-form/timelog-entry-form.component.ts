@@ -39,6 +39,8 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   public get promptToSaveChanges(): boolean { return this.controller.promptToSaveChanges; }
 
+  public get isSavingChanges(): boolean { return this.controller.isSavingChanges; }
+
   ngOnInit() {
     // console.log("Opening component")
     this._reload();

@@ -15,7 +15,7 @@
             <div *ngFor="let gridItem of gridItems" class="grid-item"
                 [ngClass]="{'currently-open-item': gridItem.isCurrentlyOpen}">
 
-                <div *ngIf="showNowLine(gridItem)" class="now-line"></div>
+                <div *ngIf="gridItem.showNowLine" class="now-line"></div>
 
                 <app-available-timelog-item *ngIf="gridItem.isAvailableItem" class='available-item'
                     [gridItem]="gridItem"></app-available-timelog-item>

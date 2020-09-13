@@ -1,4 +1,4 @@
-import { DaybookDayItem } from "../../daybook/api/daybook-day-item.class";
+import { DaybookDayItem } from "../../daybook/daybook-day-item/daybook-day-item.class";
 import { ActivityCategoryDefinition } from "./activity-category-definition.class";
 import { TimelogEntryBuilder } from "../../daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class";
 

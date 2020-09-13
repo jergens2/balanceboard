@@ -82,7 +82,7 @@ export class DaybookHttpService {
     const updatedItems$: Subject<DaybookDayItem[]> = new Subject();
     forkJoin([...daybookDayItems.map(item => this.updateDaybookDayItem$(item))]).subscribe({
       next: (items) => updatedItems$.next(items),
-      error: (e) => console.log('updating items: ', e),
+      error: (e) => console.log('error updating items: ', e),
       complete: () => updatedItems$.complete()
     });
     return updatedItems$.asObservable();

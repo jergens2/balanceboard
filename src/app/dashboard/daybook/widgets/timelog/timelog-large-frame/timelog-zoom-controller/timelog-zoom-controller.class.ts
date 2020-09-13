@@ -1,6 +1,6 @@
 import { TimelogZoomItem } from './timelog-zoom-item.class';
 import { faSun, faList, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { DaybookTimeSchedule } from '../../../../api/daybook-time-schedule/daybook-time-schedule.class';
+import { DaybookTimeSchedule } from '../../../../display-manager/daybook-time-schedule/daybook-time-schedule.class';
 import * as moment from 'moment';
 import { TimelogZoomType } from './timelog-zoom-type.enum';
 import { Observable } from 'rxjs';

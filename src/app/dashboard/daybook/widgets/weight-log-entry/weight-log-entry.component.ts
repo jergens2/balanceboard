@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DaybookDayItem } from '../../api/daybook-day-item.class';
-import { DaybookDayItemController } from '../../api/daybook-day-item-controller';
+import { DaybookDayItem } from '../../daybook-day-item/daybook-day-item.class';
 import { DaybookDisplayService } from '../../daybook-display.service';
 
 @Component({
@@ -12,10 +11,8 @@ export class WeightLogEntryComponent implements OnInit {
 
   constructor(private daybookService: DaybookDisplayService) { }
 
-  private daybookManager: DaybookDayItemController;
 
   ngOnInit() {
-    this.daybookManager = this.daybookService.daybookController;
     // this.updateWeightInfo()
     // this.daybookControllerService.activeDayController$.subscribe((activeDayChanged)=>{
     //   if(activeDayChanged){

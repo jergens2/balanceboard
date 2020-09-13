@@ -5,7 +5,7 @@ import { TLEFController } from '../../TLEF-controller.class';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
 import { TLEFFormCase } from '../../tlef-form-case.enum';
-import { DaybookDisplayUpdateType } from '../../../../../api/daybook-display-update.interface';
+import { DaybookDisplayUpdateType } from '../../../../../display-manager/daybook-display-update.interface';
 
 @Component({
   selector: 'app-tlef-times',

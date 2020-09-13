@@ -1,25 +1,27 @@
-import { DaybookTimeSchedule } from './api/daybook-time-schedule/daybook-time-schedule.class';
+import { DaybookTimeSchedule } from './daybook-time-schedule/daybook-time-schedule.class';
 import * as moment from 'moment';
-import { TLEFController } from './widgets/timelog/timelog-entry-form/TLEF-controller.class';
+import { TLEFController } from '../widgets/timelog/timelog-entry-form/TLEF-controller.class';
 import { Subscription, Observable, BehaviorSubject } from 'rxjs';
-import { TimelogZoomController } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-controller.class';
-import { SleepCycleScheduleItemsBuilder } from './sleep-manager/sleep-cycle/sleep-cycle-schedule-items-builder.class';
-import { DaybookTimeScheduleItem } from './api/daybook-time-schedule/daybook-time-schedule-item.class';
-import { TimelogZoomType } from './widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-type.enum';
-import { ToolboxService } from '../../toolbox-menu/toolbox.service';
-import { ActivityHttpService } from '../activities/api/activity-http.service';
-import { TimelogDelineator, TimelogDelineatorType } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
-import { DaybookDelineatorSetter } from './api/daybook-delineator-setter.class';
-import { DaybookTimeScheduleAvailableItem } from './api/daybook-time-schedule/daybook-time-schedule-available-item.class';
-import { DaybookTimeScheduleStatus } from './api/daybook-time-schedule/daybook-time-schedule-status.enum';
-import { DaybookTimeScheduleActiveItem } from './api/daybook-time-schedule/daybook-time-schedule-active-item.class';
-import { DaybookTimeScheduleSleepItem } from './api/daybook-time-schedule/daybook-time-schedule-sleep-item.class';
-import { TimeSelectionColumn } from './widgets/timelog/timelog-large-frame/timelog-body/time-selection-column/time-selection-column.class';
-import { TimelogDisplayGrid } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-display-grid-class';
+import { TimelogZoomController } from '../widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-controller.class';
+import { SleepCycleScheduleItemsBuilder } from '../sleep-manager/sleep-cycle/sleep-cycle-schedule-items-builder.class';
+import { DaybookTimeScheduleItem } from './daybook-time-schedule/daybook-time-schedule-item.class';
+import { TimelogZoomType } from '../widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-type.enum';
+import { ToolboxService } from '../../../toolbox-menu/toolbox.service';
+import { ActivityHttpService } from '../../activities/api/activity-http.service';
+import { TimelogDelineator, TimelogDelineatorType } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
+import { DaybookDisplayDelineatorSetter } from './daybook-display-delineator-setter.class';
+import { DaybookTimeScheduleAvailableItem } from './daybook-time-schedule/daybook-time-schedule-available-item.class';
+import { DaybookTimeScheduleStatus } from './daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleActiveItem } from './daybook-time-schedule/daybook-time-schedule-active-item.class';
+import { DaybookTimeScheduleSleepItem } from './daybook-time-schedule/daybook-time-schedule-sleep-item.class';
+import { TimeSelectionColumn } from '../widgets/timelog/timelog-large-frame/timelog-body/time-selection-column/time-selection-column.class';
+import { TimelogDisplayGrid } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-display-grid-class';
+import { DaybookUpdateAction } from './daybook-update-action.enum';
 
 export class DaybookDisplayManager {
     /**
-     *  This class is responsible managing everything related to the display of daybook
+     *  This class is the master class for the daybook,
+     *  responsible managing everything related to the display of daybook
      *
      *  Key components of the Daybook, including:
      *  -TimeSelectionColumn component,
@@ -79,7 +81,14 @@ export class DaybookDisplayManager {
     public get displayDurationMs(): number { return this._zoomController.displayDurationMs; }
     public get zoomController(): TimelogZoomController { return this._zoomController; }
 
-    public openNewCurrentTimelogEntry() { this.tlefController.openNewCurrentTimelogEntry(); }
+    public onClickNowDelineator() {
+        const index = this.tlefController.getIndexOfNowItem();
+        if (index > -1) {
+            this.openItemByIndex(index);
+        } else {
+            console.log("Error finding new current item index.")
+        }
+    }
     public openTLEDelineator(delineator: TimelogDelineator) { this.tlefController.openTLEDelineator(delineator); }
 
     public openItemByIndex(itemIndex: number) {
@@ -120,9 +129,14 @@ export class DaybookDisplayManager {
     // public get currentlyOpenItemIndex(): number { return this._currentlyOpenItemIndex$.getValue(); }
     // public get currentlyOpenItemIndex$(): Observable<number> { return this._currentlyOpenItemIndex$.asObservable(); }
 
-    public updateDisplayManager(timeSched: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder) {
+    public updateDisplayManager(timeSched: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder,
+        action: DaybookUpdateAction) {
         console.log('****** DaybookDisplayManager.updateDisplayManager()')
         this._schedule = timeSched;
+
+        // console.log("SCHEDULE ITEMS FOR UPDATING")
+        // this._schedule.timeScheduleItems.forEach(item => console.log("    "+ item.toString()))
+
         this._sleepCycle = sleepCycle;
         if (!this._zoomController) {
             this._zoomController = new TimelogZoomController(timeSched, sleepCycle);
@@ -136,8 +150,8 @@ export class DaybookDisplayManager {
         this._setDisplayDelineators();
         this._updateTimeSelectionColumn();
         this._updateTimelogDisplayGrid();
-        this._updateTlefController();
-        this._reopenItem();
+        this._updateTlefController(action);
+
     }
     public onZoomChanged(zoom: TimelogZoomType) {
         this._zoomController.setZoom(zoom);
@@ -147,36 +161,35 @@ export class DaybookDisplayManager {
 
 
     private _updateTimeSelectionColumn() {
-        console.log('DaybookDisplayManager._updateTimeSelectionColumn()')
-
-        this.displayItems.forEach(i => console.log(" display item: " + i.toString()))
-
+        // console.log('DaybookDisplayManager._updateTimeSelectionColumn()')
+        // this.displayItems.forEach(i => console.log(" display item: " + i.toString()))
         this._timeSelectionColumn = new TimeSelectionColumn(this.displayDelineators, this.displayItemsAvailable);
-
-        this.displayItems.forEach(i => console.log(" display item: " + i.toString()))
-
+        // this.displayItems.forEach(i => console.log(" display item: " + i.toString()))
     }
     private _updateTimelogDisplayGrid() {
-        console.log('DaybookDisplayManager._updateTimelogDisplayGrid()')
+        // console.log('DaybookDisplayManager._updateTimelogDisplayGrid()')
         if (!this._timelogDisplayGrid) {
             this._timelogDisplayGrid = new TimelogDisplayGrid(this._displayItems);
         } else {
             this._timelogDisplayGrid.update(this._displayItems);
         }
     }
-    private _updateTlefController() {
-        console.log('DaybookDisplayManager._updateTlefController()')
+    private _updateTlefController(action: DaybookUpdateAction) {
+        // console.log('DaybookDisplayManager._updateTlefController()')
         if (!this._tlefController) {
             this._tlefController = new TLEFController(this._displayItems, this._activityService.activityTree);
         } else {
-            this._tlefController.update(this._displayItems);
+            this._tlefController.update(this._displayItems, action);
+            if (this._tlefController.formIsOpen) {
+                this._reopenGridItem(this._tlefController.currentlyOpenTLEFItem.itemIndex);
+            }
         }
     }
 
 
     private _setDisplayDelineators() {
         // console.log("* Delineators")
-        const delineatorSetter = new DaybookDelineatorSetter(this._displayItems);
+        const delineatorSetter = new DaybookDisplayDelineatorSetter(this._displayItems);
         this._displayDelineators = delineatorSetter.displayDelineators;
         this._displayItems = delineatorSetter.displayItems;
         // console.log("YEA BRO")
@@ -190,11 +203,7 @@ export class DaybookDisplayManager {
         this.tlefController.close();
         this.timelogDisplayGrid.closeItem();
     }
-    private _reopenItem() {
-        if (this._currentlyOpenItemIndex >= 0) {
-            this.openItemByIndex(this._currentlyOpenItemIndex);
-        }
-    }
+    private _reopenGridItem(index: number) { this.timelogDisplayGrid.openItemByIndex(index); }
     private _setToolboxSub() {
         this._toolboxSub = this._toolboxService.onFormClosed$.subscribe(closed => this._closeItem());
     }

@@ -7,7 +7,7 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ActivityComponentService } from './activity-component.service';
 import { Subscription } from 'rxjs';
-import { DaybookHttpService } from '../daybook/api/daybook-http.service';
+import { DaybookHttpService } from '../daybook/daybook-day-item/daybook-http.service';
 import { AppScreenSizeService } from '../../shared/app-screen-size/app-screen-size.service';
 import { AppScreenSize } from '../../shared/app-screen-size/app-screen-size.class';
 import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size-label.enum';

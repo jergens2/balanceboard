@@ -72,24 +72,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 
 
-  private _timerSub: Subscription = new Subscription();
+  private _energySub: Subscription = new Subscription();
 
   ngOnInit() {
     this._clock = new Clock();
-    // console.log("Header on init")
-
-    // const menuSub = this._activeComponentMenu$.subscribe((componentMenu: HeaderMenu) => {
-    //   if (componentMenu != null) {
-    //     this.headerMenus = Object.assign([], this._buildHeaderMenus(componentMenu));
-    //   } else {
-    //     this.headerMenus = Object.assign([], this._buildHeaderMenus());
-    //   }
-    // });
     this.headerMenus = Object.assign([], this._buildHeaderMenus());
     this._setBattery();
-    this.sleepService.sleepManager.energyLevel$.subscribe(energy => { 
-      this._setBattery();
-    });
+    this._energySub = this.sleepService.sleepManager.energyLevel$.subscribe(energy => { this._setBattery(); });
   }
 
   ngOnDestroy() {
@@ -97,13 +86,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this._menuSubs = [];
     this._menuSubs.forEach(s => s.unsubscribe());
     this._menuSubs = [];
-    this._timerSub.unsubscribe();
+    this._energySub.unsubscribe();
   }
 
   public onClickClock() {
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.TIMELOG);
     this.router.navigate(['/daybook']);
-    this.daybookDisplayService.openNewCurrentTimelogEntry();
+    this.daybookDisplayService.onClickNowDelineator();
   }
   public onClickBattery() {
     this.daybookDisplayService.setDaybookWidget(DaybookWidgetType.SLEEP_PROFILE);
@@ -208,7 +197,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private logout() {
     this._menuSubs.forEach(s => s.unsubscribe());
     this._menuSubs = [];
-    this._timerSub.unsubscribe();
+    this._energySub.unsubscribe();
     this.authService.logout();
   }
 

@@ -2,10 +2,11 @@ import * as moment from 'moment';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { TimelogDelineator, TimelogDelineatorType } from '../timelog-delineator.class';
 import { TSRDrawStatus } from './tsr-draw-status.enum';
-import { DaybookTimeScheduleItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleItem } from '../../../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
+import { TimeInput } from '../../../../../../../shared/components/time-input/time-input.class';
 
 export class TimeSelectionRow {
     constructor(startTime: moment.Moment, endTime: moment.Moment, sectionIndex: number, section: DaybookTimeScheduleItem) {
@@ -14,17 +15,16 @@ export class TimeSelectionRow {
         this._sectionIndex = sectionIndex;
         if (this._sectionIndex > -1) {
             this._isAvailable = true;
-            this._sectionStartTime = moment(section.startTime);
-            this._sectionEndTime = moment(section.endTime);
+            this._sectionStartTime = moment(section.schedItemStartTime);
+            this._sectionEndTime = moment(section.schedItemEndTime);
         }
-
     }
 
     private _startDragging$: BehaviorSubject<TimeSelectionRow> = new BehaviorSubject(null);
     private _stopDragging$: BehaviorSubject<TimeSelectionRow> = new BehaviorSubject(null);
     private _updateDragging$: BehaviorSubject<TimeSelectionRow> = new BehaviorSubject(null);
     private _deleteDelineator$: Subject<moment.Moment> = new Subject();
-    private _editDelineator$: Subject<moment.Moment> = new Subject();
+    private _editDelineator$: Subject<{ prevVal: moment.Moment, nextVal: moment.Moment }> = new Subject();
 
     private _delineatorNgStyle: any = {};
     private _delineatorNgClass: any = {};
@@ -46,6 +46,8 @@ export class TimeSelectionRow {
     private _endTime: moment.Moment;
     private _tsrDrawStatus: TSRDrawStatus;
     private _icon: IconDefinition = null;
+
+    private _timeInput: TimeInput;
 
     public mouseIsOver: boolean = false;
     public isDragging = false;
@@ -74,7 +76,9 @@ export class TimeSelectionRow {
     public get drawDelineator(): TimelogDelineator { return this._drawDelineator; }
 
     public get deleteDelineator$(): Observable<moment.Moment> { return this._deleteDelineator$.asObservable(); }
-    public get editDelineator$(): Observable<moment.Moment> { return this._editDelineator$.asObservable(); }
+    public get editDelineator$(): Observable<{ prevVal: moment.Moment, nextVal: moment.Moment }> {
+        return this._editDelineator$.asObservable();
+    }
     public get startDragging$(): Observable<TimeSelectionRow> { return this._startDragging$.asObservable(); }
     public get updateDragging$(): Observable<TimeSelectionRow> { return this._updateDragging$.asObservable(); }
     public get stopDragging$(): Observable<TimeSelectionRow> { return this._stopDragging$.asObservable(); }
@@ -96,14 +100,17 @@ export class TimeSelectionRow {
     public get icon(): IconDefinition { return this._icon; }
     public get hoverSavedDelineator(): boolean { return this._hoverSavedDelineator; }
 
+    public get timeInput(): TimeInput { return this._timeInput; }
+
     public activate() { this._isActiveSection = true; }
     public deactivate() { this._isActiveSection = false; }
 
     public toString(): string {
-        let val: string = this.startTime.format('hh:mm a') + " to " + this.endTime.format('hh:mm a');
-        val += "\n\tAvailability section index: " + this.sectionIndex;
+        let val: string = this.startTime.format('hh:mm a') + ' to ' + this.endTime.format('hh:mm a');
+        val += '\n\tAvailability section index: ' + this.sectionIndex;
         if (this.hasMarkedDelineator) {
-            val += "\n\t*Marked delineator: " + this.markedDelineator.time.format('hh:mm a') + " -- " + this.markedDelineator.delineatorType;
+            val += '\n\t*Marked delineator: ' +
+                this.markedDelineator.time.format('hh:mm a') + ' -- ' + this.markedDelineator.delineatorType;
         }
         return val;
     }
@@ -112,6 +119,9 @@ export class TimeSelectionRow {
             this._markedDelineator = delineator;
             this._buildDelineatorsStyle();
             this._tsrDrawStatus = TSRDrawStatus.NOT_DRAWING;
+            this._timeInput = new TimeInput(this._markedDelineator.time);
+            this._timeInput.showDate = false;
+            this._timeInput.incrementMinutes = 1;
         } else {
             this._markedDelineator = null;
             this._gridNgStyle = {};
@@ -121,13 +131,13 @@ export class TimeSelectionRow {
     public deleteDelineator(timelogDelineator: moment.Moment) {
         this._deleteDelineator$.next(timelogDelineator);
     }
-    public updateSavedDelineator(newDelineatorTime: moment.Moment) {
-        if (newDelineatorTime.isSameOrAfter(this.startTime) && newDelineatorTime.isSameOrBefore(this.endTime)) {
-            this._editDelineator$.next(newDelineatorTime);
-            this.markTimelogDelineator(new TimelogDelineator(newDelineatorTime, TimelogDelineatorType.SAVED_DELINEATOR));
+    public updateSavedDelineator() {
+        const newValue: moment.Moment = this._timeInput.timeValue;
+        if (newValue.isSameOrAfter(this.startTime) && newValue.isSameOrBefore(this.endTime)) {
+            this._editDelineator$.next({ prevVal: this.markedDelineator.time, nextVal: newValue });
+            this.markTimelogDelineator(new TimelogDelineator(newValue, TimelogDelineatorType.SAVED_DELINEATOR));
         } else {
-
-            this._editDelineator$.next(newDelineatorTime);
+            this._editDelineator$.next({ prevVal: this.markedDelineator.time, nextVal: newValue });
             this.markTimelogDelineator(null);
         }
     }
@@ -237,21 +247,21 @@ export class TimeSelectionRow {
             if (thisType === TimelogDelineatorType.WAKEUP_TIME || thisType === TimelogDelineatorType.FALLASLEEP_TIME) {
                 if (thisType === TimelogDelineatorType.WAKEUP_TIME) {
                     this._icon = faSun;
-                    this._delineatorNgClass = ["delineator-wake-up"];
+                    this._delineatorNgClass = ['delineator-wake-up'];
                 }
                 else {
                     this._icon = faMoon;
-                    this._delineatorNgClass = ["delineator-fall-asleep"];
+                    this._delineatorNgClass = ['delineator-fall-asleep'];
                 }
             } else if (thisType === TimelogDelineatorType.NOW) {
                 this._icon = faClock;
-                this._delineatorNgClass = ["delineator-now"];
+                this._delineatorNgClass = ['delineator-now'];
             } else if (thisType === TimelogDelineatorType.DAY_STRUCTURE) {
-                this._delineatorNgClass = ["delineator-day-structure"];
+                this._delineatorNgClass = ['delineator-day-structure'];
             } else if (thisType === TimelogDelineatorType.TIMELOG_ENTRY_START || thisType === TimelogDelineatorType.TIMELOG_ENTRY_END) {
-                this._delineatorNgClass = ["delineator-timelog-entry"];
+                this._delineatorNgClass = ['delineator-timelog-entry'];
             } else if (thisType === TimelogDelineatorType.SAVED_DELINEATOR) {
-                this._delineatorNgClass = ["delineator-saved"];
+                this._delineatorNgClass = ['delineator-saved'];
             }
         }
         // console.log("Style is: (grid, body)" , this._gridStyle, this._bodyStyle);

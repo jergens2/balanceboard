@@ -1,8 +1,8 @@
-import { DaybookDayItem } from '../../api/daybook-day-item.class';
+import { DaybookDayItem } from '../../daybook-day-item/daybook-day-item.class';
 import { UAPAppConfiguration } from '../../../user-account-profile/api/uap-app-configuraiton.interface';
 import * as moment from 'moment';
 import { TimeScheduleItem } from '../../../../shared/time-utilities/time-schedule-item.class';
-import { DaybookTimelogEntryDataItem } from '../../api/data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookTimelogEntryDataItem } from '../../daybook-day-item/data-items/daybook-timelog-entry-data-item.interface';
 
 export class SleepCycleDaybookAnalyzer {
 
@@ -94,7 +94,7 @@ export class SleepCycleDaybookAnalyzer {
             const daySleepItems: TimeScheduleItem[] = daybookDayItems[i].sleepInputItems
                 .map(si => new TimeScheduleItem(si.startSleepTimeISO, si.endSleepTimeISO));
             if (daySleepItems.length > 0) {
-                wakeupTimes.push(daySleepItems[0].endTime);
+                wakeupTimes.push(daySleepItems[0].schedItemEndTime);
             } else {
                 wakeupTimes.push(this._defaultWakeupTime);
             }
@@ -130,7 +130,7 @@ export class SleepCycleDaybookAnalyzer {
             const daySleepItems: TimeScheduleItem[] = daybookDayItems[i].sleepInputItems
                 .map(si => new TimeScheduleItem(si.startSleepTimeISO, si.endSleepTimeISO));
             if (daySleepItems.length > 0) {
-                fallAsleepTimes.push(daySleepItems[0].startTime);
+                fallAsleepTimes.push(daySleepItems[0].schedItemStartTime);
             } else {
                 fallAsleepTimes.push(this._defaultFallAsleepTime);
             }

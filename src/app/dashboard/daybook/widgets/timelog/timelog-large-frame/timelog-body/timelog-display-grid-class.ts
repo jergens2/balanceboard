@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
-import { DaybookTimeSchedule } from '../../../../api/daybook-time-schedule/daybook-time-schedule.class';
-import { DaybookTimeScheduleItem } from '../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeSchedule } from '../../../../display-manager/daybook-time-schedule/daybook-time-schedule.class';
+import { DaybookTimeScheduleItem } from '../../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
 
 export class TimelogDisplayGrid {
 
@@ -25,16 +25,21 @@ export class TimelogDisplayGrid {
     this._buildGrid(scheduleItems, currentlyOpenItemIndex);
   }
 
+  /**
+   * 
+   * This method basically just applies a boolean property to each item indicating whether or not an item is open,
+   * exclusively for style purposes.
+   */
   public openItemByIndex(openItemIndex: number) {
     this.gridItems.forEach(item => {
-      if(item.itemIndexes.find(i => i === openItemIndex)){
+      if (item.itemIndexes.find(i => i === openItemIndex)) {
         item.isCurrentlyOpen = true;
-      }else{
+      } else {
         item.isCurrentlyOpen = false;
       }
     });
   }
-  public closeItem(){
+  public closeItem() {
     this.gridItems.forEach(item => item.isCurrentlyOpen = false);
   }
 
@@ -43,7 +48,7 @@ export class TimelogDisplayGrid {
 
 
     const gridItems: TimelogDisplayGridItem[] = scheduleItems.map(item => {
-      const newGridItem = new TimelogDisplayGridItem(item.startTime, item.endTime, item.displayPercent,
+      const newGridItem = new TimelogDisplayGridItem(item.schedItemStartTime, item.schedItemEndTime, item.displayPercent,
         item.itemIndex, item.scheduleStatus, item.timelogEntry);
       return newGridItem;
     });
@@ -58,6 +63,8 @@ export class TimelogDisplayGrid {
           }
         }
         if (merge) {
+          console.log("WE ARE MERGING.")
+
           gridItems[i - 1].mergeItem(gridItems[i]);
           gridItems.splice(i, 1);
           length = gridItems.length;
@@ -68,7 +75,7 @@ export class TimelogDisplayGrid {
 
     let gridTemplateRows: string = '';
     gridItems.forEach((gridItem) => {
-      gridTemplateRows += '' + gridItem.displayPercent.toFixed(3) + '% ';
+      gridTemplateRows += '' + gridItem.displayPercent + '% ';
     });
     displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
     this.ngStyle = displayGridNgStyle;
@@ -76,7 +83,7 @@ export class TimelogDisplayGrid {
     console.log("   * GRID ITEMS")
     this._gridItems.forEach(item => console.log("   " + item.toString()))
 
-    if(currentlyOpenItemIndex){
+    if (currentlyOpenItemIndex) {
       this._gridItems.find(item => item.itemIndex === currentlyOpenItemIndex).setAsActiveItem();
     }
 

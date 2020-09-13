@@ -65,7 +65,7 @@
 
 }
 
-.winter-day{
+/* .winter-day{
     background-color:rgba(0, 145, 255, 0.1);
 }
 .spring-day{
@@ -76,7 +76,7 @@
 }
 .autumn-day{
     background-color:rgba(255, 145, 0, 0.1);
-}
+} */
 
 .day-of-calendar:hover{
     background-color: rgba(0, 89, 255, 0.5);

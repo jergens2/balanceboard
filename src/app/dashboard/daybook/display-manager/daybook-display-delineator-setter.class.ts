@@ -1,7 +1,7 @@
 import { DaybookTimeScheduleItem } from './daybook-time-schedule/daybook-time-schedule-item.class';
 import { TimelogDelineatorType, TimelogDelineator } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 
-export class DaybookDelineatorSetter {
+export class DaybookDisplayDelineatorSetter {
 
 
     private _displayDelineators: TimelogDelineator[] = [];
@@ -41,8 +41,8 @@ export class DaybookDelineatorSetter {
                         endDelineatorType = TimelogDelineatorType.DISPLAY_END;
                     }
                 }
-                const startDelineator = new TimelogDelineator(thisItem.startTime, startDelineatorType, startDelineatorIndex);
-                const endDelineator = new TimelogDelineator(thisItem.endTime, endDelineatorType, endDelineatorIndex);
+                const startDelineator = new TimelogDelineator(thisItem.schedItemStartTime, startDelineatorType, startDelineatorIndex);
+                const endDelineator = new TimelogDelineator(thisItem.schedItemEndTime, endDelineatorType, endDelineatorIndex);
                 displayItems[i].startDelineator = startDelineator;
                 displayItems[i].endDelineator = endDelineator;
                 displayItems[i].setItemIndex(itemIndex);
@@ -50,8 +50,8 @@ export class DaybookDelineatorSetter {
             }
         } else if (displayItems.length === 1) {
             allDelineators = [
-                new TimelogDelineator(displayItems[0].startTime, TimelogDelineatorType.DISPLAY_START, 0),
-                new TimelogDelineator(displayItems[0].endTime, TimelogDelineatorType.DISPLAY_END, 1),
+                new TimelogDelineator(displayItems[0].schedItemStartTime, TimelogDelineatorType.DISPLAY_START, 0),
+                new TimelogDelineator(displayItems[0].schedItemEndTime, TimelogDelineatorType.DISPLAY_END, 1),
             ];
         }
         const duplicatesRemoved: TimelogDelineator[] = [];
@@ -64,11 +64,12 @@ export class DaybookDelineatorSetter {
         this._displayItems = displayItems;
     }
 
+
     private _getPriorityDelineator(checkD1: TimelogDelineatorType, checkD2: TimelogDelineatorType): TimelogDelineatorType {
         const delineatorDisplayPriority = [
             TimelogDelineatorType.DISPLAY_START,
             TimelogDelineatorType.DISPLAY_END,
-            TimelogDelineatorType.DAY_STRUCTURE_MIDNIGHT,
+            // TimelogDelineatorType.DAY_STRUCTURE_MIDNIGHT,
             TimelogDelineatorType.DRAWING_TLE_START,
             TimelogDelineatorType.DRAWING_TLE_END,
             TimelogDelineatorType.WAKEUP_TIME,

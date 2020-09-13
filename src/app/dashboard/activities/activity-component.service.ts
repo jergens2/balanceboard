@@ -3,9 +3,9 @@ import { ActivityCategoryDefinition } from './api/activity-category-definition.c
 import { BehaviorSubject, Observable, Subject, forkJoin, Subscription } from 'rxjs';
 import { ActivityHttpService } from './api/activity-http.service';
 import { ModalService } from '../../modal/modal.service';
-import { DaybookHttpService } from '../daybook/api/daybook-http.service';
+import { DaybookHttpService } from '../daybook/daybook-day-item/daybook-http.service';
 import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
-import { DaybookDayItem } from '../daybook/api/daybook-day-item.class';
+import { DaybookDayItem } from '../daybook/daybook-day-item/daybook-day-item.class';
 import { ActivityDataAnalyzer } from './activity-display-item/adi-parts/adi-summary/activity-data-analyzer.class';
 import { ActivityDataSummarizer } from './activity-display-item/adi-parts/adi-summary/activity-data-summarizer.class';
 

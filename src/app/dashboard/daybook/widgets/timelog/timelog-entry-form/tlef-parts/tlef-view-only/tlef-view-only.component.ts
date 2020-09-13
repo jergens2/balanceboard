@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import { ActivityHttpService } from '../../../../../../activities/api/activity-http.service';
-import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
+import { TimelogEntryActivity } from '../../../../../daybook-day-item/data-items/timelog-entry-activity.interface';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { DurationString } from '../../../../../../../shared/time-utilities/duration-string.class';
 import { TimelogEntryDecorator } from '../timelog-entry-decorator.class';

@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input, OnDestroy } from '@angular/core';
-import { DaybookHttpService } from '../../../../daybook/api/daybook-http.service';
+import { DaybookHttpService } from '../../../../daybook/daybook-day-item/daybook-http.service';
 import { ActivityCategoryDefinition } from '../../../api/activity-category-definition.class';
-import { DaybookDayItem } from '../../../../daybook/api/daybook-day-item.class';
+import { DaybookDayItem } from '../../../../daybook/daybook-day-item/daybook-day-item.class';
 import * as moment from 'moment';
 import { ActivityTLEItem } from '../../activty-tle-item.class';
 import { TimelogEntryBuilder } from '../../../../daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class';

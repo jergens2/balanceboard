@@ -17,6 +17,11 @@ export class TimeSelectionRowComponent implements OnInit {
 
   @Input() row: TimeSelectionRow;
 
+  faCheck = faCheck;
+  faEdit = faEdit;
+  faTrash = faTrash;
+
+
   constructor(private daybookService: DaybookDisplayService) { }
 
   public get showDelineator(): boolean {
@@ -24,26 +29,8 @@ export class TimeSelectionRowComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.row.markedDelineator) {
-      this._editTime = this.row.markedDelineator.time;
-    }
-
-    if (this.row.isAvailable) {
-
-      // console.log("RoW SECTION START AND END: " + this.row.earliestAvailability.format('hh:mm a') + " to " + this.row.latestAvailability.format('hh:mm a'))
-    }
   }
 
-  faCheck = faCheck;
-  faEdit = faEdit;
-  faTrash = faTrash;
-
-  private _editTime: moment.Moment;
-
-
-  public onEditTimeChanged(time: moment.Moment) {
-    this._editTime = time;
-  }
 
   public onClickDelineator(row: TimeSelectionRow) {
     const delineator = row.markedDelineator;
@@ -52,20 +39,15 @@ export class TimeSelectionRowComponent implements OnInit {
     } else if (delineator.delineatorType === TimelogDelineatorType.FALLASLEEP_TIME) {
       this.daybookService.openFallAsleepTime();
     } else if (delineator.delineatorType === TimelogDelineatorType.NOW) {
-      this.daybookService.openNewCurrentTimelogEntry();
+      this.daybookService.onClickNowDelineator();
     } else if (delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_START
       || delineator.delineatorType === TimelogDelineatorType.TIMELOG_ENTRY_END) {
       this.daybookService.openTLEDelineator(delineator);
     }
   }
 
-  public onClickSaveEdit() {
-    // console.log("on click save edit");
-    this.row.updateSavedDelineator(this._editTime);
-  }
-  public onClickDelete() {
-    this.row.deleteDelineator(this.row.markedDelineator.time);
-  }
+  public onClickSaveEdit() { this.row.updateSavedDelineator(); }
+  public onClickDelete() { this.row.deleteDelineator(this.row.markedDelineator.time); }
 
 
 

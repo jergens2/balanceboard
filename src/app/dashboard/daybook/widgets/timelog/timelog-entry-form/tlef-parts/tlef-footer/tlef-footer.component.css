@@ -12,3 +12,9 @@
 .save-changes:hover{
     color: rgb(0, 45, 129);
 }
+.medium-button{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}

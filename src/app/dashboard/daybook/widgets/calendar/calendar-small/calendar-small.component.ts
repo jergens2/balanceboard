@@ -2,7 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 import { faExpand } from '@fortawesome/free-solid-svg-icons';
-import { DaybookDayItemController } from '../../../api/daybook-day-item-controller';
 import { DaybookDisplayService } from '../../../daybook-display.service';
 import { Clock } from '../../../../../shared/time-utilities/clock.class';
 

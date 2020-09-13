@@ -131,8 +131,8 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
       let mergedTimelogEntry = this.gridItem.timelogEntries[0];
       if (this.gridItem.timelogEntries.length > 1) {
 
-        const startTime = moment(this.gridItem.startTime);
-        const endTime = moment(this.gridItem.endTime);
+        const startTime = moment(this.gridItem.schedItemStartTime);
+        const endTime = moment(this.gridItem.schedItemEndTime);
         let activities: { activityTreeId: string, milliseconds: number }[] = [];
         this.gridItem.timelogEntries.forEach((timelogEntry) => {
           activities = [...activities, ...timelogEntry.timelogEntryActivities.map((tlea) => {

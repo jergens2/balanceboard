@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { DaybookDayItem } from '../../../../api/daybook-day-item.class';
+import { DaybookDayItem } from '../../../../daybook-day-item/daybook-day-item.class';
 import { TimelogEntryItem } from '../timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
 import { DurationString } from '../../../../../../shared/time-utilities/duration-string.class';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
-import { TimelogEntryActivity } from '../../../../api/data-items/timelog-entry-activity.interface';
+import { TimelogEntryActivity } from '../../../../daybook-day-item/data-items/timelog-entry-activity.interface';
 import { ActivityCategoryDefinition } from '../../../../../activities/api/activity-category-definition.class';
 import { ActivityHttpService } from '../../../../../activities/api/activity-http.service';
 

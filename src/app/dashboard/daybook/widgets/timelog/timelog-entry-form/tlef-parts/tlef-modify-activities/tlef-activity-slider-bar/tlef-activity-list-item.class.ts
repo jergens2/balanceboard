@@ -2,7 +2,7 @@ import { ActivityCategoryDefinition } from "../../../../../../../activities/api/
 import { ActivitySliderBar } from "./activity-slider-bar.class";
 import { Subject, Observable, Subscription } from "rxjs";
 import { ITLEFActivitySliderBarItem } from "./activity-slider-bar-item.interface";
-import { TimelogEntryActivity } from "../../../../../../api/data-items/timelog-entry-activity.interface";
+import { TimelogEntryActivity } from "../../../../../../daybook-day-item/data-items/timelog-entry-activity.interface";
 
 export class TLEFActivityListItem {
 

@@ -3,8 +3,8 @@ import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-en
 import { TLEFFormCase } from './tlef-form-case.enum';
 import { SleepEntryItem } from './sleep-entry-form/sleep-entry-item.class';
 import { TLEFCircleButton } from './tlef-parts/tlef-circle-buttons-bar/tlef-circle-button.class';
-import { DaybookTimeScheduleItem } from '../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
-import { DaybookTimeScheduleStatus } from '../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleItem } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleStatus } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
 
 export class TLEFControllerItem extends DaybookTimeScheduleItem {
 
@@ -17,8 +17,8 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     private _isCurrentlyOpen: boolean = false;
     private _isDrawing: boolean = false;
 
-    // private _startDelineator: TimelogDelineator;
-    // private _endDelineator: TimelogDelineator;
+    // private _itemStartTime: DaybookItemTimeLimiter;
+    // private _itemEndTime: DaybookItemTimeLimiter;
 
     private _circleButtonItem: TLEFCircleButton;
 
@@ -36,6 +36,11 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
 
     public get circleButton(): TLEFCircleButton { return this._circleButtonItem; }
     public get formCase(): TLEFFormCase { return this._formCase; }
+    // public get itemStartTime(): DaybookSchedItemTimeLimiter { return this._itemStartTime; }
+    // public get itemEndTime(): DaybookSchedItemTimeLimiter { return this._itemEndTime; }
+
+    // public setItemStartTime(val: DaybookSchedItemTimeLimiter){ this._itemStartTime = val; }
+    // public setItemEndTime(val: DaybookSchedItemTimeLimiter){ this._itemEndTime = val; }
 
     public set isCurrentlyOpen(isOpen: boolean) {
         this._isCurrentlyOpen = isOpen;
@@ -76,7 +81,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     public get isDrawing(): boolean { return this._isDrawing; }
     public toString(): string {
 
-        return this.startTime.format('hh:mm a') + " to " + this.endTime.format('hh:mm a') + " : " + this.formCase + " ";
+        return this.schedItemStartTime.format('hh:mm a') + " to " + this.schedItemEndTime.format('hh:mm a') + " : " + this.formCase + " ";
 
     }
 }

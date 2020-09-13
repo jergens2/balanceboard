@@ -74,7 +74,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         if (menuItem.sidebarToolComponent === ToolType.TIMELOG_ENTRY) {
           this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
           this.router.navigate(['/daybook']);
-          this.daybookService.openNewCurrentTimelogEntry();
+          this.daybookService.onClickNowDelineator();
         } else {
           this.toolsService.openTool(menuItem.sidebarToolComponent);
         }

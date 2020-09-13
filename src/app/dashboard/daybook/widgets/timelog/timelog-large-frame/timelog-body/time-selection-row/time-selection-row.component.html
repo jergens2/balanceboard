@@ -1,5 +1,5 @@
-<div class="row-root" [ngStyle]="row.gridNgStyle" 
-[ngClass]="{'row-is-available': row.isAvailable, 'row-is-drawing':row.isDrawing , 'row-is-active-section':row.isActiveSection}">
+<div class="row-root" [ngStyle]="row.gridNgStyle"
+    [ngClass]="{'row-is-available': row.isAvailable, 'row-is-drawing':row.isDrawing , 'row-is-active-section':row.isActiveSection}">
 
     <div class="delineator-container" *ngIf="row.hasMarkedDelineator && !row.isEditing" (click)="onClickDelineator(row)"
         [ngStyle]="row.delineatorNgStyle">
@@ -20,9 +20,11 @@
         *ngIf="row.hasMarkedDelineator && row.isEditing" [ngStyle]="row.delineatorNgStyle">
         <div class="edit-delineator" *ngIf="row.markedDelineator && row.isEditing">
             <div class="edit-time-container">
-                <app-time-input [timeValue]="row.markedDelineator.time" [minValue]="row.earliestAvailability"
+                <!-- <app-time-input [timeValue]="row.markedDelineator.time" [minValue]="row.earliestAvailability"
                     [incrementMinutes]="1" [maxValue]="row.latestAvailability" [showDate]="false" [minimal]="true"
                     class="edit-time" (timeChanged)="onEditTimeChanged($event)">
+                </app-time-input> -->
+                <app-time-input [timeInput]="row.timeInput" class="edit-time">
                 </app-time-input>
                 <fa-icon [icon]="faCheck" class="save-edit-time" (click)="onClickSaveEdit()"></fa-icon>
                 <fa-icon [icon]="faTrash" class="delete-time" (click)="onClickDelete()"></fa-icon>

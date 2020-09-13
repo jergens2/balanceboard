@@ -1,9 +1,9 @@
-import { DaybookDayItem } from '../../api/daybook-day-item.class';
+import { DaybookDayItem } from '../../daybook-day-item/daybook-day-item.class';
 import { UAPAppConfiguration } from '../../../user-account-profile/api/uap-app-configuraiton.interface';
 import { SleepCycleScheduleItemsBuilder } from './sleep-cycle-schedule-items-builder.class';
-import { DaybookSleepInputDataItem } from '../../api/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookSleepInputDataItem } from '../../daybook-day-item/data-items/daybook-sleep-input-data-item.interface';
 import * as moment from 'moment';
-import { DaybookTimeScheduleSleepItem } from '../../api/daybook-time-schedule/daybook-time-schedule-sleep-item.class';
+import { DaybookTimeScheduleSleepItem } from '../../display-manager/daybook-time-schedule/daybook-time-schedule-sleep-item.class';
 
 
 export class SleepCycleBuilder {
@@ -30,8 +30,8 @@ export class SleepCycleBuilder {
     private _findPreviousFallAsleepTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
         if (dayItems[0].hasSleepItems && dayItems[1].hasSleepItems) {
             const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
-            const schedItems = this._getSchedItems(dayItems);
-            const startTimes = schedItems.map(item => item.startTime)
+            const schedItems = this._getSleepInputItems(dayItems);
+            const startTimes = schedItems.map(item => item.schedItemStartTime)
                 .filter(time => time.isBefore(midDay))
                 .sort((item1, item2) => {
                     const item1Diff = moment(midDay).diff(item1, 'milliseconds');
@@ -55,8 +55,8 @@ export class SleepCycleBuilder {
     private _findPreviousWakeupTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
         if (dayItems[0].hasSleepItems && dayItems[1].hasSleepItems) {
             const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
-            const schedItems = this._getSchedItems(dayItems);
-            const endTimes = schedItems.map(item => item.endTime)
+            const schedItems = this._getSleepInputItems(dayItems);
+            const endTimes = schedItems.map(item => item.schedItemEndTime)
                 .filter(time => time.isBefore(midDay))
                 .sort((item1, item2) => {
                     const item1Diff = moment(midDay).diff(item1, 'milliseconds');
@@ -80,8 +80,8 @@ export class SleepCycleBuilder {
     private _findNextFallAsleepTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
         if (dayItems[1].hasSleepItems && dayItems[2].hasSleepItems) {
             const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
-            const schedItems = this._getSchedItems(dayItems);
-            const startTimes = schedItems.map(item => item.startTime)
+            const schedItems = this._getSleepInputItems(dayItems);
+            const startTimes = schedItems.map(item => item.schedItemStartTime)
                 .filter(time => time.isAfter(midDay))
                 .sort((item1, item2) => {
                     const item1Diff = moment(item1).diff(midDay, 'milliseconds');
@@ -105,8 +105,8 @@ export class SleepCycleBuilder {
     private _findNextWakeupTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
         if (dayItems[1].hasSleepItems && dayItems[2].hasSleepItems) {
             const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
-            const schedItems = this._getSchedItems(dayItems);
-            const endTimes = schedItems.map(item => item.endTime)
+            const schedItems = this._getSleepInputItems(dayItems);
+            const endTimes = schedItems.map(item => item.schedItemEndTime)
                 .filter(time => time.isAfter(midDay))
                 .sort((item1, item2) => {
                     const item1Diff = moment(item1).diff(midDay, 'milliseconds');
@@ -128,20 +128,20 @@ export class SleepCycleBuilder {
         }
     }
 
-    private _getSchedItems(dayItems: DaybookDayItem[]) {
+    private _getSleepInputItems(dayItems: DaybookDayItem[]) {
         let sleepItems: DaybookSleepInputDataItem[] = [];
         dayItems.forEach((dayItem) => { sleepItems = [...sleepItems, ...dayItem.sleepInputItems] });
         const schedItems = sleepItems.map(item => {
             return new DaybookTimeScheduleSleepItem(moment(item.startSleepTimeISO), moment(item.endSleepTimeISO), item);
         }).sort((item1, item2) => {
-            if (item1.startTime.isBefore(item2.startTime)) { return -1; }
-            else if (item1.startTime.isAfter(item2.startTime)) { return 1; }
+            if (item1.schedItemStartTime.isBefore(item2.schedItemStartTime)) { return -1; }
+            else if (item1.schedItemStartTime.isAfter(item2.schedItemStartTime)) { return 1; }
             else { return 0; }
         });
         if (schedItems.length > 0) {
             for (let i = 1; i < schedItems.length; i++) {
-                if (schedItems[i].startTime.isSame(schedItems[i - 1].endTime)) {
-                    schedItems[i - 1].changeEndTime(schedItems[i].endTime);
+                if (schedItems[i].schedItemStartTime.isSame(schedItems[i - 1].schedItemEndTime)) {
+                    schedItems[i - 1].changeSchedItemEndTime(schedItems[i].schedItemEndTime);
                     schedItems.splice(i, 1);
                     i--;
                 }

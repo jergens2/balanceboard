@@ -1,4 +1,4 @@
-import { TimelogEntryActivity } from "../../../../../api/data-items/timelog-entry-activity.interface";
+import { TimelogEntryActivity } from "../../../../../daybook-day-item/data-items/timelog-entry-activity.interface";
 import { ActivityTree } from "../../../../../../activities/api/activity-tree.class";
 import { ActivityCategoryDefinition } from "../../../../../../activities/api/activity-category-definition.class";
 import { TimelogEntryDisplayItemUnit } from "./tle-display-item-unit.class";

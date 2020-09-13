@@ -1,5 +1,5 @@
-import { DaybookSleepInputDataItem } from "../api/data-items/daybook-sleep-input-data-item.interface";
-import { TimelogEntryActivity } from "../api/data-items/timelog-entry-activity.interface";
+import { DaybookSleepInputDataItem } from "../daybook-day-item/data-items/daybook-sleep-input-data-item.interface";
+import { TimelogEntryActivity } from "../daybook-day-item/data-items/timelog-entry-activity.interface";
 import * as moment from 'moment';
 
 export class SleepEntryInputItem {

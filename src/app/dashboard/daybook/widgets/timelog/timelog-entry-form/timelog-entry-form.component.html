@@ -1,4 +1,7 @@
 <div class="timelog-entry-form-root">
+
+
+
     <div *ngIf="entryItem" class="entry-item-grid">
         <div class="timelog-entry-form">
 
@@ -31,10 +34,15 @@
         </div>
 
 
-        <div *ngIf="promptToSaveChanges" class="save-changes-prompt">
+        <div *ngIf="promptToSaveChanges && !isSavingChanges" class="save-changes-prompt">
             <app-tlef-prompt></app-tlef-prompt>
         </div>
 
+        <div *ngIf="isSavingChanges" class="saving-changes">
+            <div style="width: 200px; height: 200px;">
+                <app-spinner></app-spinner>
+            </div>
+        </div>
     </div>
     <div *ngIf="!entryItem">
         <div style="color: red; font-weight: bold;">Error: no timelog entry item</div>

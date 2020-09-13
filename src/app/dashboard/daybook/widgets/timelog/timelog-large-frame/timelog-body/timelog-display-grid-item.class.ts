@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import { TimelogEntryItem } from './timelog-entry/timelog-entry-item.class';
-import { DaybookTimeScheduleStatus } from '../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
-import { DaybookTimeScheduleItem } from '../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleStatus } from '../../../../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleItem } from '../../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
 
 
 export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
@@ -17,11 +17,18 @@ export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
         if (timelogEntry) {
             this._timelogEntries = [timelogEntry];
         }
+
+        const now = moment();
+        if (now.isSameOrAfter(this.schedItemStartTime) && now.isBefore(this.schedItemEndTime)) {
+            this._showNowLine = true;
+        }
     }
 
     private _timelogEntries: TimelogEntryItem[] = [];
     private _itemIndexes: number[] = [];
     private _isMerged: boolean = false;
+
+    private _showNowLine: boolean = false;
 
     private readonly verySmallPercent = 2.5;
     private readonly smallPercent = 6;
@@ -37,6 +44,8 @@ export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
     public get isMerged(): boolean { return this._isMerged; }
     public get timelogEntries(): TimelogEntryItem[] { return this._timelogEntries; }
     public get itemIndexes(): number[] { return this._itemIndexes; }
+
+    public get showNowLine(): boolean { return this._showNowLine; }
 
     /**
      * take the incoming item and merge it into this object.
@@ -54,10 +63,12 @@ export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
             return 0;
         });
 
-        const firstStartTime: moment.Moment = this.startTime.isBefore(otherItem.startTime) ? this.startTime : otherItem.startTime;
-        const lastEndTime: moment.Moment = this.endTime.isAfter(otherItem.endTime) ? this.endTime : otherItem.endTime;
-        this.changeStartTime(firstStartTime);
-        this.changeEndTime(lastEndTime);
+        const firstStartTime: moment.Moment = this.schedItemStartTime.isBefore(otherItem.schedItemStartTime)
+            ? this.schedItemStartTime : otherItem.schedItemStartTime;
+        const lastEndTime: moment.Moment = this.schedItemEndTime.isAfter(otherItem.schedItemEndTime)
+            ? this.schedItemEndTime : otherItem.schedItemEndTime;
+        this.changeSchedItemStartTime(firstStartTime);
+        this.changeSchedItemEndTime(lastEndTime);
         this._isMerged = true;
     }
 
@@ -67,6 +78,6 @@ export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
 
     public toString(): string {
         return this.itemIndex + "\t" + this.scheduleStatus + '  ' + this.displayPercent.toFixed(0) + ' % '
-            + '\n\t ' + this.startTime.format('YYYY-MM-DD hh:mm a') + ' to ' + this.endTime.format('YYYY-MM-DD hh:mm a');
+            + '\n\t ' + this.schedItemStartTime.format('YYYY-MM-DD hh:mm a') + ' to ' + this.schedItemEndTime.format('YYYY-MM-DD hh:mm a');
     }
 }

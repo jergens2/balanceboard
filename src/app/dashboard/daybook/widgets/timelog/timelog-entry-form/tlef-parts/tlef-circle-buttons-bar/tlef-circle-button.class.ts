@@ -1,5 +1,5 @@
 import { TLEFFormCase } from '../../tlef-form-case.enum';
-import { DaybookTimeScheduleStatus } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleStatus } from '../../../../../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
 import { Subject } from 'rxjs';
 
 export class TLEFCircleButton {

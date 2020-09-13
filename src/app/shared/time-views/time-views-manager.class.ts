@@ -1,4 +1,4 @@
-import { DaybookDayItem } from "../../dashboard/daybook/api/daybook-day-item.class";
+import { DaybookDayItem } from "../../dashboard/daybook/daybook-day-item/daybook-day-item.class";
 import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
 import * as moment from 'moment';
 import { TimeViewDayItem } from "./time-view-day-item.class";

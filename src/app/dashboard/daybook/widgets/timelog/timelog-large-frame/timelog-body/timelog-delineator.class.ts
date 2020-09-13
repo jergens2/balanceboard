@@ -31,11 +31,11 @@ export enum TimelogDelineatorType {
     SAVED_DELINEATOR = 'SAVED_DELINEATOR',
 
     DAY_STRUCTURE = 'DAY_STRUCTURE',
-    DAY_STRUCTURE_MIDNIGHT = 'DAY_STRUCTURE_MIDNIGHT',
+    // DAY_STRUCTURE_MIDNIGHT = 'DAY_STRUCTURE_MIDNIGHT',
 
     CUSTOM = 'CUSTOM',
 
-
+    DEFAULT = 'DEFAULT' // placeholder
 }
 
 export class TimelogDelineator {

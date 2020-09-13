@@ -3,11 +3,11 @@ import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogDelineatorType, TimelogDelineator } from '../timelog-delineator.class';
 import { Subscription, Subject, Observable, range } from 'rxjs';
-import { DaybookTimeScheduleStatus } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-status.enum';
-import { DaybookTimeScheduleItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleStatus } from '../../../../../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookTimeScheduleItem } from '../../../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
 import { TimeRangeRelationship } from '../../../../../../../shared/time-utilities/time-range-relationship.enum';
 import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
-import { DaybookTimeScheduleAvailableItem } from '../../../../../api/daybook-time-schedule/daybook-time-schedule-available-item.class';
+import { DaybookTimeScheduleAvailableItem } from '../../../../../display-manager/daybook-time-schedule/daybook-time-schedule-available-item.class';
 
 export class TimeSelectionColumn {
 
@@ -20,6 +20,7 @@ export class TimeSelectionColumn {
     private _rows: TimeSelectionRow[] = [];
 
     private _deleteDelineator$: Subject<moment.Moment> = new Subject();
+    private _updateDelineator$: Subject<{ prevVal: moment.Moment, nextVal: moment.Moment }> = new Subject();
     private _startDragging$: Subject<TimeSelectionRow> = new Subject();
     private _updateDragging$: Subject<TimeSelectionRow> = new Subject();
     private _stopDragging$: Subject<TimeSelectionRow> = new Subject();
@@ -31,12 +32,16 @@ export class TimeSelectionColumn {
     public get rows(): TimeSelectionRow[] { return this._rows; }
 
     public get deleteDelineator$(): Observable<moment.Moment> { return this._deleteDelineator$.asObservable(); }
+    public get updateDelineator$(): Observable<{ prevVal: moment.Moment, nextVal: moment.Moment }> {
+        return this._updateDelineator$.asObservable();
+    }
+
     public get startDragging$(): Observable<TimeSelectionRow> { return this._startDragging$.asObservable(); }
     public get updateDragging$(): Observable<TimeSelectionRow> { return this._updateDragging$.asObservable(); }
     public get stopDragging$(): Observable<TimeSelectionRow> { return this._stopDragging$.asObservable(); }
 
 
-    constructor(delineators: TimelogDelineator[], availableItems: DaybookTimeScheduleAvailableItem[]) {
+    constructor(delineators: TimelogDelineator[], availableItems: DaybookTimeScheduleItem[]) {
         this._availableItems = Object.assign([], availableItems);
         this._displayDelineators = delineators;
         this._startTime = moment(delineators[0].time);
@@ -59,7 +64,7 @@ export class TimeSelectionColumn {
             const sectionIndex = this._findSectionIndex(startTime, endTime, availableItems);
             const section = availableItems[sectionIndex];
             const newRow = new TimeSelectionRow(startTime, endTime, sectionIndex, section);
-            const delineator = this._findDelineator(newRow);
+            const delineator = this._findDelineatorForRow(newRow);
             if (delineator) {
                 newRow.markTimelogDelineator(delineator);
             }
@@ -74,30 +79,25 @@ export class TimeSelectionColumn {
 
     private _updateRowSubscriptions() {
         this._rowSubscriptions.forEach(s => s.unsubscribe());
-        this._rowSubscriptions = [];
-        const deleteSubscriptions = this.rows.map(row => row.deleteDelineator$.subscribe((del: moment.Moment) => {
-            this._deleteDelineator$.next(del);
-        }));
-        const editSubscriptions = this.rows.map(row => row.editDelineator$.subscribe((saveNewDelineator: moment.Moment) => {
-            // this._daybookService.daybookController.delineatorController.updateDelineator(row.markedDelineator.time, saveNewDelineator);
-        }));
-        const startDragSubs = this.rows.map(row => row.startDragging$.subscribe((startDragging: TimeSelectionRow) => {
-            if (startDragging) { this._startDragging$.next(startDragging); }
-        }));
-        const updateDragSubs = this.rows.map(row => row.updateDragging$.subscribe((updateDragging: TimeSelectionRow) => {
-            if (updateDragging) {
-                this._updateDragging$.next(updateDragging);
-            }
-        }));
-        const stopDragSbus = this.rows.map(row => row.stopDragging$.subscribe((stopDragging: TimeSelectionRow) => {
-            if (stopDragging) { this._stopDragging$.next(stopDragging); }
-        }));
         this._rowSubscriptions = [
-            ...deleteSubscriptions,
-            ...editSubscriptions,
-            ...startDragSubs,
-            ...stopDragSbus,
-            ...updateDragSubs,
+            ...this.rows.map(row => row.deleteDelineator$.subscribe((del: moment.Moment) => {
+                this._deleteDelineator$.next(del);
+            })),
+            ...this.rows.map(row => row.editDelineator$
+                .subscribe((update: { prevVal: moment.Moment, nextVal: moment.Moment }) => {
+                    this._updateDelineator$.next(update);
+                })),
+            ...this.rows.map(row => row.startDragging$.subscribe((startDragging: TimeSelectionRow) => {
+                if (startDragging) { this._startDragging$.next(startDragging); }
+            })),
+            ...this.rows.map(row => row.updateDragging$.subscribe((updateDragging: TimeSelectionRow) => {
+                if (updateDragging) {
+                    this._updateDragging$.next(updateDragging);
+                }
+            })),
+            ...this.rows.map(row => row.stopDragging$.subscribe((stopDragging: TimeSelectionRow) => {
+                if (stopDragging) { this._stopDragging$.next(stopDragging); }
+            }))
         ];
     }
 
@@ -115,12 +115,12 @@ export class TimeSelectionColumn {
             return 0;
         } else if (availableItems.length > 1) {
             const foundIndex = availableItems.findIndex(availableItem => {
-                const sameStart = startTime.isSame(availableItem.startTime);
-                const isDuring = startTime.isSameOrAfter(availableItem.startTime) && endTime.isSameOrBefore(availableItem.endTime);
+                const sameStart = startTime.isSame(availableItem.schedItemStartTime);
+                const isDuring = startTime.isSameOrAfter(availableItem.schedItemStartTime) && endTime.isSameOrBefore(availableItem.schedItemEndTime);
                 if (sameStart || isDuring) {
                     return true;
                 } else {
-                    const sameEnd = startTime.isBefore(availableItem.endTime) && endTime.isSame(availableItem.endTime);
+                    const sameEnd = startTime.isBefore(availableItem.schedItemEndTime) && endTime.isSame(availableItem.schedItemEndTime);
                     return sameEnd;
                 }
             });
@@ -130,7 +130,7 @@ export class TimeSelectionColumn {
 
 
 
-    private _findDelineator(newRow: TimeSelectionRow): TimelogDelineator {
+    private _findDelineatorForRow(newRow: TimeSelectionRow): TimelogDelineator {
         const priority = [
             TimelogDelineatorType.DISPLAY_START,
             TimelogDelineatorType.DISPLAY_END,
@@ -142,12 +142,14 @@ export class TimeSelectionColumn {
             TimelogDelineatorType.TIMELOG_ENTRY_END,
             TimelogDelineatorType.DAY_STRUCTURE,
         ];
-        // const percentThreshold: number = 0.03;
-        // const totalViewMS = this.endTime.diff(this.startTime, 'milliseconds');
-        // const rangeMS = totalViewMS * percentThreshold;
-        // const rangeStart = moment(newRow.startTime).subtract(rangeMS, 'milliseconds');
-        // const rangeEnd = moment(newRow.startTime).add(rangeMS, 'milliseconds');
-        const delineators = this._displayDelineators;
+        const nowTime: moment.Moment = moment().startOf('minute');
+        const nowDelineator = new TimelogDelineator(nowTime, TimelogDelineatorType.NOW);
+        let delineators = this._displayDelineators;
+        if (nowTime.isSameOrAfter(this.startTime) && nowTime.isBefore(this.endTime)) {
+            if (!delineators.find(item => item.delineatorType === TimelogDelineatorType.NOW)) {
+                delineators = [...delineators, nowDelineator];
+            }
+        }
         const foundRangeItems = delineators.filter(item => {
             return item.time.isSameOrAfter(newRow.startTime) && item.time.isSameOrBefore(newRow.endTime);
         });
@@ -179,7 +181,7 @@ export class TimeSelectionColumn {
      */
     private _getMergedAvailableItems(): DaybookTimeScheduleItem[] {
         const existingItems: DaybookTimeScheduleAvailableItem[] = this._availableItems;
-        console.log("EXISTING ITEMS: " , existingItems.length, existingItems)
+        console.log("EXISTING ITEMS: ", existingItems.length, existingItems)
         const mergedItems: DaybookTimeScheduleItem[] = [];
         if (existingItems.length > 1) {
             const mergeDelineators: TimelogDelineator[] = this._displayDelineators.filter(item => {
@@ -193,14 +195,14 @@ export class TimeSelectionColumn {
                 let mergeOver: boolean = false;
                 if (itemsAreContinuous) {
                     for (let j = 0; j < mergeDelineators.length; j++) {
-                        if (item2.startTime.isSame(mergeDelineators[j].time)) {
+                        if (item2.schedItemStartTime.isSame(mergeDelineators[j].time)) {
                             // console.log("ITS THE SAME, BABY!" + mergeDelineators[j].toString())
                             mergeOver = true;
                         }
                     }
                 }
                 if (mergeOver) {
-                    item1.changeEndTime(item2.endTime);
+                    item1.changeSchedItemEndTime(item2.schedItemEndTime);
                     mergedItems.push(item1);
                 } else {
                     mergedItems.push(item1);

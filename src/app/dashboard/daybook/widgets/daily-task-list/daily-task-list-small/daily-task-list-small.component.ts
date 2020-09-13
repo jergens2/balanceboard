@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { DailyTaskListDataItem } from '../../../api/data-items/daily-task-list-data-item.interface';
+import { DailyTaskListDataItem } from '../../../daybook-day-item/data-items/daily-task-list-data-item.interface';
 // import { RecurringTasksService } from '../../../../activities/routines/routine-definition/api/routine-definition.service';
 // import { RecurringTaskDefinition } from '../../../../../shared/document-definitions/recurring-task-definition/recurring-task-definition.class';
 

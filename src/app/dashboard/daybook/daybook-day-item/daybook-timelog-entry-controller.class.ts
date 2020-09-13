@@ -75,6 +75,7 @@ export class DaybookTimelogEntryController {
     public get timelogEntryItems(): TimelogEntryItem[] { return this._timelogEntryItems; }
 
 
+
     public getItemAtTime(startTime: moment.Moment): TimelogEntryItem {
         const foundItem = this.timelogEntryItems.find(item => item.startTime.isSame(startTime));
         if (!foundItem) {
@@ -100,45 +101,46 @@ export class DaybookTimelogEntryController {
     }
 
 
-    public saveTimelogEntryItem(dateYYYYMMDD: string, saveTimelogEntry: TimelogEntryItem){
-        let items = this._getDateItem(dateYYYYMMDD);
+    public saveTimelogEntryItem(dateYYYYMMDD: string, saveTimelogEntry: TimelogEntryItem) {
+        let items = this._getDateItems(dateYYYYMMDD);
         items.push(saveTimelogEntry);
+
         this._sendUpdate({
             dateYYYYMMDD: dateYYYYMMDD,
             items: this._sortItems(items).map(item => item.toDataEntryItem()),
         });
     }
 
-    public updateTimelogEntryItem(dateYYYYMMDD: string, updateTimelogEntry: TimelogEntryItem){
-        let items = this._getDateItem(dateYYYYMMDD);
+    public updateTimelogEntryItem(dateYYYYMMDD: string, updateTimelogEntry: TimelogEntryItem) {
+        let items = this._getDateItems(dateYYYYMMDD);
         // console.log("updating from ITEMS:")
         // items.forEach(item=> console.log(item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a')))
-        const foundIndex = items.findIndex((item)=>{
+        const foundIndex = items.findIndex((item) => {
             return item.startTime.isSame(updateTimelogEntry.startTime) && item.endTime.isSame(updateTimelogEntry.endTime);
         });
-        if(foundIndex > -1){
+        if (foundIndex > -1) {
             // console.log("Found index is " + foundIndex)
             items.splice(foundIndex, 1, updateTimelogEntry);
             this._sendUpdate({
                 dateYYYYMMDD: dateYYYYMMDD,
                 items: this._sortItems(items).map(item => item.toDataEntryItem()),
             });
-        }else{
+        } else {
             console.log('Error updating timelog entry: could not find item.')
         }
     }
-    public deleteTimelogEntryItem(dateYYYYMMDD: string, deleteTimelogEntry: TimelogEntryItem){
-        let items = this._getDateItem(dateYYYYMMDD);
-        const foundIndex = items.findIndex((item)=>{
+    public deleteTimelogEntryItem(dateYYYYMMDD: string, deleteTimelogEntry: TimelogEntryItem) {
+        let items = this._getDateItems(dateYYYYMMDD);
+        const foundIndex = items.findIndex((item) => {
             return item.startTime.isSame(deleteTimelogEntry.startTime) && item.endTime.isSame(deleteTimelogEntry.endTime);
         });
-        if(foundIndex > -1){
+        if (foundIndex > -1) {
             items.splice(foundIndex, 1);
             this._sendUpdate({
                 dateYYYYMMDD: dateYYYYMMDD,
                 items: this._sortItems(items).map(item => item.toDataEntryItem()),
             });
-        }else{
+        } else {
             console.log('Error updating timelog entry: could not find item.')
         }
     }
@@ -160,7 +162,7 @@ export class DaybookTimelogEntryController {
         return timelogEntry;
     }
 
-    private _getDateItem(dateYYYYMMDD: string): TimelogEntryItem[] {
+    private _getDateItems(dateYYYYMMDD: string): TimelogEntryItem[] {
         if (dateYYYYMMDD === this.thisDateYYYYMMDD) {
             return this._thisDayItems;
         } else if (dateYYYYMMDD === this.nextDateYYYYMMDD) {

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DaybookDayItem } from '../../../../../daybook/api/daybook-day-item.class';
+import { DaybookDayItem } from '../../../../../daybook/daybook-day-item/daybook-day-item.class';
 import { ActivityComponentService } from '../../../../activity-component.service';
 
 @Component({

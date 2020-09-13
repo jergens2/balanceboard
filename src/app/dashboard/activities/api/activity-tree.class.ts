@@ -1,5 +1,5 @@
 import { ActivityCategoryDefinition } from "./activity-category-definition.class";
-import { DaybookDayItemScheduledActivityItem } from "../../daybook/api/data-items/daybook-day-item-scheduled-activity.class";
+import { DaybookDayItemScheduledActivityItem } from "../../daybook/daybook-day-item/data-items/daybook-day-item-scheduled-activity.class";
 import { BehaviorSubject, Observable } from "rxjs";
 
 export class ActivityTree {

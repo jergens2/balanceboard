@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AuthStatus } from '../../../authentication/auth-status.class';
 import { BehaviorSubject, Observable, Scheduler } from 'rxjs';
-import { ServiceAuthenticates } from '../../../authentication/service-authentication-garbage/service-authenticates.interface';
 import { ScheduleRotation } from './schedule-rotation.class';
 import { serverUrl } from '../../../../app/serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
@@ -9,24 +8,23 @@ import { map, first } from 'rxjs/operators';
 import * as moment from 'moment';
 import { DayTemplatesService } from '../day-templates/day-templates.service';
 import { DayTemplate } from '../day-templates/day-template.class'
-import { DayStructureDataItem } from '../../daybook/api/data-items/day-structure-data-item.interface';
-import buildDefaultDataItems  from '../../daybook/api/data-items/default-day-structure-data-items';
-import { ServiceAuthenticationAttempt } from '../../../authentication/service-authentication-garbage/service-authentication-attempt.interface';
+import { DayStructureDataItem } from '../../daybook/daybook-day-item/data-items/day-structure-data-item.interface';
+import buildDefaultDataItems  from '../../daybook/daybook-day-item/data-items/default-day-structure-data-items';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class ScheduleRotationsService implements ServiceAuthenticates {
+export class ScheduleRotationsService{
 
 
   private _userId: string;
   constructor(private httpClient: HttpClient, private dayTemplatesService: DayTemplatesService) { }
-  private _loginComplete$: BehaviorSubject<ServiceAuthenticationAttempt> = new BehaviorSubject({
+  private _loginComplete$: BehaviorSubject<any> = new BehaviorSubject({
     authenticated: false, message: '',
   });
   public synchronousLogin(userId: string) { return false;}
-  login$(userId: string): Observable<ServiceAuthenticationAttempt> {
+  login$(userId: string): Observable<any> {
     this._userId = userId;
     /**
      * first we check if any objects exist in DB with getScheduleRotationsHTTP().  If not, (for example, new user) then we generate a new one.

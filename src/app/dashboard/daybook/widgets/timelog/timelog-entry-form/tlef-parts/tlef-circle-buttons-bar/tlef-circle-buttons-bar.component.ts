@@ -54,7 +54,7 @@ export class TLEFCircleButtonsBarComponent implements OnInit, OnDestroy {
   }
 
   public onClickItem(item: TLEFCircleButton) {
-    this.daybookDisplayService.tlefController.onClickGridBarItem(item);
+    this.daybookDisplayService.displayManager.openItemByIndex(item.itemIndex);
   }
 
   public onClickGoLeft() {

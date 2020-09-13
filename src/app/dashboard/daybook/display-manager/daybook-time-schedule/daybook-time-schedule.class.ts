@@ -40,7 +40,14 @@ export class DaybookTimeSchedule extends TimeSchedule {
     public get endOfThisDay(): moment.Moment { return moment(this.startOfThisDay).add(24, 'hours'); }
     public get sleepCycle(): SleepCycleScheduleItemsBuilder { return this._sleepCycle; }
 
-    public getItemsInRange(startTime: moment.Moment, endTime: moment.Moment, trim = true): DaybookTimeScheduleItem[] {
+
+
+    /**
+     *  Grab a subset / slice of the range of items.
+     *  the schedule items 
+     * 
+     */
+    public getItemsInRange(startTime: moment.Moment, endTime: moment.Moment): DaybookTimeScheduleItem[] {
         const checkRange = new TimeScheduleItem(startTime.toISOString(), endTime.toISOString());
         let inRangeItems: DaybookTimeScheduleItem[] = [];
         if (startTime.isSameOrAfter(this.startTime) && endTime.isSameOrBefore(this.endTime)) {
@@ -49,11 +56,11 @@ export class DaybookTimeSchedule extends TimeSchedule {
                 return relationship === TimeRangeRelationship.OVERLAPS;
             }));
             for (let i = 0; i < inRangeItems.length; i++) {
-                if (inRangeItems[i].startTime.isBefore(startTime)) {
-                    inRangeItems[i].changeStartTime(startTime);
+                if (inRangeItems[i].schedItemStartTime.isBefore(startTime)) {
+                    inRangeItems[i].changeSchedItemStartTime(startTime);
                 }
-                if (inRangeItems[i].endTime.isAfter(endTime)) {
-                    inRangeItems[i].changeEndTime(endTime);
+                if (inRangeItems[i].schedItemEndTime.isAfter(endTime)) {
+                    inRangeItems[i].changeSchedItemEndTime(endTime);
                 }
             }
         } else {
@@ -65,7 +72,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
     }
 
     public getStatusAtTime(timeToCheck: moment.Moment): DaybookTimeScheduleStatus {
-        const foundItem = this._timeScheduleItems.find(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime))
+        const foundItem = this._timeScheduleItems.find(item => timeToCheck.isSameOrAfter(item.schedItemStartTime) && timeToCheck.isBefore(item.schedItemEndTime))
         if (foundItem) {
             return foundItem.scheduleStatus;
         }
@@ -80,13 +87,13 @@ export class DaybookTimeSchedule extends TimeSchedule {
 
         let isRangeAvailable: boolean = false;
         availableItems.forEach((item) => {
-            if (startTime.isSameOrAfter(item.startTime) && endTime.isSameOrBefore(item.endTime)) {
+            if (startTime.isSameOrAfter(item.schedItemStartTime) && endTime.isSameOrBefore(item.schedItemEndTime)) {
                 isRangeAvailable = true;
-            } else if (startTime.isSameOrAfter(item.startTime) && endTime.isAfter(item.endTime)) {
-                const duration = moment(item.endTime).diff(moment(startTime), 'milliseconds');
+            } else if (startTime.isSameOrAfter(item.schedItemStartTime) && endTime.isAfter(item.schedItemEndTime)) {
+                const duration = moment(item.schedItemEndTime).diff(moment(startTime), 'milliseconds');
                 isRangeAvailable = (duration > (0.5 * totalMS));
-            } else if (startTime.isBefore(item.startTime) && endTime.isAfter(item.endTime)) {
-                const duration = moment(endTime).diff(moment(item.startTime), 'milliseconds');
+            } else if (startTime.isBefore(item.schedItemStartTime) && endTime.isAfter(item.schedItemEndTime)) {
+                const duration = moment(endTime).diff(moment(item.schedItemStartTime), 'milliseconds');
                 isRangeAvailable = (duration > (0.5 * totalMS));
             } else {
 

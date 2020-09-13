@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DaybookDayItem } from '../../../api/daybook-day-item.class';
+import { DaybookDayItem } from '../../../daybook-day-item/daybook-day-item.class';
 
 @Component({
   selector: 'app-daily-task-list-large',

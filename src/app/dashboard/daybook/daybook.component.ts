@@ -4,7 +4,7 @@ import { Subscription, Observable } from 'rxjs';
 import { AppScreenSizeService } from '../../shared/app-screen-size/app-screen-size.service';
 import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size-label.enum';
 import { DaybookWidgetType, DaybookWidget } from './widgets/daybook-widget.class';
-import { DaybookDayItem } from './api/daybook-day-item.class';
+import { DaybookDayItem } from './daybook-day-item/daybook-day-item.class';
 import { faSpinner, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { DaybookDisplayService } from './daybook-display.service';
 

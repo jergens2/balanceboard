@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { ActivityHttpService } from '../../../../../../activities/api/activity-http.service';
-import { TimelogEntryActivity } from '../../../../../api/data-items/timelog-entry-activity.interface';
+import { TimelogEntryActivity } from '../../../../../daybook-day-item/data-items/timelog-entry-activity.interface';
 import { TLEFController } from '../../TLEF-controller.class';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { Subscription } from 'rxjs';

@@ -9,7 +9,7 @@ import { ModalService } from '../../modal/modal.service';
 import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
 import { ActivityComponentService } from '../../dashboard/activities/activity-component.service';
 import { ActivityHttpService } from '../../dashboard/activities/api/activity-http.service';
-import { DaybookHttpService } from '../../dashboard/daybook/api/daybook-http.service';
+import { DaybookHttpService } from '../../dashboard/daybook/daybook-day-item/daybook-http.service';
 import { NoteHttpService } from '../../dashboard/notes/api/note-http.service';
 import { TaskHttpService } from '../../dashboard/tasks/task-http.service';
 import { UserAccountProfileService } from '../../dashboard/user-account-profile/user-account-profile.service';
@@ -160,6 +160,7 @@ export class AppContainerComponent implements OnInit, OnDestroy {
     this._asyncDataLoader = null;
     //this should probably be moved or delegated to the activity component.
     this.activityComponentService.unload();
+    this.daybookDisplayService.logout();
     this.userPromptService.logout();
   }
 

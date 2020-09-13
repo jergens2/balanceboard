@@ -1,6 +1,6 @@
 import * as moment from 'moment';
-import { DaybookDayItem } from '../../../api/daybook-day-item.class';
-import { DaybookSleepInputDataItem } from '../../../api/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookDayItem } from '../../../daybook-day-item/daybook-day-item.class';
+import { DaybookSleepInputDataItem } from '../../../daybook-day-item/data-items/daybook-sleep-input-data-item.interface';
 import { UserAccountProfile } from '../../../../user-account-profile/api/user-account-profile.class';
 import { SleepDataForm } from './sleep-data-form.class';
 

@@ -27,7 +27,7 @@
     flex-direction: column;
     
 }
-.save-changes-prompt{
+.save-changes-prompt, .saving-changes{
     grid-row: 1 / -1;
     grid-column: 1 / -1;
     width:100%;
@@ -35,6 +35,13 @@
     /* position: relative;
     z-index: 5; */
     background-color: rgba(241, 241, 241, 0.85);
+}
+
+.saving-changes{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .tlef-part{

@@ -1,5 +1,5 @@
 import { ActivityCategoryDefinition } from "../../../api/activity-category-definition.class";
-import { DaybookDayItem } from "../../../../daybook/api/daybook-day-item.class";
+import { DaybookDayItem } from "../../../../daybook/daybook-day-item/daybook-day-item.class";
 import { ActivityDataAnalyzer } from "./activity-data-analyzer.class";
 import { ActivityDataSleepAnalyzer } from "./activity-data-sleep-analyzer.class";
 import { ActivityAnalysis } from "./activity-analysis.interface";

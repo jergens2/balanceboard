@@ -2,16 +2,16 @@ import * as moment from 'moment';
 import { SleepCyclePosition } from './sleep-cycle/sleep-cycle-position.enum';
 import { timer, Subscription, BehaviorSubject, Observable } from 'rxjs';
 import { SleepCycleHTTPData } from './sleep-cycle/sleep-cycle-http-data.interface';
-import { DaybookDayItem } from '../api/daybook-day-item.class';
+import { DaybookDayItem } from '../daybook-day-item/daybook-day-item.class';
 import { SleepCycleScheduleItemsBuilder } from './sleep-cycle/sleep-cycle-schedule-items-builder.class';
 import { UAPAppConfiguration } from '../../user-account-profile/api/uap-app-configuraiton.interface';
 import { SleepCycleData } from './sleep-cycle/sleep-cycle-data.class';
-import { DaybookSleepInputDataItem } from '../api/data-items/daybook-sleep-input-data-item.interface';
-import { DaybookTimeScheduleItem } from '../api/daybook-time-schedule/daybook-time-schedule-item.class';
-import { DaybookTimeScheduleStatus } from '../api/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DaybookSleepInputDataItem } from '../daybook-day-item/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookTimeScheduleItem } from '../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
+import { DaybookTimeScheduleStatus } from '../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
 import { SleepCycleBuilder } from './sleep-cycle/sleep-cycle-builder.class';
 import { SleepCycleDaybookAnalyzer } from './sleep-cycle/sleep-cycle-daybook-analyzer.class';
-import { DaybookTimelogEntryDataItem } from '../api/data-items/daybook-timelog-entry-data-item.interface';
+import { DaybookTimelogEntryDataItem } from '../daybook-day-item/data-items/daybook-timelog-entry-data-item.interface';
 
 export class SleepManager {
 
