@@ -37,3 +37,14 @@
     font-size: 0.8em;
     margin-right: 6px;
 }
+
+
+
+/* for EDITING classes */
+
+
+.tlef-times-root-editing{
+    background-color: rgb(217, 230, 255);
+    display:flex;
+    flex-direction: column;
+}

@@ -7,6 +7,7 @@ import { SleepEntryItem } from './sleep-entry-form/sleep-entry-item.class';
 import { TimelogEntryBuilder } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-builder.class';
 import { DaybookTimeScheduleStatus } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
 import * as moment from 'moment';
+import { DTSItemTimeLimiter } from '../../../display-manager/daybook-time-schedule/dts-item-time-limiter.class';
 
 export class TLEFBuilder {
     constructor() {
@@ -35,7 +36,8 @@ export class TLEFBuilder {
             }
             const tleBuilder: TimelogEntryBuilder = new TimelogEntryBuilder();
             const backgroundColor: string = tleBuilder.getBackgroundColor(timelogEntry, activityTree);
-            const controllerItem: TLEFControllerItem = new TLEFControllerItem(startTime, endTime, itemIndex,
+            const limiter: DTSItemTimeLimiter = scheduleDisplayItem.timeLimiter;
+            const controllerItem: TLEFControllerItem = new TLEFControllerItem(limiter, itemIndex,
                 formCase, scheduleStatus, backgroundColor, timelogEntry, sleepEntry);
             return controllerItem;
         });
@@ -53,7 +55,7 @@ export class TLEFBuilder {
     }
 
 
-    
+
 
     private _determineFormCase(entry: TimelogEntryItem): TLEFFormCase {
         let formCase: TLEFFormCase;

@@ -5,6 +5,7 @@ import { SleepEntryItem } from './sleep-entry-form/sleep-entry-item.class';
 import { TLEFCircleButton } from './tlef-parts/tlef-circle-buttons-bar/tlef-circle-button.class';
 import { DaybookTimeScheduleItem } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
 import { DaybookTimeScheduleStatus } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
+import { DTSItemTimeLimiter } from '../../../display-manager/daybook-time-schedule/dts-item-time-limiter.class';
 
 export class TLEFControllerItem extends DaybookTimeScheduleItem {
 
@@ -17,15 +18,13 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     private _isCurrentlyOpen: boolean = false;
     private _isDrawing: boolean = false;
 
-    // private _itemStartTime: DaybookItemTimeLimiter;
-    // private _itemEndTime: DaybookItemTimeLimiter;
-
     private _circleButtonItem: TLEFCircleButton;
 
-    constructor(startTime: moment.Moment, endTime: moment.Moment, itemIndex: number,
+    constructor(limiter: DTSItemTimeLimiter, itemIndex: number,
         formCase: TLEFFormCase, scheduleStatus: DaybookTimeScheduleStatus, backgroundColor: string,
         timelogEntry: TimelogEntryItem, sleepEntry: SleepEntryItem) {
-        super(startTime, endTime);
+        super(limiter.startTime, limiter.endTime);
+        this._timeLimiter = limiter;
         this._itemIndex = itemIndex;
         this._scheduleStatus = scheduleStatus;
         this._formCase = formCase;
@@ -36,6 +35,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
 
     public get circleButton(): TLEFCircleButton { return this._circleButtonItem; }
     public get formCase(): TLEFFormCase { return this._formCase; }
+    public get timeLimiter(): DTSItemTimeLimiter { return this._timeLimiter; }
     // public get itemStartTime(): DaybookSchedItemTimeLimiter { return this._itemStartTime; }
     // public get itemEndTime(): DaybookSchedItemTimeLimiter { return this._itemEndTime; }
 
@@ -70,6 +70,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     private _unsavedTLEChanges: TimelogEntryItem;
     public setUnsavedTLEChanges(tle: TimelogEntryItem) {
         this._unsavedChanges = true;
+        console.log("Setting unsaved: " + tle.startTime.format('hh:mm a'))
         const newTLE = new TimelogEntryItem(tle.startTime, tle.endTime);
         newTLE.timelogEntryActivities = tle.timelogEntryActivities;
         newTLE.embeddedNote = tle.embeddedNote;

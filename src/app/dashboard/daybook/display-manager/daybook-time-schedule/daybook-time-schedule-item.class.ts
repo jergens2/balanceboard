@@ -22,16 +22,16 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
 
     protected _displayPercent: number = 0;
 
-        
+
     protected _timeLimiter: DTSItemTimeLimiter;
 
     protected _actualStartTime: moment.Moment;
     protected _actualEndTime: moment.Moment;
 
-    
+
     public get sleepEntry(): SleepEntryItem { return this._sleepEntry; }
     public get timelogEntry(): TimelogEntryItem { return this._timelogEntry; }
-    
+
     /** the 'actual' start and end time refer to, for example, that even though the sleep schedule item on the display is 7:00am to 7:30, 
      * the sleep item actually started at 10:30pm previously */
     public get actualStartTime(): moment.Moment { return this._actualStartTime; }
@@ -61,7 +61,11 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
         //     }
         // }
     }
-    public setTimeLimiter(timeLimiter: DTSItemTimeLimiter) { this._timeLimiter = timeLimiter; }
+    public setTimeLimiter(timeLimiter: DTSItemTimeLimiter) {
+        this._timeLimiter = timeLimiter;
+        this._actualStartTime = moment(this._timeLimiter.startTime);
+        this._actualEndTime = moment(this._timeLimiter.endTime);
+    }
 
     constructor(startTime: moment.Moment, endTime: moment.Moment) {
         super(startTime.toISOString(), endTime.toISOString(), startTime.utcOffset(), endTime.utcOffset());

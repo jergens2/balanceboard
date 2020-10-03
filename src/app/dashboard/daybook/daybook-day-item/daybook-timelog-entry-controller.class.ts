@@ -111,12 +111,11 @@ export class DaybookTimelogEntryController {
         });
     }
 
-    public updateTimelogEntryItem(dateYYYYMMDD: string, updateTimelogEntry: TimelogEntryItem) {
+    public updateTimelogEntryItem(dateYYYYMMDD: string, originalStart: moment.Moment,
+        originalEnd: moment.Moment, updateTimelogEntry: TimelogEntryItem) {
         let items = this._getDateItems(dateYYYYMMDD);
-        // console.log("updating from ITEMS:")
-        // items.forEach(item=> console.log(item.startTime.format('YYYY-MM-DD hh:mm a') + " to " + item.endTime.format('YYYY-MM-DD hh:mm a')))
         const foundIndex = items.findIndex((item) => {
-            return item.startTime.isSame(updateTimelogEntry.startTime) && item.endTime.isSame(updateTimelogEntry.endTime);
+            return item.startTime.isSame(originalStart) && item.endTime.isSame(originalEnd);
         });
         if (foundIndex > -1) {
             // console.log("Found index is " + foundIndex)

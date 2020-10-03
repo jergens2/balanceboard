@@ -1,11 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
-import { TLEFController } from '../../TLEF-controller.class';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
-import { TLEFFormCase } from '../../tlef-form-case.enum';
-import { DaybookDisplayUpdateType } from '../../../../../display-manager/daybook-display-update.interface';
+import { TimeInput } from '../../../../../../../shared/components/time-input/time-input.class';
 
 @Component({
   selector: 'app-tlef-times',
@@ -22,10 +20,21 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
   private _entryStartTime: moment.Moment;
   private _entryEndTime: moment.Moment;
 
-  private _mouseIsOver: boolean = false;
+  private _originalStart: moment.Moment;
+  private _originalEnd: moment.Moment;
+
+  private _startTimeInput: TimeInput;
+  private _endTimeInput: TimeInput;
+
+  private _isEditing: boolean = false;
+  private _inputSubs: Subscription[] = [];
 
   public get entryItem(): TimelogEntryItem { return this._entryItem; }
   public get durationString(): string { return this.entryItem.durationString; }
+  public get isEditing(): boolean { return this._isEditing; }
+
+  public get startTimeInput(): TimeInput { return this._startTimeInput; }
+  public get endTimeInput(): TimeInput { return this._endTimeInput; }
 
   ngOnInit() {
     // console.log("Opening component")
@@ -36,39 +45,59 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
     ];
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this._subs.forEach(sub => sub.unsubscribe());
     this._subs = [];
   }
 
   private _reload() {
-    
+    console.log("RELOADING")
     if (this.daybookService.tlefController.currentlyOpenTLEFItem) {
+      const currentItem = this.daybookService.tlefController.currentlyOpenTLEFItem;
       if (this.daybookService.tlefController.currentlyOpenTLEFItem.isTLEItem) {
-        this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
-
-        // if (!this._entryStartTime) {
-        //   this._entryStartTime = moment(this.entryItem.startTime);
-        // }
-        // if (!this._entryEndTime) {
-        //   this._entryEndTime = moment(this.entryItem.endTime);
-        // }
-        // const tlefCase = this.controller.currentlyOpenTLEFItem.formCase;
-
-        this._entryStartTime = moment(this.entryItem.startTime);
-        this._entryEndTime = moment(this.entryItem.endTime);
-      } else {
-        this._entryStartTime = moment();
-        this._entryEndTime = moment();
+        this._entryItem = currentItem.getInitialTLEValue();
       }
+      this._entryStartTime = moment(currentItem.actualStartTime);
+      this._entryEndTime = moment(currentItem.actualEndTime);
+      this._startTimeInput = currentItem.timeLimiter.startTimeInput;
+      this._endTimeInput = currentItem.timeLimiter.endTimeInput;
+      this._originalStart = moment(currentItem.actualStartTime);
+      this._originalEnd = moment(currentItem.actualEndTime);
+      this._updateInputSubs();
+
+
     } else {
       this._entryItem = null;
       this._entryStartTime = moment();
       this._entryEndTime = moment();
     }
-    // console.log("RELOADING:" + this.entryStartTime + " -- " + this.entryEndTime)
+
   }
 
+
+  private _updateInputSubs() {
+    this._inputSubs.forEach(s => s.unsubscribe());
+    this._inputSubs = [
+      this._startTimeInput.timeValue$.subscribe(val => {
+        this._entryItem.setStartTime(val);
+        this._entryStartTime = moment(val);
+        this._checkForChanges();
+      }),
+      this._endTimeInput.timeValue$.subscribe(val => {
+        this._entryItem.setEndTime(val);
+        this._entryEndTime = moment(val);
+        this._checkForChanges();
+
+      })
+    ];
+
+  }
+
+  private _checkForChanges() {
+    if (!(this._entryItem.startTime.isSame(this._originalStart) && this._entryItem.endTime.isSame(this._originalEnd))) {
+      this.daybookService.tlefController.makeChangesTLE(this._entryItem);
+    }
+  }
 
   public get entryStartTime(): string {
     if (this._entryStartTime) {
@@ -83,11 +112,9 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
     return 'Error with start time';
   }
 
-  public get mouseIsOver(): boolean { return this._mouseIsOver; }
-  public onMouseEnter() {
-    this._mouseIsOver = true;
+
+  public onClickEditTimes() {
+    this._isEditing = true;
   }
-  public onMouseLeave() {
-    this._mouseIsOver = false;
-  }
+
 }

@@ -4,6 +4,7 @@ import { AppScreenSizeService } from './shared/app-screen-size/app-screen-size.s
 import { Subscription, Observable, Subject, BehaviorSubject, timer } from 'rxjs';
 import * as moment from 'moment';
 import { KeydownService } from './shared/keydown.service';
+import { ToolboxService } from './toolbox-menu/toolbox.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,7 @@ export class AppComponent implements OnInit {
     private authService: AuthenticationService,
     private sizeService: AppScreenSizeService,
     private keydownService: KeydownService,
-
+    private toolboxService: ToolboxService,
   ) { }
 
   @HostListener('window:resize', ['$event']) onResize(e) {
@@ -54,6 +55,7 @@ export class AppComponent implements OnInit {
           this._isAuthenticated = true;
         } else {
           this._isAuthenticated = false;
+          this.toolboxService.closeTool();
         }
       }),
     ];
@@ -72,6 +74,8 @@ export class AppComponent implements OnInit {
       if (diffMin >= lockAtMinutes) {
         this.authService.lock();
         this._userActivitySub.unsubscribe();
+        this._isAuthenticated = false;
+        this.toolboxService.closeTool();
       }
     });
   }

@@ -1,9 +1,10 @@
 import * as moment from 'moment';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { runInThisContext } from 'vm';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+
 export class TimeInput {
 
-    private _timeValue$: BehaviorSubject<moment.Moment>;
+    private _timeValue$: Subject<moment.Moment>;
+    private _timeValue: moment.Moment;
     private _minValue: moment.Moment;
     private _maxValue: moment.Moment;
 
@@ -19,17 +20,19 @@ export class TimeInput {
     public set maxValue(val: moment.Moment) {
         this._maxValue = moment(val);
         if (this.timeValue.isAfter(val)) {
+            this._timeValue = moment(val);
             this._timeValue$.next(val);
         }
     }
     public set minValue(val: moment.Moment) {
         this._minValue = moment(val);
         if (this.timeValue.isBefore(val)) {
+            this._timeValue = moment(val);
             this._timeValue$.next(val);
         }
     }
 
-    public get timeValue(): moment.Moment { return this._timeValue$.getValue(); }
+    public get timeValue(): moment.Moment { return this._timeValue; }
     public get timeValue$(): Observable<moment.Moment> { return this._timeValue$.asObservable(); }
 
     constructor(timeValue: moment.Moment, maxValue?: moment.Moment, minValue?: moment.Moment) {
@@ -43,7 +46,8 @@ export class TimeInput {
         } else {
             this._minValue = moment(timeValue).subtract(12, 'hours');
         }
-        this._timeValue$ = new BehaviorSubject(timeValue);
+        this._timeValue = moment(timeValue);
+        this._timeValue$ = new Subject();
         this.configure();
     }
     public configure(showButtons = true, hideBorders = true, showDate = true, incrementMinutes = 15, color = 'black', isBold = false) {
@@ -56,6 +60,7 @@ export class TimeInput {
     }
 
     public changeTime(time: moment.Moment) {
+        this._timeValue = moment(time);
         this._timeValue$.next(time);
     }
 

@@ -1,10 +1,7 @@
 import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { TLEFFormCase } from './tlef-form-case.enum';
-import * as moment from 'moment';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { TimelogDelineator } from '../timelog-large-frame/timelog-body/timelog-delineator.class';
-import { ToolboxService } from '../../../../../toolbox-menu/toolbox.service';
-import { TimelogDisplayGridItem } from '../timelog-large-frame/timelog-body/timelog-display-grid-item.class';
 import { TLEFControllerItem } from './TLEF-controller-item.class';
 import { TLEFCircleButton } from './tlef-parts/tlef-circle-buttons-bar/tlef-circle-button.class';
 import { DaybookTimeSchedule } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule.class';
@@ -12,7 +9,6 @@ import { DaybookTimeScheduleItem } from '../../../display-manager/daybook-time-s
 import { ActivityTree } from '../../../../activities/api/activity-tree.class';
 import { TLEFBuilder } from './TLEF-builder.class';
 import { DaybookUpdateAction } from '../../../display-manager/daybook-update-action.enum';
-import { TLEFItemUpdater } from './TLEF-item-updater';
 
 export class TLEFController {
 
@@ -154,12 +150,13 @@ export class TLEFController {
 
     public makeChangesTLE(changedItem: TimelogEntryItem) {
         this.currentlyOpenTLEFItem.setUnsavedTLEChanges(changedItem);
-        this._changesMadeTLE$.next(changedItem);
+        this._changesMadeTLE$.next(this.currentlyOpenTLEFItem.unsavedTLEChanges);
     }
     public saveChanges() {
         this._isSavingChanges = true;
         this._changesMadeTLE$.next(null);
     }
+    public onChangesSaved() { this._isSavingChanges = false; }
 
     public promptContinue() {
         if (this._promptStashedItemIndex) {
@@ -199,10 +196,10 @@ export class TLEFController {
         console.log("WERE IN THE ITEM UPDATER>>>> action is ", action)
 
         if (action === DaybookUpdateAction.CLOCK_MINUTE) {
-            if(this.currentlyOpenTLEFItem.formCase === TLEFFormCase.NEW_CURRENT){
+            if (this.currentlyOpenTLEFItem.formCase === TLEFFormCase.NEW_CURRENT) {
 
-            }else if(this.currentlyOpenTLEFItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE){
-                
+            } else if (this.currentlyOpenTLEFItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
+
             }
         } else if (action === DaybookUpdateAction.DELINEATOR) {
 

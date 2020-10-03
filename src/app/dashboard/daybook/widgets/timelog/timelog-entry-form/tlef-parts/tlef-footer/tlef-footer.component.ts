@@ -50,15 +50,18 @@ export class TlefFooterComponent implements OnInit {
   }
 
   public onClickSaveChanges() {
-
-    // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') 
+    console.log("SAVING CHANGES!")
+    console.log(this.controller.currentlyOpenTLEFItem.unsavedTLEChanges.startTime.format('YYYY-MM-DD hh:mm a'))
     // + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
     const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
-    this.daybookService.daybookController.tleController.updateTimelogEntryItem(dateYYYYMMDD, this.controller.changesMadeTLE);
+    const originalStart: moment.Moment = moment(this.controller.currentlyOpenTLEFItem.actualStartTime);
+    const originalEnd: moment.Moment = moment(this.controller.currentlyOpenTLEFItem.actualEndTime);
+    this.daybookService.daybookController.
+      tleController.updateTimelogEntryItem(dateYYYYMMDD, originalStart, originalEnd, this.controller.changesMadeTLE);
     // console.log("Saving changes")
     // this._close();
     this.controller.saveChanges();
-    this.daybookService.saveChanges$(DaybookUpdateAction.TIMELOG_ENTRY);
+    this.daybookService.saveChanges$(DaybookUpdateAction.TIMELOG_ENTRY).subscribe(complete => this.controller.onChangesSaved());
   }
 
   public onDelete() {

@@ -66,7 +66,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
   }
   public onClickRemoveActivity(activityItem: TLEFActivityListItem) {
     this.activityItems.splice(this.activityItems.indexOf(activityItem), 1);
-    let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
+    const durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
     this.activityItems.forEach((activityItem) => {
       activityItem.durationMinutes = durationMinutes;
     });
@@ -77,14 +77,14 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
   /** This is the event of a new activity been added to the list */
   public onActivityValueChanged(activity: ActivityCategoryDefinition) {
     activity = this.activitiesService.findActivityByTreeId(activity.treeId);
-    let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length + 1);
-    let durationPercent = durationMinutes / (this.timelogEntryMinutes) * 100;
+    const durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length + 1);
+    const durationPercent = durationMinutes / (this.timelogEntryMinutes) * 100;
     const minimumActivityPercent: number = 2;
     let maximumPercent: number = 100;
     if (this.activityItems.length > 1) {
       maximumPercent = (100 - ((this.activityItems.length - 1) * minimumActivityPercent));
     }
-    let activityItem: TLEFActivityListItem = new TLEFActivityListItem(activity, durationMinutes, durationPercent, this.timelogEntryMinutes, maximumPercent);
+    const activityItem: TLEFActivityListItem = new TLEFActivityListItem(activity, durationMinutes, durationPercent, this.timelogEntryMinutes, maximumPercent);
     this._activityItems = this._addNewActivityItem(activityItem);
     this._updateChangeSubscriptions();
     this._updatePercentages(activityItem);
@@ -100,11 +100,11 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
     if (this._timelogEntryActivities.length > 1) {
       maxPercent = 100 - ((this._timelogEntryActivities.length - 1) * 2);
     }
-    let activityItems: TLEFActivityListItem[] = [];
+    const activityItems: TLEFActivityListItem[] = [];
     this._timelogEntryActivities.forEach((tleActivity: TimelogEntryActivity) => {
-      let durationMinutes = ((tleActivity.percentage / 100) * this.timelogEntryMinutes);
-      let durationPercent = tleActivity.percentage;
-      let activity = this.activitiesService.findActivityByTreeId(tleActivity.activityTreeId);
+      const durationMinutes = ((tleActivity.percentage / 100) * this.timelogEntryMinutes);
+      const durationPercent = tleActivity.percentage;
+      const activity = this.activitiesService.findActivityByTreeId(tleActivity.activityTreeId);
       activityItems.push(new TLEFActivityListItem(activity, durationMinutes, durationPercent, this.timelogEntryMinutes, maxPercent))
     });
     this._activityItems = activityItems;
@@ -118,9 +118,9 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
   }
 
   private _addNewActivityItem(activityItem: TLEFActivityListItem): TLEFActivityListItem[] {
-    let currentItems = this.activityItems;
+    const currentItems = this.activityItems;
     let alreadyIn: boolean = false;
-    for (let item of currentItems) {
+    for (const item of currentItems) {
       if (item.activity.treeId == activityItem.activity.treeId) {
         alreadyIn = true;
       }
@@ -138,7 +138,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
       sub.unsubscribe();
     });
     this._changeSubscriptions = [];
-    for (let activityItem of this.activityItems) {
+    for (const activityItem of this.activityItems) {
       activityItem.deactivate();
       this._changeSubscriptions.push(activityItem.percentChanged$.subscribe((percentChanged) => {
         this._updatePercentages(activityItem, percentChanged);
@@ -175,7 +175,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
           if (percentageSum > 100) {
             let totalSubtract: number = percentageSum - 100;
             while (totalSubtract > 0) {
-              let itemsLength = (this.activityItems.filter((item) => {
+              const itemsLength = (this.activityItems.filter((item) => {
                 if (item.durationPercent > minimumActivityPercent && item.activity.treeId != changedActivityItem.activity.treeId) {
                   return item;
                 }
@@ -185,7 +185,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
                   changedActivityItem.updatePercentage(changedActivityItem.durationPercent - totalSubtract, maximumPercent, false);
                   totalSubtract = 0;
                 } else {
-                  let subtractEvenly: number = totalSubtract / itemsLength;
+                  const subtractEvenly: number = totalSubtract / itemsLength;
                   this.activityItems.forEach((activityItem) => {
                     if (activityItem.activity.treeId != changedActivityItem.activity.treeId && activityItem.durationPercent > minimumActivityPercent) {
                       if (activityItem.durationPercent > minimumActivityPercent) {
@@ -217,7 +217,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
           } else if (percentageSum < 100) {
             let totalAdd = 100 - percentageSum;
             while (totalAdd > 0) {
-              let itemsLength = (this.activityItems.filter((item) => {
+              const itemsLength = (this.activityItems.filter((item) => {
                 if (item.durationPercent < maximumPercent && item.activity.treeId != changedActivityItem.activity.treeId) {
                   return item;
                 }
@@ -227,14 +227,14 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
                   changedActivityItem.updatePercentage(changedActivityItem.durationPercent + totalAdd, maximumPercent, false);
                   totalAdd = 0;
                 } else {
-                  let addEvenly: number = totalAdd / itemsLength;
+                  const addEvenly: number = totalAdd / itemsLength;
                   this.activityItems.forEach((activityItem) => {
                     if (activityItem.activity.treeId != changedActivityItem.activity.treeId && activityItem.durationPercent < maximumPercent) {
                       if ((activityItem.durationPercent + addEvenly) <= maximumPercent) {
                         totalAdd -= addEvenly;
                         activityItem.updatePercentage(activityItem.durationPercent + addEvenly, maximumPercent, true);
                       } else {
-                        let difference: number = (maximumPercent - activityItem.durationPercent)
+                        const difference: number = (maximumPercent - activityItem.durationPercent)
                         totalAdd -= difference;
                         activityItem.updatePercentage(activityItem.durationPercent + difference, maximumPercent, true);
                       }
@@ -253,9 +253,9 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
           }
         }
       } else {
-        for (let activityItem of this.activityItems) {
-          let durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
-          let dividedEvenlyPercentage = durationMinutes / (this.timelogEntryMinutes) * 100;
+        for (const activityItem of this.activityItems) {
+          const durationMinutes: number = this.timelogEntryMinutes / (this.activityItems.length);
+          const dividedEvenlyPercentage = durationMinutes / (this.timelogEntryMinutes) * 100;
           activityItem.deactivate();
           activityItem.updatePercentage(dividedEvenlyPercentage, maximumPercent, true);
         }

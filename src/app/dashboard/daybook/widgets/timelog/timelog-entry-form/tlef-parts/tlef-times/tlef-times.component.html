@@ -1,4 +1,4 @@
-<div class="tlef-times-root" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+<div class="tlef-times-root" (click)="onClickEditTimes()" *ngIf="!isEditing">
     <div class="times-container">
         <span class="from-to">from</span><span class="entry-time" style="margin-right: 15px;">{{ entryStartTime }}</span> 
         <span class="from-to">to</span><span class="entry-time">{{ entryEndTime  }}</span>
@@ -7,5 +7,15 @@
     
     <div class="duration-string">
         {{ durationString }}
+    </div>
+</div>
+
+
+<div *ngIf="isEditing" class="tlef-times-root-editing">
+    boo ya
+    <app-time-input [timeInput]="startTimeInput"></app-time-input>
+    <app-time-input [timeInput]="endTimeInput"></app-time-input>
+    <div style="display:flex;flex-direction: row-reverse;">
+        gucci
     </div>
 </div>

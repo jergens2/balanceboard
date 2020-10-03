@@ -23,27 +23,17 @@ export class TlefPromptComponent implements OnInit {
   }
 
 
-  public onClickSave(){
-    
-    // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
+  public onClickSave() {
     const changesMadeTLE = this._controller.changesMadeTLE;
-    console.log("Method disabled")
     const dateYYYYMMDD: string = changesMadeTLE.startTime.format('YYYY-MM-DD');
-    if(changesMadeTLE.isSavedEntry){
-      this.daybookService.daybookController.tleController.updateTimelogEntryItem(dateYYYYMMDD, changesMadeTLE);
-    }else{
-      this.daybookService.daybookController.tleController.saveTimelogEntryItem(dateYYYYMMDD, changesMadeTLE);
-    }
+    this.daybookService.daybookController.tleController.saveTimelogEntryItem(dateYYYYMMDD, changesMadeTLE);
     this._controller.saveChanges();
-    this.daybookService.saveChanges$(DaybookUpdateAction.TIMELOG_ENTRY).subscribe(complete =>    this._controller.promptContinue());
-    // this._controller.promptContinue();
-    // console.log("Saving changes")
-    
+    this.daybookService.saveChanges$(DaybookUpdateAction.TIMELOG_ENTRY).subscribe(complete => this._controller.promptContinue());
   }
-  public onClickDiscard(){
+  public onClickDiscard() {
     this._controller.promptContinue();
   }
-  public onClickReturn(){
+  public onClickReturn() {
     this._controller.closeTLEFPrompt();
   }
 
@@ -52,7 +42,7 @@ export class TlefPromptComponent implements OnInit {
 
 
 /**
- * 
+ *
  *   public onClickSaveChanges() {
     console.log("Saving changes to item: ",  this._changedTimelogEntryItem);
     // console.log(this._changedTimelogEntryItem.startTime.format('YYYY-MM-DD hh:mm a') + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
@@ -66,5 +56,5 @@ export class TlefPromptComponent implements OnInit {
     this.daybookService.activeDayController.deleteTimelogEntryItem$(this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
     this._close();
   }
-  
+
  */
