@@ -17,14 +17,10 @@ export class TLEFCircleButtonsBarComponent implements OnInit, OnDestroy {
 
   constructor(private daybookDisplayService: DaybookDisplayService, private activitiesService: ActivityHttpService) { }
 
-  private _startTime: moment.Moment;
-  private _endTime: moment.Moment;
-  private _tlefController: TLEFController;
 
-  public get items(): TLEFCircleButton[] { return this._tlefController.gridBarItems; }
+  private _gridBarItems: TLEFCircleButton[];
 
-  public get startTime(): moment.Moment { return this.daybookDisplayService.displayStartTime; }
-  public get endTime(): moment.Moment { return this.daybookDisplayService.displayEndTime; }
+  public get items(): TLEFCircleButton[] { return this._gridBarItems; }
 
   public faArrowLeft = faArrowLeft;
   public faArrowRight = faArrowRight;
@@ -42,9 +38,7 @@ export class TLEFCircleButtonsBarComponent implements OnInit, OnDestroy {
   }
 
   private _reload() {
-    this._startTime = this.daybookDisplayService.displayStartTime;
-    this._endTime = this.daybookDisplayService.displayEndTime;
-    this._tlefController = this.daybookDisplayService.tlefController;
+    this._gridBarItems = this.daybookDisplayService.tlefController.tlefCircleButtons;
   }
 
 

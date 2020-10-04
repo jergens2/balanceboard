@@ -57,9 +57,8 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
 
   private _rebuild() {
     this._timeDelineators = Object.assign([], this.daybookDisplayService.displayManager.displayDelineators);
-    console.log(" TIME DELINEATORS IN THE COLUMN: ")
-    this._timeDelineators.forEach(t => console.log("  " + t.toString()))
-
+    // console.log(" TIME DELINEATORS IN THE COLUMN: ")
+    // this._timeDelineators.forEach(t => console.log("  " + t.toString()))
     this._subscribeToColumn();
   }
 

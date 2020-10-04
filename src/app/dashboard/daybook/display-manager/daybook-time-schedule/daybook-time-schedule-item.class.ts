@@ -95,6 +95,9 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
         this._endDelineator.time = moment(time);
     }
 
+    // public changeActualStartTime(time: moment.Moment) { this._actualStartTime = moment(time); }
+    // public changeActualEndTime(time: moment.Moment) { this._actualEndTime = moment(time); }
+
     public clone(): DaybookTimeScheduleItem {
         const clonedItem = new DaybookTimeScheduleItem(this.schedItemStartTime, this.schedItemEndTime);
         clonedItem.startDelineator = new TimelogDelineator(this.startDelineator.time,

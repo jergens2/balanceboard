@@ -44,7 +44,13 @@
 
 
 .tlef-times-root-editing{
-    background-color: rgb(217, 230, 255);
     display:flex;
     flex-direction: column;
+    background-color: rgb(240, 240, 240);
+}
+.time-input-container{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 3px;
 }

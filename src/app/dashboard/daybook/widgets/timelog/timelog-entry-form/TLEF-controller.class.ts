@@ -26,7 +26,7 @@ export class TLEFController {
     public get currentlyOpenTLEFItem$(): Observable<TLEFControllerItem> { return this._currentlyOpenTLEFItem$.asObservable(); }
     public get isChanged(): boolean { return this._changesMadeTLE$.getValue() !== null; }
     public get tlefItems(): TLEFControllerItem[] { return this._tlefItems; }
-    public get gridBarItems(): TLEFCircleButton[] { return this.tlefItems.map(item => item.circleButton); }
+    public get tlefCircleButtons(): TLEFCircleButton[] { return this.tlefItems.map(item => item.circleButton); }
     public get changesMadeTLE$(): Observable<TimelogEntryItem> { return this._changesMadeTLE$.asObservable(); }
     public get changesMadeTLE(): TimelogEntryItem { return this._changesMadeTLE$.getValue(); }
     public get currentlyOpenTLEFItem(): TLEFControllerItem { return this._currentlyOpenTLEFItem$.getValue(); }
@@ -48,17 +48,13 @@ export class TLEFController {
         this._tlefItems = builder.buildItems(scheduleDisplayItems, this._activityTree);
     }
     public update(scheduleDisplayItems: DaybookTimeScheduleItem[], action: DaybookUpdateAction) {
-        console.log("********* UPDATING TLEF CONTROLLER-  action is: ", action)
+        console.log('********* UPDATING TLEF CONTROLLER-  action is: ', action)
         const builder: TLEFBuilder = new TLEFBuilder();
         this._tlefItems = builder.buildItems(scheduleDisplayItems, this._activityTree);
-
-        this.tlefItems.forEach(item => console.log("  " + item.toString()));
-
+        // this.tlefItems.forEach(item => console.log('  ' + item.toString()));
         if (this.formIsOpen) {
             this._reopenTLEFItem(action);
-
         }
-
     }
     public getIndexOfNowItem(): number {
         const newCurrent = this.tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
@@ -75,13 +71,13 @@ export class TLEFController {
         }
     }
     public openItemByIndex(itemIndex: number) {
-        console.log("******UPDATING TLEF ITEM BY INDEX: ", itemIndex);
-        this.tlefItems.forEach(item => console.log(item.toString()))
+        // console.log('******UPDATING TLEF ITEM BY INDEX: ', itemIndex);
+        // this.tlefItems.forEach(item => console.log(item.toString()))
         const indexItem = this._tlefItems.find(item => item.itemIndex === itemIndex);
         if (indexItem) {
             this._openTLEFItem(indexItem);
         } else {
-            console.log("Error opening TLEF Item by index: " + itemIndex);
+            console.log('Error opening TLEF Item by index: ' + itemIndex);
         }
     }
     public close() {
@@ -108,7 +104,7 @@ export class TLEFController {
         }
     }
     public onCreateNewTimelogEntry(schedule: DaybookTimeSchedule) {
-        console.log("Durrr what does this do?")
+        console.log('Durrr what does this do?')
     }
 
     public openTLEDelineator(delineator: TimelogDelineator) {
@@ -149,7 +145,7 @@ export class TLEFController {
         this._makeChangesTLE(currentItem);
     }
     public makeChangesToTLENote(note: string) {
-        console.log("Note changed to ", note)
+        console.log('Note changed to ', note)
         const currentItem = this.currentlyOpenTLEFItem.unsavedChangesTLE;
         currentItem.embeddedNote = note;
         this._makeChangesTLE(currentItem);
@@ -166,7 +162,6 @@ export class TLEFController {
     public saveChanges() {
         this._isSavingChanges = true;
         this._changesMadeTLE$.next(null);
-        this.currentlyOpenTLEFItem.itemIndex;
 
     }
     public onChangesSaved() { this._isSavingChanges = false; }
@@ -186,17 +181,20 @@ export class TLEFController {
     }
 
 
-    private _openTLEFItem(item: TLEFControllerItem) {
-        console.log("Opening TLEF Item", item);
+    private _openTLEFItem(item: TLEFControllerItem, overWrite = false) {
+        console.log('Opening TLEF Item', item);
         let doOpenItem: boolean = true;
-        if (this.currentlyOpenTLEFItem) {
-            console.log(" ITS CURRENTLY OPEN")
-            if (this.isChanged) {
-                this._promptToSaveChanges = true;
-                this._promptStashedItemIndex = item.itemIndex;
-                doOpenItem = false;
+        if (!overWrite) {
+            if (this.currentlyOpenTLEFItem) {
+                console.log(' ITS CURRENTLY OPEN')
+                if (this.isChanged) {
+                    this._promptToSaveChanges = true;
+                    this._promptStashedItemIndex = item.itemIndex;
+                    doOpenItem = false;
+                }
             }
         }
+
         if (doOpenItem) {
             this._isSavingChanges = false;
             this._changesMadeTLE$.next(null);
@@ -205,23 +203,45 @@ export class TLEFController {
         }
     }
     private _reopenTLEFItem(action: DaybookUpdateAction) {
-        console.log("In the item updater >>>> action is ", action)
+        console.log('In the item updater >>>> action is ', action)
 
         if (action === DaybookUpdateAction.CLOCK_MINUTE) {
+            /*
+            *  CASE:  NOW time changed.
+             *      If the TLEF was open when the clock changed, then update the new time.
+             *          if NEW_CURRENT case, then update end time.
+             *          if NEW_CURRENT_FUTURE,
+             *              and if no changes, then update new start time,
+             *              but if there are changes, then don't update the time.
+            */
             if (this.currentlyOpenTLEFItem.formCase === TLEFFormCase.NEW_CURRENT) {
-
+                const newItem = this.currentlyOpenTLEFItem;
+                let newEndTime = moment().startOf('minute');
+                const existingItemOfType = this.tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+                if (newEndTime.isAfter(existingItemOfType.timeLimiter.upperLimit)) {
+                    newEndTime = moment(existingItemOfType.timeLimiter.upperLimit);
+                }
+                newItem.changeSchedItemEndTime(newEndTime);
+                newItem.setTimeLimiter(existingItemOfType.timeLimiter);
+                newItem.timeLimiter.endTimeInput.changeTime(newEndTime);
+                console.log("REOPENING NEW ITEM: ", newItem.actualEndTime.format('hh:mm a'), newItem.schedItemEndTime.format('hh:mm a'))
+                // this block does NOT utilize the this._openTLEFItem() method.
+                this._isSavingChanges = false;
+                this._setItemCurrentlyOpen(newItem.itemIndex);
+                this._currentlyOpenTLEFItem$.next(newItem);
             } else if (this.currentlyOpenTLEFItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
-
+                if (!this.currentlyOpenTLEFItem.hasUnsavedChanges) {
+                    const foundItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
+                    this._openTLEFItem(foundItem);
+                }
             }
         } else if (action === DaybookUpdateAction.DELINEATOR) {
 
         } else if (action === DaybookUpdateAction.DRAWING) {
 
         } else {
-            console.log("standard case")
-            // console.log("Currently open TLEF ITEM: " + this.currentlyOpenTLEFItem
-            console.log(this.currentlyOpenTLEFItem.hasUnsavedChanges)
-
+            // Standard case, 
+            console.log('standard case')
             if (this.currentlyOpenTLEFItem.hasUnsavedChanges) {
                 let startTime: moment.Moment = moment(this.currentlyOpenTLEFItem.actualStartTime);
                 let endTime: moment.Moment = moment(this.currentlyOpenTLEFItem.actualEndTime);
@@ -236,29 +256,18 @@ export class TLEFController {
                         item.actualEndTime.isSame(endTime);
                 });
                 if (foundTimeItem) {
-                    // console.log("*** successfully found an item by time")
-                    this._currentlyOpenTLEFItem$.next(null);
-                    this._openTLEFItem(foundTimeItem);
+                    this._openTLEFItem(foundTimeItem, true);
                 } else {
-                    // console.log("*** did not find item by time.")
                     const foundIndexItem = this.tlefItems.find(item => item.itemIndex === this.currentlyOpenTLEFItem.itemIndex);
-                    this._currentlyOpenTLEFItem$.next(null);
-                    this._openTLEFItem(foundIndexItem);
+                    this._openTLEFItem(foundIndexItem, true);
                 }
             } else {
-                console.log("There were no unsaved changed.  what do?")
+                console.log('There were no unsaved changed.  what do?')
             }
-
-
         }
 
         /**
-             *  CASE:  NOW time changed.
-             *      If the TLEF was open when the clock changed, then update the new time.
-             *          if NEW_CURRENT case, then update end time.
-             *          if NEW_CURRENT_FUTURE,
-             *              and if no changes, then update new start time,
-             *              but if there are changes, then don't update the time.
+             
              *
              *
              *  CASE:  NEW DELINEATOR or DELETED DELINEATOR
@@ -279,9 +288,6 @@ export class TLEFController {
              *      IF there are changes prompt to save changes, then close
              * 
              */
-
-
-        return;
     }
     private _setItemCurrentlyOpen(itemIndex: number) {
         this._tlefItems.forEach(item => {

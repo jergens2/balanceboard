@@ -12,10 +12,14 @@
 
 
 <div *ngIf="isEditing" class="tlef-times-root-editing">
-    boo ya
-    <app-time-input [timeInput]="startTimeInput"></app-time-input>
-    <app-time-input [timeInput]="endTimeInput"></app-time-input>
-    <div style="display:flex;flex-direction: row-reverse;">
-        gucci
+    <div class="time-input-container">
+        <div style="width: 30px; color:rgb(70, 70, 70);">from</div>
+         <app-time-input [timeInput]="startTimeInput" class="time-input"></app-time-input>
+        <div style="width: 30px;"></div>
+    </div>
+    <div class="time-input-container">
+        <div style="width: 30px; color:rgb(70, 70, 70);">to</div>
+        <app-time-input [timeInput]="endTimeInput"></app-time-input>
+        <div style="width: 30px;"></div>
     </div>
 </div>

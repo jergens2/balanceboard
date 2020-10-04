@@ -4,6 +4,7 @@ import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import * as moment from 'moment';
 import { TimeInput } from '../../../../../../../shared/components/time-input/time-input.class';
+import { TLEFFormCase } from '../../tlef-form-case.enum';
 
 @Component({
   selector: 'app-tlef-times',
@@ -51,21 +52,48 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
   }
 
   private _reload() {
-    console.log("RELOADING")
     if (this.daybookService.tlefController.currentlyOpenTLEFItem) {
       const currentItem = this.daybookService.tlefController.currentlyOpenTLEFItem;
-      if (this.daybookService.tlefController.currentlyOpenTLEFItem.isTLEItem) {
-        this._entryItem = currentItem.getInitialTLEValue();
+      console.log("RELOADING tlef times: from " + currentItem)
+      if (this.isEditing) {
+        if (this._entryStartTime && this._entryEndTime) {
+          if (!this._entryStartTime.isSame(currentItem.actualStartTime) && !this._entryEndTime.isSame(currentItem.actualEndTime)) {
+            if (currentItem.formCase !== TLEFFormCase.NEW_CURRENT) {
+              this._isEditing = false;
+            }
+
+          }
+        }
       }
-      this._entryStartTime = moment(currentItem.actualStartTime);
-      this._entryEndTime = moment(currentItem.actualEndTime);
+      if (this.daybookService.tlefController.currentlyOpenTLEFItem.isTLEItem) {
+        if (!this._entryItem) {
+          this._entryItem = currentItem.getInitialTLEValue();
+        }
+      }
+      if (!this._entryStartTime) {
+        this._entryStartTime = moment(currentItem.actualStartTime);
+      }
+      if (!this._entryEndTime) {
+        this._entryEndTime = moment(currentItem.actualEndTime);
+      }
       this._startTimeInput = currentItem.timeLimiter.startTimeInput;
+      this._startTimeInput.showDate = false;
       this._endTimeInput = currentItem.timeLimiter.endTimeInput;
-      this._originalStart = moment(currentItem.actualStartTime);
-      this._originalEnd = moment(currentItem.actualEndTime);
+      this._endTimeInput.showDate = false;
+      if (!this._originalStart && !this._originalEnd) {
+        this._originalStart = moment(currentItem.actualStartTime);
+        this._originalEnd = moment(currentItem.actualEndTime);
+      }
+
+
+
+
       this._updateInputSubs();
-
-
+      if (currentItem.formCase === TLEFFormCase.NEW_CURRENT) {
+        this._entryItem.setEndTime(currentItem.actualEndTime);
+        this._entryEndTime = moment(currentItem.actualEndTime);
+        this._endTimeInput.changeTime(this._entryEndTime);
+      }
     } else {
       this._entryItem = null;
       this._entryStartTime = moment();
@@ -94,7 +122,9 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
   }
 
   private _checkForChanges() {
+    console.log("**** TLEF: Checking for changes to times.")
     if (!(this._entryItem.startTime.isSame(this._originalStart) && this._entryItem.endTime.isSame(this._originalEnd))) {
+      console.log("**** TLEF: changes were made!!!")
       this.daybookService.tlefController.makeChangesToTLETimes(this._entryStartTime, this._entryEndTime);
     }
   }

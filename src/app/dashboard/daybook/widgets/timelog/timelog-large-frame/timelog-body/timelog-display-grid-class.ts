@@ -26,7 +26,7 @@ export class TimelogDisplayGrid {
   }
 
   /**
-   * 
+   *
    * This method basically just applies a boolean property to each item indicating whether or not an item is open,
    * exclusively for style purposes.
    */
@@ -63,8 +63,6 @@ export class TimelogDisplayGrid {
           }
         }
         if (merge) {
-          console.log("WE ARE MERGING.")
-
           gridItems[i - 1].mergeItem(gridItems[i]);
           gridItems.splice(i, 1);
           length = gridItems.length;
@@ -80,13 +78,10 @@ export class TimelogDisplayGrid {
     displayGridNgStyle['grid-template-rows'] = gridTemplateRows;
     this.ngStyle = displayGridNgStyle;
     this._gridItems = gridItems;
-    console.log("   * GRID ITEMS")
-    this._gridItems.forEach(item => console.log("   " + item.toString()))
-
+    // console.log("   * GRID ITEMS")
+    // this._gridItems.forEach(item => console.log("   " + item.toString()))
     if (currentlyOpenItemIndex) {
       this._gridItems.find(item => item.itemIndex === currentlyOpenItemIndex).setAsActiveItem();
     }
-
   }
-
 }
