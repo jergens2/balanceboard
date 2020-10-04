@@ -22,7 +22,6 @@ import { SharedModule } from '../../../../../shared/shared.module';
 import { TlefTimesComponent } from './tlef-parts/tlef-times/tlef-times.component';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { TlefPromptComponent } from './tlef-parts/tlef-prompt/tlef-prompt.component';
-import { TlefEmbeddedNoteComponent } from './tlef-parts/tlef-embedded-note/tlef-embedded-note.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FallAsleepTimeComponent } from './sleep-entry-form/fall-asleep-time/fall-asleep-time.component';
 
@@ -49,7 +48,6 @@ import { FallAsleepTimeComponent } from './sleep-entry-form/fall-asleep-time/fal
     TLEFCircleButtonsBarComponent,
     TlefTimesComponent,
     TlefPromptComponent,
-    TlefEmbeddedNoteComponent,
     FallAsleepTimeComponent,
   ],
   imports: [

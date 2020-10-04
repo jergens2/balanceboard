@@ -95,7 +95,7 @@ export class TlefTimesComponent implements OnInit, OnDestroy {
 
   private _checkForChanges() {
     if (!(this._entryItem.startTime.isSame(this._originalStart) && this._entryItem.endTime.isSame(this._originalEnd))) {
-      this.daybookService.tlefController.makeChangesTLE(this._entryItem);
+      this.daybookService.tlefController.makeChangesToTLETimes(this._entryStartTime, this._entryEndTime);
     }
   }
 

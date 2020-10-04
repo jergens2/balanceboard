@@ -51,7 +51,7 @@ export class TlefFooterComponent implements OnInit {
 
   public onClickSaveChanges() {
     console.log("SAVING CHANGES!")
-    console.log(this.controller.currentlyOpenTLEFItem.unsavedTLEChanges.startTime.format('YYYY-MM-DD hh:mm a'))
+    console.log(this.controller.currentlyOpenTLEFItem.unsavedChangesTLE.startTime.format('YYYY-MM-DD hh:mm a'))
     // + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
     const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
     const originalStart: moment.Moment = moment(this.controller.currentlyOpenTLEFItem.actualStartTime);

@@ -14,6 +14,9 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     private _initialSleepValue: SleepEntryItem;
     private _formCase: TLEFFormCase;
 
+    private _changedStartTime: moment.Moment;
+    private _changedEndTime: moment.Moment;
+
     private _isCurrent: boolean = false;
     private _isCurrentlyOpen: boolean = false;
     private _isDrawing: boolean = false;
@@ -31,6 +34,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
         this._circleButtonItem = new TLEFCircleButton(itemIndex, scheduleStatus, formCase, backgroundColor);
         this._initialSleepValue = sleepEntry;
         this._initialTLEValue = timelogEntry;
+        this._unsavedChangesTLE = timelogEntry;
     }
 
     public get circleButton(): TLEFCircleButton { return this._circleButtonItem; }
@@ -52,6 +56,9 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     public get isSleepItem(): boolean { return this.formCase === TLEFFormCase.SLEEP; }
     public get isTLEItem(): boolean { return this.formCase !== TLEFFormCase.SLEEP; }
 
+    public get changedStartTime(): moment.Moment { return this._changedStartTime; }
+    public get changedEndTime(): moment.Moment { return this._changedEndTime; }
+
     public setAsCurrent() {
         this._isCurrent = true;
         this._circleButtonItem.setAsCurrent();
@@ -67,7 +74,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
         return this._initialSleepValue;
     }
 
-    private _unsavedTLEChanges: TimelogEntryItem;
+    private _unsavedChangesTLE: TimelogEntryItem;
     public setUnsavedTLEChanges(tle: TimelogEntryItem) {
         this._unsavedChanges = true;
         console.log("Setting unsaved: " + tle.startTime.format('hh:mm a'))
@@ -75,9 +82,13 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
         newTLE.timelogEntryActivities = tle.timelogEntryActivities;
         newTLE.embeddedNote = tle.embeddedNote;
         if (tle.isSavedEntry) { newTLE.setIsSaved(); }
-        this._unsavedTLEChanges = newTLE;
+        this._changedStartTime = moment(tle.startTime);
+        this._changedEndTime = moment(tle.endTime);
+        this._unsavedChangesTLE = newTLE;
     }
-    public get unsavedTLEChanges(): TimelogEntryItem { return this._unsavedTLEChanges; }
+
+
+    public get unsavedChangesTLE(): TimelogEntryItem { return this._unsavedChangesTLE; }
     public get hasUnsavedChanges(): boolean { return this._unsavedChanges; }
     public get isDrawing(): boolean { return this._isDrawing; }
     public toString(): string {
