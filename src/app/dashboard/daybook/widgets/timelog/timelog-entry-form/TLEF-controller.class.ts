@@ -17,20 +17,23 @@ export class TLEFController {
     private _changesMadeTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
     private _promptToSaveChanges: boolean = false;
     private _tlefItems: TLEFControllerItem[] = [];
-    private _currentlyOpenTLEFItem$: BehaviorSubject<TLEFControllerItem> = new BehaviorSubject(null);
+    private _currentlyOpenTLEFItem$: BehaviorSubject<{ item: TLEFControllerItem, isSameItem: boolean }> = new BehaviorSubject(null);
     private _activityTree: ActivityTree;
     private _promptStashedItemIndex: number;
     private _isSavingChanges: boolean = false;
 
     public get formIsOpen(): boolean { return this._currentlyOpenTLEFItem$.getValue() !== null; }
-    public get currentlyOpenTLEFItem$(): Observable<TLEFControllerItem> { return this._currentlyOpenTLEFItem$.asObservable(); }
-    public get isChanged(): boolean { return this._changesMadeTLE$.getValue() !== null; }
+    public get currentlyOpenTLEFItem$(): Observable<{ item: TLEFControllerItem, isSameItem: boolean }> {
+        return this._currentlyOpenTLEFItem$.asObservable();
+    }
+
     public get tlefItems(): TLEFControllerItem[] { return this._tlefItems; }
     public get tlefCircleButtons(): TLEFCircleButton[] { return this.tlefItems.map(item => item.circleButton); }
     public get changesMadeTLE$(): Observable<TimelogEntryItem> { return this._changesMadeTLE$.asObservable(); }
     public get changesMadeTLE(): TimelogEntryItem { return this._changesMadeTLE$.getValue(); }
-    public get currentlyOpenTLEFItem(): TLEFControllerItem { return this._currentlyOpenTLEFItem$.getValue(); }
-    public get showDeleteButton(): boolean { return this.currentlyOpenTLEFItem.getInitialTLEValue().isSavedEntry; }
+    public get isChanged(): boolean { return this.changesMadeTLE !== null; }
+    public get currentlyOpenTLEFItem(): { item: TLEFControllerItem, isSameItem: boolean } { return this._currentlyOpenTLEFItem$.getValue(); }
+    public get showDeleteButton(): boolean { return this.currentlyOpenTLEFItem.item.getInitialTLEValue().isSavedEntry; }
     public get promptToSaveChanges(): boolean { return this._promptToSaveChanges; }
     public get isNew(): boolean {
         return [
@@ -38,7 +41,7 @@ export class TLEFController {
             TLEFFormCase.NEW_CURRENT_FUTURE,
             TLEFFormCase.NEW_FUTURE,
             TLEFFormCase.NEW_PREVIOUS
-        ].indexOf(this.currentlyOpenTLEFItem.formCase) > -1;
+        ].indexOf(this.currentlyOpenTLEFItem.item.formCase) > -1;
     }
     public get isSavingChanges(): boolean { return this._isSavingChanges; }
 
@@ -48,7 +51,7 @@ export class TLEFController {
         this._tlefItems = builder.buildItems(scheduleDisplayItems, this._activityTree);
     }
     public update(scheduleDisplayItems: DaybookTimeScheduleItem[], action: DaybookUpdateAction) {
-        console.log('********* UPDATING TLEF CONTROLLER-  action is: ', action)
+        // console.log('********* UPDATING TLEF CONTROLLER-  action is: ', action)
         const builder: TLEFBuilder = new TLEFBuilder();
         this._tlefItems = builder.buildItems(scheduleDisplayItems, this._activityTree);
         // this.tlefItems.forEach(item => console.log('  ' + item.toString()));
@@ -103,9 +106,16 @@ export class TLEFController {
             console.log('Error: Could not find a current item.')
         }
     }
-    public onCreateNewTimelogEntry(schedule: DaybookTimeSchedule) {
-        console.log('Durrr what does this do?')
-    }
+    // public onCreateNewDrawnTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
+    //     console.log('Durrr what does this do?')
+    //     console.log("can we find item by time? ")
+    //     const foundItem = this._tlefItems.find(item => item.schedItemStartTime.isSame(startTime) && item.schedItemEndTime.isSame(endTime))
+    //     if(foundItem){
+    //         console.log("Boo ya ka sha")
+    //         this._openTLEFItem(foundItem);
+    //     }
+
+    // }
 
     public openTLEDelineator(delineator: TimelogDelineator) {
         const gridItem = this.tlefItems.find((item) => { return item.schedItemStartTime.isSame(delineator.time) });
@@ -119,7 +129,7 @@ export class TLEFController {
         const activeItem = this.currentlyOpenTLEFItem;
         let currentIndex = -1;
         if (activeItem) {
-            currentIndex = this._tlefItems.indexOf(activeItem);
+            currentIndex = this._tlefItems.indexOf(activeItem.item);
         }
         if (currentIndex > 0) {
             const openItem = this._tlefItems[currentIndex - 1];
@@ -130,7 +140,7 @@ export class TLEFController {
         const activeItem = this.currentlyOpenTLEFItem;
         let currentIndex = -1;
         if (activeItem) {
-            currentIndex = this._tlefItems.indexOf(activeItem);
+            currentIndex = this._tlefItems.indexOf(activeItem.item);
         }
         if (currentIndex < this._tlefItems.length - 1) {
             const openItem = this._tlefItems[currentIndex + 1];
@@ -139,25 +149,25 @@ export class TLEFController {
     }
 
     public makeChangesToTLETimes(startTime: moment.Moment, endTime: moment.Moment) {
-        const currentItem = this.currentlyOpenTLEFItem.unsavedChangesTLE;
+        const currentItem = this.currentlyOpenTLEFItem.item.unsavedChangesTLE;
         currentItem.setStartTime(startTime);
         currentItem.setEndTime(endTime);
         this._makeChangesTLE(currentItem);
     }
     public makeChangesToTLENote(note: string) {
         console.log('Note changed to ', note)
-        const currentItem = this.currentlyOpenTLEFItem.unsavedChangesTLE;
+        const currentItem = this.currentlyOpenTLEFItem.item.unsavedChangesTLE;
         currentItem.embeddedNote = note;
         this._makeChangesTLE(currentItem);
     }
     public makeChangesToTLEActivities(activities: TimelogEntryActivity[]) {
-        const currentItem = this.currentlyOpenTLEFItem.unsavedChangesTLE;
+        const currentItem = this.currentlyOpenTLEFItem.item.unsavedChangesTLE;
         currentItem.timelogEntryActivities = activities;
         this._makeChangesTLE(currentItem);
     }
     private _makeChangesTLE(changedItem: TimelogEntryItem) {
-        this.currentlyOpenTLEFItem.setUnsavedTLEChanges(changedItem);
-        this._changesMadeTLE$.next(this.currentlyOpenTLEFItem.unsavedChangesTLE);
+        this.currentlyOpenTLEFItem.item.setUnsavedTLEChanges(changedItem);
+        this._changesMadeTLE$.next(this.currentlyOpenTLEFItem.item.unsavedChangesTLE);
     }
     public saveChanges() {
         this._isSavingChanges = true;
@@ -178,15 +188,15 @@ export class TLEFController {
     public closeTLEFPrompt() {
         this._promptStashedItemIndex = null;
         this._promptToSaveChanges = false;
+
     }
 
 
     private _openTLEFItem(item: TLEFControllerItem, overWrite = false) {
-        console.log('Opening TLEF Item', item);
+        // console.log('Opening TLEF Item', item);
         let doOpenItem: boolean = true;
         if (!overWrite) {
             if (this.currentlyOpenTLEFItem) {
-                console.log(' ITS CURRENTLY OPEN')
                 if (this.isChanged) {
                     this._promptToSaveChanges = true;
                     this._promptStashedItemIndex = item.itemIndex;
@@ -199,57 +209,59 @@ export class TLEFController {
             this._isSavingChanges = false;
             this._changesMadeTLE$.next(null);
             this._setItemCurrentlyOpen(item.itemIndex);
-            this._currentlyOpenTLEFItem$.next(item);
+            this._currentlyOpenTLEFItem$.next({ item: item, isSameItem: false });
         }
     }
     private _reopenTLEFItem(action: DaybookUpdateAction) {
-        console.log('In the item updater >>>> action is ', action)
-
         if (action === DaybookUpdateAction.CLOCK_MINUTE) {
-            /*
-            *  CASE:  NOW time changed.
+            /*  CASE:  NOW time changed.
              *      If the TLEF was open when the clock changed, then update the new time.
              *          if NEW_CURRENT case, then update end time.
              *          if NEW_CURRENT_FUTURE,
              *              and if no changes, then update new start time,
              *              but if there are changes, then don't update the time.
             */
-            if (this.currentlyOpenTLEFItem.formCase === TLEFFormCase.NEW_CURRENT) {
-                const newItem = this.currentlyOpenTLEFItem;
-                let newEndTime = moment().startOf('minute');
-                const existingItemOfType = this.tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
-                if (newEndTime.isAfter(existingItemOfType.timeLimiter.upperLimit)) {
-                    newEndTime = moment(existingItemOfType.timeLimiter.upperLimit);
+            if (this.currentlyOpenTLEFItem.item.formCase === TLEFFormCase.NEW_CURRENT) {
+                const existingItem: TLEFControllerItem = this.currentlyOpenTLEFItem.item;
+                if (!existingItem.hasUnsavedChanges) {
+                    let newEndTime = moment().startOf('minute');
+                    const newItemOfType = this.tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT);
+                    if (newEndTime.isAfter(newItemOfType.timeLimiter.upperLimit)) {
+                        newEndTime = moment(newItemOfType.timeLimiter.upperLimit);
+                    }
+                    existingItem.changeSchedItemEndTime(newEndTime);
+                    newItemOfType.timeLimiter.changeEndTime(newEndTime);
+                    existingItem.setTimeLimiter(newItemOfType.timeLimiter);
+                    this._isSavingChanges = false;
+                    this._setItemCurrentlyOpen(existingItem.itemIndex);
+                    this._currentlyOpenTLEFItem$.next({ item: existingItem, isSameItem: true });
+                    this._changesMadeTLE$.next(null);
+                    existingItem.clearUnsavedChanges();
+                } else {
+                    // do nothing
                 }
-                newItem.changeSchedItemEndTime(newEndTime);
-                newItem.setTimeLimiter(existingItemOfType.timeLimiter);
-                newItem.timeLimiter.endTimeInput.changeTime(newEndTime);
-                console.log("REOPENING NEW ITEM: ", newItem.actualEndTime.format('hh:mm a'), newItem.schedItemEndTime.format('hh:mm a'))
-                // this block does NOT utilize the this._openTLEFItem() method.
-                this._isSavingChanges = false;
-                this._setItemCurrentlyOpen(newItem.itemIndex);
-                this._currentlyOpenTLEFItem$.next(newItem);
-            } else if (this.currentlyOpenTLEFItem.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
-                if (!this.currentlyOpenTLEFItem.hasUnsavedChanges) {
+            } else if (this.currentlyOpenTLEFItem.item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE) {
+                if (!this.currentlyOpenTLEFItem.item.hasUnsavedChanges) {
                     const foundItem = this._tlefItems.find(item => item.formCase === TLEFFormCase.NEW_CURRENT_FUTURE);
                     this._openTLEFItem(foundItem);
                 }
+            } else {
+                // do nothing.
             }
         } else if (action === DaybookUpdateAction.DELINEATOR) {
 
         } else if (action === DaybookUpdateAction.DRAWING) {
-
+            console.log("DRAWING?")
         } else {
-            // Standard case, 
-            console.log('standard case')
-            if (this.currentlyOpenTLEFItem.hasUnsavedChanges) {
-                let startTime: moment.Moment = moment(this.currentlyOpenTLEFItem.actualStartTime);
-                let endTime: moment.Moment = moment(this.currentlyOpenTLEFItem.actualEndTime);
-                if (this.currentlyOpenTLEFItem.changedStartTime) {
-                    startTime = moment(this.currentlyOpenTLEFItem.changedStartTime);
+            // Standard case
+            if (this.currentlyOpenTLEFItem.item.hasUnsavedChanges) {
+                let startTime: moment.Moment = moment(this.currentlyOpenTLEFItem.item.actualStartTime);
+                let endTime: moment.Moment = moment(this.currentlyOpenTLEFItem.item.actualEndTime);
+                if (this.currentlyOpenTLEFItem.item.changedStartTime) {
+                    startTime = moment(this.currentlyOpenTLEFItem.item.changedStartTime);
                 }
-                if (this.currentlyOpenTLEFItem.changedEndTime) {
-                    endTime = moment(this.currentlyOpenTLEFItem.changedEndTime);
+                if (this.currentlyOpenTLEFItem.item.changedEndTime) {
+                    endTime = moment(this.currentlyOpenTLEFItem.item.changedEndTime);
                 }
                 const foundTimeItem = this.tlefItems.find(item => {
                     return item.actualStartTime.isSame(startTime) &&
@@ -258,16 +270,13 @@ export class TLEFController {
                 if (foundTimeItem) {
                     this._openTLEFItem(foundTimeItem, true);
                 } else {
-                    const foundIndexItem = this.tlefItems.find(item => item.itemIndex === this.currentlyOpenTLEFItem.itemIndex);
+                    const foundIndexItem = this.tlefItems.find(item => item.itemIndex === this.currentlyOpenTLEFItem.item.itemIndex);
                     this._openTLEFItem(foundIndexItem, true);
                 }
-            } else {
-                console.log('There were no unsaved changed.  what do?')
-            }
+            } else { }
         }
 
         /**
-             
              *
              *
              *  CASE:  NEW DELINEATOR or DELETED DELINEATOR
@@ -275,18 +284,18 @@ export class TLEFController {
              *
              *      IF THE CURRENT ITEM's TIMES HAVE BEEN AFFECTED (the change of delineator caused the item to shrink or expand)
              *          UPDATE NEW TIMES
-             * 
-             * 
+             *
+             *
              *  CASE: DRAWING
              *      IF there are changes to existing item, and
              *          IF drawing a new TLE does not interfere with the existing one that is open in terms of times,
              *              then prompt user to save changes.
              *          however, if there is an overlap of any kind, then we'll just obliterate it.
              *      ELSE start drawing
-             * 
+             *
              *  CASE:  CALENDAR
              *      IF there are changes prompt to save changes, then close
-             * 
+             *
              */
     }
     private _setItemCurrentlyOpen(itemIndex: number) {
@@ -299,13 +308,13 @@ export class TLEFController {
         });
     }
 
-    private _formClosed$: Subject<boolean> = new Subject();
-    private _closeForm() {
-        this._changesMadeTLE$.next(null);
-        this._currentlyOpenTLEFItem$.next(null);
-        this._formClosed$.next(true);
-    }
-    public get onFormClosed$(): Observable<boolean> { return this._formClosed$.asObservable(); }
+    // private _formClosed$: Subject<boolean> = new Subject();
+    // private _closeForm() {
+    //     this._changesMadeTLE$.next(null);
+    //     this._currentlyOpenTLEFItem$.next(null);
+    //     this._formClosed$.next(true);
+    // }
+    // public get onFormClosed$(): Observable<boolean> { return this._formClosed$.asObservable(); }
     /**
      * Subscribe to the toolbox Close (X) button.
      */

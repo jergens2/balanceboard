@@ -51,14 +51,14 @@ export class TimelogEntryFormComponent implements OnInit, OnDestroy {
 
   private _reload() {
     if (this.controller.currentlyOpenTLEFItem) {
-      this._formCase = this.controller.currentlyOpenTLEFItem.formCase;
-      if(this.controller.currentlyOpenTLEFItem.isTLEItem){
-        this._entryItem = this.controller.currentlyOpenTLEFItem.getInitialTLEValue();
+      this._formCase = this.controller.currentlyOpenTLEFItem.item.formCase;
+      if (this.controller.currentlyOpenTLEFItem.item.isTLEItem) {
+        this._entryItem = this.controller.currentlyOpenTLEFItem.item.getInitialTLEValue();
         // console.log(this._entryItem.toString);
-      }else{
+      } else {
         this._entryItem = null;
       }
-      
+
     } else {
       this._entryItem = null;
     }

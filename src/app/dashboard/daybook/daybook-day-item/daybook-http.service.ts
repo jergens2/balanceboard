@@ -76,8 +76,8 @@ export class DaybookHttpService {
   }
 
   public updateDaybookDayItems$(daybookDayItems: DaybookDayItem[]): Observable<DaybookDayItem[]> {
-    console.log(' $ updating daybook day items: ');
-    daybookDayItems.forEach(i => console.log("  ", i.dateYYYYMMDD, i.id,));
+    // console.log(' $ updating daybook day items: ');
+    // daybookDayItems.forEach(i => console.log("  ", i.dateYYYYMMDD, i.id,));
 
     const updatedItems$: Subject<DaybookDayItem[]> = new Subject();
     forkJoin([...daybookDayItems.map(item => this.updateDaybookDayItem$(item))]).subscribe({
@@ -114,32 +114,70 @@ export class DaybookHttpService {
       .pipe<DaybookDayItem[]>(map((response) => {
         return this._buildDaybookDayItemsFromResponse(response.data as any[]);
       })).subscribe((items: DaybookDayItem[]) => {
+        console.log("mhmm: items from DB", items)
+        const fullItemRange: DaybookDayItem[] = [];
+        let currentDateYYYYMMDD: string = rangeStartYYYYMMDD;
+        const daysDiff: number = moment(rangeEndYYYYMMDD).diff(moment(rangeStartYYYYMMDD), 'days');
+        console.log("Days diff is " + daysDiff)
+        for (let i = 0; i <= daysDiff; i++) {
+          currentDateYYYYMMDD = moment(rangeStartYYYYMMDD).add(i, 'days').format('YYYY-MM-DD');
+          console.log("Current date is now:  " + currentDateYYYYMMDD);
+          const foundItem = items.find(item => item.dateYYYYMMDD === currentDateYYYYMMDD);
+          if (foundItem) {
+            fullItemRange.push(foundItem);
+          } else {
+            fullItemRange.push(new DaybookDayItem(currentDateYYYYMMDD, false));
+          }
+
+        }
+
         const daysToSave: DaybookDayItem[] = [];
         if (saveDatesYYYYMMDD) {
+          console.log("Save dates: ", saveDatesYYYYMMDD)
           saveDatesYYYYMMDD.forEach(saveDateYYYYMMDD => {
+
             const foundExistingDayItem: DaybookDayItem = items.find(reponseItem => reponseItem.dateYYYYMMDD === saveDateYYYYMMDD);
             if (!foundExistingDayItem) {
+              console.log("no existing item: must save it.")
               daysToSave.push(new DaybookDayItem(saveDateYYYYMMDD));
             }
           });
         }
+        let sortedItems = fullItemRange.sort((d1, d2) => {
+          if (d1.dateYYYYMMDD < d2.dateYYYYMMDD) { return -1; }
+          else if (d1.dateYYYYMMDD > d2.dateYYYYMMDD) { return 1; }
+          else { return 0; }
+        });
         if (daysToSave.length > 0) {
+          console.log("We have items to save")
           this._saveMultipleItems$(daysToSave).subscribe((savedDays) => {
-            items = [...items, ...savedDays].sort((d1, d2) => {
+            savedDays.forEach(savedDay => {
+              const foundIndex = sortedItems.findIndex(item => item.dateYYYYMMDD === savedDay.dateYYYYMMDD);
+              if (foundIndex >= 0) {
+                sortedItems.splice(foundIndex, 1, savedDay);
+              } else {
+                sortedItems.push(savedDay);
+              }
+            });
+            sortedItems = sortedItems.sort((d1, d2) => {
               if (d1.dateYYYYMMDD < d2.dateYYYYMMDD) { return -1; }
               else if (d1.dateYYYYMMDD > d2.dateYYYYMMDD) { return 1; }
               else { return 0; }
             });
-            isComplete$.next(items);
+            isComplete$.next(sortedItems);
             isComplete$.complete();
-          })
+          });
         } else {
-          isComplete$.next(items);
+          // console.log("sortedItemsfrom : " + rangeStartYYYYMMDD + " to " + rangeEndYYYYMMDD);
+          // sortedItems.forEach(item => console.log(item.dateYYYYMMDD));
+          isComplete$.next(sortedItems);
           isComplete$.complete();
         }
       });
     return isComplete$.asObservable();
   }
+
+
 
   /**
    * this method is used by DaybookDisplayService to send a synchronous update command.
@@ -149,34 +187,44 @@ export class DaybookHttpService {
    *
    * This method performs an async action which optionally provides an observable to subscribe to.
    */
-  public getUpdate$(thisDateYYYYMMDD: string): Observable<boolean> {
+  public getUpdate$(thisDateYYYYMMDD: string, saveNew: boolean = false): Observable<boolean> {
     const isComplete$: Subject<boolean> = new Subject();
     const prevDateYYYYMMDD: string = moment(thisDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
     const nextDateYYYYMMDD: string = moment(thisDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-    this.getDaybookDayItemByRange$(prevDateYYYYMMDD, nextDateYYYYMMDD).subscribe(updatedItems => {
+    let saveNewItems: string[] = [];
+    if (saveNew) {
+      saveNewItems = [prevDateYYYYMMDD, thisDateYYYYMMDD, nextDateYYYYMMDD];
+    }
+    console.log("Saving new items");
+    saveNewItems.forEach(item => console.log(item))
+
+    console.log("Getting items from range: " + prevDateYYYYMMDD + " to " + nextDateYYYYMMDD)
+    this.getDaybookDayItemByRange$(prevDateYYYYMMDD, nextDateYYYYMMDD, saveNewItems).subscribe(updatedItems => {
+      console.log("Got items in range: ", updatedItems)
+      updatedItems.forEach(item => console.log(item.dateYYYYMMDD))
       const currentItems = this.dayItems;
+      let reSort = false;
       updatedItems.forEach(updatedItem => {
         const index = currentItems.findIndex(currentItem => currentItem.dateYYYYMMDD === updatedItem.dateYYYYMMDD);
-        let reSort = false;
         if (index > -1) {
           currentItems.splice(index, 1, updatedItem);
         } else {
           currentItems.push(updatedItem);
           reSort = true;
         }
-        if (reSort) {
-          const sortedItems = currentItems.sort((d1, d2) => {
-            if (d1.dateYYYYMMDD < d2.dateYYYYMMDD) { return -1; }
-            else if (d1.dateYYYYMMDD > d2.dateYYYYMMDD) { return 1; }
-            else { return 0; }
-          });
-          this._dayItems$.next(sortedItems);
-        } else {
-          this._dayItems$.next(currentItems);
-        }
-        isComplete$.next(true);
-        isComplete$.complete();
       });
+      if (reSort) {
+        const sortedItems = currentItems.sort((d1, d2) => {
+          if (d1.dateYYYYMMDD < d2.dateYYYYMMDD) { return -1; }
+          else if (d1.dateYYYYMMDD > d2.dateYYYYMMDD) { return 1; }
+          else { return 0; }
+        });
+        this._dayItems$.next(sortedItems);
+      } else {
+        this._dayItems$.next(currentItems);
+      }
+      isComplete$.next(true);
+      isComplete$.complete();
     });
     return isComplete$.asObservable();
   }
@@ -187,15 +235,35 @@ export class DaybookHttpService {
   public hasDateItems(dateYYYYMMDD: string): boolean {
     const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
     const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-    const hasPrevDate: boolean = this.dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD) !== null;
-    const hasThisDate: boolean = this.dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD) !== null;
-    const hasNextDate: boolean = this.dayItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD) !== null;
+    let hasPrevDate: boolean = false;
+    let hasThisDate: boolean = false;
+    let hasNextDate: boolean = false;
+    const foundPrevDate = this.dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD);
+    const foundThisDate = this.dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
+    const foundNextDate = this.dayItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD);
+    if (foundPrevDate) {
+      if (foundPrevDate.isSavedItem) {
+        hasPrevDate = true;
+      }
+    }
+    if (foundThisDate) {
+      if (foundThisDate.isSavedItem) {
+        hasThisDate = true;
+      }
+    }
+    if (foundNextDate) {
+      if (foundNextDate.isSavedItem) {
+        hasNextDate = true;
+      }
+    }
+    console.log("Has date items for ?", dateYYYYMMDD)
+    console.log(hasPrevDate, hasThisDate, hasNextDate)
     return hasPrevDate && hasThisDate && hasNextDate;
   }
 
 
   private _saveDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
-    // console.log(' $ Saving daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
+    console.log(' $ Saving daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
     const postUrl = serverUrl + '/api/daybook-day-item/create';
     daybookDayItem.userId = this._userId;
     return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape)

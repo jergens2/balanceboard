@@ -93,7 +93,7 @@ export class TlefModifyActivitiesComponent implements OnInit, OnDestroy {
 
   private _reload() {
     // console.log("tlef-activities.reload()", this.timelogEntry)
-    this._timelogEntry = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+    this._timelogEntry = this.daybookService.tlefController.currentlyOpenTLEFItem.item.getInitialTLEValue();
     // console.log("Start, end: " + this._timelogEntry.startTime.format('hh:mm a ') + " to " + this._timelogEntry.endTime.format('hh:mm a'))
     let maxPercent: number = 100;
     // console.log("this.timelog entry: " , this.timelogEntry, this._timelogEntryActivities)

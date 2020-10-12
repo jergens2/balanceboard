@@ -41,6 +41,10 @@ export class TimeInputComponent implements OnInit {
     this._timeInputForm = new FormGroup({
       timeValue: new FormControl(this.timeValue.format('HH:mm')),
     });
+    this._timeInput.timeValue$.subscribe(changed => {
+      // console.log("Time has changed, patching value ", changed.format('hh:mm a'))
+      this.timeInputForm.patchValue({ 'timeValue': changed.format('HH:mm') });
+    });
   }
 
   public onClickChangeTime(action: 'ADD' | 'SUBTRACT') {

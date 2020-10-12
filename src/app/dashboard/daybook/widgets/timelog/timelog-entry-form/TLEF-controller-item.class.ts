@@ -35,6 +35,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
         this._initialSleepValue = sleepEntry;
         this._initialTLEValue = timelogEntry;
         this._unsavedChangesTLE = timelogEntry;
+        this._unsavedChanges = false;
     }
 
     public get circleButton(): TLEFCircleButton { return this._circleButtonItem; }
@@ -77,7 +78,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
     private _unsavedChangesTLE: TimelogEntryItem;
     public setUnsavedTLEChanges(tle: TimelogEntryItem) {
         this._unsavedChanges = true;
-        console.log("Setting unsaved: " + tle.startTime.format('hh:mm a'))
+        // console.log("Setting unsaved: " + tle.startTime.format('hh:mm a'))
         const newTLE = new TimelogEntryItem(tle.startTime, tle.endTime);
         newTLE.timelogEntryActivities = tle.timelogEntryActivities;
         newTLE.embeddedNote = tle.embeddedNote;
@@ -90,6 +91,7 @@ export class TLEFControllerItem extends DaybookTimeScheduleItem {
 
     public get unsavedChangesTLE(): TimelogEntryItem { return this._unsavedChangesTLE; }
     public get hasUnsavedChanges(): boolean { return this._unsavedChanges; }
+    public clearUnsavedChanges() { this._unsavedChanges = false;}
     public get isDrawing(): boolean { return this._isDrawing; }
     public toString(): string {
 

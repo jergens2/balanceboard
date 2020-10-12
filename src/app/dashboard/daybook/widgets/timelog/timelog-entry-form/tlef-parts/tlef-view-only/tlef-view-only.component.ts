@@ -50,7 +50,7 @@ export class TlefViewOnlyComponent implements OnInit {
   ngOnInit() {
     this._update();
     this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((change)=>{
-      if(change && change.isTLEItem){
+      if(change && change.item.isTLEItem){
         this._update();
       }
       
@@ -59,7 +59,7 @@ export class TlefViewOnlyComponent implements OnInit {
 
   private _update(){
     if(this.daybookService.tlefController.currentlyOpenTLEFItem){
-      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.item.getInitialTLEValue();
       if(this._entryItem.embeddedNote){
         this._noteText = this._entryItem.embeddedNote;
       }else{

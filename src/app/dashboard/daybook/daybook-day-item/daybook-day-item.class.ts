@@ -15,15 +15,17 @@ import { DaybookSleepInputDataItem } from './data-items/daybook-sleep-input-data
 
 export class DaybookDayItem {
 
-    constructor(dateYYYYMMDD: string) {
+    constructor(dateYYYYMMDD: string, isSavedItem: boolean = true) {
         // console.log("CONSTRUCTING DAYBOOK ITEM: " + dateYYYYMMDD)
         const shape: DaybookDayItemHttpShape = Object.assign({}, blankDaybookItemHttpShape);
         shape.dateYYYYMMDD = dateYYYYMMDD;
         this.setHttpShape(shape);
+        this._isSavedItem = isSavedItem;
     }
 
     private _httpShape: DaybookDayItemHttpShape;
     private _isToday: boolean;
+    private _isSavedItem: boolean;
 
     private _scheduledActivities: DaybookDayItemScheduledActivity[] = [];
 
@@ -38,6 +40,7 @@ export class DaybookDayItem {
     // public set sleepDataItems(items: DaybookSleepInputDataItem[]) { this._httpShape.sleepInputItems = items; }
 
     public get httpShape(): DaybookDayItemHttpShape { return this._httpShape; }
+    public get isSavedItem(): boolean { return this._isSavedItem; }
 
     public get id(): string { return this.httpShape._id; }
     public get userId(): string { return this.httpShape.userId; }
@@ -55,20 +58,20 @@ export class DaybookDayItem {
     public set sleepInputItems(items: DaybookSleepInputDataItem[]) { this._httpShape.sleepInputItems = items; }
 
 
-    public get hasSleepItems(): boolean{
-        const minMs = 2* 1000* 60* 60; // 2 hours
+    public get hasSleepItems(): boolean {
+        const minMs = 2 * 1000 * 60 * 60; // 2 hours
         let sum = 0;
-        if(this.sleepInputItems.length === 0){
+        if (this.sleepInputItems.length === 0) {
             return false;
-        }else if(this.sleepInputItems.length > 1){
+        } else if (this.sleepInputItems.length > 1) {
             return true;
-        }else{
-            this.sleepInputItems.forEach((sleepItem)=>{
+        } else {
+            this.sleepInputItems.forEach((sleepItem) => {
                 sum += moment(sleepItem.endSleepTimeISO).diff(moment(sleepItem.startSleepTimeISO), 'milliseconds');
-            });        
+            });
             return sum > minMs;
         }
-        
+
     }
 
 

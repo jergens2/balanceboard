@@ -116,7 +116,8 @@ export class TimeSelectionColumn {
         } else if (availableItems.length > 1) {
             const foundIndex = availableItems.findIndex(availableItem => {
                 const sameStart = startTime.isSame(availableItem.schedItemStartTime);
-                const isDuring = startTime.isSameOrAfter(availableItem.schedItemStartTime) && endTime.isSameOrBefore(availableItem.schedItemEndTime);
+                const isDuring = startTime.isSameOrAfter(availableItem.schedItemStartTime)
+                    && endTime.isSameOrBefore(availableItem.schedItemEndTime);
                 if (sameStart || isDuring) {
                     return true;
                 } else {
@@ -181,35 +182,44 @@ export class TimeSelectionColumn {
      */
     private _getMergedAvailableItems(): DaybookTimeScheduleItem[] {
         const existingItems: DaybookTimeScheduleAvailableItem[] = this._availableItems;
-        console.log("EXISTING ITEMS: ", existingItems.length, existingItems)
+        // console.log("EXISTING ITEMS: ", existingItems.length, existingItems)
+        // existingItems.forEach(item => console.log(item.toString()))
+        // existingItems.forEach(item => console.log(item.startDelineator.toString(), item.endDelineator.toString()))
         const mergedItems: DaybookTimeScheduleItem[] = [];
         if (existingItems.length > 1) {
             const mergeDelineators: TimelogDelineator[] = this._displayDelineators.filter(item => {
                 return (item.delineatorType === TimelogDelineatorType.NOW
                     || item.delineatorType === TimelogDelineatorType.DAY_STRUCTURE);
             });
+            let item1 = existingItems[0].clone();
+            let lastItemAdded: boolean = false;
             for (let i = 1; i < existingItems.length; i++) {
-                const item1 = existingItems[i - 1].clone();
-                const item2 = existingItems[i].clone();
+                let item2 = existingItems[i].clone();
                 const itemsAreContinuous: boolean = item1.getRelationshipTo(item2) === TimeRangeRelationship.IMMEDIATELY_BEFORE;
                 let mergeOver: boolean = false;
                 if (itemsAreContinuous) {
-                    for (let j = 0; j < mergeDelineators.length; j++) {
-                        if (item2.schedItemStartTime.isSame(mergeDelineators[j].time)) {
-                            // console.log("ITS THE SAME, BABY!" + mergeDelineators[j].toString())
-                            mergeOver = true;
-                        }
+                    if (item2.startDelineator.delineatorType === TimelogDelineatorType.NOW ||
+                        item2.startDelineator.delineatorType === TimelogDelineatorType.DAY_STRUCTURE) {
+                        mergeOver = true;
                     }
                 }
+
                 if (mergeOver) {
                     item1.changeSchedItemEndTime(item2.schedItemEndTime);
-                    mergedItems.push(item1);
+                    // i++;
+                    lastItemAdded = false;
                 } else {
                     mergedItems.push(item1);
-                    mergedItems.push(item2);
+                    item1 = existingItems[i].clone();
+                    lastItemAdded = true;
                 }
             }
+            if (!lastItemAdded) {
+                mergedItems.push(item1);
+            }
         }
+        // console.log("RETURNING MERGED ITEMS: ")
+        // mergedItems.forEach(item => console.log(item.toString()))
         return mergedItems;
     }
 

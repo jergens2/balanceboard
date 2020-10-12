@@ -1,7 +1,7 @@
 import { DaybookTimeSchedule } from './daybook-time-schedule/daybook-time-schedule.class';
 import * as moment from 'moment';
 import { TLEFController } from '../widgets/timelog/timelog-entry-form/TLEF-controller.class';
-import { Subscription, Observable, BehaviorSubject } from 'rxjs';
+import { Subscription, Observable, BehaviorSubject, Subject } from 'rxjs';
 import { TimelogZoomController } from '../widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-controller.class';
 import { SleepCycleScheduleItemsBuilder } from '../sleep-manager/sleep-cycle/sleep-cycle-schedule-items-builder.class';
 import { DaybookTimeScheduleItem } from './daybook-time-schedule/daybook-time-schedule-item.class';
@@ -56,6 +56,7 @@ export class DaybookDisplayManager {
     private _displayDelineators: TimelogDelineator[] = [];
 
     private _currentlyOpenItemIndex: number = -1;
+    private _tlefChangeSub$: Subscription = new Subscription();
     // private _currentlyOpenItemIndex$: BehaviorSubject<number> = new BehaviorSubject(-1);
 
     public get displayItems(): DaybookTimeScheduleItem[] { return this._displayItems; }
@@ -89,7 +90,20 @@ export class DaybookDisplayManager {
             console.log("Error finding new current item index.")
         }
     }
+    public openWakeupTime() {
+        console.log("method disabled");
+    }
+    public openFallAsleepTime() {
+        console.log("method disabled")
+    }
     public openTLEDelineator(delineator: TimelogDelineator) { this.tlefController.openTLEDelineator(delineator); }
+    public openDrawnItem(startTime: moment.Moment, endTime: moment.Moment) {
+        const foundItem = this.displayItems.find(item => item.schedItemStartTime.isSame(startTime) && item.schedItemEndTime.isSame(endTime))
+        if (foundItem) {
+            console.log("Boo ya ka sha")
+            this.openItemByIndex(foundItem.itemIndex);
+        }
+    }
 
     public openItemByIndex(itemIndex: number) {
         console.log("Opening item: " + itemIndex);
@@ -126,12 +140,13 @@ export class DaybookDisplayManager {
             this.openItemByIndex(this._currentlyOpenItemIndex);
         }
     }
+    public reopenGridItem(index: number) { this.timelogDisplayGrid.openItemByIndex(index); }
     // public get currentlyOpenItemIndex(): number { return this._currentlyOpenItemIndex$.getValue(); }
     // public get currentlyOpenItemIndex$(): Observable<number> { return this._currentlyOpenItemIndex$.asObservable(); }
 
     public updateDisplayManager(timeSched: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder,
         action: DaybookUpdateAction) {
-        console.log('****** DaybookDisplayManager.updateDisplayManager()')
+        // console.log('****** DaybookDisplayManager.updateDisplayManager()')
         this._schedule = timeSched;
 
         // console.log("SCHEDULE ITEMS FOR UPDATING")
@@ -176,14 +191,20 @@ export class DaybookDisplayManager {
     }
     private _updateTlefController(action: DaybookUpdateAction) {
         // console.log('DaybookDisplayManager._updateTlefController()')
+        this._tlefChangeSub$.unsubscribe();
         if (!this._tlefController) {
             this._tlefController = new TLEFController(this._displayItems, this._activityService.activityTree);
         } else {
             this._tlefController.update(this._displayItems, action);
             if (this._tlefController.formIsOpen) {
-                this._reopenGridItem(this._tlefController.currentlyOpenTLEFItem.itemIndex);
+                this.reopenGridItem(this._tlefController.currentlyOpenTLEFItem.item.itemIndex);
             }
         }
+        this._tlefChangeSub$ = this._tlefController.currentlyOpenTLEFItem$.subscribe(changed => {
+            if (changed) {
+                this.reopenGridItem(changed.item.itemIndex);
+            }
+        });
     }
 
 
@@ -198,12 +219,16 @@ export class DaybookDisplayManager {
         // console.log('DISPLAY ITEMS BRAH');
         // this._displayItems.forEach(item => console.log('  ' + item.toString()));
     }
+
+    private _closed$: Subject<boolean> = new Subject();
+    public get closed$(): Observable<boolean> { return this._closed$.asObservable(); }
+    
     private _closeItem() {
+        this._closed$.next(true);
         this._currentlyOpenItemIndex = -1;
         this.tlefController.close();
         this.timelogDisplayGrid.closeItem();
     }
-    private _reopenGridItem(index: number) { this.timelogDisplayGrid.openItemByIndex(index); }
     private _setToolboxSub() {
         this._toolboxSub = this._toolboxService.onFormClosed$.subscribe(closed => this._closeItem());
     }

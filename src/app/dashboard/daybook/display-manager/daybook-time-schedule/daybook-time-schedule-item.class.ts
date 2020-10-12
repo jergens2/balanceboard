@@ -74,6 +74,7 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
         this._timeLimiter = new DTSItemTimeLimiter(startTime, endTime);
         this._actualStartTime = moment(startTime);
         this._actualEndTime = moment(endTime);
+        this._scheduleStatus = DaybookTimeScheduleStatus.AVAILABLE;
     }
 
     public setDisplayPercent(totalViewMs: number) { this._displayPercent = (this.durationMs / totalViewMs) * 100; }

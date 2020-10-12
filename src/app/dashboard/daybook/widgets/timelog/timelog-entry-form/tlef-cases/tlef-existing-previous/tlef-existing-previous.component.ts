@@ -47,8 +47,8 @@ export class TlefExistingPreviousComponent implements OnInit {
   }
 
   private _reload(){
-    if(this.daybookService.tlefController.currentlyOpenTLEFItem.isTLEItem){
-      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+    if(this.daybookService.tlefController.currentlyOpenTLEFItem.item.isTLEItem){
+      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.item.getInitialTLEValue();
       this._activities = this.entryItem.timelogEntryActivities.map(item => this._convertToActivity(item.activityTreeId));
     }
     

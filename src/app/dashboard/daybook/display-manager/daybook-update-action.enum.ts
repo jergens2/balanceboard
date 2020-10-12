@@ -5,4 +5,5 @@ export enum DaybookUpdateAction {
     CALENDAR = 'CALENDAR',
     CLOCK_MINUTE = 'CLOCK_MINUTE',
     DRAWING = 'DRAWING',
+    REFRESH = 'REFRESH',
 }

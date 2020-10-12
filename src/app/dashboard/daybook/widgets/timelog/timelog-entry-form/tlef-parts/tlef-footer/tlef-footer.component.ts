@@ -33,6 +33,9 @@ export class TlefFooterComponent implements OnInit {
   public get isNew(): boolean { return this._controller.isNew; }
 
   ngOnInit() {
+    // this.daybookService.tlefController.changesMadeTLE$.subscribe(what => {
+      
+    // })
   }
 
 
@@ -51,11 +54,11 @@ export class TlefFooterComponent implements OnInit {
 
   public onClickSaveChanges() {
     console.log("SAVING CHANGES!")
-    console.log(this.controller.currentlyOpenTLEFItem.unsavedChangesTLE.startTime.format('YYYY-MM-DD hh:mm a'))
+    console.log(this.controller.currentlyOpenTLEFItem.item.unsavedChangesTLE.startTime.format('YYYY-MM-DD hh:mm a'))
     // + " to " + this._changedTimelogEntryItem.endTime.format('YYYY-MM-DD hh:mm a'))
     const dateYYYYMMDD: string = this.controller.changesMadeTLE.startTime.format('YYYY-MM-DD');
-    const originalStart: moment.Moment = moment(this.controller.currentlyOpenTLEFItem.actualStartTime);
-    const originalEnd: moment.Moment = moment(this.controller.currentlyOpenTLEFItem.actualEndTime);
+    const originalStart: moment.Moment = moment(this.controller.currentlyOpenTLEFItem.item.actualStartTime);
+    const originalEnd: moment.Moment = moment(this.controller.currentlyOpenTLEFItem.item.actualEndTime);
     this.daybookService.daybookController.
       tleController.updateTimelogEntryItem(dateYYYYMMDD, originalStart, originalEnd, this.controller.changesMadeTLE);
     // console.log("Saving changes")
@@ -67,9 +70,9 @@ export class TlefFooterComponent implements OnInit {
   public onDelete() {
     // console.log("Deleting: ", this.entryItem.startTime.format('YYYY-MM-DD hh:mm a') 
     // + " to " + this.entryItem.endTime.format('YYYY-MM-DD hh:mm a') )
-    const dateYYYYMMDD: string = this.controller.currentlyOpenTLEFItem.schedItemStartTime.format('YYYY-MM-DD');
+    const dateYYYYMMDD: string = this.controller.currentlyOpenTLEFItem.item.schedItemStartTime.format('YYYY-MM-DD');
     this.daybookService.daybookController.tleController
-      .deleteTimelogEntryItem(dateYYYYMMDD, this._controller.currentlyOpenTLEFItem.getInitialTLEValue());
+      .deleteTimelogEntryItem(dateYYYYMMDD, this._controller.currentlyOpenTLEFItem.item.getInitialTLEValue());
     this.controller.saveChanges();
     this.daybookService.saveChanges$(DaybookUpdateAction.TIMELOG_ENTRY).subscribe(complete => this._close());
   }
@@ -88,6 +91,7 @@ export class TlefFooterComponent implements OnInit {
   }
 
   private _close() {
+    this.daybookService.clearDrawing();
     this.controller.close();
     this.toolboxService.closeTool();
   }

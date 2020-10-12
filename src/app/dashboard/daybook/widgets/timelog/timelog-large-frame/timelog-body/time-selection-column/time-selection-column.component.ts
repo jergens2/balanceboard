@@ -50,7 +50,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._rebuild();
     this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
-      console.log("REBUILDING AFTER UPDATE")
+      // console.log("REBUILDING AFTER UPDATE")
       this._rebuild();
     });
   }
@@ -90,7 +90,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   }
 
   private _startDragging(row: TimeSelectionRow) {
-    console.log("_startDragging " + row.startTime.format("hh:mm a") + " ---- " + row.sectionIndex)
+    // console.log("_startDragging " + row.startTime.format("hh:mm a") + " ---- " + row.sectionIndex)
     this._startRow = row;
     this._activateSection(this._startRow);
     // this._startRow.isDrawing
@@ -233,7 +233,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   private _createNewTimelogEntry(startTime: moment.Moment, endTime: moment.Moment) {
     const drawStartDel = new TimelogDelineator(startTime, TimelogDelineatorType.DRAWING_TLE_START);
     const drawEndDel = new TimelogDelineator(endTime, TimelogDelineatorType.DRAWING_TLE_END);
-    this.daybookDisplayService.onCreateNewTimelogEntry(drawStartDel, drawEndDel);
+    this.daybookDisplayService.onCreateNewDrawnTimelogEntry(drawStartDel, drawEndDel);
     this._reset();
   }
 

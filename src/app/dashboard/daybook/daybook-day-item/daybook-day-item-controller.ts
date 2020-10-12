@@ -10,7 +10,8 @@ export class DaybookDayItemController {
      * Expects an array containing prevDayItem, thisDayItem, nextDayItem)
      */
     constructor(dateYYYYMMDD: string, dayItems: DaybookDayItem[]) {
-        console.log('Constructing daybook manager');
+        console.log('Constructing daybook manager for date: ' + dateYYYYMMDD);
+        dayItems.forEach(i => console.log("   " + i.dateYYYYMMDD))
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._thisDayYYYYMMDD = this._dateYYYYMMDD;
         this._construct(dateYYYYMMDD, dayItems);
@@ -41,13 +42,13 @@ export class DaybookDayItemController {
     public get thisDateYYYYMMDD(): string { return this.dateYYYYMMDD; }
     public get nextDateYYYYMMDD(): string { return moment(this.dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'); }
 
-    public get isToday(): boolean { return this._thisDay.dateYYYYMMDD === moment().format('YYYY-MM-DD'); }
-    public get isTomorrow(): boolean { return this._thisDay.dateYYYYMMDD === moment().add(1, 'days').format('YYYY-MM-DD'); }
-    public get isYesterday(): boolean { return this._thisDay.dateYYYYMMDD === moment().subtract(1, 'days').format('YYYY-MM-DD'); }
-    public get isAfterToday(): boolean { return this._thisDay.dateYYYYMMDD > moment().format('YYYY-MM-DD'); }
-    public get isBeforeToday(): boolean { return this._thisDay.dateYYYYMMDD < moment().format('YYYY-MM-DD'); }
-    public get controllerStartTime(): moment.Moment { return moment(this._thisDay.dateYYYYMMDD).startOf('day').subtract(1, 'days'); }
-    public get controllerEndTime(): moment.Moment { return moment(this._thisDay.dateYYYYMMDD).startOf('day').add(2, 'days'); }
+    public get isToday(): boolean { return this.dateYYYYMMDD === moment().format('YYYY-MM-DD'); }
+    public get isTomorrow(): boolean { return this.dateYYYYMMDD === moment().add(1, 'days').format('YYYY-MM-DD'); }
+    public get isYesterday(): boolean { return this.dateYYYYMMDD === moment().subtract(1, 'days').format('YYYY-MM-DD'); }
+    public get isAfterToday(): boolean { return this.dateYYYYMMDD > moment().format('YYYY-MM-DD'); }
+    public get isBeforeToday(): boolean { return this.dateYYYYMMDD < moment().format('YYYY-MM-DD'); }
+    public get controllerStartTime(): moment.Moment { return moment(this.dateYYYYMMDD).startOf('day').subtract(1, 'days'); }
+    public get controllerEndTime(): moment.Moment { return moment(this.dateYYYYMMDD).startOf('day').add(2, 'days'); }
 
     public get previousDay(): DaybookDayItem { return this._prevDay; }
     public get thisDay(): DaybookDayItem { return this._thisDay; }
@@ -96,11 +97,16 @@ export class DaybookDayItemController {
         } else {
             isValid = false;
         }
+        if (!isValid) {
+            console.log("Day items: ")
+            dayItems.forEach(item => console.log(item.dateYYYYMMDD, item))
+        }
+
         return isValid;
     }
 
     private _subs: Subscription[] = [];
-    private _subscribeToChanges(){
+    private _subscribeToChanges() {
         this._subs = [
             this._timeDelineatorController.saveChanges$.subscribe((delineators: moment.Moment[]) => {
                 this.thisDay.timeDelineators = delineators;

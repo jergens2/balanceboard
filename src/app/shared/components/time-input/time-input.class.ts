@@ -39,12 +39,12 @@ export class TimeInput {
         if (maxValue) {
             this._maxValue = moment(maxValue);
         } else {
-            this._maxValue = moment(timeValue).add(12, 'hours');
+            this._maxValue = moment(timeValue).add(24, 'hours');
         }
         if (minValue) {
             this._minValue = moment(minValue);
         } else {
-            this._minValue = moment(timeValue).subtract(12, 'hours');
+            this._minValue = moment(timeValue).subtract(24, 'hours');
         }
         this._timeValue = moment(timeValue);
         this._timeValue$ = new Subject();
@@ -59,9 +59,14 @@ export class TimeInput {
         this.isBold = isBold;
     }
 
+    public changeUpperLimit(newLimit: moment.Moment) { this._maxValue = moment(newLimit); }
+    public changeLowerLimit(newLimit: moment.Moment) { this._minValue = moment(newLimit); }
+
     public changeTime(time: moment.Moment) {
         this._timeValue = moment(time);
         this._timeValue$.next(time);
     }
 
 }
+
+

@@ -15,7 +15,7 @@ export class TlefNewCurrentFutureComponent implements OnInit {
   @Input() public set controller(controller: TLEFController) { this._controller = controller; }
   public get controller(): TLEFController { return this._controller; }
 
-  public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.getInitialTLEValue(); }
+  public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.item.getInitialTLEValue(); }
 
   ngOnInit() {
   }

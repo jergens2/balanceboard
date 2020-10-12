@@ -43,7 +43,7 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
     this._setEntryItem();
     this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((tlefItem) => {
       if (tlefItem) {
-        if (tlefItem.isTLEItem) {
+        if (tlefItem.item.isTLEItem) {
           this._setEntryItem();
         }
       }
@@ -57,7 +57,7 @@ export class TlefNewOrModifyComponent implements OnInit, OnDestroy {
 
   private _setEntryItem() {
     if (this.daybookService.tlefController.currentlyOpenTLEFItem) {
-      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialTLEValue();
+      this._entryItem = this.daybookService.tlefController.currentlyOpenTLEFItem.item.getInitialTLEValue();
       this._initialActivities = [];
       // console.log("Setting entry itme in NEW OR MODIFY component " , this._entryItem)
       if (this._entryItem) {

@@ -16,7 +16,7 @@ export class TlefExistingFutureComponent implements OnInit {
   private _controller: TLEFController;
   @Input() public set controller(controller: TLEFController) { 
     this._controller = controller;
-    this._initialValue = this._controller.currentlyOpenTLEFItem.getInitialTLEValue();
+    this._initialValue = this._controller.currentlyOpenTLEFItem.item.getInitialTLEValue();
   }
   public get controller(): TLEFController { return this._controller; }
 

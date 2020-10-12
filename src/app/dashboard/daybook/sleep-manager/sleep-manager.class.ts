@@ -18,8 +18,6 @@ export class SleepManager {
     /**
      * This class is the master class for Sleep data.
      *
-     * Flow goes like this:
-     *
      */
     constructor(data: SleepCycleData, dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration) {
         this._sleepData = data;
@@ -123,7 +121,7 @@ export class SleepManager {
      */
     public getSleepCycleForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): SleepCycleScheduleItemsBuilder {
         const builder: SleepCycleBuilder = new SleepCycleBuilder();
-        console.log("BUILDER THING.  Day items: ", dayItems)
+        // console.log("BUILDER THING.  Day items: ", dayItems)
         return builder.buildSleepCycleForDate(dateYYYYMMDD, dayItems, this._appConfig);
     }
 

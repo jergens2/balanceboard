@@ -40,7 +40,8 @@ export class DaybookTimeScheduleBuilder {
      * @param daybookController
      */
     public buildDaybookSchedule(dateYYYYMMDD: string, startTime: moment.Moment, endTime: moment.Moment,
-        sleepCycle: SleepCycleScheduleItemsBuilder, daybookController: DaybookDayItemController): DaybookTimeSchedule {
+        sleepCycle: SleepCycleScheduleItemsBuilder, daybookController: DaybookDayItemController,
+        drawnItem?: DaybookTimeScheduleActiveItem): DaybookTimeSchedule {
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._startTime = startTime;
         this._endTime = endTime;
@@ -50,6 +51,9 @@ export class DaybookTimeScheduleBuilder {
         const activeItems: DaybookTimeScheduleActiveItem[] = daybookController.timelogEntryItems.map(item => {
             return new DaybookTimeScheduleActiveItem(item.startTime, item.endTime, item.toDataEntryItem());
         });
+        if (drawnItem) {
+            activeItems.push(drawnItem);
+        }
         // console.log("***   SLEEP ITEMS ARE:")
         // sleepItems.forEach(si => console.log("   " + si.toString()))
         // console.log("***   ACTIVE TLE ITEMS ARE:")

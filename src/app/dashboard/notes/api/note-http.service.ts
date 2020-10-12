@@ -65,12 +65,15 @@ export class NoteHttpService {
         'Content-Type': 'application/json'
       })
     };
+    const before = moment();
+    // console.log("starting notes...")
     this.httpClient.get<{ message: string, data: any }>(requestUrl, httpOptions)
       .pipe<NotebookEntry[]>(map((response: { message: string, data: any[] }) => {
         return response.data.map(d => NoteBuilder.buildNoteFromData(d));
       }))
       .subscribe({
         next: (notes) => {
+          // console.log("It took this many MS to build notes: ", moment().diff(before, 'milliseconds'))
           this._allNotes$.next(notes);
           isComplete$.next(true);
         },

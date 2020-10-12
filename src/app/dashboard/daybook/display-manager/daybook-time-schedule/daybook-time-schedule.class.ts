@@ -105,11 +105,6 @@ export class DaybookTimeSchedule extends TimeSchedule {
         return this._timeScheduleItems.filter(item => item.scheduleStatus === DaybookTimeScheduleStatus.AVAILABLE);
     }
 
-    // private _findItemAtTime(timeToCheck: moment.Moment): DaybookTimeScheduleItem {
-    //     return this._timeScheduleItems.find(item => timeToCheck.isSameOrAfter(item.startTime) && timeToCheck.isBefore(item.endTime))
-    // }
-
-
     public onCreateNewTimelogEntry(drawStartDel: TimelogDelineator, drawEndDel: TimelogDelineator) {
         console.log("onCreateNewTimelogEntry() METHOD DISABLED")
     }

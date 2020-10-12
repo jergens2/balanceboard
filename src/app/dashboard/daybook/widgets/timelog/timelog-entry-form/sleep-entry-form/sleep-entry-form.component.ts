@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { Subscription, from } from 'rxjs';
 import { DurationString } from '../../../../../../shared/time-utilities/duration-string.class';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faBed } from '@fortawesome/free-solid-svg-icons'; 
+import { faBed } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-sleep-entry-form',
@@ -55,9 +55,9 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
       //     this._update();
       //   }
       // }),
-      this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((item)=>{
-        if(item){
-          if(item.isSleepItem){
+      this.daybookService.tlefController.currentlyOpenTLEFItem$.subscribe((update) => {
+        if (update) {
+          if (update.item.isSleepItem) {
             this._update();
           }
         }
@@ -76,16 +76,16 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
 
 
   private _update() {
-    if(this.daybookService.tlefController.formIsOpen){
-      this._sleepItem = this.daybookService.tlefController.currentlyOpenTLEFItem.getInitialSleepValue();
+    if (this.daybookService.tlefController.formIsOpen) {
+      this._sleepItem = this.daybookService.tlefController.currentlyOpenTLEFItem.item.getInitialSleepValue();
 
       this._wakeupTime = moment(this.daybookService.displayManager.wakeupTime);
       this._fallAsleepTime = moment(this.daybookService.displayManager.fallAsleepTime);
-  
+
       this._setNewWakeupTime = moment(this._wakeupTime);
       this._setNewFallAsleepTime = moment(this._fallAsleepTime);
     }
-    
+
   }
 
 
@@ -141,10 +141,10 @@ export class SleepInputFormComponent implements OnInit, OnDestroy {
   }
 
 
-  public onClickFallAsleepTime(){
+  public onClickFallAsleepTime() {
     this._isEditingFallAsleepTime = true;
   }
-  public onCloseFallAsleepTime(){
+  public onCloseFallAsleepTime() {
     this._isEditingFallAsleepTime = false;
   }
 
