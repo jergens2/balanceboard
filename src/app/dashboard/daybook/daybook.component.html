@@ -1,55 +1,36 @@
 <div class="daybook-root">
-  <div class="daybook-header font-family-lexend">
-    {{ daybookHeader }}
-  </div>
-<!-- 
-  <div class="layout-flex" *ngIf="daybookIsLoading">
-    <div class="spinner-container">
-      <fa-icon [icon]="faSpinner" [spin]="true"></fa-icon>
+  <div class="daybook-header font-family-lexend" (mouseenter)="onMouseEnterHeader()"
+    (mouseleave)="onMouseLeaveHeader()">
+    <div class="header-button-container">
+      <fa-icon class="icon-button" [icon]="faArrowLeft" (click)="onClickDayBack()" *ngIf="mouseOverHeader"></fa-icon>
     </div>
-  </div> -->
+    <div style="flex-grow: 2; display:flex;flex-direction: row; justify-content: center;">
+      <span style="font-size:1.4em;">{{ headerDate }}</span> <span
+        style="margin-left: 15px;">{{ headerDaysDiff }}</span>
+    </div>
+    <div class="header-button-container">
+      <fa-icon class="icon-button" [icon]="faArrowRight" (click)="onClickDayForward()" *ngIf="mouseOverHeader">
+      </fa-icon>
+    </div>
+  </div>
 
   <div class="layout-flex-container">
-
-
     <div class="layout-flex">
-
-
-
       <div class="main-widget">
-        <app-timelog-large-frame *ngIf="widgetIsTimelog" [ngStyle]="primaryWidget.ngStyle"
-          class="main-widget-item" [ngClass]="primaryWidget.ngClass"></app-timelog-large-frame>
-        <app-calendar-large *ngIf="widgetIsCalendar" [ngStyle]="primaryWidget.ngStyle"
-          class="main-widget-item" [ngClass]="primaryWidget.ngClass"></app-calendar-large>
-        <app-daily-task-list-large *ngIf="widgetIsDTL" [ngClass]="primaryWidget.ngStyle"
-          class="main-widget-item" [ngClass]="primaryWidget.ngClass"></app-daily-task-list-large>
-        <app-sleep-profile-large *ngIf="widgetIsSleepProfile" [ngStyle]="primaryWidget.ngStyle"
-          class="main-widget-item" [ngClass]="primaryWidget.ngClass"></app-sleep-profile-large>
-        <!-- <div class="main-widget-item spinner-container" *ngIf="serviceIsLoading">
-          <app-spinner style="width: 150px; height: 150px;"></app-spinner>
-        </div> -->
+        <app-timelog-large-frame *ngIf="widgetIsTimelog" [ngStyle]="primaryWidget.ngStyle" class="main-widget-item"
+          [ngClass]="primaryWidget.ngClass"></app-timelog-large-frame>
+        <app-calendar-large *ngIf="widgetIsCalendar" [ngStyle]="primaryWidget.ngStyle" class="main-widget-item"
+          [ngClass]="primaryWidget.ngClass"></app-calendar-large>
+        <app-daily-task-list-large *ngIf="widgetIsDTL" [ngClass]="primaryWidget.ngStyle" class="main-widget-item"
+          [ngClass]="primaryWidget.ngClass"></app-daily-task-list-large>
+        <app-sleep-profile-large *ngIf="widgetIsSleepProfile" [ngStyle]="primaryWidget.ngStyle" class="main-widget-item"
+          [ngClass]="primaryWidget.ngClass"></app-sleep-profile-large>
       </div>
-
-
-
-
       <div class="sidebar" *ngIf="appScreenSize > 1">
-
         <div class="small-widget" *ngIf="!calendarWidget.isExpanded" (mouseenter)="calendarWidget.onMouseEnterWidget()"
           (mouseleave)="calendarWidget.onMouseLeaveWidget()">
-          <!-- <div class="small-widget-header">
-            <div class="swh-buffer"></div>
-            <div>Calendar</div>
-            <div class="swh-buffer">
-              <fa-icon [icon]="faExpand" *ngIf="calendarWidget.mouseOver" class="icon-button"
-                (click)="calendarWidget.onClickExpand()"></fa-icon>
-            </div>
-          </div> -->
-          <!-- <div class="small-widget-body"> -->
           <app-calendar-small (expand)="calendarWidget.onClickExpand()"></app-calendar-small>
-          <!-- </div> -->
         </div>
-
         <div class="small-widget" *ngIf="!dailyTaskListWidget.isExpanded"
           (mouseenter)="dailyTaskListWidget.onMouseEnterWidget()"
           (mouseleave)="dailyTaskListWidget.onMouseLeaveWidget()">
@@ -65,7 +46,6 @@
             <app-daily-task-list-small></app-daily-task-list-small>
           </div>
         </div>
-
         <div class="small-widget" *ngIf="!timelogWidget.isExpanded" (mouseenter)="timelogWidget.onMouseEnterWidget()"
           (mouseleave)="timelogWidget.onMouseLeaveWidget()">
           <div class="small-widget-header">
@@ -91,28 +71,12 @@
           </div>
           <app-sleep-profile-widget class="small-widget-body"></app-sleep-profile-widget>
         </div>
-
         <div class="small-widget">
           <div class="small-widget-header" style="justify-content: center;">
             Calendar items
           </div>
-          
         </div>
-
-
-        <!-- <div class="small-widget">
-          <div class="small-widget-header" style="justify-content: center;">
-            Weight Log
-          </div>
-          <app-weight-log-entry class="small-widget-body"></app-weight-log-entry>
-        </div> -->
-
-
-
       </div>
     </div>
-
-    <!-- <div class="layout-flex-bottom-buffer"></div> -->
-
   </div>
 </div>

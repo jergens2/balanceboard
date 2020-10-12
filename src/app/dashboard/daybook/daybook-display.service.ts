@@ -35,7 +35,7 @@ export class DaybookDisplayService {
   private _widgetChanged$: BehaviorSubject<DaybookWidgetType> = new BehaviorSubject(DaybookWidgetType.TIMELOG);
 
   private _clock$: BehaviorSubject<moment.Moment>;
-  private _displayUpdated$: Subject<boolean> = new Subject();
+  private _displayUpdated$: Subject<string> = new Subject();
 
   private _daybookSchedule: DaybookTimeSchedule;
   private _daybookController: DaybookDayItemController;
@@ -56,7 +56,7 @@ export class DaybookDisplayService {
   public get widgetChanged$(): Observable<DaybookWidgetType> { return this._widgetChanged$.asObservable(); }
   public get widgetChanged(): DaybookWidgetType { return this._widgetChanged$.getValue(); }
 
-  public get displayUpdated$(): Observable<boolean> { return this._displayUpdated$.asObservable(); }
+  public get displayUpdated$(): Observable<string> { return this._displayUpdated$.asObservable(); }
 
   public get displayStartTime(): moment.Moment { return this._daybookDisplayManager.displayStartTime; }
   public get displayEndTime(): moment.Moment { return this._daybookDisplayManager.displayEndTime; }
@@ -102,7 +102,7 @@ export class DaybookDisplayService {
   public onCreateNewDrawnTimelogEntry(drawStartDel: TimelogDelineator, drawEndDel: TimelogDelineator) {
     this._currentlyDrawing = true;
     const drawnItem: DaybookTimeScheduleActiveItem = new DaybookTimeScheduleActiveItem(drawStartDel.time, drawEndDel.time, null);
-    this._updateDisplay(this.todayYYYYMMDD, DaybookUpdateAction.DRAWING, drawnItem);
+    this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.DRAWING, drawnItem);
     this.displayManager.openDrawnItem(drawStartDel.time, drawEndDel.time);
     // this.tlefController.onCreateNewDrawnTimelogEntry(drawStartDel.time, drawEndDel.time);
   }
@@ -120,7 +120,6 @@ export class DaybookDisplayService {
     this._closedSub.unsubscribe();
     this._closedSub = this._daybookDisplayManager.closed$.subscribe(closed => {
       this._currentlyDrawing = false;
-      console.log("closed hm")
       this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
     });
     this._startClock();
@@ -168,7 +167,7 @@ export class DaybookDisplayService {
       this._daybookController = controller;
       this._daybookDisplayManager.updateDisplayManager(schedule, sleepCycle, action);
 
-      this._displayUpdated$.next(true);
+      this._displayUpdated$.next(dateYYYYMMDD);
     }
 
   }

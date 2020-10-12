@@ -10,14 +10,12 @@ export class DaybookDayItemController {
      * Expects an array containing prevDayItem, thisDayItem, nextDayItem)
      */
     constructor(dateYYYYMMDD: string, dayItems: DaybookDayItem[]) {
-        console.log('Constructing daybook manager for date: ' + dateYYYYMMDD);
-        dayItems.forEach(i => console.log("   " + i.dateYYYYMMDD))
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._thisDayYYYYMMDD = this._dateYYYYMMDD;
         this._construct(dateYYYYMMDD, dayItems);
     }
 
-    private _dateYYYYMMDD: string = '';
+    private _dateYYYYMMDD: string;
     private _prevDay: DaybookDayItem;
     private _thisDay: DaybookDayItem;
     private _nextDay: DaybookDayItem;

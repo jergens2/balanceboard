@@ -88,7 +88,6 @@ export class DaybookHttpService {
     return updatedItems$.asObservable();
   }
 
-
   /**
    *  get all daybook items from database for this user
    */
@@ -99,7 +98,6 @@ export class DaybookHttpService {
         return this._buildDaybookDayItemsFromResponse(response.data as any[]);
       }));
   }
-
 
   /**
    *  get an array of all daybook Day Items in range.
@@ -114,31 +112,23 @@ export class DaybookHttpService {
       .pipe<DaybookDayItem[]>(map((response) => {
         return this._buildDaybookDayItemsFromResponse(response.data as any[]);
       })).subscribe((items: DaybookDayItem[]) => {
-        console.log("mhmm: items from DB", items)
         const fullItemRange: DaybookDayItem[] = [];
         let currentDateYYYYMMDD: string = rangeStartYYYYMMDD;
         const daysDiff: number = moment(rangeEndYYYYMMDD).diff(moment(rangeStartYYYYMMDD), 'days');
-        console.log("Days diff is " + daysDiff)
         for (let i = 0; i <= daysDiff; i++) {
           currentDateYYYYMMDD = moment(rangeStartYYYYMMDD).add(i, 'days').format('YYYY-MM-DD');
-          console.log("Current date is now:  " + currentDateYYYYMMDD);
           const foundItem = items.find(item => item.dateYYYYMMDD === currentDateYYYYMMDD);
           if (foundItem) {
             fullItemRange.push(foundItem);
           } else {
             fullItemRange.push(new DaybookDayItem(currentDateYYYYMMDD, false));
           }
-
         }
-
         const daysToSave: DaybookDayItem[] = [];
         if (saveDatesYYYYMMDD) {
-          console.log("Save dates: ", saveDatesYYYYMMDD)
           saveDatesYYYYMMDD.forEach(saveDateYYYYMMDD => {
-
             const foundExistingDayItem: DaybookDayItem = items.find(reponseItem => reponseItem.dateYYYYMMDD === saveDateYYYYMMDD);
             if (!foundExistingDayItem) {
-              console.log("no existing item: must save it.")
               daysToSave.push(new DaybookDayItem(saveDateYYYYMMDD));
             }
           });
@@ -149,7 +139,6 @@ export class DaybookHttpService {
           else { return 0; }
         });
         if (daysToSave.length > 0) {
-          console.log("We have items to save")
           this._saveMultipleItems$(daysToSave).subscribe((savedDays) => {
             savedDays.forEach(savedDay => {
               const foundIndex = sortedItems.findIndex(item => item.dateYYYYMMDD === savedDay.dateYYYYMMDD);
@@ -177,8 +166,6 @@ export class DaybookHttpService {
     return isComplete$.asObservable();
   }
 
-
-
   /**
    * this method is used by DaybookDisplayService to send a synchronous update command.
    *
@@ -195,13 +182,7 @@ export class DaybookHttpService {
     if (saveNew) {
       saveNewItems = [prevDateYYYYMMDD, thisDateYYYYMMDD, nextDateYYYYMMDD];
     }
-    console.log("Saving new items");
-    saveNewItems.forEach(item => console.log(item))
-
-    console.log("Getting items from range: " + prevDateYYYYMMDD + " to " + nextDateYYYYMMDD)
     this.getDaybookDayItemByRange$(prevDateYYYYMMDD, nextDateYYYYMMDD, saveNewItems).subscribe(updatedItems => {
-      console.log("Got items in range: ", updatedItems)
-      updatedItems.forEach(item => console.log(item.dateYYYYMMDD))
       const currentItems = this.dayItems;
       let reSort = false;
       updatedItems.forEach(updatedItem => {
@@ -256,8 +237,6 @@ export class DaybookHttpService {
         hasNextDate = true;
       }
     }
-    console.log("Has date items for ?", dateYYYYMMDD)
-    console.log(hasPrevDate, hasThisDate, hasNextDate)
     return hasPrevDate && hasThisDate && hasNextDate;
   }
 
