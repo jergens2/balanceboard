@@ -14,20 +14,20 @@ export class TimelogLargeFrameComponent implements OnInit {
 
   constructor(private daybookService: DaybookDisplayService) { }
 
+  public faCog = faCog;
+  public faEye = faEye;
+  public faAngleRight = faAngleRight;
+  public faAngleLeft = faAngleLeft;
+
   ngOnInit() {
   }
 
-
-  public onClickHeaderItem(item: string){
+  public onClickHeaderItem(item: string) {
     console.log("header item clicked: ", item);
   }
 
-  public get showTimelogBody(): boolean { return this.daybookService.currentZoom.zoomType === TimelogZoomType.AWAKE_PERIOD; } 
   public get showTimelogList(): boolean { return this.daybookService.currentZoom.zoomType === TimelogZoomType.LIST_VIEW; }
+  public get showTimelogBody(): boolean { return !this.showTimelogList; }
 
-  
-  faCog = faCog;
-  faEye = faEye;
-  faAngleRight = faAngleRight;
-  faAngleLeft = faAngleLeft;
+
 }

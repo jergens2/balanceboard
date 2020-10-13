@@ -53,19 +53,15 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
     public get isAvailableItem(): boolean { return this.scheduleStatus === DaybookTimeScheduleStatus.AVAILABLE; }
     // public set scheduleStatus(status: DaybookTimeScheduleStatus) { this._scheduleStatus = status; }
     public get itemIndex(): number { return this._itemIndex; }
-    public setItemIndex(index: number, previousItem?: DaybookTimeScheduleItem) {
-        this._itemIndex = index;
-        // if (previousItem && this.isAvailableItem) {
-        //     if (!previousItem.isAvailableItem) {
-        //         this._startDelineator = previousItem.endDelineator;
-        //     }
-        // }
-    }
+    public setItemIndex(index: number, previousItem?: DaybookTimeScheduleItem) { this._itemIndex = index; }
     public setTimeLimiter(timeLimiter: DTSItemTimeLimiter) {
         this._timeLimiter = timeLimiter;
         this._actualStartTime = moment(this._timeLimiter.startTime);
         this._actualEndTime = moment(this._timeLimiter.endTime);
     }
+    public setStatus(status: DaybookTimeScheduleStatus) { this._scheduleStatus = status; }
+    public setTimelogEntry(timelogEntry: TimelogEntryItem) { this._timelogEntry = timelogEntry; }
+    public setSleepEntry(sleepEntry: SleepEntryItem) { this._sleepEntry = sleepEntry; }
 
     constructor(startTime: moment.Moment, endTime: moment.Moment) {
         super(startTime.toISOString(), endTime.toISOString(), startTime.utcOffset(), endTime.utcOffset());
@@ -106,6 +102,10 @@ export class DaybookTimeScheduleItem extends TimeScheduleItem {
         clonedItem.endDelineator = new TimelogDelineator(this.endDelineator.time,
             this.endDelineator.delineatorType, this.endDelineator.scheduleIndex);
         clonedItem.setItemIndex(this.itemIndex);
+        clonedItem.setStatus(this.scheduleStatus);
+        clonedItem.setTimelogEntry(this.timelogEntry);
+        clonedItem.setSleepEntry(this.sleepEntry);
+        clonedItem.setTimeLimiter(this.timeLimiter);
         return clonedItem;
     }
 

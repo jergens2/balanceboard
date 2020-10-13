@@ -67,7 +67,10 @@ export class DaybookDisplayService {
   public get daybookSchedule(): DaybookTimeSchedule { return this._daybookSchedule; }
   public get displayManager(): DaybookDisplayManager { return this._daybookDisplayManager; }
 
-  public onZoomChanged(zoom: TimelogZoomType) { this.displayManager.onZoomChanged(zoom); }
+  public onZoomChanged(zoom: TimelogZoomType) {
+    this.displayManager.onZoomChanged(zoom);
+    this._displayUpdated$.next(this.activeDateYYYYMMDD);
+  }
 
   public changeCalendarDate$(dateYYYYMMDD: string): Observable<boolean> {
     const isComplete$: Subject<boolean> = new Subject();
@@ -137,7 +140,7 @@ export class DaybookDisplayService {
   }
 
   private _updateDisplay(dateYYYYMMDD: string, action: DaybookUpdateAction, drawnItem?: DaybookTimeScheduleActiveItem) {
-    console.log("updating display: " + dateYYYYMMDD, action)
+    // console.log("updating display: " + dateYYYYMMDD, action)
     let doUpdate: boolean = true;
     if (action === DaybookUpdateAction.CLOCK_MINUTE && this.currentlyDrawing) {
       doUpdate = false;
@@ -200,7 +203,6 @@ export class DaybookDisplayService {
         }
       }),
       timer(msToNextHttpUpdate, 20000).subscribe(tick => {
-        console.log("Getting update for active date:  " + this.activeDateYYYYMMDD)
         this.httpService.getUpdate$(this.activeDateYYYYMMDD);
       }),
     ];

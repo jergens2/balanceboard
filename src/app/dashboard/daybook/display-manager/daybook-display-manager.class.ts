@@ -146,43 +146,36 @@ export class DaybookDisplayManager {
 
     public updateDisplayManager(timeSched: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder,
         action: DaybookUpdateAction) {
-        // console.log('****** DaybookDisplayManager.updateDisplayManager()')
         this._schedule = timeSched;
-
-        // console.log("SCHEDULE ITEMS FOR UPDATING")
-        // this._schedule.timeScheduleItems.forEach(item => console.log("    "+ item.toString()))
-
         this._sleepCycle = sleepCycle;
         if (!this._zoomController) {
             this._zoomController = new TimelogZoomController(timeSched, sleepCycle);
         } else {
             this._zoomController.update(timeSched, sleepCycle);
         }
-        // console.log("DISPLAY MS IS " + this.displayDurationMs)
-        // console.log("DISPLAY TIME IS " + this.displayStartTime.format('hh:mm a') + " to " + this.displayEndTime.format('hh:mm a'))
-        this._displayItems = this._schedule.getItemsInRange(this.displayStartTime, this.displayEndTime);
+        this._update(action);
+    }
+    public onZoomChanged(zoom: TimelogZoomType) {
+        this._zoomController.setZoom(zoom);
+        this._update(DaybookUpdateAction.REFRESH);
+    }
+
+    private _update(action: DaybookUpdateAction) {
+        const startTime: moment.Moment = moment(this.zoomController.displayStartTime);
+        const endTime: moment.Moment = moment(this.zoomController.displayEndTime);
+        this._displayItems = this._schedule.getItemsInRange(startTime, endTime);
         this._displayItems.forEach(di => di.setDisplayPercent(this.displayDurationMs));
         this._setDisplayDelineators();
         this._updateTimeSelectionColumn();
         this._updateTimelogDisplayGrid();
         this._updateTlefController(action);
-
     }
-    public onZoomChanged(zoom: TimelogZoomType) {
-        this._zoomController.setZoom(zoom);
-        this._displayItems = this._schedule.getItemsInRange(this.displayStartTime, this.displayEndTime);
-    }
-
 
 
     private _updateTimeSelectionColumn() {
-        // console.log('DaybookDisplayManager._updateTimeSelectionColumn()')
-        // this.displayItems.forEach(i => console.log(" display item: " + i.toString()))
         this._timeSelectionColumn = new TimeSelectionColumn(this.displayDelineators, this.displayItemsAvailable);
-        // this.displayItems.forEach(i => console.log(" display item: " + i.toString()))
     }
     private _updateTimelogDisplayGrid() {
-        // console.log('DaybookDisplayManager._updateTimelogDisplayGrid()')
         if (!this._timelogDisplayGrid) {
             this._timelogDisplayGrid = new TimelogDisplayGrid(this._displayItems);
         } else {
@@ -190,7 +183,6 @@ export class DaybookDisplayManager {
         }
     }
     private _updateTlefController(action: DaybookUpdateAction) {
-        // console.log('DaybookDisplayManager._updateTlefController()')
         this._tlefChangeSub$.unsubscribe();
         if (!this._tlefController) {
             this._tlefController = new TLEFController(this._displayItems, this._activityService.activityTree);
@@ -209,20 +201,14 @@ export class DaybookDisplayManager {
 
 
     private _setDisplayDelineators() {
-        // console.log("* Delineators")
         const delineatorSetter = new DaybookDisplayDelineatorSetter(this._displayItems);
         this._displayDelineators = delineatorSetter.displayDelineators;
         this._displayItems = delineatorSetter.displayItems;
-        // console.log("YEA BRO")
-        // this._displayDelineators.forEach(item => console.log("  " + item.toString()))
-        // console.log('\n');
-        // console.log('DISPLAY ITEMS BRAH');
-        // this._displayItems.forEach(item => console.log('  ' + item.toString()));
     }
 
     private _closed$: Subject<boolean> = new Subject();
     public get closed$(): Observable<boolean> { return this._closed$.asObservable(); }
-    
+
     private _closeItem() {
         this._closed$.next(true);
         this._currentlyOpenItemIndex = -1;

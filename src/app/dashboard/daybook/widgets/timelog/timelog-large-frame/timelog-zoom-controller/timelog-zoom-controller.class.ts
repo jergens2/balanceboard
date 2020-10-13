@@ -57,7 +57,10 @@ export class TimelogZoomController {
 
 
     public setZoom(zoomType: TimelogZoomType) {
+        this.zoomItems.forEach(item => item.isActive = false);
         this._currentZoom = this.zoomItems.find(item => item.zoomType === zoomType);
+        this._currentZoom.isActive = true;
+        // console.log("Current zoom is: " + this._currentZoom.toString())
     }
 
 
@@ -78,8 +81,11 @@ export class TimelogZoomController {
             new TimelogZoomItem(minus4Hours, plus4Hours, TimelogZoomType.EIGHT_HOUR_WINDOW, null, '8'),
             new TimelogZoomItem(wakeupTime, fallAsleepTime, TimelogZoomType.AWAKE_PERIOD, faSun, 'AWAKE'),
             new TimelogZoomItem(startOfThisDay, endOfThisDay, TimelogZoomType.LIST_VIEW, faList, 'LIST'),
-            new TimelogZoomItem(this._customStartTime, this._customEndTime, TimelogZoomType.CUSTOM, faSearch, 'CUSTOM'),
+            // new TimelogZoomItem(this._customStartTime, this._customEndTime, TimelogZoomType.CUSTOM, faSearch, 'CUSTOM'),
         ];
+
+        this.zoomItems[0].isFirst = true;
+        this.zoomItems[this.zoomItems.length - 1].isLast = true;
     }
 
 

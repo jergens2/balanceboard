@@ -24,7 +24,9 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._zoomButtons = this.daybookDisplayService.zoomItems;
-    console.log("THIS ZOOM BUITTONS IS ", this._zoomButtons)
+    this.daybookDisplayService.displayUpdated$.subscribe(change => {
+      this._zoomButtons = this.daybookDisplayService.zoomItems;
+    });
   }
   ngOnDestroy() {
     this._daybookSub.unsubscribe();

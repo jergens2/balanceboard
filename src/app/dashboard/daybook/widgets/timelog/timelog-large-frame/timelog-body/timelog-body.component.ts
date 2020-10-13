@@ -57,9 +57,9 @@ export class TimelogBodyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._update();
-    // this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
-    //   this._update();
-    // });
+    this._updateDisplaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
+      this._update();
+    });
   }
   ngOnDestroy() {
     this._updateDisplaySub.unsubscribe();

@@ -32,6 +32,8 @@ export class DaybookTimeSchedule extends TimeSchedule {
         this._dateYYYYMMDD = dateYYYYMMDD;
         this._timeScheduleItems = items;
         this._sleepCycle = sleepCycle;
+        // console.log("Time schedule constructed:")
+        // this._timeScheduleItems.forEach(item => console.log("\t" + item.toString()))
     }
 
     public get timeScheduleItems(): DaybookTimeScheduleItem[] { return this._timeScheduleItems; }
@@ -50,11 +52,18 @@ export class DaybookTimeSchedule extends TimeSchedule {
     public getItemsInRange(startTime: moment.Moment, endTime: moment.Moment): DaybookTimeScheduleItem[] {
         const checkRange = new TimeScheduleItem(startTime.toISOString(), endTime.toISOString());
         let inRangeItems: DaybookTimeScheduleItem[] = [];
+        // console.log("getting items.  from: " + startTime.format('YYYY-MM-DD hh:mm a') + " to: " + endTime.format('YYYY-MM-DD hh:mm a')
+        //     + " -- time sched items are")
+        // this.timeScheduleItems.forEach(item => console.log(item.toString()))
         if (startTime.isSameOrAfter(this.startTime) && endTime.isSameOrBefore(this.endTime)) {
-            inRangeItems = Object.assign([], this.timeScheduleItems.filter(item => {
+            this.timeScheduleItems.forEach(item => {
+                const newItem = item.clone();
+                inRangeItems.push(newItem);
+            });
+            inRangeItems = inRangeItems.filter(item => {
                 const relationship = item.getRelationshipTo(checkRange);
                 return relationship === TimeRangeRelationship.OVERLAPS;
-            }));
+            });
             for (let i = 0; i < inRangeItems.length; i++) {
                 if (inRangeItems[i].schedItemStartTime.isBefore(startTime)) {
                     inRangeItems[i].changeSchedItemStartTime(startTime);
