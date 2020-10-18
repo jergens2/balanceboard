@@ -1,10 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { CalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
-import { faExpand } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { DaybookDisplayService } from '../../../daybook-display.service';
 import { Clock } from '../../../../../shared/time-utilities/clock.class';
 import { Subscription } from 'rxjs';
+import { DaybookUpdateAction } from '../../../display-manager/daybook-update-action.enum';
 
 @Component({
   selector: 'app-calendar-small',
@@ -19,9 +20,14 @@ export class CalendarSmallComponent implements OnInit, OnDestroy {
   private _monthHeader: string = '';
   private _updateSub: Subscription;
 
+  private _currentMonth: moment.Moment;
+
   constructor(private daybookService: DaybookDisplayService) { }
 
   public readonly faExpand = faExpand;
+  public readonly faArrowLeft = faArrowLeft;
+  public readonly faArrowRight = faArrowRight;
+
   @Output() public expand: EventEmitter<boolean> = new EventEmitter();
 
   public get isLarge(): boolean { return this._isLarge; }
@@ -36,11 +42,25 @@ export class CalendarSmallComponent implements OnInit, OnDestroy {
   public onClickCalendarDay(dayOfCalendar: CalendarDay) {
     this.daybookService.changeCalendarDate$(dayOfCalendar.date.format('YYYY-MM-DD'));
   }
+  public onGoMonthRight() {
+    const newDate = moment(this._currentMonth).add(1, 'month');
+    this._buildDaysOfCalendar(newDate);
+  }
+  public onGoMonthLeft() {
+    const newDate = moment(this._currentMonth).subtract(1, 'month');
+    this._buildDaysOfCalendar(newDate);
+  }
 
   ngOnInit() {
     this._buildDaysOfCalendar(moment(this.daybookService.activeDateYYYYMMDD).startOf('day'));
     this._updateSub = this.daybookService.displayUpdated$.subscribe(update => {
-      this._buildDaysOfCalendar(moment(this.daybookService.activeDateYYYYMMDD).startOf('day'));
+      if (update === DaybookUpdateAction.CLOCK_MINUTE) {
+        if (this._currentMonth.format('YYYY-MM-DD') === moment(this.daybookService.activeDateYYYYMMDD).format('YYYY-MM-DD')) {
+          this._buildDaysOfCalendar(moment(this.daybookService.activeDateYYYYMMDD).startOf('day'));
+        }
+      } else {
+        this._buildDaysOfCalendar(moment(this.daybookService.activeDateYYYYMMDD).startOf('day'));
+      }
     });
   }
   ngOnDestroy() {
@@ -93,5 +113,6 @@ export class CalendarSmallComponent implements OnInit, OnDestroy {
     }
     this._monthHeader = moment(date).format('MMMM');
     this._daysOfCalendar = daysOfCalendar;
+    this._currentMonth = moment(date);
   }
 }

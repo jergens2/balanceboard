@@ -63,7 +63,7 @@ import { FallAsleepTimeComponent } from './sleep-entry-form/fall-asleep-time/fal
     TimelogEntryFormComponent,
     SleepInputFormComponent,
     TlefModifyActivitiesComponent,
-    // ActivitySliderBarComponent,
+    ActivitySliderBarComponent,
   ]
 })
 export class TLEFModule { }

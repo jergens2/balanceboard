@@ -33,7 +33,6 @@ export class SleepCycleScheduleItemsBuilder {
         this._previousWakeupTime = moment(prevWakeupTime);
         this._nextFallAsleepTime = moment(nextFallAsleepTime);
         this._nextWakeupTime = moment(nextWakeupTime);
-
         // console.log("  ss  TIME VALUES SET: ")
         // console.log("  ss  PREV FALL ASLEEP: " , this._previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
         // console.log("  ss  PREV WAKE: " , this._previousWakeupTime.format('YYYY-MM-DD hh:mm a'))

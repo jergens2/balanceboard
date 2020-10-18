@@ -1,0 +1,5 @@
+export class TLEFActivitiesBars{
+    constructor(){
+        
+    }
+}

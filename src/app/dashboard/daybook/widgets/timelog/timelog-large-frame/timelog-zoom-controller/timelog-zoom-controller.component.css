@@ -1,15 +1,27 @@
 .zoom-controller-root{
-    flex-shrink: 2;
+    flex-grow: 2;
     height: 20px;
 
     display:flex;
     flex-direction: row;
+    justify-content: space-between;
 
+    
+    
+    font-size: 0.7em;
+}
+.times-display{
+    color: gray;
+    margin-left: 10px;
+}
+.zoom-buttons{
+    display:flex;
+    flex-shrink: 2;
+    flex-direction: row;
     border-radius: 5px;
     border: 1px solid rgba(0,0, 0, 0.1);
-    font-size: 0.6em;
 }
-.zoom-controller-root:hover{
+.zoom-buttons:hover{
     border-radius: 5px;
     border: 1px solid gray;
 }

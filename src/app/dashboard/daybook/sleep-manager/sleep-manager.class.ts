@@ -120,7 +120,7 @@ export class SleepManager {
      *  This method is used by the daybook display service
      */
     public getSleepCycleForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): SleepCycleScheduleItemsBuilder {
-        const builder: SleepCycleBuilder = new SleepCycleBuilder();
+        const builder: SleepCycleBuilder = new SleepCycleBuilder(this._sleepData);
         // console.log("BUILDER THING.  Day items: ", dayItems)
         return builder.buildSleepCycleForDate(dateYYYYMMDD, dayItems, this._appConfig);
     }
@@ -133,10 +133,10 @@ export class SleepManager {
             .add(this._appConfig.defaultFallAsleepHour, 'hours').add(this._appConfig.defaultFallAsleepMinute, 'minutes');
         this._clock$ = new BehaviorSubject(moment());
         this._previousFallAsleepTime = moment(this._defaultFallAsleepTime).subtract(24, 'hours');
-        this._previousActivityTime = moment(this._previousFallAsleepTime);
         this._previousWakeupTime = moment(this._defaultWakeupTime);
         this._nextFallAsleepTime = moment(this._defaultFallAsleepTime);
         this._nextWakeupTime = moment(this._defaultWakeupTime).add(24, 'hours');
+        this._setPreviousActivityValue();
     }
 
     private _setValues() {
@@ -164,7 +164,7 @@ export class SleepManager {
         let allActivities: DaybookTimelogEntryDataItem[] = [];
         this.dayItems
             .filter(item => item.dateYYYYMMDD === todayYYYYMMDD || item.dateYYYYMMDD === yesterdayYYYYMMDD)
-            .forEach(item => allActivities.concat(item.timelogEntryDataItems));
+            .forEach(item => allActivities = allActivities.concat(item.timelogEntryDataItems));
         allActivities = allActivities.sort((a1, a2) => {
             if (a1.startTimeISO < a2.startTimeISO) { return -1; }
             else if (a1.startTimeISO > a2.startTimeISO) { return 1; }
@@ -174,7 +174,7 @@ export class SleepManager {
             this._previousActivity = allActivities[allActivities.length - 1];
             this._previousActivityTime = moment(this._previousActivity.endTimeISO);
         } else {
-            this._previousActivityTime = moment(this.previousFallAsleepTime);
+            this._previousActivityTime = moment(this.previousFallAsleepTime).subtract(6, 'hours');
             this._previousActivity = null;
         }
     }

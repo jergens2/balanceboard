@@ -32,6 +32,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }
 .time-input-row-label{
     color: gray;
@@ -138,4 +140,17 @@
     border-radius: 45px;
     height: 45px;
     font-size: 1.0em;
+}
+
+
+
+.units{
+    display:flex;
+    flex-direction: row; 
+    align-items: flex-start;
+}
+
+.unit{
+    margin: 2px;
+    border: 1px solid black;
 }

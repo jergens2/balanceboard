@@ -7,6 +7,8 @@ import { SleepDataFormComponent } from './sleep-data-prompt/sleep-data-form/slee
 import { SleepDataPromptComponent } from './sleep-data-prompt/sleep-data-prompt.component';
 import { SmpFooterComponent } from './sleep-data-prompt/sleep-data-prompt-footer/smp-footer.component';
 import { SdfHourCountComponent } from './sleep-data-prompt/sleep-data-form/sdf-hour-count/sdf-hour-count.component';
+import { SdfNewTleComponent } from './sleep-data-prompt/sleep-data-form/sdf-new-tle/sdf-new-tle.component';
+import { TLEFModule } from '../widgets/timelog/timelog-entry-form/tlef.module';
 
 
 @NgModule({
@@ -15,12 +17,14 @@ import { SdfHourCountComponent } from './sleep-data-prompt/sleep-data-form/sdf-h
     SleepDataFormComponent,
     SmpFooterComponent,
     SdfHourCountComponent,
+    SdfNewTleComponent,
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     FontAwesomeModule,
     SharedModule,
+    TLEFModule,
   ],
   exports: [
     SleepDataPromptComponent,

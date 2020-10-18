@@ -57,6 +57,10 @@ export class DaybookDayItem {
     public get sleepInputItems(): DaybookSleepInputDataItem[] { return this.httpShape.sleepInputItems }
     public set sleepInputItems(items: DaybookSleepInputDataItem[]) { this._httpShape.sleepInputItems = items; }
 
+    public toString(): string { 
+        return "" + this.dateYYYYMMDD + " " + this.sleepInputItems.length + " sleep items (" + 
+            this.hasSleepItems + "), and " + this.timelogEntryDataItems.length + " timelog items";
+    }
 
     public get hasSleepItems(): boolean {
         const minMs = 2 * 1000 * 60 * 60; // 2 hours

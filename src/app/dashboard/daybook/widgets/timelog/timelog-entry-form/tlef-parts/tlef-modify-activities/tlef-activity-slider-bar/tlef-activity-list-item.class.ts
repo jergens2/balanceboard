@@ -7,7 +7,7 @@ import { TimelogEntryActivity } from "../../../../../../daybook-day-item/data-it
 export class TLEFActivityListItem {
 
 
-    constructor(activity: ActivityCategoryDefinition, durationMinutes: number, durationPercent: number, totalTimelogEntryMinutes:number, maxPercent: number) {
+    constructor(activity: ActivityCategoryDefinition, durationMinutes: number, durationPercent: number, totalTimelogEntryMinutes: number, maxPercent: number) {
         this.activity = activity;
         this.color = this.activity.color;
         this._originalColor = this.color;
@@ -18,20 +18,20 @@ export class TLEFActivityListItem {
 
 
         this.sliderBar = new ActivitySliderBar(this.durationPercent, this._maxPercent, this.activity.color);
-        this._sliderBarSubscription = this.sliderBar.durationPercent$.subscribe((percentChange: number)=>{
+        this._sliderBarSubscription = this.sliderBar.durationPercent$.subscribe((percentChange: number) => {
             this.updatePercentage(percentChange, maxPercent, false);
             this._percentChangedBySliderBar.next(percentChange);
         });
     }
 
-    public toEntryActivity(): TimelogEntryActivity{
+    public toEntryActivity(): TimelogEntryActivity {
         return {
             percentage: this.durationPercent,
             activityTreeId: this.activity.treeId,
         }
     }
 
-    
+
     activity: ActivityCategoryDefinition;
     mouseOver: boolean = false;
     colorPickerIsOpen: boolean = false;
@@ -41,19 +41,19 @@ export class TLEFActivityListItem {
 
     color: string;
 
-    private _originalColor:string;
-    public onClickOpenColorPicker(){
+    private _originalColor: string;
+    public onClickOpenColorPicker() {
         this.colorPickerIsOpen = true;
     }
 
-    public onClickSaveColorPicker(color: string){
+    public onClickSaveColorPicker(color: string) {
         console.log("Saving color: ", color);
         this._originalColor = color;
         this.color = color;
         this.activity.color = color;
         this.colorPickerIsOpen = false;
         this.sliderBar = new ActivitySliderBar(this.durationPercent, this._maxPercent, this.activity.color);
-        this._sliderBarSubscription = this.sliderBar.durationPercent$.subscribe((percentChange: number)=>{
+        this._sliderBarSubscription = this.sliderBar.durationPercent$.subscribe((percentChange: number) => {
             this.updatePercentage(percentChange, this._maxPercent, false);
             this._percentChangedBySliderBar.next(percentChange);
         });
@@ -61,26 +61,26 @@ export class TLEFActivityListItem {
     }
     private _activityModified$: Subject<ActivityCategoryDefinition> = new Subject();
     public get activityModified$(): Observable<ActivityCategoryDefinition> { return this._activityModified$.asObservable(); };
-    public onClickCancelColorPicker(){
+    public onClickCancelColorPicker() {
         // console.log("Color picker cancelled")
         this.color = this._originalColor;
         this.colorPickerIsOpen = false;
     }
-    public onColorChanged(color: string){
+    public onColorChanged(color: string) {
         // console.log("Color changed (RGBA): ", color);
         this.color = color;
     }
 
     private sliderBar: ActivitySliderBar;
 
-    public get sliderBarIsActive():boolean {
+    public get sliderBarIsActive(): boolean {
         return this.sliderBar.isActive;
     }
-    public get sliderBarItems(): ITLEFActivitySliderBarItem[]{ 
+    public get sliderBarItems(): ITLEFActivitySliderBarItem[] {
         return this.sliderBar.sliderBarItems;
     }
 
-    public deactivate(){
+    public deactivate() {
         this.sliderBar.deactivate();
     }
     public activate() {
@@ -94,12 +94,12 @@ export class TLEFActivityListItem {
     public mouseUpSliderBarItem(sliderBarItem: ITLEFActivitySliderBarItem) {
         this.sliderBar.mouseUpSliderBarItem(sliderBarItem);
     }
-    public onClickBarItem(sliderBarItem: ITLEFActivitySliderBarItem){
+    public onClickBarItem(sliderBarItem: ITLEFActivitySliderBarItem) {
         this.sliderBar.onClickBarItem(sliderBarItem);
     }
 
 
-    
+
 
     private _maxPercent: number;
     private _sliderBarSubscription: Subscription = new Subscription();
@@ -107,21 +107,20 @@ export class TLEFActivityListItem {
     private _percentChangedBySliderBar: Subject<number> = new Subject();
     public get percentChanged$(): Observable<number> {
         return this._percentChangedBySliderBar.asObservable();
-    }  
-
-
-
-    updatePercentage(percent: number, maxPercent: number, updateSliderBar: boolean){
+    }
+    
+    updatePercentage(percent: number, maxPercent: number, updateSliderBar: boolean) {
         this.durationPercent = percent;
-        this.durationMinutes = (this.durationPercent/100) * this.totalTimelogEntryMinutes;
-
-        
-        if(updateSliderBar){
-            if(this.sliderBar.durationPercent != percent){
+        this.durationMinutes = (this.durationPercent / 100) * this.totalTimelogEntryMinutes;
+        if (updateSliderBar) {
+            if (this.sliderBar.durationPercent != percent) {
                 this.sliderBar.update(this.durationPercent, maxPercent);
             }
-            
         }
-        
+    }
+
+    public updateDuration(duration: number) {
+        this.totalTimelogEntryMinutes = duration;
+        this.updatePercentage(this.durationPercent, this._maxPercent, true);
     }
 }

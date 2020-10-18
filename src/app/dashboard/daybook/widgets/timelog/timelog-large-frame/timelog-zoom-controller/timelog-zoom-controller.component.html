@@ -1,6 +1,12 @@
 <div class="zoom-controller-root no-select">
-    <div *ngFor="let zoomButton of zoomButtons" [ngClass]="zoomButton.ngClass" class="zoom-button" (click)="onClickButton(zoomButton)" >
-        <fa-icon *ngIf="zoomButton.icon" [icon]="zoomButton.icon"></fa-icon>
-        <div *ngIf="!zoomButton.icon">{{ zoomButton.label }}</div>
+    <div class="times-display">
+        {{ times }}
     </div>
+    <div class="zoom-buttons">
+        <div *ngFor="let zoomButton of zoomButtons" [ngClass]="zoomButton.ngClass" class="zoom-button" (click)="onClickButton(zoomButton)" >
+            <fa-icon *ngIf="zoomButton.icon" [icon]="zoomButton.icon"></fa-icon>
+            <div *ngIf="!zoomButton.icon">{{ zoomButton.label }}</div>
+        </div>
+    </div>
+
 </div>

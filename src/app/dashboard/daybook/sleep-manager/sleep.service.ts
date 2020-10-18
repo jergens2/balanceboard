@@ -40,8 +40,7 @@ export class SleepService {
   public get sleepManager(): SleepManager { return this._sleepManager; }
   public get clock(): moment.Moment { return this.sleepManager.clock; }
   public get clock$(): Observable<moment.Moment> { return this.sleepManager.clock$; }
-  public get sleepCycleData(): SleepCycleData { return this._sleepCycleData; }
-  public get hasPrompt(): boolean { return this.sleepCycleData.hasPrompt; }
+  public get hasPrompt(): boolean { return this.sleepData.hasPrompt; }
 
   public login$(userId: string): Observable<boolean> {
     this._userId = userId;
@@ -64,7 +63,7 @@ export class SleepService {
    * if it is the first time config, user sets initial values and this method is reloaded.
   */
   public step3And5InitiateSleepManager() {
-    const sleepData: SleepCycleData = this.sleepCycleData;
+    const sleepData: SleepCycleData = this.sleepData;
     const dayItems: DaybookDayItem[] = this.daybookHTTPService.dayItems;
     const appConfig: UAPAppConfiguration = this.accountService.appConfig;
     this._sleepManager = new SleepManager(sleepData, dayItems, appConfig);

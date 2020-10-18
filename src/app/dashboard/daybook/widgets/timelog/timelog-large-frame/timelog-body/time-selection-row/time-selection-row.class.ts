@@ -13,7 +13,7 @@ export class TimeSelectionRow {
         this._startTime = startTime;
         this._endTime = endTime;
         this._sectionIndex = sectionIndex;
-        if (this._sectionIndex > -1) {
+        if (this._sectionIndex > -1 && section) {
             this._isAvailable = true;
             this._sectionStartTime = moment(section.schedItemStartTime);
             this._sectionEndTime = moment(section.schedItemEndTime);

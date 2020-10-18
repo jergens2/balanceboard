@@ -62,7 +62,10 @@ export class TimeSelectionColumn {
             const startTime: moment.Moment = moment(currentTime);
             const endTime: moment.Moment = moment(currentTime).add(this._divisorMinutes, 'minutes');
             const sectionIndex = this._findSectionIndex(startTime, endTime, availableItems);
-            const section = availableItems[sectionIndex];
+            let section: DaybookTimeScheduleItem;
+            if (sectionIndex > -1) {
+                section = availableItems[sectionIndex]
+            }
             const newRow = new TimeSelectionRow(startTime, endTime, sectionIndex, section);
             const delineator = this._findDelineatorForRow(newRow);
             if (delineator) {
@@ -111,9 +114,7 @@ export class TimeSelectionColumn {
         if (availableItems.length === 0) {
             console.log('Error: no item found')
             return -1;
-        } else if (availableItems.length === 1) {
-            return 0;
-        } else if (availableItems.length > 1) {
+        } else {
             const foundIndex = availableItems.findIndex(availableItem => {
                 const sameStart = startTime.isSame(availableItem.schedItemStartTime);
                 const isDuring = startTime.isSameOrAfter(availableItem.schedItemStartTime)
@@ -203,7 +204,6 @@ export class TimeSelectionColumn {
                         mergeOver = true;
                     }
                 }
-
                 if (mergeOver) {
                     item1.changeSchedItemEndTime(item2.schedItemEndTime);
                     // i++;

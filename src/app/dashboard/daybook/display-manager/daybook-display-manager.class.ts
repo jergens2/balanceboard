@@ -124,7 +124,6 @@ export class DaybookDisplayManager {
     public openItemToTheLeft() {
         this._currentlyOpenItemIndex -= 1;
         if (this._currentlyOpenItemIndex < 0) {
-            console.log("We've reached the end.")
             this._currentlyOpenItemIndex = 0;
         } else {
             this.openItemByIndex(this._currentlyOpenItemIndex);
@@ -135,7 +134,6 @@ export class DaybookDisplayManager {
         if (this._currentlyOpenItemIndex >= this.displayItems.length) {
 
             this._currentlyOpenItemIndex = this.displayItems.length - 1;
-            console.log("We've reached the end.")
         } else {
             this.openItemByIndex(this._currentlyOpenItemIndex);
         }

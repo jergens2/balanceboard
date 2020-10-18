@@ -3,6 +3,7 @@ import { DaybookDayItem } from '../../../daybook-day-item/daybook-day-item.class
 import { DaybookSleepInputDataItem } from '../../../daybook-day-item/data-items/daybook-sleep-input-data-item.interface';
 import { UserAccountProfile } from '../../../../user-account-profile/api/user-account-profile.class';
 import { SleepDataForm } from './sleep-data-form.class';
+import { TimelogEntryItem } from '../../../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 
 export class SleepDaybookItemUpdater {
 
@@ -18,7 +19,8 @@ export class SleepDaybookItemUpdater {
     }
 
     public updateDaybookItems(sleepForm: SleepDataForm,
-        userProfile: UserAccountProfile, dayItems: DaybookDayItem[]): DaybookDayItem[] {
+        userProfile: UserAccountProfile, dayItems: DaybookDayItem[],
+        addTimelogEntries: TimelogEntryItem[]): DaybookDayItem[] {
         const thisDateYYYYMMDD: string = moment().format('YYYY-MM-DD');
         const prevDateYYYYMMDD: string = moment().subtract(1, 'days').format('YYYY-MM-DD');
         const prevDayItem = dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD);
@@ -65,18 +67,18 @@ export class SleepDaybookItemUpdater {
             }
             prevDayItem.sleepInputItems = this._validateSleepItems(prevDaySleepItems);
             thisDayItem.sleepInputItems = this._validateSleepItems(thisDaySleepItems);
+            if(addTimelogEntries.length > 0){
+                addTimelogEntries.forEach(item => {
+                    if(item.startTime.format('YYYY-MM-DD') === prevDateYYYYMMDD){
+                        prevDayItem.timelogEntryDataItems.push(item.toDataEntryItem());
+                    }else if(item.startTime.format('YYYY-MM-DD') === thisDateYYYYMMDD){
+                        thisDayItem.timelogEntryDataItems.push(item.toDataEntryItem());
+                    }
+                });
+            }
             const daysToUpdate = [prevDayItem, thisDayItem];
+            console.log("DAYS TO UPDATE: " , daysToUpdate)
             return daysToUpdate;
-            // forkJoin(daysToUpdate.map<Observable<DaybookDayItem>>((item: DaybookDayItem) =>
-            //     this._httpService.updateDaybookDayItem$(item)))
-            //     .subscribe((updatedItems: DaybookDayItem[]) => {
-            //         // console.log("Received updated items from forkJoin: ", updatedItems);
-            //         isComplete$.next(true);
-            //     }, (err) => {
-            //         console.log('error updating day items: ', err);
-            //         isComplete$.next(true);
-            //     });
-            // return isComplete$.asObservable();
         }
         return [];
     }

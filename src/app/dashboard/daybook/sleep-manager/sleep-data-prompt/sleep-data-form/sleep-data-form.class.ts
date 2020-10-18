@@ -16,6 +16,8 @@ export class SleepDataForm {
     private _nextFallAsleepTime: moment.Moment;
     private _nextWakeupTime: moment.Moment;
 
+    private _hasAvailableTime: boolean;
+
     private _energyAtWakeup: number;
     private _sleepDurationPercent: number;
 
@@ -31,14 +33,19 @@ export class SleepDataForm {
     private _timeUntilSleepHours: number;
     private _nextSleepDurationHours: number;
 
+    private _newTLEStartTimeInput: TimeInput;
+    private _newTLEEndTimeInput: TimeInput;
     private _prevFallAsleepTimeInput: TimeInput;
     private _prevWakeupTimeInput: TimeInput;
     private _nextFallAsleepTimeInput: TimeInput;
     private _nextWakeupTimeInput: TimeInput;
 
+
     private _sleepManager: SleepManager;
 
     public get previousActivityTime(): moment.Moment { return this._previousActivityTime; }
+    public get hasAvailableTime(): boolean { return this._hasAvailableTime; }
+    
     public get previousFallAsleepTime(): moment.Moment { return this._previousFallAsleepTime; }
     public get previousWakeupTime(): moment.Moment { return this._previousWakeupTime; }
     public get nowTime(): moment.Moment { return this._nowTime; }
@@ -62,6 +69,8 @@ export class SleepDataForm {
     public get prevWakeupTimeInput(): TimeInput { return this._prevWakeupTimeInput; }
     public get nextFallAsleepTimeInput(): TimeInput { return this._nextFallAsleepTimeInput; }
     public get nextWakeupTimeInput(): TimeInput { return this._nextWakeupTimeInput; }
+    public get newTLEStartTimeInput(): TimeInput { return this._newTLEStartTimeInput; }
+    public get newTLEEndTimeInput(): TimeInput { return this._newTLEEndTimeInput; }
 
     public get energyAtWakeup(): number { return this._energyAtWakeup; }
     public get sleepDurationPercent(): number { return this._sleepDurationPercent; }
@@ -69,6 +78,7 @@ export class SleepDataForm {
     constructor(sleepManager: SleepManager) {
         this._sleepManager = sleepManager;
         this._previousActivityTime = moment(this._sleepManager.previousActivityTime);
+        // console.log("Previous activity time is: " + this.previousActivityTime.format('YYYY-MM-DD hh:mm a'))
         this._previousFallAsleepTime = moment(this._sleepManager.previousFallAsleepTime);
         this._previousWakeupTime = moment(this._sleepManager.previousWakeupTime);
         this._nextFallAsleepTime = moment(this._sleepManager.nextFallAsleepTime);
@@ -92,6 +102,27 @@ export class SleepDataForm {
         this._nextWakeupTimeInput.color = wakeupColor;
         this._nextWakeupTimeInput.isBold = true;
 
+        let minValue: moment.Moment = moment(this._previousActivityTime);
+        let activityStartTime: moment.Moment = moment(this._previousActivityTime);
+        if(!this._sleepManager.hasPreviousActivity){
+            activityStartTime = moment(this._previousFallAsleepTime).subtract(1, 'hours');
+            minValue = moment(this._previousWakeupTime).subtract(20, 'hours');
+            this._hasAvailableTime = true;
+        }else{
+            if(this._previousFallAsleepTime.diff(this._previousActivityTime, 'milliseconds') > 0){
+                this._hasAvailableTime = true;
+            }else{
+                this._hasAvailableTime = false;
+            }
+        }
+
+        console.log("NEW TLE START TIME INPUT: " + activityStartTime.format('YYYY-MM-DD hh:mm a'))
+        console.log("max:  " + this._previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'));
+        console.log("min: " + minValue.format('YYYY-MM-DD hh:mm a'))
+
+        this._newTLEStartTimeInput = new TimeInput(activityStartTime, this._previousFallAsleepTime, minValue);
+        this._newTLEEndTimeInput = new TimeInput(this._previousFallAsleepTime, this._previousFallAsleepTime, activityStartTime);
+
         this._prevFallAsleepTimeInput.timeValue$.subscribe(time => {
             this._previousFallAsleepTime = moment(time);
             this._recalculateTimeValues();
@@ -108,13 +139,18 @@ export class SleepDataForm {
             this._nextWakeupTime = moment(time);
             this._recalculateTimeValues();
         });
-
+        this._newTLEStartTimeInput.timeValue$.subscribe(t => {
+            console.log("okay")
+            this._recalculateTimeValues()
+    
+        });
+        this._newTLEEndTimeInput.timeValue$.subscribe(t => this._recalculateTimeValues());
         this._startClock();
         this._recalculateTimeValues();
     }
 
     private _recalculateTimeValues() {
-        const previousVacantMs = moment(this.previousFallAsleepTime).diff(this.previousActivityTime, 'milliseconds');
+        const previousVacantMs = moment(this.previousFallAsleepTime).diff(this.newTLEEndTimeInput.timeValue, 'milliseconds');
         const previousSleepMs = moment(this.previousWakeupTime).diff(this.previousFallAsleepTime, 'milliseconds');
         const awakeForMs = moment().diff(this.previousWakeupTime, 'milliseconds');
         const timeUntilSleepMs = moment(this.nextFallAsleepTime).diff(moment(), 'milliseconds');
@@ -133,9 +169,9 @@ export class SleepDataForm {
         this._nextSleepDurationHours = TimeUnitConverter.convert(nextSleepDuratoin, TimeUnit.Millisecond, TimeUnit.Hour);
 
         if (this._sleepManager.hasPreviousActivity) {
-            this._prevFallAsleepTimeInput.minValue = moment(this.previousActivityTime);
+            this._prevFallAsleepTimeInput.minValue = moment(this._newTLEStartTimeInput.minValue);
         } else {
-            this._prevFallAsleepTimeInput.minValue = moment(this.previousActivityTime).subtract(6, 'hours');
+            this._prevFallAsleepTimeInput.minValue = moment(this.previousActivityTime).subtract(8, 'hours');
         }
         this._prevFallAsleepTimeInput.maxValue = moment(this.previousWakeupTime).subtract(1, 'hours');
         this._prevWakeupTimeInput.maxValue = moment(this._nowTime);
@@ -144,6 +180,15 @@ export class SleepDataForm {
         this._nextFallAsleepTimeInput.minValue = moment(this._nowTime).add(20, 'minutes');
         this._nextWakeupTimeInput.maxValue = moment(this.nextFallAsleepTime).add(18, 'hours');
         this._nextWakeupTimeInput.minValue = moment(this.nextFallAsleepTime).add(1, 'hours');
+        this._newTLEStartTimeInput.maxValue = moment(this._newTLEEndTimeInput.timeValue).subtract(1, 'minute');
+        this._newTLEEndTimeInput.minValue = moment(this._newTLEStartTimeInput.timeValue).add(1, 'minute');
+        this._newTLEEndTimeInput.maxValue = moment(this._previousFallAsleepTime);
+
+        if(this._previousFallAsleepTime.diff(this._previousActivityTime, 'milliseconds') > 0){
+            this._hasAvailableTime = true;
+        }else{
+            this._hasAvailableTime = false;
+        }
     }
 
     private _startClock() {

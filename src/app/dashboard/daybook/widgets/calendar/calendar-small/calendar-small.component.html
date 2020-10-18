@@ -1,13 +1,16 @@
 <div class="calendar-small-root no-select font-family-open-sans" (mouseenter)="onMouseEnter()"
     (mouseleave)="onMouseLeave()">
     <div class="calendar-header">
-        <div class="header-buffer"></div>
+        <div class="header-buffer">
+            <fa-icon [icon]="faArrowLeft" class="icon-button" (click)="onGoMonthLeft()" *ngIf="mouseIsOver">
+            </fa-icon>
+        </div>
         <div>
             {{ monthHeader }}
         </div>
 
         <div class="header-buffer">
-            <fa-icon [icon]="faExpand" class="icon-button" (click)="onClickExpand()" *ngIf="mouseIsOver && !isLarge">
+            <fa-icon [icon]="faArrowRight" class="icon-button" (click)="onGoMonthRight()" *ngIf="mouseIsOver">
             </fa-icon>
         </div>
     </div>

@@ -19,23 +19,35 @@ export class TimelogZoomControllerComponent implements OnInit, OnDestroy {
   private _zoomButtons: TimelogZoomItem[] = [];
 
   private _daybookSub: Subscription = new Subscription();
+  private _times: string;
 
   public get zoomButtons(): TimelogZoomItem[] { return this._zoomButtons; }
+  public get times(): string { return this._times; }
 
   ngOnInit() {
     this._zoomButtons = this.daybookDisplayService.zoomItems;
+    this._setTimesString();
     this.daybookDisplayService.displayUpdated$.subscribe(change => {
       this._zoomButtons = this.daybookDisplayService.zoomItems;
+      this._setTimesString();
     });
   }
   ngOnDestroy() {
     this._daybookSub.unsubscribe();
   }
+
   public onClickButton(zoomItem: TimelogZoomItem) {
     this.daybookDisplayService.onZoomChanged(zoomItem.zoomType);
   }
 
+  private _setTimesString() {
+    const startTime: moment.Moment = moment(this.daybookDisplayService.displayStartTime);
+    const endTime: moment.Moment = moment(this.daybookDisplayService.displayEndTime);
 
+
+    this._times = startTime.format('h:mm a') + " to " + endTime.format('h:mm a');
+
+  }
 
 
 }

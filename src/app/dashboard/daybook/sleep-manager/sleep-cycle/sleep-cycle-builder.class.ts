@@ -4,6 +4,7 @@ import { SleepCycleScheduleItemsBuilder } from './sleep-cycle-schedule-items-bui
 import { DaybookSleepInputDataItem } from '../../daybook-day-item/data-items/daybook-sleep-input-data-item.interface';
 import * as moment from 'moment';
 import { DaybookTimeScheduleSleepItem } from '../../display-manager/daybook-time-schedule/daybook-time-schedule-sleep-item.class';
+import { SleepCycleData } from './sleep-cycle-data.class';
 
 
 export class SleepCycleBuilder {
@@ -11,8 +12,11 @@ export class SleepCycleBuilder {
     /**
      * This class exists for the SleepManager to use
      */
-    constructor() { }
+    constructor(data: SleepCycleData) {
+        this._sleepCycleData = data;
+    }
 
+    private _sleepCycleData: SleepCycleData;
     private _appConfig: UAPAppConfiguration;
 
     public buildSleepCycleForDate(dateYYYYMMDD: string,
@@ -22,110 +26,147 @@ export class SleepCycleBuilder {
         const previousWakeupTime: moment.Moment = this._findPreviousWakeupTime(dateYYYYMMDD, dayItems);
         const nextFallAsleepTime: moment.Moment = this._findNextFallAsleepTime(dateYYYYMMDD, dayItems);
         const nextWakeupTime: moment.Moment = this._findNextWakeupTime(dateYYYYMMDD, dayItems);
+
+
+        // console.log("  x  TIME VALUES SET: ")
+        // console.log("  x  PREV FALL ASLEEP: ", previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("  x  PREV WAKE: ", previousWakeupTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("  x  NEXT FALL ASLEEP: ", nextFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("  x  NEXT WAKE: ", nextWakeupTime.format('YYYY-MM-DD hh:mm a'))
         const newSleepCycle = new SleepCycleScheduleItemsBuilder(dateYYYYMMDD, dayItems, appConfig,
             moment(previousFallAsleepTime), moment(previousWakeupTime), moment(nextFallAsleepTime), moment(nextWakeupTime));
         return newSleepCycle;
     }
 
     private _findPreviousFallAsleepTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
-        if (dayItems[0].hasSleepItems && dayItems[1].hasSleepItems) {
-            const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
-            const schedItems = this._getSleepInputItems(dayItems);
-            const startTimes = schedItems.map(item => item.schedItemStartTime)
-                .filter(time => time.isBefore(midDay))
-                .sort((item1, item2) => {
-                    const item1Diff = moment(midDay).diff(item1, 'milliseconds');
-                    const item2Diff = moment(midDay).diff(item2, 'milliseconds');
-                    if (item1Diff > 0 && item1Diff < item2Diff) {
-                        return -1;
-                    } else if (item2Diff > 0 && item2Diff < item1Diff) {
-                        return 1;
-                    } else { return 0; }
-                });
-            const foundTime = startTimes[0];
-            // console.log("FOUND PREVIOUS FALL ASLEEP TIME for DATE: " + dateYYYYMMDD + " \n\t\t" + foundTime.format('YYYY-MM-DD hh:mm a'))
-            return foundTime;
-        } else {
-            const addHours = this._appConfig.defaultFallAsleepHour;
-            const addMins = this._appConfig.defaultFallAsleepMinute;
-            const fallAsleepTime = moment(dateYYYYMMDD).startOf('day').subtract(24, 'hours').add(addHours, 'hours').add(addMins, 'minutes');
-            return fallAsleepTime;
+        const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
+        const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
+        const prevDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD);
+        if (thisDayItem && prevDayItem) {
+            if (thisDayItem.hasSleepItems && prevDayItem.hasSleepItems) {
+                const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
+                const schedItems = this._getSleepInputItems(dayItems);
+                const startTimes = schedItems.map(item => item.schedItemStartTime)
+                    .filter(time => time.isBefore(midDay))
+                    .sort((item1, item2) => {
+                        const item1Diff = moment(midDay).diff(item1, 'milliseconds');
+                        const item2Diff = moment(midDay).diff(item2, 'milliseconds');
+                        if (item1Diff > 0 && item1Diff < item2Diff) {
+                            return -1;
+                        } else if (item2Diff > 0 && item2Diff < item1Diff) {
+                            return 1;
+                        } else { return 0; }
+                    });
+                const foundTime = startTimes[0];
+                // console.log("FOUND PREVIOUS FALL ASLEEP TIME for DATE: " + dateYYYYMMDD + " \n\t\t" + foundTime.format('YYYY-MM-DD hh:mm a'))
+                return foundTime;
+            }
         }
+        const addHours = this._appConfig.defaultFallAsleepHour;
+        const addMins = this._appConfig.defaultFallAsleepMinute;
+        const fallAsleepTime = moment(dateYYYYMMDD).startOf('day').subtract(24, 'hours').add(addHours, 'hours').add(addMins, 'minutes');
+        return fallAsleepTime;
+
     }
     private _findPreviousWakeupTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
-        if (dayItems[0].hasSleepItems && dayItems[1].hasSleepItems) {
-            const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
-            const schedItems = this._getSleepInputItems(dayItems);
-            const endTimes = schedItems.map(item => item.schedItemEndTime)
-                .filter(time => time.isBefore(midDay))
-                .sort((item1, item2) => {
-                    const item1Diff = moment(midDay).diff(item1, 'milliseconds');
-                    const item2Diff = moment(midDay).diff(item2, 'milliseconds');
-                    if (item1Diff > 0 && item1Diff < item2Diff) {
-                        return -1;
-                    } else if (item2Diff > 0 && item2Diff < item1Diff) {
-                        return 1;
-                    } else { return 0; }
-                });
-            const foundTime = endTimes[0];
-            // console.log("FOUND PREVIOUS WAKEUP TIME for DATE: " + dateYYYYMMDD + " \n\t\t" + foundTime.format('YYYY-MM-DD hh:mm a'))
-            return foundTime;
-        } else {
-            const addHours = this._appConfig.defaultWakeupHour;
-            const addMins = this._appConfig.defaultWakeupMinute;
-            const wakeupTime = moment(dateYYYYMMDD).startOf('day').add(addHours, 'hours').add(addMins, 'minutes');
-            return wakeupTime;
+        const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
+        const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
+        const prevDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD);
+        if (thisDayItem && prevDayItem) {
+            if (thisDayItem.hasSleepItems && prevDayItem.hasSleepItems) {
+                const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
+                const schedItems = this._getSleepInputItems(dayItems);
+                const endTimes = schedItems.map(item => item.schedItemEndTime)
+                    .filter(time => time.isBefore(midDay))
+                    .sort((item1, item2) => {
+                        const item1Diff = moment(midDay).diff(item1, 'milliseconds');
+                        const item2Diff = moment(midDay).diff(item2, 'milliseconds');
+                        if (item1Diff > 0 && item1Diff < item2Diff) {
+                            return -1;
+                        } else if (item2Diff > 0 && item2Diff < item1Diff) {
+                            return 1;
+                        } else { return 0; }
+                    });
+                const foundTime = endTimes[0];
+                // console.log("FOUND PREVIOUS WAKEUP TIME for DATE: " + dateYYYYMMDD + " \n\t\t" + foundTime.format('YYYY-MM-DD hh:mm a'))
+                return foundTime;
+            }
         }
+        const tomorrowYYYYMMDD = moment().add(24, 'hours').format('YYYY-MM-DD');
+        if(dateYYYYMMDD === tomorrowYYYYMMDD){
+            return moment(this._sleepCycleData.nextWakeupTime);
+        }
+        const addHours = this._appConfig.defaultWakeupHour;
+        const addMins = this._appConfig.defaultWakeupMinute;
+        const wakeupTime = moment(dateYYYYMMDD).startOf('day').add(addHours, 'hours').add(addMins, 'minutes');
+        return wakeupTime;
+
     }
     private _findNextFallAsleepTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
-        if (dayItems[1].hasSleepItems && dayItems[2].hasSleepItems) {
-            const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
-            const schedItems = this._getSleepInputItems(dayItems);
-            const startTimes = schedItems.map(item => item.schedItemStartTime)
-                .filter(time => time.isAfter(midDay))
-                .sort((item1, item2) => {
-                    const item1Diff = moment(item1).diff(midDay, 'milliseconds');
-                    const item2Diff = moment(item2).diff(midDay, 'milliseconds');
-                    if (item1Diff > 0 && item1Diff < item2Diff) {
-                        return -1;
-                    } else if (item2Diff > 0 && item2Diff < item1Diff) {
-                        return 1;
-                    } else { return 0; }
-                });
-            const foundTime = startTimes[0];
-            // console.log("FOUND NEXT FALL ASLEEP TIME for DATE: " + dateYYYYMMDD + " \n\t\t" + foundTime.format('YYYY-MM-DD hh:mm a'))
-            return foundTime;
-        } else {
-            const addHours = this._appConfig.defaultFallAsleepHour;
-            const addMins = this._appConfig.defaultFallAsleepMinute;
-            const fallAsleepTime = moment(dateYYYYMMDD).startOf('day').add(addHours, 'hours').add(addMins, 'minutes');
-            return fallAsleepTime;
+        const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+        const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
+        const nextDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD);
+        if (thisDayItem && nextDayItem) {
+            if (thisDayItem.hasSleepItems && nextDayItem.hasSleepItems) {
+                const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
+                const schedItems = this._getSleepInputItems(dayItems);
+                const startTimes = schedItems.map(item => item.schedItemStartTime)
+                    .filter(time => time.isAfter(midDay))
+                    .sort((item1, item2) => {
+                        const item1Diff = moment(item1).diff(midDay, 'milliseconds');
+                        const item2Diff = moment(item2).diff(midDay, 'milliseconds');
+                        if (item1Diff > 0 && item1Diff < item2Diff) {
+                            return -1;
+                        } else if (item2Diff > 0 && item2Diff < item1Diff) {
+                            return 1;
+                        } else { return 0; }
+                    });
+                const foundTime = startTimes[0];
+                return foundTime;
+            }
         }
+        const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
+        const tomorrowYYYYMMDD: string = moment(todayYYYYMMDD).add(24, 'hours').format('YYYY-MM-DD');
+        if (nextDateYYYYMMDD === tomorrowYYYYMMDD) {
+            return moment(this._sleepCycleData.nextFallAsleepTime);
+        }
+        const addHours = this._appConfig.defaultFallAsleepHour;
+        const addMins = this._appConfig.defaultFallAsleepMinute;
+        const fallAsleepTime = moment(dateYYYYMMDD).startOf('day').add(addHours, 'hours').add(addMins, 'minutes');
+        return fallAsleepTime;
     }
     private _findNextWakeupTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
-        if (dayItems[1].hasSleepItems && dayItems[2].hasSleepItems) {
-            const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
-            const schedItems = this._getSleepInputItems(dayItems);
-            const endTimes = schedItems.map(item => item.schedItemEndTime)
-                .filter(time => time.isAfter(midDay))
-                .sort((item1, item2) => {
-                    const item1Diff = moment(item1).diff(midDay, 'milliseconds');
-                    const item2Diff = moment(item2).diff(midDay, 'milliseconds');
-                    if (item1Diff > 0 && item1Diff < item2Diff) {
-                        return -1;
-                    } else if (item2Diff > 0 && item2Diff < item1Diff) {
-                        return 1;
-                    } else { return 0; }
-                });
-            const foundTime = endTimes[0];
-            // console.log("FOUND NEXT WAKEUP TIME for DATE: " + dateYYYYMMDD + " \n\t\t" + foundTime.format('YYYY-MM-DD hh:mm a'))
-            return foundTime;
-        } else {
-            const addHours = this._appConfig.defaultWakeupHour;
-            const addMins = this._appConfig.defaultWakeupMinute;
-            const wakeupTime = moment(dateYYYYMMDD).startOf('day').add(24, 'hours').add(addHours, 'hours').add(addMins, 'minutes');
-            return wakeupTime;
+        const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+        const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
+        const nextDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD);
+        if (thisDayItem && nextDayItem) {
+            if (thisDayItem.hasSleepItems && nextDayItem.hasSleepItems) {
+                const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
+                const schedItems = this._getSleepInputItems(dayItems);
+                const endTimes = schedItems.map(item => item.schedItemEndTime)
+                    .filter(time => time.isAfter(midDay))
+                    .sort((item1, item2) => {
+                        const item1Diff = moment(item1).diff(midDay, 'milliseconds');
+                        const item2Diff = moment(item2).diff(midDay, 'milliseconds');
+                        if (item1Diff > 0 && item1Diff < item2Diff) {
+                            return -1;
+                        } else if (item2Diff > 0 && item2Diff < item1Diff) {
+                            return 1;
+                        } else { return 0; }
+                    });
+                const foundTime = endTimes[0];
+                return foundTime;
+            }
         }
+        const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
+        const tomorrowYYYYMMDD: string = moment(todayYYYYMMDD).add(24, 'hours').format('YYYY-MM-DD');
+        if (nextDateYYYYMMDD === tomorrowYYYYMMDD) {
+            return moment(this._sleepCycleData.nextWakeupTime);
+        }
+        const addHours = this._appConfig.defaultWakeupHour;
+        const addMins = this._appConfig.defaultWakeupMinute;
+        const wakeupTime = moment(dateYYYYMMDD).startOf('day').add(24, 'hours').add(addHours, 'hours').add(addMins, 'minutes');
+        return wakeupTime;
     }
 
     private _getSleepInputItems(dayItems: DaybookDayItem[]) {

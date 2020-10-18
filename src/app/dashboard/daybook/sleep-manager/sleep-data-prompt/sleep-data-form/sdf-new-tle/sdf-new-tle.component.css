@@ -1,0 +1,42 @@
+.new-tle-top{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    font-size: 12pt;
+}
+
+.new-activity{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-left:15px;
+    margin-right:15px;
+}
+.new-activity-name{
+    margin-left:5px;
+}
+.new-activity-color-block{
+    width:20px;
+    height:20px;
+    border-radius:3px;
+}
+
+.slider-bar-container{
+    width:100%;
+
+}
+
+
+.activity-color-circle{
+    width:15px;
+    height: 15px;
+    border-radius: 15px;
+    margin-right: 5px;
+    border: 1px solid rgba(0, 0, 0, 0);
+}
+.activity-color-circle:hover{
+    cursor: pointer;
+    border: 1px solid black;
+}

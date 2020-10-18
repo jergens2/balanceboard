@@ -17,10 +17,8 @@ export class AppComponent implements OnInit {
   private _isAuthenticated: boolean;
   private _userActivitySub: Subscription = new Subscription();
   private _inactivityStartTime: moment.Moment;
-  private _keyDown$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   public get isAuthenticated(): boolean { return this._isAuthenticated; }
-  public get keyDown$(): Observable<string> { return this._keyDown$.asObservable(); }
 
   constructor(
     private authService: AuthenticationService,

@@ -1,7 +1,6 @@
 <div class="sleep-form-root">
     <div style="margin-bottom: 10px;">
-        wtf why is this here?
-        <!-- <app-tlef-circle-buttons-bar></app-tlef-circle-buttons-bar> -->
+        <app-tlef-circle-buttons-bar></app-tlef-circle-buttons-bar>
     </div>
     <div class="form-item">
 
@@ -18,7 +17,7 @@
             </div>
         </div>
         <div *ngIf="isEditingFallAsleepTime">
-            <app-fall-asleep-time (close)="onCloseFallAsleepTime()"></app-fall-asleep-time>
+            <app-time-input [timeInput]="startTimeInput" class="time-input"></app-time-input>
         </div>
 
         <div class="time-container">

@@ -63,7 +63,7 @@ export class TlefViewOnlyComponent implements OnInit {
       if(this._entryItem.embeddedNote){
         this._noteText = this._entryItem.embeddedNote;
       }else{
-        this._noteText = "No note";
+        this._noteText = "";
       }
       const decorator: TimelogEntryDecorator = new TimelogEntryDecorator(this.activitiesService);
       this._displayActivities = this.entryItem.timelogEntryActivities.map(item => {

@@ -7,16 +7,45 @@
 
         <div class="time-input-row" *ngIf="hasPreviousActivity">
             <div class="time-input-row-label">Previous activity</div>
+            <div>
+                <div *ngFor="let activity of displayActivities">
+                    {{ activity.name }}
+                    <div class="units">
+                        <div *ngFor="let unit of activity.units" [ngStyle]="unit.ngStyle" class="unit">
+                        </div>
+                        <div class="duration-string">
+                            {{ activity.durationString }}</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="time-input-row-time">
+                <span style="font-weight: normal; color: gray;">ended at </span>
                 {{ previousActivityTime.format('h:mm a') }}
             </div>
         </div>
+        <div class="time-input-row" *ngIf="hasAvailableTime">
+            Activities prior to sleeping
+            <button class="medium-button save-button" style="margin: 5px;" *ngIf="showAddButton"
+                (click)="onClickAddActivities()">
+                <fa-icon [icon]="faPlus" style="margin: 5px;"></fa-icon>
+                Add activities
+            </button>
+            <app-sdf-new-tle *ngIf="showTLEForm" [startTimeInput]="newTLEStartTimeInput" 
+            [endTimeInput]="newTLEEndTimeInput" style="width: 100%;"
+            (activities)="updateTimelogEntry($event)"
+            (cancel)="onCancelActivities()"></app-sdf-new-tle>
+        </div>
+
         <div class="duration-row" *ngIf="hasPreviousActivity">
             <div>
-                <span class="duration-row-label">time until sleep</span>
+                <span class="duration-row-label">unaccounted-for time before falling asleep</span>
                 <span class="duration-row-duration">{{ previousVacantDuration }}</span>
             </div>
             <app-sdf-hour-count [itemCount]="previousVacantDurationHours" [color]="'AWAKE'"></app-sdf-hour-count>
+
+
+
         </div>
         <div class="time-input-row no-select">
             <div class="time-input-row-label">Last night I fell asleep at</div>
