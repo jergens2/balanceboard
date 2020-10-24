@@ -19,6 +19,12 @@ export class SleepCycleBuilder {
     private _sleepCycleData: SleepCycleData;
     private _appConfig: UAPAppConfiguration;
 
+    public get todayYYYYMMDD(): string { return moment().format('YYYY-MM-DD'); }
+    public get tomorrowYYYYMMDD(): string { return moment(this.todayYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'); }
+    public get dayAfterTomorrowYYYYMMDD(): string { return moment(this.todayYYYYMMDD).add(2, 'days').format('YYYY-MM-DD'); }
+    public get yesterdayYYYYMMDD(): string { return moment(this.todayYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD'); }
+    public get dayBeforeYesterdayYYYYMMDD(): string { return moment(this.todayYYYYMMDD).subtract(2, 'days').format('YYYY-MM-DD'); }
+
     public buildSleepCycleForDate(dateYYYYMMDD: string,
         dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration): SleepCycleScheduleItemsBuilder {
         this._appConfig = appConfig;
@@ -26,8 +32,6 @@ export class SleepCycleBuilder {
         const previousWakeupTime: moment.Moment = this._findPreviousWakeupTime(dateYYYYMMDD, dayItems);
         const nextFallAsleepTime: moment.Moment = this._findNextFallAsleepTime(dateYYYYMMDD, dayItems);
         const nextWakeupTime: moment.Moment = this._findNextWakeupTime(dateYYYYMMDD, dayItems);
-
-
         // console.log("  x  TIME VALUES SET: ")
         // console.log("  x  PREV FALL ASLEEP: ", previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
         // console.log("  x  PREV WAKE: ", previousWakeupTime.format('YYYY-MM-DD hh:mm a'))
@@ -39,6 +43,11 @@ export class SleepCycleBuilder {
     }
 
     private _findPreviousFallAsleepTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        if (dateYYYYMMDD === this.todayYYYYMMDD) {
+            return moment(this._sleepCycleData.previousFallAsleepTime);
+        } else if (dateYYYYMMDD === this.tomorrowYYYYMMDD) {
+            return moment(this._sleepCycleData.nextFallAsleepTime);
+        }
         const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
         const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
         const prevDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD);
@@ -69,6 +78,11 @@ export class SleepCycleBuilder {
 
     }
     private _findPreviousWakeupTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        if (dateYYYYMMDD === this.todayYYYYMMDD) {
+            return moment(this._sleepCycleData.previousWakeupTime);
+        } else if (dateYYYYMMDD === this.tomorrowYYYYMMDD) {
+            return moment(this._sleepCycleData.nextWakeupTime);
+        }
         const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
         const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
         const prevDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD);
@@ -92,17 +106,17 @@ export class SleepCycleBuilder {
                 return foundTime;
             }
         }
-        const tomorrowYYYYMMDD = moment().add(24, 'hours').format('YYYY-MM-DD');
-        if(dateYYYYMMDD === tomorrowYYYYMMDD){
-            return moment(this._sleepCycleData.nextWakeupTime);
-        }
         const addHours = this._appConfig.defaultWakeupHour;
         const addMins = this._appConfig.defaultWakeupMinute;
         const wakeupTime = moment(dateYYYYMMDD).startOf('day').add(addHours, 'hours').add(addMins, 'minutes');
         return wakeupTime;
-
     }
     private _findNextFallAsleepTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        if (dateYYYYMMDD === this.yesterdayYYYYMMDD) {
+            return moment(this._sleepCycleData.previousFallAsleepTime);
+        } else if (dateYYYYMMDD === this.todayYYYYMMDD) {
+            return moment(this._sleepCycleData.nextFallAsleepTime);
+        }
         const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
         const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
         const nextDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD);
@@ -125,17 +139,17 @@ export class SleepCycleBuilder {
                 return foundTime;
             }
         }
-        const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
-        const tomorrowYYYYMMDD: string = moment(todayYYYYMMDD).add(24, 'hours').format('YYYY-MM-DD');
-        if (nextDateYYYYMMDD === tomorrowYYYYMMDD) {
-            return moment(this._sleepCycleData.nextFallAsleepTime);
-        }
         const addHours = this._appConfig.defaultFallAsleepHour;
         const addMins = this._appConfig.defaultFallAsleepMinute;
         const fallAsleepTime = moment(dateYYYYMMDD).startOf('day').add(addHours, 'hours').add(addMins, 'minutes');
         return fallAsleepTime;
     }
     private _findNextWakeupTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        if (dateYYYYMMDD === this.yesterdayYYYYMMDD) {
+            return moment(this._sleepCycleData.previousWakeupTime);
+        } else if (dateYYYYMMDD === this.todayYYYYMMDD) {
+            return moment(this._sleepCycleData.nextWakeupTime);
+        }
         const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
         const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
         const nextDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD);
@@ -157,11 +171,6 @@ export class SleepCycleBuilder {
                 const foundTime = endTimes[0];
                 return foundTime;
             }
-        }
-        const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
-        const tomorrowYYYYMMDD: string = moment(todayYYYYMMDD).add(24, 'hours').format('YYYY-MM-DD');
-        if (nextDateYYYYMMDD === tomorrowYYYYMMDD) {
-            return moment(this._sleepCycleData.nextWakeupTime);
         }
         const addHours = this._appConfig.defaultWakeupHour;
         const addMins = this._appConfig.defaultWakeupMinute;

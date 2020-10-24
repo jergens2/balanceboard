@@ -58,8 +58,8 @@ export class DaybookTimeScheduleBuilder {
         // sleepItems.forEach(si => console.log("   " + si.toString()))
         // console.log("***   ACTIVE TLE ITEMS ARE:")
         // activeItems.forEach(si => console.log("   " + si.toString()))
-        const availableItems: DaybookTimeScheduleAvailableItem[] = this._populateAvailableScheduleItems(
-            this._sortAndValidateScheduleItems([...sleepItems, ...activeItems]));
+        const notAvailableItems = this._sortAndValidateScheduleItems([...sleepItems, ...activeItems]);
+        const availableItems: DaybookTimeScheduleAvailableItem[] = this._populateAvailableScheduleItems(notAvailableItems);
         // console.log("***   AVBAILABLE ITEMS ARE:")
         // availableItems.forEach(si => console.log("   " + si.toString()))
         const combinedScheduleItems = this._sortAndValidateScheduleItems([...sleepItems, ...activeItems, ...availableItems]);
@@ -72,7 +72,6 @@ export class DaybookTimeScheduleBuilder {
         }
         const limiterSetter: DTSTimeLimiterSetter = new DTSTimeLimiterSetter(combinedScheduleItems);
         const finalizedItems = limiterSetter.finalizedItems;
-
         return new DaybookTimeSchedule(dateYYYYMMDD, startTime, endTime, finalizedItems, sleepCycle);
     }
 
@@ -97,7 +96,6 @@ export class DaybookTimeScheduleBuilder {
         });
         existingItemTimes = removedDuplicates;
         const splitDelineators: TimelogDelineator[] = this._getSplitterDelineators(existingItemTimes);
-
         let currentTime: moment.Moment = moment(this._startTime);
         let allItems: DaybookTimeScheduleAvailableItem[] = [];
         if (timeScheduleItems.length === 0) {
@@ -117,7 +115,7 @@ export class DaybookTimeScheduleBuilder {
             }
         }
         // console.log("ALL AVAILABLE ITEMS: ")
-        // allItems.forEach(item => console.log(item.startDelineator, item.endDelineator))
+        // allItems.forEach(item => console.log(item.toString()))
         return allItems;
     }
     private _splitThisAvailableItem(startTime: moment.Moment, endTime: moment.Moment,

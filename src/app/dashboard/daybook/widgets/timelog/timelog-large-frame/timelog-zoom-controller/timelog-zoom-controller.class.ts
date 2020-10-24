@@ -21,25 +21,28 @@ export class TimelogZoomController {
     private _customStartTime: moment.Moment;
     private _customEndTime: moment.Moment;
 
+    private _dateYYYYMMDD: string;
+
     /**
      * The purpose of this class is to set and allow for the changing of the zoom on the timelog.
      * 
      * This class has variables that depend on the current time, 
      * and these variables are updated by the parent class every minute.
      */
-    constructor(schedule: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder) {
+    constructor(schedule: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder, dateYYYYMMDD: string) {
         this._schedule = schedule;
         this._sleepCycle = sleepCycle;
+        this._dateYYYYMMDD = dateYYYYMMDD;
         this._buildZoomItems();
         this.setZoom(TimelogZoomType.AWAKE_PERIOD);
     }
 
-    public update(schedule: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder) {
+    public update(schedule: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder, dateYYYYMMDD: string) {
         this._schedule = schedule;
         this._sleepCycle = sleepCycle;
+        this._dateYYYYMMDD = dateYYYYMMDD;
         this._updateZoomItems();
     }
-
 
     public get zoomItems(): TimelogZoomItem[] { return this._zoomItems; }
 
@@ -54,15 +57,14 @@ export class TimelogZoomController {
     public get zoomIsList(): boolean { return this.currentZoom.zoomType === TimelogZoomType.LIST_VIEW; }
     public get zoomIsCustom(): boolean { return this.currentZoom.zoomType === TimelogZoomType.CUSTOM; }
 
-
-
     public setZoom(zoomType: TimelogZoomType) {
-        this.zoomItems.forEach(item => item.isActive = false);
+        // console.log("setting zoom: " + zoomType);
+        // this.zoomItems.forEach(item => item.isActive = false);
+        // console.log("ZOOM ITEMS")
+        // this.zoomItems.forEach(item => console.log("ITEM: " + item.toString()))
         this._currentZoom = this.zoomItems.find(item => item.zoomType === zoomType);
         this._currentZoom.isActive = true;
-        // console.log("Current zoom is: " + this._currentZoom.toString())
     }
-
 
     private _buildZoomItems() {
         const startOfThisDay: moment.Moment = this._schedule.startOfThisDay;
@@ -83,14 +85,22 @@ export class TimelogZoomController {
             new TimelogZoomItem(startOfThisDay, endOfThisDay, TimelogZoomType.LIST_VIEW, faList, 'LIST'),
             // new TimelogZoomItem(this._customStartTime, this._customEndTime, TimelogZoomType.CUSTOM, faSearch, 'CUSTOM'),
         ];
-
+        const today = moment().format('YYYY-MM-DD');
+        if (this._dateYYYYMMDD !== today) {
+            this._zoomItems.splice(this._zoomItems.findIndex(item => item.zoomType === TimelogZoomType.EIGHT_HOUR_WINDOW), 1);
+        }
         this.zoomItems[0].isFirst = true;
         this.zoomItems[this.zoomItems.length - 1].isLast = true;
     }
 
-
     private _updateZoomItems() {
-        const currentZoomType = this.currentZoom.zoomType;
+        let currentZoomType = this.currentZoom.zoomType;
+        const today = moment().format('YYYY-MM-DD');
+        if (this._dateYYYYMMDD !== today) {
+            if (currentZoomType === TimelogZoomType.EIGHT_HOUR_WINDOW) {
+                currentZoomType = TimelogZoomType.AWAKE_PERIOD;
+            }
+        }
         this._buildZoomItems();
         this.setZoom(currentZoomType);
     }

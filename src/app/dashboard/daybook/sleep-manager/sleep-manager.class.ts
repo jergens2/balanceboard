@@ -171,12 +171,19 @@ export class SleepManager {
             return 0;
         });
         if (allActivities.length > 0) {
-            this._previousActivity = allActivities[allActivities.length - 1];
-            this._previousActivityTime = moment(this._previousActivity.endTimeISO);
+            const activityEndTime = moment(allActivities[allActivities.length - 1].endTimeISO);
+            if (activityEndTime.isBefore(moment(this._previousWakeupTime).subtract(24, 'hours'))) {
+                this._previousActivityTime = moment(this.previousFallAsleepTime).subtract(6, 'hours');
+                this._previousActivity = null;
+            } else {
+                this._previousActivityTime = moment(activityEndTime);
+                this._previousActivity = allActivities[allActivities.length - 1];
+            }
         } else {
             this._previousActivityTime = moment(this.previousFallAsleepTime).subtract(6, 'hours');
             this._previousActivity = null;
         }
+
     }
 
     private _startClock() {

@@ -18,6 +18,13 @@ export class DaybookTimeScheduleSleepItem extends DaybookTimeScheduleItem {
         this._actualEndTime = moment(addItem.schedItemEndTime);
         this._sleepEntry.changeEndTime(addItem.schedItemEndTime);
     }
+    /** adds an item that immediately precedes this one and updates the information. */
+    // public mergeItemBefore(addItem: DaybookTimeScheduleSleepItem) {
+    //     // this.changeSchedItemEndTime(addItem.schedItemEndTime);
+    //     this._actualStartTime = moment(addItem.schedItemStartTime);
+    //     this._sleepEntry.changeStartTime(addItem.schedItemStartTime);
+    // }
+
 
 
     private _buildSleepEntry(sleepEntry: DaybookSleepInputDataItem) {

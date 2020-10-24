@@ -168,7 +168,7 @@ export class DaybookDisplayService {
 
       this._daybookSchedule = schedule;
       this._daybookController = controller;
-      this._daybookDisplayManager.updateDisplayManager(schedule, sleepCycle, action);
+      this._daybookDisplayManager.updateDisplayManager(schedule, sleepCycle, action, dateYYYYMMDD);
 
       this._displayUpdated$.next(action);
     }

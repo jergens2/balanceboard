@@ -68,6 +68,7 @@ export class SleepEntryItem {
     }
 
     public changeEndTime(time: moment.Moment) { this._endTime = moment(time); }
+    public changeStartTime(time: moment.Moment) { this._startTime = moment(time); }
 
     public getEnergyAtTime(timeToCheck: moment.Moment): number {
         const diffHours = moment(timeToCheck).diff(this.startTime, 'milliseconds') / (1000 * 60 * 60);
@@ -78,26 +79,26 @@ export class SleepEntryItem {
 
 
 
-    public setEndTime(endTime: moment.Moment, asleepHoursPerDay: number) {
-        // AKA setWakeupTime
-        this._endTime = moment(endTime);
-        this._endTimeIsSaved = true;
-        if (!this._startTimeIsSaved) {
-            // if there was no fall asleep time set.
-            this._startTime = moment(this._endTime).subtract(asleepHoursPerDay, 'hours');
-            this._startTimeIsSaved = true;
-        }
-    }
-    public setStartTime(startTime: moment.Moment, asleepHoursPerDay?: number, saveFollowingEndTime = false) {
-        // AKA setFallAsleepTime
-        this._startTime = startTime;
-        this._startTimeIsSaved = true;
+    // public setEndTime(endTime: moment.Moment, asleepHoursPerDay: number) {
+    //     // AKA setWakeupTime
+    //     this._endTime = moment(endTime);
+    //     this._endTimeIsSaved = true;
+    //     if (!this._startTimeIsSaved) {
+    //         // if there was no fall asleep time set.
+    //         this._startTime = moment(this._endTime).subtract(asleepHoursPerDay, 'hours');
+    //         this._startTimeIsSaved = true;
+    //     }
+    // }
+    // public setStartTime(startTime: moment.Moment, asleepHoursPerDay?: number, saveFollowingEndTime = false) {
+    //     // AKA setFallAsleepTime
+    //     this._startTime = startTime;
+    //     this._startTimeIsSaved = true;
 
-        if (saveFollowingEndTime) {
-            this._endTime = moment(this._startTime).add(asleepHoursPerDay, 'hours');
-            this._endTimeIsSaved = true;
-        }
-    }
+    //     if (saveFollowingEndTime) {
+    //         this._endTime = moment(this._startTime).add(asleepHoursPerDay, 'hours');
+    //         this._endTimeIsSaved = true;
+    //     }
+    // }
     public note: string = "";
     public percentAsleep: number = 100;
 

@@ -143,13 +143,13 @@ export class DaybookDisplayManager {
     // public get currentlyOpenItemIndex$(): Observable<number> { return this._currentlyOpenItemIndex$.asObservable(); }
 
     public updateDisplayManager(timeSched: DaybookTimeSchedule, sleepCycle: SleepCycleScheduleItemsBuilder,
-        action: DaybookUpdateAction) {
+        action: DaybookUpdateAction, dateYYYYMMDD: string) {
         this._schedule = timeSched;
         this._sleepCycle = sleepCycle;
         if (!this._zoomController) {
-            this._zoomController = new TimelogZoomController(timeSched, sleepCycle);
+            this._zoomController = new TimelogZoomController(timeSched, sleepCycle, dateYYYYMMDD);
         } else {
-            this._zoomController.update(timeSched, sleepCycle);
+            this._zoomController.update(timeSched, sleepCycle, dateYYYYMMDD);
         }
         this._update(action);
     }
