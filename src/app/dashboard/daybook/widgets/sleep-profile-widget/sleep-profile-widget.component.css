@@ -5,97 +5,33 @@
     flex-direction: column;
 }
 
-.profile-item{
+.widget-row{
     display:flex;
     flex-direction: column;
-}
-
-
-.red-circle{
-    color: red;
-
-}
-.green-circle{
-    color: green;
-}
-
-/* .complete-view{
-    display:flex;
-    flex-direction: row;
-    
-}
-
-
-.section-row{
-    display:flex;
-    flex-direction: row;
-    width:100%;
-    padding:5px;
+    width: 100% ;
     margin-bottom: 10px;
 }
-.section-row-completion{
-    display:flex;
-    height:100%;
-    flex-direction: row;
-    align-items: center;
-    font-size:1.5em;
-}
-.section-row-content{
-    display:flex;
-    flex-direction: column;
-    flex-grow: 2;
-}
-
-.input-row{
+.time-row{
     display:flex;
     flex-direction: row;
+    width: 100%;
     align-items: center;
-    height:30px;
+    justify-content: space-between;
 }
-
-.time-input{
-    margin-left:5px;
-    margin-right:5px;
-    border-radius:3px;
-    color:black;
-    border: 1px solid grey;
-}
-.time-input-complete{
-    color: black;
-    border: 1px solid black;
-}
-
-.sleep-quality{
-    font-size:1.3em;
-    margin-right:2px;
-    cursor: pointer;
-    color: rgb(215, 215, 215);
-}
-
-.fall-asleep-date{
-    font-weight: bold;
-    border-radius: 5px;
-    font-size: 0.8em;
+.label{
+    font-size:0.8em;
     color: gray;
 }
-.fall-asleep-date:hover{
-    background-color: rgb(245, 245, 245);
-    cursor: pointer;
-} */
-
-/* 
-.sleep-quality-very-poor{
-    color: rgb(0, 16, 37);
+.date{
+    font-size: 0.9em;
 }
-.sleep-quality-poor{
-    color: rgb(0, 38, 83);
+.time{ 
+    font-size: 1.1em;
+    font-weight: bold;
 }
-.sleep-quality-okay{
-    color: rgb(0, 57, 131);
+.wake-up{
+    color: orange;
 }
-.sleep-quality-well{
-    color: rgb(0, 83, 190);
+.fall-asleep{
+    color: navy;
 }
-.sleep-quality-very-well{
-    color: rgb(0, 110, 255);
-} */

@@ -59,7 +59,7 @@ export class TimelogZoomController {
 
     public setZoom(zoomType: TimelogZoomType) {
         // console.log("setting zoom: " + zoomType);
-        // this.zoomItems.forEach(item => item.isActive = false);
+        this.zoomItems.forEach(item => item.isActive = false);
         // console.log("ZOOM ITEMS")
         // this.zoomItems.forEach(item => console.log("ITEM: " + item.toString()))
         this._currentZoom = this.zoomItems.find(item => item.zoomType === zoomType);

@@ -45,6 +45,7 @@ export class SleepProfileLargeComponent implements OnInit {
     timer(0, 10000).subscribe((tick) => {
       this._updateBedtime();
     });
+    this.sleepService.sleepManager
 
   }
 

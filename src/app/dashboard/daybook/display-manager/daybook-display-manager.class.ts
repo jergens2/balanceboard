@@ -132,8 +132,8 @@ export class DaybookDisplayManager {
     public openItemToTheRight() {
         this._currentlyOpenItemIndex += 1;
         if (this._currentlyOpenItemIndex >= this.displayItems.length) {
-
             this._currentlyOpenItemIndex = this.displayItems.length - 1;
+            
         } else {
             this.openItemByIndex(this._currentlyOpenItemIndex);
         }

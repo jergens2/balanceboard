@@ -164,7 +164,8 @@ export class SleepCycleScheduleItemsBuilder {
                 if (this._nextWakeupTime.isAfter(endOfThisDay)) {
                     sleepItems.push(new DaybookTimeScheduleSleepItem(this._nextFallAsleepTime, endOfThisDay, null));
                 } else {
-                    console.log("Unusual circumstance: ", this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - " + this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'));
+                    // console.log("Unusual circumstance: ",
+                    //     this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - " + this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'));
                     sleepItems.push(new DaybookTimeScheduleSleepItem(this._nextFallAsleepTime, this._nextWakeupTime, null))
                 }
             }

@@ -120,10 +120,27 @@ export class SleepManager {
      *  This method is used by the daybook display service
      */
     public getSleepCycleForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): SleepCycleScheduleItemsBuilder {
-        const builder: SleepCycleBuilder = new SleepCycleBuilder(this._sleepData);
-        // console.log("BUILDER THING.  Day items: ", dayItems)
-        return builder.buildSleepCycleForDate(dateYYYYMMDD, dayItems, this._appConfig);
+        const builder: SleepCycleBuilder = new SleepCycleBuilder(this._sleepData, this._appConfig);
+        return builder.buildSleepCycleForDate(dateYYYYMMDD, dayItems);
     }
+
+    public findPreviousFallAsleepTimeForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        const builder: SleepCycleBuilder = new SleepCycleBuilder(this._sleepData, this._appConfig);
+        return builder.findPreviousFallAsleepTimeForDate(dateYYYYMMDD, dayItems);
+    }
+    public findPreviousWakeupTimeForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        const builder: SleepCycleBuilder = new SleepCycleBuilder(this._sleepData, this._appConfig);
+        return builder.findPreviousWakeupTimeForDate(dateYYYYMMDD, dayItems);
+    }
+    public findNextFallAsleepTimeForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        const builder: SleepCycleBuilder = new SleepCycleBuilder(this._sleepData, this._appConfig);
+        return builder.findNextFallAsleepTimeForDate(dateYYYYMMDD, dayItems);
+    }
+    public findNextWakeupTimeForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        const builder: SleepCycleBuilder = new SleepCycleBuilder(this._sleepData, this._appConfig);
+        return builder.findNextWakeupTimeForDate(dateYYYYMMDD, dayItems);
+    }
+
 
     private _setDefaults() {
         const startOfDay = moment().startOf('day');

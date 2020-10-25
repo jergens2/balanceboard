@@ -63,19 +63,7 @@ export class DaybookDayItem {
     }
 
     public get hasSleepItems(): boolean {
-        const minMs = 2 * 1000 * 60 * 60; // 2 hours
-        let sum = 0;
-        if (this.sleepInputItems.length === 0) {
-            return false;
-        } else if (this.sleepInputItems.length > 1) {
-            return true;
-        } else {
-            this.sleepInputItems.forEach((sleepItem) => {
-                sum += moment(sleepItem.endSleepTimeISO).diff(moment(sleepItem.startSleepTimeISO), 'milliseconds');
-            });
-            return sum > minMs;
-        }
-
+        return this.sleepInputItems.length > 0;
     }
 
 
@@ -88,7 +76,9 @@ export class DaybookDayItem {
         this._httpShape.daybookTimelogEntryDataItems = items;
     }
 
-    public set timeDelineators(timeDelineators: moment.Moment[]) { this._httpShape.timeDelineators = timeDelineators.map(item => item.toISOString()); }
+    public set timeDelineators(timeDelineators: moment.Moment[]) { 
+        this._httpShape.timeDelineators = timeDelineators.map(item => item.toISOString()); 
+    }
 
 
     public get dailyWeightLogEntryKg(): number { return this.httpShape.dailyWeightLogEntryKg; }

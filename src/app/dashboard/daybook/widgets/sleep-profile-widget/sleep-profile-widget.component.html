@@ -1,8 +1,16 @@
 <div class="sleep-profile-widget-root">
-    <div>
-        Woke up at:  {{ wakeupTime }}
+    <div class="widget-row">
+        <span class="label">{{ wakeupLabel }}</span>
+        <div class="time-row">
+            <span class="date">{{ wakeupDate }}</span>
+            <span class="time wake-up">{{ wakeupTime }}</span>
+        </div>
     </div>
-    <div>
-        Bed time:  {{ bedtime }}
+    <div class="widget-row">
+        <span class="label">{{ bedtimeLabel }}</span>
+        <div class="time-row">
+            <span class="date">{{ bedtimeDate }}</span>
+            <span class="time fall-asleep">{{ bedtime }}</span>
+        </div>
     </div>
 </div>

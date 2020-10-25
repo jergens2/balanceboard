@@ -189,7 +189,6 @@ export class DaybookTimeScheduleBuilder {
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(24, 'hours'), typeStructure),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(48, 'hours'), typeStructure),
         ];
-
         const nowDelineator: TimelogDelineator = new TimelogDelineator(moment().startOf('minute'), TimelogDelineatorType.NOW);
         const savedDelineators: TimelogDelineator[] = this._daybookController.savedDelineatorTimes.map(item => {
             return new TimelogDelineator(item, TimelogDelineatorType.SAVED_DELINEATOR);

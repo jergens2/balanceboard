@@ -12,8 +12,9 @@ export class SleepCycleBuilder {
     /**
      * This class exists for the SleepManager to use
      */
-    constructor(data: SleepCycleData) {
+    constructor(data: SleepCycleData, appConfig: UAPAppConfiguration) {
         this._sleepCycleData = data;
+        this._appConfig = appConfig;
     }
 
     private _sleepCycleData: SleepCycleData;
@@ -26,8 +27,7 @@ export class SleepCycleBuilder {
     public get dayBeforeYesterdayYYYYMMDD(): string { return moment(this.todayYYYYMMDD).subtract(2, 'days').format('YYYY-MM-DD'); }
 
     public buildSleepCycleForDate(dateYYYYMMDD: string,
-        dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration): SleepCycleScheduleItemsBuilder {
-        this._appConfig = appConfig;
+        dayItems: DaybookDayItem[]): SleepCycleScheduleItemsBuilder {
         const previousFallAsleepTime: moment.Moment = this._findPreviousFallAsleepTime(dateYYYYMMDD, dayItems);
         const previousWakeupTime: moment.Moment = this._findPreviousWakeupTime(dateYYYYMMDD, dayItems);
         const nextFallAsleepTime: moment.Moment = this._findNextFallAsleepTime(dateYYYYMMDD, dayItems);
@@ -37,9 +37,22 @@ export class SleepCycleBuilder {
         // console.log("  x  PREV WAKE: ", previousWakeupTime.format('YYYY-MM-DD hh:mm a'))
         // console.log("  x  NEXT FALL ASLEEP: ", nextFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
         // console.log("  x  NEXT WAKE: ", nextWakeupTime.format('YYYY-MM-DD hh:mm a'))
-        const newSleepCycle = new SleepCycleScheduleItemsBuilder(dateYYYYMMDD, dayItems, appConfig,
+        const newSleepCycle = new SleepCycleScheduleItemsBuilder(dateYYYYMMDD, dayItems, this._appConfig,
             moment(previousFallAsleepTime), moment(previousWakeupTime), moment(nextFallAsleepTime), moment(nextWakeupTime));
         return newSleepCycle;
+    }
+
+    public findPreviousFallAsleepTimeForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        return this._findPreviousFallAsleepTime(dateYYYYMMDD, dayItems);
+    }
+    public findPreviousWakeupTimeForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        return this._findPreviousWakeupTime(dateYYYYMMDD, dayItems);
+    }
+    public findNextFallAsleepTimeForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        return this._findNextFallAsleepTime(dateYYYYMMDD, dayItems);
+    }
+    public findNextWakeupTimeForDate(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
+        return this._findNextWakeupTime(dateYYYYMMDD, dayItems);
     }
 
     private _findPreviousFallAsleepTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {
