@@ -161,7 +161,7 @@ export class SleepDataFormComponent implements OnInit {
       }
     }
 
-
+    
     const updateDaybookItems: DaybookDayItem[] = daybookUpdater.updateDaybookItems(this.sdfDisplay, profile, dayItems, addTimelogEntries);
 
     forkJoin([

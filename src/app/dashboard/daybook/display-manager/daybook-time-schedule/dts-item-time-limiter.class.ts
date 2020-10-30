@@ -44,6 +44,10 @@ export class DTSItemTimeLimiter {
         this._updateInputs();
     }
 
+    public clone(): DTSItemTimeLimiter {
+        return new DTSItemTimeLimiter(this.startTime, this.endTime, this.upperLimit, this.lowerLimit);
+    }
+
     public changeEndTime(time: moment.Moment) {
         if (time.isAfter(this._upperLimit)) {
             this._endTime = moment(this._upperLimit);

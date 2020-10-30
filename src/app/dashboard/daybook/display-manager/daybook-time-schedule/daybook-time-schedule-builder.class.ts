@@ -178,6 +178,13 @@ export class DaybookTimeScheduleBuilder {
         const typeStructure = TimelogDelineatorType.DAY_STRUCTURE;
         const structureDelineators: TimelogDelineator[] = [
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').subtract(24, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').subtract(21, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').subtract(18, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').subtract(15, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').subtract(12, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').subtract(9, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').subtract(6, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').subtract(3, 'hours'), typeStructure),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day'), typeStructure),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').hour(3), typeStructure),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').hour(6), typeStructure),
@@ -187,6 +194,13 @@ export class DaybookTimeScheduleBuilder {
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').hour(18), typeStructure),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').hour(21), typeStructure),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(24, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(27, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(30, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(33, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(36, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(39, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(42, 'hours'), typeStructure),
+            new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(45, 'hours'), typeStructure),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(48, 'hours'), typeStructure),
         ];
         const nowDelineator: TimelogDelineator = new TimelogDelineator(moment().startOf('minute'), TimelogDelineatorType.NOW);

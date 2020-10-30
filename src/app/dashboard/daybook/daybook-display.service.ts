@@ -20,6 +20,7 @@ import { TimelogDisplayGrid } from './widgets/timelog/timelog-large-frame/timelo
 import { DaybookUpdateAction } from './display-manager/daybook-update-action.enum';
 import { DaybookDayItemController } from './daybook-day-item/daybook-day-item-controller';
 import { DaybookTimeScheduleActiveItem } from './display-manager/daybook-time-schedule/daybook-time-schedule-active-item.class';
+import { SleepDisplayProfile } from './widgets/sleep-profile-widget/sleep-display-profile.class';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,7 @@ export class DaybookDisplayService {
   private _daybookSchedule: DaybookTimeSchedule;
   private _daybookController: DaybookDayItemController;
   private _daybookDisplayManager: DaybookDisplayManager;
+  private _sleepDisplayProfile: SleepDisplayProfile;
 
   private _drawTLE$: BehaviorSubject<TimelogEntryItem> = new BehaviorSubject(null);
   private _currentlyDrawing: boolean = false;
@@ -66,6 +68,7 @@ export class DaybookDisplayService {
 
   public get daybookSchedule(): DaybookTimeSchedule { return this._daybookSchedule; }
   public get displayManager(): DaybookDisplayManager { return this._daybookDisplayManager; }
+  public get sleepDisplayProfile(): SleepDisplayProfile { return this._sleepDisplayProfile; }
 
   public onZoomChanged(zoom: TimelogZoomType) {
     this.displayManager.onZoomChanged(zoom);
@@ -159,6 +162,7 @@ export class DaybookDisplayService {
       // console.log('   * DDS._updateDisplay() constructing controller')
       const controller: DaybookDayItemController = new DaybookDayItemController(dateYYYYMMDD, controllerItems);
       // console.log('   * DDS._updateDisplay() getting sleep cycle')
+      const sleepManager = this.sleepService.sleepManager;
       const sleepCycle = this.sleepService.sleepManager.getSleepCycleForDate(dateYYYYMMDD, dayItems);
 
       const scheduleBuilder: DaybookTimeScheduleBuilder = new DaybookTimeScheduleBuilder();
@@ -168,6 +172,7 @@ export class DaybookDisplayService {
 
       this._daybookSchedule = schedule;
       this._daybookController = controller;
+      this._sleepDisplayProfile = new SleepDisplayProfile(schedule.timeScheduleItems, sleepManager, dateYYYYMMDD, controllerItems);
       this._daybookDisplayManager.updateDisplayManager(schedule, sleepCycle, action, dateYYYYMMDD);
 
       this._displayUpdated$.next(action);

@@ -1,16 +1,30 @@
 <div class="sleep-profile-widget-root">
     <div class="widget-row">
         <span class="label">{{ wakeupLabel }}</span>
-        <div class="time-row">
+        <div class="time-row" *ngIf="!isEditingWakeupTime" (click)="onClickWakeupTime()">
             <span class="date">{{ wakeupDate }}</span>
             <span class="time wake-up">{{ wakeupTime }}</span>
+        </div>
+        <div *ngIf="isEditingWakeupTime" class="editing-row">
+            <app-time-input [timeInput]="wakeupInput" ></app-time-input>
+            <div class="buttons-row">
+                <button class="small-button save-button" (click)="onClickSaveWakeup()">Save</button>
+                <button class="small-button discard-button" (click)="onClickDiscardWakeup()">Cancel</button>
+            </div>
         </div>
     </div>
     <div class="widget-row">
         <span class="label">{{ bedtimeLabel }}</span>
-        <div class="time-row">
+        <div class="time-row" *ngIf="!isEditingFallAsleepTime" (click)="onClickFallAsleepTime()">
             <span class="date">{{ bedtimeDate }}</span>
             <span class="time fall-asleep">{{ bedtime }}</span>
+        </div>
+        <div *ngIf="isEditingFallAsleepTime" class="editing-row">
+            <app-time-input [timeInput]="fallAsleepInput" ></app-time-input>
+            <div class="buttons-row">
+                <button class="small-button save-button" (click)="onClickSaveFallAsleep()">Save</button>
+                <button class="small-button discard-button" (click)="onClickDiscardFallAsleep()">Cancel</button>
+            </div>
         </div>
     </div>
 </div>

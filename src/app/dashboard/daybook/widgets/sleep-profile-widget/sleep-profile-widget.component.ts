@@ -7,6 +7,9 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { SleepService } from '../../sleep-manager/sleep.service';
 import { DaybookDisplayService } from '../../daybook-display.service';
 import { DaybookDayItem } from '../../daybook-day-item/daybook-day-item.class';
+import { DTSItemTimeLimiter } from '../../display-manager/daybook-time-schedule/dts-item-time-limiter.class';
+import { TimeInput } from '../../../../../app/shared/components/time-input/time-input.class';
+import { DaybookUpdateAction } from '../../display-manager/daybook-update-action.enum';
 
 @Component({
   selector: 'app-sleep-profile-widget',
@@ -30,6 +33,12 @@ export class SleepProfileWidgetComponent implements OnInit {
   private _sleepAtDate: string;
   private _sleepAtTime: string;
 
+  private _wakeupInput: TimeInput;
+  private _sleepInput: TimeInput;
+
+  private _isEditingWakeupTime: boolean = false;
+  private _isEditingFallAsleepTime: boolean = false;
+
   public get wakeupLabel(): string { return this._wakeupLabel; }
   public get wakeupDate(): string { return this._wakeupDate; }
   public get wakeupTime(): string { return this._wakeupTime; }
@@ -38,11 +47,22 @@ export class SleepProfileWidgetComponent implements OnInit {
   public get bedtimeDate(): string { return this._sleepAtDate; }
   public get bedtime(): string { return this._sleepAtTime; }
 
+  public get wakeupInput(): TimeInput { return this._wakeupInput; }
+  public get fallAsleepInput(): TimeInput { return this._sleepInput; }
+
+  public get isEditingWakeupTime(): boolean { return this._isEditingWakeupTime; }
+  public get isEditingFallAsleepTime(): boolean { return this._isEditingFallAsleepTime; }
+
+
 
   ngOnInit() {
     this._update();
     this.daybookService.displayUpdated$.subscribe(update => {
       this._update();
+      if (update === DaybookUpdateAction.CALENDAR) {
+        this._isEditingFallAsleepTime = false;
+        this._isEditingWakeupTime = false;
+      }
     });
   }
 
@@ -50,10 +70,32 @@ export class SleepProfileWidgetComponent implements OnInit {
 
   }
 
+  public onClickWakeupTime() { this._isEditingWakeupTime = true; }
+  public onClickFallAsleepTime() { this._isEditingFallAsleepTime = true; }
+  public onClickSaveWakeup() {
+    console.log("Not implemented");
+    this._isEditingWakeupTime = false;
+    this._update();
+  }
+  public onClickDiscardWakeup() {
+    this._isEditingWakeupTime = false;
+    this._update();
+  }
+  public onClickSaveFallAsleep() {
+    console.log("Not implemented");
+    this._isEditingFallAsleepTime = false;
+    this._update();
+  }
+  public onClickDiscardFallAsleep() {
+    this._isEditingFallAsleepTime = false;
+    this._update();
+  }
+
   private _update() {
+
+    const sleepProfile = this.daybookService.sleepDisplayProfile;
     const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
     const currentDateYYYYMMDD: string = this.daybookService.activeDateYYYYMMDD;
-    const dayItems: DaybookDayItem[] = this.daybookService.daybookController.dayItems;
     if (todayYYYYMMDD === currentDateYYYYMMDD) {
       this._wakeupLabel = 'Woke up at:';
       this._sleepAtLabel = 'Bed time:';
@@ -64,11 +106,12 @@ export class SleepProfileWidgetComponent implements OnInit {
       this._wakeupLabel = 'Woke up at:';
       this._sleepAtLabel = 'Went to sleep at:';
     }
-    const wakeup: moment.Moment = this.sleepService.sleepManager.findPreviousWakeupTimeForDate(currentDateYYYYMMDD, dayItems);
-    const sleepAt: moment.Moment = this.sleepService.sleepManager.findNextFallAsleepTimeForDate(currentDateYYYYMMDD, dayItems);
-    this._wakeupTime = wakeup.format('h:mm a');
-    this._wakeupDate = wakeup.format('YYYY-MM-DD');
-    this._sleepAtTime = sleepAt.format('h:mm a');
-    this._sleepAtDate = sleepAt.format('YYYY-MM-DD');
+
+    this._wakeupTime = sleepProfile.wakeupTime.format('h:mm a');
+    this._wakeupDate = sleepProfile.wakeupTime.format('YYYY-MM-DD');
+    this._sleepAtTime = sleepProfile.fallAsleepTime.format('h:mm a');
+    this._sleepAtDate = sleepProfile.fallAsleepTime.format('YYYY-MM-DD');
+    this._wakeupInput = sleepProfile.wakeupInput;
+    this._sleepInput = sleepProfile.fallAsleepInput;
   }
 }

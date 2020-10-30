@@ -114,4 +114,15 @@ export class SleepCycleData {
         }
         return SleepCyclePosition.ACTIVE;
     }
+
+
+
+    public toString(): string { 
+        let string = "Sleep Data: ";
+        string += "\n\tPrev Fall Asleep time: " + this._previousFallAsleepTime.format('YYYY-MM-DD hh:mm a');
+        string += "\n\tPrev Wakeup time: " + this._previousWakeupTime.format('YYYY-MM-DD hh:mm a');
+        string += "\n\tNext Fall Asleep time: " + this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a');
+        string += "\n\tNext Wakeup time: " + this._nextWakeupTime.format('YYYY-MM-DD hh:mm a');
+        return string;
+    }
 }

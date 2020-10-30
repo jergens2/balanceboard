@@ -56,7 +56,7 @@ export class AuthenticationService {
 
 
   public attemptLogin(authData: RegistrationData) {
-    // console.log("Login attempt:", authData);
+    console.log("Login attempt:", authData);
     this.http.post<{ message: string, data: any }>(serverUrl + '/api/authentication/authenticate', authData)
 
       .pipe<AuthStatus>(map((response: {

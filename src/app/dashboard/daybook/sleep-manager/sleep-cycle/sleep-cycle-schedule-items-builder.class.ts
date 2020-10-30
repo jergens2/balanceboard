@@ -45,7 +45,6 @@ export class SleepCycleScheduleItemsBuilder {
         this._relevantItems = relevantItems;
         this._appConfig = appConfig;
         this._activeDateYYYYMMDD = dateYYYYMMDD;
-        // this._setDefaults();
         this._previousFallAsleepTime = moment(prevFallAsleepTime);
         this._previousWakeupTime = moment(prevWakeupTime);
         this._nextFallAsleepTime = moment(nextFallAsleepTime);
@@ -164,8 +163,8 @@ export class SleepCycleScheduleItemsBuilder {
                 if (this._nextWakeupTime.isAfter(endOfThisDay)) {
                     sleepItems.push(new DaybookTimeScheduleSleepItem(this._nextFallAsleepTime, endOfThisDay, null));
                 } else {
-                    // console.log("Unusual circumstance: ",
-                    //     this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - " + this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'));
+                    console.log("Unusual circumstance: ",
+                        this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a') + " - " + this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'));
                     sleepItems.push(new DaybookTimeScheduleSleepItem(this._nextFallAsleepTime, this._nextWakeupTime, null))
                 }
             }

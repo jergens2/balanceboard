@@ -104,16 +104,11 @@ export class SleepService {
   }
 
   public get sleepData(): SleepCycleData { return this._sleepCycleData; }
-  public setSleepData(sleepData: SleepCycleData) { this._sleepCycleData = sleepData; }
+  // public setSleepData(sleepData: SleepCycleData) { this._sleepCycleData = sleepData; }
   public get previousFallAsleepTime(): moment.Moment { return this.sleepData.previousFallAsleepTime; }
   public get previousWakeupTime(): moment.Moment { return this.sleepData.previousWakeupTime; }
   public get nextFallAsleepTime(): moment.Moment { return this.sleepData.nextFallAsleepTime; }
   public get nextWakeupTime(): moment.Moment { return this.sleepData.nextWakeupTime; }
-
-
-
-
-
 
   public saveSleepProfileChanges$(sleepProfile: SleepCycleHTTPData): Observable<boolean> {
     sleepProfile.userId = this._userId;
@@ -126,6 +121,7 @@ export class SleepService {
       failData: any,
     }>(url, sleepProfile).subscribe((response) => {
       if (response.success === true) {
+        // console.log("RESPONSE DATA: " , response)
         this._sleepCycleData = new SleepCycleData(response.successData);
       }
       isComplete$.next(true);

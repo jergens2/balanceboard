@@ -17,6 +17,8 @@ import { DaybookTimeScheduleSleepItem } from './daybook-time-schedule/daybook-ti
 import { TimeSelectionColumn } from '../widgets/timelog/timelog-large-frame/timelog-body/time-selection-column/time-selection-column.class';
 import { TimelogDisplayGrid } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-display-grid-class';
 import { DaybookUpdateAction } from './daybook-update-action.enum';
+import { SleepDisplayProfile } from '../widgets/sleep-profile-widget/sleep-display-profile.class';
+import { SleepManager } from '../sleep-manager/sleep-manager.class';
 
 export class DaybookDisplayManager {
     /**
@@ -49,6 +51,7 @@ export class DaybookDisplayManager {
     private _toolboxService: ToolboxService;
     private _activityService: ActivityHttpService;
     private _timeSelectionColumn: TimeSelectionColumn;
+    private _sleepDisplayProfile: SleepDisplayProfile;
 
     private _zoomController: TimelogZoomController;
 
@@ -81,6 +84,7 @@ export class DaybookDisplayManager {
     public get fallAsleepTime(): moment.Moment { return this._sleepCycle.nextFallAsleepTime; }
     public get displayDurationMs(): number { return this._zoomController.displayDurationMs; }
     public get zoomController(): TimelogZoomController { return this._zoomController; }
+    public get sleepDisplayProfile(): SleepDisplayProfile { return this._sleepDisplayProfile; }
 
     public onClickNowDelineator() {
         const index = this.tlefController.getIndexOfNowItem();
@@ -133,7 +137,7 @@ export class DaybookDisplayManager {
         this._currentlyOpenItemIndex += 1;
         if (this._currentlyOpenItemIndex >= this.displayItems.length) {
             this._currentlyOpenItemIndex = this.displayItems.length - 1;
-            
+
         } else {
             this.openItemByIndex(this._currentlyOpenItemIndex);
         }

@@ -25,12 +25,16 @@ export class SleepManager {
         this._appConfig = appConfig;
         this._setDefaults();
         this._sleepAnalysis = new SleepCycleDaybookAnalyzer(this._daybookDayItems, this._appConfig);
-        console.log("TO DO:  if sleep analysis has good value, then use it to calculate approximate sleep and wakeup times.")
+
+
+        // console.log("TO DO:  if sleep analysis has good value, then use it to calculate approximate sleep and wakeup times.")
         if (this._sleepAnalysis.isValid) {
 
         } else {
 
         }
+
+        
         if (!this._sleepData.hasPrompt) {
             this._setValues();
             this._updateEnergyLevel();
