@@ -24,7 +24,7 @@
 
 
 
-<div *ngIf="isLoading" class="background-image-3 loading">
+<div *ngIf="isLoading" class="loading" [ngClass]="backgroundNgClass">
     <app-spinner style="width:200px;height:200px;"></app-spinner>
 </div>
 

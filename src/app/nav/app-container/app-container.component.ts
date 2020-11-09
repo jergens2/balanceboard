@@ -18,6 +18,7 @@ import { AsyncDataServiceLoader } from './async-data-service-loader.class';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { AppAsyncServiceList } from './async-data-service-list.interface';
 import { Modal } from '../../modal/modal.class';
+import { BackgroundImageService } from '../../shared/background-image.service';
 
 @Component({
   selector: 'app-app-container',
@@ -40,6 +41,7 @@ export class AppContainerComponent implements OnInit, OnDestroy {
     private taskHttpService: TaskHttpService,
     private userProfileService: UserAccountProfileService,
     private sleepService: SleepService,
+    private bgService: BackgroundImageService,
   ) { }
 
   private _sidebarIsOpen: boolean = true;
@@ -67,6 +69,8 @@ export class AppContainerComponent implements OnInit, OnDestroy {
   public get showUserActionPrompt(): boolean { return this._showUserActionPrompt && !this.isLoading; }
   public get showAppContainer(): boolean { return !this.isLoading && !this.showUserActionPrompt; }
   public get showModal(): boolean { return this._showModal; }
+
+  public get backgroundNgClass(): string[] { return this.bgService.ngClass; }
 
   public get appContainerNgClass(): string[] {
     if (this.sizeLabel === 0) {

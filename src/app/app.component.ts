@@ -5,6 +5,7 @@ import { Subscription, Observable, Subject, BehaviorSubject, timer } from 'rxjs'
 import * as moment from 'moment';
 import { KeydownService } from './shared/keydown.service';
 import { ToolboxService } from './toolbox-menu/toolbox.service';
+import { BackgroundImageService } from './shared/background-image.service';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit {
     private sizeService: AppScreenSizeService,
     private keydownService: KeydownService,
     private toolboxService: ToolboxService,
+    private bgService: BackgroundImageService,
   ) { }
 
   @HostListener('window:resize', ['$event']) onResize(e) {
@@ -43,6 +45,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this._isAuthenticated = false;
+    this.bgService.getNewRandomImage();
     this.sizeService.updateSize(window.innerWidth, window.innerHeight);
     this._resetUserInactiveTimer();
     this._authSubs.forEach(sub => sub.unsubscribe());

@@ -27,21 +27,56 @@
 
 
 .background-image-1{
-  background: url("./assets/bg1.JPG") no-repeat center center fixed; 
+  background: url("./assets/background-images/bg1.JPG") no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
 }
 .background-image-2{
-  background: url("./assets/bg2.JPG") no-repeat center center fixed; 
+  background: url("./assets/background-images/bg2.JPG") no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
 }
 .background-image-3{
-  background: url("./assets/bg3.JPG") no-repeat center center fixed; 
+  background: url("./assets/background-images/bg3.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-4{
+  background: url("./assets/background-images/bg4.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-5{
+  background: url("./assets/background-images/bg5.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-6{
+  background: url("./assets/background-images/bg6.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-7{
+  background: url("./assets/background-images/bg7.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-8{
+  background: url("./assets/background-images/bg8.JPG") no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

@@ -4,6 +4,7 @@ import * as moment from 'moment';
 
 import { faKey, faUser, faUnlock, faSpinner, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { Subject, Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { BackgroundImageService } from '../shared/background-image.service';
 
 
 @Component({
@@ -21,12 +22,14 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   public readonly faSignInAlt = faSignInAlt;
   public readonly faUserPlus = faUserPlus;
 
-  constructor(private authService: AuthenticationService) { }
+  constructor(private authService: AuthenticationService, private bgService: BackgroundImageService) { }
 
 
 
 
-  private _action: 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' | 'LOADING'= 'LOADING';
+  private _action: 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' | 'LOADING' = 'LOADING';
+  private _ngClass: string[] = [];
+  public get ngClass(): string[] { return this._ngClass; }
   public get action(): 'INITIAL' | 'LOGIN' | 'REGISTER' | 'PIN' | 'LOCK_SCREEN' | 'LOADING' { return this._action; }
   public get actionIsInitial(): boolean { return this._action === 'INITIAL'; }
   public get actionIsLogin(): boolean { return this._action === 'LOGIN'; }
@@ -38,6 +41,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._reload();
+
     // console.log('Action: ', this._action)
   }
 
@@ -65,6 +69,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
 
   private _lockSub: Subscription = new Subscription();
   private _reload() {
+    this._ngClass = this.bgService.ngClass;
     this._lockSub.unsubscribe();
     this._lockSub = this.authService.lockApp$.subscribe((lock) => {
       if (lock === true) {
@@ -83,6 +88,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     } else if (currentAuthData === 'LOCKED') {
       this._action = 'LOCK_SCREEN';
     }
+
   }
 
   private _refreshToken() {

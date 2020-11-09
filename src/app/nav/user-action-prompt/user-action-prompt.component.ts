@@ -4,6 +4,7 @@ import { UserPromptType } from './user-prompt-type.enum';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Subscription } from 'rxjs';
 import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
+import { BackgroundImageService } from '../../shared/background-image.service';
 
 @Component({
   selector: 'app-user-action-prompt',
@@ -14,7 +15,7 @@ export class UserActionPromptComponent implements OnInit, OnDestroy {
 
   constructor(
     private promptService: UserActionPromptService,
-    private sleepService: SleepService) { }
+    private sleepService: SleepService, private bgService: BackgroundImageService) { }
 
   private _prompts: UserPromptType[] = [];
   private _promptSub: Subscription = new Subscription();
@@ -26,6 +27,7 @@ export class UserActionPromptComponent implements OnInit, OnDestroy {
   public get promptIsConfig(): boolean { return this._currentPrompt === UserPromptType.USER_PROFILE; }
   public get showSkipButton(): boolean { return true; }
   public get confirmLogout(): boolean { return this._confirmLogout; }
+  public get backgroundNgClass(): string[] { return this.bgService.ngClass; }
 
   ngOnInit() {
     this._prompts = this.promptService.prompts;

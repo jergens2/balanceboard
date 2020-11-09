@@ -1,12 +1,12 @@
 
 
-<app-sleep-data-prompt *ngIf="promptIsSleep" (complete)="onSleepManagerComplete()" class="root background-image-1">
+<app-sleep-data-prompt *ngIf="promptIsSleep" (complete)="onSleepManagerComplete()" class="root" [ngClass]="backgroundNgClass">
 </app-sleep-data-prompt>
-<app-first-time-config *ngIf="promptIsConfig" (complete)="onConfigComplete()" class="root background-image-1">
+<app-first-time-config *ngIf="promptIsConfig" (complete)="onConfigComplete()" class="root" [ngClass]="backgroundNgClass">
 </app-first-time-config>
 
 
-<div *ngIf="promptIsInfo" class="root background-image-1">
+<div *ngIf="promptIsInfo" class="root" [ngClass]="backgroundNgClass">
     Info screen. <button (click)="onClickContinue()">Okay!</button>
 </div>
 

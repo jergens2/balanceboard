@@ -13,6 +13,7 @@ import { ToolboxService } from '../../toolbox-menu/toolbox.service';
 import { ToolType } from '../../toolbox-menu/tool-type.enum';
 import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
+import { BackgroundImageService } from '../../shared/background-image.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -25,7 +26,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     private router: Router,
     private modalService: ModalService,
     private toolsService: ToolboxService,
-    private daybookService: DaybookDisplayService) { }
+    private daybookService: DaybookDisplayService,
+    private bgService: BackgroundImageService) { }
 
 
   faPlus = faPlus;
@@ -151,6 +153,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public onClickLock(){
     console.log("Locking!")
     this._isLocking = true;
+    this.bgService.getNewRandomImage();
     this.authService.lock();
   }
 
