@@ -27,7 +27,7 @@ export class ActivityComponentService {
   private _currentActivity$: BehaviorSubject<ActivityCategoryDefinition> = new BehaviorSubject(null);
   private _isLoading$: BehaviorSubject<boolean> = new BehaviorSubject(true);
   private _loadingMessage$: BehaviorSubject<string> = new BehaviorSubject('');
-  
+
 
   public get currentActivity(): ActivityCategoryDefinition { return this._currentActivity$.getValue(); }
   public get currentActivity$(): Observable<ActivityCategoryDefinition> { return this._currentActivity$.asObservable(); }
@@ -39,7 +39,7 @@ export class ActivityComponentService {
 
   public get listIsOpen(): boolean { return this._listIsOpen$.getValue(); }
   public get listIsOpen$(): Observable<boolean> { return this._listIsOpen$.asObservable(); }
-  
+
   public get updater(): DaybookActivityUpdater { return this._daybookActivityUpdater; }
   public get summarizer(): ActivityDataSummarizer { return this._activitiesSummarizer; }
   public get daybookDayItems(): DaybookDayItem[] { return this.updater.daybookDayItems; }
@@ -60,19 +60,19 @@ export class ActivityComponentService {
       this._daybookActivityUpdater = new DaybookActivityUpdater(items);
       // this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
       this._activitiesSummarizer = new ActivityDataSummarizer(items, this._activityDefinitionService.activityTree);
-      if(this.currentActivity){
+      if (this.currentActivity) {
         this._activitiesSummarizer.analyzeActivityAndChildren(this.currentActivity)
       }
-      this._activitySub = this._activityDefinitionService.activityTree$.subscribe(changedTree =>{ 
-        if(changedTree){
-          if(this.currentActivity){
+      this._activitySub = this._activityDefinitionService.activityTree$.subscribe(changedTree => {
+        if (changedTree) {
+          if (this.currentActivity) {
             const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);
             this._activitiesSummarizer.analyzeActivityAndChildren(foundExisting)
             this._currentActivity$.next(foundExisting);
           }
         }
 
-        
+
       });
 
       isLoading$.next(true);
@@ -80,28 +80,26 @@ export class ActivityComponentService {
     return isLoading$.asObservable();
   }
 
-  public unload(){
+  public unload() {
     this._activitySub.unsubscribe();
     this._daybookHttpService = null;
     this._activityDefinitionService = null;
     this._currentActivity$.next(null);
   }
 
-  public openList(){ this._listIsOpen$.next(true); }
+  public openList() { this._listIsOpen$.next(true); }
   public toggleList() { this._listIsOpen$.next(!this.listIsOpen); }
   public closeList() { this._listIsOpen$.next(false); }
-  public setComponentSize(size: 'SMALL' | 'MEDIUM' | 'LARGE'){this._componentSize$.next(size);}
+  public setComponentSize(size: 'SMALL' | 'MEDIUM' | 'LARGE') { this._componentSize$.next(size); }
 
-  public restart(){
+  public restart() {
     this._currentActivity$.next(null);
   }
 
   public openActivity(activity: ActivityCategoryDefinition) {
+    console.log("Opening activity: " + activity.name);
     this._currentActivity$.next(activity);
     this.summarizer.analyzeActivityAndChildren(activity);
-
-    // do some stuff like load daybook history.
-
     this._isLoading$.next(false);
   }
 
@@ -131,7 +129,7 @@ export class ActivityComponentService {
     }
   }
 
-  private _permanentlyDeleteActivityDefintion(){
+  private _permanentlyDeleteActivityDefintion() {
     this._activityDefinitionService.permanentlyDeleteActivity$(this.currentActivity).subscribe((isComplete: boolean) => {
       this._currentActivity$.next(null);
       this._modalService.closeModal();
@@ -160,13 +158,13 @@ export class ActivityComponentService {
     }
   }
 
-  
+
 
   public executeMoveToTrash() {
     this._modalService.openLoadingModal("Moving " + this.currentActivity.name + " to the trash");
     const activity = this.currentActivity;
     activity.moveToTrash();
-    this._activityDefinitionService.updateActivity$(activity).subscribe(isComplete =>{
+    this._activityDefinitionService.updateActivity$(activity).subscribe(isComplete => {
       this._currentActivity$.next(null);
       this._modalService.closeModal();
     });

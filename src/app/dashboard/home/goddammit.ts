@@ -153,7 +153,7 @@
 
 //   }
 //   private crossesMidnight(timelogEntry: TimelogEntryItem): boolean {
-//     const midnight: moment.Moment = moment(timelogEntry.startTime).startOf("day").add(24, "hours");
+//     const midnight: moment.Moment = moment(timelogEntry.startTime).startOf("day").add(24, 'hours');
 //     const startsBefore: boolean = timelogEntry.startTime.isSameOrBefore(midnight);
 //     const endsAfter: boolean = timelogEntry.endTime.isSameOrAfter(midnight);
 
@@ -309,7 +309,7 @@
 //     if (precedingTimelogEntry) {
 //       if (this.crossesMidnight(precedingTimelogEntry)) {
 //         let start: moment.Moment = precedingTimelogEntry.startTime;
-//         let midnight: moment.Moment = moment(precedingTimelogEntry.startTime).startOf("day").add(24, "hours");
+//         let midnight: moment.Moment = moment(precedingTimelogEntry.startTime).startOf("day").add(24, 'hours');
 //         let end: moment.Moment = precedingTimelogEntry.endTime;
 
 //         let beforeMidnightEntry: TimelogEntryItem = new TimelogEntryItem(start, midnight);
@@ -332,7 +332,7 @@
 //     if (followingTimelogEntry) {
 //       if (this.crossesMidnight(followingTimelogEntry)) {
 //         let start: moment.Moment = followingTimelogEntry.startTime;
-//         let midnight: moment.Moment = moment(followingTimelogEntry.startTime).startOf("day").add(24, "hours");
+//         let midnight: moment.Moment = moment(followingTimelogEntry.startTime).startOf("day").add(24, 'hours');
 //         let end: moment.Moment = followingTimelogEntry.endTime;
 
 //         let beforeMidnightEntry: TimelogEntryItem = new TimelogEntryItem(start, midnight);

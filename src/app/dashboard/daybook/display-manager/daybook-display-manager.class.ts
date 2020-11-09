@@ -95,22 +95,37 @@ export class DaybookDisplayManager {
         }
     }
     public openWakeupTime() {
-        console.log("method disabled");
+        const foundFirstItem = this._displayItems.find(item => item.isSleepItem);
+        if (foundFirstItem) {
+            this.openItemByIndex(foundFirstItem.itemIndex);
+        } else {
+            const foundFirstAvailableItem = this._displayItems.find(item => item.isAvailableItem);
+            if (foundFirstAvailableItem) {
+                this.openItemByIndex(foundFirstAvailableItem.itemIndex);
+            }
+        }
     }
     public openFallAsleepTime() {
-        console.log("method disabled")
+        const foundSleepItems = this._displayItems.filter(item => item.isSleepItem);
+        if (foundSleepItems.length > 0) {
+            this.openItemByIndex(foundSleepItems[foundSleepItems.length - 1].itemIndex);
+        } else {
+            const availItems = this._displayItems.filter(item => item.isAvailableItem);
+            if (availItems.length > 0) {
+                this.openItemByIndex(availItems[availItems.length - 1].itemIndex);
+            }
+        }
     }
     public openTLEDelineator(delineator: TimelogDelineator) { this.tlefController.openTLEDelineator(delineator); }
     public openDrawnItem(startTime: moment.Moment, endTime: moment.Moment) {
         const foundItem = this.displayItems.find(item => item.schedItemStartTime.isSame(startTime) && item.schedItemEndTime.isSame(endTime))
         if (foundItem) {
-            console.log("Boo ya ka sha")
             this.openItemByIndex(foundItem.itemIndex);
         }
     }
 
     public openItemByIndex(itemIndex: number) {
-        console.log("Opening item: " + itemIndex);
+        // console.log("Opening item: " + itemIndex);
         this._currentlyOpenItemIndex = itemIndex;
         this.timelogDisplayGrid.openItemByIndex(itemIndex);
         this.tlefController.openItemByIndex(itemIndex);

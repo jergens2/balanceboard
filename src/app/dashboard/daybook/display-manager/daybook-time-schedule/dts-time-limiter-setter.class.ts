@@ -24,8 +24,17 @@ export class DTSTimeLimiterSetter {
             const item = items[i];
             const itemStartTime: moment.Moment = moment(item.schedItemStartTime);
             const itemEndTime: moment.Moment = moment(item.schedItemEndTime);
-            const nextBusyTime = this._getNextBusyTime(item, items);
+            let nextBusyTime = this._getNextBusyTime(item, items);
             const prevBusyTime = this._getPrevBusyTime(item, items);
+            if (item.isSleepItem) {
+                const isTodayItem = moment(item.schedItemEndTimeISO).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD');
+                const isBeforeNow = moment(item.schedItemEndTimeISO).isBefore(moment());
+                if (isTodayItem && isBeforeNow) {
+                    if (moment().isBefore(nextBusyTime)) {
+                        nextBusyTime = moment();
+                    }
+                }
+            }
             const limiter = new DTSItemTimeLimiter(itemStartTime, itemEndTime, nextBusyTime, prevBusyTime);
             item.setTimeLimiter(limiter);
         }

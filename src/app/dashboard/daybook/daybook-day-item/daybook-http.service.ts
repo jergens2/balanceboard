@@ -78,7 +78,11 @@ export class DaybookHttpService {
   public updateDaybookDayItems$(daybookDayItems: DaybookDayItem[]): Observable<DaybookDayItem[]> {
     // console.log(' $ updating daybook day items: ');
     // daybookDayItems.forEach(i => console.log("  ", i.dateYYYYMMDD, i.id,));
-
+    // daybookDayItems.forEach(item => {
+    //   console.log("ITEM: " + item.dateYYYYMMDD)
+    //   item.sleepInputItems.forEach(si => console.log("    "
+    //     + moment(si.startSleepTimeISO).format('YYYY-MM-DD hh:mm a') + " to " + moment(si.endSleepTimeISO).format('YYYY-MM-DD hh:mm a')))
+    // })
     const updatedItems$: Subject<DaybookDayItem[]> = new Subject();
     forkJoin([...daybookDayItems.map(item => this.updateDaybookDayItem$(item))]).subscribe({
       next: (items) => updatedItems$.next(items),
@@ -242,7 +246,7 @@ export class DaybookHttpService {
 
 
   private _saveDaybookDayItem$(daybookDayItem: DaybookDayItem): Observable<DaybookDayItem> {
-    console.log(' $ Saving daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
+    // console.log(' $ Saving daybook day item: ', daybookDayItem.dateYYYYMMDD, daybookDayItem);
     const postUrl = serverUrl + '/api/daybook-day-item/create';
     daybookDayItem.userId = this._userId;
     return this.httpClient.post<{ message: string, data: any }>(postUrl, daybookDayItem.httpShape)

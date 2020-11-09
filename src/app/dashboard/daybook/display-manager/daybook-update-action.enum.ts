@@ -1,6 +1,7 @@
 export enum DaybookUpdateAction {
     DELINEATOR = 'DELIEATOR',
     TIMELOG_ENTRY = 'TIMELOG_ENTRY',
+    SLEEP_ENTRY = 'SLEEP_ENTRY',
     INITIAL = 'INITIAL',
     CALENDAR = 'CALENDAR',
     CLOCK_MINUTE = 'CLOCK_MINUTE',

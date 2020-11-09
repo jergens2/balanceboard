@@ -38,7 +38,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._reload();
-    console.log('Action: ', this._action)
+    // console.log('Action: ', this._action)
   }
 
   public onClickLogin() {
@@ -68,7 +68,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
     this._lockSub.unsubscribe();
     this._lockSub = this.authService.lockApp$.subscribe((lock) => {
       if (lock === true) {
-        console.log('received lock signal')
+        // console.log('received lock signal')
         this._action = 'LOCK_SCREEN'
       }
     });

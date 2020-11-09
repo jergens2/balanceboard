@@ -8,7 +8,6 @@ import { TimeUnit } from '../../../../../shared/time-utilities/time-unit.enum';
 
 export class SleepDataForm {
 
-
     private _previousActivityTime: moment.Moment;
     private _previousFallAsleepTime: moment.Moment;
     private _previousWakeupTime: moment.Moment;
@@ -45,7 +44,7 @@ export class SleepDataForm {
 
     public get previousActivityTime(): moment.Moment { return this._previousActivityTime; }
     public get hasAvailableTime(): boolean { return this._hasAvailableTime; }
-    
+
     public get previousFallAsleepTime(): moment.Moment { return this._previousFallAsleepTime; }
     public get previousWakeupTime(): moment.Moment { return this._previousWakeupTime; }
     public get nowTime(): moment.Moment { return this._nowTime; }
@@ -78,8 +77,9 @@ export class SleepDataForm {
     constructor(sleepManager: SleepManager) {
         this._sleepManager = sleepManager;
         this._previousActivityTime = moment(this._sleepManager.previousActivityTime);
-        // console.log("Previous activity time is: " + this.previousActivityTime.format('YYYY-MM-DD hh:mm a'))
+        console.log("Previous activity time is: " + this.previousActivityTime.format('YYYY-MM-DD hh:mm a'))
         this._previousFallAsleepTime = moment(this._sleepManager.previousFallAsleepTime);
+        console.log("Previous fall asleep time is: ", this.previousFallAsleepTime.format('hh:mm a'))
         this._previousWakeupTime = moment(this._sleepManager.previousWakeupTime);
         this._nextFallAsleepTime = moment(this._sleepManager.nextFallAsleepTime);
         this._nextWakeupTime = moment(this._sleepManager.nextWakeupTime);
@@ -104,22 +104,20 @@ export class SleepDataForm {
 
         let minValue: moment.Moment = moment(this._previousActivityTime);
         let activityStartTime: moment.Moment = moment(this._previousActivityTime);
-        if(!this._sleepManager.hasPreviousActivity){
+        if (!this._sleepManager.hasPreviousActivity) {
             activityStartTime = moment(this._previousFallAsleepTime).subtract(1, 'hours');
             minValue = moment(this._previousWakeupTime).subtract(20, 'hours');
             this._hasAvailableTime = true;
-        }else{
-            if(this._previousFallAsleepTime.diff(this._previousActivityTime, 'milliseconds') > 0){
+        } else {
+            if (this._previousFallAsleepTime.diff(this._previousActivityTime, 'milliseconds') > 0) {
                 this._hasAvailableTime = true;
-            }else{
+            } else {
                 this._hasAvailableTime = false;
             }
         }
-
         console.log("NEW TLE START TIME INPUT: " + activityStartTime.format('YYYY-MM-DD hh:mm a'))
         console.log("max:  " + this._previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'));
         console.log("min: " + minValue.format('YYYY-MM-DD hh:mm a'))
-
         this._newTLEStartTimeInput = new TimeInput(activityStartTime, this._previousFallAsleepTime, minValue);
         this._newTLEEndTimeInput = new TimeInput(this._previousFallAsleepTime, this._previousFallAsleepTime, activityStartTime);
 
@@ -140,9 +138,7 @@ export class SleepDataForm {
             this._recalculateTimeValues();
         });
         this._newTLEStartTimeInput.timeValue$.subscribe(t => {
-            console.log("okay")
-            this._recalculateTimeValues()
-    
+            this._recalculateTimeValues();
         });
         this._newTLEEndTimeInput.timeValue$.subscribe(t => this._recalculateTimeValues());
         this._startClock();
@@ -184,9 +180,9 @@ export class SleepDataForm {
         this._newTLEEndTimeInput.minValue = moment(this._newTLEStartTimeInput.timeValue).add(1, 'minute');
         this._newTLEEndTimeInput.maxValue = moment(this._previousFallAsleepTime);
 
-        if(this._previousFallAsleepTime.diff(this._previousActivityTime, 'milliseconds') > 0){
+        if (this._previousFallAsleepTime.diff(this._previousActivityTime, 'milliseconds') > 0) {
             this._hasAvailableTime = true;
-        }else{
+        } else {
             this._hasAvailableTime = false;
         }
     }

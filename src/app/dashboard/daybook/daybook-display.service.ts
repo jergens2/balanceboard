@@ -121,7 +121,7 @@ export class DaybookDisplayService {
 
 
   public reinitiate() {
-    console.log('   * REINITIATING DAYBOOK DISPLAY SERVICE')
+    // console.log('   * REINITIATING DAYBOOK DISPLAY SERVICE')
     this._daybookDisplayManager = new DaybookDisplayManager(this.toolBoxService, this.activitiesService);
     this._closedSub.unsubscribe();
     this._closedSub = this._daybookDisplayManager.closed$.subscribe(closed => {
@@ -134,12 +134,15 @@ export class DaybookDisplayService {
 
   public saveChanges$(action: DaybookUpdateAction): Observable<boolean> {
     const isComplete$: Subject<boolean> = new Subject();
-    console.log("UPDATING ITEMS: ", this.daybookController.dayItems);
+    // console.log("UPDATING ITEMS: ", this.daybookController.dayItems);
     this.httpService.updateDaybookDayItems$(this.daybookController.dayItems).subscribe(complete => {
       this._updateDisplay(this.activeDateYYYYMMDD, action);
       isComplete$.next(true);
     }, e => { isComplete$.error(e) }, () => isComplete$.next(true));
     return isComplete$.asObservable();
+  }
+  public refreshDisplay(){
+    this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
   }
 
   private _updateDisplay(dateYYYYMMDD: string, action: DaybookUpdateAction, drawnItem?: DaybookTimeScheduleActiveItem) {

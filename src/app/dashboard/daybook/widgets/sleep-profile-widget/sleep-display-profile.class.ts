@@ -20,8 +20,12 @@ export class SleepDisplayProfile {
     constructor(scheduleItems: DaybookTimeScheduleItem[], sleepManager: SleepManager, dateYYYYMMDD: string, dayItems: DaybookDayItem[]) {
         this._wakeupTime = sleepManager.findPreviousWakeupTimeForDate(dateYYYYMMDD, dayItems);
         this._fallAsleepTime = sleepManager.findNextFallAsleepTimeForDate(dateYYYYMMDD, dayItems);
+        // console.log("WAKEUPTIME : " + this._wakeupTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("items: " )
+        // scheduleItems.forEach(item => console.log("   " + item.toString()))
         const wakeupItem = scheduleItems.find(item => item.schedItemEndTime.isSame(this._wakeupTime));
         const sleepItem = scheduleItems.find(item => item.schedItemStartTime.isSame(this._fallAsleepTime));
+        // console.log("WAKE UP ITEM, SLEEP ITEM: " , wakeupItem, sleepItem)
         this._wakeupInput = wakeupItem.timeLimiter.clone().endTimeInput;
         this._fallAsleepInput = sleepItem.timeLimiter.clone().startTimeInput;
     }

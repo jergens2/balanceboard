@@ -15,17 +15,17 @@ export class AppScreenSizeService {
 
   public get appScreenSize$(): Observable<AppScreenSize> { return this._appScreenSize$.asObservable(); }
   public get appScreenSize(): AppScreenSize { return this._appScreenSize$.getValue(); }
-  public get maxComponentHeightPx(): number { 
-    if(this.appScreenSize.label !== AppScreenSizeLabel.MOBILE){
+  public get maxComponentHeightPx(): number {
+    if (this.appScreenSize.label !== AppScreenSizeLabel.MOBILE) {
       return (this.appScreenSize.height - 30)  //header is 30
-    }else{
+    } else {
       return (this.appScreenSize.height);
     }
   }
   public get screenSizeNgClass(): string[] { return this.appScreenSize.ngClass; }
 
   public updateSize(innerWidth: number, innerHeight: number): AppScreenSize {
-    console.log("SIZE UPDATED: W, H: ", innerWidth, innerHeight)
+    // console.log("SIZE UPDATED: W, H: ", innerWidth, innerHeight)
     const appScreenSize: AppScreenSize = new AppScreenSize(innerWidth, innerHeight);
     this._appScreenSize$.next(appScreenSize);
     return appScreenSize;

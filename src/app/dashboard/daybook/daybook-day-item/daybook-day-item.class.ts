@@ -57,9 +57,22 @@ export class DaybookDayItem {
     public get sleepInputItems(): DaybookSleepInputDataItem[] { return this.httpShape.sleepInputItems }
     public set sleepInputItems(items: DaybookSleepInputDataItem[]) { this._httpShape.sleepInputItems = items; }
 
-    public toString(): string { 
-        return "" + this.dateYYYYMMDD + " " + this.sleepInputItems.length + " sleep items (" + 
+    public toString(): string {
+        return "" + this.dateYYYYMMDD + " " + this.sleepInputItems.length + " sleep items (" +
             this.hasSleepItems + "), and " + this.timelogEntryDataItems.length + " timelog items";
+    }
+    public sleepItemsToString(): string {
+        let strVal = this.dateYYYYMMDD + "\n";
+        if (this.sleepInputItems.length > 0) {
+            this.sleepInputItems.forEach(item => {
+                strVal += "\tFrom: " + moment(item.startSleepTimeISO).format('YYYY-MM-DD hh:mm a') + " ";
+                strVal += "To: " + moment(item.endSleepTimeISO).format('YYYY-MM-DD hh:mm a');
+                strVal += "\n";
+            });
+        } else {
+            strVal = this.dateYYYYMMDD + "  no sleep items for this day."
+        }
+        return strVal;
     }
 
     public get hasSleepItems(): boolean {
@@ -76,8 +89,8 @@ export class DaybookDayItem {
         this._httpShape.daybookTimelogEntryDataItems = items;
     }
 
-    public set timeDelineators(timeDelineators: moment.Moment[]) { 
-        this._httpShape.timeDelineators = timeDelineators.map(item => item.toISOString()); 
+    public set timeDelineators(timeDelineators: moment.Moment[]) {
+        this._httpShape.timeDelineators = timeDelineators.map(item => item.toISOString());
     }
 
 

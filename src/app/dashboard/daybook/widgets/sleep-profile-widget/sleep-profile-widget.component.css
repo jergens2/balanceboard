@@ -17,9 +17,9 @@
     width: 100%;
     align-items: center;
     justify-content: flex-start;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding: 5px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding: 3px;
 }
 .time-row:hover{
     background-color: rgb(245, 245, 245);

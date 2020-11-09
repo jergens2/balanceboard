@@ -34,12 +34,15 @@ export class SleepManager {
 
         }
 
-        
+        // console.log("Reconstructing sleep manager.")
+        // console.log("Has prompt? ", this._sleepData.hasPrompt)
+        // console.log(this._sleepData)
         if (!this._sleepData.hasPrompt) {
             this._setValues();
             this._updateEnergyLevel();
             this._startClock();
         }
+
     }
 
 
@@ -166,15 +169,20 @@ export class SleepManager {
         this._nextFallAsleepTime = moment(this._sleepData.nextFallAsleepTime);
         this._nextWakeupTime = moment(this._sleepData.nextWakeupTime);
         this._setPreviousActivityValue();
+        // console.log("SLEEP MANAGER ._setValues()")
+        // console.log("\tPrev Fall Asleep Time: " + this._previousFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("\tPrev wakeup Time     : " + this._previousWakeupTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("\tnext fall asleep time: " + this._nextFallAsleepTime.format('YYYY-MM-DD hh:mm a'))
+        // console.log("\tnext wakeup Time      : " + this._nextWakeupTime.format('YYYY-MM-DD hh:mm a'))
     }
 
 
     /**
      * Determine the end time of the last activity.
-     * 
+     *
      * When sleep data form prompt comes up, it necessarily implies that the sleep position is a new day, 
      * therefore the sleep data has all changed.
-     * 
+     *
      * The previous activity will be the most recent one from now.
      * There might not be a previous activity, in which case set the value to the same as previous fall asleep time.
      */

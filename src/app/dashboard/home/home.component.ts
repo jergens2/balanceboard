@@ -129,7 +129,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   //       } else if (isSameDay) {
   //         // normal occurrence
   //         const currentDateStart: moment.Moment = moment(currentDateYYYYMMDD).startOf("day");
-  //         const currentDateEnd: moment.Moment = moment(currentDateYYYYMMDD).startOf("day").add(24, "hours");
+  //         const currentDateEnd: moment.Moment = moment(currentDateYYYYMMDD).startOf("day").add(24, 'hours');
 
   //         const startsBeforeEndsBefore: boolean = timelogEntry.startTime.isBefore(currentDateStart) && timelogEntry.endTime.isBefore(currentDateStart);
   //         const startsBeforeEndsDuring: boolean = timelogEntry.startTime.isBefore(currentDateStart) && timelogEntry.endTime.isAfter(currentDateStart) && timelogEntry.endTime.isBefore(currentDateEnd);
@@ -352,8 +352,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   //     if(startTime.isBefore(moment(day.dateYYYYMMDD).startOf("day"))){
   //       console.log("   startTime time ("+startTime.format("YYYY-MM-DD hh:mm a")+") is before start of day: " + moment(day.dateYYYYMMDD).startOf("day").format("YYYY-MM-DD hh:mm aa"))
   //     }
-  //     if(endTime.isAfter(moment(day.dateYYYYMMDD).startOf("day").add(24, "hours"))){
-  //       console.log("   end time ("+endTime.format("YYYY-MM-DD hh:mm a")+") is after end of day: " + moment(day.dateYYYYMMDD).startOf("day").add(24, "hours").format("YYYY-MM-DD hh:mm aa"))
+  //     if(endTime.isAfter(moment(day.dateYYYYMMDD).startOf("day").add(24, 'hours'))){
+  //       console.log("   end time ("+endTime.format("YYYY-MM-DD hh:mm a")+") is after end of day: " + moment(day.dateYYYYMMDD).startOf("day").add(24, 'hours').format("YYYY-MM-DD hh:mm aa"))
   //     }
 
 

@@ -59,10 +59,6 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onClickNewRoutine() {
-    console.log("New routine button clicked");
-  }
-
   ngOnInit() {
     this._activityTree = this.activityDefinitionService.activityTree;
     this._subs = [
@@ -71,7 +67,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
         this._openActivity = activityChanged;
       }),
       this.activityDefinitionService.activityTree$.subscribe((changedTree) => {
-        this._activityTree = changedTree
+        this._activityTree = changedTree;
       }),
       this.activityCompService.initiate$(this.activityDefinitionService, this.modalService, this.daybookHttpService)
         .subscribe(isComplete => {

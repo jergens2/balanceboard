@@ -39,7 +39,7 @@ export class DaybookTimeSchedule extends TimeSchedule {
     public get timeScheduleItems(): DaybookTimeScheduleItem[] { return this._timeScheduleItems; }
     public get dateYYYYMMDD(): string { return this._dateYYYYMMDD; }
     public get startOfThisDay(): moment.Moment { return moment(this.dateYYYYMMDD).startOf('day'); }
-    public get endOfThisDay(): moment.Moment { return moment(this.startOfThisDay).add(24, 'hours'); }
+    public get endOfThisDay(): moment.Moment { return moment(this.startOfThisDay).add(1, 'days').startOf('day'); }
     public get sleepCycle(): SleepCycleScheduleItemsBuilder { return this._sleepCycle; }
 
 

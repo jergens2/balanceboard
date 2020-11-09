@@ -56,7 +56,7 @@ export class AuthenticationService {
 
 
   public attemptLogin(authData: RegistrationData) {
-    console.log("Login attempt:", authData);
+    // console.log("Login attempt:", authData);
     this.http.post<{ message: string, data: any }>(serverUrl + '/api/authentication/authenticate', authData)
 
       .pipe<AuthStatus>(map((response: {
@@ -92,7 +92,7 @@ export class AuthenticationService {
       });
   }
 
-  
+
   public unlockWithPin(pin: string, email: string) {
     const data = {
       email: email,
@@ -128,13 +128,13 @@ export class AuthenticationService {
 
       }, (error) => {
         // console.log("Login attempt failed: ", error);
-        if(this._unlockAttempts >= 3){
+        if (this._unlockAttempts >= 3) {
           this.logout();
-        }else{
+        } else {
           this._unlockAttempts++;
           this._loginAttempt$.next(false);
         }
-        
+
       });
   }
 
@@ -237,7 +237,7 @@ export class AuthenticationService {
    * why?  for the purpose of telling the server.  Why though?
    */
   public lock() {
-    console.log('locking')
+    // console.log('locking')
     this._isAuthenticated = false;
     this._appComponentLogin$.next(false);
     this._timerSubs.forEach(s => s.unsubscribe());
@@ -268,7 +268,7 @@ export class AuthenticationService {
 
 
 
-    // public getUserById$(userId: string): Observable<string> {
+  // public getUserById$(userId: string): Observable<string> {
   //   return this.http.get<any>(serverUrl + "/api/authentication/getUserById/" + userId)
   //     .pipe(map((response) => {
   //       let settings: any[] = Object.assign([], response.data.userSettings);
@@ -310,7 +310,7 @@ export class AuthenticationService {
       const refreshSub = timer(requestNew).subscribe((requestNew) => {
         this.refreshToken$(authStatus.token, authStatus.userId);
       });
-      this._timerSubs = [ tokenExpiredSub, refreshSub ];
+      this._timerSubs = [tokenExpiredSub, refreshSub];
 
 
       this._isAuthenticated = true;

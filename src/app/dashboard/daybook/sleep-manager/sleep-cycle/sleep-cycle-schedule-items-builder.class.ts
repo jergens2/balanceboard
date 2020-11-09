@@ -59,13 +59,21 @@ export class SleepCycleScheduleItemsBuilder {
     }
 
     public get72HourSleepDataItems(dateYYYYMMDD: string): DaybookTimeScheduleSleepItem[] {
+
+        const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
+        const nextDateYYYYMMDD: string = moment(dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+        // console.log("GETTING 72 Hour Sleep Data Items");
+        // console.log(prevDateYYYYMMDD, dateYYYYMMDD, nextDateYYYYMMDD);
         let sleepItems: DaybookTimeScheduleSleepItem[] = [
-            ...this._sleepTimeRangesForDate(moment(dateYYYYMMDD).subtract(24, 'hours').format('YYYY-MM-DD')),
+            ...this._sleepTimeRangesForDate(prevDateYYYYMMDD),
             ...this._sleepTimeRangesForDate(dateYYYYMMDD),
-            ...this._sleepTimeRangesForDate(moment(dateYYYYMMDD).add(24, 'hours').format('YYYY-MM-DD')),
+            ...this._sleepTimeRangesForDate(nextDateYYYYMMDD),
         ];
+        // console.log("Sleep items BEFORE MERGE: ")
+        // sleepItems.forEach((item) => { console.log("  " + item.toString()) })
+        
         sleepItems = this._mergeSleepItems(sleepItems);
-        // console.log("Returning sleep items: ")
+        // console.log("Sleep items AFTER MERGE: ")
         // sleepItems.forEach((item) => { console.log("  " + item.toString()) })
         return sleepItems;
     }
@@ -151,7 +159,7 @@ export class SleepCycleScheduleItemsBuilder {
     }
     private _buildTodayItems(): DaybookTimeScheduleSleepItem[] {
         const startOfThisDay = moment().startOf('day');
-        const endOfThisDay = moment(startOfThisDay).add(24, 'hours');
+        const endOfThisDay = moment(startOfThisDay).add(1, 'days').startOf('day');
         let sleepItems: DaybookTimeScheduleSleepItem[] = [];
         if (this.activeDayIsToday) {
             if (this._previousFallAsleepTime.isAfter(startOfThisDay)) {
@@ -188,7 +196,7 @@ export class SleepCycleScheduleItemsBuilder {
     }
     private _buildTomorrowItems(): DaybookTimeScheduleSleepItem[] {
         const startOfThisDay = moment(this.tomorrowYYYYMMDD).startOf('day');
-        const endOfThisDay = moment(startOfThisDay).add(24, 'hours');
+        const endOfThisDay = moment(startOfThisDay).add(1, 'days').startOf('day');
         let sleepItems: DaybookTimeScheduleSleepItem[] = [];
         if (this.activeDayIsToday) {
             if (this.nextFallAsleepTime.isAfter(startOfThisDay)) {
@@ -240,6 +248,7 @@ export class SleepCycleScheduleItemsBuilder {
      * see sleep-time-ranges.png
      */
     private _sleepTimeRangesForDate(dateYYYYMMDD: string): DaybookTimeScheduleSleepItem[] {
+        // console.log(dateYYYYMMDD + " Sleep items for DATE")
         const isToday: boolean = dateYYYYMMDD === this.todayYYYYMMDD;
         const isTomorrow: boolean = dateYYYYMMDD === this.tomorrowYYYYMMDD;
         const isYesterday: boolean = dateYYYYMMDD === this.yesterdayYYYYMMDD;
@@ -272,7 +281,7 @@ export class SleepCycleScheduleItemsBuilder {
 
     private _getDefaultSleepItemsTemplate(dateYYYYMMDD: string): DaybookTimeScheduleSleepItem[] {
         const dateStartTime = moment(dateYYYYMMDD).startOf('day');
-        const dateEndTime = moment(dateStartTime).add(24, 'hours');
+        const dateEndTime = moment(dateStartTime).add(1, 'days').startOf('day');
         const defaultWakeupTime = this._defaultWakeupTime(dateYYYYMMDD);
         const defaultSleepTime = this._defaultFallAsleepTime(dateYYYYMMDD);
         const items: DaybookTimeScheduleSleepItem[] = [];

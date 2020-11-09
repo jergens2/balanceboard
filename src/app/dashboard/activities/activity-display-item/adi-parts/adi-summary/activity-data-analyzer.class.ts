@@ -1,26 +1,102 @@
-import { DaybookDayItem } from "../../../../daybook/daybook-day-item/daybook-day-item.class";
-import { ActivityCategoryDefinition } from "../../../api/activity-category-definition.class";
+import { DaybookDayItem } from '../../../../daybook/daybook-day-item/daybook-day-item.class';
+import { ActivityCategoryDefinition } from '../../../api/activity-category-definition.class';
 import * as moment from 'moment';
-import { ADIWeekDataChartItem } from "./adi-week-data-chart-item.class";
-import { ActivityDataSleepAnalyzer } from "./activity-data-sleep-analyzer.class";
-import { ActivityAnalysis } from "./activity-analysis.interface";
+import { ADIWeekDataChartItem } from './adi-week-data-chart-item.class';
+import { ActivityDataSleepAnalyzer } from './activity-data-sleep-analyzer.class';
+import { ActivityAnalysis } from './activity-analysis.interface';
+import { ADIOccurrenceData } from './adi-occurrence-data.interface';
 
 export class ActivityDataAnalyzer {
 
     private _daybookItems: DaybookDayItem[] = [];
-    private _weekHourData: ADIWeekDataChartItem[] = [];
+
+    private _activityOccurrences: ADIOccurrenceData[];
+    // private _weekHourData: ADIWeekDataChartItem[] = [];
+
+    public get activityOccurences(): ADIOccurrenceData[] { return this._activityOccurrences; }
 
     // public get occurrencesTotal(): string { return this._summaryValOccurrencesTotal; }
     // public get durationHoursTotal(): string { return this._summaryValDurationHoursTotal; }
     // public get medianHoursPerWeek(): string { return this._summaryValMedianHoursPerWeek; }
     // public get medianOccurrencesPerWeek(): string { return this._summaryValMedianOccurrencesPerWeek; }
 
-    public get weekHourData(): ADIWeekDataChartItem[] { return this._weekHourData; }
+    // public get weekHourData(): ADIWeekDataChartItem[] { return this._weekHourData; }
 
     constructor(daybookItems: DaybookDayItem[],) {
         this._daybookItems = daybookItems;
+        console.log('Daybook day items: ' + this._daybookItems.length)
+        let sumTLEs = 0;
+        this._daybookItems.forEach(item => {
+            sumTLEs += item.timelogEntryDataItems.length;
+        })
+        console.log('total count of Timelog Entries: ' + sumTLEs)
         this._analyzeInitial(90);
+        this._calculateAll();
     }
+
+
+    private _calculateAll() {
+        console.log("Calculating all daybookDayItems: " + this._daybookItems.length);
+        const start = moment();
+        const activityOccurrences: ADIOccurrenceData[] = [];
+
+        this._daybookItems.forEach(dayItem => {
+            dayItem.timelogEntryDataItems.forEach(tledi => {
+                const startTime: moment.Moment = moment(tledi.startTimeISO);
+                const endTime: moment.Moment = moment(tledi.endTimeISO);
+                const durationMs = moment(endTime).diff(startTime, 'milliseconds');
+                tledi.timelogEntryActivities.forEach(tlea => {
+                    const occurrence = {
+                        dateYYYYMMDD: startTime.format('YYYY-MM-DD'),
+                        startTime: moment(startTime),
+                        endTime: moment(endTime),
+                        durationMs: durationMs * (tlea.percentage / 100)
+                    };
+                    const foundActivity = activityOccurrences.find(ao => ao.activityTreeId === tlea.activityTreeId);
+                    if (foundActivity) {
+                        foundActivity.occurrences.push(occurrence);
+                    } else {
+                        activityOccurrences.push({
+                            activityTreeId: tlea.activityTreeId,
+                            occurrences: [occurrence],
+                            totalMs: occurrence.durationMs,
+                            msPerOccurrence: occurrence.durationMs,
+                        });
+                    }
+                });
+            });
+        });
+
+        activityOccurrences.forEach(activityOccurrence => {
+            let totalMs: number = 0;
+            activityOccurrence.occurrences.forEach(o => {
+                totalMs += o.durationMs;
+            });
+            activityOccurrence.totalMs = totalMs;
+            activityOccurrence.msPerOccurrence = totalMs / activityOccurrence.occurrences.length;
+        });
+
+
+        activityOccurrences.sort((a1, a2)=> {
+            if(a1.totalMs > a2.totalMs){
+                return -1;
+            }else if(a1.totalMs < a2.totalMs){
+                return 1;
+            }else{
+                return 0;
+            }
+        });
+
+        // console.log("activity occurrences: " )
+        // activityOccurrences.forEach(item => {
+        //     console.log(item)
+        // })
+
+        this._activityOccurrences = activityOccurrences;
+        const end = moment();
+        console.log("Method duration ms: " + end.diff(start, 'milliseconds'));
+    }
+
 
 
     private _analyzeInitial(days: number = 90) {
@@ -45,7 +121,6 @@ export class ActivityDataAnalyzer {
             .find(tledi => tledi.timelogEntryActivities.find(tlea => allIds.find(id => id === tlea.activityTreeId))));
         const startDateYYYYMMDD: string = moment(query.startTime).format('YYYY-MM-DD');
         let currentDateYYYYMMDD: string = moment(startDateYYYYMMDD).format('YYYY-MM-DD');
-
         let occurrenceData: {
             dateYYYYMMDD: string,
             occurrences: number,
@@ -80,30 +155,12 @@ export class ActivityDataAnalyzer {
         }
 
 
-        return this._calculateAnalysis(occurrenceData, activity);
-        // let cumulativePercent: number = 0;
-        // this._weekHourData = msPerWeek.map(item => {
-        //     const hours = item.ms / (1000 * 60 * 60);
-        //     const percent: number = (item.ms / weeklySumMs) * 100;
-        //     cumulativePercent += percent;
-        //     const color = activity.color;
-        //     const percentOfLargest: number = item.ms / largestWeeklyMs * 100;
-        //     return new ADIWeekDataChartItem(item.startDateYYYYMMDD, hours, percent, cumulativePercent, percentOfLargest);
-        // });
-        // let largestHours = 0;
-        // this._weekHourData.forEach(item => {
-        //     if (item.hours > largestHours) { largestHours = item.hours; }
-        // })
-        // this._weekHourData.forEach(item => {
-        //     let alpha: number = (item.hours / largestHours);
-        //     if(alpha < 0.1){ 
-        //         alpha = 0.1;
-        //     }
-        //     item.setColor(activity.color, alpha.toFixed(2));
-        // });
+        const analysis: ActivityAnalysis = this._calculateAnalysis(occurrenceData, activity);
+        return analysis;
     }
 
-    private _calculateAnalysis(occurrenceData: { dateYYYYMMDD: string, occurrences: number, ms: number }[], activity: ActivityCategoryDefinition): ActivityAnalysis {
+    private _calculateAnalysis(occurrenceData: { dateYYYYMMDD: string, occurrences: number, ms: number }[],
+        activity: ActivityCategoryDefinition): ActivityAnalysis {
         let analysis = {
             definition: activity,
             averageMsPerWeek: 0,
@@ -150,6 +207,10 @@ export class ActivityDataAnalyzer {
             sortedDayOccurrenceData.forEach(d => { sumMs += d.ms; sumOccurrences += d.occurrences; });
             const weekHalfIndex = sortedWeekOccurrenceData.length % 2 === 0 ? sortedWeekOccurrenceData.length / 2 : (sortedWeekOccurrenceData.length - 1) / 2;
             const dayHalfIndex = sortedDayOccurrenceData.length % 2 === 0 ? sortedDayOccurrenceData.length / 2 : (sortedDayOccurrenceData.length - 1) / 2;
+
+            // console.log("weekHalfIndex, dayHalfIndex: ", weekHalfIndex, dayHalfIndex);
+            // console.log("sorted week occurrence data",)
+            // sortedWeekOccurrenceData.forEach(item => console.log(item))
 
             analysis = {
                 definition: activity,

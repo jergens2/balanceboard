@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class SleepCycleData {
     constructor(data: SleepCycleHTTPData) {
         if (data) {
+            this._dataId = data._id;
             this._userId = data.userId;
             this._energyAtWakeup = data.energyAtWakeup;
 
@@ -33,6 +34,7 @@ export class SleepCycleData {
         }
     }
 
+    private _dataId: string;
     private _userId: string;
     private _previousFallAsleepTimeISO: string;
     private _previousFallAsleepUTCOffset: number;
@@ -76,6 +78,29 @@ export class SleepCycleData {
     public get nextFallAsleepTime(): moment.Moment { return this._nextFallAsleepTime; }
     public get nextWakeupTime(): moment.Moment { return this._nextWakeupTime; }
 
+
+    public changePrevWakeupTime(time: moment.Moment){
+        this._previousWakeupTime = moment(time);
+        this._previousWakeupTimeISO = moment(time).toISOString();
+        this._previousWakeupUTCOffset = moment(time).utcOffset();
+    }
+    public changePrevFallAsleepTime(time: moment.Moment){
+        this._previousFallAsleepTime = moment(time);
+        this._previousFallAsleepTimeISO = moment(time).toISOString();
+        this._previousFallAsleepUTCOffset = moment(time).utcOffset();
+    }
+
+    public changeNextFallAsleepTime(time: moment.Moment) { 
+        this._nextFallAsleepTime = moment(time);
+        this._nextFallAsleepTimeISO = moment(time).toISOString();
+        this._nextFallAsleepUTCOffset = moment(time).utcOffset();
+    }
+    public changeNextWakeupTime(time: moment.Moment) { 
+        this._nextWakeupTime = moment(time);
+        this._nextWakeupTimeISO = moment(time).toISOString();
+        this._nextWakeupUTCOffset = moment(time).utcOffset();
+    }
+
     /**
      * refer to:
      * sleep-cycle-position.jpg
@@ -115,6 +140,21 @@ export class SleepCycleData {
         return SleepCyclePosition.ACTIVE;
     }
 
+    public toHttpData(): SleepCycleHTTPData { 
+        return {
+            _id: this._dataId,
+            userId: this._userId,
+            previousFallAsleepTime: this._previousFallAsleepTime.toISOString(),
+            previousFallAsleepUTCOffset: this._previousFallAsleepTime.utcOffset(),
+            previousWakeupTime: this._previousWakeupTime.toISOString(),
+            previousWakeupUTCOffset: this._previousWakeupTime.utcOffset(),
+            energyAtWakeup: this._energyAtWakeup,
+            nextFallAsleepTime: this._nextFallAsleepTime.toISOString(),
+            nextFallAsleepUTCOffset: this._nextFallAsleepTime.utcOffset(),
+            nextWakeupTime: this._nextWakeupTime.toISOString(),
+            nextWakeupUTCOffset: this._nextWakeupTime.utcOffset(),
+        };
+    }
 
 
     public toString(): string { 

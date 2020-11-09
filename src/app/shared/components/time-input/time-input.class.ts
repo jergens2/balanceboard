@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 export class TimeInput {
 
+    private _originalValue: moment.Moment;
     private _timeValue$: Subject<moment.Moment>;
     private _timeValue: moment.Moment;
     private _minValue: moment.Moment;
@@ -14,6 +15,8 @@ export class TimeInput {
     public hideBorders: boolean;
     public color: string;
     public isBold: boolean;
+
+    public get originalValue(): moment.Moment { return moment(this._originalValue); }
 
     public get maxValue(): moment.Moment { return this._maxValue; }
     public get minValue(): moment.Moment { return this._minValue; }
@@ -47,6 +50,7 @@ export class TimeInput {
             this._minValue = moment(timeValue).subtract(24, 'hours');
         }
         this._timeValue = moment(timeValue);
+        this._originalValue = moment(timeValue);
         this._timeValue$ = new Subject();
         this.configure();
     }
@@ -65,6 +69,10 @@ export class TimeInput {
     public changeTime(time: moment.Moment) {
         this._timeValue = moment(time);
         this._timeValue$.next(time);
+    }
+
+    public reset(){
+        this.changeTime(this._originalValue);
     }
 
 }

@@ -99,8 +99,13 @@ export class SleepCycleBuilder {
         const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
         const thisDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD);
         const prevDayItem: DaybookDayItem = dayItems.find(item => item.dateYYYYMMDD === prevDateYYYYMMDD);
+        const addHours = this._appConfig.defaultWakeupHour;
+        const addMins = this._appConfig.defaultWakeupMinute;
+        let wakeupTime = moment(dateYYYYMMDD).startOf('day').add(addHours, 'hours').add(addMins, 'minutes');
+
         if (thisDayItem && prevDayItem) {
-            if (thisDayItem.hasSleepItems && prevDayItem.hasSleepItems) {
+            // if (thisDayItem.hasSleepItems && prevDayItem.hasSleepItems) {
+            if (thisDayItem.hasSleepItems) {
                 const midDay: moment.Moment = moment(dateYYYYMMDD).startOf('day').add(12, 'hours');
                 const schedItems = this._getSleepInputItems(dayItems);
                 const endTimes = schedItems.map(item => item.schedItemEndTime)
@@ -114,14 +119,10 @@ export class SleepCycleBuilder {
                             return 1;
                         } else { return 0; }
                     });
-                const foundTime = endTimes[0];
-                // console.log("FOUND PREVIOUS WAKEUP TIME for DATE: " + dateYYYYMMDD + " \n\t\t" + foundTime.format('YYYY-MM-DD hh:mm a'))
-                return foundTime;
+                wakeupTime = endTimes[0];
             }
         }
-        const addHours = this._appConfig.defaultWakeupHour;
-        const addMins = this._appConfig.defaultWakeupMinute;
-        const wakeupTime = moment(dateYYYYMMDD).startOf('day').add(addHours, 'hours').add(addMins, 'minutes');
+        // console.log("FOUND PREVIOUS WAKEUP TIME for DATE: " + dateYYYYMMDD + " \n\t\t" + wakeupTime.format('YYYY-MM-DD hh:mm a'))
         return wakeupTime;
     }
     private _findNextFallAsleepTime(dateYYYYMMDD: string, dayItems: DaybookDayItem[]): moment.Moment {

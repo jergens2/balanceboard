@@ -40,6 +40,7 @@ export class SleepService {
   public get sleepManager(): SleepManager { return this._sleepManager; }
   public get clock(): moment.Moment { return this.sleepManager.clock; }
   public get clock$(): Observable<moment.Moment> { return this.sleepManager.clock$; }
+  public get sleepData(): SleepCycleData { return this._sleepCycleData; }
   public get hasPrompt(): boolean { return this.sleepData.hasPrompt; }
 
   public login$(userId: string): Observable<boolean> {
@@ -63,6 +64,10 @@ export class SleepService {
    * if it is the first time config, user sets initial values and this method is reloaded.
   */
   public step3And5InitiateSleepManager() {
+    this._rebuildManager();
+  }
+
+  private _rebuildManager(){
     const sleepData: SleepCycleData = this.sleepData;
     const dayItems: DaybookDayItem[] = this.daybookHTTPService.dayItems;
     const appConfig: UAPAppConfiguration = this.accountService.appConfig;
@@ -103,15 +108,16 @@ export class SleepService {
     return moment(startOfDay).add(appConfig.defaultWakeupHour, 'hours').add(appConfig.defaultWakeupMinute, 'minutes');
   }
 
-  public get sleepData(): SleepCycleData { return this._sleepCycleData; }
+
   // public setSleepData(sleepData: SleepCycleData) { this._sleepCycleData = sleepData; }
   public get previousFallAsleepTime(): moment.Moment { return this.sleepData.previousFallAsleepTime; }
   public get previousWakeupTime(): moment.Moment { return this.sleepData.previousWakeupTime; }
   public get nextFallAsleepTime(): moment.Moment { return this.sleepData.nextFallAsleepTime; }
   public get nextWakeupTime(): moment.Moment { return this.sleepData.nextWakeupTime; }
 
-  public saveSleepProfileChanges$(sleepProfile: SleepCycleHTTPData): Observable<boolean> {
+  public saveSleepProfileChangesHTTP$(sleepProfile: SleepCycleHTTPData): Observable<boolean> {
     sleepProfile.userId = this._userId;
+    // console.log("SAVING CHANGES TO SLEEP DATA:", sleepProfile)
     const isComplete$: Subject<boolean> = new Subject();
     const url = serverUrl + '/api/sleep-manager/update';
     this.httpClient.post<{
@@ -123,6 +129,7 @@ export class SleepService {
       if (response.success === true) {
         // console.log("RESPONSE DATA: " , response)
         this._sleepCycleData = new SleepCycleData(response.successData);
+        this._rebuildManager();
       }
       isComplete$.next(true);
     }, (error) => {
@@ -131,6 +138,63 @@ export class SleepService {
     return isComplete$.asObservable();
   }
 
+  public changePrevFallAsleepTime$(fallAsleep: moment.Moment): Observable<boolean> {
+    const now = moment();
+    const isComplete$: Subject<boolean> = new Subject();
+    if (fallAsleep.isAfter(moment(now).subtract(36, 'hours'))) {
+      this._sleepCycleData.changePrevFallAsleepTime(fallAsleep);
+      this.saveSleepProfileChangesHTTP$(this._sleepCycleData.toHttpData()).subscribe(isComplete => {
+        this._rebuildManager();
+        isComplete$.complete();
+      });
+    } else {
+      isComplete$.complete();
+    }
+    return isComplete$.asObservable();
+  }
+  public changePrevWakeupTime$(wakeup: moment.Moment): Observable<boolean> {
+    const now = moment();
+    const isComplete$: Subject<boolean> = new Subject();
+    if (wakeup.isAfter(moment(now).subtract(36, 'hours')) && wakeup.isBefore(now)) {
+      this._sleepCycleData.changePrevWakeupTime(wakeup);
+      this.saveSleepProfileChangesHTTP$(this._sleepCycleData.toHttpData()).subscribe(isComplete => {
+        this._rebuildManager();
+        isComplete$.complete();
+      });
+    } else {
+      isComplete$.complete();
+    }
+    return isComplete$.asObservable();
+  }
 
+  public changeNextFallAsleepTime$(bedtime: moment.Moment): Observable<boolean> {
+    const now = moment();
+    const isComplete$: Subject<boolean> = new Subject();
+    if (bedtime.isBefore(moment(now).add(24, 'hours'))) {
+      this._sleepCycleData.changeNextFallAsleepTime(bedtime);
+      this.saveSleepProfileChangesHTTP$(this._sleepCycleData.toHttpData()).subscribe(isComplete => {
+        this._rebuildManager();
+        isComplete$.complete();
+      });
+    } else {
+      isComplete$.complete();
+    }
+    return isComplete$.asObservable();
+  }
+
+  public changeNextWakeupTime$(wakeup: moment.Moment): Observable<boolean> {
+    const now = moment();
+    const isComplete$: Subject<boolean> = new Subject();
+    if (wakeup.isBefore(moment(now).add(36, 'hours'))) {
+      this._sleepCycleData.changeNextWakeupTime(wakeup);
+      this.saveSleepProfileChangesHTTP$(this._sleepCycleData.toHttpData()).subscribe(isComplete => {
+        this._rebuildManager();
+        isComplete$.complete();
+      });
+    } else {
+      isComplete$.complete();
+    }
+    return isComplete$.asObservable();
+  }
 
 }

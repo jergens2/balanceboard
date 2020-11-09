@@ -100,12 +100,12 @@ export class SleepDataFormComponent implements OnInit {
     this._showAddButton = false;
     this._showTLEForm = true;
   }
-  public onCancelActivities(){
+  public onCancelActivities() {
     this._showAddButton = true;
     this._showTLEForm = false;
   }
 
-  public updateTimelogEntry(activities: TLEFActivityListItem[]){
+  public updateTimelogEntry(activities: TLEFActivityListItem[]) {
     this._timelogEntryActivities = activities;
   }
 
@@ -140,33 +140,33 @@ export class SleepDataFormComponent implements OnInit {
     const dayItems = this._daybookHttpService.dayItems;
 
     let addTimelogEntries: TimelogEntryItem[] = [];
-    if(this._timelogEntryActivities.length > 0){
+    if (this._timelogEntryActivities.length > 0) {
 
       const start: moment.Moment = moment(this.newTLEStartTimeInput.timeValue);
       const end: moment.Moment = moment(this.newTLEEndTimeInput.timeValue);
       const startDateYYYYMMDD: string = moment(start).format('YYYY-MM-DD');
       const endDateYYYYMMDD: string = moment(end).format('YYYY-MM-DD');
 
-      if(startDateYYYYMMDD === endDateYYYYMMDD){
+      if (startDateYYYYMMDD === endDateYYYYMMDD) {
         const newTLE = new TimelogEntryItem(start, end);
         newTLE.timelogEntryActivities = this._timelogEntryActivities.map(item => item.toEntryActivity());
-        addTimelogEntries = [ newTLE ];
-      }else{
+        addTimelogEntries = [newTLE];
+      } else {
         const midnight: moment.Moment = moment(start).startOf('day').add(24, 'hours');
         const newTLE1 = new TimelogEntryItem(start, midnight);
         const newTLE2 = new TimelogEntryItem(midnight, end);
         newTLE1.timelogEntryActivities = this._timelogEntryActivities.map(item => item.toEntryActivity());
         newTLE2.timelogEntryActivities = this._timelogEntryActivities.map(item => item.toEntryActivity());
-        addTimelogEntries = [ newTLE1, newTLE2 ];
+        addTimelogEntries = [newTLE1, newTLE2];
       }
     }
 
-    
-    const updateDaybookItems: DaybookDayItem[] = daybookUpdater.updateDaybookItems(this.sdfDisplay, profile, dayItems, addTimelogEntries);
+
+    const updateDaybookItems: DaybookDayItem[] = daybookUpdater.updateDaybookItemsForSleepForm(this.sdfDisplay, profile, dayItems, addTimelogEntries);
 
     forkJoin([
       this._daybookHttpService.updateDaybookDayItems$(updateDaybookItems),
-      this._sleepService.saveSleepProfileChanges$(data),
+      this._sleepService.saveSleepProfileChangesHTTP$(data),
     ]).subscribe({
       next: (a) => { },
       error: (e) => console.log('Error loading: ', e),
@@ -178,15 +178,17 @@ export class SleepDataFormComponent implements OnInit {
 
   }
 
-  private _setPrevActivity(){
+  private _setPrevActivity() {
     if (this.hasPreviousActivity) {
       let displayActivities: TimelogEntryActivityDisplayItem[] = [];
       const totalMs = moment(this.previousActivity.endTimeISO).diff(this.previousActivity.startTimeISO, 'milliseconds');
       this.previousActivity.timelogEntryActivities.forEach(item => {
         const activity = this._activityService.findActivityByTreeId(item.activityTreeId);
-        const durationMs = (item.percentage * totalMs) / 100;
-        const displayItem = new TimelogEntryActivityDisplayItem(durationMs, activity);
-        displayActivities.push(displayItem);
+        if (activity) {
+          const durationMs = (item.percentage * totalMs) / 100;
+          const displayItem = new TimelogEntryActivityDisplayItem(durationMs, activity);
+          displayActivities.push(displayItem);
+        }
       });
       this._displayActivities = displayActivities;
     }

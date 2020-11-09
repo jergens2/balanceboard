@@ -18,7 +18,6 @@ import { PointsWidgetLargeComponent } from './widgets/points/points-widget-large
 import { SleepBatteryWidgetComponent } from './widgets/sleep-battery/small/sleep-battery-widget.component';
 import { SleepProfileWidgetComponent } from './widgets/sleep-profile-widget/sleep-profile-widget.component';
 import { WeightLogEntryComponent } from './widgets/weight-log-entry/weight-log-entry.component';
-import { SleepProfileFormComponent } from './widgets/sleep-profile-widget/sleep-profile-form/sleep-profile-form.component';
 import { SleepProfileDisplayComponent } from './widgets/sleep-profile-widget/sleep-profile-display/sleep-profile-display.component';
 import { SleepProfileLargeComponent } from './widgets/sleep-profile-widget/sleep-profile-large/sleep-profile-large.component';
 import { TimelogModule } from './widgets/timelog/timelog.module';
@@ -50,13 +49,9 @@ import { EnergyChartComponent } from './widgets/sleep-profile-widget/sleep-profi
     SleepBatteryWidgetComponent,
     SleepProfileWidgetComponent,
     WeightLogEntryComponent,
-    SleepProfileFormComponent,
     SleepProfileDisplayComponent,
     SleepProfileLargeComponent,
     EnergyChartComponent,
-
-    
   ],
-
 })
 export class DaybookModule { }
