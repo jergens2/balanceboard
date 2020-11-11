@@ -1,6 +1,6 @@
 <div class="activities-list-root" (mouseleave)="onMouseLeaveList()" (mouseenter)="onMouseEnterList()">
     <div class="item-list-header">
-        Activities List
+        <!-- <app-activity-search (output)="searchResults($event)"></app-activity-search> -->
     </div>
 
     <div class="list-container">
@@ -14,7 +14,6 @@
         <app-activity-list-item *ngFor="let activity of trashedActivities" [activity]="activity"
             (activityOpened)="onActivityOpened($event)" class="list-item"></app-activity-list-item>
     </div>
-
-
+    
 
 </div>

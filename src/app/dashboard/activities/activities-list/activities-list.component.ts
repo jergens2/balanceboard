@@ -7,7 +7,7 @@ import { ActivityCategoryDefinition } from '../api/activity-category-definition.
 import { AppScreenSizeService } from '../../../shared/app-screen-size/app-screen-size.service';
 import { ActivityComponentService } from '../activity-component.service';
 import { AppScreenSizeLabel } from '../../../shared/app-screen-size/app-screen-size-label.enum';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 
 @Component({
   selector: 'app-activities-list',
@@ -28,34 +28,33 @@ export class ActivitiesListComponent implements OnInit {
 
   public get containerNgClass(): string[] { return this._containerNgClass; }
   @Output() public activityOpened: EventEmitter<ActivityCategoryDefinition> = new EventEmitter();
-  
+
   ngOnInit(): void {
     this._activityTree = this.activityDefService.activityTree;
   }
 
-
-
-
-  public onActivityOpened(activity: ActivityCategoryDefinition){
+  public onActivityOpened(activity: ActivityCategoryDefinition) {
     this.activityService.openActivity(activity);
-    if(this.sizeService.appScreenSize.label !== AppScreenSizeLabel.VERY_LARGE){
+    if (this.sizeService.appScreenSize.label !== AppScreenSizeLabel.VERY_LARGE) {
       this.activityService.closeList();
     }
   }
 
   private _mouseIsInList: boolean = true;
-  public onMouseLeaveList(){
+  private _timerSub: Subscription = new Subscription();
+  public onMouseLeaveList() {
     this._mouseIsInList = false;
-    timer(2500).subscribe(s =>{
-      if(!this._mouseIsInList){
-        if(this.activityService.componentSize === 'MEDIUM'){
-          if(this.activityService.currentActivity){
+    this._timerSub.unsubscribe();
+    this._timerSub = timer(2500).subscribe(s => {
+      if (!this._mouseIsInList) {
+        if (this.activityService.componentSize === 'MEDIUM') {
+          if (this.activityService.currentActivity) {
             this.activityService.closeList();
           }
         }
       }
     });
   }
-  public onMouseEnterList(){this._mouseIsInList = true;  }
+  public onMouseEnterList() { this._mouseIsInList = true; }
 
 }

@@ -1,0 +1,5 @@
+<div class="activity-search-root">
+    <fa-icon [icon]="faSearch" style="color: gray;"></fa-icon>
+    <input type="text" class="search-input" placeholder="Find activity" (keyup)="onActivityInputKeyUp($event)"
+        (keydown)="onActivityInputKeyDown($event)" [value]="searchValue">
+</div>

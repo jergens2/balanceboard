@@ -50,11 +50,15 @@
 }
 
 .color-circle{
-    width:20px;
-    height:20px;
-    border-radius:20px;
+    width:16px;
+    height:16px;
+    min-width: 16px;
+    max-width: 16px;
+    max-height: 16px;
+    max-width: 16px;
+    border-radius:16px;
     border:1px solid rgba(255, 255, 255, 0);
-    margin-right:5px;
+    margin-right:4px;
 }
 
 .expand-button-container{

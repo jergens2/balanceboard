@@ -92,6 +92,9 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
     this._activity = activity;
     this.configuringSchedule = false;
   }
+  public onCloseDeleteOptions(){
+    this._showDeleteContent = false;
+  }
   public onClickOpenColorPicker() {
     this._colorPickerIsOpen = true;
   }

@@ -25,6 +25,8 @@ export class AdiSummaryComponent implements OnInit {
   private _currentRange: 7 | 30 | 90 | 365 | 'Specify';
   private _currentRangeStart: moment.Moment;
   private _currentRangeEnd: moment.Moment;
+  private _weekHourData: ADIWeekDataChartItem[] = [];
+  private _includeChildren: boolean = true;
 
   public get analyzer(): ActivityDataAnalyzer { return this.activitiesService.summarizer.analyzer; }
   public get occurrencesTotal(): string { return this._occurrencesTotal; }
@@ -32,8 +34,9 @@ export class AdiSummaryComponent implements OnInit {
   public get medianHoursPerWeek(): string { return this._medianHoursPerWeek; }
   public get medianOccurrencesPerWeek(): string { return this._medianOccurrencesPerWeek; }
   public get rangeMenu(): ButtonMenu { return this._rangeMenu; }
-  // public get weekHourData(): ADIWeekDataChartItem[] { return this.analyzer.weekHourData; }
+  public get weekHourData(): ADIWeekDataChartItem[] { return this._weekHourData; }
   public get analysis(): ActivityAnalysis { return this._analysis; }
+  public get includeChildren(): boolean { return this._includeChildren; }
 
   ngOnInit(): void {
     console.log("Activity occurrence data:" + this.analyzer.activityOccurences.length);
@@ -42,10 +45,10 @@ export class AdiSummaryComponent implements OnInit {
     this._rangeMenu.addItem$('30').subscribe(s => this._setRange(30));
     this._rangeMenu.addItem$('90').subscribe(s => this._setRange(90));
     this._rangeMenu.addItem$('365').subscribe(s => this._setRange(365));
-    this._rangeMenu.addItem$('Specify').subscribe(s => this._setRange('Specify'));
+    // this._rangeMenu.addItem$('Specify').subscribe(s => this._setRange('Specify'));
     this.activitiesService.currentActivity$.subscribe(item => {
       this._reload();
-    })
+    });
   }
 
   private _setRange(range: 7 | 30 | 90 | 365 | 'Specify') {
@@ -62,17 +65,104 @@ export class AdiSummaryComponent implements OnInit {
 
   private _reload() {
     const currentActivity = this.activitiesService.currentActivity;
-    const occurrenceData = this.activitiesService.summarizer.activityOccurences;
-    const foundActivity = occurrenceData.find(item => item.activityTreeId === currentActivity.treeId);
-    if (foundActivity) {
-      this._analysis = this._buildAnalysis(foundActivity);
-    } else {
-      this._occurrencesTotal = '0';
-      this._durationHoursTotal = '0';
-      this._medianHoursPerWeek = '0';
-      this._medianOccurrencesPerWeek = '0';
+    if(currentActivity){
+      const occurrenceData = this.activitiesService.summarizer.activityOccurences;
+      const foundActivityData = occurrenceData.find(item => item.activityTreeId === currentActivity.treeId);
+      this._weekHourData = this._buildWeekHourData();
+      if (foundActivityData) {
+        this._analysis = this._buildAnalysis(foundActivityData);
+  
+      } else {
+        this._occurrencesTotal = '0';
+        this._durationHoursTotal = '0';
+        this._medianHoursPerWeek = '0';
+        this._medianOccurrencesPerWeek = '0';
+      }
+    }
+    
+
+  }
+
+  private _buildWeekHourData(): ADIWeekDataChartItem[] {
+    const currentActivity = this.activitiesService.currentActivity;
+    const occurrenceData: ADIOccurrenceData[] = this.activitiesService.summarizer.activityOccurences;
+    let totalActivityMs: number = 0;
+    occurrenceData.forEach(item => totalActivityMs += item.totalMs);
+    let activityIds: string[] = [currentActivity.treeId];
+    if (this.includeChildren) {
+      const tree = this.activitiesService.activityTree;
+      const allActivities = tree.allActivities;
+      activityIds = [currentActivity.treeId, ...currentActivity.getAllChildActivities()];
     }
 
+    const weekHourData: ADIWeekDataChartItem[] = [];
+    let startDateYYYYMMDD: string = moment(this._currentRangeStart).format('YYYY-MM-DD');
+
+    const lastDateYYYYMMDD: string = moment().day(6).format('YYYY-MM-DD');
+    console.log("Last date YYYYMMDD is " + lastDateYYYYMMDD);
+    console.log("Start date is: " + startDateYYYYMMDD)
+
+    if (moment(startDateYYYYMMDD).day() > 0) {
+      startDateYYYYMMDD = moment(startDateYYYYMMDD).subtract(moment(startDateYYYYMMDD).day(), 'days').format('YYYY-MM-DD');
+    }
+
+    const activitiesOccurrenceData = occurrenceData.filter(dataItem => activityIds.indexOf(dataItem.activityTreeId) > -1);
+    const weekDatas: {
+      startDateYYYYMMDD: string, ms: number, cumulativePercent: number, percentOfLargest: number
+    }[] = [];
+
+    let largestMs: number = 0;
+    let totalMs: number = 0;
+    while (startDateYYYYMMDD <= lastDateYYYYMMDD) {
+      const startOfWeek = moment(startDateYYYYMMDD);
+      const endOfWeek = moment(startDateYYYYMMDD).add(6, 'days');
+      let weekOccurrences: {
+        dateYYYYMMDD: string,
+        startTime: moment.Moment,
+        endTime: moment.Moment,
+        durationMs: number,
+      }[] = [];
+      activitiesOccurrenceData.forEach(activityOccurrenceData => {
+        const inRangeItems = activityOccurrenceData.occurrences.filter(occurrence => {
+          return occurrence.startTime.isSameOrAfter(startOfWeek) && occurrence.startTime.isSameOrBefore(endOfWeek);
+        });
+        if (inRangeItems.length > 0) {
+          weekOccurrences = [...weekOccurrences, ...inRangeItems];
+        }
+      });
+      const weekData = {
+        startDateYYYYMMDD: startDateYYYYMMDD, ms: 0, cumulativePercent: 0, percentOfLargest: 0
+      };
+      let sumMs = 0;
+      for (let i = 0; i < weekOccurrences.length; i++) {
+        sumMs += weekOccurrences[i].durationMs;
+      }
+      if (sumMs > largestMs) {
+        largestMs = sumMs;
+      }
+      totalMs += sumMs;
+      weekData.ms = sumMs;
+      weekDatas.push(weekData);
+      startDateYYYYMMDD = moment(startDateYYYYMMDD).add(7, 'days').format('YYYY-MM-DD');
+    }
+    let cumulativeMs: number = 0;
+
+    for (let i = 0; i < weekDatas.length; i++) {
+      const percentOfLargest = weekDatas[i].ms / largestMs;
+      cumulativeMs += weekDatas[i].ms;
+      weekDatas[i].cumulativePercent = cumulativeMs / totalMs;
+      weekDatas[i].percentOfLargest = percentOfLargest;
+
+    }
+    console.log("WEEK DATA: ", weekDatas)
+    const color = currentActivity.color;
+    const chartItems: ADIWeekDataChartItem[] = weekDatas.map(data => {
+      const chartItem = new ADIWeekDataChartItem(data);
+      const alpha = data.percentOfLargest;
+      chartItem.setColor(color, alpha);
+      return chartItem;
+    });
+    return chartItems;
   }
 
   private _buildAnalysis(occurrenceData: ADIOccurrenceData): ActivityAnalysis {
@@ -108,7 +198,7 @@ export class AdiSummaryComponent implements OnInit {
       // medianMsPerOccurrence: number,
       totalOccurrences: occurrenceData.occurrences.length,
       totalMs: occurrenceData.totalMs,
-    }
+    };
   }
 
 

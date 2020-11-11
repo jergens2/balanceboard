@@ -1,23 +1,24 @@
 <div class="sleep-data-root">
 
-    <!-- <div class="clock-container">
-
-        <div style="color: rgb(77, 77, 77); font-size: 0.9em; font-weight: bold; align-self: center;">
-            Today is {{ currentDate }}
-        </div>
-        <div class="current-time">
-            <span>{{ currentTime }}</span>
-            <span style="font-size: 0.7em; margin-left: 3px;">{{currentTimeSS}}</span>
-            <span style="margin-left: 12px;">{{ currentTimeAMPM}}</span>
-        </div>
-
-    </div> -->
-
-
 
     <div *ngIf="isNearBedtime" class="content">
-        It's nearly bedtime.
-        <button (click)="onClickContinue()" class="medium-button save-button">Okay!</button>
+        <app-clock style="margin-bottom:15px;"></app-clock>
+        <div style="font-size: 1.3em;margin-bottom: 15px;">It's nearly bedtime.</div>
+        
+        
+        <div class="bed-time" (click)="onClickOpenBedTime()" *ngIf="!isModifyingBedtime">
+            Bed time: {{ nextFallAsleepTime.format('h:mm a') }}
+        </div>
+        <div *ngIf="isModifyingBedtime" class="modifying-bedtime">
+            <app-time-input [timeInput]="nextFallAsleepTimeInput"></app-time-input>
+            <div style="display:flex;flex-direction: row;">
+                <button class="small-button save-button" (click)="onClickSaveBedtime()">Save</button>
+                <button class="small-button discard-button" (click)="onClickCloseBedtime()">Cancel</button>
+            </div>
+        </div>
+        
+        <button (click)="onClickContinue()" class="medium-button save-button" *ngIf="!isSaving">Okay!</button>
+        <button class="medium-button save-button" *ngIf="isSaving" disabled>Saving...</button>
     </div>
 
     <div *ngIf="isAfterBedtime" class="content">

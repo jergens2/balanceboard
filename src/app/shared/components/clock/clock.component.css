@@ -1,0 +1,25 @@
+.clock{
+    color: rgb(0, 89, 255);
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+.time-container{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.time{
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-right: 4px;
+}
+.time-seconds{
+    margin-right: 10px;
+}
+
+.date{
+    font-size: 1.1em;
+    color: rgb(68, 90, 131);
+}

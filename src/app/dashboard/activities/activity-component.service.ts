@@ -8,6 +8,7 @@ import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
 import { DaybookDayItem } from '../daybook/daybook-day-item/daybook-day-item.class';
 import { ActivityDataAnalyzer } from './activity-display-item/adi-parts/adi-summary/activity-data-analyzer.class';
 import { ActivityDataSummarizer } from './activity-display-item/adi-parts/adi-summary/activity-data-summarizer.class';
+import { ActivityTree } from './api/activity-tree.class';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,7 @@ export class ActivityComponentService {
   private _isLoading$: BehaviorSubject<boolean> = new BehaviorSubject(true);
   private _loadingMessage$: BehaviorSubject<string> = new BehaviorSubject('');
 
+  public get activityTree(): ActivityTree { return this._activityDefinitionService.activityTree; }
 
   public get currentActivity(): ActivityCategoryDefinition { return this._currentActivity$.getValue(); }
   public get currentActivity$(): Observable<ActivityCategoryDefinition> { return this._currentActivity$.asObservable(); }
@@ -52,31 +54,30 @@ export class ActivityComponentService {
   public initiate$(activityDefinitionService: ActivityHttpService,
     modalService: ModalService, daybookHttpService: DaybookHttpService): Observable<boolean> {
     const isLoading$: Subject<boolean> = new Subject();
-    console.log("Reinitiang")
     this._activityDefinitionService = activityDefinitionService;
     this._modalService = modalService;
     this._daybookHttpService = daybookHttpService;
-    this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
-      this._daybookActivityUpdater = new DaybookActivityUpdater(items);
-      // this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
-      this._activitiesSummarizer = new ActivityDataSummarizer(items, this._activityDefinitionService.activityTree);
-      if (this.currentActivity) {
-        this._activitiesSummarizer.analyzeActivityAndChildren(this.currentActivity)
-      }
-      this._activitySub = this._activityDefinitionService.activityTree$.subscribe(changedTree => {
-        if (changedTree) {
-          if (this.currentActivity) {
-            const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);
-            this._activitiesSummarizer.analyzeActivityAndChildren(foundExisting)
-            this._currentActivity$.next(foundExisting);
-          }
-        }
 
 
-      });
-
-      isLoading$.next(true);
-    });
+    isLoading$.next(true);
+    isLoading$.complete();
+    // this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
+    //   this._daybookActivityUpdater = new DaybookActivityUpdater(items);
+    //   // this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
+    //   this._activitiesSummarizer = new ActivityDataSummarizer(items, this._activityDefinitionService.activityTree);
+    //   if (this.currentActivity) {
+    //     this._activitiesSummarizer.analyzeActivityAndChildren(this.currentActivity);
+    //   }
+    //   this._activitySub = this._activityDefinitionService.activityTree$.subscribe(changedTree => {
+    //     if (changedTree) {
+    //       if (this.currentActivity) {
+    //         const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);
+    //         this.openActivity(foundExisting);
+    //       }
+    //     }
+    //   });
+    //   isLoading$.next(true);
+    // });
     return isLoading$.asObservable();
   }
 
@@ -97,7 +98,7 @@ export class ActivityComponentService {
   }
 
   public openActivity(activity: ActivityCategoryDefinition) {
-    console.log("Opening activity: " + activity.name);
+    // console.log("Opening activity: " + activity.name);
     this._currentActivity$.next(activity);
     this.summarizer.analyzeActivityAndChildren(activity);
     this._isLoading$.next(false);

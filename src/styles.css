@@ -82,6 +82,20 @@
   -o-background-size: cover;
   background-size: cover;
 }
+.background-image-9{
+  background: url("./assets/background-images/bg9.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-10{
+  background: url("./assets/background-images/bg10.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 
 
 .no-select {

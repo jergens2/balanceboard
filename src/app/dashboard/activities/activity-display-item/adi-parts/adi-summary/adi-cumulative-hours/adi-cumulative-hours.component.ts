@@ -31,11 +31,11 @@ export class AdiCumulativeHoursComponent implements OnInit {
 
   private _setToCumulative(){
     this._modeIsCumulative = true;
-    this._weekDataItems.forEach(item => item.toggleViewMode());
+    this._weekDataItems.forEach(item => item.setToCumulative());
   }
   private _setToWeekly(){
     this._modeIsCumulative = false;
-    this._weekDataItems.forEach(item => item.toggleViewMode());
+    this._weekDataItems.forEach(item => item.setToWeekly());
   }
 
 }

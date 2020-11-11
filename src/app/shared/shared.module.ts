@@ -39,6 +39,8 @@ import { TvYearViewComponent } from './time-views/tv-year-view/tv-year-view.comp
 import { TvWeekViewComponent } from './time-views/tv-week-view/tv-week-view.component';
 import { TvSpecifyViewComponent } from './time-views/tv-specify-view/tv-specify-view.component';
 import { ColorPickerComponent } from "./color-picker/color-picker.component";
+import { ActivitySearchComponent } from './activity-search/activity-search.component';
+import { ClockComponent } from './components/clock/clock.component';
 
 
 
@@ -87,6 +89,8 @@ import { ColorPickerComponent } from "./color-picker/color-picker.component";
         TvYearViewComponent,
         TvWeekViewComponent,
         TvSpecifyViewComponent,
+        ActivitySearchComponent,
+        ClockComponent,
     ],
     exports: [
         CommonModule,
@@ -96,6 +100,7 @@ import { ColorPickerComponent } from "./color-picker/color-picker.component";
 
         RecurringTaskFormComponent,
         ActivityInputDropdownComponent,
+        ActivitySearchComponent,
         DataEntryItemInputComponent,
         DeleteConfirmButtonComponent,
 
@@ -109,6 +114,8 @@ import { ColorPickerComponent } from "./color-picker/color-picker.component";
 
         TimeViewsComponent,
         ButtonMenuComponent,
+        ClockComponent,
+
     ]
 })
 

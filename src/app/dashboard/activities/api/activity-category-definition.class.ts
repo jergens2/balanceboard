@@ -1,25 +1,28 @@
-import { ActivityDurationSetting } from "./activity-duration.enum";
-import { ActivityCategoryDefinitionHttpShape } from "./activity-category-definition-http-shape.interface";
-import { ActivityPointsConfiguration } from "./activity-points-configuration.interface";
-import { ActivityScheduleRepitition } from "./activity-schedule-repitition.interface";
+import { ActivityDurationSetting } from './activity-duration.enum';
+import { ActivityCategoryDefinitionHttpShape } from './activity-category-definition-http-shape.interface';
+import { ActivityPointsConfiguration } from './activity-points-configuration.interface';
+import { ActivityScheduleRepitition } from './activity-schedule-repitition.interface';
 
 export class ActivityCategoryDefinition {
 
     constructor(httpShape: ActivityCategoryDefinitionHttpShape) {
         this._httpShape = httpShape;
-        this._fullNamePath = "/" + this.name;
-        if(this.parentTreeId === this.userId + "_TOP_LEVEL"){
+        this._fullNamePath = '/' + this.name;
+        if (this.parentTreeId === this.userId + '_TOP_LEVEL') {
             this._isRootLevel = true;
         }
     }
 
     private _httpShape: ActivityCategoryDefinitionHttpShape;
-    private _isRootLevel: boolean = false;
+    private _isRootLevel = false;
+
+    private _children: ActivityCategoryDefinition[] = [];
+    private _fullNamePath = '/';
 
     public get httpShape(): ActivityCategoryDefinitionHttpShape { return this._httpShape; }
     public get id(): string { return this._httpShape._id; }
     public get treeId(): string { return this._httpShape.treeId; }
-    public get isInTrash(): boolean { return this._httpShape.isInTrash }
+    public get isInTrash(): boolean { return this._httpShape.isInTrash; }
     public get name(): string { return this._httpShape.name; }
     public get description(): string { return this._httpShape.description; }
     public get userId(): string { return this._httpShape.userId; }
@@ -43,9 +46,15 @@ export class ActivityCategoryDefinition {
     public set parentTreeId(parentTreeId: string) { this._httpShape.parentTreeId = parentTreeId; }
     public set durationSetting(durationSetting: ActivityDurationSetting) { this._httpShape.durationSetting = durationSetting; }
     public set specifiedDurationMinutes(minutes: number) { this._httpShape.specifiedDurationMinutes = minutes; }
-    public set scheduleRepititions(scheduleRepititions: ActivityScheduleRepitition[]) { this._httpShape.scheduleRepititions = scheduleRepititions; }
-    public set currentPointsConfiguration(pointsConfiguration: ActivityPointsConfiguration) { this._httpShape.currentPointsConfiguration = pointsConfiguration; }
-    public set pointsConfigurationHistory(pointsConfigurations: ActivityPointsConfiguration[]) { this._httpShape.pointsConfigurationHistory = pointsConfigurations; }
+    public set scheduleRepititions(scheduleRepititions: ActivityScheduleRepitition[]) {
+        this._httpShape.scheduleRepititions = scheduleRepititions;
+    }
+    public set currentPointsConfiguration(pointsConfiguration: ActivityPointsConfiguration) {
+        this._httpShape.currentPointsConfiguration = pointsConfiguration;
+    }
+    public set pointsConfigurationHistory(pointsConfigurations: ActivityPointsConfiguration[]) {
+        this._httpShape.pointsConfigurationHistory = pointsConfigurations;
+    }
     public set color(color: string) { this._httpShape.color = color; }
     public set icon(icon: string) { this._httpShape.icon = icon; }
     public set isSleepActivity(isSleep: boolean) { this._httpShape.isSleepActivity = isSleep; }
@@ -68,14 +77,15 @@ export class ActivityCategoryDefinition {
     public get isConfigured(): boolean { return this._httpShape.isConfigured; }
     // public set isConfigured(isConfigured: boolean) { this._httpShape.isConfigured = isConfigured };
 
-    private _children: ActivityCategoryDefinition[] = [];
-    private _fullNamePath: string = "/";
-
-
-
-
-    public setFullPath(fullPath: string) {this._fullNamePath = fullPath;}
-    public get fullNamePath(): string {return this._fullNamePath;}
+    public setFullPath(fullPath: string) { this._fullNamePath = fullPath; }
+    public get fullNamePath(): string { return this._fullNamePath; }
+    public get fullNamePathNoSlash(): string {
+        let name = this.fullNamePath;
+        if (name[name.length - 1] === '/') {
+            name = name.substr(0, name.length - 1);
+        }
+        return name;
+    }
 
     /**
     * This method returns the position in the path where the searchValue is found.
@@ -87,23 +97,34 @@ export class ActivityCategoryDefinition {
     */
     public fullNamePathIndexOf(searchValue: string, preciseMatch?: boolean): number {
 
-
-        let foundIndex: number = -1;
-        this.fullNamePathSplit.forEach((pathName: string) => {
+        const foundIndex = this.fullNamePathSplit.findIndex((pathName: string) => {
             if (preciseMatch) {
-                if (pathName.toLowerCase().indexOf(searchValue) == 0 && pathName.length == searchValue.length) {
-                    foundIndex = this.fullNamePathSplit.indexOf(pathName);
-                }
+                return pathName.toLowerCase().indexOf(searchValue) === 0 && pathName.length === searchValue.length;
             } else {
-                if (pathName.toLowerCase().indexOf(searchValue) == 0) {
-                    foundIndex = this.fullNamePathSplit.indexOf(pathName);
-                }
+                return pathName.toLowerCase().indexOf(searchValue) >= 0;
             }
         });
         return foundIndex;
     }
     public get fullNamePathSplit(): string[] {
-        return this.fullNamePath.split("/").filter((path) => { return path != ""; });
+        return this.fullNamePath.split('/').filter(path => path !== '');
+    }
+    public get searchFullNamePath(): {
+        firstIndexOfZeroMatch: number,
+        firstIndexOfMatch: number,
+        name: string
+        fullName: string,
+    } {
+        this.fullNamePathSplit
+
+
+        // return {
+        //     firstIndexOfZeroMatch: ,
+        //     firstIndexOfMatch: number,
+        //     name: string
+        // fullName: string,
+        // };
+        return null;
     }
 
     // public findDescendant(descendantName: string): ActivityCategoryDefinition{
@@ -131,12 +152,12 @@ export class ActivityCategoryDefinition {
 
     /**
      * Gets all child tree ids, recursively.
-     * 
+     *
      */
-    public getAllChildActivities(): string[] { 
+    public getAllChildActivities(): string[] {
         let childIds: string[] = [];
-        if(this.children.length > 0){
-            this.children.forEach(child => { 
+        if (this.children.length > 0) {
+            this.children.forEach(child => {
                 childIds.push(child.treeId);
                 childIds = [...childIds, ...child.getAllChildActivities()];
             });
@@ -156,7 +177,7 @@ export class ActivityCategoryDefinition {
                 this._children.splice(this._children.indexOf(childCategory), 1);
                 return;
             } else {
-                for (let child of this._children) {
+                for (const child of this._children) {
                     if (child.children.length > 0) {
                         child.removeChild(childCategory);
                     }

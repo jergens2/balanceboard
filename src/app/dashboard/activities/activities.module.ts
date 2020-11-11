@@ -27,7 +27,8 @@ import { YearOccurrenceComponent } from './activity-display-item/adi-parts/activ
 import { ActivitiesToolbarComponent } from './activities-toolbar/activities-toolbar.component';
 import { AdiSummaryComponent } from './activity-display-item/adi-parts/adi-summary/adi-summary.component';
 import { AdiCumulativeHoursComponent } from './activity-display-item/adi-parts/adi-summary/adi-cumulative-hours/adi-cumulative-hours.component';
-import { AdiAverageHoursComponent } from './activity-display-item/adi-parts/adi-summary/adi-average-hours/adi-average-hours.component';
+import { ActivityBrowseResultsComponent } from './activity-browse/activity-browse-results/activity-browse-results.component';
+import { ActivityBrowseComponent } from './activity-browse/activity-browse.component';
 
 
 @NgModule({
@@ -55,7 +56,8 @@ import { AdiAverageHoursComponent } from './activity-display-item/adi-parts/adi-
     ActivitiesToolbarComponent,
     AdiSummaryComponent,
     AdiCumulativeHoursComponent,
-    AdiAverageHoursComponent,
+    ActivityBrowseComponent,
+    ActivityBrowseResultsComponent,
   ],
   imports: [
     CommonModule,

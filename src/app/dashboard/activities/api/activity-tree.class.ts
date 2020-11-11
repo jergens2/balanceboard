@@ -15,7 +15,9 @@ export class ActivityTree {
 
     public get rootActivities(): ActivityCategoryDefinition[] { return this._rootActivities; }
     public get sleepActivity(): ActivityCategoryDefinition { return this._allActivitiesAndRoutines.find(activity => activity.isSleepActivity); }
-    public get allActivities(): ActivityCategoryDefinition[] { return this._allActivitiesAndRoutines.filter(activity => (!activity.isRoutine)); }
+    public get allActivities(): ActivityCategoryDefinition[] { 
+        return this._allActivitiesAndRoutines.filter(activity => (!activity.isRoutine)); 
+    }
     public get allActivitiesAndRoutines(): ActivityCategoryDefinition[] { return this._allActivitiesAndRoutines; }
     public get activityRoutines(): ActivityCategoryDefinition[] { return this._activityRoutines; }
     public get allExcludingTrashed(): ActivityCategoryDefinition[] { return this._allActivitiesAndRoutines.filter(item => !item.isInTrash); }
@@ -52,7 +54,7 @@ export class ActivityTree {
         }
     }
 
-    public findChildActivities(activityNode: ActivityCategoryDefinition, allActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition {
+    private _findChildActivities(activityNode: ActivityCategoryDefinition, allActivities: ActivityCategoryDefinition[]): ActivityCategoryDefinition {
         for (let activity of allActivities) {
             if (activity.parentTreeId == activityNode.treeId) {
                 activity.setFullPath(activityNode.fullNamePath + activity.name + "/");
@@ -60,7 +62,7 @@ export class ActivityTree {
             }
         }
         for (let childNode of activityNode.children) {
-            childNode = this.findChildActivities(childNode, allActivities);
+            childNode = this._findChildActivities(childNode, allActivities);
         }
         activityNode.children.sort((c1, c2) => {
             if (c1.name > c2.name) {
@@ -110,7 +112,7 @@ export class ActivityTree {
         });
 
         for (let rootActivity of rootActivities) {
-            rootActivity = this.findChildActivities(rootActivity, allActivities);
+            rootActivity = this._findChildActivities(rootActivity, allActivities);
         }
         this._rootActivities = rootActivities;
         this._activityRoutines = rootActivities.filter((activity) => { return activity.isRoutine === true; });

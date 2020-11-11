@@ -1,0 +1,9 @@
+.activity-find-root{
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    border:1px solid blue;
+    align-items: center;
+    justify-content: center;
+}

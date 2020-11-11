@@ -1,0 +1,17 @@
+.browse-results{
+    display:flex;
+    flex-direction: column;
+}
+
+
+.search-result{
+    display:flex;
+    flex-direction: row;
+    margin-top: 1px;
+    border-radius: 3px;
+    font-size: 1.1em;
+}
+.search-result:hover{
+    background-color: rgb(240, 240, 240);
+    cursor: pointer;
+}

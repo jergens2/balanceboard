@@ -33,7 +33,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
   public get faCalendarAlt() { return faCalendarAlt };
   public get faPlus() { return faPlus };
-  public get maxHeightPx(): string { return (this.sizeService.maxComponentHeightPx-40) + "px"; }
+  public get maxHeightPx(): string { return (this.sizeService.maxComponentHeightPx - 40) + "px"; }
 
   public get openActivity(): ActivityCategoryDefinition { return this._openActivity; }
   public get isLoading(): boolean { return this._isLoading; }
@@ -72,7 +72,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
       this.activityCompService.initiate$(this.activityDefinitionService, this.modalService, this.daybookHttpService)
         .subscribe(isComplete => {
           this._isLoading = false;
-        }),
+        }, () => { }, () => { this._isLoading = false; }),
     ];
   }
 
@@ -90,14 +90,14 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
       size = 'SMALL';
     }
     this.activityCompService.setComponentSize(size);
-    if(size === 'SMALL' || size === 'MEDIUM'){
+    if (size === 'SMALL' || size === 'MEDIUM') {
       if (this.activityCompService.currentActivity) {
         this.activityCompService.closeList();
       } else {
         this.activityCompService.openList();
       }
     }
-    
+
   }
 
 }
