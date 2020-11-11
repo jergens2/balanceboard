@@ -22,8 +22,6 @@ export class ActivityComponentService {
   private _daybookHttpService: DaybookHttpService;
   private _daybookActivityUpdater: DaybookActivityUpdater;
   private _activitiesSummarizer: ActivityDataSummarizer;
-  private _listIsOpen$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  private _componentSize$: BehaviorSubject<'SMALL' | 'MEDIUM' | 'LARGE'> = new BehaviorSubject('MEDIUM');
 
   private _currentActivity$: BehaviorSubject<ActivityCategoryDefinition> = new BehaviorSubject(null);
   private _isLoading$: BehaviorSubject<boolean> = new BehaviorSubject(true);
@@ -39,15 +37,10 @@ export class ActivityComponentService {
   public get loadingMessage(): string { return this._loadingMessage$.getValue(); }
   public get loadingMessage$(): Observable<string> { return this._loadingMessage$.asObservable(); }
 
-  public get listIsOpen(): boolean { return this._listIsOpen$.getValue(); }
-  public get listIsOpen$(): Observable<boolean> { return this._listIsOpen$.asObservable(); }
-
   public get updater(): DaybookActivityUpdater { return this._daybookActivityUpdater; }
   public get summarizer(): ActivityDataSummarizer { return this._activitiesSummarizer; }
   public get daybookDayItems(): DaybookDayItem[] { return this.updater.daybookDayItems; }
 
-  public get componentSize(): 'SMALL' | 'MEDIUM' | 'LARGE' { return this._componentSize$.getValue(); }
-  public get componentSize$(): Observable<'SMALL' | 'MEDIUM' | 'LARGE'> { return this._componentSize$.asObservable(); }
 
   private _activitySub: Subscription = new Subscription();
 
@@ -59,25 +52,25 @@ export class ActivityComponentService {
     this._daybookHttpService = daybookHttpService;
 
 
-    isLoading$.next(true);
-    isLoading$.complete();
-    // this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
-    //   this._daybookActivityUpdater = new DaybookActivityUpdater(items);
-    //   // this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
-    //   this._activitiesSummarizer = new ActivityDataSummarizer(items, this._activityDefinitionService.activityTree);
-    //   if (this.currentActivity) {
-    //     this._activitiesSummarizer.analyzeActivityAndChildren(this.currentActivity);
-    //   }
-    //   this._activitySub = this._activityDefinitionService.activityTree$.subscribe(changedTree => {
-    //     if (changedTree) {
-    //       if (this.currentActivity) {
-    //         const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);
-    //         this.openActivity(foundExisting);
-    //       }
-    //     }
-    //   });
-    //   isLoading$.next(true);
-    // });
+    // isLoading$.next(true);
+    // isLoading$.complete();
+    this._daybookHttpService.getAllItems$().subscribe((items: DaybookDayItem[]) => {
+      this._daybookActivityUpdater = new DaybookActivityUpdater(items);
+      // this._activityDataAnalyzer = new ActivityDataAnalyzer(items);
+      this._activitiesSummarizer = new ActivityDataSummarizer(items, this._activityDefinitionService.activityTree);
+      if (this.currentActivity) {
+        this._activitiesSummarizer.analyzeActivityAndChildren(this.currentActivity);
+      }
+      this._activitySub = this._activityDefinitionService.activityTree$.subscribe(changedTree => {
+        if (changedTree) {
+          if (this.currentActivity) {
+            const foundExisting = changedTree.findActivityByTreeId(this.currentActivity.treeId);
+            this.openActivity(foundExisting);
+          }
+        }
+      });
+      isLoading$.next(true);
+    });
     return isLoading$.asObservable();
   }
 
@@ -88,11 +81,6 @@ export class ActivityComponentService {
     this._currentActivity$.next(null);
   }
 
-  public openList() { this._listIsOpen$.next(true); }
-  public toggleList() { this._listIsOpen$.next(!this.listIsOpen); }
-  public closeList() { this._listIsOpen$.next(false); }
-  public setComponentSize(size: 'SMALL' | 'MEDIUM' | 'LARGE') { this._componentSize$.next(size); }
-
   public restart() {
     this._currentActivity$.next(null);
   }
@@ -102,6 +90,9 @@ export class ActivityComponentService {
     this._currentActivity$.next(activity);
     this.summarizer.analyzeActivityAndChildren(activity);
     this._isLoading$.next(false);
+  }
+  public browseActivities(){
+    this._currentActivity$.next(null);
   }
 
   public executePermanentlyDeleteActivity() {

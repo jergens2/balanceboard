@@ -56,7 +56,7 @@ export class SleepDataPromptComponent implements OnInit {
   public get nextFallAsleepTime(): moment.Moment { return this._nextFallAsleepTime; }
   public get nextFallAsleepTimeInput(): TimeInput { return this._nextFallAsleepTimeInput; }
   public get nextFallAsleepValChanged(): boolean { return this._nextFallAsleepValChanged; }
-  public get isModifyingBedtime(): boolean { return this._isModifyingBedtime; } 
+  public get isModifyingBedtime(): boolean { return this._isModifyingBedtime; }
   public get isSaving(): boolean { return this._isSaving; }
 
   // public get rootNgClass(): any {
@@ -114,20 +114,20 @@ export class SleepDataPromptComponent implements OnInit {
     });
   }
 
-  public onClickOpenBedTime(){
+  public onClickOpenBedTime() {
     this._isModifyingBedtime = true;
   }
-  public onClickSaveBedtime(){
+  public onClickSaveBedtime() {
     const newBedTime: moment.Moment = moment(this.nextFallAsleepTimeInput.timeValue);
     this._isSaving = true;
-    this.sleepService.changeNextFallAsleepTime$(newBedTime).subscribe(response => {}, ()=>{}, ()=>{
+    this.sleepService.changeNextFallAsleepTime$(newBedTime).subscribe(response => { }, () => { }, () => {
       this._isModifyingBedtime = false;
       this._isSaving = false;
-      console.log("Need to re-check the current sleep status here and then navigate forward.")
+      // console.log("Need to re-check the current sleep status here and then navigate forward.")
     });
-    
+
   }
-  public onClickCloseBedtime(){
+  public onClickCloseBedtime() {
     this._isModifyingBedtime = false;
   }
 

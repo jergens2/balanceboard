@@ -1,5 +1,11 @@
 <div class="activity-search-root">
-    <fa-icon [icon]="faSearch" style="color: gray;"></fa-icon>
-    <input type="text" class="search-input" placeholder="Find activity" (keyup)="onActivityInputKeyUp($event)"
-        (keydown)="onActivityInputKeyDown($event)" [value]="searchValue">
+    <div class="search-input-container">
+        <fa-icon [icon]="faSearch" style="color: gray; margin-right: 10px;"></fa-icon>
+        <input type="text" class="search-input" placeholder="Find activity" (keyup)="onActivityInputKeyUp($event)"
+            (keydown)="onActivityInputKeyDown($event)" [value]="searchValue">
+    </div>
+    <div class="results">
+        {{ resultsCount}} results
+    </div>
+
 </div>

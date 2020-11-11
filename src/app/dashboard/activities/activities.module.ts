@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivitiesComponent } from './activities.component';
-import { ActivityListItemComponent } from './activities-list/activity-list-item/activity-list-item.component';
 import { RoutineComponent } from './routines/routine/routine.component';
 import { ActivityDisplayItemComponent } from './activity-display-item/activity-display-item.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -9,7 +8,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from '../../shared/shared.module';
 import { ActivityCategoryDefinitionFormComponent } from './activity-category-definition-form/activity-category-definition-form.component';
 import { ColorPickerModule } from 'ngx-color-picker';
-import { ActivitiesListComponent } from './activities-list/activities-list.component';
 import { ActivityDeleteOptionsComponent } from './activity-display-item/adi-parts/activity-delete-options/activity-delete-options.component';
 import { AdoMergeWithComponent } from './activity-display-item/adi-parts/activity-delete-options/ado-merge-with/ado-merge-with.component';
 import { AdoMoveToTrashComponent } from './activity-display-item/adi-parts/activity-delete-options/ado-move-to-trash/ado-move-to-trash.component';
@@ -24,7 +22,6 @@ import { DayOccurrenceComponent } from './activity-display-item/adi-parts/activi
 import { WeekOccurrenceComponent } from './activity-display-item/adi-parts/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/week-occurrence/week-occurrence.component';
 import { MonthOccurrenceComponent } from './activity-display-item/adi-parts/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/month-occurrence/month-occurrence.component';
 import { YearOccurrenceComponent } from './activity-display-item/adi-parts/activity-schedule-configuration/activity-repitition-display/repitition-occurrence/year-occurrence/year-occurrence.component';
-import { ActivitiesToolbarComponent } from './activities-toolbar/activities-toolbar.component';
 import { AdiSummaryComponent } from './activity-display-item/adi-parts/adi-summary/adi-summary.component';
 import { AdiCumulativeHoursComponent } from './activity-display-item/adi-parts/adi-summary/adi-cumulative-hours/adi-cumulative-hours.component';
 import { ActivityBrowseResultsComponent } from './activity-browse/activity-browse-results/activity-browse-results.component';
@@ -34,7 +31,6 @@ import { ActivityBrowseComponent } from './activity-browse/activity-browse.compo
 @NgModule({
   declarations: [
     ActivitiesComponent,
-    ActivityListItemComponent,
     RoutineComponent,
     ActivityDisplayItemComponent,
     ActivityScheduleConfigurationComponent,
@@ -47,13 +43,11 @@ import { ActivityBrowseComponent } from './activity-browse/activity-browse.compo
     WeekOccurrenceComponent,
     MonthOccurrenceComponent,
     YearOccurrenceComponent,
-    ActivitiesListComponent,
     ActivityDeleteOptionsComponent,
     AdoMergeWithComponent,
     AdoMoveToTrashComponent,
     AdoPermanentlyDeleteComponent,
     AdoMergeWithParentComponent,
-    ActivitiesToolbarComponent,
     AdiSummaryComponent,
     AdiCumulativeHoursComponent,
     ActivityBrowseComponent,

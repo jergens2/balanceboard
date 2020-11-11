@@ -1,31 +1,19 @@
-<div class="activities-root" *ngIf="!isLoading" >
+<div class="activities-root" *ngIf="!isLoading">
 
-  <app-activity-browse></app-activity-browse>
-<!-- 
-  <app-activities-toolbar class="toolbar"></app-activities-toolbar>
+  <app-activity-browse *ngIf="browsingAllActivities"></app-activity-browse>
+  <div *ngIf="viewingActivity">
+    <div class="browse-activities-button-container">
+      <div class="browse-activities-button" (click)="onClickBrowseActivities()">
+        <fa-icon [icon]="faSearch"></fa-icon>
+        <span style="margin-left: 5px;">Browse Activities</span>
+        
+      </div>
 
-
-  <div *ngIf="sizeIsSmall" class="small-grid activities-body">
-    
-    <app-activity-display-item [style.max-height]="maxHeightPx" class="activity-display-item" style="background-color: rgb(248, 248, 248);"
-      *ngIf="!listIsOpen && openActivity"></app-activity-display-item>
-      <app-activities-list *ngIf="listIsOpen" class="small-grid-list" [style.max-height]="maxHeightPx"></app-activities-list>
-  </div>
-
-  <div *ngIf="sizeIsMedium" class="medium-grid activities-body">
-    
-    <div class="medium-grid-body">
-      <app-activity-display-item class="activity-display-item" [style.max-height]="maxHeightPx" style="background-color: rgb(248, 248, 248);"
-        *ngIf="openActivity"></app-activity-display-item>
     </div>
-    <app-activities-list *ngIf="listIsOpen" class="medium-grid-list" [style.max-height]="maxHeightPx"></app-activities-list>
+
+    <app-activity-display-item></app-activity-display-item>
   </div>
 
-  <div *ngIf="sizeIsLarge" class="large-grid activities-body">
-    <app-activities-list class="large-grid-list" [style.max-height]="maxHeightPx"></app-activities-list>
-    <app-activity-display-item class="large-grid-body" [style.max-height]="maxHeightPx" style="background-color: rgb(248, 248, 248);"
-      *ngIf="openActivity"></app-activity-display-item>
-  </div> -->
 
 </div>
 

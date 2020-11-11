@@ -1,11 +1,40 @@
 .activities-root{
-    /* width: 100%;
-    height: 100%; */
+    width: 100%;
+    height: 100%;
     /* display:grid;
     grid-template-rows: 40px 1fr;
     grid-template-columns: 1fr; */
     /* overflow-y: auto; */
 }
+
+
+.browse-activities-button-container{
+    width:100%;
+    display:flex;
+    flex-direction: row-reverse;
+    padding: 5px; 
+    font-size: 1.1em; 
+    color: gray;
+}
+
+.browse-activities-button{
+    display:flex;
+    flex-direction: row;
+    border-radius: 5px;
+    margin-right: 15px;
+    margin-top: 5px;
+    padding: 5px;
+}
+
+.browse-activities-button:hover{
+    color: rgb(0, 89, 255);
+    cursor: pointer;
+    background-color: rgb(250, 250, 250);
+}
+
+
+
+
 .toolbar{
     grid-row: 1 / span 1;
     grid-column: 1 / -1;
@@ -14,6 +43,10 @@
     grid-row: 2 / span 1;
     grid-column: 1 / -1;
 }
+
+
+
+
 
 
 

@@ -21,11 +21,14 @@ export class ActivitySearchComponent implements OnInit {
 
   private _allActivities: ActivityCategoryDefinition[] = [];
   private _searchValue: string = '';
+  private _resultsCount: number = 0;
 
   public get searchValue(): string { return this._searchValue; }
+  public get resultsCount(): number { return this._resultsCount; }
 
   ngOnInit(): void {
     this._allActivities = this._getAllActivities();
+    this._resultsCount = this._allActivities.length;
   }
 
   public onActivityInputKeyDown(event: KeyboardEvent) {
@@ -52,6 +55,7 @@ export class ActivitySearchComponent implements OnInit {
           isIndented: false,
         };
       }));
+      this._resultsCount = this._allActivities.length;
     }
   }
 
@@ -72,5 +76,6 @@ export class ActivitySearchComponent implements OnInit {
     searchValue = searchValue.toLowerCase();
     const searcher = new ActivitySearch(this._allActivities, searchValue);
     this.searchResults.next(searcher.results);
+    this._resultsCount = searcher.results.length;
   }
 }

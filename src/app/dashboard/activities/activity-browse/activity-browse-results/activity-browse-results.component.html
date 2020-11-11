@@ -1,10 +1,12 @@
 <div class="browse-results">
-    <div *ngIf="searchResults.length === 0">
+    <!-- <div *ngIf="searchResults.length === 0">
         No results
-    </div>
-    <div *ngIf="searchResults.length > 0">
-        <div *ngFor="let searchResult of searchResults" class="search-result no-select">
-            <div *ngIf="searchResult.isIndented" style="width: 50px;"></div>
+    </div> -->
+    <div *ngIf="searchResults.length > 0" class="results">
+        <div *ngFor="let searchResult of searchResults" class="search-result no-select" (click)="onClickResult(searchResult)">
+            <div *ngIf="searchResult.isIndented" style="width: 30px;"></div>
+            <div class="color-circle" [style.background-color]="searchResult.activity.color">
+            </div>
             {{ searchResult.displayString }}
         </div>
     </div>
