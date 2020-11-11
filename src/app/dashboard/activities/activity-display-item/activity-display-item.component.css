@@ -14,6 +14,8 @@
     padding: 10px;
     border-radius: 10px;
     border: 1px solid rgb(240, 240, 240);
+
+    overflow-x: none;
 }
 
 .title-container{
@@ -23,7 +25,7 @@
 
     display:flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     margin-bottom:15px;
     height: 45px;
@@ -100,4 +102,12 @@
 }
 .body-item-content{
     background-color: rgb(251, 251, 251);
+}
+
+
+.back-button{
+    width: 25px;
+    font-size: 0.9em;
+    height: 25px;
+    border-radius: 25px;
 }

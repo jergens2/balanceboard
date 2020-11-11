@@ -48,7 +48,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   public get screenSize(): AppScreenSize { return this.sizeService.appScreenSize; }
 
   public onClickBrowseActivities(){
-    this.activityCompService.browseActivities();
+    this.activityCompService.browseAllActivities();
   }
 
   public get rootActivities(): ActivityCategoryDefinition[] {

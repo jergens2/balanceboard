@@ -1,17 +1,29 @@
 <div class="activity-display-item-root font-family-open-sans">
     <div class="activity-display-item">
         <div class="title-container">
-            <div style="height: 0px; width: 0px;">
-                <input class="clean-input" *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color"
-                    [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'" [cpPosition]="'bottom'"
-                    [cpOKButton]="true" [cpOKButtonText]="'Save'" [cpOKButtonClass]="'small-button'"
-                    [cpCancelButton]="true" [cpCancelButtonClass]="'small-button discard-button'"
-                    (colorPickerClose)="onClickCancelColorPicker()" (colorPickerCancel)="onClickCancelColorPicker()"
-                    (colorPickerSelect)="onClickSaveColorPicker($event)" (colorPickerChange)="onColorChanged($event)" />
+            <div style="width: 30px;">
+                <button class="medium-button discard-button back-button">
+                    <fa-icon [icon]="faArrowLeft" (click)="onClickBack()"></fa-icon>
+                </button>
             </div>
-            <div class="title-color" [style.background-color]="activity.color" (click)="onClickOpenColorPicker()"></div>
-            <app-title-displayer-modifier [value]="activity.name" (valueChanged)="onNameChanged($event)">
-            </app-title-displayer-modifier>
+            <div style="display:flex;flex-direction: row; align-items: center;">
+                <div style="height: 0px; width: 0px;">
+                    <input class="clean-input" *ngIf="colorPickerIsOpen" [(colorPicker)]="activity.color"
+                        [cpSaveClickOutside]="false" [cpToggle]="true" [cpOutputFormat]="'rgba'" [cpPosition]="'bottom'"
+                        [cpOKButton]="true" [cpOKButtonText]="'Save'" [cpOKButtonClass]="'small-button'"
+                        [cpCancelButton]="true" [cpCancelButtonClass]="'small-button discard-button'"
+                        (colorPickerClose)="onClickCancelColorPicker()" (colorPickerCancel)="onClickCancelColorPicker()"
+                        (colorPickerSelect)="onClickSaveColorPicker($event)"
+                        (colorPickerChange)="onColorChanged($event)" />
+                </div>
+                <div class="title-color" [style.background-color]="activity.color" (click)="onClickOpenColorPicker()">
+                </div>
+                <app-title-displayer-modifier [value]="activity.name" (valueChanged)="onNameChanged($event)">
+                </app-title-displayer-modifier>
+            </div>
+            <div style="width: 30px;">
+
+            </div>
         </div>
         <div class="body" *ngIf="!activity.isInTrash">
             <div class="body-item">

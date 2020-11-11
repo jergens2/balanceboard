@@ -1,8 +1,9 @@
 import * as moment from 'moment';
 import { ColorConverter } from '../../../../../shared/utilities/color-converter.class';
 import { ColorType } from '../../../../../shared/utilities/color-type.enum';
+import { ADIChartItemData as ADIChartItemData } from './adi-chart-item-data.interface';
 
-export class ADIWeekDataChartItem {
+export class ADIChartDisplayItem {
 
     private _color: string
     private _startDateYYYYMMDD: string;
@@ -13,6 +14,7 @@ export class ADIWeekDataChartItem {
     private _ngStyle: any = {};
     private _mouseIsOver: boolean = false;
     private _displayTime: string = '';
+    private _modeIsCumulative: boolean = false;
 
     public get startDateYYYYMMDD(): string { return this._startDateYYYYMMDD; }
     public get hours(): number { return this._hours; }
@@ -23,12 +25,12 @@ export class ADIWeekDataChartItem {
     public get mouseIsOver(): boolean { return this._mouseIsOver; }
     public get displayTime(): string { return this._displayTime; }
 
-    constructor(data: {startDateYYYYMMDD: string, ms: number, cumulativePercent: number, percentOfLargest: number}) {
-        this._startDateYYYYMMDD = data.startDateYYYYMMDD;
-        this._hours = data.ms / (60 * 60 * 1000);
+    constructor(itemData: ADIChartItemData) {
+        this._startDateYYYYMMDD = itemData.startDateYYYYMMDD;
+        this._hours = itemData.ms / (60 * 60 * 1000);
         // this._percent = percent;
-        this._cumulativePercent = data.cumulativePercent * 100;
-        this._percentOfLargest = data.percentOfLargest * 100;
+        this._cumulativePercent = itemData.cumulativePercent * 100;
+        this._percentOfLargest = itemData.percentOfLargest * 100;
         this._displayTime = moment(this._startDateYYYYMMDD).format('MMM DD, YYYY');
     }
 
@@ -42,13 +44,13 @@ export class ADIWeekDataChartItem {
             this._ngStyle['height'] = this._percentOfLargest.toFixed(3) + '%';
         }
     }
-    private _modeIsCumulative: boolean = false;
 
-    public setToCumulative(){
+
+    public setToCumulative() {
         this._modeIsCumulative = true;
         this._ngStyle['height'] = this._cumulativePercent.toFixed(3) + '%';
     }
-    public setToWeekly(){
+    public setToWeekly() {
         this._modeIsCumulative = false;
         this._ngStyle['height'] = this._percentOfLargest.toFixed(3) + '%';
     }
@@ -61,6 +63,10 @@ export class ADIWeekDataChartItem {
     }
     public onMouseLeave() {
         this._mouseIsOver = false;
+    }
+
+    public toString(): string {
+        return this.startDateYYYYMMDD + " : " + this.percentOfLargest;
     }
 
 }

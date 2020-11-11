@@ -1,7 +1,7 @@
 import { DaybookDayItem } from '../../../../daybook/daybook-day-item/daybook-day-item.class';
 import { ActivityCategoryDefinition } from '../../../api/activity-category-definition.class';
 import * as moment from 'moment';
-import { ADIWeekDataChartItem } from './adi-week-data-chart-item.class';
+import { ADIChartDisplayItem } from './adi-chart-display-item.class';
 import { ActivityDataSleepAnalyzer } from './activity-data-sleep-analyzer.class';
 import { ActivityAnalysis } from './activity-analysis.interface';
 import { ADIOccurrenceData } from './adi-occurrence-data.interface';

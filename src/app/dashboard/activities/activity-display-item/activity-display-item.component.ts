@@ -2,7 +2,7 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { ActivityScheduleRepitition } from '../api/activity-schedule-repitition.interface';
 import { ActivityHttpService } from '../api/activity-http.service';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ActivityComponentService } from '../activity-component.service';
 import { Subscription } from 'rxjs';
 
@@ -30,6 +30,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   public get color(): string { return this._color; }
 
   public get faTrash() { return faTrash };
+  public readonly faArrowLeft = faArrowLeft;
   public get activity(): ActivityCategoryDefinition { return this._activity; }
 
   public get titleBorderBottom(): any { return this._titleBorderBottom; }
@@ -69,6 +70,9 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
     if(value === 'DELETE'){
       this._showDeleteContent = !this._showDeleteContent;
     }
+  }
+  public onClickBack(){
+    this.activityService.browseAllActivities();
   }
 
   public onConfigurationSaved(repititions: ActivityScheduleRepitition[]) {

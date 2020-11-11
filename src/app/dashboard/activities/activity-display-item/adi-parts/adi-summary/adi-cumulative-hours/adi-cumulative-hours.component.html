@@ -2,48 +2,45 @@
     <div style="width:100%;display:flex;flex-direction: row-reverse;margin-bottom: 10px;">
         <app-button-menu [menu]="chartMenu" style="width: 250px;"></app-button-menu>
     </div>
-    
-
 
     <div class="items" *ngIf="modeIsCumulative">
-        <div class="item-container" *ngFor="let item of weekDataItems">
+        <div class="item-container" *ngFor="let item of chartItems">
             <div [ngStyle]="item.ngStyle" class="chart-item" (mouseenter)="item.onMouseEnter()"
                 (mouseleave)="item.onMouseLeave()">
-    
                 <div class="popup-display-container">
                     <div *ngIf="item.mouseIsOver" class="popup-display">
-                        <div class="text-above">Week of {{ item.displayTime }}</div>
+                        <div class="text-above" *ngIf="isWeeklyChart">Week of {{ item.displayTime }}</div>
+                        <div class="text-above" *ngIf="isDailyChart">{{ item.displayTime }}</div>
                         <div style="align-self: center;">
                             + {{ item.hours.toFixed(1) }} hours
                         </div>
-    
+
                     </div>
                 </div>
-    
-    
             </div>
         </div>
     </div>
 
     <div class="items" *ngIf="!modeIsCumulative">
-        <div class="item-container" *ngFor="let item of weekDataItems">
+        <div class="item-container" *ngFor="let item of chartItems">
             <div [ngStyle]="item.ngStyle" class="chart-item" (mouseenter)="item.onMouseEnter()"
                 (mouseleave)="item.onMouseLeave()">
-    
+
                 <div class="popup-display-container">
                     <div *ngIf="item.mouseIsOver" class="popup-display">
-                        <div class="text-above">Week of {{ item.displayTime }}</div>
+                        <div class="text-above" *ngIf="isWeeklyChart">Week of {{ item.displayTime }}</div>
+                        <div class="text-above" *ngIf="isDailyChart">{{ item.displayTime }}</div>
                         <div style="align-self: center;">
                             {{ item.hours.toFixed(1) }} hours
                         </div>
-    
+
                     </div>
                 </div>
-    
-    
+
+
             </div>
         </div>
     </div>
-    
+
 
 </div>

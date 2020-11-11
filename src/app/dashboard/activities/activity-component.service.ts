@@ -91,7 +91,7 @@ export class ActivityComponentService {
     this.summarizer.analyzeActivityAndChildren(activity);
     this._isLoading$.next(false);
   }
-  public browseActivities(){
+  public browseAllActivities() {
     this._currentActivity$.next(null);
   }
 

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ADIWeekDataChartItem } from '../adi-week-data-chart-item.class';
+import { ADIChartDisplayItem } from '../adi-chart-display-item.class';
 
 @Component({
   selector: 'app-adi-average-hours',
@@ -9,11 +9,11 @@ import { ADIWeekDataChartItem } from '../adi-week-data-chart-item.class';
 export class AdiAverageHoursComponent implements OnInit {
 
 
-  private _weekDataItems: ADIWeekDataChartItem[] = [];
-  @Input() public set weekDataItems(data: ADIWeekDataChartItem[]){
+  private _weekDataItems: ADIChartDisplayItem[] = [];
+  @Input() public set weekDataItems(data: ADIChartDisplayItem[]){
     this._weekDataItems = data;
   }
-  public get weekDataItems(): ADIWeekDataChartItem[] { return this._weekDataItems; }
+  public get weekDataItems(): ADIChartDisplayItem[] { return this._weekDataItems; }
 
 
 

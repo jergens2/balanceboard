@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ADIWeekDataChartItem } from '../adi-week-data-chart-item.class';
+import { ADIChartDisplayItem } from '../adi-chart-display-item.class';
 import { ButtonMenu } from '../../../../../../shared/components/button-menu/button-menu.class';
 
 @Component({
@@ -11,11 +11,21 @@ export class AdiCumulativeHoursComponent implements OnInit {
 
   constructor() { }
 
-  private _weekDataItems: ADIWeekDataChartItem[] = [];
-  @Input() public set weekDataItems(data: ADIWeekDataChartItem[]){
-    this._weekDataItems = data;
+  private _chartItems: ADIChartDisplayItem[] = [];
+  @Input() public set chartItems(items: ADIChartDisplayItem[]) {
+    this._chartItems = items;
+    if (this._modeIsCumulative) {
+      this._setToCumulative();
+    } else if (!this._modeIsCumulative) {
+      this._setToWeekly();
+    }
   }
-  public get weekDataItems(): ADIWeekDataChartItem[] { return this._weekDataItems; }
+  public get chartItems(): ADIChartDisplayItem[] { return this._chartItems; }
+
+  @Input() public currentRange: 7 | 30 | 90 | 365 | 'Specify' = 365;
+
+  public get isWeeklyChart(): boolean { return this.currentRange === 365; }
+  public get isDailyChart(): boolean { return !this.isWeeklyChart; }
 
   private _chartMenu: ButtonMenu;
   private _modeIsCumulative: boolean = false;
@@ -29,13 +39,13 @@ export class AdiCumulativeHoursComponent implements OnInit {
     this._chartMenu.openItem('Hours per week');
   }
 
-  private _setToCumulative(){
+  private _setToCumulative() {
     this._modeIsCumulative = true;
-    this._weekDataItems.forEach(item => item.setToCumulative());
+    this._chartItems.forEach(item => item.setToCumulative());
   }
-  private _setToWeekly(){
+  private _setToWeekly() {
     this._modeIsCumulative = false;
-    this._weekDataItems.forEach(item => item.setToWeekly());
+    this._chartItems.forEach(item => item.setToWeekly());
   }
 
 }
