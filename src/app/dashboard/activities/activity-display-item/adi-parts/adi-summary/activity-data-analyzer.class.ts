@@ -29,7 +29,7 @@ export class ActivityDataAnalyzer {
 
 
     private _calculateAllActivityOccurrences() {
-        console.log("Calculating all daybookDayItems: " + this._daybookItems.length);
+        // console.log("Calculating all daybookDayItems: " + this._daybookItems.length);
         const start = moment();
 
         const activityOccurrences: ADIOccurrenceData[] = [];
@@ -87,7 +87,7 @@ export class ActivityDataAnalyzer {
 
         this._activityOccurrences = activityOccurrences;
         const end = moment();
-        console.log("Method duration ms: " + end.diff(start, 'milliseconds'));
+        // console.log("Method duration ms: " + end.diff(start, 'milliseconds'));
     }
 
 

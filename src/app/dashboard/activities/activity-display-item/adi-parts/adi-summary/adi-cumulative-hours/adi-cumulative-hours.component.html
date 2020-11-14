@@ -1,9 +1,11 @@
 <div class="cumulative-hours-root">
-    <div style="width:100%;display:flex;flex-direction: row-reverse;margin-bottom: 10px;">
+
+    <div style="display:flex;flex-direction: row; justify-content: space-between;margin-bottom: 10px;">
+        <app-button-menu [menu]="modeMenu" style="width: 250px;"></app-button-menu>
         <app-button-menu [menu]="chartMenu" style="width: 250px;"></app-button-menu>
     </div>
 
-    <div class="items" *ngIf="modeIsCumulative">
+    <div class="items" *ngIf="itemsAreCumulative">
         <div class="item-container" *ngFor="let item of chartItems">
             <div [ngStyle]="item.ngStyle" class="chart-item" (mouseenter)="item.onMouseEnter()"
                 (mouseleave)="item.onMouseLeave()">
@@ -12,7 +14,7 @@
                         <div class="text-above" *ngIf="isWeeklyChart">Week of {{ item.displayTime }}</div>
                         <div class="text-above" *ngIf="isDailyChart">{{ item.displayTime }}</div>
                         <div style="align-self: center;">
-                            + {{ item.hours.toFixed(1) }} hours
+                            + {{ item.value }} <span style="margin-left: 2px;">{{ item.units }}</span>
                         </div>
 
                     </div>
@@ -21,7 +23,7 @@
         </div>
     </div>
 
-    <div class="items" *ngIf="!modeIsCumulative">
+    <div class="items" *ngIf="!itemsAreCumulative">
         <div class="item-container" *ngFor="let item of chartItems">
             <div [ngStyle]="item.ngStyle" class="chart-item" (mouseenter)="item.onMouseEnter()"
                 (mouseleave)="item.onMouseLeave()">
@@ -31,7 +33,7 @@
                         <div class="text-above" *ngIf="isWeeklyChart">Week of {{ item.displayTime }}</div>
                         <div class="text-above" *ngIf="isDailyChart">{{ item.displayTime }}</div>
                         <div style="align-self: center;">
-                            {{ item.hours.toFixed(1) }} hours
+                            {{ item.value }} <span style="margin-left: 2px;">{{ item.units }}</span>
                         </div>
 
                     </div>

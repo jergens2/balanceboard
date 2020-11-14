@@ -51,7 +51,7 @@ export class ActivitySearchComponent implements OnInit {
         return {
           activity: item,
           groupIndex: 0,
-          displayString: item.fullNamePath,
+          displayString: item.fullNamePathNoSlash,
           isIndented: false,
         };
       }));

@@ -1,0 +1,37 @@
+<div class="relationships-root">
+
+
+
+
+    <div style="margin-bottom: 2px;">
+        <div *ngIf="hasParent" class="label-row" (click)="onClickParent()">
+            <div class="color-circle" [style.background-color]="parent.color"></div> {{ parent.name}}
+        </div>
+        <div *ngIf="!hasParent">
+            This is a root level activity
+        </div>
+    </div>
+    <div style="margin-left: 9px; display:flex;flex-direction: row; align-items: center;">
+        <div class="connector" *ngIf="hasParent"></div>
+        <div class="label-row">
+            <div class="color-circle" [style.background-color]="currentActivity.color" ></div>
+            <span style="font-weight: bold;">{{ currentActivity.name}}</span>
+            
+        </div>
+    </div>
+    <div *ngIf="hasChildren">
+        <div *ngFor="let child of children" class="label-row" (click)="onClickChild(child)"
+            style="margin-left: 37px; display:flex;flex-direction: row; align-items: center;">
+            <div class="connector"></div>
+            <div class="color-circle" [style.background-color]="child.color"></div> {{ child.name}}
+        </div>
+    </div>
+    <div *ngIf="!hasChildren" style="margin-top: 10px;">
+        No child activities
+        <div>
+            <button class="small-button save-button">Add new child</button>
+        </div>
+    </div>
+
+
+</div>

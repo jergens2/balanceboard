@@ -1,0 +1,31 @@
+.relationships-root{
+    display:flex;
+    flex-direction: column;
+}
+.color-circle{
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    margin-right: 5px;
+}
+
+.label-row{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+}
+.label-row:hover{
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.connector{
+    margin-top: -7px;
+    height: 10px;
+    width: 10px;
+    border-left: 2px solid gray;
+    border-bottom: 2px solid gray;
+    margin-right: 9px;
+}

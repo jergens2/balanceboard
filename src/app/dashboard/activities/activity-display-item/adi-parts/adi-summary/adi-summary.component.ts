@@ -8,6 +8,7 @@ import { ActivityAnalysis } from './activity-analysis.interface';
 import { ADIOccurrence, ADIOccurrenceData } from './adi-occurrence-data.interface';
 import { ADIChartItemData } from './adi-chart-item-data.interface';
 import { Subscription } from 'rxjs';
+import { ADIChartItemBuilder } from './adi-chart-item-builder.class';
 
 @Component({
   selector: 'app-adi-summary',
@@ -107,132 +108,12 @@ export class AdiSummaryComponent implements OnInit, OnDestroy {
   }
 
   private _buildChartItems() {
-    const currentActivity = this.activitiesService.currentActivity;
-    const occurrenceData: ADIOccurrenceData[] = this.activitiesService.summarizer.activityOccurences;
-    let totalActivityMs: number = 0;
-    occurrenceData.forEach(item => totalActivityMs += item.totalMs);
-    let activityIds: string[] = [currentActivity.treeId];
-    if (this.includeChildren) {
-      const tree = this.activitiesService.activityTree;
-      const allActivities = tree.allActivities;
-      activityIds = [currentActivity.treeId, ...currentActivity.getAllChildActivities()];
-    }
-    let currentDateYYYYMMDD: string = moment(this._currentRangeStart).format('YYYY-MM-DD');
-    const lastDateYYYYMMDD: string = moment().day(6).format('YYYY-MM-DD');
-    if (moment(currentDateYYYYMMDD).day() > 0) {
-      currentDateYYYYMMDD = moment(currentDateYYYYMMDD).subtract(moment(currentDateYYYYMMDD).day(), 'days').format('YYYY-MM-DD');
-    }
-    const activitiesOccurrenceData = occurrenceData.filter(dataItem => activityIds.indexOf(dataItem.activityTreeId) > -1);
-    const allDayDataItems: ADIChartItemData[] = [];
-    while (currentDateYYYYMMDD <= lastDateYYYYMMDD) {
-      const startOfDay = moment(currentDateYYYYMMDD).startOf('day');
-      const endOfDay = moment(currentDateYYYYMMDD).endOf('day');
-
-      let dayOccurrences: ADIOccurrence[] = [];
-      activitiesOccurrenceData.forEach(activityOccurrenceData => {
-        const inRangeItems = activityOccurrenceData.occurrences.filter(occurrence => {
-          return occurrence.startTime.isSameOrAfter(startOfDay) && occurrence.endTime.isSameOrBefore(endOfDay);
-        });
-        if (inRangeItems.length > 0) {
-          dayOccurrences = [...dayOccurrences, ...inRangeItems];
-        }
-      });
-      let daySumMs: number = 0;
-      let dayOccurrenceCount: number = 0;
-      let largestDayMs: number = 0;
-      dayOccurrences.forEach(dayOccurrence => {
-        dayOccurrenceCount++;
-        daySumMs += dayOccurrence.durationMs;
-        if (dayOccurrence.durationMs > largestDayMs) {
-          largestDayMs = dayOccurrence.durationMs;
-        }
-      });
-
-      const dayChartItem: ADIChartItemData = {
-        startDateYYYYMMDD: currentDateYYYYMMDD,
-        ms: daySumMs,
-        occurrenceCount: dayOccurrenceCount,
-        cumulativePercent: 0,
-        percentOfLargest: 0,
-      };
-      allDayDataItems.push(dayChartItem);
-      currentDateYYYYMMDD = moment(currentDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-    }
-    const isWeekMode = this._currentRange === 365;
-    const dataItems: ADIChartItemData[] = [];
-    if (isWeekMode) {
-      let currentWeekYYYYMMDD: string = moment(this._currentRangeStart).format('YYYY-MM-DD');
-      const lastDateYYYYMMDD: string = moment().day(6).format('YYYY-MM-DD');
-      if (moment(currentWeekYYYYMMDD).day() > 0) {
-        currentWeekYYYYMMDD = moment(currentWeekYYYYMMDD).subtract(moment(currentWeekYYYYMMDD).day(), 'days').format('YYYY-MM-DD');
-      }
-      let largestWeekMs: number = 0;
-      let sumOfAllWeeksMs: number = 0;
-      while (currentWeekYYYYMMDD <= lastDateYYYYMMDD) {
-        const endOfWeekYYYYMMDD = moment(currentWeekYYYYMMDD).day(6).format('YYYY-MM-DD')
-        const weekItems = allDayDataItems.filter(item => {
-          return item.startDateYYYYMMDD >= currentWeekYYYYMMDD && item.startDateYYYYMMDD <= endOfWeekYYYYMMDD;
-        });
-        let sumOfWeekMs: number = 0;
-        let weekOccurrenceCount: number = 0;
-        weekItems.forEach(item => {
-          sumOfWeekMs += item.ms;
-          weekOccurrenceCount += item.occurrenceCount;
-        });
-        const dataItem: ADIChartItemData = {
-          startDateYYYYMMDD: currentWeekYYYYMMDD,
-          ms: sumOfWeekMs,
-          occurrenceCount: weekOccurrenceCount,
-          cumulativePercent: 0,
-          percentOfLargest: 0,
-        };
-        if (sumOfWeekMs > largestWeekMs) {
-          largestWeekMs = sumOfWeekMs;
-        }
-        dataItems.push(dataItem);
-        sumOfAllWeeksMs += sumOfWeekMs;
-        currentWeekYYYYMMDD = moment(currentWeekYYYYMMDD).add(7, 'days').format('YYYY-MM-DD');
-      }
-
-
-      let cumulativePercent: number = 0;
-      for (let i = 0; i < dataItems.length; i++) {
-        const percentOfLargest = dataItems[i].ms / largestWeekMs;
-        cumulativePercent += dataItems[i].ms / sumOfAllWeeksMs;
-        dataItems[i].percentOfLargest = percentOfLargest;
-        dataItems[i].cumulativePercent = cumulativePercent;
-      }
-
-    } else {
-      const startDateYYYYMMDD = this._currentRangeStart.format('YYYY-MM-DD');
-      const endDateYYYYMMDD = this._currentRangeEnd.format('YYYY-MM-DD');
-      let currentDayDateYYYYMMDD = startDateYYYYMMDD;
-      let largestDayMs: number = 0;
-      let sumOfAllDaysMs: number = 0;
-      while (currentDayDateYYYYMMDD <= endDateYYYYMMDD) {
-        const dataItem: ADIChartItemData = allDayDataItems.find(item => item.startDateYYYYMMDD === currentDayDateYYYYMMDD);
-        dataItems.push(dataItem);
-        currentDayDateYYYYMMDD = moment(currentDayDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-        if(dataItem.ms > largestDayMs){
-          largestDayMs = dataItem.ms;
-        }
-        sumOfAllDaysMs += dataItem.ms;
-      }
-      let cumulativePercent: number = 0;
-      for (let i = 0; i < dataItems.length; i++) {
-        const percentOfLargest = dataItems[i].ms / largestDayMs;
-        cumulativePercent += dataItems[i].ms / sumOfAllDaysMs;
-        dataItems[i].percentOfLargest = percentOfLargest;
-        dataItems[i].cumulativePercent = cumulativePercent;
-      }
-    }
-    // console.log("DATA ITEMS: ", dataItems)
-    this._chartItems = dataItems.map(item => {
-      const chartItem = new ADIChartDisplayItem(item);
-      const alpha = item.percentOfLargest;
-      chartItem.setColor(this.activitiesService.currentActivity.color, alpha);
-      return chartItem;
-    });
+    const activity = this.activitiesService.currentActivity;
+    const occurrenceData = this.activitiesService.summarizer.activityOccurences;
+    const tree = this.activitiesService.activityTree;
+    const builder = new ADIChartItemBuilder(activity, occurrenceData, true, tree,
+      this._currentRangeStart, this._currentRangeEnd, this._currentRange);
+    this._chartItems = builder.chartItems;
   }
 
   private _buildAnalysis(occurrenceData: ADIOccurrenceData): ActivityAnalysis {

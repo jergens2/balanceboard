@@ -12,40 +12,68 @@ export class AdiCumulativeHoursComponent implements OnInit {
   constructor() { }
 
   private _chartItems: ADIChartDisplayItem[] = [];
-  @Input() public set chartItems(items: ADIChartDisplayItem[]) {
-    this._chartItems = items;
-    if (this._modeIsCumulative) {
-      this._setToCumulative();
-    } else if (!this._modeIsCumulative) {
-      this._setToWeekly();
-    }
-  }
-  public get chartItems(): ADIChartDisplayItem[] { return this._chartItems; }
+  private _chartMenu: ButtonMenu;
+  private _modeMenu: ButtonMenu;
+  private _modeIsDuration: boolean = true;
+  private _itemsAreCumulative: boolean = false;
 
-  @Input() public currentRange: 7 | 30 | 90 | 365 | 'Specify' = 365;
+  public get chartMenu(): ButtonMenu { return this._chartMenu; }
+  public get modeMenu(): ButtonMenu { return this._modeMenu; }
+  public get itemsAreCumulative(): boolean { return this._itemsAreCumulative; }
 
   public get isWeeklyChart(): boolean { return this.currentRange === 365; }
   public get isDailyChart(): boolean { return !this.isWeeklyChart; }
 
-  private _chartMenu: ButtonMenu;
-  private _modeIsCumulative: boolean = false;
-  public get chartMenu(): ButtonMenu { return this._chartMenu; }
-  public get modeIsCumulative(): boolean { return this._modeIsCumulative; }
+  public get chartItems(): ADIChartDisplayItem[] { return this._chartItems; }
+
+  @Input() public currentRange: 7 | 30 | 90 | 365 | 'Specify' = 365;
+  @Input() public set chartItems(items: ADIChartDisplayItem[]) {
+    this._chartItems = items;
+    this._reset();
+  }
+
+
 
   ngOnInit(): void {
+    this._modeIsDuration = true;
+    this._itemsAreCumulative = false;
+
+
     this._chartMenu = new ButtonMenu();
-    this._chartMenu.addItem$('Hours per week').subscribe(s => this._setToWeekly());
-    this._chartMenu.addItem$('Cumulative hours').subscribe(s => this._setToCumulative());
-    this._chartMenu.openItem('Hours per week');
+    this._chartMenu.addItem$('Per Period').subscribe(s => this._setToPerPeriod());
+    this._chartMenu.addItem$('Cumulative').subscribe(s => this._setToCumulative());
+    this._chartMenu.openItem('Per Period');
+
+    this._modeMenu = new ButtonMenu();
+    this._modeMenu.addItem$('Duration').subscribe(s => this._setToDuration());
+    this._modeMenu.addItem$('Occurrences').subscribe(s => this._setToOccurrences());
+    this._modeMenu.openItem('Duration');
+
+
+    this._reset();
+  }
+
+  private _setToDuration() {
+    this._modeIsDuration = true;
+    this._reset();
+  }
+
+  private _setToOccurrences() {
+    this._modeIsDuration = false;
+    this._reset();
   }
 
   private _setToCumulative() {
-    this._modeIsCumulative = true;
-    this._chartItems.forEach(item => item.setToCumulative());
+    this._itemsAreCumulative = true;
+    this._reset();
   }
-  private _setToWeekly() {
-    this._modeIsCumulative = false;
-    this._chartItems.forEach(item => item.setToWeekly());
+  private _setToPerPeriod() {
+    this._itemsAreCumulative = false;
+    this._reset();
+  }
+
+  private _reset() {
+    this._chartItems.forEach(item => item.setTo(this._modeIsDuration, this._itemsAreCumulative));
   }
 
 }

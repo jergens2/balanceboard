@@ -26,6 +26,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   private _showSummaryContent: boolean = true;
   private _showConfigContent: boolean = false;
   private _showDeleteContent: boolean = false;
+  private _showRelationships: boolean = false;
 
   public get color(): string { return this._color; }
 
@@ -40,6 +41,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
   public get showSummaryContent(): boolean { return this._showSummaryContent; }
   public get showConfigContent(): boolean { return this._showConfigContent; }
   public get showDeleteContent(): boolean { return this._showDeleteContent; }
+  public get showRelationships(): boolean { return this._showRelationships; }
 
   // public get isLoading(): boolean { return this.activityService.isLoading; }
   // public get loadingMessage(): string { return this.activityService.loadingMessage; }
@@ -60,7 +62,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
     this._activity.name = newName;
     this.activityDefService.updateActivity$(this._activity);
   }
-  public onClickHeader(value: 'ANALYSIS' | 'CONFIG' | 'DELETE'){
+  public onClickHeader(value: 'ANALYSIS' | 'CONFIG' | 'DELETE' | 'RELATIONSHIPS'){
     if(value === 'ANALYSIS'){
       this._showSummaryContent = !this._showSummaryContent;
     }
@@ -69,6 +71,9 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
     }
     if(value === 'DELETE'){
       this._showDeleteContent = !this._showDeleteContent;
+    }
+    if(value === 'RELATIONSHIPS'){
+      this._showRelationships = !this._showRelationships;
     }
   }
   public onClickBack(){

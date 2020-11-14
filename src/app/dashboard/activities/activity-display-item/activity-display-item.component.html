@@ -25,7 +25,21 @@
 
             </div>
         </div>
+
+
         <div class="body" *ngIf="!activity.isInTrash">
+
+            <div class="body-item">
+                <div class="body-item-header no-select" (click)="onClickHeader('RELATIONSHIPS')">
+                    {{ activity.fullNamePathNoSlash }}
+                </div>
+                <div class="body-item-content" *ngIf="showRelationships">
+                    <app-adi-relationships></app-adi-relationships>
+                </div>
+
+            </div>
+
+
             <div class="body-item">
                 <div class="body-item-header no-select" (click)="onClickHeader('ANALYSIS')">
                     Data analysis

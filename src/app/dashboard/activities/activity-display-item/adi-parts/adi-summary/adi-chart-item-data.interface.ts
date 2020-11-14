@@ -1,7 +1,11 @@
 export interface ADIChartItemData {
     startDateYYYYMMDD: string;
+
     ms: number;
+    msCumulativePercent: number;
+    msPercentOfLargest: number;
+
     occurrenceCount: number;
-    cumulativePercent: number;
-    percentOfLargest: number;
+    occurrenceCumulativePercent: number;
+    occurrencePercentOfLargest: number;
 }
