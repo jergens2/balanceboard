@@ -77,7 +77,7 @@ export class ActivityDisplayItemComponent implements OnInit, OnDestroy {
     }
   }
   public onClickBack(){
-    this.activityService.browseAllActivities();
+    this.activityService.viewAllActivities();
   }
 
   public onConfigurationSaved(repititions: ActivityScheduleRepitition[]) {

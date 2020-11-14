@@ -19,10 +19,11 @@
     margin-bottom: 5px;
 }
 .duration-string{
-    font-size:0.75em; 
-    color:gray; 
+    font-size:1.2em; 
+    color:blue; 
     font-weight: bold;
-    align-self: flex-end;
+    text-align: center;
+    width: 100%;
 }
 
 .entry-time{

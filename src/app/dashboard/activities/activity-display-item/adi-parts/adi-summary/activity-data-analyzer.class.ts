@@ -91,6 +91,37 @@ export class ActivityDataAnalyzer {
     }
 
 
+    public getOccurrences(startDateYYYYMMDD: string, endDateYYYYMMDD: string): ADIOccurrenceData[]{
+        const rangeActivities: ADIOccurrenceData[] = [];
+        this._activityOccurrences.forEach(activityOccurrence => {
+            const rangeItems = activityOccurrence.occurrences.filter(occurrence => {
+                return occurrence.dateYYYYMMDD >= startDateYYYYMMDD && occurrence.dateYYYYMMDD <= endDateYYYYMMDD;
+            });
+            if(rangeItems.length > 0){
+                let totalMs: number = 0;
+                let msPerOccurrence: number = 0;
+                rangeItems.forEach(rangeItem => {
+                    totalMs += rangeItem.durationMs;
+                });
+                msPerOccurrence = totalMs / rangeItems.length;
+                rangeActivities.push({
+                    activityTreeId: activityOccurrence.activityTreeId,
+                    occurrences: rangeItems,
+                    totalMs: totalMs,
+                    msPerOccurrence: msPerOccurrence,
+                });
+            }
+        });
+        return rangeActivities.sort((a1, a2)=>{
+            if(a1.totalMs > a2.totalMs){
+                return -1;
+            }else if(a1.totalMs < a2.totalMs){
+                return 1;
+            }else{
+                return 0;
+            }
+        });
+    }
 
 
     // public getAnalysis(activity: ActivityCategoryDefinition,

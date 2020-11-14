@@ -1,0 +1,22 @@
+.summary-root{
+    display:flex;
+    flex-direction: column;
+}
+
+.activity-item{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+}
+.activity-item:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+.color-circle{
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    margin-right: 5px;
+}

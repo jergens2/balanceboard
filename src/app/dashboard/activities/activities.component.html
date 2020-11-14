@@ -1,20 +1,15 @@
 <div class="activities-root" *ngIf="!isLoading">
 
-  <app-activity-browse *ngIf="browsingAllActivities"></app-activity-browse>
-  <div *ngIf="viewingActivity">
-    <div class="browse-activities-button-container">
-      <div class="browse-activities-button" (click)="onClickBrowseActivities()">
-        <fa-icon [icon]="faSearch"></fa-icon>
-        <span style="margin-left: 5px;">Browse Activities</span>
-        
-      </div>
 
-    </div>
+  <app-activities-view-tabs class="grid-item-tabs"></app-activities-view-tabs>
 
-    <app-activity-display-item></app-activity-display-item>
+
+  <div class="grid-item-body">
+    <app-activity-browse *ngIf="viewModeIsList"></app-activity-browse>
+    <app-activity-display-item *ngIf="viewModeIsActivity"> </app-activity-display-item>
+    <app-activities-summary *ngIf="viewModeIsSummary"></app-activities-summary>
+    <app-activities-query *ngIf="viewModeIsQuery"></app-activities-query>
   </div>
-
-
 </div>
 
 

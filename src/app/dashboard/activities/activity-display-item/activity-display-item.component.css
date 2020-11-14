@@ -1,6 +1,7 @@
 .activity-display-item-root{
     height: 100%;
     width: 100%;
+    padding-top: 10px;
     overflow-y: auto;
     overflow-x: hidden;
 }

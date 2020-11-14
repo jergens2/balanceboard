@@ -1,0 +1,13 @@
+<div class="summary-root">
+    Summary
+    <app-button-menu [menu]="rangeMenu" style="width: 250px;"></app-button-menu>
+
+    {{ rangeString }}
+
+    <div style="display:flex;flex-direction: column;">
+        <div *ngFor="let occurrence of activityOccurrences" (click)="onClickActivity(occurrence.activity)" class="activity-item">
+            <div class="color-circle" [style.background-color]="occurrence.activity.color"></div>
+            {{occurrence.activity.name}} - {{ occurrence.displayDuration }}
+        </div>
+    </div>
+</div>

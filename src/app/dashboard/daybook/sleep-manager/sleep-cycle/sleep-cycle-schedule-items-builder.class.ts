@@ -5,6 +5,7 @@ import { TimeSchedule } from '../../../../shared/time-utilities/time-schedule.cl
 import { DaybookTimeScheduleActiveItem } from '../../display-manager/daybook-time-schedule/daybook-time-schedule-active-item.class';
 import { DaybookTimeScheduleSleepItem } from '../../display-manager/daybook-time-schedule/daybook-time-schedule-sleep-item.class';
 import { DaybookSleepInputDataItem } from '../../daybook-day-item/data-items/daybook-sleep-input-data-item.interface';
+import { DaybookTimelogEntryDataItem } from '../../daybook-day-item/data-items/daybook-timelog-entry-data-item.interface';
 
 export class SleepCycleScheduleItemsBuilder {
 
@@ -269,6 +270,13 @@ export class SleepCycleScheduleItemsBuilder {
                     });
                 } else {
                     items = this._getDefaultSleepItemsTemplate(dateYYYYMMDD);
+                    if(foundItem.timelogEntryDataItems.length > 0){
+                        console.log("boomb");
+                        // items = this._reconcileActivities(items, foundItem.timelogEntryDataItems);
+                        // console.log("items: ")
+                        // items.forEach(item => item.toString())
+                    }
+
                 }
             } else {
                 items = this._getDefaultSleepItemsTemplate(dateYYYYMMDD);
@@ -394,5 +402,30 @@ export class SleepCycleScheduleItemsBuilder {
             }
         }
         return largestItem;
+    }
+
+
+    private _reconcileActivities(sleepItems: DaybookTimeScheduleSleepItem[], 
+        activities: DaybookTimelogEntryDataItem[]): DaybookTimeScheduleSleepItem[]{
+        //     console.log("SLEEP ITEMS< ", sleepItems)
+        // sleepItems.forEach(sleepItem => {
+        //     const sleepItemStart = moment(sleepItem.schedItemStartTime);
+        //     const sleepItemEnd = moment(sleepItem.schedItemEndTime);
+        //     activities.forEach(activity => {
+        //         const activityStart = moment(activity.startTimeISO);
+        //         const activityEnd = moment(activity.endTimeISO);
+        //         if(sleepItemStart.isBefore(activityStart) && sleepItemEnd.isAfter(activityStart)){
+        //             sleepItem.changeSchedItemEndTime(activityStart);
+        //             // sleepItem.changeSchedItemEndTime
+        //             // console.log("joom")
+        //         }
+        //         if(sleepItemStart.isBefore(activityEnd) && sleepItemEnd.isAfter(activityEnd)){
+        //             // console.log("boom")
+        //             sleepItem.changeSchedItemStartTime(activityEnd);
+        //         }
+        //     });
+        // });
+        // console.log("returning  ITEMS< ", sleepItems)
+        return sleepItems;
     }
 }

@@ -27,6 +27,9 @@ import { AdiCumulativeHoursComponent } from './activity-display-item/adi-parts/a
 import { ActivityBrowseResultsComponent } from './activity-browse/activity-browse-results/activity-browse-results.component';
 import { ActivityBrowseComponent } from './activity-browse/activity-browse.component';
 import { AdiRelationshipsComponent } from './activity-display-item/adi-parts/adi-relationships/adi-relationships.component';
+import { ActivitiesViewTabsComponent } from './activities-view-tabs/activities-view-tabs.component';
+import { ActivitiesSummaryComponent } from './activities-summary/activities-summary.component';
+import { ActivitiesQueryComponent } from './activities-query/activities-query.component';
 
 
 @NgModule({
@@ -54,6 +57,9 @@ import { AdiRelationshipsComponent } from './activity-display-item/adi-parts/adi
     ActivityBrowseComponent,
     ActivityBrowseResultsComponent,
     AdiRelationshipsComponent,
+    ActivitiesViewTabsComponent,
+    ActivitiesSummaryComponent,
+    ActivitiesQueryComponent,
   ],
   imports: [
     CommonModule,

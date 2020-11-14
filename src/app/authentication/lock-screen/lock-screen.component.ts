@@ -33,7 +33,7 @@ export class LockScreenComponent implements OnInit, OnDestroy {
     });
 
     this._keydownSub = this.keyDownService.keyDown$.subscribe((keyVal: string)=>{
-      console.log("Key val:  ", keyVal);
+      // console.log("Key val:  ", keyVal);
       if(keyVal === 'Enter' || keyVal === ' '){
         this.onClickUnlock(); 
       }

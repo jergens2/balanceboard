@@ -28,7 +28,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   private _activityTree: ActivityTree;
   private _openActivity: ActivityCategoryDefinition;
   private _rootNgClass: string[] = [];
-  private _browsingAll: boolean = true;
+
 
   private _subs: Subscription[] = [];
 
@@ -42,13 +42,21 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   public get isLoading(): boolean { return this._isLoading; }
   public get rootNgClass(): string[] { return this._rootNgClass; }
 
-  public get browsingAllActivities(): boolean { return this._browsingAll; }
-  public get viewingActivity(): boolean { return !this._browsingAll; }
+
 
   public get screenSize(): AppScreenSize { return this.sizeService.appScreenSize; }
 
+
+  public get viewModeIsActivity(): boolean { return this.activityCompService.viewModeIsActivity; }
+  public get viewModeIsList(): boolean { return this.activityCompService.viewModeIsList; }
+  public get viewModeIsSummary(): boolean { return this.activityCompService.viewModeIsSummary; }
+  public get viewModeIsQuery(): boolean { return this.activityCompService.viewModeIsQuery; }
+
+
+
+
   public onClickBrowseActivities(){
-    this.activityCompService.browseAllActivities();
+    this.activityCompService.viewAllActivities();
   }
 
   public get rootActivities(): ActivityCategoryDefinition[] {
@@ -62,14 +70,6 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._activityTree = this.activityDefinitionService.activityTree;
     this._subs = [
-      this.activityCompService.currentActivity$.subscribe((activityChanged) => {
-        if (activityChanged) {
-          this._browsingAll = false;
-        } else {
-          this._browsingAll = true;
-        }
-
-      }),
       this.activityDefinitionService.activityTree$.subscribe((changedTree) => {
         this._activityTree = changedTree;
       }),

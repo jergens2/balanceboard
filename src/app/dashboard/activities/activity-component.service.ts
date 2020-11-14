@@ -27,10 +27,20 @@ export class ActivityComponentService {
   private _isLoading$: BehaviorSubject<boolean> = new BehaviorSubject(true);
   private _loadingMessage$: BehaviorSubject<string> = new BehaviorSubject('');
 
+  private _currentViewMode$: BehaviorSubject<'ACTIVITY' | 'LIST' | 'SUMMARY' | 'QUERY'> = new BehaviorSubject('SUMMARY');
+
   public get activityTree(): ActivityTree { return this._activityDefinitionService.activityTree; }
 
   public get currentActivity(): ActivityCategoryDefinition { return this._currentActivity$.getValue(); }
   public get currentActivity$(): Observable<ActivityCategoryDefinition> { return this._currentActivity$.asObservable(); }
+
+  public get currentViewMode(): 'ACTIVITY' | 'LIST' | 'SUMMARY' | 'QUERY' { return this._currentViewMode$.getValue(); }
+  public get currentViewMode$(): Observable<'ACTIVITY' | 'LIST' | 'SUMMARY' | 'QUERY'> { return this._currentViewMode$.asObservable(); }
+
+  public get viewModeIsActivity(): boolean { return this.currentViewMode === 'ACTIVITY'; }
+  public get viewModeIsList(): boolean { return this.currentViewMode === 'LIST'; }
+  public get viewModeIsSummary(): boolean { return this.currentViewMode === 'SUMMARY'; }
+  public get viewModeIsQuery(): boolean { return this.currentViewMode === 'QUERY'; }
 
   public get isLoading(): boolean { return this._isLoading$.getValue(); }
   public get isLoading$(): Observable<boolean> { return this._isLoading$.asObservable(); }
@@ -88,11 +98,18 @@ export class ActivityComponentService {
   public openActivity(activity: ActivityCategoryDefinition) {
     // console.log("Opening activity: " + activity.name);
     this._currentActivity$.next(activity);
+    this._currentViewMode$.next('ACTIVITY');
     this.summarizer.analyzeActivityAndChildren(activity);
     this._isLoading$.next(false);
   }
-  public browseAllActivities() {
-    this._currentActivity$.next(null);
+  public viewAllActivities() {
+    this._currentViewMode$.next('LIST');
+  }
+  public viewSummary() {
+    this._currentViewMode$.next('SUMMARY');
+  }
+  public viewQuery() {
+    this._currentViewMode$.next('QUERY');
   }
 
   public executePermanentlyDeleteActivity() {

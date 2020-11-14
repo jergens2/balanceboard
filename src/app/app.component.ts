@@ -66,7 +66,7 @@ export class AppComponent implements OnInit {
   private _resetUserInactiveTimer() {
     let diffMin = moment().diff(this._inactivityStartTime, 'minutes');
     // console.log("RESETTING INACTIVITY TIMER (prev val: " + diffMin + " minutes")
-    const lockAtMinutes = 15;
+    const lockAtMinutes = 30;
     this._inactivityStartTime = moment();
     this._userActivitySub.unsubscribe();
     this._userActivitySub = timer(0, 3000).subscribe((tick) => {

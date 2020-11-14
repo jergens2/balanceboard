@@ -1,0 +1,7 @@
+<div class="tabs-root">
+    <div *ngFor="let tab of tabs" class="tab" (click)="onClickTab(tab.id)" [ngClass]="{'is-active': tab.isActive}">
+        <fa-icon [icon]="tab.icon" style="margin-right: 5px;" *ngIf="tab.id !== 'ACTIVITY'"></fa-icon>
+        <fa-icon [icon]="tab.icon" style="margin-right: 5px;" *ngIf="tab.id === 'ACTIVITY'" [style.color]="tab.activity.color"></fa-icon>
+        <span >{{tab.label}}</span>
+    </div>
+</div>
