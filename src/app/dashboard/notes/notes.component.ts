@@ -26,33 +26,42 @@ export class NotesComponent implements OnInit, OnDestroy {
   private _isLoading: boolean = true;
   private _allNotebookEntries: NotebookEntry[] = [];
 
-  private _filteredNotebookEntries: { dateYYYYMMDD: string, daysAgo: string, notes: NotebookEntry[] }[] = [];
+  private _filteredNotebookEntries: {
+    dateYYYYMMDD: string,
+    dateStr: string, daysAgo: string, notes: NotebookEntry[]
+  }[] = [];
   private _showMoreButton: boolean = false;
 
   public get isLoading(): boolean { return this._isLoading; }
   public get timeViewsManager(): TimeViewsManager { return this.noteQueryService.timeViewsManager; }
   public get showMoreButton(): boolean { return this._showMoreButton; }
 
-  public get filteredNotebookEntries(): { dateYYYYMMDD: string, daysAgo: string, notes: NotebookEntry[] }[] { return this._filteredNotebookEntries; };
+  public get filteredNotebookEntries(): {
+    dateYYYYMMDD: string,
+    dateStr: string, daysAgo: string, notes: NotebookEntry[]
+  }[] { return this._filteredNotebookEntries; };
 
   private get _maxResults(): number { return 25; };
 
   private _subscriptions: Subscription[] = [];
 
   ngOnInit() {
-    this._subscriptions = [this.noteHttpService.allNotes$.subscribe((allNotes)=>{
+    this._subscriptions = [this.noteHttpService.allNotes$.subscribe((allNotes) => {
       this.noteQueryService.reInitiate(allNotes);
-      this._isLoading = false ;
+      this._setFilteredEntries(allNotes);
+      this._isLoading = false;
     })];
+
   }
 
   private _setFilteredEntries(notes: NotebookEntry[]) {
-    let filteredEntries: { dateYYYYMMDD: string, daysAgo: string, notes: NotebookEntry[] }[] = [];
+    let filteredEntries: { dateYYYYMMDD: string, dateStr: string, daysAgo: string, notes: NotebookEntry[] }[] = [];
     if (notes.length > 0) {
       let currentDateYYYYMMDD: string = notes[0].journalDateYYYYMMDD;
       let i = 0;
-      let currentEntry: { dateYYYYMMDD: string, daysAgo: string, notes: NotebookEntry[] } = {
-        dateYYYYMMDD: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
+      let currentEntry: { dateYYYYMMDD: string, dateStr: string, daysAgo: string, notes: NotebookEntry[] } = {
+        dateYYYYMMDD: moment(currentDateYYYYMMDD).format('YYYY-MM-DD'),
+        dateStr: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
         daysAgo: moment().diff(moment(currentDateYYYYMMDD), 'days').toFixed(0),
         notes: [],
       };
@@ -63,7 +72,8 @@ export class NotesComponent implements OnInit, OnDestroy {
           filteredEntries.push(currentEntry);
           currentDateYYYYMMDD = notes[i].journalDateYYYYMMDD;
           currentEntry = {
-            dateYYYYMMDD: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
+            dateYYYYMMDD: moment(currentDateYYYYMMDD).format('YYYY-MM-DD'),
+            dateStr: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
             daysAgo: moment().diff(moment(currentDateYYYYMMDD), 'days').toFixed(0),
             notes: [notes[i]],
           };
@@ -72,7 +82,16 @@ export class NotesComponent implements OnInit, OnDestroy {
       }
       filteredEntries.push(currentEntry);
     }
-    this._filteredNotebookEntries = filteredEntries;
+
+    this._filteredNotebookEntries = filteredEntries.sort((item1, item2) => {
+      if (item1.dateYYYYMMDD < item2.dateYYYYMMDD) {
+        return 1;
+      } else if (item1.dateYYYYMMDD > item2.dateYYYYMMDD) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
   }
 
 

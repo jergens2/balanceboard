@@ -27,7 +27,7 @@ export class NoteHttpService {
 
   public login$(userId: string): Observable<boolean> {
     this._userId = userId;
-    const startTime: moment.Moment = moment().subtract(365, 'days').startOf('day');
+    const startTime: moment.Moment = moment().subtract(1000, 'days').startOf('day');
     return this.fetchNotebookEntriesHTTP$(startTime);
   }
   public logout() {
