@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { faCogs, faSignOutAlt, faPlus, faUser, faLock } from '@fortawesome/free-solid-svg-icons';
-import { MenuItem } from '../header/header-menu/menu-item.model';
+import { MenuItem } from '../header/header-menu/menu-item.class';
 import { appMenuItems } from '../app-menu-items';
 import { Modal } from '../../modal/modal.class';
 import { IModalOption } from '../../modal/modal-option.interface';

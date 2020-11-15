@@ -1,7 +1,7 @@
-import { MenuItem } from "./header/header-menu/menu-item.model";
+import { MenuItem } from "./header/header-menu/menu-item.class";
 import { faSitemap, faCheckCircle, faBookOpen, faBook, faListUl, faCalendar, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { HeaderMenu } from "./header/header-menu/header-menu.model";
+import { HeaderMenu } from "./header/header-menu/header-menu.class";
 import { ToolType } from "../toolbox-menu/tool-type.enum";
 
 

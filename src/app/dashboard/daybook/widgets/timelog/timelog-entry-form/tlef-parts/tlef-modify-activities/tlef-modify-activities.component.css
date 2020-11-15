@@ -1,3 +1,7 @@
+.activities-container{
+    max-height: 360px;
+    overflow-y: auto;
+}
 
 .new-activity{
     display:flex;

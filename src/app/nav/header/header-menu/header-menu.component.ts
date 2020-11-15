@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { HeaderMenu } from './header-menu.model';
-import { MenuItem } from './menu-item.model';
+import { HeaderMenu } from './header-menu.class';
+import { MenuItem } from './menu-item.class';
 import { Router } from '@angular/router';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 

@@ -56,14 +56,15 @@ export class TimelogEntryComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.screenSize = this.screenSizeService.appScreenSize.label;
     this._rebuild(this._calculateMaxItems());
-
     this._subscriptions = [
       this.screenSizeService.appScreenSize$.subscribe((size) => {
         this.screenSize = size.label;
         this._rebuild(this._calculateMaxItems());
       }),
       this.activitiesService.activityTree$.subscribe((treeChanged) => {
-        this._rebuild(this._calculateMaxItems());
+        if(treeChanged){
+          this._rebuild(this._calculateMaxItems());
+        }
       }),
     ];
   }

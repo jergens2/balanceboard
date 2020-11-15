@@ -1,13 +1,32 @@
 <div class="summary-root">
-    Summary
-    <app-button-menu [menu]="rangeMenu" style="width: 250px;"></app-button-menu>
+    <div style="display:flex;flex-direction: row;">
+        <app-button-menu [menu]="rangeMenu" style="width: 250px; margin-right: 50px;"></app-button-menu>
+        <app-button-menu [menu]="viewMenu" style="width: 100px;"></app-button-menu>
+    </div>
 
-    {{ rangeString }}
+    <div style="margin-top: 10px; margin-bottom: 10px; display:flex;flex-direction: column;"> 
+        <div style="font-size: 0.9em; color: gray;">
+            {{ rangeString }}
+        </div>
+        <div>
+            {{ rangeDateString }}
+        </div>
+    </div>
+    
 
-    <div style="display:flex;flex-direction: column;">
+    <div style="display:flex;flex-direction: column; overflow-y: auto;">
+        <div style="display:flex;flex-direction: row; font-weight: bold; margin-left: 20px;">
+            <div style="width: 200px; margin-right: 20px;">Activity</div>
+            <div style="width: 100px; margin-right: 20px;">Hours</div>
+            <div style="width: 150px; margin-right: 20px;">Percent of total</div>
+        </div>
         <div *ngFor="let occurrence of activityOccurrences" (click)="onClickActivity(occurrence.activity)" class="activity-item">
             <div class="color-circle" [style.background-color]="occurrence.activity.color"></div>
-            {{occurrence.activity.name}} - {{ occurrence.displayDuration }}
+            <div style="display:flex;flex-direction: row;">
+                <div style="width: 200px; margin-right: 20px;">{{occurrence.activity.name}}</div>
+                <div style="width: 100px; margin-right: 20px;">{{ occurrence.displayDuration }}</div>
+                <div style="width: 100px; margin-right: 20px;">{{ occurrence.percentOfTotal.toFixed(1) }} %</div>
+            </div>
         </div>
     </div>
 </div>

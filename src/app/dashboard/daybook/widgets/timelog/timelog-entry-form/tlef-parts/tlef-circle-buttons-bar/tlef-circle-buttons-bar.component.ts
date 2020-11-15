@@ -20,7 +20,10 @@ export class TLEFCircleButtonsBarComponent implements OnInit, OnDestroy {
 
   private _gridBarItems: TLEFCircleButton[];
 
+  private _itemSections: TLEFCircleButton[][] = [];
+
   public get items(): TLEFCircleButton[] { return this._gridBarItems; }
+  public get itemSections(): TLEFCircleButton[][] { return this._itemSections; }
 
   public faArrowLeft = faArrowLeft;
   public faArrowRight = faArrowRight;
@@ -39,6 +42,32 @@ export class TLEFCircleButtonsBarComponent implements OnInit, OnDestroy {
 
   private _reload() {
     this._gridBarItems = this.daybookDisplayService.tlefController.tlefCircleButtons;
+
+
+    const maxPerRow = 16;
+    const rows: TLEFCircleButton[][] = [];
+    if (this._gridBarItems.length > maxPerRow) {
+      const rowCount = Math.ceil(this._gridBarItems.length / maxPerRow);
+      let itemsPerRow = Math.ceil(this._gridBarItems.length / rowCount);
+
+      let gbIndex = 0;
+
+      
+      for (let i = 0; i < rowCount; i++) {
+
+        const row: TLEFCircleButton[] = [];
+        for (let j = 0; j < itemsPerRow; j++) {
+          if (gbIndex < this._gridBarItems.length) {
+            row.push(this._gridBarItems[gbIndex]);
+
+          }
+          gbIndex++;
+        }
+        rows.push(row)
+      }
+    }
+
+    this._itemSections = rows;
   }
 
 

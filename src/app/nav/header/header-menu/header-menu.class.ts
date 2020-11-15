@@ -1,4 +1,4 @@
-import { MenuItem } from "./menu-item.model";
+import { MenuItem } from "./menu-item.class";
 import { Subscription } from "rxjs";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 

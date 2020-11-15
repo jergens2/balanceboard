@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { HeaderMenu } from './header-menu/header-menu.model';
+import { HeaderMenu } from './header-menu/header-menu.class';
 import { appMenuItems } from '../app-menu-items';
 import { Subscription, Observable, fromEvent, Subscriber, timer, Subject } from 'rxjs';
 import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks, faUsers, IconDefinition, faBatteryEmpty, faBatteryQuarter, faBatteryHalf, faBatteryThreeQuarters, faBatteryFull } from '@fortawesome/free-solid-svg-icons';
-import { MenuItem } from './header-menu/menu-item.model';
+import { MenuItem } from './header-menu/menu-item.class';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
 import { ToolboxService } from '../../toolbox-menu/toolbox.service';
@@ -138,7 +138,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       signOutSub,
       notepadMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.NOTEBOOK_ENTRY)),
       actionItemMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.ACTION_ITEM)),
-      timelogEntryMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.TIMELOG_ENTRY)),
+      timelogEntryMenuItem.clickEmitted$.subscribe(c => this.daybookDisplayService.displayManager.onClickNowDelineator()),
       futureEventMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.FUTURE_EVENT)),
       dailyTaskListMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.DAILY_TASK_LIST)),
     ];
@@ -247,6 +247,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
       headerMenu.closeMenu();
     }
   }
-
 
 }

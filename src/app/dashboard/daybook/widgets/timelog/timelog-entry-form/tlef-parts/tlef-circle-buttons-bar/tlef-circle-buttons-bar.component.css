@@ -10,10 +10,14 @@
 
 .items{
     display:flex;
+    flex-direction: column;
+}
+.item-section{
+    display:flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
+    margin-bottom: 2px;
 }
 
 .no-click{
