@@ -35,7 +35,6 @@ export class ConfirmPasswordComponent implements OnInit {
 
     const password1 = this.authService.registrationController.password;
     const password2 = this._confirmPasswordForm.controls['password'].value;
-    console.log("P1, p2: " , password1, password2)
     if (password2.length >= 8 && password1 === password2) {
       this.result.emit(true);
     } else {

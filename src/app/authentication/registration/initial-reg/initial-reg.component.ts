@@ -60,7 +60,7 @@ export class InitialRegComponent implements OnInit {
     const passwordValue: string = (this._registrationForm.controls['password'].value);
     const emailValue: string = this._registrationForm.controls['email'].value;
 
-    let usernameToLower: string = (usernameValue + '').toLowerCase();
+
 
     const password: string = passwordValue;
     const email: string = emailValue !== null ? emailValue.toLowerCase() : '';
@@ -73,7 +73,17 @@ export class InitialRegComponent implements OnInit {
 
     const passwordIsValid: boolean = (password !== null && password.length >= 8);
 
-    const usernameIsValid: boolean = (usernameValue === '' || usernameValue === null || (usernameValue.length >= 6 && usernameValue.length <= 24));
+    const usernameIsValid: boolean = (usernameValue === '' || usernameValue === null
+      || (usernameValue.length >= 6 && usernameValue.length <= 24));
+    let usernameToLower: string = '';
+    let usernameStylized: string = '';
+    if (usernameValue === '' || usernameValue === null) {
+      usernameToLower = 'NO_REGISTERED_USERNAME_USE_EMAIL';
+      usernameStylized = 'NO_REGISTERED_USERNAME_USE_EMAIL';
+    } else {
+      usernameToLower = usernameValue.toLowerCase();
+      usernameStylized = usernameValue;
+    }
 
     if (emailIsValid && passwordIsValid && usernameIsValid) {
 
@@ -84,7 +94,7 @@ export class InitialRegComponent implements OnInit {
       const authData: RegistrationData = {
         email: email,
         username: usernameToLower,
-        usernameStylized: usernameValue,
+        usernameStylized: usernameStylized,
         password: passwordValue,
         pin: '',
       };
@@ -111,9 +121,6 @@ export class InitialRegComponent implements OnInit {
   }
   private _checkForExisting(authData: RegistrationData) {
     this._checkingForExisting = true;
-    if (!authData.username) {
-      authData.username = 'NO_USERNAME_PROVIDED_BY_USER';
-    }
     this.authService.checkForExistingAccount$(authData.email, authData.username).subscribe((response: {
       message: string,
       usernameIsUnique: boolean,
@@ -129,7 +136,7 @@ export class InitialRegComponent implements OnInit {
       } else {
         let message: string[] = [];
         // console.log("respnose: " , response)
-        if(response.alreadyRegistered === true){
+        if (response.alreadyRegistered === true) {
           if (response.usernameIsUnique === false) {
             message.push("Username already taken");
             this._usernameIsInvalid = true;
@@ -138,7 +145,7 @@ export class InitialRegComponent implements OnInit {
             message.push("Email already registered");
             this._emailIsInvalid = true;
           }
-        }else{
+        } else {
           if (response.codeIsPresent === true) {
             this.authService.setInitialRegistrationData(authData);
             this.goToConfirm.emit(true);

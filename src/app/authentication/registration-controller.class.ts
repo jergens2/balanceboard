@@ -44,7 +44,7 @@ export class RegistrationController {
     public getAuthData(): RegistrationData {
         let usernameStylized: string = this._usernameStylized;
         let username: string = this._username;
-        if (this._username === '') {
+        if (this._username === '' || this._username === null) {
             username = 'NO_REGISTERED_USERNAME_USE_EMAIL';
             usernameStylized = 'NO_REGISTERED_USERNAME_USE_EMAIL';
         }

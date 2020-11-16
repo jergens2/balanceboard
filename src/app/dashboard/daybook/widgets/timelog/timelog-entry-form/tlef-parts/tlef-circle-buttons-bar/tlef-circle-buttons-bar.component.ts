@@ -49,10 +49,7 @@ export class TLEFCircleButtonsBarComponent implements OnInit, OnDestroy {
     if (this._gridBarItems.length > maxPerRow) {
       const rowCount = Math.ceil(this._gridBarItems.length / maxPerRow);
       let itemsPerRow = Math.ceil(this._gridBarItems.length / rowCount);
-
       let gbIndex = 0;
-
-      
       for (let i = 0; i < rowCount; i++) {
 
         const row: TLEFCircleButton[] = [];
@@ -63,11 +60,12 @@ export class TLEFCircleButtonsBarComponent implements OnInit, OnDestroy {
           }
           gbIndex++;
         }
-        rows.push(row)
+        rows.push(row);
       }
+      this._itemSections = rows;
+    } else {
+      this._itemSections = [this._gridBarItems];
     }
-
-    this._itemSections = rows;
   }
 
 

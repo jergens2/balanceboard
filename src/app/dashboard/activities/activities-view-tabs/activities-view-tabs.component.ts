@@ -4,6 +4,7 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faList, faCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar } from '@fortawesome/free-regular-svg-icons';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
+import { AppScreenSizeService } from '../../../shared/app-screen-size/app-screen-size.service';
 
 @Component({
   selector: 'app-activities-view-tabs',
@@ -12,7 +13,9 @@ import { ActivityCategoryDefinition } from '../api/activity-category-definition.
 })
 export class ActivitiesViewTabsComponent implements OnInit {
 
-  constructor(private activityService: ActivityComponentService) { }
+  constructor(private activityService: ActivityComponentService, screenService: AppScreenSizeService) { }
+
+  public get isSmallScreen(): boolean { return false; }
 
   private _tabs: {
     id: 'ACTIVITY' | 'LIST' | 'SUMMARY' | 'QUERY',

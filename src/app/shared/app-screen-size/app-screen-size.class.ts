@@ -12,6 +12,10 @@ export class AppScreenSize {
     public get label(): AppScreenSizeLabel { return this._label; }
     public get ngClass(): string[] { return this._ngClass; }
 
+    public get isSmall(): boolean { return this.label === AppScreenSizeLabel.MOBILE; }
+    public get isMobile(): boolean { return this.label === AppScreenSizeLabel.MOBILE; }
+    public get isTablet(): boolean { return this.label === AppScreenSizeLabel.TABLET; }
+
     constructor(width: number, height: number) {
         this._width = width;
         this._height = height;
