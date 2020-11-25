@@ -3,11 +3,11 @@ import { DaybookDayItem } from '../../../../daybook/daybook-day-item/daybook-day
 import { ActivityDataAnalyzer } from './activity-data-analyzer.class';
 import { ActivityDataSleepAnalyzer } from './activity-data-sleep-analyzer.class';
 import { ActivityAnalysis } from './activity-analysis.interface';
-import { ActivityTree } from '../../../api/activity-tree.class';
+import { ActivityDefinitionTree } from '../../../api/activity-definition-tree.class';
 import * as moment from 'moment';
 import { ADIOccurrenceData } from './adi-occurrence-data.interface';
 
-export class ActivityDataSummarizer{
+export class ActivityDataSummarizer {
 
 
     private _sortedActivities: ActivityCategoryDefinition[] = [];
@@ -16,15 +16,15 @@ export class ActivityDataSummarizer{
 
     public get activityOccurences(): ADIOccurrenceData[] { return this._activityAnalyzer.activityOccurences; }
 
-    constructor(daybookItems: DaybookDayItem[], activityTree: ActivityTree){
-        this._activityAnalyzer = new ActivityDataAnalyzer(daybookItems);
+    constructor(daybookItems: DaybookDayItem[], activityTree: ActivityDefinitionTree) {
+        this._activityAnalyzer = new ActivityDataAnalyzer(daybookItems, activityTree);
         const sleepAnalyzer = new ActivityDataSleepAnalyzer(daybookItems);
 
         // const activityAnalyses: ActivityAnalysis[] = activityTree.allActivities.map<ActivityAnalysis>(activity => {
         //     return this._activityAnalyzer.getAnalysis(activity, this._defaultQuery, false);
         // })
         // this._activityAnalyses = [...activityAnalyses];
-        
+
         // this._activityAnalyses.sort((item1, item2)=>{
         //     if(item1.totalMs > item2.totalMs){ return -1;}
         //     else if(item1.totalMs < item2.totalMs) { return 1; }
@@ -40,12 +40,10 @@ export class ActivityDataSummarizer{
 
     public get analyzer(): ActivityDataAnalyzer { return this._activityAnalyzer; }
 
-    public analyzeActivityAndChildren(currentActivty: ActivityCategoryDefinition){
+    public analyzeActivityAndChildren(currentActivty: ActivityCategoryDefinition) {
         console.log("method disabled")
         // this._activityAnalyzer.getAnalysis(currentActivty, this._defaultQuery, true);
     }
-
-
 
     private get _defaultQuery(): { startTime: moment.Moment, endTime: moment.Moment, } {
         const now = moment();
@@ -55,7 +53,7 @@ export class ActivityDataSummarizer{
         return {
             startTime: start,
             endTime: end,
-        }
+        };
     }
 
 }

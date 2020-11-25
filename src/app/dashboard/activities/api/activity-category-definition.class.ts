@@ -13,6 +13,7 @@ export class ActivityCategoryDefinition {
         }
     }
 
+
     private _httpShape: ActivityCategoryDefinitionHttpShape;
     private _isRootLevel = false;
 
@@ -60,6 +61,7 @@ export class ActivityCategoryDefinition {
     public set isSleepActivity(isSleep: boolean) { this._httpShape.isSleepActivity = isSleep; }
     public set canDelete(canDelete: boolean) { this._httpShape.canDelete = canDelete; }
 
+
     public isScheduledOnDate(dateYYYYMMDD: string): boolean {
 
         // console.log("This method is disabled.");
@@ -85,6 +87,11 @@ export class ActivityCategoryDefinition {
             name = name.substr(0, name.length - 1);
         }
         return name;
+    }
+
+    // produces a clone that won't have children
+    public cloneByHttpShape(): ActivityCategoryDefinition {
+        return new ActivityCategoryDefinition(this.httpShape);
     }
 
     /**
@@ -154,15 +161,19 @@ export class ActivityCategoryDefinition {
      * Gets all child tree ids, recursively.
      *
      */
-    public getAllChildActivities(): string[] {
+    public getAllChildActivityTreeIds(): string[] {
         let childIds: string[] = [];
         if (this.children.length > 0) {
             this.children.forEach(child => {
                 childIds.push(child.treeId);
-                childIds = [...childIds, ...child.getAllChildActivities()];
+                childIds = [...childIds, ...child.getAllChildActivityTreeIds()];
             });
         }
         return childIds;
+    }
+    /**Includes all child activity Ids recursive and this activity's id. */
+    public getAllBranchActivityTreeIds(): string[] {
+        return [this.treeId, ...this.getAllChildActivityTreeIds()];
     }
 
     addChild(childCategory: ActivityCategoryDefinition) {

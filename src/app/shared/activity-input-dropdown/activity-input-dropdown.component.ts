@@ -3,7 +3,7 @@ import { faCaretDown, faCaretRight, faSitemap, faSearch, faSpinner } from '@fort
 
 import { Subscription, Observable, fromEvent, Subject, timer } from 'rxjs';
 import { ActivityDropdownListItem } from './activity-dropdown-list-item.interface';
-import { ActivityTree } from '../../dashboard/activities/api/activity-tree.class';
+import { ActivityDefinitionTree } from '../../dashboard/activities/api/activity-definition-tree.class';
 import { ActivityCategoryDefinition } from '../../dashboard/activities/api/activity-category-definition.class';
 import { ActivityHttpService } from '../../dashboard/activities/api/activity-http.service';
 import { ActivityInputSearch } from './activity-input-search.class';
@@ -33,7 +33,7 @@ export class ActivityInputDropdownComponent implements OnInit, OnDestroy {
     this.valueChanged.emit(activity);
   }
 
-  activitiesTree: ActivityTree;
+  activitiesTree: ActivityDefinitionTree;
 
 
 

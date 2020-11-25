@@ -9,6 +9,8 @@ import { ADIOccurrence, ADIOccurrenceData } from './adi-occurrence-data.interfac
 import { ADIChartItemData } from './adi-chart-item-data.interface';
 import { Subscription } from 'rxjs';
 import { ADIChartItemBuilder } from './adi-chart-item-builder.class';
+import { ADITreemap } from '../../../activities-summary/activity-summary-treemap-item/activity-treemap.class';
+import { ActivityDefinitionTree } from '../../../api/activity-definition-tree.class';
 
 @Component({
   selector: 'app-adi-summary',
@@ -21,6 +23,7 @@ export class AdiSummaryComponent implements OnInit, OnDestroy {
 
   private _rangeMenu: ButtonMenu = new ButtonMenu();
   private _analysis: ActivityAnalysis;
+  private _treemap: ADITreemap;
   private _occurrencesTotal: string;
   private _durationHoursTotal: string;
   private _medianHoursPerWeek: string;
@@ -33,6 +36,9 @@ export class AdiSummaryComponent implements OnInit, OnDestroy {
 
   private _reloadSub: Subscription;
   private _firstBurned: boolean = false;
+
+
+  public get activityTree(): ActivityDefinitionTree { return this.activitiesService.activityTree; }
 
   public get analyzer(): ActivityDataAnalyzer { return this.activitiesService.summarizer.analyzer; }
   public get occurrencesTotal(): string { return this._occurrencesTotal; }
@@ -48,6 +54,7 @@ export class AdiSummaryComponent implements OnInit, OnDestroy {
 
   public get analysis(): ActivityAnalysis { return this._analysis; }
   public get includeChildren(): boolean { return this._includeChildren; }
+
 
   ngOnInit(): void {
     console.log('Activity occurrence data:' + this.analyzer.activityOccurences.length);
@@ -92,10 +99,8 @@ export class AdiSummaryComponent implements OnInit, OnDestroy {
       const foundActivityData = occurrenceData.find(item => item.activityTreeId === currentActivity.treeId);
       this._buildChartItems();
 
-
       if (foundActivityData) {
         this._analysis = this._buildAnalysis(foundActivityData);
-
       } else {
         this._occurrencesTotal = '0';
         this._durationHoursTotal = '0';
@@ -106,6 +111,9 @@ export class AdiSummaryComponent implements OnInit, OnDestroy {
 
 
   }
+
+
+
 
   private _buildChartItems() {
     const activity = this.activitiesService.currentActivity;

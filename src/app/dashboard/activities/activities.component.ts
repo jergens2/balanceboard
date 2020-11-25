@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewChecked } from '@angular/core';
 import { ActivityHttpService } from './api/activity-http.service';
-import { ActivityTree } from './api/activity-tree.class';
+import { ActivityDefinitionTree } from './api/activity-definition-tree.class';
 import { ActivityCategoryDefinition } from './api/activity-category-definition.class';
 import { ModalService } from '../../modal/modal.service';
 import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
@@ -25,7 +25,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
 
 
   private _isLoading: boolean = true;
-  private _activityTree: ActivityTree;
+  private _activityTree: ActivityDefinitionTree;
   private _openActivity: ActivityCategoryDefinition;
   private _rootNgClass: string[] = [];
 

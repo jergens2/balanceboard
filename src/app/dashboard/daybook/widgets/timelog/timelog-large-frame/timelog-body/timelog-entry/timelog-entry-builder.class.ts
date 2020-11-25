@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import { ActivityCategoryDefinition } from '../../../../../../activities/api/activity-category-definition.class';
 import { ColorConverter } from '../../../../../../../shared/utilities/color-converter.class';
 import { ColorType } from '../../../../../../../shared/utilities/color-type.enum';
-import { ActivityTree } from '../../../../../../activities/api/activity-tree.class';
+import { ActivityDefinitionTree } from '../../../../../../activities/api/activity-definition-tree.class';
 
 export class TimelogEntryBuilder {
     constructor() {
@@ -25,7 +25,7 @@ export class TimelogEntryBuilder {
         return new TimelogEntryItem(startTime, endTime);
     }
 
-    public getBackgroundColor(timelogEntry: TimelogEntryItem, activityTree: ActivityTree): string {
+    public getBackgroundColor(timelogEntry: TimelogEntryItem, activityTree: ActivityDefinitionTree): string {
         let backgroundColor: string = '';
         if (timelogEntry) {
             if (timelogEntry.timelogEntryActivities.length > 0) {

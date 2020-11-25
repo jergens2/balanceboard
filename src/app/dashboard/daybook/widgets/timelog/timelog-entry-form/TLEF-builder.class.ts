@@ -1,5 +1,5 @@
 import { DaybookTimeScheduleItem } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
-import { ActivityTree } from '../../../../activities/api/activity-tree.class';
+import { ActivityDefinitionTree } from '../../../../activities/api/activity-definition-tree.class';
 import { TLEFControllerItem } from './TLEF-controller-item.class';
 import { TLEFFormCase } from './tlef-form-case.enum';
 import { TimelogEntryItem } from '../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
@@ -14,7 +14,7 @@ export class TLEFBuilder {
 
     }
 
-    public buildItems(scheduleDisplayItems: DaybookTimeScheduleItem[], activityTree: ActivityTree): TLEFControllerItem[] {
+    public buildItems(scheduleDisplayItems: DaybookTimeScheduleItem[], activityTree: ActivityDefinitionTree): TLEFControllerItem[] {
         const tlefItems: TLEFControllerItem[] = scheduleDisplayItems.map(scheduleDisplayItem => {
             const startTime = scheduleDisplayItem.schedItemStartTime;
             const endTime = scheduleDisplayItem.schedItemEndTime;

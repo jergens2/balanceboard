@@ -8,6 +8,7 @@ import { faCalendarAlt } from '@fortawesome/free-regular-svg-icons';
 import { TimeViewsManager } from '../../shared/time-views/time-views-manager.class';
 import { Subscription } from 'rxjs';
 import { NoteHttpService } from './api/note-http.service';
+import { NoteGroup } from './note-group/note-group.interface';
 
 @Component({
   selector: 'app-notes',
@@ -24,76 +25,129 @@ export class NotesComponent implements OnInit, OnDestroy {
   constructor(private noteQueryService: NoteQueryService, private noteHttpService: NoteHttpService) { }
 
   private _isLoading: boolean = true;
-  private _allNotebookEntries: NotebookEntry[] = [];
-
-  private _filteredNotebookEntries: {
-    dateYYYYMMDD: string,
-    dateStr: string, daysAgo: string, notes: NotebookEntry[]
-  }[] = [];
   private _showMoreButton: boolean = false;
+
+
+  private _allNotes: NotebookEntry[] = [];
+
+  private _allNoteGroups: NoteGroup[] = [];
+  private _showNoteGroups: NoteGroup[] = [];
+
+  private get _maxDefaultResults(): number { return 30; }
 
   public get isLoading(): boolean { return this._isLoading; }
   public get timeViewsManager(): TimeViewsManager { return this.noteQueryService.timeViewsManager; }
   public get showMoreButton(): boolean { return this._showMoreButton; }
 
-  public get filteredNotebookEntries(): {
-    dateYYYYMMDD: string,
-    dateStr: string, daysAgo: string, notes: NotebookEntry[]
-  }[] { return this._filteredNotebookEntries; };
-
-  private get _maxResults(): number { return 25; };
+  public get noteGroups(): NoteGroup[] { return this._allNoteGroups; }
+  public get showNoteGroups(): NoteGroup[] { return this._showNoteGroups; }
 
   private _subscriptions: Subscription[] = [];
 
   ngOnInit() {
-    this._subscriptions = [this.noteHttpService.allNotes$.subscribe((allNotes) => {
-      this.noteQueryService.reInitiate(allNotes);
-      this._setFilteredEntries(allNotes);
-      this._isLoading = false;
-    })];
+    this._allNotes = this.noteHttpService.allNotes;
+    this._subscriptions = [
+      this.noteHttpService.allNotes$.subscribe((allNotes) => {
+        this._allNotes = allNotes;
+        this._reload();
+      })
+    ];
 
   }
 
-  private _setFilteredEntries(notes: NotebookEntry[]) {
-    let filteredEntries: { dateYYYYMMDD: string, dateStr: string, daysAgo: string, notes: NotebookEntry[] }[] = [];
-    if (notes.length > 0) {
-      let currentDateYYYYMMDD: string = notes[0].journalDateYYYYMMDD;
-      let i = 0;
-      let currentEntry: { dateYYYYMMDD: string, dateStr: string, daysAgo: string, notes: NotebookEntry[] } = {
-        dateYYYYMMDD: moment(currentDateYYYYMMDD).format('YYYY-MM-DD'),
-        dateStr: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
+
+  private _reload() {
+    const noteGroups: NoteGroup[] = [];
+    const allNotes = this._allNotes.sort((item1, item2) => {
+      if (item1.dateModified > item2.dateModified) {
+        return -1;
+      } else if (item1.dateModified < item2.dateModified) {
+        return 1;
+      }
+      return 0;
+    });
+    if (allNotes.length > 0) {
+      let currentDateYYYYMMDD: string = allNotes[0].dateModifiedYYYYMMDD;
+      let currentNoteGroup: NoteGroup = {
+        dateYYYYMMDD: currentDateYYYYMMDD,
+        dateString: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
         daysAgo: moment().diff(moment(currentDateYYYYMMDD), 'days').toFixed(0),
         notes: [],
+        noNotesEndDateYYYYMMDD: currentDateYYYYMMDD,
+        noNotesDateString: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
       };
-      while (i < notes.length) {
-        if (notes[i].journalDateYYYYMMDD === currentDateYYYYMMDD) {
-          currentEntry.notes.push(notes[i]);
+      for (let i = 0; i < allNotes.length; i++) {
+        if (currentDateYYYYMMDD === allNotes[i].dateModifiedYYYYMMDD) {
+          currentNoteGroup.notes.push(allNotes[i].clone());
         } else {
-          filteredEntries.push(currentEntry);
-          currentDateYYYYMMDD = notes[i].journalDateYYYYMMDD;
-          currentEntry = {
-            dateYYYYMMDD: moment(currentDateYYYYMMDD).format('YYYY-MM-DD'),
-            dateStr: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
-            daysAgo: moment().diff(moment(currentDateYYYYMMDD), 'days').toFixed(0),
-            notes: [notes[i]],
-          };
+          noteGroups.push(currentNoteGroup);
+          const nextDate = moment(currentDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
+          const newDateYYYYMMDD: string = allNotes[i].dateModifiedYYYYMMDD;
+          if (nextDate === newDateYYYYMMDD) {
+            currentNoteGroup = {
+              dateYYYYMMDD: nextDate,
+              dateString: moment(nextDate).format('MMM Do, YYYY'),
+              daysAgo: moment().diff(moment(nextDate), 'days').toFixed(0),
+              notes: [allNotes[i]],
+              noNotesEndDateYYYYMMDD: nextDate,
+              noNotesDateString: moment(nextDate).format('MMM Do, YYYY'),
+            };
+            currentDateYYYYMMDD = nextDate;
+          } else {
+            const dayBeforeNewDateYYYYMMDD: string = moment(newDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
+            noteGroups.push({
+              dateYYYYMMDD: dayBeforeNewDateYYYYMMDD,
+              dateString: moment(dayBeforeNewDateYYYYMMDD).format('MMM Do, YYYY'),
+              daysAgo: moment().diff(moment(dayBeforeNewDateYYYYMMDD), 'days').toFixed(0),
+              notes: [],
+              noNotesEndDateYYYYMMDD: nextDate,
+              noNotesDateString: moment(nextDate).format('MMM Do, YYYY'),
+            });
+            currentNoteGroup = {
+              dateYYYYMMDD: newDateYYYYMMDD,
+              dateString: moment(newDateYYYYMMDD).format('MMM Do, YYYY'),
+              daysAgo: moment().diff(moment(newDateYYYYMMDD), 'days').toFixed(0),
+              notes: [allNotes[i]],
+              noNotesEndDateYYYYMMDD: newDateYYYYMMDD,
+              noNotesDateString: moment(newDateYYYYMMDD).format('MMM Do, YYYY'),
+            };
+            currentDateYYYYMMDD = newDateYYYYMMDD;
+          }
+
         }
-        i++;
       }
-      filteredEntries.push(currentEntry);
+
+
+
+      this._allNoteGroups = noteGroups.sort((item1, item2) => {
+        if (item1.dateYYYYMMDD < item2.dateYYYYMMDD) {
+          return 1;
+        } else if (item1.dateYYYYMMDD > item2.dateYYYYMMDD) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+
+      let currentGroupCount = 0;
+      let currentIndex: number = 0;
+      const showGroups: NoteGroup[] = [];
+      while (currentGroupCount < this._maxDefaultResults && currentIndex < noteGroups.length) {
+        showGroups.push(this._allNoteGroups[currentIndex]);
+        if (this._allNoteGroups[currentIndex].notes.length > 0) {
+          currentGroupCount++;
+        }
+        currentIndex++;
+      }
+      if (currentIndex < noteGroups.length) {
+        this._showMoreButton = true;
+      }
+
+      this._showNoteGroups = showGroups;
+      this._isLoading = false;
     }
 
-    this._filteredNotebookEntries = filteredEntries.sort((item1, item2) => {
-      if (item1.dateYYYYMMDD < item2.dateYYYYMMDD) {
-        return 1;
-      } else if (item1.dateYYYYMMDD > item2.dateYYYYMMDD) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
   }
-
 
 
   ngOnDestroy() {
@@ -102,13 +156,13 @@ export class NotesComponent implements OnInit, OnDestroy {
 
   public onClickShowMore() {
     const additional = 10;
-    const maxResults = this._filteredNotebookEntries.length + additional;
-    if (this._allNotebookEntries.length > maxResults) {
-      // this._filteredNotebookEntries = this._allNotebookEntries.slice(0, maxResults - 1);
+    const maxResults = this._showNoteGroups.length + additional;
+    if (this._allNoteGroups.length > maxResults) {
+      this._showNoteGroups = this._allNoteGroups.slice(0, maxResults - 1);
       this._showMoreButton = true;
 
     } else {
-      // this._filteredNotebookEntries = this._allNotebookEntries;
+      this._showNoteGroups = this._allNoteGroups;
       this._showMoreButton = false;
     }
   }

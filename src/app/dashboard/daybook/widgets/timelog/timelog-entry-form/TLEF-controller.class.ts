@@ -6,7 +6,7 @@ import { TLEFControllerItem } from './TLEF-controller-item.class';
 import { TLEFCircleButton } from './tlef-parts/tlef-circle-buttons-bar/tlef-circle-button.class';
 import { DaybookTimeSchedule } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule.class';
 import { DaybookTimeScheduleItem } from '../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
-import { ActivityTree } from '../../../../activities/api/activity-tree.class';
+import { ActivityDefinitionTree } from '../../../../activities/api/activity-definition-tree.class';
 import { TLEFBuilder } from './TLEF-builder.class';
 import { DaybookUpdateAction } from '../../../display-manager/daybook-update-action.enum';
 import { TimelogEntryActivity } from '../../../daybook-day-item/data-items/timelog-entry-activity.interface';
@@ -18,7 +18,7 @@ export class TLEFController {
     private _promptToSaveChanges: boolean = false;
     private _tlefItems: TLEFControllerItem[] = [];
     private _currentlyOpenTLEFItem$: BehaviorSubject<{ item: TLEFControllerItem, isSameItem: boolean }> = new BehaviorSubject(null);
-    private _activityTree: ActivityTree;
+    private _activityTree: ActivityDefinitionTree;
     private _promptStashedItemIndex: number;
     private _isSavingChanges: boolean = false;
 
@@ -46,7 +46,7 @@ export class TLEFController {
     }
     public get isSavingChanges(): boolean { return this._isSavingChanges; }
 
-    constructor(scheduleDisplayItems: DaybookTimeScheduleItem[], activityTree: ActivityTree) {
+    constructor(scheduleDisplayItems: DaybookTimeScheduleItem[], activityTree: ActivityDefinitionTree) {
         this._activityTree = activityTree;
         const builder: TLEFBuilder = new TLEFBuilder();
         this._tlefItems = builder.buildItems(scheduleDisplayItems, this._activityTree);

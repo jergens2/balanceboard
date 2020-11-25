@@ -8,7 +8,7 @@ import { DaybookActivityUpdater } from './api/daybook-activity-updater.class';
 import { DaybookDayItem } from '../daybook/daybook-day-item/daybook-day-item.class';
 import { ActivityDataAnalyzer } from './activity-display-item/adi-parts/adi-summary/activity-data-analyzer.class';
 import { ActivityDataSummarizer } from './activity-display-item/adi-parts/adi-summary/activity-data-summarizer.class';
-import { ActivityTree } from './api/activity-tree.class';
+import { ActivityDefinitionTree } from './api/activity-definition-tree.class';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +29,7 @@ export class ActivityComponentService {
 
   private _currentViewMode$: BehaviorSubject<'ACTIVITY' | 'LIST' | 'SUMMARY' | 'QUERY'> = new BehaviorSubject('SUMMARY');
 
-  public get activityTree(): ActivityTree { return this._activityDefinitionService.activityTree; }
+  public get activityTree(): ActivityDefinitionTree { return this._activityDefinitionService.activityTree; }
 
   public get currentActivity(): ActivityCategoryDefinition { return this._currentActivity$.getValue(); }
   public get currentActivity$(): Observable<ActivityCategoryDefinition> { return this._currentActivity$.asObservable(); }

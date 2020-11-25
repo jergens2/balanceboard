@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivityHttpService } from '../api/activity-http.service';
-import { ActivityTree } from '../api/activity-tree.class';
+import { ActivityDefinitionTree } from '../api/activity-definition-tree.class';
 import { faCheckCircle, faCircle, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { ModalService } from '../../../modal/modal.service';
 import { DefaultActivityCategoryDefinitions } from '../api/default-activity-category-definitions.class';
@@ -62,7 +62,7 @@ export class ActivityCategoryDefinitionFormComponent implements OnInit {
   constructor(private activityCategoryDefinitionService: ActivityHttpService, private modalService: ModalService) { }
 
   activityForm: FormGroup = null;
-  private activityTree: ActivityTree = null;
+  private activityTree: ActivityDefinitionTree = null;
   pickedColor: string = "#fafafa";
 
 

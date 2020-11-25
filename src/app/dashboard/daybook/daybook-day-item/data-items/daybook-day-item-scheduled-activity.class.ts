@@ -1,6 +1,6 @@
 import { ActivityCategoryDefinition } from "../../../activities/api/activity-category-definition.class";
 import * as moment from 'moment';
-import { ActivityTree } from "../../../activities/api/activity-tree.class";
+import { ActivityDefinitionTree } from "../../../activities/api/activity-definition-tree.class";
 
 export interface DaybookDayItemScheduledActivityItem{
     activityTreeId: string;
@@ -64,7 +64,7 @@ export class DaybookDayItemScheduledActivity{
     }
 
     private _routineMemberActivities: DaybookDayItemScheduledActivity[] = [];
-    public setRoutineMembers(activityTree: ActivityTree){
+    public setRoutineMembers(activityTree: ActivityDefinitionTree){
         let routineMemberActivities : DaybookDayItemScheduledActivity[] = [];
         this.routineMemberActivityItems.forEach((memberItem: DaybookDayItemScheduledActivityItem)=>{
             let activityDefinition: ActivityCategoryDefinition = activityTree.findActivityByTreeId(memberItem.activityTreeId);

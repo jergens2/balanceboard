@@ -6,7 +6,8 @@ import { NotebookEntryHttpShape } from './notebook-entry-http-shape.interface';
 import { NoteTag } from '../notes-query-bar/nqb-tag-search/note-tag.class';
 
 export class NotebookEntry {
-    constructor(id: string, userId: string, dateCreated: moment.Moment, type: NotebookEntryTypes, textContent: string, title: string, tags: string[]) {
+    constructor(id: string, userId: string, dateCreated: moment.Moment,
+        type: NotebookEntryTypes, textContent: string, title: string, tags: string[]) {
         this._id = id;
         this._userId = userId;
         this._dateCreated = moment(dateCreated);
@@ -56,8 +57,11 @@ export class NotebookEntry {
     public get title(): string { return this._title; }
     public get time(): string { return this._displayTime; }
 
+    public get dateModified(): moment.Moment { return this._dateModified; }
+    public get dateModifiedYYYYMMDD(): string { return this._dateModified.format('YYYY-MM-DD'); }
+
     public set userId(userId: string) { this._userId = userId; }
-    public set dateModified(time: moment.Moment) { this._dateModified = time; }
+    public setDateModified(time: moment.Moment) { this._dateModified = time; }
     public set journalDate(time: moment.Moment) {
         this._journalDate = time;
         this._displayTime = this._journalDate.format('YYYY-MM-DD h:mm a');
@@ -66,6 +70,12 @@ export class NotebookEntry {
 
     public tagsMatch(tags: NoteTag[]): boolean {
         return (this._tags.find(noteTag => tags.find(tag => tag.tagValue === noteTag.tagValue)) !== null);
+    }
+
+
+    public clone(): NotebookEntry {
+        return new NotebookEntry(this.id, this.userId,
+            this._dateCreated, this._type, this.textContent, this.title, this.tags.map(tag => tag.tagValue));
     }
 
 }

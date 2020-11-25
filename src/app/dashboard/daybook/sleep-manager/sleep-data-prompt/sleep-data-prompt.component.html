@@ -23,6 +23,7 @@
 
     <div *ngIf="isAfterBedtime" class="content">
         It's after bedtime.
+        <button (click)="onClickContinue()" class="medium-button save-button">Okay!</button>
     </div>
 
     <div *ngIf="isSleepTime" class="content">

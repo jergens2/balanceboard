@@ -6,7 +6,7 @@ import { DailyTaskListDataItem } from './data-items/daily-task-list-data-item.in
 import * as moment from 'moment';
 
 import { ActivityCategoryDefinition } from '../../activities/api/activity-category-definition.class';
-import { ActivityTree } from '../../activities/api/activity-tree.class';
+import { ActivityDefinitionTree } from '../../activities/api/activity-definition-tree.class';
 import { DaybookDayItemScheduledActivity, DaybookDayItemScheduledActivityItem } from './data-items/daybook-day-item-scheduled-activity.class';
 
 import blankDaybookItemHttpShape from './data-items/blank-http-shape';
@@ -100,7 +100,7 @@ export class DaybookDayItem {
     public get dailyTaskListDataItems(): DailyTaskListDataItem[] { return this.httpShape.dailyTaskListDataItems; }
 
 
-    public buildScheduledActivities(activityTree: ActivityTree) {
+    public buildScheduledActivities(activityTree: ActivityDefinitionTree) {
         this._scheduledActivities = this.scheduledActivityItems.map((activityItem: DaybookDayItemScheduledActivityItem) => {
             const activityDefinition: ActivityCategoryDefinition = activityTree.findActivityByTreeId(activityItem.activityTreeId);
             if (activityDefinition) {
@@ -113,7 +113,7 @@ export class DaybookDayItem {
     }
     private buildScheduledActivity(
         activityItem: DaybookDayItemScheduledActivityItem,
-        activityDefinition: ActivityCategoryDefinition, activityTree: ActivityTree): DaybookDayItemScheduledActivity {
+        activityDefinition: ActivityCategoryDefinition, activityTree: ActivityDefinitionTree): DaybookDayItemScheduledActivity {
 
         const newScheduledActivity = new DaybookDayItemScheduledActivity(activityItem, activityDefinition);
         if (activityItem.routineMemberActivities.length > 0) {
@@ -127,7 +127,7 @@ export class DaybookDayItem {
     public get scheduledActivityItems(): DaybookDayItemScheduledActivityItem[] {
         return this.httpShape.scheduledActivityItems;
     }
-    public setScheduledActivityItems(items: DaybookDayItemScheduledActivityItem[], activityTree: ActivityTree) {
+    public setScheduledActivityItems(items: DaybookDayItemScheduledActivityItem[], activityTree: ActivityDefinitionTree) {
         this._httpShape.scheduledActivityItems = items;
         this.buildScheduledActivities(activityTree);
         // this.dataChanged({ prev: false, current: true, next: false });

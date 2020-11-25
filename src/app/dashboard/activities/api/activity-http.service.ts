@@ -4,7 +4,7 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { serverUrl } from '../../../serverurl';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { ActivityTree } from './activity-tree.class';
+import { ActivityDefinitionTree } from './activity-definition-tree.class';
 import { Guid } from '../../../shared/utilities/guid.class';
 import { ActivityBuilder } from './activity-builder.class';
 
@@ -16,11 +16,11 @@ export class ActivityHttpService {
   constructor(private httpClient: HttpClient) { }
 
   private _userId: string = '';
-  private _activityTree$: BehaviorSubject<ActivityTree> = new BehaviorSubject(null);
+  private _activityTree$: BehaviorSubject<ActivityDefinitionTree> = new BehaviorSubject(null);
 
   public get userId(): string { return this._userId; }
-  public get activityTree(): ActivityTree { return this._activityTree$.getValue(); }
-  public get activityTree$(): Observable<ActivityTree> { return this._activityTree$.asObservable(); }
+  public get activityTree(): ActivityDefinitionTree { return this._activityTree$.getValue(); }
+  public get activityTree$(): Observable<ActivityDefinitionTree> { return this._activityTree$.asObservable(); }
   public findActivityByTreeId(id: string) { return this.activityTree.findActivityByTreeId(id); }
 
   public login$(userId: string): Observable<boolean> {
@@ -29,7 +29,7 @@ export class ActivityHttpService {
     this._fetchActivitiesHttp$(this._userId)
       .subscribe({
         next: activities => {
-          this._activityTree$.next(new ActivityTree(activities));
+          this._activityTree$.next(new ActivityDefinitionTree(activities));
           isComplete$.next(true);
         },
         error: e => console.log('Error A', e),

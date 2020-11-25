@@ -1,5 +1,5 @@
 import { TimelogEntryActivity } from "../../../../../daybook-day-item/data-items/timelog-entry-activity.interface";
-import { ActivityTree } from "../../../../../../activities/api/activity-tree.class";
+import { ActivityDefinitionTree } from "../../../../../../activities/api/activity-definition-tree.class";
 import { ActivityCategoryDefinition } from "../../../../../../activities/api/activity-category-definition.class";
 import { TimelogEntryDisplayItemUnit } from "./tle-display-item-unit.class";
 import { DurationString } from "../../../../../../../shared/time-utilities/duration-string.class";

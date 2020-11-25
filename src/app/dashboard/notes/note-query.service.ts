@@ -30,8 +30,10 @@ export class NoteQueryService{
 
   public reInitiate(notes: NotebookEntry[]){ 
     this._allNotes = notes;
+    console.log("TIME VIEWS MANAGER START...")
     this._timeViewsManager = new TimeViewsManager();
     this._timeViewsManager.setNotebooksView(this._allNotes)
+    console.log("time views manager is DONE")
     this.setQuery(new NoteQuery());
     this._subscription.unsubscribe();
     this._subscription = this._timeViewsManager.queryChanged$().subscribe((queryDatesChanged)=>{
@@ -62,7 +64,7 @@ export class NoteQueryService{
     }else{
       this._tagsDisplay = "all tags"
     }
-    
+    console.log("Query is set")
     this._currentNotes$.next(filteredNotes);
   }
 

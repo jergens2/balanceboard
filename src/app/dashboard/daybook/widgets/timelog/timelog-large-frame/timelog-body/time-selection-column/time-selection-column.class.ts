@@ -112,7 +112,6 @@ export class TimeSelectionColumn {
 
     private _findSectionIndex(startTime: moment.Moment, endTime: moment.Moment, availableItems: DaybookTimeScheduleItem[]): number {
         if (availableItems.length === 0) {
-            console.log('Error: no item found')
             return -1;
         } else {
             const foundIndex = availableItems.findIndex(availableItem => {

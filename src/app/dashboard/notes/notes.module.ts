@@ -7,6 +7,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SharedModule } from '../../shared/shared.module';
 import { NqbDateSearchComponent } from './notes-query-bar/nqb-date-search/nqb-date-search.component';
 import { NqbTagSearchComponent } from './notes-query-bar/nqb-tag-search/nqb-tag-search.component';
+import { NotesHeaderComponent } from './notes-header/notes-header.component';
+import { NoteGroupComponent } from './note-group/note-group.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +17,8 @@ import { NqbTagSearchComponent } from './notes-query-bar/nqb-tag-search/nqb-tag-
     NotesQueryBarComponent,
     NqbDateSearchComponent,
     NqbTagSearchComponent,
+    NotesHeaderComponent,
+    NoteGroupComponent,
     
   ],
   imports: [

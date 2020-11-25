@@ -74,7 +74,7 @@ export class NotebookEntryFormComponent implements OnInit {
     let notebookEntry: NotebookEntry = new NotebookEntry('','', journalDate, NotebookEntryTypes.Note, textContent, title, tags);
 
     // console.log("Saving note:", notebookEntry);
-    this.notesHttpService.saveNotebookEntry(notebookEntry);
+    this.notesHttpService.saveNotebookEntry$(notebookEntry);
     this.toolsService.closeTool();
   }
 

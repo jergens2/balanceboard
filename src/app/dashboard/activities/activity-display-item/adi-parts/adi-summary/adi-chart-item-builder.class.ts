@@ -2,7 +2,7 @@ import { ADIChartDisplayItem } from "./adi-chart-display-item.class";
 import * as moment from 'moment';
 import { ADIOccurrence, ADIOccurrenceData } from "./adi-occurrence-data.interface";
 import { ActivityCategoryDefinition } from "../../../api/activity-category-definition.class";
-import { ActivityTree } from "../../../api/activity-tree.class";
+import { ActivityDefinitionTree } from "../../../api/activity-definition-tree.class";
 import { ADIChartItemData } from "./adi-chart-item-data.interface";
 
 
@@ -14,14 +14,14 @@ export class ADIChartItemBuilder {
     public get chartItems(): ADIChartDisplayItem[] { return this._chartItems; }
 
     constructor(currentActivity: ActivityCategoryDefinition, occurrenceData: ADIOccurrenceData[],
-        includeChildren: boolean, tree: ActivityTree,
+        includeChildren: boolean, tree: ActivityDefinitionTree,
         currentRangeStart: moment.Moment, currentRangeEnd: moment.Moment, currentRange: 7 | 30 | 90 | 365 | 'Specify') {
         let totalActivityMs: number = 0;
         occurrenceData.forEach(item => totalActivityMs += item.totalMs);
         let activityIds: string[] = [currentActivity.treeId];
         if (includeChildren) {
             const allActivities = tree.allActivities;
-            activityIds = [currentActivity.treeId, ...currentActivity.getAllChildActivities()];
+            activityIds = [currentActivity.treeId, ...currentActivity.getAllChildActivityTreeIds()];
         }
         let currentDateYYYYMMDD: string = moment(currentRangeStart).format('YYYY-MM-DD');
         const lastDateYYYYMMDD: string = moment().day(6).format('YYYY-MM-DD');

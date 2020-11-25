@@ -30,6 +30,8 @@ import { AdiRelationshipsComponent } from './activity-display-item/adi-parts/adi
 import { ActivitiesViewTabsComponent } from './activities-view-tabs/activities-view-tabs.component';
 import { ActivitiesSummaryComponent } from './activities-summary/activities-summary.component';
 import { ActivitiesQueryComponent } from './activities-query/activities-query.component';
+import { AstGridItemComponent } from './activities-summary/activity-summary-treemap/ast-grid-item/ast-grid-item.component';
+import { ActivitySummaryTreemapItemComponent } from './activities-summary/activity-summary-treemap-item/activity-summary-treemap-item.component';
 
 
 @NgModule({
@@ -60,6 +62,8 @@ import { ActivitiesQueryComponent } from './activities-query/activities-query.co
     ActivitiesViewTabsComponent,
     ActivitiesSummaryComponent,
     ActivitiesQueryComponent,
+    AstGridItemComponent,
+    ActivitySummaryTreemapItemComponent,
   ],
   imports: [
     CommonModule,

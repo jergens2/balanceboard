@@ -27,16 +27,15 @@ export class NoteHttpService {
 
   public login$(userId: string): Observable<boolean> {
     this._userId = userId;
-    const startTime: moment.Moment = moment().subtract(1000, 'days').startOf('day');
-    return this.fetchNotebookEntriesHTTP$(startTime);
+    return this.fetchAllNotebookEntriesHTTP$();
   }
   public logout() {
     this._userId = null;
     this._rangeStart = null;
     this._allNotes$.next([]);
   }
-  public saveNotebookEntry(notebookEntry: NotebookEntry) {
-
+  public saveNotebookEntry$(notebookEntry: NotebookEntry): Observable<NotebookEntry> {
+    console.log("SAVING NOTE: ", notebookEntry)
     notebookEntry.userId = this._userId;
     const requestUrl: string = serverUrl + '/api/notebook/create';
     const httpOptions = {
@@ -46,17 +45,60 @@ export class NoteHttpService {
       })
     };
     const requestBody: NotebookEntryHttpShape = notebookEntry.httpShape;
-    return this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
+    const savedNote$: Subject<NotebookEntry> = new Subject();
+    this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
+      .pipe<NotebookEntry>(map((response: { message: string, data: any }) => {
+        return NoteBuilder.buildNoteFromData(response.data);
+      })).subscribe(notebookSaved => {
+        const allNotes = this._sortNotes([...this.allNotes, notebookSaved]);
+        this._allNotes$.next(allNotes);
+        savedNote$.next(notebookSaved);
+        savedNote$.complete();
+      }, () => { }, () => { savedNote$.complete(); });
+    return savedNote$;
+  }
+
+
+
+
+
+  public fetchAllNotebookEntriesHTTP$(): Observable<boolean> {
+    const isComplete$: Subject<boolean> = new Subject();
+    const requestUrl: string = serverUrl + '/api/notebook/' + this._userId;
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    this.httpClient.get<{ message: string, data: any }>(requestUrl, httpOptions)
       .pipe<NotebookEntry[]>(map((response: { message: string, data: any[] }) => {
         return response.data.map(d => NoteBuilder.buildNoteFromData(d));
-      }));
+      }))
+      .subscribe({
+        next: (notes) => {
+          // console.log("It took this many MS to build notes: ", moment().diff(before, 'milliseconds'))
+          this._allNotes$.next(notes);
+          isComplete$.next(true);
+        },
+        error: e => console.log('Error with notebooks', e),
+        complete: () => isComplete$.complete()
+      });
+    return isComplete$.asObservable();
   }
+
+
+
+
+
+
+
+
 
   /**
    *
    * @param startISO the range start time. will get all notes between start and now
    */
-  public fetchNotebookEntriesHTTP$(startTime: moment.Moment): Observable<boolean> {
+  public getNotebookEntriesFromDateHTTP$(startTime: moment.Moment): Observable<boolean> {
     this._rangeStart = moment(startTime);
     const isComplete$: Subject<boolean> = new Subject();
     const requestUrl: string = serverUrl + '/api/notebook/' + this._userId + '/' + startTime.toISOString();
@@ -83,7 +125,7 @@ export class NoteHttpService {
     return isComplete$.asObservable();
   }
 
-  updateNotebookEntryHTTP$(notebookEntry: NotebookEntry): Observable<boolean> {
+  public updateNotebookEntryHTTP$(notebookEntry: NotebookEntry): Observable<boolean> {
     const requestUrl: string = serverUrl + '/api/notebook/update';
     const httpOptions = {
       headers: new HttpHeaders({
@@ -132,5 +174,16 @@ export class NoteHttpService {
   }
 
 
+  private _sortNotes(notes: NotebookEntry[]): NotebookEntry[] {
+    return notes.sort((note1, note2) => {
+      if (note1.journalDateYYYYMMDD > note2.journalDateYYYYMMDD) {
+        return -1;
+      } else if (note1.journalDateYYYYMMDD < note2.journalDateYYYYMMDD) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }
 
 }

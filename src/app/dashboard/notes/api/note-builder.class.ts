@@ -7,7 +7,7 @@ export class NoteBuilder {
   public static buildNoteFromData(data: any): NotebookEntry {
     const notebookEntry: NotebookEntry = new NotebookEntry(data._id,
       data.userId, data.dateCreatedISO, data.type, data.textContent, data.title, data.tags);
-    notebookEntry.dateModified = moment(data.dateModifiedISO);
+    notebookEntry.setDateModified(moment(data.dateModifiedISO));
     notebookEntry.journalDate = moment(data.journalDateISO);
     notebookEntry.data = data.data;
     if (data.journalDateISO) {

@@ -1,29 +1,24 @@
-
 <div class="notebook-root">
 
 
   <div *ngIf="isLoading" class="spinner-container">
     <div style="color: gray; font-style: italic;">Loading notes...</div>
     <app-spinner style="width: 200px; height: 200px;"></app-spinner>
-    
+
   </div>
   <div *ngIf="!isLoading" style="display:flex;flex-direction: column;">
     <div class="notes-query-bar">
-      <app-notes-query-bar class="header"></app-notes-query-bar>
+      <!-- <app-notes-header class="header"></app-notes-query-bar> -->
     </div>
     <div class="notebook-entries">
-      <div *ngFor="let day of filteredNotebookEntries" class="notebook-day">
-        <div class="date-container">
-          <div class="date">{{ day.dateYYYYMMDD }}</div>
-          <div class="days-ago">{{ day.daysAgo }} days ago</div>
-        </div>
 
-        <app-notebook-entry *ngFor="let note of day.notes" [notebookEntry]="note"></app-notebook-entry>
+      <div *ngFor="let noteGroup of showNoteGroups">
+        <app-note-group [noteGroup]="noteGroup"></app-note-group>
       </div>
     </div>
-    <!-- <div *ngIf="showMoreButton" class="show-more-button">
+    <div *ngIf="showMoreButton" class="show-more-button">
       <button class="medium-button" style="margin: 20px;" (click)="onClickShowMore()">Show more</button>
-    </div> -->
+    </div>
   </div>
 
 
