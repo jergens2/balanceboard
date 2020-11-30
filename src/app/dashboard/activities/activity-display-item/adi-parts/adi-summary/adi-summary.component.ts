@@ -9,8 +9,8 @@ import { ADIOccurrence, ADIOccurrenceData } from './adi-occurrence-data.interfac
 import { ADIChartItemData } from './adi-chart-item-data.interface';
 import { Subscription } from 'rxjs';
 import { ADIChartItemBuilder } from './adi-chart-item-builder.class';
-import { ADITreemap } from '../../../activities-summary/activity-summary-treemap-item/activity-treemap.class';
 import { ActivityDefinitionTree } from '../../../api/activity-definition-tree.class';
+import { ADITreemap } from '../../../activities-summary/activities-summary-treemap/activity-treemap.class';
 
 @Component({
   selector: 'app-adi-summary',

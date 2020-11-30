@@ -49,6 +49,7 @@ export class NotesComponent implements OnInit, OnDestroy {
     this._subscriptions = [
       this.noteHttpService.allNotes$.subscribe((allNotes) => {
         this._allNotes = allNotes;
+        console.log("RELOADING")
         this._reload();
       })
     ];
@@ -154,16 +155,20 @@ export class NotesComponent implements OnInit, OnDestroy {
     this._subscriptions.forEach(s => s.unsubscribe());
   }
 
-  public onClickShowMore() {
-    const additional = 10;
-    const maxResults = this._showNoteGroups.length + additional;
-    if (this._allNoteGroups.length > maxResults) {
-      this._showNoteGroups = this._allNoteGroups.slice(0, maxResults - 1);
-      this._showMoreButton = true;
+  public onClickShowAll() {
+    this._showNoteGroups = this._allNoteGroups;
+  //   const additional = 10;
+  //   const maxResults = this._showNoteGroups.length + additional;
+  //   if (this._allNoteGroups.length > maxResults) {
+  //     this._showNoteGroups = this._allNoteGroups.slice(0, maxResults - 1);
+  //     this._showMoreButton = true;
 
-    } else {
-      this._showNoteGroups = this._allNoteGroups;
-      this._showMoreButton = false;
-    }
+  //   } else {
+  //     this._showNoteGroups = this._allNoteGroups;
+  //     this._showMoreButton = false;
+  //   }
+  // }
   }
+
 }
+

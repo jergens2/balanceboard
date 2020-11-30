@@ -4,7 +4,7 @@
         <app-button-menu [menu]="viewMenu" style="width: 100px;"></app-button-menu>
     </div>
 
-    <div style="margin-top: 10px; margin-bottom: 10px; display:flex;flex-direction: column;"> 
+    <div style="margin-top: 10px; margin-bottom: 10px; display:flex;flex-direction: column;">
         <div style="font-size: 0.9em; color: gray;">
             {{ rangeString }}
         </div>
@@ -12,12 +12,10 @@
             {{ rangeDateString }}
         </div>
     </div>
-    
 
-    <div *ngIf="treemap" class="treemap-container">
-        Treemap container
-        <app-activity-summary-treemap-item [gridItem]="treemap.originalTreemapGridItem"
-        [style.width]="treemap.chartWidth" [style.height]="treemap.chartHeight"></app-activity-summary-treemap-item>
-    </div>
+    <app-activities-summary-treemap [treemap]="treemap"></app-activities-summary-treemap>
+
+
+
 
 </div>

@@ -1,0 +1,25 @@
+.treemap-item.root{
+    display:flex;
+    /* border: 1px solid black; */
+    width: 100%;
+    height: 100%;
+}
+
+.recursive-container{
+    display:grid;
+    width: 100%;
+    height: 100%;
+}
+
+.max-size{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction: column;
+}
+.hover-item{ 
+    border: 1px solid black;
+}
+.hover-item:hover{
+    border: 2px solid blue;
+}

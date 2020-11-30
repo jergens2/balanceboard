@@ -41,10 +41,10 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if(this.notebookEntry){
       let text = this.notebookEntry.textContent;
-      if(text.length > this._initialCharacters ){
-        text = text.substr(0, this._initialCharacters) + "...";
-        this._isMinimized = true;
-      }
+      // if(text.length > this._initialCharacters ){
+      //   text = text.substr(0, this._initialCharacters) + "...";
+      //   this._isMinimized = true;
+      // }
       this._noteText = text;
       this._wordCount = this.notebookEntry.textContent.split(' ').length;
     }

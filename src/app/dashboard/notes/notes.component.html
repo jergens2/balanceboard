@@ -8,7 +8,7 @@
   </div>
   <div *ngIf="!isLoading" style="display:flex;flex-direction: column;">
     <div class="notes-query-bar">
-      <!-- <app-notes-header class="header"></app-notes-query-bar> -->
+      <app-notes-header class="header"></app-notes-header>
     </div>
     <div class="notebook-entries">
 
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div *ngIf="showMoreButton" class="show-more-button">
-      <button class="medium-button" style="margin: 20px;" (click)="onClickShowMore()">Show more</button>
+      <button class="medium-button" style="margin: 20px;" (click)="onClickShowAll()">Show all</button>
     </div>
   </div>
 

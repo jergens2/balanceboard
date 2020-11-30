@@ -6,8 +6,8 @@ import { ADIOccurrence, ADIOccurrenceData } from '../activity-display-item/adi-p
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
 import { totalmem } from 'os';
 import { ActivitySummaryData } from './activity-summary-data.interface';
-import { ADITreemap } from './activity-summary-treemap-item/activity-treemap.class';
 import { ActivityDefinitionTree } from '../api/activity-definition-tree.class';
+import { ADITreemap } from './activities-summary-treemap/activity-treemap.class';
 
 @Component({
   selector: 'app-activities-summary',

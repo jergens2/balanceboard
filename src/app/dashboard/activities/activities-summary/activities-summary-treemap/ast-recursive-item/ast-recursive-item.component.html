@@ -1,0 +1,14 @@
+<div *ngIf="hasChildren" class="max-size" [style.background-color]="backgroundColor">
+    <div *ngIf="hasMultipleChildren" class="max-size" style="display:grid;" 
+        [style.grid-template-rows]="gridTemplateRows" [style.grid-template-columns]="gridTemplateColumns">
+        <app-ast-recursive-item *ngFor="let childItem of children" [item]="childItem" class="max-size">
+        </app-ast-recursive-item>
+    </div>
+    <div *ngIf="!hasMultipleChildren" class="max-size">
+        <app-ast-recursive-item [item]="children[0]" class="max-size"></app-ast-recursive-item>
+    </div>
+
+</div>
+<div *ngIf="!hasChildren" class="max-size hover-item" [style.background-color]="backgroundColor" (click)="onClick()">
+
+</div>
