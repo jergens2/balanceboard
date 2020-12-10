@@ -2,12 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ButtonMenu } from '../../../shared/components/button-menu/button-menu.class';
 import { ActivityComponentService } from '../activity-component.service';
 import * as moment from 'moment';
-import { ADIOccurrence, ADIOccurrenceData } from '../activity-display-item/adi-parts/adi-summary/adi-occurrence-data.interface';
 import { ActivityCategoryDefinition } from '../api/activity-category-definition.class';
-import { totalmem } from 'os';
 import { ActivitySummaryData } from './activity-summary-data.interface';
 import { ActivityDefinitionTree } from '../api/activity-definition-tree.class';
 import { ADITreemap } from './activities-summary-treemap/activity-treemap.class';
+import { AppScreenSizeService } from '../../../shared/app-screen-size/app-screen-size.service';
 
 @Component({
   selector: 'app-activities-summary',
@@ -16,7 +15,7 @@ import { ADITreemap } from './activities-summary-treemap/activity-treemap.class'
 })
 export class ActivitiesSummaryComponent implements OnInit {
 
-  constructor(private activityService: ActivityComponentService) { }
+  constructor(private activityService: ActivityComponentService, private screenService: AppScreenSizeService) { }
 
   private _rangeMenu: ButtonMenu;
   private _viewMenu: ButtonMenu;
@@ -35,6 +34,7 @@ export class ActivitiesSummaryComponent implements OnInit {
   public get viewMenu(): ButtonMenu { return this._viewMenu; }
 
   private _treemap: ADITreemap;
+  private _screenWidth: number;
 
   private _activityOccurrences: ActivitySummaryData[];
   public get activityOccurrences(): ActivitySummaryData[] { return this._activityOccurrences; }
@@ -53,8 +53,22 @@ export class ActivitiesSummaryComponent implements OnInit {
     this._viewMenu = new ButtonMenu();
     this._viewMenu.addItem$('List').subscribe(s => this._setView('List'));
     this._viewMenu.addItem$('Tree').subscribe(s => this._setView('Tree'));
-    this._viewMenu.openItem('List');
-    this._rangeMenu.openItem('7');
+    const listItem = this._viewMenu.menuItems.find(item => item.label === 'List');
+    const rangeItem = this._rangeMenu.menuItems.find(item => item.label === '7');
+    this._viewMenu.openItemClicked(listItem);
+    this._rangeMenu.openItemClicked(rangeItem);
+
+    this._screenWidth = this.screenService.appScreenSize.width;
+    this.screenService.appScreenSize$.subscribe(change => {
+      this._screenWidth = change.width;
+      if (this._treemap) {
+        const diff = Math.abs(this._treemap.chartWidth - this._screenWidth);
+        if (diff > 50) {
+          this._recalculate();
+        }
+      }
+    });
+    this._recalculate();
   }
 
   private _setView(view: 'List' | 'Tree') {
@@ -75,51 +89,8 @@ export class ActivitiesSummaryComponent implements OnInit {
     // console.log("***************************************_recalculate()\n\n");
     const rangeStart = moment().subtract(this._range, 'days').startOf('day');
     const rangeEnd = moment().endOf('day');
-    const currentDateYYYYMMDD: string = moment(rangeStart).format('YYYY-MM-DD');
-    const finalDateYYYYMMDD: string = moment(rangeEnd).format('YYYY-MM-DD');
     this._rangeDateString = moment(rangeStart).format('MMMM Do, YYYY') + ' to ' + moment(rangeEnd).format('MMMM Do, YYYY');
-    const tree = this.activityService.activityTree;
-    const analyzer = this.activityService.summarizer.analyzer;
-    const occurrences = analyzer.getOccurrences(currentDateYYYYMMDD, finalDateYYYYMMDD);
-
-    const sumTotalMs: number = analyzer.getSumTotalMs(currentDateYYYYMMDD, finalDateYYYYMMDD);
-    const summaryData: ActivitySummaryData[] = analyzer.getSummaryItems(currentDateYYYYMMDD, finalDateYYYYMMDD);
-
-    let totalMs: number = 0;
-    occurrences.forEach(occ => {
-      totalMs += occ.totalMs;
-    });
-
-    /**
-     * 
-          activity: ActivityCategoryDefinition;
-          occurrences: ADIOccurrence[];
-          totalFamilyMs: number;
-          totalItemMs: number;
-          displayDuration: string;
-          msPerOccurrence: number;
-          percentOfTotal: number;
-          percentOfParent: number;
-          hasParent: boolean;
-          childData: ActivitySummaryData[];
-     */
-    // this._activityOccurrences = occurrences.map(item => {
-    //     const percentOfTotal = (item.totalMs / totalMs) * 100;
-    //     return {
-    //       activity: tree.findActivityByTreeId(item.activityTreeId),
-    //       occurrences: item.occurrences,
-    //       totalFamilyMs: item.totalMs,
-    //       totalItemMs: item.totalMs,
-    //       msPerOccurrence: item.msPerOccurrence,
-    //       displayDuration: (item.totalMs / (1000 * 60 * 60)).toFixed(1) + ' hrs',
-    //       percentOfTotal: percentOfTotal,
-
-    //     };
-    //   });
-
-
     this._buildTreemap();
-    // console.log("_recalculate() complete")
   }
 
   private _buildTreemap() {
@@ -128,17 +99,20 @@ export class ActivitiesSummaryComponent implements OnInit {
 
     const occurrenceData = this.activityService.summarizer.analyzer.getOccurrences(startDateYYYYMMDD, endDateYYYYMMDD);
     const totalChartMs = this.activityService.summarizer.analyzer.getSumTotalMs(startDateYYYYMMDD, endDateYYYYMMDD);
-    const width = 600;
-    const height = 400;
+
+    let width = this._screenWidth - 40;
+    let height = width;
+    if (this._screenWidth > 775) {
+      width = this._screenWidth - 260;
+      height = width * 0.6;
+    }
+    if (height > 620) {
+      height = 620;
+    }
     const activityTree: ActivityDefinitionTree = this.activityService.activityTree;
-
     const rootActivities = activityTree.rootActivities;
-
-    // console.log("  _buildTreemap()")
     const treemap = new ADITreemap(rootActivities, width, height, occurrenceData, totalChartMs);
     this._treemap = treemap;
-    // console.log("   buildTreemap() complete")
-    
   }
 
   public onClickActivity(activity: ActivityCategoryDefinition) {

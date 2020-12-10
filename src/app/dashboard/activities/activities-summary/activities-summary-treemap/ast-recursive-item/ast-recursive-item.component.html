@@ -9,6 +9,10 @@
     </div>
 
 </div>
-<div *ngIf="!hasChildren" class="max-size hover-item" [style.background-color]="backgroundColor" (click)="onClick()">
-
+<div *ngIf="!hasChildren" class="max-size hover-item no-select font-family-ubuntu" [style.font-size]="fontSize" [style.background-color]="backgroundColor" (mouseover)="onMouseOver()" (click)="onClick()">
+    <div *ngIf="showName" >{{ name }} </div>
+    <div *ngIf="showVal">
+        <span *ngIf="true">{{ percentOfTotal.toFixed(1) }} %</span>
+        <span *ngIf="false"></span>
+    </div>
 </div>

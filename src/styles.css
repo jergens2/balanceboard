@@ -96,6 +96,34 @@
   -o-background-size: cover;
   background-size: cover;
 }
+.background-image-11{
+  background: url("./assets/background-images/bg11.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-12{
+  background: url("./assets/background-images/bg12.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-13{
+  background: url("./assets/background-images/bg13.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+.background-image-14{
+  background: url("./assets/background-images/bg14.JPG") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 
 
 .no-select {

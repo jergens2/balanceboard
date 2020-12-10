@@ -1,4 +1,22 @@
-<div class="treemap-root">
-    <!-- treemap-root -->
-    <app-ast-recursive-item [item]="originalItem" [style.width]="ogWidth" [style.height]="ogHeight"></app-ast-recursive-item>
+<div class="treemap-container">
+    <!-- <div class="display-center">
+        <div *ngIf="displayItem" style="display:flex;flex-direction: column;">
+            <div style="display:flex;flex-direction: row;">
+                <div class="color-circle" [style.background-color]="displayItemColor"></div>{{ displayItemName }}
+            </div>
+            <div>
+                Total hours: {{ displayItemTotalHours }}
+            </div>
+            <div>
+                Percent of total: {{ displayItemPercentOfTotal }}
+            </div>
+            <div>
+                Percent of parent ({{displayItemParentName }}): {{ displayItemPercentOfParent }}
+            </div>
+        </div>
+    </div> -->
+    <div class="treemap-root">
+        <app-ast-recursive-item [item]="originalItem" [style.width]="ogWidth" [style.height]="ogHeight" style="border: 1px solid black;">
+        </app-ast-recursive-item>
+    </div>
 </div>

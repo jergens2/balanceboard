@@ -107,14 +107,14 @@ export class ActivityDefinitionTree {
         for (const activity of allActivities) {
             activity.removeChildren();
         }
-        const rootActivities: ActivityCategoryDefinition[] = [];
+        let rootActivities: ActivityCategoryDefinition[] = [];
         for (const activity of allActivities) {
             if (activity.parentTreeId.endsWith('_TOP_LEVEL')) {
                 activity.setFullPath('/' + activity.name + '/');
                 rootActivities.push(activity);
             }
         }
-        rootActivities.sort((a1, a2) => {
+        rootActivities = rootActivities.sort((a1, a2) => {
             if (a1.name > a2.name) { return 1; }
             if (a1.name < a2.name) { return -1; }
             return 0;

@@ -1,3 +1,9 @@
+.treemap-container{
+    display:flex;
+    flex-direction: column;
+    height: 150px;
+}
+
 .treemap-root{
     /* background-color: pink; */
     display:flex;
@@ -6,4 +12,21 @@
     width: 100%;
     height: 100%;
     padding: 20px;
+
+
+}
+
+.display-center{
+    height: 100px;
+    min-height: 100px;
+    /* min-height: 150px; */
+}
+
+.color-circle{
+    min-width: 15px;
+    min-height: 15px;
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    margin-right: 15px;
 }

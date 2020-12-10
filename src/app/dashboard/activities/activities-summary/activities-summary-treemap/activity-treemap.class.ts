@@ -1,8 +1,6 @@
 import { ActivityDefinitionTree } from '../../api/activity-definition-tree.class';
 import { ADIOccurrenceData } from '../../activity-display-item/adi-parts/adi-summary/adi-occurrence-data.interface';
-import { ActivityTreemapDataItemKlass } from './activity-treemap-data-item.class';
 import { ActivityCategoryDefinition } from '../../api/activity-category-definition.class';
-import { ActivityTreemapGridItem } from './activity-treemap-grid-item.class';
 import { ActivityTreemapDataItem } from './activity-treemap-data-item.interface';
 
 export class ADITreemap {
@@ -14,13 +12,12 @@ export class ADITreemap {
     private _chartRatio: number;
 
     private _activityOccurrenceData: ADIOccurrenceData[];
-    private _rootTreeDataItems: ActivityTreemapDataItemKlass[];
     private _rootGridTemplateRows: string;
     private _rootGridTemplateColumns: string;
 
     private _originalTreemapGridItem: ActivityTreemapDataItem;
+    private _thresholdPercent: number = 35;
 
-    public get rootTreeDataItems(): ActivityTreemapDataItemKlass[] { return this._rootTreeDataItems; }
 
     public get rootGridTemplateRows(): string { return this._rootGridTemplateRows; }
     public get rootGridTemplateColumns(): string { return this._rootGridTemplateColumns; }
@@ -34,7 +31,8 @@ export class ADITreemap {
     public get chartWidth(): number { return this._chartWidth; }
     public get chartHeight(): number { return this._chartHeight; }
 
-    public get thresholdPercent(): number { return 20; }
+    
+    public get thresholdPercent(): number { return this._thresholdPercent; }
 
 
     /**
@@ -52,6 +50,22 @@ export class ADITreemap {
         this._calculateTreemapItems2();
     }
 
+    public decrementThreshold(){
+        if(this._thresholdPercent > 5){
+            this._thresholdPercent-= 5;
+        }else{
+            this._thresholdPercent = 1;
+        }
+        this._calculateTreemapItems2();
+    }
+    public incrementThreshold(){
+        if(this._thresholdPercent < 95){
+            this._thresholdPercent += 5;
+        }else{
+            this._thresholdPercent = 99;
+        }
+        this._calculateTreemapItems2();
+    }
 
     private _calculateTreemapItems2() {
         // console.log("Calculating treemapitems2");
