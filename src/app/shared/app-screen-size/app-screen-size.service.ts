@@ -8,7 +8,7 @@ import { AppScreenSizeLabel } from './app-screen-size-label.enum';
 })
 export class AppScreenSizeService {
 
-  constructor() { }
+  constructor() {console.log("screen size service init") }
 
 
   private _appScreenSize$: BehaviorSubject<AppScreenSize> = new BehaviorSubject(new AppScreenSize(window.innerWidth, window.innerHeight));

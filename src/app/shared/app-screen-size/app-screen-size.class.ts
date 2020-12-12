@@ -9,6 +9,7 @@ export class AppScreenSize {
 
     public get width(): number { return this._width; }
     public get height(): number { return this._height; }
+    public get area(): number { return this.width * this.height; }
     public get label(): AppScreenSizeLabel { return this._label; }
     public get ngClass(): string[] { return this._ngClass; }
 

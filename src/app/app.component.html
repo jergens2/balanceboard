@@ -1,2 +1,4 @@
-<app-authentication *ngIf="!isAuthenticated"></app-authentication>
-<app-app-container *ngIf="isAuthenticated" class="app-container"></app-app-container>
+<div class="app-root-background" [ngClass]="backgroundNgClass">
+    <app-authentication *ngIf="!isAuthenticated"></app-authentication>
+    <app-app-container *ngIf="isAuthenticated" class="app-container"></app-app-container>
+</div>

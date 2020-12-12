@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
   private _inactivityStartTime: moment.Moment;
 
   public get isAuthenticated(): boolean { return this._isAuthenticated; }
+  public get backgroundNgClass(): any { return this.bgService.ngClass; }
 
   constructor(
     private authService: AuthenticationService,
