@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { faKey, faUser, faUnlock, faSpinner, faSignInAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { Subject, Observable, BehaviorSubject, Subscription } from 'rxjs';
 import { BackgroundImageService } from '../shared/background-image.service';
+import { AppScreenSizeService } from '../shared/app-screen-size/app-screen-size.service';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   public readonly faSignInAlt = faSignInAlt;
   public readonly faUserPlus = faUserPlus;
 
-  constructor(private authService: AuthenticationService, private bgService: BackgroundImageService) { }
+  constructor(private authService: AuthenticationService, private bgService: BackgroundImageService, private screenService: AppScreenSizeService) { }
 
 
 
@@ -38,8 +39,13 @@ export class AuthenticationComponent implements OnInit, OnDestroy {
   public get actionIsLockScreen(): boolean { return this._action === 'LOCK_SCREEN'; }
   public get isLoading(): boolean { return this._action === 'LOADING'; }
 
+  public get screenWidth(): number { return this.screenService.appScreenSize.width; }
+  public get screenHeight(): number { return this.screenService.appScreenSize.height; }
+  public get widthPx(): string { return this.screenWidth + 'px'; }
+  public get heightPx(): string { return this.screenHeight + 'px'; }
 
   ngOnInit() {
+    
     this._reload();
 
     // console.log('Action: ', this._action)
