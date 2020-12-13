@@ -1,10 +1,10 @@
 .lock-screen-circle{
-    min-width: 360px;
-    min-height: 360px;
+    min-width: 300px;
+    min-height: 300px;
     /* width: 100%; */
     background-color: rgba(255, 255, 255, 0.7);
     border: 2px solid rgb(123, 169, 255);
-    border-radius: 360px;
+    border-radius: 300px;
     margin-top: 25px;
 
     display:flex;
@@ -24,30 +24,36 @@
 
 
 .icon-button{
-    height: 50px;
-    width: 50px;
+    /* height: 65x;
+    width: 65px; */
     display:flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    border-radius: 50px;
+    /* border-radius: 65px; */
     border: 1px solid rgba(255, 255, 255, 0);
     color: rgba(57, 81, 124, 0.8);
 }
-.icon-button:hover{
-    color: rgb(0, 42, 121);
-    border: 1px solid rgb(0, 42, 121);
-    cursor: pointer;
-    background-color: rgba(129, 173, 255, 0.4);
-}
+
 
 .unlock-container{
     display:flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-top: 25px;
-    width: 50px;
-    height: 50px;
+    margin-top: 15px;
+    width: 80px;
+    height: 80px;
+    border-radius: 80px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     font-size: 1.5em;
+}
+.unlock-container:hover{
+    color: rgb(0, 42, 121);
+    border: 1px solid rgb(0, 42, 121);
+    cursor: pointer;
+    background-color: rgba(129, 173, 255, 0.4);
+}
+.unlock-container:hover > .icon-button{
+    color: rgb(0, 42, 121);
 }

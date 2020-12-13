@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, Input, EventEmitter, HostListener, OnDestroy } from '@angular/core';
-import { faTimes, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faArrowLeft, faArrowRight, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { AuthenticationService } from '../authentication.service';
 import { Observable, Subscription, timer } from 'rxjs';
 import * as moment from 'moment';
@@ -20,6 +20,7 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
   public faTimes = faTimes;
   public faArrowLeft = faArrowLeft;
   public faArrowRight = faArrowRight;
+  public faCheck = faCheck;
 
   private _pinAction: 'UNLOCK' | 'CREATE' | 'CONFIRM_CREATE' = 'UNLOCK';
   private _showConfirmButton: boolean = false;
@@ -58,6 +59,7 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
       return 'Confirm your PIN';
     }
   }
+  public get pinActionIsCreate(): boolean { return this.pinAction !== 'UNLOCK'; }
 
   private _keySub: Subscription = new Subscription();
 
@@ -94,6 +96,15 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
     if (this._pinItems.length < 8) {
       this._pinItems.push(num);
     }
+    this._updateActionButtons()
+  }
+  public onClickDeletePinItem() {
+    this._pinItems.pop();
+    this._updateActionButtons();
+  }
+
+
+  private _updateActionButtons(){
     if (this._pinItems.length >= 4) {
       if (this._pinAction === 'CREATE') {
         this._showConfirmButton = true;
@@ -102,10 +113,6 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
       }
     }
   }
-  public onClickDeletePinItem() {
-    this._pinItems.pop();
-  }
-
 
   public onClickUnlock() {
     this._formMessage = "";
@@ -126,6 +133,8 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
       } else {
         this._formMessage = 'PINs do not match, try again'
         this._pinAction = 'CREATE';
+        this._showLoadingButton = false;
+        this._showConfirmButton = false;
       }
     }
   }
@@ -196,6 +205,7 @@ export class PinPadUnlockComponent implements OnInit, OnDestroy {
     this._showConfirmButton = false;
     this._showLoadingButton = false;
     this._showUnlockButton = false;
+    this._formMessage = 'Confirm your PIN';
   }
 
 }

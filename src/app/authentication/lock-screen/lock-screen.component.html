@@ -5,9 +5,9 @@
     <div class="clock">
         {{ clock }}
     </div>
-    <div class="unlock-container"  (mouseenter)="onMouseEnterLock()" (mouseleave)="onMouseLeaveLock()">
+    <div class="unlock-container"  (mouseenter)="onMouseEnterLock()" (mouseleave)="onMouseLeaveLock()" (click)="onClickUnlock()">
         <fa-icon [icon]="faLock" class="icon-button" *ngIf="!mouseIsOverLock"></fa-icon>
-        <fa-icon [icon]="faLockOpen" class="icon-button" *ngIf="mouseIsOverLock" (click)="onClickUnlock()"></fa-icon>
+        <fa-icon [icon]="faLockOpen" class="icon-button" *ngIf="mouseIsOverLock" ></fa-icon>
     </div>
 </div>
 

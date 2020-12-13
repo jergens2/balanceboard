@@ -1,7 +1,7 @@
 .authentication-root{
     width: 100%;
     height: 100vh;
-    min-height: 600px;
+    /* min-height: 600px; */
     /* background-color: rgb(253, 253, 253); */
     display:flex;
     flex-direction: column;
@@ -11,24 +11,38 @@
 
 .authentication-body{
     /* min-height: 600px; */
-    padding: 25px;
-    min-width: 360px;
+    /* padding: 25px; */
+    min-width: 320px;
 
-    max-width: 600px;
+    /* max-width: 600px; */
+    width:100%;
+    height:100%;
     border-radius: 25px;    /* border: 1px solid rgb(197, 197, 197); */
     text-align: center;
-    border:1px solid rgba(255, 255, 255, 0);
+    /* border:1px solid rgba(255, 255, 255, 0); */
 
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     display:flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 
 }
+
+
+
+.action-container{
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 20px;
+    margin: 20px;
+    border-radius: 5px;
+}
+
 .transparent{
     background-color: rgba(255, 255, 255, 0);
 }
+
 .authentication-focused{
     /* border:1px solid rgb(0, 58, 134); */
     /* background-color: rgba(255, 255, 255, 0.2); */
@@ -38,9 +52,12 @@
 
 
 .title{
-    font-size:2em;
+    font-size:1.8em;
     font-weight: 500;
-    color: rgb(0, 47, 134);
+    color: rgb(25, 72, 160);
+    /* background-color: rgba(255, 255, 255, 0.3); */
+    padding: 10px;
+    border-radius: 3px;
 }
 
 .login-button{

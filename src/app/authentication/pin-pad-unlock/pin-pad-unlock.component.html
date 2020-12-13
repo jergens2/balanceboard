@@ -1,6 +1,20 @@
-<div class="pin-pad-root" >
+<div class="pin-pad-root" [ngClass]="{'transparent':pinActionIsCreate }">
     <div class="message">
-        {{ pinActionMessage }}
+        <span *ngIf="!formMessage">{{ pinActionMessage }}</span>
+        <span *ngIf="formMessage">{{ formMessage }} </span>
+    </div>
+    <div class="pin-display-area" style="margin-bottom: 10px;">
+        <div style="width: 35px"></div>
+        <div class="pin-display">
+            <div class="pin-item" *ngFor="let item of pinItems">
+                <div class="inner-pin-item"></div>
+            </div>
+        </div>
+        <div style="width: 30px;margin-left: 5px;">
+            <button *ngIf="pinItems.length > 0" class="delete-button" (click)="onClickDeletePinItem()">
+                <fa-icon [icon]="faTimes"></fa-icon>
+            </button>
+        </div>
     </div>
     <div class="pin-buttons" style="margin-bottom: 10px;">
         <div class="button-container"><button class="pin-pad-button" (click)="onClickButton(1)">1</button></div>
@@ -12,33 +26,27 @@
         <div class="button-container"><button class="pin-pad-button" (click)="onClickButton(7)">7</button></div>
         <div class="button-container"><button class="pin-pad-button" (click)="onClickButton(8)">8</button></div>
         <div class="button-container"><button class="pin-pad-button" (click)="onClickButton(9)">9</button></div>
-        <div class="button-container" style="grid-column: 2 / span 1;"><button class="pin-pad-button"  (click)="onClickButton(0)">0</button></div>
-    </div>
-    <div class="pin-display-area" style="margin-bottom: 10px;">
-        <div style="width: 35px"></div>
-        <div class="pin-display">
-            <div class="pin-item" *ngFor="let item of pinItems">
-                <div class="inner-pin-item"></div>
-            </div>
-        </div>
-        <div style="width: 30px;margin-right: 5px;">
-            <button *ngIf="pinItems.length > 0" class="delete-button" (click)="onClickDeletePinItem()"><fa-icon [icon]="faTimes"></fa-icon></button>
+        <div class="button-container" style="grid-column: 2 / span 1;"><button class="pin-pad-button"
+                (click)="onClickButton(0)">0</button></div>
+        <div class="button-container" style="grid-column: 3 / span 1;">
+            <button class="pin-pad-unlock-button" (click)="onClickUnlock()" *ngIf="showUnlockButton" tabindex="0">
+                <fa-icon [icon]="faCheck" style="color: rgb(70, 145, 0);"></fa-icon>
+            </button>
+            <button class="pin-pad-unlock-button" *ngIf="showLoadingButton">
+                <app-spinner style="width: 30px; height: 30px;"></app-spinner>
+            </button>
         </div>
     </div>
+
     <div class="controls-area">
         <button class="small-button discard-button" (click)="onClickClose()" tabindex="0">
             <fa-icon [icon]="faArrowLeft"></fa-icon>
         </button>
-
+        <div style="flex-grow: 2;">
+            <div style="width: 1px;"></div>
+        </div>
         <button class="large-button save-button" (click)="onClickConfirmPin()" *ngIf="showConfirmButton" tabindex="0">
             Confirm <fa-icon [icon]="faArrowRight"></fa-icon>
         </button>
-        <button class="large-button save-button" (click)="onClickUnlock()" *ngIf="showUnlockButton" tabindex="0">
-            <fa-icon [icon]="faArrowRight"></fa-icon>
-        </button>
-        <button class="large-button save-button" *ngIf="showLoadingButton" >
-            <app-spinner style="width: 30px; height: 30px;"></app-spinner>
-        </button>
     </div>
-    <div style="margin:5px;" *ngIf="formMessage">{{ formMessage }}</div>
 </div>
