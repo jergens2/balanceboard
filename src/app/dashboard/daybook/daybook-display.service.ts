@@ -21,6 +21,7 @@ import { DaybookUpdateAction } from './display-manager/daybook-update-action.enu
 import { DaybookDayItemController } from './daybook-day-item/daybook-day-item-controller';
 import { DaybookTimeScheduleActiveItem } from './display-manager/daybook-time-schedule/daybook-time-schedule-active-item.class';
 import { SleepDisplayProfile } from './widgets/sleep-profile-widget/sleep-display-profile.class';
+import { ClockService } from '../../shared/clock/clock.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +32,11 @@ export class DaybookDisplayService {
     private activitiesService: ActivityHttpService,
     private toolBoxService: ToolboxService,
     private sleepService: SleepService,
-    private httpService: DaybookHttpService) { }
+    private httpService: DaybookHttpService,
+    private clockService: ClockService) { }
 
   private _widgetChanged$: BehaviorSubject<DaybookWidgetType> = new BehaviorSubject(DaybookWidgetType.TIMELOG);
 
-  private _clock$: BehaviorSubject<moment.Moment>;
   private _displayUpdated$: Subject<DaybookUpdateAction> = new Subject();
 
   private _daybookSchedule: DaybookTimeSchedule;
@@ -50,9 +51,9 @@ export class DaybookDisplayService {
   private _clockSubs: Subscription[] = [];
   private _todaySub: Subscription = new Subscription();
 
-  public get todayYYYYMMDD(): string { return this.clock.format('YYYY-MM-DD'); }
-  public get clock(): moment.Moment { return this._clock$.getValue(); }
-  public get clock$(): Observable<moment.Moment> { return this._clock$.asObservable(); }
+  public get todayYYYYMMDD(): string { return this.currentTime.format('YYYY-MM-DD'); }
+  public get currentTime(): moment.Moment { return this.clockService.currentTime; }
+  public get currentTime$(): Observable<moment.Moment> { return this.clockService.currentTime$; }
   public get daybookController(): DaybookDayItemController { return this._daybookController; }
   public get activeDateYYYYMMDD(): string { return this.daybookController.dateYYYYMMDD; }
   public get widgetChanged$(): Observable<DaybookWidgetType> { return this._widgetChanged$.asObservable(); }
@@ -122,14 +123,14 @@ export class DaybookDisplayService {
 
   public reinitiate() {
     // console.log('   * REINITIATING DAYBOOK DISPLAY SERVICE')
-    this._daybookDisplayManager = new DaybookDisplayManager(this.toolBoxService, this.activitiesService);
+    this._daybookDisplayManager = new DaybookDisplayManager(this.toolBoxService, this.activitiesService, this.clockService.clock);
     this._closedSub.unsubscribe();
     this._closedSub = this._daybookDisplayManager.closed$.subscribe(closed => {
       this._currentlyDrawing = false;
       this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
     });
-    this._startClock();
     this._updateDisplay(this.todayYYYYMMDD, DaybookUpdateAction.INITIAL);
+    this._subscribeToClock();
   }
 
   public saveChanges$(action: DaybookUpdateAction): Observable<boolean> {
@@ -152,7 +153,6 @@ export class DaybookDisplayService {
       doUpdate = false;
     }
     if (doUpdate) {
-      // console.log('******** DaybookDisplayService._updateDisplay()' + moment().format('hh:mm a'));
       this._drawTLE$.next(null);
       const dayItems: DaybookDayItem[] = this.httpService.dayItems;
       const prevDateYYYYMMDD: string = moment(dateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
@@ -162,13 +162,12 @@ export class DaybookDisplayService {
         dayItems.find(item => item.dateYYYYMMDD === dateYYYYMMDD),
         dayItems.find(item => item.dateYYYYMMDD === nextDateYYYYMMDD),
       ];
-      // console.log('   * DDS._updateDisplay() constructing controller')
-      const controller: DaybookDayItemController = new DaybookDayItemController(dateYYYYMMDD, controllerItems);
+      const controller: DaybookDayItemController = new DaybookDayItemController(dateYYYYMMDD, controllerItems, this.clockService.clock);
       // console.log('   * DDS._updateDisplay() getting sleep cycle')
       const sleepManager = this.sleepService.sleepManager;
       const sleepCycle = this.sleepService.sleepManager.getSleepCycleForDate(dateYYYYMMDD, dayItems);
 
-      const scheduleBuilder: DaybookTimeScheduleBuilder = new DaybookTimeScheduleBuilder();
+      const scheduleBuilder: DaybookTimeScheduleBuilder = new DaybookTimeScheduleBuilder(this.clockService.clock);
       // console.log('   * DDS._updateDisplay() DaybookTimeScheduleBuilder built.  constructing schedule now.')
       const schedule: DaybookTimeSchedule = scheduleBuilder.buildDaybookSchedule(dateYYYYMMDD, controller.controllerStartTime,
         controller.controllerEndTime, sleepCycle, controller, drawnItem);
@@ -186,33 +185,32 @@ export class DaybookDisplayService {
 
 
 
-  private _startClock() {
-    // console.log('   * DDS._startClock()')
-    const msToNextMinute = moment().startOf('minute').add(1, 'minute').diff(moment(), 'milliseconds');
-    let msToNextHttpUpdate = moment().startOf('minute').add(45, 'seconds').diff(moment(), 'milliseconds');
-    if (msToNextHttpUpdate < 0) {
-      msToNextHttpUpdate = moment().startOf('minute').add(105, 'seconds').diff(moment(), 'milliseconds');
-    }
-    const msToMidnight = moment().startOf('day').add(24, 'hours').add(1, 'second').diff(moment(), 'milliseconds');
-    this._clock$ = new BehaviorSubject(moment());
+  private _subscribeToClock() {
+    const clock = this.clockService.clock;    
     this._clockSubs.forEach(s => s.unsubscribe());
     this._clockSubs = [
-      timer(msToNextMinute, 60000).subscribe(tick => {
-        this._clock$.next(moment());
+      clock.everyClockMinute$.subscribe(tick => {
         if (this.todayYYYYMMDD === this.activeDateYYYYMMDD) {
           this._updateDisplay(this.todayYYYYMMDD, DaybookUpdateAction.CLOCK_MINUTE);
         }
       }),
-      timer(msToMidnight, (1000 * 60 * 60 * 24)).subscribe(tick => {
-        const newDate = moment().format('YYYY-MM-DD');
+      clock.everyClockDay$.subscribe(tick => {
+        const newDate = moment(this.clockService.currentTime).format('YYYY-MM-DD');
         const prevDate = moment(newDate).subtract(1, 'days').format('YYYY-MM-DD');
         if (this.activeDateYYYYMMDD === prevDate) {
-          this.changeCalendarDate$(moment().format('YYYY-MM-DD'));
+          this.changeCalendarDate$(moment(this.clockService.currentTime).format('YYYY-MM-DD'));
         }
       }),
-      timer(msToNextHttpUpdate, 20000).subscribe(tick => {
-        this.httpService.getUpdate$(this.activeDateYYYYMMDD);
+      clock.everyClockSecond$.subscribe(tick => {
+        const second = clock.currentTime.second();
+        if(second === 15 || second === 45){
+          this.httpService.getUpdate$(this.activeDateYYYYMMDD);
+        }
+        this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
       }),
+
+
+
     ];
   }
 

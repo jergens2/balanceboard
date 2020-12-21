@@ -11,18 +11,6 @@ import { ActivityInputDropdownComponent } from "./activity-input-dropdown/activi
 import { RecurringTaskFormComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/recurring-task-form.component";
 import { RtRepititionsComponent } from "./document-definitions/recurring-task-definition/recurring-task-form/rt-repititions/rt-repititions.component";
 import { BrowseActivityComponent } from './activity-input-dropdown/browse-activity/browse-activity.component';
-import { DataEntryItemInputComponent } from './z_data-entry-item-input/data-entry-item-input.component';
-import { TimelogEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/timelog-entry-input/timelog-entry-input.component';
-import { FinancialEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/financial-entry-input/financial-entry-input.component';
-import { ActionItemEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/action-item-entry-input/action-item-entry-input.component';
-import { ReminderEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/reminder-entry-input/reminder-entry-input.component';
-import { ScheduledEventInputComponent } from './z_data-entry-item-input/data-entry-input-components/scheduled-event-input/scheduled-event-input.component';
-import { DietaryEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/dietary-entry-input/dietary-entry-input.component';
-import { FeelingEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/feeling-entry-input/feeling-entry-input.component';
-import { WeightlogEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/weightlog-entry-input/weightlog-entry-input.component';
-import { CountEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/count-entry-input/count-entry-input.component';
-import { RuleConditionEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/rule-condition-entry-input/rule-condition-entry-input.component';
-import { HealthSymptomEntryInputComponent } from './z_data-entry-item-input/data-entry-input-components/health-symptom-entry-input/health-symptom-entry-input.component';
 
 import { ColorPickerModule } from "ngx-color-picker";
 import { SpinnerComponent } from './components/spinner/spinner.component';
@@ -40,7 +28,7 @@ import { TvWeekViewComponent } from './time-views/tv-week-view/tv-week-view.comp
 import { TvSpecifyViewComponent } from './time-views/tv-specify-view/tv-specify-view.component';
 import { ColorPickerComponent } from "./color-picker/color-picker.component";
 import { ActivitySearchComponent } from './activity-search/activity-search.component';
-import { ClockComponent } from './components/clock/clock.component';
+import { ClockComponent } from './clock/clock.component';
 
 
 
@@ -62,19 +50,6 @@ import { ClockComponent } from './components/clock/clock.component';
         RtRepititionsComponent,
 
         BrowseActivityComponent,
-
-        DataEntryItemInputComponent,
-        TimelogEntryInputComponent,
-        FinancialEntryInputComponent,
-        ActionItemEntryInputComponent,
-        ReminderEntryInputComponent,
-        ScheduledEventInputComponent,
-        DietaryEntryInputComponent,
-        FeelingEntryInputComponent,
-        WeightlogEntryInputComponent,
-        CountEntryInputComponent,
-        RuleConditionEntryInputComponent,
-        HealthSymptomEntryInputComponent,
         DropdownListComponent,
         TimeInputComponent,
         DeleteConfirmButtonComponent,
@@ -96,12 +71,9 @@ import { ClockComponent } from './components/clock/clock.component';
         CommonModule,
         ColorPickerComponent,
         
-
-
         RecurringTaskFormComponent,
         ActivityInputDropdownComponent,
         ActivitySearchComponent,
-        DataEntryItemInputComponent,
         DeleteConfirmButtonComponent,
 
         DropdownListComponent,

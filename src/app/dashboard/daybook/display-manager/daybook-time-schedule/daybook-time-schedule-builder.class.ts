@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import { DaybookTimeScheduleAvailableItem } from './daybook-time-schedule-available-item.class';
 import { DaybookDayItemController } from '../../daybook-day-item/daybook-day-item-controller';
 import { DTSTimeLimiterSetter } from './dts-time-limiter-setter.class';
+import { Clock } from '../../../../shared/clock/clock.class';
 
 
 
@@ -16,8 +17,9 @@ export class DaybookTimeScheduleBuilder {
      * The purpose of this class is to export all code related to the construction of the DaybookTimeSchedule,
      * so that the DaybookTimeSchedule class can be focused on the actual behavior and properties.
      */
-    constructor() { }
+    constructor(clock: Clock) {this._clock = clock; }
 
+    private _clock: Clock;
     private _dateYYYYMMDD: string;
     private _sleepCycleBuilder: SleepCycleScheduleItemsBuilder;
     private _daybookController: DaybookDayItemController;
@@ -203,7 +205,8 @@ export class DaybookTimeScheduleBuilder {
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(45, 'hours'), typeStructure),
             new TimelogDelineator(moment(this._dateYYYYMMDD).startOf('day').add(48, 'hours'), typeStructure),
         ];
-        const nowDelineator: TimelogDelineator = new TimelogDelineator(moment().startOf('minute'), TimelogDelineatorType.NOW);
+        const now = this._clock.currentTime;
+        const nowDelineator: TimelogDelineator = new TimelogDelineator(moment(now).startOf('minute'), TimelogDelineatorType.NOW);
         const savedDelineators: TimelogDelineator[] = this._daybookController.savedDelineatorTimes.map(item => {
             return new TimelogDelineator(item, TimelogDelineatorType.SAVED_DELINEATOR);
         });

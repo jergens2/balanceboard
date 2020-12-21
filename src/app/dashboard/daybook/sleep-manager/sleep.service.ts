@@ -11,6 +11,7 @@ import { DaybookDayItem } from '../daybook-day-item/daybook-day-item.class';
 import { UserAccountProfileService } from '../../user-account-profile/user-account-profile.service';
 import { UAPAppConfiguration } from '../../user-account-profile/api/uap-app-configuraiton.interface';
 import { SleepCycleData } from './sleep-cycle/sleep-cycle-data.class';
+import { ClockService } from '../../../shared/clock/clock.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,14 +33,15 @@ export class SleepService {
    * as well as having a property of SleepManager  
    */
   constructor(private httpClient: HttpClient, private daybookHTTPService: DaybookHttpService,
-    private accountService: UserAccountProfileService) { }
+    private accountService: UserAccountProfileService, private clockService: ClockService) { }
 
   private _userId: string;
   private _sleepManager: SleepManager;
   private _sleepCycleData: SleepCycleData;
+
   public get sleepManager(): SleepManager { return this._sleepManager; }
-  public get clock(): moment.Moment { return this.sleepManager.clock; }
-  public get clock$(): Observable<moment.Moment> { return this.sleepManager.clock$; }
+  public get currentTime(): moment.Moment { return this.sleepManager.currentTime; }
+  public get currentTime$(): Observable<moment.Moment> { return this.sleepManager.currentTime$; }
   public get sleepData(): SleepCycleData { return this._sleepCycleData; }
   public get hasPrompt(): boolean { return this.sleepData.hasPrompt; }
 
@@ -67,11 +69,11 @@ export class SleepService {
     this._rebuildManager();
   }
 
-  private _rebuildManager(){
+  private _rebuildManager() {
     const sleepData: SleepCycleData = this.sleepData;
     const dayItems: DaybookDayItem[] = this.daybookHTTPService.dayItems;
     const appConfig: UAPAppConfiguration = this.accountService.appConfig;
-    this._sleepManager = new SleepManager(sleepData, dayItems, appConfig);
+    this._sleepManager = new SleepManager(sleepData, dayItems, appConfig, this.clockService.clock);
   }
 
   private _step2loadSleepCycleAsyncData$(): Observable<boolean> {
@@ -93,7 +95,7 @@ export class SleepService {
         }
       })).subscribe({
         next: (data: SleepCycleHTTPData) => {
-          this._sleepCycleData = new SleepCycleData(data);
+          this._sleepCycleData = new SleepCycleData(data, this.clockService.clock);
           isComplete$.next(true);
         },
         error: e => console.log('Error', e),
@@ -128,7 +130,7 @@ export class SleepService {
     }>(url, sleepProfile).subscribe((response) => {
       if (response.success === true) {
         // console.log("RESPONSE DATA: " , response)
-        this._sleepCycleData = new SleepCycleData(response.successData);
+        this._sleepCycleData = new SleepCycleData(response.successData, this.clockService.clock);
         this._rebuildManager();
       }
       isComplete$.next(true);

@@ -2,9 +2,12 @@ import * as moment from 'moment';
 import { SleepCyclePosition } from './sleep-cycle-position.enum';
 import { SleepCycleHTTPData } from './sleep-cycle-http-data.interface';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Clock } from '../../../../shared/clock/clock.class';
 
 export class SleepCycleData {
-    constructor(data: SleepCycleHTTPData) {
+    constructor(data: SleepCycleHTTPData, clock: Clock) {
+        console.log("Sleep Cycle Data constructor");
+        this._clock = clock;
         if (data) {
             this._dataId = data._id;
             this._userId = data.userId;
@@ -27,6 +30,9 @@ export class SleepCycleData {
             this._nextWakeupTime = moment(this._nextWakeupTimeISO);
 
             this._position$ = new BehaviorSubject(this.getCurrentPosition());
+            this._clock.everyClockMinute$.subscribe(()=>{
+                this._position$.next(this.getCurrentPosition());
+            });
         } else {
             this._position$ = new BehaviorSubject(SleepCyclePosition.ACTIVE);
             this._hasPrompt = true;
@@ -34,6 +40,7 @@ export class SleepCycleData {
         }
     }
 
+    private _clock: Clock;
     private _dataId: string;
     private _userId: string;
     private _previousFallAsleepTimeISO: string;
@@ -106,7 +113,7 @@ export class SleepCycleData {
      * sleep-cycle-position.jpg
      */
     public getCurrentPosition(): SleepCyclePosition {
-        const now: moment.Moment = moment();
+        const now: moment.Moment = moment(this._clock.currentTime);
         const previousWakeupTime = moment(this.previousWakeupTime);
         const nextFallAsleepTime = moment(this.nextFallAsleepTime);
         const nextWakeupTime = moment(this.nextWakeupTime);

@@ -5,6 +5,7 @@ import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/time
 import * as moment from 'moment';
 import { timer } from 'rxjs';
 import { TLEFController } from '../../TLEF-controller.class';
+import { ClockService } from '../../../../../../../shared/clock/clock.service';
 
 @Component({
   selector: 'app-tlef-existing-current',
@@ -13,14 +14,9 @@ import { TLEFController } from '../../TLEF-controller.class';
 })
 export class TlefExistingCurrentComponent implements OnInit {
 
-  constructor(private daybookService: DaybookDisplayService) { }
+  constructor(private daybookService: DaybookDisplayService, private clockService: ClockService) { }
 
   ngOnInit() {
-    this._clock = moment();
-    timer(0, 1000).subscribe((tick)=>{
-      this._clock = moment();
-    });
-
     // this._controller.changesMadeTLE$.subscribe((change)=>{
     //   if(change === null){
     //     this._isEditing = false;
@@ -28,7 +24,6 @@ export class TlefExistingCurrentComponent implements OnInit {
     // });
   }
 
-  private _clock: moment.Moment;
   private _isEditing: boolean = false;
   public get isEditing(): boolean { return this._isEditing; }
 
@@ -39,7 +34,7 @@ export class TlefExistingCurrentComponent implements OnInit {
   public get entryItem(): TimelogEntryItem { return this._controller.currentlyOpenTLEFItem.item.getInitialTLEValue(); }
 
   public get clock(): string{
-    return this._clock.format('h:mm:ss a');
+    return this.clockService.currentTime.format('h:mm:ss a');
   }
 
   public onClickEdit(){

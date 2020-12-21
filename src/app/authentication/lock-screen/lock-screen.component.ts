@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import { timer, Subscription } from 'rxjs';
 import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import { KeydownService } from '../../shared/keydown.service';
+import { ClockService } from '../../shared/clock/clock.service';
 
 @Component({
   selector: 'app-lock-screen',
@@ -17,20 +18,16 @@ export class LockScreenComponent implements OnInit, OnDestroy {
   private _mouseIsOverLock: boolean = false;
   public get mouseIsOverLock(): boolean { return this._mouseIsOverLock; }
 
-  constructor(private keyDownService: KeydownService) { }
+  constructor(private keyDownService: KeydownService, private clockService: ClockService) { }
 
-  private _clock: moment.Moment;
 
-  public get clock(): string { return this._clock.format('h:mm:ss a'); }
-  public get date(): string { return this._clock.format('dddd, MMM Do, YYYY'); }
+
+  public get clock(): string { return this.clockService.currentTime.format('h:mm:ss a'); }
+  public get date(): string { return this.clockService.currentTime.format('dddd, MMM Do, YYYY'); }
 
   private _keydownSub: Subscription = new Subscription();
 
   ngOnInit(): void {
-    this._clock = moment();
-    timer(1000, 1000).subscribe((tick) => {
-      this._clock = moment();
-    });
 
     this._keydownSub = this.keyDownService.keyDown$.subscribe((keyVal: string)=>{
       // console.log("Key val:  ", keyVal);

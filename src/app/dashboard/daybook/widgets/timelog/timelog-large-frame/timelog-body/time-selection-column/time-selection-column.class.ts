@@ -1,13 +1,11 @@
 import * as moment from 'moment';
 import { TimeSelectionRow } from '../time-selection-row/time-selection-row.class';
-import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogDelineatorType, TimelogDelineator } from '../timelog-delineator.class';
 import { Subscription, Subject, Observable, range } from 'rxjs';
-import { DaybookTimeScheduleStatus } from '../../../../../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
 import { DaybookTimeScheduleItem } from '../../../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
 import { TimeRangeRelationship } from '../../../../../../../shared/time-utilities/time-range-relationship.enum';
-import { TimeScheduleItem } from '../../../../../../../shared/time-utilities/time-schedule-item.class';
 import { DaybookTimeScheduleAvailableItem } from '../../../../../display-manager/daybook-time-schedule/daybook-time-schedule-available-item.class';
+import { Clock } from '../../../../../../../shared/clock/clock.class';
 
 export class TimeSelectionColumn {
 
@@ -18,6 +16,8 @@ export class TimeSelectionColumn {
     private _endTime: moment.Moment;
     private _divisorMinutes: number = 5;
     private _rows: TimeSelectionRow[] = [];
+
+    private _clock: Clock;
 
     private _deleteDelineator$: Subject<moment.Moment> = new Subject();
     private _updateDelineator$: Subject<{ prevVal: moment.Moment, nextVal: moment.Moment }> = new Subject();
@@ -41,7 +41,8 @@ export class TimeSelectionColumn {
     public get stopDragging$(): Observable<TimeSelectionRow> { return this._stopDragging$.asObservable(); }
 
 
-    constructor(delineators: TimelogDelineator[], availableItems: DaybookTimeScheduleItem[]) {
+    constructor(delineators: TimelogDelineator[], availableItems: DaybookTimeScheduleItem[], clock: Clock) {
+        this._clock = clock;
         this._availableItems = Object.assign([], availableItems);
         this._displayDelineators = delineators;
         this._startTime = moment(delineators[0].time);
@@ -143,7 +144,7 @@ export class TimeSelectionColumn {
             TimelogDelineatorType.TIMELOG_ENTRY_END,
             TimelogDelineatorType.DAY_STRUCTURE,
         ];
-        const nowTime: moment.Moment = moment().startOf('minute');
+        const nowTime: moment.Moment = moment(this._clock.currentTime).startOf('minute');
         const nowDelineator = new TimelogDelineator(nowTime, TimelogDelineatorType.NOW);
         let delineators = this._displayDelineators;
         if (nowTime.isSameOrAfter(this.startTime) && nowTime.isBefore(this.endTime)) {

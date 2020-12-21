@@ -95,8 +95,6 @@ export class SleepProfileWidgetComponent implements OnInit {
 
     const dayIsToday: boolean = moment().format('YYYY-MM-DD') === dateYYYYMMDD;
     const dayIsTomorrow: boolean = moment().add(1, 'days').format('YYYY-MM-DD') === dateYYYYMMDD;
-    const dayIsAfterToday: boolean = moment().format('YYYY-MM-DD') < dateYYYYMMDD;
-    const dayIsBeforeToday: boolean = moment().format('YYYY-MM-DD') > dateYYYYMMDD;
     const updateItems = dayItemUpdater.changeWakeupTime(dateYYYYMMDD, currentVal, wakeupTime, dayItems);
     if (dayIsToday) {
       console.log("today is today")

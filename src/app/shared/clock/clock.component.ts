@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as moment from 'moment';
 import { Subscription, timer } from 'rxjs';
+import { ClockService } from './clock.service';
 
 @Component({
   selector: 'app-clock',
@@ -9,9 +10,10 @@ import { Subscription, timer } from 'rxjs';
 })
 export class ClockComponent implements OnInit, OnDestroy {
 
-  constructor() { }
+  constructor(private clockService: ClockService) { }
 
-  private _clock: moment.Moment;
+
+  private _currentTime: moment.Moment;
   private _clockString: string;
   private _clockStringSs: string;
   private _clockStringAm: string; 
@@ -24,21 +26,20 @@ export class ClockComponent implements OnInit, OnDestroy {
   public get dateString(): string { return this._dateString; }
 
   ngOnInit(): void {
-    this._clock = moment();
+    this._currentTime = this.clockService.currentTime;
     this._setClockString();
-    const msToNextSec: number = moment().startOf('second').add(1, 'second').diff(moment(), 'milliseconds');
-    this._clockSub = timer(msToNextSec, 1).subscribe(tick => {
-      this._clock = moment();
+    this._clockSub = this.clockService.everyClockSecond$.subscribe(() => {
+      this._currentTime = moment(this.clockService.currentTime);
       this._setClockString()
     });
 
   }
 
   private _setClockString() {
-    this._clockString = moment(this._clock).format('h:mm');
-    this._clockStringSs = moment(this._clock).format('ss');
-    this._clockStringAm = moment(this._clock).format('a');
-    this._dateString = moment(this._clock).format('dddd, MMMM Do, YYYY');
+    this._clockString = moment(this._currentTime).format('h:mm');
+    this._clockStringSs = moment(this._currentTime).format('ss');
+    this._clockStringAm = moment(this._currentTime).format('a');
+    this._dateString = moment(this._currentTime).format('dddd, MMMM Do, YYYY');
   }
 
   ngOnDestroy() {

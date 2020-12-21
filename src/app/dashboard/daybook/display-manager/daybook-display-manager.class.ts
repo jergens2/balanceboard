@@ -19,6 +19,7 @@ import { TimelogDisplayGrid } from '../widgets/timelog/timelog-large-frame/timel
 import { DaybookUpdateAction } from './daybook-update-action.enum';
 import { SleepDisplayProfile } from '../widgets/sleep-profile-widget/sleep-display-profile.class';
 import { SleepManager } from '../sleep-manager/sleep-manager.class';
+import { Clock } from '../../../shared/clock/clock.class';
 
 export class DaybookDisplayManager {
     /**
@@ -36,12 +37,14 @@ export class DaybookDisplayManager {
      *  All daybook and timelog components that need to coordinate with the current display
      *  will access this class through the DaybookDisplayService
      */
-    constructor(toolboxService: ToolboxService, activityService: ActivityHttpService) {
+    constructor(toolboxService: ToolboxService, activityService: ActivityHttpService, clock: Clock) {
         this._toolboxService = toolboxService;
         this._activityService = activityService;
+        this._clock = clock;
         this._setToolboxSub();
     }
 
+    private _clock: Clock;
     private _toolboxSub: Subscription;
 
     private _tlefController: TLEFController;
@@ -190,11 +193,11 @@ export class DaybookDisplayManager {
 
 
     private _updateTimeSelectionColumn() {
-        this._timeSelectionColumn = new TimeSelectionColumn(this.displayDelineators, this.displayItemsAvailable);
+        this._timeSelectionColumn = new TimeSelectionColumn(this.displayDelineators, this.displayItemsAvailable, this._clock);
     }
     private _updateTimelogDisplayGrid() {
         if (!this._timelogDisplayGrid) {
-            this._timelogDisplayGrid = new TimelogDisplayGrid(this._displayItems);
+            this._timelogDisplayGrid = new TimelogDisplayGrid(this._displayItems, this._clock);
         } else {
             this._timelogDisplayGrid.update(this._displayItems);
         }

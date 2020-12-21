@@ -3,7 +3,7 @@ import { CalendarDay } from './calendar-day.interface';
 import * as moment from 'moment';
 import { faArrowLeft, faArrowRight, faExpand } from '@fortawesome/free-solid-svg-icons';
 import { DaybookDisplayService } from '../../../daybook-display.service';
-import { Clock } from '../../../../../shared/time-utilities/clock.class';
+import { Clock } from '../../../../../shared/clock/clock.class';
 import { Subscription } from 'rxjs';
 import { DaybookUpdateAction } from '../../../display-manager/daybook-update-action.enum';
 

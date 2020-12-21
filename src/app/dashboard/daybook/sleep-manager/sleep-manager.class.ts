@@ -1,17 +1,14 @@
 import * as moment from 'moment';
 import { SleepCyclePosition } from './sleep-cycle/sleep-cycle-position.enum';
 import { timer, Subscription, BehaviorSubject, Observable } from 'rxjs';
-import { SleepCycleHTTPData } from './sleep-cycle/sleep-cycle-http-data.interface';
 import { DaybookDayItem } from '../daybook-day-item/daybook-day-item.class';
 import { SleepCycleScheduleItemsBuilder } from './sleep-cycle/sleep-cycle-schedule-items-builder.class';
 import { UAPAppConfiguration } from '../../user-account-profile/api/uap-app-configuraiton.interface';
 import { SleepCycleData } from './sleep-cycle/sleep-cycle-data.class';
-import { DaybookSleepInputDataItem } from '../daybook-day-item/data-items/daybook-sleep-input-data-item.interface';
-import { DaybookTimeScheduleItem } from '../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
-import { DaybookTimeScheduleStatus } from '../display-manager/daybook-time-schedule/daybook-time-schedule-status.enum';
 import { SleepCycleBuilder } from './sleep-cycle/sleep-cycle-builder.class';
 import { SleepCycleDaybookAnalyzer } from './sleep-cycle/sleep-cycle-daybook-analyzer.class';
 import { DaybookTimelogEntryDataItem } from '../daybook-day-item/data-items/daybook-timelog-entry-data-item.interface';
+import { Clock } from '../../../shared/clock/clock.class';
 
 export class SleepManager {
 
@@ -19,10 +16,11 @@ export class SleepManager {
      * This class is the master class for Sleep data.
      *
      */
-    constructor(data: SleepCycleData, dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration) {
+    constructor(data: SleepCycleData, dayItems: DaybookDayItem[], appConfig: UAPAppConfiguration, clock: Clock) {
         this._sleepData = data;
         this._daybookDayItems = dayItems;
         this._appConfig = appConfig;
+        this._clock = clock;
         this._setDefaults();
         this._sleepAnalysis = new SleepCycleDaybookAnalyzer(this._daybookDayItems, this._appConfig);
 
@@ -40,7 +38,9 @@ export class SleepManager {
         if (!this._sleepData.hasPrompt) {
             this._setValues();
             this._updateEnergyLevel();
-            this._startClock();
+            this._clockSubs = [
+                this._clock.everyClockMinute$.subscribe(()=> this._updateEnergyLevel()),
+            ];
         }
 
     }
@@ -55,9 +55,8 @@ export class SleepManager {
     private _nextWakeupTime: moment.Moment;
 
 
-
+    private _clock: Clock;
     private _clockSubs: Subscription[] = [];
-    private _clock$: BehaviorSubject<moment.Moment>;
     private _id: string;
 
 
@@ -79,8 +78,8 @@ export class SleepManager {
     private _defaultFallAsleepTime: moment.Moment;
 
 
-    public get clock(): moment.Moment { return this._clock$.getValue(); }
-    public get clock$(): Observable<moment.Moment> { return this._clock$.asObservable(); }
+    public get currentTime(): moment.Moment { return this._clock.currentTime; }
+    public get currentTime$(): Observable<moment.Moment> { return this._clock.currentTime$; }
     public get sleepData(): SleepCycleData { return this._sleepData; }
     public get position(): SleepCyclePosition { return this.sleepData.position; }
     public get positionIsActive(): boolean { return this.sleepData.positionIsActive; }
@@ -155,7 +154,6 @@ export class SleepManager {
             .add(this._appConfig.defaultWakeupHour, 'hours').add(this._appConfig.defaultWakeupMinute, 'minutes');
         this._defaultFallAsleepTime = moment(startOfDay)
             .add(this._appConfig.defaultFallAsleepHour, 'hours').add(this._appConfig.defaultFallAsleepMinute, 'minutes');
-        this._clock$ = new BehaviorSubject(moment());
         this._previousFallAsleepTime = moment(this._defaultFallAsleepTime).subtract(24, 'hours');
         this._previousWakeupTime = moment(this._defaultWakeupTime);
         this._nextFallAsleepTime = moment(this._defaultFallAsleepTime);
@@ -215,15 +213,6 @@ export class SleepManager {
 
     }
 
-    private _startClock() {
-        this._clock$.next(moment());
-        const msToNextSecond = moment().startOf('second').add(1, 'second').diff(moment(), 'milliseconds');
-        const msToNextMinute = moment().add(1, 'minutes').startOf('minute').diff(moment(), 'milliseconds');
-        this._clockSubs = [
-            timer(msToNextSecond, 1000).subscribe(tick => this._clock$.next(moment())),
-            timer(msToNextMinute, 60000).subscribe(tick => this._updateEnergyLevel()),
-        ];
-    }
     private _updateEnergyLevel() {
         const totalDurationMS = moment(this.nextFallAsleepTime).diff(moment(this.previousWakeupTime), 'milliseconds');
         const durationFromStart = moment().diff(moment(this.previousWakeupTime), 'milliseconds');

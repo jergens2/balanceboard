@@ -4,17 +4,21 @@ import { Subscription } from 'rxjs';
 import { DaybookTimelogEntryController } from './daybook-timelog-entry-controller.class';
 import { TimelogEntryItem } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { DaybookTimeDelineatorController } from './daybook-time-delineator-controller.class';
+import { Clock } from '../../../shared/clock/clock.class';
 
 export class DaybookDayItemController {
     /**
      * Expects an array containing prevDayItem, thisDayItem, nextDayItem)
      */
-    constructor(dateYYYYMMDD: string, dayItems: DaybookDayItem[]) {
+    constructor(dateYYYYMMDD: string, dayItems: DaybookDayItem[], clock: Clock) {
         this._dateYYYYMMDD = dateYYYYMMDD;
+        this._clock = clock;
         this._thisDayYYYYMMDD = this._dateYYYYMMDD;
         this._construct(dateYYYYMMDD, dayItems);
+
     }
 
+    private _clock: Clock;
     private _dateYYYYMMDD: string;
     private _prevDay: DaybookDayItem;
     private _thisDay: DaybookDayItem;
@@ -40,11 +44,12 @@ export class DaybookDayItemController {
     public get thisDateYYYYMMDD(): string { return this.dateYYYYMMDD; }
     public get nextDateYYYYMMDD(): string { return moment(this.dateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD'); }
 
-    public get isToday(): boolean { return this.dateYYYYMMDD === moment().format('YYYY-MM-DD'); }
-    public get isTomorrow(): boolean { return this.dateYYYYMMDD === moment().add(1, 'days').format('YYYY-MM-DD'); }
-    public get isYesterday(): boolean { return this.dateYYYYMMDD === moment().subtract(1, 'days').format('YYYY-MM-DD'); }
-    public get isAfterToday(): boolean { return this.dateYYYYMMDD > moment().format('YYYY-MM-DD'); }
-    public get isBeforeToday(): boolean { return this.dateYYYYMMDD < moment().format('YYYY-MM-DD'); }
+    public get currentTime(): moment.Moment { return this._clock.currentTime; }
+    public get isToday(): boolean { return this.dateYYYYMMDD === moment(this.currentTime).format('YYYY-MM-DD'); }
+    public get isTomorrow(): boolean { return this.dateYYYYMMDD === moment(this.currentTime).add(1, 'days').format('YYYY-MM-DD'); }
+    public get isYesterday(): boolean { return this.dateYYYYMMDD === moment(this.currentTime).subtract(1, 'days').format('YYYY-MM-DD'); }
+    public get isAfterToday(): boolean { return this.dateYYYYMMDD > moment(this.currentTime).format('YYYY-MM-DD'); }
+    public get isBeforeToday(): boolean { return this.dateYYYYMMDD < moment(this.currentTime).format('YYYY-MM-DD'); }
     public get controllerStartTime(): moment.Moment { return moment(this.dateYYYYMMDD).startOf('day').subtract(1, 'days'); }
     public get controllerEndTime(): moment.Moment { return moment(this.dateYYYYMMDD).startOf('day').add(2, 'days'); }
 
@@ -87,6 +92,7 @@ export class DaybookDayItemController {
     }
     private _isValid(dayItems: DaybookDayItem[]): boolean {
         let isValid: boolean = true;
+        // console.log("checking if valid...", dayItems)
         if (dayItems.length === 3) {
             const prevItemValid: boolean = dayItems[0].dateYYYYMMDD === this.prevDateYYYYMMDD;
             const thisItemValid: boolean = dayItems[1].dateYYYYMMDD === this.thisDateYYYYMMDD;
@@ -96,7 +102,7 @@ export class DaybookDayItemController {
             isValid = false;
         }
         if (!isValid) {
-            console.log("Day items: ")
+            // console.log("Day items: ")
             dayItems.forEach(item => console.log(item.dateYYYYMMDD, item))
         }
 

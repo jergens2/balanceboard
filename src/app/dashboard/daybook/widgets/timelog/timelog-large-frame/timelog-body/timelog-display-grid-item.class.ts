@@ -8,7 +8,7 @@ export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
 
 
     constructor(startTime: moment.Moment, endTime: moment.Moment, displayPercent: number,
-        itemIndex: number, status: DaybookTimeScheduleStatus, timelogEntry?: TimelogEntryItem) {
+        itemIndex: number, status: DaybookTimeScheduleStatus, currentTime: moment.Moment, timelogEntry?: TimelogEntryItem) {
         super(startTime, endTime);
         this._itemIndex = itemIndex;
         this._itemIndexes = [this._itemIndex];
@@ -17,9 +17,7 @@ export class TimelogDisplayGridItem extends DaybookTimeScheduleItem {
         if (timelogEntry) {
             this._timelogEntries = [timelogEntry];
         }
-
-        const now = moment();
-        if (now.isSameOrAfter(this.schedItemStartTime) && now.isBefore(this.schedItemEndTime)) {
+        if (currentTime.isSameOrAfter(this.schedItemStartTime) && currentTime.isBefore(this.schedItemEndTime)) {
             this._showNowLine = true;
         }
     }

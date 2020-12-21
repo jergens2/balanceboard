@@ -17,7 +17,8 @@ import * as moment from 'moment';
 import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
 import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
 import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
-import { Clock } from '../../shared/time-utilities/clock.class';
+import { Clock } from '../../shared/clock/clock.class';
+import { ClockService } from '../../shared/clock/clock.service';
 
 @Component({
   selector: 'app-header',
@@ -32,6 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private modalService: ModalService,
     private daybookDisplayService: DaybookDisplayService,
     private sleepService: SleepService,
+    private clockService: ClockService,
     private router: Router) { }
 
   faBars = faBars;
@@ -41,7 +43,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private _batteryIcon: IconDefinition;
   private _batteryNgClass: string;
   private _batteryPercent: string = '';
-  private _clock: Clock;
 
   activeAppTool: string = null;
 
@@ -53,7 +54,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public get batteryIcon(): IconDefinition { return this._batteryIcon; }
   public get batteryPercent(): string { return this._batteryPercent; }
   public get batteryNgClass(): string { return this._batteryNgClass; }
-  public get clockTime(): moment.Moment { return this._clock.currentTime; }
+  public get clockTime(): moment.Moment { return this.clockService.currentTime; }
 
   @Output() sidebarButtonClicked: EventEmitter<boolean> = new EventEmitter();
 
@@ -75,7 +76,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private _energySub: Subscription = new Subscription();
 
   ngOnInit() {
-    this._clock = new Clock();
     this.headerMenus = Object.assign([], this._buildHeaderMenus());
     this._setBattery();
     this._energySub = this.sleepService.sleepManager.energyLevel$.subscribe(energy => { this._setBattery(); });

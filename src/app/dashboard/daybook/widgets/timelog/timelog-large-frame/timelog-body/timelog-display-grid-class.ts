@@ -2,13 +2,16 @@ import * as moment from 'moment';
 import { TimelogDisplayGridItem } from './timelog-display-grid-item.class';
 import { DaybookTimeSchedule } from '../../../../display-manager/daybook-time-schedule/daybook-time-schedule.class';
 import { DaybookTimeScheduleItem } from '../../../../display-manager/daybook-time-schedule/daybook-time-schedule-item.class';
+import { Clock } from '../../../../../../shared/clock/clock.class';
 
 export class TimelogDisplayGrid {
 
-  constructor(scheduleItems: DaybookTimeScheduleItem[]) {
+  constructor(scheduleItems: DaybookTimeScheduleItem[], clock: Clock) {
+    this._clock = clock;
     this._buildGrid(scheduleItems);
   }
 
+  private _clock: Clock;
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;
   private _daybookSchedule: DaybookTimeSchedule;
@@ -49,7 +52,7 @@ export class TimelogDisplayGrid {
 
     const gridItems: TimelogDisplayGridItem[] = scheduleItems.map(item => {
       const newGridItem = new TimelogDisplayGridItem(item.schedItemStartTime, item.schedItemEndTime, item.displayPercent,
-        item.itemIndex, item.scheduleStatus, item.timelogEntry);
+        item.itemIndex, item.scheduleStatus, this._clock.currentTime, item.timelogEntry );
       return newGridItem;
     });
 

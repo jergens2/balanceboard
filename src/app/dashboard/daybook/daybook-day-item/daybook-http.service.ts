@@ -36,16 +36,22 @@ export class DaybookHttpService {
 
   private _reinitiate$(): Observable<boolean> {
     const isComplete$: Subject<boolean> = new Subject();
+    
     const rangeDayCount: number = 30;
 
-    const yesterdayYYYYMMDD: string = moment().subtract(1, 'days').format('YYYY-MM-DD');
     const todayYYYYMMDD: string = moment().format('YYYY-MM-DD');
-    const tomorrowYYYYMMDD: string = moment().add(1, 'days').format('YYYY-MM-DD');
     const rangeStartDateYYYYMMDD: string = moment(todayYYYYMMDD).subtract(rangeDayCount, 'days').format('YYYY-MM-DD');
-    const rangeEndDateYYYYMMDD: string = moment(todayYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-
-    const saveDatesYYYYMMDD: string[] = [yesterdayYYYYMMDD, todayYYYYMMDD, tomorrowYYYYMMDD];
-
+    const saveDatesYYYYMMDD: string[] = [];
+    let currentSaveDateYYYYMMDD: string = moment().startOf('week').format('YYYY-MM-DD');
+    let addDays: number = 6;
+    if(moment().day() === 6){
+      addDays = 8;
+    }
+    for(let i=0; i<=addDays; i++){
+      currentSaveDateYYYYMMDD = moment(currentSaveDateYYYYMMDD).add(i, 'days').format('YYYY-MM-DD');
+      saveDatesYYYYMMDD.push(currentSaveDateYYYYMMDD);
+    }
+    const rangeEndDateYYYYMMDD: string = currentSaveDateYYYYMMDD;
     this.getDaybookDayItemByRange$(rangeStartDateYYYYMMDD, rangeEndDateYYYYMMDD, saveDatesYYYYMMDD).subscribe({
       next: (days: DaybookDayItem[]) => {
         // console.log("WE GOT THE DAYS:", days)
