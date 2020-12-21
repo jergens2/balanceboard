@@ -206,7 +206,6 @@ export class DaybookDisplayService {
         if(second === 15 || second === 45){
           this.httpService.getUpdate$(this.activeDateYYYYMMDD);
         }
-        this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
       }),
 
 
