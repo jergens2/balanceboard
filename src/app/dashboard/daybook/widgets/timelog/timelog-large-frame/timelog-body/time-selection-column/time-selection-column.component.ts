@@ -50,6 +50,7 @@ export class TimeSelectionColumnComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this._rebuild();
     this._displaySub = this.daybookDisplayService.displayUpdated$.subscribe((update) => {
+      // console.log("Time selection column component rebuild")
       this._rebuild();
     });
   }

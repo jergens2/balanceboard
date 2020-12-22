@@ -144,6 +144,7 @@ export class TimeSelectionColumn {
             TimelogDelineatorType.TIMELOG_ENTRY_END,
             TimelogDelineatorType.DAY_STRUCTURE,
         ];
+        // console.log("Now time according to service is:  " + this._clock.currentTime.format('hh:mm a'))
         const nowTime: moment.Moment = moment(this._clock.currentTime).startOf('minute');
         const nowDelineator = new TimelogDelineator(nowTime, TimelogDelineatorType.NOW);
         let delineators = this._displayDelineators;

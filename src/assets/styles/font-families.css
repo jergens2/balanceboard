@@ -1,0 +1,25 @@
+/* @font-face{
+  font-family: Ubuntu; 
+  src: url("./assets/fonts/Ubuntu/Ubuntu-Regular.ttf");
+}; */
+@font-face{
+    font-family: Lexend; 
+    src: url("./../fonts/Lexend_Deca/LexendDeca-Regular.ttf");
+};
+@font-face{
+    font-family: Ubuntu; 
+    src: url("./../fonts/Ubuntu/Ubuntu-Regular.ttf");
+}
+@font-face{
+    font-family: OpenSans;
+    src: url("./../fonts/Open_Sans/OpenSans-Regular.ttf");
+}
+.font-family-lexend{
+    font-family: 'Lexend';
+}
+.font-family-ubuntu{
+    font-family: 'Ubuntu';
+}
+.font-family-open-sans{
+    font-family: 'OpenSans';
+}

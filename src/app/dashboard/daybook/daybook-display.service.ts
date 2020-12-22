@@ -190,6 +190,7 @@ export class DaybookDisplayService {
     this._clockSubs.forEach(s => s.unsubscribe());
     this._clockSubs = [
       clock.everyClockMinute$.subscribe(tick => {
+        // console.log("updating display.  time is: " + this.clockService.currentTime.format('hh:mm a'))
         if (this.todayYYYYMMDD === this.activeDateYYYYMMDD) {
           this._updateDisplay(this.todayYYYYMMDD, DaybookUpdateAction.CLOCK_MINUTE);
         }

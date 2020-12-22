@@ -12,6 +12,9 @@ export class ClockService {
 
   constructor() {
     this._clock = new Clock();
+
+
+    
     /** The following can be used for testing purposes. */
     // let setTime: moment.Moment = moment().add(1, 'hours');
     // timer(0, 3000).subscribe(()=>{
