@@ -19,6 +19,7 @@ import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.s
 import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
 import { Clock } from '../../shared/clock/clock.class';
 import { ClockService } from '../../shared/clock/clock.service';
+import { MenuItemType } from './header-menu/menu-item-type.enum';
 
 @Component({
   selector: 'app-header',
@@ -104,7 +105,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this._menuSubs.forEach(s => s.unsubscribe());
     this._menuSubs = [];
     const newMenus: HeaderMenu[] = [];
-    const signOutMenuItem = new MenuItem('Sign Out', null, faSignOutAlt);
+    const signOutMenuItem = new MenuItem(MenuItemType.LOGOUT);
     const signOutSub = signOutMenuItem.clickEmitted$.subscribe(() => {
       const options: IModalOption[] = [
         {
@@ -127,28 +128,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
       });
       this.modalService.openModal(modal);
     });
-    newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem('Settings', '/user-settings', faCogs), signOutMenuItem])));
+    newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem(MenuItemType.SETTINGS), signOutMenuItem])));
 
-    const notepadMenuItem: MenuItem = new MenuItem('Notebook Entry', null, faStickyNote);
-    const actionItemMenuItem: MenuItem = new MenuItem('Action Item', null, faCheckCircle);
-    const timelogEntryMenuItem: MenuItem = new MenuItem('Timelog Entry', null, faTable);
-    const futureEventMenuItem: MenuItem = new MenuItem('Appointment / Future Event', null, faCalendarAlt);
-    const dailyTaskListMenuItem: MenuItem = new MenuItem('Daily Task List', null, faTasks);
+    const notepadMenuItem: MenuItem = new MenuItem(MenuItemType.NOTES);
+    const actionItemMenuItem: MenuItem = new MenuItem(MenuItemType.TASKS);
+    const timelogEntryMenuItem: MenuItem = new MenuItem(MenuItemType.DAYBOOK);
+    // const futureEventMenuItem: MenuItem = new MenuItem('Appointment / Future Event', null, faCalendarAlt);
+    // const dailyTaskListMenuItem: MenuItem = new MenuItem('Daily Task List', null, faTasks);
     this._menuSubs = [
       signOutSub,
       notepadMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.NOTEBOOK_ENTRY)),
       actionItemMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.ACTION_ITEM)),
       timelogEntryMenuItem.clickEmitted$.subscribe(c => this.daybookDisplayService.displayManager.onClickNowDelineator()),
-      futureEventMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.FUTURE_EVENT)),
-      dailyTaskListMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.DAILY_TASK_LIST)),
+      // futureEventMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.FUTURE_EVENT)),
+      // dailyTaskListMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.DAILY_TASK_LIST)),
     ];
 
     const toolsMenuItems: MenuItem[] = [
       notepadMenuItem,
       actionItemMenuItem,
       timelogEntryMenuItem,
-      futureEventMenuItem,
-      dailyTaskListMenuItem
+      // futureEventMenuItem,
+      // dailyTaskListMenuItem
     ];
 
     const toolsMenu: HeaderMenu = new HeaderMenu('Tools', toolsMenuItems);

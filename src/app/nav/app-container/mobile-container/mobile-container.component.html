@@ -1,0 +1,4 @@
+<div class="mobile-container-root">
+    <app-mobile-menu *ngIf="showMobileMenu" (close)="onCloseMobileMenu()"></app-mobile-menu>
+    <router-outlet *ngIf="!showMobileMenu"></router-outlet>
+</div>

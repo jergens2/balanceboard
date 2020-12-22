@@ -3,16 +3,17 @@ import { faSitemap, faCheckCircle, faBookOpen, faBook, faListUl, faCalendar, faU
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { HeaderMenu } from "./header/header-menu/header-menu.class";
 import { ToolType } from "../toolbox-menu/tool-type.enum";
+import { MenuItemType } from "./header/header-menu/menu-item-type.enum";
 
 
 
 
 // menuItems.push(new MenuItem('Home', '/home', faHome));
 
-const daybookMenu = new MenuItem('Daybook', '/daybook', faBookOpen);
-const notebookItem: MenuItem = new MenuItem('Notes', '/notes', faBook);
-const tasksItem: MenuItem = new MenuItem('Tasks', '/tasks', faCheckCircle);
-const activityItem = new MenuItem('Activities', '/activities', faSitemap);
+const daybookMenu = new MenuItem(MenuItemType.DAYBOOK);
+const notebookItem: MenuItem = new MenuItem(MenuItemType.NOTES);
+const tasksItem: MenuItem = new MenuItem(MenuItemType.TASKS);
+const activityItem = new MenuItem(MenuItemType.ACTIVITIES);
 
 notebookItem.sidebarToolComponent = ToolType.NOTEBOOK_ENTRY;
 daybookMenu.sidebarToolComponent = ToolType.TIMELOG_ENTRY;

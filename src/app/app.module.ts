@@ -41,6 +41,8 @@ import { LockScreenComponent } from './authentication/lock-screen/lock-screen.co
 import { AppContainerComponent } from './nav/app-container/app-container.component';
 import { UserAccountProfileModule } from './dashboard/user-account-profile/user-account-profile.module';
 import { UapFooterComponent } from './nav/user-action-prompt/uap-footer/uap-footer.component';
+import { MobileMenuComponent } from './nav/app-container/mobile-container/mobile-menu/mobile-menu.component';
+import { MobileContainerComponent } from './nav/app-container/mobile-container/mobile-container.component';
 
 
 
@@ -67,6 +69,8 @@ import { UapFooterComponent } from './nav/user-action-prompt/uap-footer/uap-foot
     LockScreenComponent,
     AppContainerComponent,
     UapFooterComponent,
+    MobileMenuComponent,
+    MobileContainerComponent,
 
   ],
   imports: [

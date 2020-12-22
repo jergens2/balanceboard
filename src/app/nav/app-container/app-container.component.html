@@ -1,4 +1,4 @@
-<div *ngIf="showAppContainer" class="app-container" [ngClass]="appContainerNgClass">
+<div *ngIf="showAppContainer && !isSmallScreen" class="app-container" [ngClass]="appContainerNgClass">
     <div class="header">
         <app-header (sidebarButtonClicked)="onHeaderSidebarButtonClicked()"></app-header>
     </div>
@@ -18,8 +18,10 @@
     </div>
 </div>
 
+<app-mobile-container *ngIf="showAppContainer && isSmallScreen" style="height: 100%; width: 100%;"></app-mobile-container>
+
 <!-- class="user-action-prompt background-image-1" -->
-<app-user-action-prompt *ngIf="showUserActionPrompt" style="height: 100%; width: 100%;" >
+<app-user-action-prompt *ngIf="showUserActionPrompt" style="height: 100%; width: 100%;">
 </app-user-action-prompt>
 
 

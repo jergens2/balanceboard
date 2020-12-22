@@ -29,6 +29,7 @@ import { TvSpecifyViewComponent } from './time-views/tv-specify-view/tv-specify-
 import { ColorPickerComponent } from "./color-picker/color-picker.component";
 import { ActivitySearchComponent } from './activity-search/activity-search.component';
 import { ClockComponent } from './clock/clock.component';
+import { NewItemCircleButtonComponent } from './components/new-item-circle-button/new-item-circle-button.component';
 
 
 
@@ -66,6 +67,7 @@ import { ClockComponent } from './clock/clock.component';
         TvSpecifyViewComponent,
         ActivitySearchComponent,
         ClockComponent,
+        NewItemCircleButtonComponent,
     ],
     exports: [
         CommonModule,
@@ -87,7 +89,7 @@ import { ClockComponent } from './clock/clock.component';
         TimeViewsComponent,
         ButtonMenuComponent,
         ClockComponent,
-
+        NewItemCircleButtonComponent,
     ]
 })
 

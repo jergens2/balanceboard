@@ -2,8 +2,7 @@
 @import url("./assets/styles/bootstrap.css");
 @import url("./assets/styles/background-images.css");
 @import url("./assets/styles/font-families.css");
-
-
+@import url("./assets/styles/buttons.css");
 
 .no-select {
     -webkit-touch-callout: none; /* iOS Safari */
@@ -14,66 +13,6 @@
     user-select: none;           /* Non-prefixed version, currently supported by Chrome and Opera */
 }
   
-
-.icon-button-dim{
-    color:rgb(221, 221, 221);
-}
-.icon-button-dim:hover{
-    cursor: pointer;
-    color:black;
-}
-.icon-button{
-    color:rgb(201, 201, 201);
-}
-.icon-button:hover{
-    color: black;
-    cursor: pointer;
-}
-
-.button:disabled{
-    cursor: not-allowed;
-}
-
-.icon-delete-button{
-    cursor: pointer;
-    color: gray;
-    border: 1px solid rgba(0, 0, 0, 0);
-    background-color: rgba(0, 0, 0, 0);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-.icon-delete-button:hover{
-    color: white;
-    background-color:rgb(255, 67, 67);
-    border: 1px solid rgb(255, 67, 67);
-}
-
-.small-button{
-    font-size: 0.7em;
-    color:gray;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color:rgb(252, 253, 253);
-    /* background-color:hsl(200, 33%, 96%); */
-    /* font-weight: bold; */
-    font-weight:400; 
-    border-radius: 10px;
-    outline-color: rgba(0, 0, 0, 0.089);
-    display:flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-.small-button:hover{
-    color: white;
-    background-color: rgb(0, 89, 255);
-    border: 1px solid rgb(0, 89, 255);
-    cursor: pointer;
-    text-decoration: none;
-}
-
 .new-item-icon{
     color: gray;    
 }
@@ -82,111 +21,8 @@
     color: rgb(0, 89, 255);
 }
 
-.medium-button{
-    font-size: 0.9em;
-    color:gray;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color:rgb(252, 253, 253);
-    /* background-color:hsl(200, 33%, 96%); */
-    /* font-weight: bold; */
-    outline-color: rgba(0, 0, 0, 0.089);
-    font-weight:400; 
-    border-radius: 10px;
-    display:flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-.medium-button:hover{
-    color: white;
-    background-color: rgb(0, 89, 255);
-    border: 1px solid rgb(0, 89, 255);
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.large-button{
-    font-size: 1.1em;
-    padding: 5px;
-    color:gray;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color:rgb(252, 253, 253);
-    /* background-color:hsl(200, 33%, 96%); */
-    /* font-weight: bold; */
-    outline-color: rgba(0, 0, 0, 0.089);
-    font-weight:500; 
-    border-radius: 10px;
-    display:flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-.large-button:hover{
-    color: white;
-    background-color: rgb(0, 89, 255);
-    border: 1px solid rgb(0, 89, 255);
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.discard-button:hover{
-    background-color: rgb(223, 223, 223);
-    border: 1px solid black;
-    color: black;
-    cursor: pointer;
-}
-
-.delete-button:hover{
-    color: white;
-    background-color:rgb(255, 67, 67);
-    border: 1px solid rgb(255, 67, 67);
-}
-.confirm-delete-button{
-    border: 1px solid red;
-    background-color: rgba(151, 0, 0, 0.5);
-    color: white;
-}
-.confirm-delete-button:hover{
-    border: 1px solid red;
-    background-color: rgb(219, 0, 0);
-    color: white;
-}
-
-.button-disabled{
-    cursor: not-allowed;
-    color: rgb(196, 196, 196);
-}
-.button-disabled:hover{
-    color: rgb(196, 196, 196);
-    background-color: white;
-    cursor: not-allowed;
-}
-
 .clean-input{
     border:none;    
-}
-
-
-
-
-.dropdown-list-component-container{
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-}
-
-
-.display-flex-column{
-    display:flex;
-    flex-direction: column;
-    flex-grow:2;
-    width:100%;
-    height:100%;
-}
-.display-flex-row{
-    display: flex;
-    flex-direction: row;
 }
 
 .max-flex-item{
@@ -194,11 +30,4 @@
     height: 100%; 
     display:flex;
     flex-direction: column;
-}
-
-
-.error-message{
-    font-size: 0.8em;
-    font-weight: bold;
-    color:red;
 }

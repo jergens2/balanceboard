@@ -1,0 +1,17 @@
+
+<div class="mobile-root">
+    <app-clock class="clock"></app-clock>
+    <div *ngFor="let menuItem of menuItems" class="menu-item">
+        <div style="display:flex;flex-direction: row; align-items: center;" (click)="onClickItem(menuItem)"> 
+            <div class="icon-container">
+                <fa-icon [icon]="menuItem.icon"></fa-icon>
+            </div>
+
+            <div style="font-size: 1.4em; font-weight: bold;"> {{ menuItem.title }}</div>
+           
+
+        </div>
+        <app-new-item-circle-button (click)="onClickNew(menuItem)" style="margin-right: 5px;" [diameter]="50"></app-new-item-circle-button>
+    </div>
+
+</div>

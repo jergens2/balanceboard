@@ -122,7 +122,7 @@ export class DaybookDisplayService {
 
 
   public reinitiate() {
-    // console.log('   * REINITIATING DAYBOOK DISPLAY SERVICE')
+    console.log('   * REINITIATING DAYBOOK DISPLAY SERVICE')
     this._daybookDisplayManager = new DaybookDisplayManager(this.toolBoxService, this.activitiesService, this.clockService.clock);
     this._closedSub.unsubscribe();
     this._closedSub = this._daybookDisplayManager.closed$.subscribe(closed => {
