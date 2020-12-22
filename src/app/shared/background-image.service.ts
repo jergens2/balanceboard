@@ -13,7 +13,7 @@ export class BackgroundImageService {
   public get ngClass(): string[] { return this._ngClass$.getValue(); }
 
   public getNewRandomImage() {
-    const imageCount = 14;
+    const imageCount = 16;
     const random = Math.floor(Math.random() * imageCount) + 1;
     const backgroundImg: string = 'background-image-' + random;
     this._ngClass$.next([backgroundImg]);
