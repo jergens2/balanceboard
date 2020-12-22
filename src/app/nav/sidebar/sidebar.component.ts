@@ -153,7 +153,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public onClickLock(){
     console.log("Locking!")
     this._isLocking = true;
-    this.bgService.getNewRandomImage();
+    // this.bgService.getNewRandomImage();
     this.authService.lock();
   }
 
