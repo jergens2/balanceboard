@@ -1,27 +1,42 @@
-# Balanceboard
+# balanceboard
+https://www.balanceboard.app
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.4.
+A personal digital multitool to organize your life.
 
-## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
+# Tools and features
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+-Timelog: input the activities you perform during the day and take account of how your time is spent
+-Notekeeper:  write and organize your thoughts, ideas, journal entries, etc.
+-Task manager:  organize and keep track of the things that you need to do
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+In progress:
+-Scoreboard:  a points system to motivate you to spend your time more appropriately
+-Task manager --Daily task list
+-Agenda & Calendar
 
-## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+# Plans for future tools and features
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+-Lists
 
-## Further help
+-Planning, priorities, goals
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+-Financial tools
+--Budget builder
+
+-Encrypted password & credential manager
+
+-Social
+--Encrypted chat
+--Friend challenges
+--Data sharing
+
+
+# Other potential app ideas
+-Decentralised data storage - perhaps utilizing an existing network such as MaidSafe
+-ikigai builder / purpose finder
+
