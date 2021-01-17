@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ToolboxService } from '../../toolbox-menu/toolbox.service';
+import { ToolboxService } from '../../toolbox/toolbox.service';
 import { Subscription } from 'rxjs';
 import { AppScreenSizeLabel } from '../../shared/app-screen-size/app-screen-size-label.enum';
 import { AppScreenSizeService } from '../../shared/app-screen-size/app-screen-size.service';

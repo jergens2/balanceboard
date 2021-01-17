@@ -10,9 +10,12 @@ export class NewItemCircleButtonComponent implements OnInit {
 
   constructor() { }
 
+  private _icon = this.faPlus; 
   public get faPlus() { return faPlus; }
+  public get icon() { return this._icon; }
 
   @Input() diameter: number;
+  @Input() public set icon(iconValue){ this._icon = iconValue; }
 
   private _fontSizePx: number = 12; 
 

@@ -4,7 +4,7 @@ import { AppScreenSizeService } from './shared/app-screen-size/app-screen-size.s
 import { Subscription, Observable, Subject, BehaviorSubject, timer } from 'rxjs';
 import * as moment from 'moment';
 import { KeydownService } from './shared/keydown.service';
-import { ToolboxService } from './toolbox-menu/toolbox.service';
+import { ToolboxService } from './toolbox/toolbox.service';
 import { BackgroundImageService } from './shared/background-image.service';
 
 @Component({

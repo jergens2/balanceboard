@@ -12,20 +12,6 @@
   </div>
   <div class="header-component-sections">
     
-    <div class="header-component-section">
-      <div *ngFor="let headerMenu of headerMenus" class="header-menu" [ngClass]="{'header-is-open':headerMenu.isOpen}">
-        <div class="menu-name" (click)="onClickHeaderMenuName(headerMenu)"
-          (mouseover)="onMouseOverHeaderMenuName(headerMenu)" (mouseleave)="onMouseLeaveHeaderMenuName(headerMenu)">
-          <fa-icon [icon]="headerMenu.icon" style="margin-right:2px;" *ngIf="headerMenu.icon"></fa-icon>
-          {{ headerMenu.name }}
-        </div>
-
-        <div *ngIf="headerMenu.isOpen == true" class="open-menu">
-          <app-header-menu [openMenu]="headerMenu"></app-header-menu>
-        </div>
-      </div>
-    </div>
-
     <div class="header-top-right-section">
       <div class="header-top-right-section-item battery-section" (click)="onClickBattery()">
         <span style="color: gray; font-weight:bold; font-size:0.6em; margin-right: 2px;">{{ batteryPercent }}% </span>

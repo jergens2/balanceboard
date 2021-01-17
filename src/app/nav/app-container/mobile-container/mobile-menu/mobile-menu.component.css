@@ -2,10 +2,9 @@
     width:100%;
     height:100%;
 
+    flex-grow: 2;
     display: flex;
     flex-direction: column;
-    
-    overflow-y: auto;
 }
 
 .clock{
@@ -31,6 +30,21 @@
 
 
 }
+.menu-title{
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 5px;
+    display:flex;
+    flex-direction: row; 
+    align-items: center;
+}
+.menu-title:hover{
+    background-color: rgb(233, 233, 233);
+    cursor: pointer;
+}
+
+
 
 
 .icon-container{

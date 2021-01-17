@@ -7,7 +7,7 @@ import * as moment from 'moment';
 import { TimelogDelineator } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 import { TimelogEntryItem } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { TimelogDisplayGridItem } from './widgets/timelog/timelog-large-frame/timelog-body/timelog-display-grid-item.class';
-import { ToolboxService } from '../../toolbox-menu/toolbox.service';
+import { ToolboxService } from '../../toolbox/toolbox.service';
 import { TLEFController } from './widgets/timelog/timelog-entry-form/TLEF-controller.class';
 import { ActivityHttpService } from '../activities/api/activity-http.service';
 import { SleepService } from './sleep-manager/sleep.service';

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ToolboxService } from '../../../../../../toolbox-menu/toolbox.service';
+import { ToolboxService } from '../../../../../../toolbox/toolbox.service';
 import { SleepEntryItem } from './sleep-entry-item.class';
 import { DaybookDisplayService } from '../../../../daybook-display.service';
 import * as moment from 'moment';

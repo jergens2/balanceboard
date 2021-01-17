@@ -2,7 +2,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { EventEmitter } from "@angular/core";
 import { HeaderMenu } from "./header-menu.class";
 import { SidebarNewItemButton } from "../../sidebar/sidebar-new-item-button.interface";
-import { ToolType } from "../../../toolbox-menu/tool-type.enum";
+import { ToolType } from "../../../toolbox/tool-type.enum";
 import { MenuItemType } from "./menu-item-type.enum";
 import { faBook, faBookOpen, faCheckCircle, faCogs, faSignOutAlt, faSitemap } from "@fortawesome/free-solid-svg-icons";
 
@@ -15,6 +15,8 @@ export class MenuItem implements SidebarNewItemButton{
 
     private _itemType: MenuItemType;
     public get itemType(): MenuItemType{ return this._itemType; }
+
+    public get isLogout(): boolean { return this.itemType === MenuItemType.LOGOUT; }
 
     constructor(itemType: MenuItemType) {
         this._itemType = itemType;
@@ -36,7 +38,7 @@ export class MenuItem implements SidebarNewItemButton{
             this.icon = faSitemap;
         }else if(itemType === MenuItemType.LOGOUT){
             this.title = 'Logout';
-            this.routerLink = '';
+            this.routerLink = '/auth';
             this.icon = faSignOutAlt;
         }else if(itemType === MenuItemType.SETTINGS){
             this.title = 'Settings';

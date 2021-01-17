@@ -2,7 +2,7 @@
 <div class="mobile-root">
     <app-clock class="clock"></app-clock>
     <div *ngFor="let menuItem of menuItems" class="menu-item">
-        <div style="display:flex;flex-direction: row; align-items: center;" (click)="onClickItem(menuItem)"> 
+        <div class="menu-title" (click)="onClickItem(menuItem)"> 
             <div class="icon-container">
                 <fa-icon [icon]="menuItem.icon"></fa-icon>
             </div>
@@ -11,7 +11,8 @@
            
 
         </div>
-        <app-new-item-circle-button (click)="onClickNew(menuItem)" style="margin-right: 5px;" [diameter]="50"></app-new-item-circle-button>
+        <app-new-item-circle-button (click)="onClickNew(menuItem)" style="margin-right: 5px;" [diameter]="50" *ngIf="!menuItem.isLogout"></app-new-item-circle-button>
+        <app-new-item-circle-button (click)="onClickLock()" style="margin-right: 5px;" [diameter]="50" [icon]="faLock" *ngIf="menuItem.isLogout"></app-new-item-circle-button>
     </div>
 
 </div>

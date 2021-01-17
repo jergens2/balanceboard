@@ -140,3 +140,22 @@
 }
 
 
+
+.medium-circle-button{
+    border: 1px solid rgb(201, 201, 201);
+    background-color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px; 
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    color: gray;
+}
+.medium-circle-button:hover{
+    border: 1px solid rgb(0, 89, 255);
+    background-color: rgb(0, 89, 255);
+    color: white;
+    cursor: pointer;
+}

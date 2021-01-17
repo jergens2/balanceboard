@@ -6,7 +6,7 @@ import { TimelogZoomController } from '../widgets/timelog/timelog-large-frame/ti
 import { SleepCycleScheduleItemsBuilder } from '../sleep-manager/sleep-cycle/sleep-cycle-schedule-items-builder.class';
 import { DaybookTimeScheduleItem } from './daybook-time-schedule/daybook-time-schedule-item.class';
 import { TimelogZoomType } from '../widgets/timelog/timelog-large-frame/timelog-zoom-controller/timelog-zoom-type.enum';
-import { ToolboxService } from '../../../toolbox-menu/toolbox.service';
+import { ToolboxService } from '../../../toolbox/toolbox.service';
 import { ActivityHttpService } from '../../activities/api/activity-http.service';
 import { TimelogDelineator, TimelogDelineatorType } from '../widgets/timelog/timelog-large-frame/timelog-body/timelog-delineator.class';
 import { DaybookDisplayDelineatorSetter } from './daybook-display-delineator-setter.class';

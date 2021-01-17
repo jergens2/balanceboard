@@ -48,9 +48,10 @@ export class DaybookHttpService {
       addDays = 8;
     }
     for(let i=0; i<=addDays; i++){
-      currentSaveDateYYYYMMDD = moment(currentSaveDateYYYYMMDD).add(i, 'days').format('YYYY-MM-DD');
+      currentSaveDateYYYYMMDD = moment(currentSaveDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
       saveDatesYYYYMMDD.push(currentSaveDateYYYYMMDD);
     }
+    console.log("SAVE DATES: ", )
     const rangeEndDateYYYYMMDD: string = currentSaveDateYYYYMMDD;
     this.getDaybookDayItemByRange$(rangeStartDateYYYYMMDD, rangeEndDateYYYYMMDD, saveDatesYYYYMMDD).subscribe({
       next: (days: DaybookDayItem[]) => {
@@ -116,6 +117,7 @@ export class DaybookHttpService {
    */
   public getDaybookDayItemByRange$(rangeStartYYYYMMDD: string, rangeEndYYYYMMDD: string, saveDatesYYYYMMDD?: string[])
     : Observable<DaybookDayItem[]> {
+    console.log("Getting daybook day items by range: " , rangeStartYYYYMMDD, rangeEndYYYYMMDD, saveDatesYYYYMMDD)
     const isComplete$: Subject<DaybookDayItem[]> = new Subject();
     const getUrl = serverUrl + '/api/daybook-day-item/' + this._userId + '/' + rangeStartYYYYMMDD + '/' + rangeEndYYYYMMDD;
     this.httpClient.get<{ message: string, data: any }>(getUrl)

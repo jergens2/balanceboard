@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { ToolboxService } from '../../../../../../../toolbox-menu/toolbox.service';
+import { ToolboxService } from '../../../../../../../toolbox/toolbox.service';
 import { DaybookDisplayService } from '../../../../../daybook-display.service';
 import { TimelogEntryItem } from '../../../timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 

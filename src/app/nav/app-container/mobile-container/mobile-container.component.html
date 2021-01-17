@@ -1,4 +1,10 @@
-<div class="mobile-container-root">
-    <app-mobile-menu *ngIf="showMobileMenu" (close)="onCloseMobileMenu()"></app-mobile-menu>
-    <router-outlet *ngIf="!showMobileMenu"></router-outlet>
+<div class="full-flex-column">
+    <app-mobile-menu *ngIf="showMobileMenu" (close)="onCloseMobileMenu()" class="full-flex-column"></app-mobile-menu>
+    <router-outlet *ngIf="showRouterOutlet" class="full-flex-column"></router-outlet>
+    <app-toolbox *ngIf="showToolbox" class="full-flex-column"></app-toolbox>
+    <div class="menu-button-container" *ngIf="showRouterOutlet" >
+        <button class="medium-circle-button menu-button" (click)="onClickMenu()">
+            <fa-icon [icon]="faBars"></fa-icon>
+        </button>
+    </div>
 </div>

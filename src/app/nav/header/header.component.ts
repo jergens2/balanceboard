@@ -6,8 +6,8 @@ import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt
 import { MenuItem } from './header-menu/menu-item.class';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Router } from '@angular/router';
-import { ToolboxService } from '../../toolbox-menu/toolbox.service';
-import { ToolType } from '../../toolbox-menu/tool-type.enum';
+import { ToolboxService } from '../../toolbox/toolbox.service';
+import { ToolType } from '../../toolbox/tool-type.enum';
 import { IModalOption } from '../../modal/modal-option.interface';
 import { ModalComponentType } from '../../modal/modal-component-type.enum';
 import { Modal } from '../../modal/modal.class';

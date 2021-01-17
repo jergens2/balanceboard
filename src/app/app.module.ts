@@ -26,7 +26,7 @@ import { DefaultModalComponent } from './modal/custom-modals/default-modal/defau
 import { ConfirmModalComponent } from './modal/custom-modals/confirm-modal/confirm-modal.component';
 import { SharedModule } from './shared/shared.module';
 import { SearchBarComponent } from './nav/search-bar/search-bar.component';
-import { ToolsMenuModule } from './toolbox-menu/tools-menu.module';
+import { ToolsMenuModule } from './toolbox/tools-menu.module';
 import { ColorPickerModule } from 'ngx-color-picker';
 import { RegistrationComponent } from './authentication/registration/registration.component';
 import { LoginComponent } from './authentication/login/login.component';
