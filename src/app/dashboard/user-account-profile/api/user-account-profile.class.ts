@@ -62,6 +62,9 @@ export class UserAccountProfile {
     public setAppConfig(config: UAPAppConfiguration) {
         this._appConfig = config;
     }
+    public setAppPreferences(preferences: UAPAppPreferences) {
+        this._appPreferences = preferences;
+    }
 
     private _setId(data: any) {
         // console.log("Setting id: ", data)

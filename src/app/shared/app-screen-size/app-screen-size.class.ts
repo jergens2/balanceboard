@@ -13,9 +13,16 @@ export class AppScreenSize {
     public get label(): AppScreenSizeLabel { return this._label; }
     public get ngClass(): string[] { return this._ngClass; }
 
-    public get isSmall(): boolean { return this.label === AppScreenSizeLabel.MOBILE; }
+
     public get isMobile(): boolean { return this.label === AppScreenSizeLabel.MOBILE; }
     public get isTablet(): boolean { return this.label === AppScreenSizeLabel.TABLET; }
+    public get isNormal(): boolean { return this.label === AppScreenSizeLabel.NORMAL; }
+    public get isLarge(): boolean { return this.label === AppScreenSizeLabel.LARGE; }
+    public get isVeryLarge(): boolean { return this.label === AppScreenSizeLabel.VERY_LARGE; }
+    
+    public get isSmallSize(): boolean { return this.isMobile; }
+    public get isMediumSize(): boolean { return this.isTablet || this.isNormal; }
+    public get isFullSize(): boolean { return this.isLarge || this.isVeryLarge; }
 
     constructor(width: number, height: number) {
         this._width = width;

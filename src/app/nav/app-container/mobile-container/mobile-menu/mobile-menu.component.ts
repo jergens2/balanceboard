@@ -6,8 +6,8 @@ import { DaybookDisplayService } from 'src/app/dashboard/daybook/daybook-display
 import { DaybookWidgetType } from 'src/app/dashboard/daybook/widgets/daybook-widget.class';
 import { ToolboxService } from 'src/app/toolbox/toolbox.service';
 import { appMenuItems } from '../../../app-menu-items';
-import { MenuItemType } from '../../../header/header-menu/menu-item-type.enum';
-import { MenuItem } from '../../../header/header-menu/menu-item.class';
+import { MenuItemType } from '../../full-size-container/header/header-menu/menu-item-type.enum';
+import { MenuItem } from '../../full-size-container/header/header-menu/menu-item.class';
 
 @Component({
   selector: 'app-mobile-menu',

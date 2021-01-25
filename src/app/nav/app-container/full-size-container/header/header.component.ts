@@ -1,24 +1,24 @@
 import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { HeaderMenu } from './header-menu/header-menu.class';
-import { appMenuItems } from '../app-menu-items';
+import { appMenuItems } from '../../../app-menu-items';
 import { Subscription, Observable, fromEvent, Subscriber, timer, Subject } from 'rxjs';
 import { faBars, faCogs, faSignOutAlt, faTools, faWrench, faTable, faCalendarAlt, faTasks, faUsers, IconDefinition, faBatteryEmpty, faBatteryQuarter, faBatteryHalf, faBatteryThreeQuarters, faBatteryFull } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from './header-menu/menu-item.class';
-import { AuthenticationService } from '../../authentication/authentication.service';
+import { AuthenticationService } from '../../../../authentication/authentication.service';
 import { Router } from '@angular/router';
-import { ToolboxService } from '../../toolbox/toolbox.service';
-import { ToolType } from '../../toolbox/tool-type.enum';
-import { IModalOption } from '../../modal/modal-option.interface';
-import { ModalComponentType } from '../../modal/modal-component-type.enum';
-import { Modal } from '../../modal/modal.class';
-import { ModalService } from '../../modal/modal.service';
+import { ToolboxService } from '../../../../toolbox/toolbox.service';
+import { ToolType } from '../../../../toolbox/tool-type.enum';
+import { IModalOption } from '../../../../modal/modal-option.interface';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
+import { Modal } from '../../../../modal/modal.class';
+import { ModalService } from '../../../../modal/modal.service';
 import { faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import * as moment from 'moment';
-import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
-import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
-import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
-import { Clock } from '../../shared/clock/clock.class';
-import { ClockService } from '../../shared/clock/clock.service';
+import { DaybookWidgetType } from '../../../../dashboard/daybook/widgets/daybook-widget.class';
+import { DaybookDisplayService } from '../../../../dashboard/daybook/daybook-display.service';
+import { SleepService } from '../../../../dashboard/daybook/sleep-manager/sleep.service';
+import { Clock } from '../../../../shared/clock/clock.class';
+import { ClockService } from '../../../../shared/clock/clock.service';
 import { MenuItemType } from './header-menu/menu-item-type.enum';
 
 @Component({

@@ -1,7 +1,7 @@
 .app-container{
     width:100%;
     height: 100%;
-    display:grid;
+    display:flex;
     background-color: rgba(255, 255, 255, 0.65);
 }
 
@@ -39,26 +39,6 @@
 }
 
 
-.app-container-mobile{
-    display:grid;
-    grid-template-rows: 29px 1fr;
-    grid-template-columns: 1fr;
-}
-.app-container-tablet{
-    display:grid;
-    grid-template-rows: 29px 1fr;
-    grid-template-columns: 1fr;
-}
-.app-container-normal{
-    display:grid;
-    grid-template-rows: 29px 1fr;
-    grid-template-columns: 250px 1fr 1px;
-}
-.app-container-large{
-    display:grid;
-    grid-template-rows: 29px 1fr;
-    grid-template-columns: 250px 1fr 1px;
-}
 
 
 .content-mobile{

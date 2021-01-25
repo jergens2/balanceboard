@@ -1,9 +1,9 @@
-import { MenuItem } from "./header/header-menu/menu-item.class";
+import { MenuItem } from "./app-container/full-size-container/header/header-menu/menu-item.class";
 import { faSitemap, faCheckCircle, faBookOpen, faBook, faListUl, faCalendar, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { HeaderMenu } from "./header/header-menu/header-menu.class";
+import { HeaderMenu } from "./app-container/full-size-container/header/header-menu/header-menu.class";
 import { ToolType } from "../toolbox/tool-type.enum";
-import { MenuItemType } from "./header/header-menu/menu-item-type.enum";
+import { MenuItemType } from "./app-container/full-size-container/header/header-menu/menu-item-type.enum";
 
 
 

@@ -1,8 +1,8 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { EventEmitter } from "@angular/core";
 import { HeaderMenu } from "./header-menu.class";
-import { SidebarNewItemButton } from "../../sidebar/sidebar-new-item-button.interface";
-import { ToolType } from "../../../toolbox/tool-type.enum";
+import { SidebarNewItemButton } from "./sidebar-new-item-button.interface";
+import { ToolType } from "../../../../../toolbox/tool-type.enum";
 import { MenuItemType } from "./menu-item-type.enum";
 import { faBook, faBookOpen, faCheckCircle, faCogs, faSignOutAlt, faSitemap } from "@fortawesome/free-solid-svg-icons";
 

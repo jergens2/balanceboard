@@ -27,7 +27,7 @@
   <div *ngFor="let menuItem of menuItems" class="sidebar-button no-select"
     (mouseenter)="onMouseEnterSidebarNewItemButton(menuItem)" (mouseleave)="onMouseLeaveSidebarNewItemButton(menuItem)">
     <div class="sidebar-button-router-link" [routerLinkActive]='routerLinkActiveClass'
-      [routerLink]="menuItem.routerLink">
+      [routerLink]="menuItem.routerLink" *ngIf="!menuItem.isLogout">
       <div style="width:30px;margin-right:3px;">
         <fa-icon [icon]="menuItem.icon"></fa-icon>
       </div>
@@ -35,6 +35,13 @@
         {{ menuItem.title }}
       </div>
     </div>
+    <div class="sidebar-button-router-link" *ngIf="menuItem.isLogout" (click)="onClickLogout()">
+      <div style="width:30px;margin-right:3px;"><fa-icon [icon]="menuItem.icon"></fa-icon></div>
+      <div>
+        {{ menuItem.title }}
+      </div>
+    </div>
+
 
     <div *ngIf="menuItem.sidebarToolComponent" class="sidebar-new-item-button-container">
 

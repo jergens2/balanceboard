@@ -16,10 +16,10 @@ import { AuthInterceptor } from './authentication/auth-interceptor';
 import { AuthenticationService } from './authentication/authentication.service';
 
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './nav/header/header.component';
-import { SidebarComponent } from './nav/sidebar/sidebar.component';
+import { HeaderComponent } from './nav/app-container/full-size-container/header/header.component';
+import { SidebarComponent } from './nav/app-container/full-size-container/sidebar/sidebar.component';
 import { AuthenticationComponent } from './authentication/authentication.component';
-import { HeaderMenuComponent } from './nav/header/header-menu/header-menu.component';
+import { HeaderMenuComponent } from './nav/app-container/full-size-container/header/header-menu/header-menu.component';
 import { ModalComponent } from './modal/modal.component';
 import { DefaultModalComponent } from './modal/custom-modals/default-modal/default-modal.component';
 
@@ -43,6 +43,10 @@ import { UserAccountProfileModule } from './dashboard/user-account-profile/user-
 import { UapFooterComponent } from './nav/user-action-prompt/uap-footer/uap-footer.component';
 import { MobileMenuComponent } from './nav/app-container/mobile-container/mobile-menu/mobile-menu.component';
 import { MobileContainerComponent } from './nav/app-container/mobile-container/mobile-container.component';
+import { FullSizeContainerComponent } from './nav/app-container/full-size-container/full-size-container.component';
+import { TabletContainerComponent } from './nav/app-container/tablet-container/tablet-container.component';
+import { MiniSidebarComponent } from './nav/app-container/full-size-container/mini-sidebar/mini-sidebar.component';
+import { PinnedSidebarComponent } from './nav/app-container/full-size-container/pinned-sidebar/pinned-sidebar.component';
 
 
 
@@ -71,6 +75,10 @@ import { MobileContainerComponent } from './nav/app-container/mobile-container/m
     UapFooterComponent,
     MobileMenuComponent,
     MobileContainerComponent,
+    FullSizeContainerComponent,
+    TabletContainerComponent,
+    MiniSidebarComponent,
+    PinnedSidebarComponent,
 
   ],
   imports: [

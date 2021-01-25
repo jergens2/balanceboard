@@ -1,7 +1,8 @@
 .authentication-root{
     width: 100%;
     height: 100vh;
-    min-height: 568px;
+    min-height: 480px;
+    min-width: 320px;
     /* background-color: rgb(253, 253, 253); */
     display:flex;
     flex-direction: column;
@@ -12,7 +13,7 @@
 .authentication-body{
     /* min-height: 600px; */
     /* padding: 25px; */
-    min-width: 320px;
+    /* min-width: 320px; */
 
     /* max-width: 600px; */
     width:100%;
@@ -34,8 +35,8 @@
 
 .action-container{
     background-color: rgba(255, 255, 255, 0.7);
-    padding: 20px;
-    margin: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     border-radius: 5px;
 }
 

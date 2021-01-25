@@ -1,19 +1,19 @@
-import { AuthenticationService } from '../../authentication/authentication.service';
+import { AuthenticationService } from '../../../../authentication/authentication.service';
 import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { faCogs, faSignOutAlt, faPlus, faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 import { MenuItem } from '../header/header-menu/menu-item.class';
-import { appMenuItems } from '../app-menu-items';
-import { Modal } from '../../modal/modal.class';
-import { IModalOption } from '../../modal/modal-option.interface';
-import { ModalComponentType } from '../../modal/modal-component-type.enum';
-import { ModalService } from '../../modal/modal.service';
-import { ToolboxService } from '../../toolbox/toolbox.service';
-import { ToolType } from '../../toolbox/tool-type.enum';
-import { DaybookDisplayService } from '../../dashboard/daybook/daybook-display.service';
-import { DaybookWidgetType } from '../../dashboard/daybook/widgets/daybook-widget.class';
-import { BackgroundImageService } from '../../shared/background-image.service';
+import { appMenuItems } from '../../../app-menu-items';
+import { Modal } from '../../../../modal/modal.class';
+import { IModalOption } from '../../../../modal/modal-option.interface';
+import { ModalComponentType } from '../../../../modal/modal-component-type.enum';
+import { ModalService } from '../../../../modal/modal.service';
+import { ToolboxService } from '../../../../toolbox/toolbox.service';
+import { ToolType } from '../../../../toolbox/tool-type.enum';
+import { DaybookDisplayService } from '../../../../dashboard/daybook/daybook-display.service';
+import { DaybookWidgetType } from '../../../../dashboard/daybook/widgets/daybook-widget.class';
+import { BackgroundImageService } from '../../../../shared/background-image.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -71,23 +71,23 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   public onClickMenuItem(menuItem: MenuItem) {
-    if (menuItem.sidebarToolComponentMouseOver) {
-      if (menuItem.sidebarToolComponent) {
-        if (menuItem.sidebarToolComponent === ToolType.TIMELOG_ENTRY) {
-          this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
-          this.router.navigate(['/daybook']);
-          this.daybookService.onClickNowDelineator();
+      if (menuItem.sidebarToolComponentMouseOver) {
+        if (menuItem.sidebarToolComponent) {
+          if (menuItem.sidebarToolComponent === ToolType.TIMELOG_ENTRY) {
+            this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
+            this.router.navigate(['/daybook']);
+            this.daybookService.onClickNowDelineator();
+
+          } else {
+            this.toolsService.openTool(menuItem.sidebarToolComponent);
+          }
         } else {
           this.toolsService.openTool(menuItem.sidebarToolComponent);
         }
+
       } else {
-        this.toolsService.openTool(menuItem.sidebarToolComponent);
+        this.router.navigate([menuItem.routerLink]);
       }
-
-    } else {
-      this.router.navigate([menuItem.routerLink]);
-    }
-
   }
 
   public onMouseEnterSidebarNewItemButton(menuItem: MenuItem) {
@@ -111,13 +111,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   onClick(button: string) {
     this.router.navigate(['/' + button]);
   }
-  onClickContact(){
+  onClickContact() {
     this.router.navigate(['/user-account'])
   }
 
   onClickLogout() {
     console.log("OnclickLogout()")
-    if(!this._isLocking){
+    if (!this._isLocking) {
       let options: IModalOption[] = [
         {
           value: "Logout",
@@ -141,7 +141,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       });
       this.modalService.openModal(modal);
     }
-    
+
 
   }
 
@@ -150,7 +150,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private _isLocking: boolean = false;
-  public onClickLock(){
+  public onClickLock() {
     console.log("Locking!")
     this._isLocking = true;
     // this.bgService.getNewRandomImage();

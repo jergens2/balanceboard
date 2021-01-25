@@ -45,27 +45,58 @@ export class UserAccountProfileService {
   }
 
 
+  /**
+   * 
+   */
+  public saveChanges$(): Observable<boolean> {
+    const profile = this.userProfile;
+    const _complete$: Subject<boolean> = new Subject();
+    const url = serverUrl + "/api/user-account-profile/save";
+    const body = {
+      id: profile.id,
+      userId: this._userId,
+      userProfile: profile.userProfileHttp(),
+    }
+    this.httpClient.post<{ message: string, data: any, success: boolean }>(url, body)
+      .subscribe((response) => {
+        // console.log("Respoinse is: ", response)
+        if (response.success === true) {
+          const newProfile = new UserAccountProfile(response.data);
+          this._userProfile$.next(newProfile);
+        }
+        _complete$.next(true);
+      }, error => {
+        console.log("error: ", error)
+        _complete$.next(true);
+      });
+    return _complete$.asObservable();
+  }
 
 
-  // public initiate$(userId: string): Observable<UserPromptType> {
-  //   this._userId = userId;
-  //   const _prompt$: Subject<UserPromptType> = new Subject();
-  //   this._getUserAccountProfile$().subscribe((profile) => {
-  //     this._userProfile$ = new BehaviorSubject(profile);
-  //     // console.log("Profile!" , profile.isValid, profile);
-  //     if (profile.isValid) {
-  //       _prompt$.next();
-  //     } else {
-  //       _prompt$.next(UserPromptType.USER_PROFILE);
-  //     }
-  //   }, (error) => {
-  //     console.log("Error with user profile: ", error);
-  //     _prompt$.next();
-  //   });
-
-  //   return _prompt$.asObservable();
-  // }
-
+  public saveAppPreferencesChanges$(preferences: UAPAppPreferences): Observable<boolean> {
+    const profile = this.userProfile;
+    profile.setAppPreferences(preferences);
+    const _complete$: Subject<boolean> = new Subject();
+    const url = serverUrl + "/api/user-account-profile/save";
+    const body = {
+      id: this.userProfile.id,
+      userId: this._userId,
+      userProfile: profile.userProfileHttp(),
+    }
+    this.httpClient.post<{ message: string, data: any, success: boolean }>(url, body)
+      .subscribe((response) => {
+        // console.log("Respoinse is: ", response)
+        if (response.success === true) {
+          const newProfile = new UserAccountProfile(response.data);
+          this._userProfile$.next(newProfile);
+        }
+        _complete$.next(true);
+      }, error => {
+        console.log("error: ", error)
+        _complete$.next(true);
+      });
+    return _complete$.asObservable();
+  }
   public saveAppConfigChanges$(config: UAPAppConfiguration): Observable<boolean> {
     const profile = this.userProfile;
     profile.setAppConfig(config);

@@ -65,7 +65,10 @@ export class AppContainerComponent implements OnInit, OnDestroy {
   public get sidebarIsOpen(): boolean { return this._sidebarIsOpen; }
 
 
-  public get isSmallScreen(): boolean { return this.appScreenSize.isSmall; }
+  public get isSmallSize(): boolean { return this.appScreenSize.isSmallSize; }
+  public get isMediumSize(): boolean { return this.appScreenSize.isMediumSize; }
+  public get isFullSize(): boolean { return this.appScreenSize.isFullSize; }
+
   public get isLoading(): boolean { return this._isLoading; }
   public get showUserActionPrompt(): boolean { return this._showUserActionPrompt && !this.isLoading; }
   public get showAppContainer(): boolean { return !this.isLoading && !this.showUserActionPrompt; }

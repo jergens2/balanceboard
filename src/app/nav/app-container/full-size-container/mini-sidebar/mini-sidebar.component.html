@@ -1,0 +1,33 @@
+<div class="mini-sidebar-root" >
+
+    <div class="sidebar sidebar-large" *ngIf="mouseIsOver" [@appear]="'appear'" (mouseleave)="onMouseLeave()">
+        <div class="pin-button-container">
+            <div class="pin-button" (click)="onClickPin()">
+                <fa-icon [icon]="faThumbtack"></fa-icon>
+            </div>
+        </div>
+        <div *ngFor="let menuItem of menuItems" class="menu-item">
+
+            <div class="menu-item-label" routerLinkActive='active-link-icon' [routerLink]="menuItem.routerLink">
+                <div class="menu-item-icon">
+                    <fa-icon [icon]="menuItem.icon"></fa-icon>
+                </div>
+                <div style="width: 100px; margin-left: 10px;">
+                    {{ menuItem.title }}
+                </div>
+            </div>
+            <app-new-item-circle-button [diameter]="35" (click)="onClickMenuItem(menuItem)">
+            </app-new-item-circle-button>
+        </div>
+    </div>
+
+
+    <div class="sidebar sidebar-minimized" *ngIf="!mouseIsOver" (mouseenter)="onMouseEnter()">
+        <div *ngFor="let menuItem of menuItems" class="menu-item" routerLinkActive='active-link-icon' [routerLink]="menuItem.routerLink">
+            <div class="menu-item-icon">
+                <fa-icon [icon]="menuItem.icon"></fa-icon>
+            </div>
+        </div>
+    </div>
+
+</div>

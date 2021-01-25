@@ -16,7 +16,7 @@ export class AppScreenSizeService {
   public get appScreenSize$(): Observable<AppScreenSize> { return this._appScreenSize$.asObservable(); }
   public get appScreenSize(): AppScreenSize { return this._appScreenSize$.getValue(); }
 
-  public get isSmall(): boolean { return this.appScreenSize.isSmall; }
+  public get isSmall(): boolean { return this.appScreenSize.isSmallSize; }
 
   public get maxComponentHeightPx(): number {
     if (this.appScreenSize.label !== AppScreenSizeLabel.MOBILE) {
