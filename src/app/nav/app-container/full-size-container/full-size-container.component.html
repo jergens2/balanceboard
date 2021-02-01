@@ -1,20 +1,3 @@
-<!-- <div class="container-root sidebar-not-pinned" *ngIf="!sidebarIsPinned">
-    <div class="outlet">
-        <router-outlet></router-outlet>
-    </div>
-
-    <app-mini-sidebar class="sidebar-container-unpinned"></app-mini-sidebar>
-</div>
-
-
-<div class="container-root sidebar-pinned" *ngIf="sidebarIsPinned">
-    <app-pinned-sidebar class="sidebar-container-pinned"></app-pinned-sidebar>
-    
-    <div class="outlet">
-        <router-outlet></router-outlet>
-    </div>
-</div> -->
-
 <div class="container-root" [ngClass]="{'sidebar-pinned': sidebarIsPinned, 'sidebar-not-pinned': !sidebarIsPinned}">
     
     <app-pinned-sidebar class="sidebar-container-pinned" *ngIf="sidebarIsPinned"></app-pinned-sidebar>
@@ -24,8 +7,16 @@
     </div>
 
     <app-mini-sidebar class="sidebar-container-unpinned" *ngIf="!sidebarIsPinned"></app-mini-sidebar>
+
+
 </div>
 
+<div *ngIf="showToolbox" class="toolbox-root">
+    <div class="tool-container">
+        <app-toolbox></app-toolbox>
+    </div>
+
+</div>
 
 
 <!-- <p>full-size-container works!</p> -->

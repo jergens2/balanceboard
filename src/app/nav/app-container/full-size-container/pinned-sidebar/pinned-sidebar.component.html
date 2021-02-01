@@ -1,14 +1,54 @@
-<div class="pinned-sidebar-root">
-    <div (click)="onClickUnpin()">
-        <fa-icon [icon]="faChevronLeft"></fa-icon>
-    </div>
-    <div>
-<!-- 
-    <div *ngFor="let menuItem of menuItems" class="menu-item" routerLinkActive='active-link-icon' [routerLink]="menuItem.routerLink">
-            <div class="menu-item-icon">
-                <fa-icon [icon]="menuItem.icon"></fa-icon>
-            </div>
+<div class="pinned-sidebar-root no-select" [@appear]="isUnpinned ? 'disappear' : 'appear'" (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()">
+
+    <div class="unpin-button-container">
+        <div (click)="onClickUnpin()" class="unpin-button" *ngIf="mouseIsOver">
+            <fa-icon [icon]="faChevronLeft"></fa-icon>
         </div>
- -->
     </div>
+
+
+    <div class="menu-items">
+
+
+        <div *ngFor="let menuItem of menuItems">
+
+
+            <div class="menu-item" [ngStyle]="menuItem.ngStylePinned" *ngIf="menuItem.hasRouterLink" [routerLink]="menuItem.routerLink" routerLinkActive='active-link-icon' >
+                <div class="menu-item-label" >
+                    <div class="menu-item-icon">
+                        <fa-icon [icon]="menuItem.icon"></fa-icon>
+                    </div>
+                    <div>
+                        {{ menuItem.title }}
+                    </div>
+                </div>
+                <app-new-item-circle-button [diameter]="35" [icon]="menuItem.sidebarToolIcon"
+                    (click)="onClickMenuItemTool(menuItem)" *ngIf="menuItem.hasSidebarToolComponent">
+                </app-new-item-circle-button>
+            </div>
+
+
+            <div class="menu-item" [ngStyle]="menuItem.ngStylePinned" *ngIf="!menuItem.hasRouterLink">
+                <div class="menu-item-label">
+                    <div class="menu-item-icon">
+                        <fa-icon [icon]="menuItem.icon"></fa-icon>
+                    </div>
+                    <div>
+                        {{ menuItem.title }}
+                    </div>
+                </div>
+                <app-new-item-circle-button [diameter]="35" [icon]="menuItem.sidebarToolIcon"
+                    (click)="onClickMenuItemTool(menuItem)" *ngIf="menuItem.hasSidebarToolComponent">
+                </app-new-item-circle-button>
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+
+
 </div>

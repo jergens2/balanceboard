@@ -106,28 +106,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this._menuSubs = [];
     const newMenus: HeaderMenu[] = [];
     const signOutMenuItem = new MenuItem(MenuItemType.LOGOUT);
-    const signOutSub = signOutMenuItem.clickEmitted$.subscribe(() => {
-      const options: IModalOption[] = [
-        {
-          value: 'Logout',
-          dataObject: null,
-        },
-        {
-          value: 'Cancel',
-          dataObject: null,
-        }
-      ];
-      const modal: Modal = new Modal('Logout?', 'Confirm: logout?', null, options, {}, ModalComponentType.Confirm);
-      modal.headerIcon = faSignOutAlt;
+    // const signOutSub = signOutMenuItem.clickEmitted$.subscribe(() => {
+    //   const options: IModalOption[] = [
+    //     {
+    //       value: 'Logout',
+    //       dataObject: null,
+    //     },
+    //     {
+    //       value: 'Cancel',
+    //       dataObject: null,
+    //     }
+    //   ];
+    //   const modal: Modal = new Modal('Logout?', 'Confirm: logout?', null, options, {}, ModalComponentType.Confirm);
+    //   modal.headerIcon = faSignOutAlt;
 
-      this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
-        if (selectedOption.value === 'Logout') { this.logout(); } else if (selectedOption.value == 'Cancel') {
-        } else {
-          //error 
-        }
-      });
-      this.modalService.openModal(modal);
-    });
+    //   this.modalService.modalResponse$.subscribe((selectedOption: IModalOption) => {
+    //     if (selectedOption.value === 'Logout') { this.logout(); } else if (selectedOption.value == 'Cancel') {
+    //     } else {
+    //       //error 
+    //     }
+    //   });
+    //   this.modalService.openModal(modal);
+    // });
     newMenus.push(new HeaderMenu('Menu', appMenuItems.concat([new MenuItem(MenuItemType.SETTINGS), signOutMenuItem])));
 
     const notepadMenuItem: MenuItem = new MenuItem(MenuItemType.NOTES);
@@ -135,14 +135,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const timelogEntryMenuItem: MenuItem = new MenuItem(MenuItemType.DAYBOOK);
     // const futureEventMenuItem: MenuItem = new MenuItem('Appointment / Future Event', null, faCalendarAlt);
     // const dailyTaskListMenuItem: MenuItem = new MenuItem('Daily Task List', null, faTasks);
-    this._menuSubs = [
-      signOutSub,
-      notepadMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.NOTEBOOK_ENTRY)),
-      actionItemMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.ACTION_ITEM)),
-      timelogEntryMenuItem.clickEmitted$.subscribe(c => this.daybookDisplayService.displayManager.onClickNowDelineator()),
-      // futureEventMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.FUTURE_EVENT)),
-      // dailyTaskListMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.DAILY_TASK_LIST)),
-    ];
+    // this._menuSubs = [
+    //   signOutSub,
+    //   notepadMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.NOTEBOOK_ENTRY)),
+    //   actionItemMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.ACTION_ITEM)),
+    //   timelogEntryMenuItem.clickEmitted$.subscribe(c => this.daybookDisplayService.displayManager.onClickNowDelineator()),
+    //   // futureEventMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.FUTURE_EVENT)),
+    //   // dailyTaskListMenuItem.clickEmitted$.subscribe(c => this.toolsService.openTool(ToolType.DAILY_TASK_LIST)),
+    // ];
 
     const toolsMenuItems: MenuItem[] = [
       notepadMenuItem,

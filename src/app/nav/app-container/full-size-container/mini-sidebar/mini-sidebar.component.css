@@ -12,6 +12,7 @@
     position: fixed;
     display:flex;
     flex-direction: column;
+    padding:0px;
     padding-left: 15px;
     font-size: 1.25em;
 
@@ -54,6 +55,7 @@
     align-items:center;
     padding: 5px;
     margin-bottom: 5px;
+    height: 45px;
 }
 .menu-item:last-of-type{
     margin-bottom: 0px;
@@ -104,7 +106,7 @@
 }
 
 .pin-button{
-    color: rgb(182, 182, 182);
+    color: rgba(0, 0, 0, 0.2);
     font-size: 0.8em;
 }
 .pin-button:hover{

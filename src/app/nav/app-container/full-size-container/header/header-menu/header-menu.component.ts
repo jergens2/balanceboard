@@ -30,25 +30,25 @@ export class HeaderMenuComponent implements OnInit {
     if(this.mouseOverSubMenu){
 
     }else{
-      menuItem.click();
-      if (menuItem.routerLink != null && menuItem.routerLink != '') {
-        this.router.navigate([menuItem.routerLink]);
-      }
+      // menuItem.click();
+      // if (menuItem.routerLink != null && menuItem.routerLink != '') {
+      //   this.router.navigate([menuItem.routerLink]);
+      // }
     }
     
     // this.headerService.closeMenus(true);
   }
 
   onMouseOverHeaderMenuItem(menuItem: MenuItem) {
-    if (menuItem.subMenu) {
-      menuItem.subMenu.isOpen = true;
-    }
+    // if (menuItem.subMenu) {
+    //   menuItem.subMenu.isOpen = true;
+    // }
 
   }
   onMouseLeaveHeaderMenuItem(menuItem: MenuItem) {
-    if (menuItem.subMenu) {
-      menuItem.closeSubMenu();
-    }
+    // if (menuItem.subMenu) {
+    //   menuItem.closeSubMenu();
+    // }
     // if (menuItem.subMenu) {
     //   menuItem.subMenu.isOpen = false;
     // }

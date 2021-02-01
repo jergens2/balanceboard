@@ -5,4 +5,97 @@
     flex-direction: column;
 
     background-color: rgba(255, 255, 255, 0.9);
+    border-right: 1px solid rgb(231, 231, 231);
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    
+    box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.05);
+    -webkit-box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.05);
+    -moz-box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.05);
+}
+
+
+
+
+
+.menu-items{
+    display: flex;
+    flex-direction: column;
+
+    flex-grow: 2;
+
+    font-size: 1.25em ;
+
+    margin-top: 10px;
+}  
+
+
+
+.menu-item{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    align-items:center;
+    justify-content: space-between;
+    padding: 8px;
+    margin-bottom: 5px;
+    height: 45px;
+}
+.menu-item:hover{
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.menu-item-label{
+    display:flex; 
+    flex-direction: row; 
+    align-items: center;
+    margin-right: 5px;
+}
+.menu-item:hover > .menu-item-label{
+    font-weight: bold;
+    font-size: 1.1em;
+    color: blue;
+    cursor: pointer;
+}
+
+
+
+.menu-item-icon{
+    width: 30px;
+    margin-right: 15px;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.active-link-icon{
+    color: rgb(23, 85, 190);
+}
+
+
+.unpin-button-container{
+    width: 100%;
+    height: 30px;
+    display:flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    font-size: 1.1em;
+}
+
+.unpin-button{
+    color: rgba(0, 0, 0, 0.3);
+    font-size: 0.8em;
+    width: 25px;
+    height: 25px;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.unpin-button:hover{
+    cursor: pointer;
+    color:black;
 }

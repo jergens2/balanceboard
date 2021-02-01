@@ -9,6 +9,7 @@ import { DaybookDisplayService } from 'src/app/dashboard/daybook/daybook-display
 import { ToolboxService } from 'src/app/toolbox/toolbox.service';
 import { Router } from '@angular/router';
 import { UserAccountProfileService } from 'src/app/dashboard/user-account-profile/user-account-profile.service';
+import { AuthenticationService } from 'src/app/authentication/authentication.service';
 
 
 @Component({
@@ -25,24 +26,19 @@ import { UserAccountProfileService } from 'src/app/dashboard/user-account-profil
       transition('void => *', [
         style({
           transform: 'translateX(-165px)',
-          opacity: 0.1,
+          opacity: 0.3,
           padding: '15px',
           paddingLeft: '15px', 
         }),
-        animate(105, style({
-          opacity: 1,
-          transform: 'translateX(0)',
-          padding: '35px',
-          paddingLeft: '15px', 
-        }))
+        animate(120, )
       ]),
       transition('* => void', [
-        animate(150, style({
+        animate(120, style({
           transform: 'translateX(-165px)',
-          opacity: 0.1,
+          opacity: 0.3,
           // color: 'white',
-          padding: '15px',
-          paddingLeft: '15px', 
+          // padding: '15px',
+          // paddingLeft: '15px', 
         }))
       ])
     ]),
@@ -56,6 +52,7 @@ export class MiniSidebarComponent implements OnInit {
     private daybookService: DaybookDisplayService, 
     private toolboxService: ToolboxService,
     private profileService: UserAccountProfileService,
+    private authService: AuthenticationService,
     private router: Router) { }
 
   public get faPlus() { return faPlus; }
@@ -74,22 +71,29 @@ export class MiniSidebarComponent implements OnInit {
   public get mouseIsOver(): boolean { return this._mouseIsOver; }
 
   public onClickMenuItem(menuItem: MenuItem) {
+    console.log("ITEM CLICKED: " , menuItem.itemType)
     if (menuItem.sidebarToolComponentMouseOver) {
-      if (menuItem.sidebarToolComponent) {
-        if (menuItem.sidebarToolComponent === ToolType.TIMELOG_ENTRY) {
+      if (menuItem.hasSidebarToolComponent) {
+        if (menuItem.sidebarTool === ToolType.TIMELOG_ENTRY) {
           this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
           this.router.navigate(['/daybook']);
           this.daybookService.onClickNowDelineator();
-
+        } else if(menuItem.sidebarTool === ToolType.LOCK){
+          
         } else {
-          this.toolboxService.openTool(menuItem.sidebarToolComponent);
+          this.toolboxService.openTool(menuItem.sidebarTool);
         }
-      } else {
-        this.toolboxService.openTool(menuItem.sidebarToolComponent);
       }
-
     } else {
       this.router.navigate([menuItem.routerLink]);
+    }
+  }
+
+  public onClickMenuItemTool(menuItem: MenuItem){
+    if(menuItem.sidebarTool === ToolType.LOCK){
+      this.authService.lock();
+    }else{
+
     }
   }
 

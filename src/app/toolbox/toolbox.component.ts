@@ -8,10 +8,34 @@ import * as moment from 'moment';
 import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { AppScreenSize } from '../shared/app-screen-size/app-screen-size.class';
 
+import { trigger, state, style, animate, transition, keyframes, } from '@angular/animations';
+
 @Component({
   selector: 'app-toolbox',
   templateUrl: './toolbox.component.html',
-  styleUrls: ['./toolbox.component.css']
+  styleUrls: ['./toolbox.component.css'],
+  animations: [
+    trigger('appear', [
+      state('appear', style({
+        transform: 'translateY(0)',
+        opacity: 1,
+      })),
+      transition('void => *', [
+        style({
+          transform: 'translateY(-100%)',
+          opacity: 0.3,
+        }),
+        animate(200,),
+
+      ]),
+      transition('* => void', [
+        animate(200, style({
+          transform: 'translateX(-100%)',
+          opacity: 0.3,
+        }))
+      ])
+    ]),
+  ],
 })
 export class ToolsComponent implements OnInit {
 

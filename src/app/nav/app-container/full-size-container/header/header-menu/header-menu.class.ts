@@ -12,19 +12,19 @@ export class HeaderMenu{
     constructor(name: string, menuItems: MenuItem[]){
         this.name = name;
         this.menuItems = Object.assign([] , menuItems);
-        for(let menuItem of this.menuItems){
-            menuItem.clickEmitted$.subscribe((click)=>{
-                this.closeMenu();
-            })
-        }
+        // for(let menuItem of this.menuItems){
+        //     menuItem.clickEmitted$.subscribe((click)=>{
+        //         this.closeMenu();
+        //     })
+        // }
     }
 
     closeMenu(){
-        this.menuOpenSubscription.unsubscribe();
-        this.menuItems.forEach((menuItem: MenuItem)=>{
-            menuItem.closeSubMenu();
-        })
-        this.isOpen = false;
+        // this.menuOpenSubscription.unsubscribe();
+        // this.menuItems.forEach((menuItem: MenuItem)=>{
+        //     menuItem.closeSubMenu();
+        // })
+        // this.isOpen = false;
     }
 
 }
