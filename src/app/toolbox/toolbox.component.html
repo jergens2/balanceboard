@@ -1,127 +1,29 @@
-<div class="tools-root" *ngIf="toolName != ''" [@appear]="'appear'">
+<div class="toolbox-root" [@appear]="'appear'">
+  <div class="tool-container">
 
-
-  <div class="tool" *ngIf="toolName == 'ACTION_ITEM'"
-    [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <div class="tool-header ">
-      <div class="tool-header-item">
-        New action item
-      </div>
-      <div class="header-close-button">
-        <div *ngIf="queueCount > 1" class="queue-count">
-          {{ queueCount }}
-        </div>
-        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
-      </div>
-    </div>
-    <div class="tool-body">
-      <app-action-item-form></app-action-item-form>
-    </div>
-  </div>
-
-  <div class="tool" *ngIf="toolName == 'NOTEBOOK_ENTRY'"
-    [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
     <div class="tool-header">
-      <div class="tool-header-item font-family-open-sans">
-        New Notebook Entry
+      <div class="tool-title">
+        {{ toolTitle }}
       </div>
       <div class="header-close-button">
-        <div *ngIf="queueCount > 1" class="queue-count">
-          {{ queueCount }}
-        </div>
         <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
       </div>
     </div>
+
     <div class="tool-body">
-      <app-notebook-entry-form></app-notebook-entry-form>
+      
+      <app-action-item-form *ngIf="toolIsActionItem"></app-action-item-form>
+      <app-notebook-entry-form *ngIf="toolIsNote"></app-notebook-entry-form>
+      <app-timelog-entry-form *ngIf="toolIsTimelogEntry"></app-timelog-entry-form>
+      <app-sleep-entry-form *ngIf="toolIsSleepEntry"></app-sleep-entry-form>
+      <app-future-event-form *ngIf="toolIsFutureEvent"></app-future-event-form>
+      <app-dtl-tool *ngIf="toolIsDailyTaskList"></app-dtl-tool>
+      <!-- <div style="height: 2020px; background-color: lime;">
+        asdf
+  
+      </div> -->
     </div>
+
   </div>
-
-  <div class="tool" *ngIf="toolName == 'TIMELOG_ENTRY'"
-    [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <div class="tool-header">
-      <div class="tool-header-item font-family-open-sans">
-        Timelog Entry
-      </div>
-      <div class="header-close-button">
-        <div *ngIf="queueCount > 1" class="queue-count">
-          {{ queueCount }}
-        </div>
-        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
-      </div>
-    </div>
-    <div class="tool-body">
-      <app-timelog-entry-form></app-timelog-entry-form>
-    </div>
-  </div>
-
-
-  <div class="tool" *ngIf="toolName === 'START_NEW_DAY'"
-    [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <!-- <div class="tool-header">
-      <div class="tool-header-item font-family-open-sans">
-        Starting a new day
-      </div>
-      <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
-    </div> -->
-    <div class="tool-body">
-      <app-daybook-time-position-form></app-daybook-time-position-form>
-    </div>
-  </div>
-
-  <div class="tool" *ngIf="toolName == 'SLEEP_ENTRY'"
-    [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <div class="tool-header">
-      <div class="tool-header-item font-family-open-sans">
-        Sleep Entry
-      </div>
-      <div class="header-close-button">
-        <div *ngIf="queueCount > 1" class="queue-count">
-          {{ queueCount }}
-        </div>
-        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
-      </div>
-    </div>
-    <div class="tool-body">
-      <app-sleep-entry-form></app-sleep-entry-form>
-    </div>
-  </div>
-
-  <div class="tool" *ngIf="toolName == 'FUTURE_EVENT'"
-    [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <div class="tool-header">
-      <div class="tool-header-item">
-        New Future Event
-      </div>
-      <div class="header-close-button">
-        <div *ngIf="queueCount > 1" class="queue-count">
-          {{ queueCount }}
-        </div>
-        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
-      </div>
-    </div>
-    <div class="tool-body">
-      <app-future-event-form></app-future-event-form>
-    </div>
-  </div>
-
-  <div class="tool" *ngIf="toolName == 'DAILY_TASK_LIST'"
-    [ngClass]="{'tool-mobile': screenSize <=1 , 'tool-large': screenSize > 1}">
-    <div class="tool-header">
-      <div class="tool-header-item">
-        Daily Task List: {{ currentDate }}
-      </div>
-      <div class="header-close-button">
-        <div *ngIf="queueCount > 1" class="queue-count">
-          {{ queueCount }}
-        </div>
-        <fa-icon [icon]="faTimes" class="icon-button tool-header-item" (click)="onClickClose()"></fa-icon>
-      </div>
-
-    </div>
-    <div class="tool-body">
-      <app-dtl-tool></app-dtl-tool>
-    </div>
-  </div>
-
 </div>
+

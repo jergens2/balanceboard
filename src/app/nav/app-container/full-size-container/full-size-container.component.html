@@ -1,7 +1,7 @@
 <div class="container-root" [ngClass]="{'sidebar-pinned': sidebarIsPinned, 'sidebar-not-pinned': !sidebarIsPinned}">
-    
+
     <app-pinned-sidebar class="sidebar-container-pinned" *ngIf="sidebarIsPinned"></app-pinned-sidebar>
-    
+
     <div class="outlet">
         <router-outlet></router-outlet>
     </div>
@@ -12,10 +12,7 @@
 </div>
 
 <div *ngIf="showToolbox" class="toolbox-root">
-    <div class="tool-container">
-        <app-toolbox></app-toolbox>
-    </div>
-
+    <app-toolbox class="tool-container"></app-toolbox>
 </div>
 
 

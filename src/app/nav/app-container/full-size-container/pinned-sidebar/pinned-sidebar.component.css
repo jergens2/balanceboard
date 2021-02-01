@@ -5,13 +5,13 @@
     flex-direction: column;
 
     background-color: rgba(255, 255, 255, 0.9);
-    border-right: 1px solid rgb(231, 231, 231);
+    border-right: 1px solid rgb(245, 245, 245);
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
     
-    box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.05);
-    -webkit-box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.05);
-    -moz-box-shadow: 2px 1px 5px 1px rgba(0,0,0,0.05);
+    box-shadow: 2px 1px 5px 0px rgba(0,0,0,0.05);
+    -webkit-box-shadow: 2px 1px 5px 0px rgba(0,0,0,0.05);
+    -moz-box-shadow: 2px 1px 5px 0px rgba(0,0,0,0.05);
 }
 
 
@@ -24,8 +24,7 @@
 
     flex-grow: 2;
 
-    font-size: 1.25em ;
-
+    font-size: 1.15em ;
     margin-top: 10px;
 }  
 
@@ -55,10 +54,16 @@
 .menu-item:hover > .menu-item-label{
     font-weight: bold;
     font-size: 1.1em;
-    color: blue;
+    color: rgb(0, 89, 255);
     cursor: pointer;
 }
+.menu-item:hover > .menu-item-label > .menu-item-icon{
+    color: rgb(0, 89, 255);
+}
 
+.menu-item-title{
+    font-weight:550;
+}
 
 
 .menu-item-icon{
@@ -68,7 +73,9 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    color: rgb(44, 44, 44);
 }
+
 
 
 .active-link-icon{

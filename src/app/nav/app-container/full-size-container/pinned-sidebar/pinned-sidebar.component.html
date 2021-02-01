@@ -16,10 +16,10 @@
 
             <div class="menu-item" [ngStyle]="menuItem.ngStylePinned" *ngIf="menuItem.hasRouterLink" [routerLink]="menuItem.routerLink" routerLinkActive='active-link-icon' >
                 <div class="menu-item-label" >
-                    <div class="menu-item-icon">
+                    <div class="menu-item-icon" routerLinkActive='active-link-icon'>
                         <fa-icon [icon]="menuItem.icon"></fa-icon>
                     </div>
-                    <div>
+                    <div class="menu-item-title">
                         {{ menuItem.title }}
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                     <div class="menu-item-icon">
                         <fa-icon [icon]="menuItem.icon"></fa-icon>
                     </div>
-                    <div>
+                    <div class="menu-item-title">
                         {{ menuItem.title }}
                     </div>
                 </div>

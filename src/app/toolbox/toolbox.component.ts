@@ -43,11 +43,30 @@ export class ToolsComponent implements OnInit {
 
   constructor(private toolsService: ToolboxService, private sizeService: AppScreenSizeService) { }
 
-  // public ifNotepad: boolean = false;
-  // public ifActionItem: boolean = false;
-  // public ifTimelogEntry: boolean = false;
+  private _currentTool: ToolType = null;
+  public get currentTool(): ToolType { return this._currentTool; }
+  public get hasCurrentTool(): boolean { return this.currentTool !== null; }
 
-  public toolName: string = "";
+  public get toolIsNote(): boolean { return this._currentTool === ToolType.NOTEBOOK_ENTRY; }
+  public get toolIsActionItem(): boolean { return this._currentTool === ToolType.ACTION_ITEM; }
+  public get toolIsTimelogEntry(): boolean { return this._currentTool === ToolType.TIMELOG_ENTRY; }
+  public get toolIsActivity(): boolean { return this._currentTool === ToolType.ACTIVITY; }
+  public get toolIsFutureEvent(): boolean { return this._currentTool === ToolType.FUTURE_EVENT; }
+  public get toolIsSleepEntry(): boolean { return this._currentTool === ToolType.SLEEP_ENTRY; }
+  public get toolIsDailyTaskList(): boolean { return this._currentTool === ToolType.DAILY_TASK_LIST; }
+
+  public get toolTitle(): string {
+    if (this.toolIsNote) { return 'New note'; }
+    else if (this.toolIsActionItem) { return 'New action item'; }
+    else if (this.toolIsTimelogEntry) { return 'New timelog entry'; }
+    else if (this.toolIsActivity) { return 'New activity definition'; }
+    else if (this.toolIsFutureEvent) { return 'New future event'; }
+    else if (this.toolIsSleepEntry) { return 'Sleep entry'; }
+    else if (this.toolIsDailyTaskList) { return 'Daily task list'; }
+    else { return ''; }
+  }
+
+
   public screenSize: AppScreenSizeLabel;
 
   ngOnInit() {
@@ -60,9 +79,9 @@ export class ToolsComponent implements OnInit {
     this.toolsService.currentToolQueue$.subscribe((tools: ToolType[]) => {
       // console.log("Tool queue subscription: ", tools)
       if (tools.length > 0) {
-        this.toolName = tools[0].toString();
+        this._currentTool = tools[0];
       } else {
-        this.toolName = "";
+        this._currentTool = null;
       }
     });
     // console.log("Tools component init COMPLETE");
