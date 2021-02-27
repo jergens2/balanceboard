@@ -75,7 +75,6 @@ export class DaybookDisplayService {
 
   public onZoomChanged(zoom: TimelogZoomType) {
     this.displayManager.onZoomChanged(zoom);
-    console.log("onZoomChanged")
     this._displayUpdated$.next(DaybookUpdateAction.REFRESH);
   }
 
@@ -125,12 +124,12 @@ export class DaybookDisplayService {
 
 
   public reinitiate() {
-    console.log('   * REINITIATING DAYBOOK DISPLAY SERVICE')
+    // console.log('   * REINITIATING DAYBOOK DISPLAY SERVICE')
     this._daybookDisplayManager = new DaybookDisplayManager(this.toolBoxService, this.activitiesService, this.clockService.clock, this.profileService);
     this._closedSub.unsubscribe();
     this._closedSub = this._daybookDisplayManager.closed$.subscribe(closed => {
       this._currentlyDrawing = false;
-      console.log("reinitiate closed sub")
+      console.log("there is an error being caused here when logging out or locking, need to fix.")
       this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
     });
     this._updateDisplay(this.todayYYYYMMDD, DaybookUpdateAction.INITIAL);
@@ -146,13 +145,10 @@ export class DaybookDisplayService {
     }, e => { isComplete$.error(e) }, () => isComplete$.next(true));
     return isComplete$.asObservable();
   }
-  public refreshDisplay(){
-    console.log("refreshDisplay()")
-    this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
-  }
+  public refreshDisplay() { this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH); }
 
   private _updateDisplay(dateYYYYMMDD: string, action: DaybookUpdateAction, drawnItem?: DaybookTimeScheduleActiveItem) {
-    console.log("updating display: " + dateYYYYMMDD, action)
+    // console.log("updating display: " + dateYYYYMMDD, action)
     let doUpdate: boolean = true;
     if (action === DaybookUpdateAction.CLOCK_MINUTE && this.currentlyDrawing) {
       doUpdate = false;
@@ -191,7 +187,7 @@ export class DaybookDisplayService {
 
 
   private _subscribeToClock() {
-    const clock = this.clockService.clock;    
+    const clock = this.clockService.clock;
     this._clockSubs.forEach(s => s.unsubscribe());
     this._clockSubs = [
       clock.everyClockMinute$.subscribe(tick => {
@@ -209,7 +205,7 @@ export class DaybookDisplayService {
       }),
       clock.everyClockSecond$.subscribe(tick => {
         const second = clock.currentTime.second();
-        if(second === 15 || second === 45){
+        if (second === 15 || second === 45) {
           this.httpService.getUpdate$(this.activeDateYYYYMMDD);
         }
       }),

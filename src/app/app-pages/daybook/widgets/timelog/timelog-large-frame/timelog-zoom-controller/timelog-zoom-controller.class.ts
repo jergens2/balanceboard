@@ -51,7 +51,6 @@ export class TimelogZoomController {
         this._schedule = schedule;
         this._sleepCycle = sleepCycle;
         this._dateYYYYMMDD = dateYYYYMMDD;
-        console.log("UPDATING ZOOM")
         this._updateZoomItems();
     }
 
@@ -80,7 +79,7 @@ export class TimelogZoomController {
         }else{
             this._profileService.appPreferences.daybook.listMode = false;
         }
-        console.log("Setting zoom")
+        // console.log("Setting zoom")
         this._profileService.saveChanges$();
     }
 

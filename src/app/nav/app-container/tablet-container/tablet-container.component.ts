@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToolboxService } from 'src/app/toolbox/toolbox.service';
 
 @Component({
   selector: 'app-tablet-container',
@@ -7,7 +8,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TabletContainerComponent implements OnInit {
 
-  constructor() { }
+  constructor(private toolboxService: ToolboxService) { }
+  
+  public get showToolbox(): boolean { return this.toolboxService.toolIsOpen; }
 
   ngOnInit(): void {
   }

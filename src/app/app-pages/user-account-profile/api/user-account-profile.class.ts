@@ -59,8 +59,7 @@ export class UserAccountProfile {
         this._setAppPreferences(userProfile);
         this._setAppConfig(userProfile);
 
-        console.log("UserAccountProfile created:" , this.userProfileHttp())
-        console.log(this.daybook)
+        // console.log("UserAccountProfile created:" , this.userProfileHttp())
     }
 
     public setAppConfig(config: UAPAppConfiguration) {

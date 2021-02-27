@@ -44,7 +44,7 @@
 
 
     <div class="sidebar sidebar-minimized" *ngIf="!mouseIsOver" (mouseenter)="onMouseEnter()">
-        <div *ngFor="let menuItem of menuItems" class="menu-item" [ngStyle]="menuItem.ngStyleMini">
+        <div *ngFor="let menuItem of menuItems" class="menu-item" style="justify-content: center;" [ngStyle]="menuItem.ngStyleMini">
 
             <div class="menu-item-icon" routerLinkActive='active-link-icon' [routerLink]="menuItem.routerLink"
                 *ngIf="menuItem.hasRouterLink">
