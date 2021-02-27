@@ -134,7 +134,6 @@ export class NoteHttpService {
       })
     };
     const requestBody: NotebookEntryHttpShape = notebookEntry.httpShape;
-    requestBody.dateModified = moment().toISOString();
     console.log("Updating: request body: ", requestBody)
     const isComplete$: Subject<boolean> = new Subject();
     this.httpClient.post<{ message: string, data: any }>(requestUrl, requestBody, httpOptions)
@@ -165,7 +164,7 @@ export class NoteHttpService {
         console.log('Response from HTTP delete request:', response);
         const allNotes = this.allNotes;
         const index = this.allNotes.findIndex(existingNote => existingNote.id === note.id);
-        if (index >= 0) {
+        if (index >= 0) { 
           allNotes.splice(index, 1);
         }
         this._allNotes$.next(this._sortNotes(allNotes));

@@ -58,6 +58,7 @@ export class NotebookEntry {
     public get title(): string { return this._title; }
     public get time(): string { return this._displayTime; }
 
+    public get dateCreated(): moment.Moment { return this._dateCreated; }
     public get dateModified(): moment.Moment { return this._dateModified; }
     public get dateModifiedYYYYMMDD(): string { return this._dateModified.format('YYYY-MM-DD'); }
 

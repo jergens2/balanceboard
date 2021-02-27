@@ -91,7 +91,10 @@ export class NotebookEntryFormComponent implements OnInit {
     if (this._editNoteEntry) {
       const id = this._editNoteEntry.id;
       const userId = this._editNoteEntry.userId;
-      notebookEntry = new NotebookEntry(id, userId, journalDate, NotebookEntryTypes.Note, textContent, title, tags);
+      const dateCreated = moment(this._editNoteEntry.dateCreated);
+      notebookEntry = new NotebookEntry(id, userId, dateCreated, NotebookEntryTypes.Note, textContent, title, tags);
+      notebookEntry.setDateModified(moment());
+      notebookEntry.journalDate = this._editNoteEntry.journalDate;
       this.notesHttpService.updateNotebookEntryHTTP$(notebookEntry);
     } else {
       this.notesHttpService.saveNotebookEntry$(notebookEntry);

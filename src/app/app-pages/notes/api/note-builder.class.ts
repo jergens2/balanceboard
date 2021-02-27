@@ -15,7 +15,6 @@ export class NoteBuilder {
     if (data.journalDateISO) {
       journalDate = moment(data.journalDateISO);
     }
-    const journalDateISO: string = data.journalDateISO;
     const tags = data.tags;
     const textContent = data.textContent;
     const title = data.title;

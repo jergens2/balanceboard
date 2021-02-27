@@ -1,7 +1,7 @@
 <div *ngIf="noteGroup.notes.length > 0" class="yes-notes" [ngClass]="{'padding':isNotSmall}">
     <div class="date-container">
         <div class="date">{{ noteGroup.dateString }}</div>
-        <div class="days-ago">{{ noteGroup.daysAgo }} days ago</div>
+        <div class="days-ago" *ngIf="isNotToday">{{ noteGroup.daysAgo }} days ago</div>
     </div>
 
     <app-notebook-entry *ngFor="let note of noteGroup.notes" [notebookEntry]="note"></app-notebook-entry>

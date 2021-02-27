@@ -94,7 +94,6 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
 
       this._maxWidth = maxWidth + 'px';
       this._noteTextMaxWidth = maxNoteWidth + 'px';
-      console.log("NOTE TEXT MAX WIDTH, vs other:", this._noteTextMaxWidth, this._maxWidth)
     }else if(size.isMediumSize){
       this._maxWidth = size.width + 'px';
       this._noteTextMaxWidth = size.width-20 + 'px';
@@ -131,10 +130,7 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
   }
 
   onClickEdit(){
-    console.log("Editing this.notebookEntry", this.notebookEntry)
     this.toolboxService.editNote(this.notebookEntry);
-
-
   }
 
 }

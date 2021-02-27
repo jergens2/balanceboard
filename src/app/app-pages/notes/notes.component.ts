@@ -62,16 +62,16 @@ export class NotesComponent implements OnInit, OnDestroy {
   private _reload() {
     const noteGroups: NoteGroup[] = [];
     const allNotes = this._allNotes.sort((item1, item2) => {
-      if (item1.dateModified > item2.dateModified) {
+      if (item1.journalDate.toISOString() > item2.journalDate.toISOString()) {
         return -1;
-      } else if (item1.dateModified < item2.dateModified) {
+      } else if (item1.journalDate.toISOString() < item2.journalDate.toISOString()) {
         return 1;
       }
       return 0;
     });
     console.log("All notes is:" , allNotes)
     if (allNotes.length > 0) {
-      let currentDateYYYYMMDD: string = allNotes[0].dateModifiedYYYYMMDD;
+      let currentDateYYYYMMDD: string = allNotes[0].journalDateYYYYMMDD;
       let currentNoteGroup: NoteGroup = {
         dateYYYYMMDD: currentDateYYYYMMDD,
         dateString: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
@@ -81,12 +81,12 @@ export class NotesComponent implements OnInit, OnDestroy {
         noNotesDateString: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
       };
       for (let i = 0; i < allNotes.length; i++) {
-        if (currentDateYYYYMMDD === allNotes[i].dateModifiedYYYYMMDD) {
+        if (currentDateYYYYMMDD === allNotes[i].journalDateYYYYMMDD) {
           currentNoteGroup.notes.push(allNotes[i].clone());
         } else {
           noteGroups.push(currentNoteGroup);
           const nextDate = moment(currentDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
-          const newDateYYYYMMDD: string = allNotes[i].dateModifiedYYYYMMDD;
+          const newDateYYYYMMDD: string = allNotes[i].journalDateYYYYMMDD;
           if (nextDate === newDateYYYYMMDD) {
             currentNoteGroup = {
               dateYYYYMMDD: nextDate,
