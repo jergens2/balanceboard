@@ -75,6 +75,7 @@ export class DaybookDisplayService {
 
   public onZoomChanged(zoom: TimelogZoomType) {
     this.displayManager.onZoomChanged(zoom);
+    console.log("onZoomChanged")
     this._displayUpdated$.next(DaybookUpdateAction.REFRESH);
   }
 
@@ -129,6 +130,7 @@ export class DaybookDisplayService {
     this._closedSub.unsubscribe();
     this._closedSub = this._daybookDisplayManager.closed$.subscribe(closed => {
       this._currentlyDrawing = false;
+      console.log("reinitiate closed sub")
       this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
     });
     this._updateDisplay(this.todayYYYYMMDD, DaybookUpdateAction.INITIAL);
@@ -145,11 +147,12 @@ export class DaybookDisplayService {
     return isComplete$.asObservable();
   }
   public refreshDisplay(){
+    console.log("refreshDisplay()")
     this._updateDisplay(this.activeDateYYYYMMDD, DaybookUpdateAction.REFRESH);
   }
 
   private _updateDisplay(dateYYYYMMDD: string, action: DaybookUpdateAction, drawnItem?: DaybookTimeScheduleActiveItem) {
-    // console.log("updating display: " + dateYYYYMMDD, action)
+    console.log("updating display: " + dateYYYYMMDD, action)
     let doUpdate: boolean = true;
     if (action === DaybookUpdateAction.CLOCK_MINUTE && this.currentlyDrawing) {
       doUpdate = false;
@@ -218,6 +221,7 @@ export class DaybookDisplayService {
 
 
   public logout() {
+    console.log("display manager logout")
     this._clockSubs.forEach(s => s.unsubscribe());
     this._todaySub.unsubscribe();
     this._closedSub.unsubscribe();

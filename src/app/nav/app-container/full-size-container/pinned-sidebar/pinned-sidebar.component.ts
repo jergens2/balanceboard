@@ -12,6 +12,7 @@ import { ToolType } from 'src/app/toolbox/tool-type.enum';
 import { DaybookWidgetType } from 'src/app/app-pages/daybook/widgets/daybook-widget.class';
 import { ToolboxService } from 'src/app/toolbox/toolbox.service';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
+import { MenuItemType } from '../header/header-menu/menu-item-type.enum';
 
 @Component({
   selector: 'app-pinned-sidebar',
@@ -65,8 +66,10 @@ export class PinnedSidebarComponent implements OnInit {
 
   public onClickUnpin() {
     this._isUnpinned = true;
+    console.log("on click unpin")
     timer(120).subscribe(() => {
       this.profileService.appPreferences.sidebarIsPinned = false;
+      console.log("saving changes")
       this.profileService.saveChanges$();
     })
 
@@ -76,25 +79,11 @@ export class PinnedSidebarComponent implements OnInit {
   public onMouseLeave() { this._mouseIsOver = false; }
 
 
-  // public onClickMenuItem(menuItem: MenuItem) {
-  //   console.log("onClickMenuItem")
-  //   if (menuItem.sidebarToolComponentMouseOver) {
-  //     if (menuItem.hasSidebarToolComponent) {
-  //       if (menuItem.sidebarTool === ToolType.TIMELOG_ENTRY) {
-  //         console.log("Is this happening?")
-  //         this.daybookService.setDaybookWidget(DaybookWidgetType.TIMELOG);
-  //         this.router.navigate(['/daybook']);
-  //         this.daybookService.onClickNowDelineator();
-  //       } else if(menuItem.sidebarTool === ToolType.LOCK){
-
-  //       } else {
-  //         this.toolboxService.openTool(menuItem.sidebarTool);
-  //       }
-  //     }
-  //   } else {
-  //     this.router.navigate([menuItem.routerLink]);
-  //   }
-  // }
+  public onClickMenuItem(menuItem: MenuItem) {
+    if(menuItem.itemType === MenuItemType.LOGOUT){
+      this.authService.logout();
+    }
+  }
 
   public onClickMenuItemTool(menuItem: MenuItem) {
     if (menuItem.isLogout) {

@@ -1,7 +1,7 @@
 <div class="mini-sidebar-root no-select">
 
     <div class="sidebar sidebar-large" *ngIf="mouseIsOver" [@appear]="'appear'" (mouseleave)="onMouseLeave()">
-        <div class="pin-button-container">
+        <div class="pin-button-container" *ngIf="screenIsLarge">
             <div class="pin-button" (click)="onClickPin()">
                 <fa-icon [icon]="faThumbtack"></fa-icon>
             </div>
@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <div class="menu-item-label" *ngIf="!menuItem.hasRouterLink">
+            <div class="menu-item-label" *ngIf="!menuItem.hasRouterLink" (click)="onClickMenuItem(menuItem)">
                 <div class="menu-item-icon">
                     <fa-icon [icon]="menuItem.icon"></fa-icon>
                 </div>

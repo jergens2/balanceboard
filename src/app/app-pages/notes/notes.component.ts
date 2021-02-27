@@ -72,14 +72,7 @@ export class NotesComponent implements OnInit, OnDestroy {
     console.log("All notes is:" , allNotes)
     if (allNotes.length > 0) {
       let currentDateYYYYMMDD: string = allNotes[0].journalDateYYYYMMDD;
-      let currentNoteGroup: NoteGroup = {
-        dateYYYYMMDD: currentDateYYYYMMDD,
-        dateString: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
-        daysAgo: moment().diff(moment(currentDateYYYYMMDD), 'days').toFixed(0),
-        notes: [],
-        noNotesEndDateYYYYMMDD: currentDateYYYYMMDD,
-        noNotesDateString: moment(currentDateYYYYMMDD).format('MMM Do, YYYY'),
-      };
+      let currentNoteGroup: NoteGroup = this._newNoteGroup(currentDateYYYYMMDD, []);
       for (let i = 0; i < allNotes.length; i++) {
         if (currentDateYYYYMMDD === allNotes[i].journalDateYYYYMMDD) {
           currentNoteGroup.notes.push(allNotes[i].clone());
@@ -88,33 +81,12 @@ export class NotesComponent implements OnInit, OnDestroy {
           const nextDate = moment(currentDateYYYYMMDD).subtract(1, 'days').format('YYYY-MM-DD');
           const newDateYYYYMMDD: string = allNotes[i].journalDateYYYYMMDD;
           if (nextDate === newDateYYYYMMDD) {
-            currentNoteGroup = {
-              dateYYYYMMDD: nextDate,
-              dateString: moment(nextDate).format('MMM Do, YYYY'),
-              daysAgo: moment().diff(moment(nextDate), 'days').toFixed(0),
-              notes: [allNotes[i]],
-              noNotesEndDateYYYYMMDD: nextDate,
-              noNotesDateString: moment(nextDate).format('MMM Do, YYYY'),
-            };
+            currentNoteGroup = this._newNoteGroup(nextDate, [allNotes[i]]);
             currentDateYYYYMMDD = nextDate;
           } else {
             const dayBeforeNewDateYYYYMMDD: string = moment(newDateYYYYMMDD).add(1, 'days').format('YYYY-MM-DD');
-            noteGroups.push({
-              dateYYYYMMDD: dayBeforeNewDateYYYYMMDD,
-              dateString: moment(dayBeforeNewDateYYYYMMDD).format('MMM Do, YYYY'),
-              daysAgo: moment().diff(moment(dayBeforeNewDateYYYYMMDD), 'days').toFixed(0),
-              notes: [],
-              noNotesEndDateYYYYMMDD: nextDate,
-              noNotesDateString: moment(nextDate).format('MMM Do, YYYY'),
-            });
-            currentNoteGroup = {
-              dateYYYYMMDD: newDateYYYYMMDD,
-              dateString: moment(newDateYYYYMMDD).format('MMM Do, YYYY'),
-              daysAgo: moment().diff(moment(newDateYYYYMMDD), 'days').toFixed(0),
-              notes: [allNotes[i]],
-              noNotesEndDateYYYYMMDD: newDateYYYYMMDD,
-              noNotesDateString: moment(newDateYYYYMMDD).format('MMM Do, YYYY'),
-            };
+            noteGroups.push(this._newNoteGroup(dayBeforeNewDateYYYYMMDD, [], nextDate));
+            currentNoteGroup = this._newNoteGroup(newDateYYYYMMDD, [allNotes[i]]);
             currentDateYYYYMMDD = newDateYYYYMMDD;
           }
 
@@ -171,6 +143,23 @@ export class NotesComponent implements OnInit, OnDestroy {
     //     this._showMoreButton = false;
     //   }
     // }
+  }
+
+
+  private _newNoteGroup(dateYYYYMMDD: string, notes: NotebookEntry[], endDateYYYYMMDD?: string): NoteGroup { 
+    const noteGroup = {
+      dateYYYYMMDD: dateYYYYMMDD,
+      dateString: moment(dateYYYYMMDD).format('MMMM Do, YYYY'),
+      daysAgo: moment().diff(moment(dateYYYYMMDD), 'days').toFixed(0),
+      notes: notes,
+      noNotesEndDateYYYYMMDD: dateYYYYMMDD,
+      noNotesDateString: moment(dateYYYYMMDD).format('MMM Do, YYYY'),
+    };
+    if(endDateYYYYMMDD){
+      noteGroup.noNotesEndDateYYYYMMDD = endDateYYYYMMDD;
+      noteGroup.noNotesDateString = moment(endDateYYYYMMDD).format('MMM Do, YYYY');
+    }
+    return noteGroup;
   }
 
 }

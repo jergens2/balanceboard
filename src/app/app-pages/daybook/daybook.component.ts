@@ -11,7 +11,10 @@ import { DaybookDisplayService } from './daybook-display.service';
 @Component({
   selector: 'app-daybook',
   templateUrl: './daybook.component.html',
-  styleUrls: ['./daybook.component.css']
+  styleUrls: ['./daybook.component.css'],
+  host: {
+    class: 'full-flex-column'
+  }
 })
 export class DaybookComponent implements OnInit, OnDestroy {
 

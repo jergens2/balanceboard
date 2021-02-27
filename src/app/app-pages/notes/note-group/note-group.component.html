@@ -1,19 +1,22 @@
-<div *ngIf="noteGroup.notes.length > 0" class="yes-notes" [ngClass]="{'padding':isNotSmall}">
+<div *ngIf="noteGroup.notes.length > 0" class="yes-notes" [ngClass]="ngClass">
     <div class="date-container">
         <div class="date">{{ noteGroup.dateString }}</div>
         <div class="days-ago" *ngIf="isNotToday">{{ noteGroup.daysAgo }} days ago</div>
     </div>
 
-    <app-notebook-entry *ngFor="let note of noteGroup.notes" [notebookEntry]="note"></app-notebook-entry>
+    <div>
+        <app-notebook-entry *ngFor="let note of noteGroup.notes" [notebookEntry]="note"></app-notebook-entry>
+    </div>
+    
 </div>
 
-<div *ngIf="noteGroup.notes.length === 0" class="no-notes" [ngClass]="{'padding':isNotSmall}">
+<div *ngIf="noteGroup.notes.length === 0" class="no-notes" [ngClass]="{'padding':isFullSize}">
     <div class="no-notes-inner">
         <span *ngIf="noNotesSameDate">
             No notes on {{ noteGroup.dateString }} 
         </span>
         <span *ngIf="!noNotesSameDate">
-            No notes between {{ noteGroup.dateString }} and {{ noteGroup.noNotesDateString}}
+            No notes from {{ noteGroup.dateString }} to {{ noteGroup.noNotesDateString}}
         </span>
     </div>
 </div>

@@ -29,6 +29,16 @@
 }  
 
 
+.menu-item-container{
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    align-items:center;
+
+    padding: 8px;
+    margin-bottom: 5px;
+    height: 45px;
+}
 
 .menu-item{
     width: 100%;
@@ -36,11 +46,9 @@
     flex-direction: row;
     align-items:center;
     justify-content: space-between;
-    padding: 8px;
-    margin-bottom: 5px;
-    height: 45px;
+
 }
-.menu-item:hover{
+.menu-item-.menu-item-container{
     cursor: pointer;
     background-color: rgba(255, 255, 255, 0.8);
 }

@@ -2,7 +2,7 @@ import { Component, HostListener, OnInit, } from '@angular/core';
 import { faPlus, faThumbtack } from '@fortawesome/free-solid-svg-icons';
 import { appMenuItems } from 'src/app/nav/app-menu-items';
 import { trigger, state, style, animate, transition, keyframes, } from '@angular/animations';
-import { MenuItem } from '../header/header-menu/menu-item.class';
+import { MenuItem } from '../full-size-container/header/header-menu/menu-item.class';
 import { ToolType } from 'src/app/toolbox/tool-type.enum';
 import { DaybookWidgetType } from 'src/app/app-pages/daybook/widgets/daybook-widget.class';
 import { DaybookDisplayService } from 'src/app/app-pages/daybook/daybook-display.service';
@@ -10,6 +10,8 @@ import { ToolboxService } from 'src/app/toolbox/toolbox.service';
 import { Router } from '@angular/router';
 import { UserAccountProfileService } from 'src/app/app-pages/user-account-profile/user-account-profile.service';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
+import { AppScreenSizeService } from 'src/app/shared/app-screen-size/app-screen-size.service';
+import { MenuItemType } from '../full-size-container/header/header-menu/menu-item-type.enum';
 
 
 @Component({
@@ -53,11 +55,13 @@ export class MiniSidebarComponent implements OnInit {
     private toolboxService: ToolboxService,
     private profileService: UserAccountProfileService,
     private authService: AuthenticationService,
+    private screenService: AppScreenSizeService,
     private router: Router) { }
 
   public get faPlus() { return faPlus; }
   public get faThumbtack() { return faThumbtack }
   public get menuItems(): MenuItem[] { return appMenuItems; }
+  public get screenIsLarge(): boolean { return this.screenService.isFullSize; }
 
   ngOnInit(): void {
 
@@ -101,8 +105,14 @@ export class MiniSidebarComponent implements OnInit {
     }
   }
 
+  public onClickMenuItem(menuItem: MenuItem) {
+    if(menuItem.itemType === MenuItemType.LOGOUT){
+      this.authService.logout();
+    }
+  }
 
   public onClickPin(){
+    console.log("on click pin, saving changes")
     this.profileService.appPreferences.sidebarIsPinned = true;
     this.profileService.saveChanges$();
   }

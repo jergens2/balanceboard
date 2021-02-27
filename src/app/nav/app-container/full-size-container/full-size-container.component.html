@@ -1,6 +1,6 @@
 <div class="container-root" [ngClass]="{'sidebar-pinned': sidebarIsPinned, 'sidebar-not-pinned': !sidebarIsPinned}">
     <app-pinned-sidebar class="sidebar-container-pinned" *ngIf="sidebarIsPinned"></app-pinned-sidebar>
-    <div class="outlet-container">
+    <div class="outlet-container" *ngIf="isFullSize">
         <router-outlet></router-outlet>
     </div>
     <app-mini-sidebar class="sidebar-container-unpinned" *ngIf="!sidebarIsPinned"></app-mini-sidebar>

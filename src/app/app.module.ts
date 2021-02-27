@@ -45,7 +45,7 @@ import { MobileMenuComponent } from './nav/app-container/mobile-container/mobile
 import { MobileContainerComponent } from './nav/app-container/mobile-container/mobile-container.component';
 import { FullSizeContainerComponent } from './nav/app-container/full-size-container/full-size-container.component';
 import { TabletContainerComponent } from './nav/app-container/tablet-container/tablet-container.component';
-import { MiniSidebarComponent } from './nav/app-container/full-size-container/mini-sidebar/mini-sidebar.component';
+import { MiniSidebarComponent } from './nav/app-container/mini-sidebar/mini-sidebar.component';
 import { PinnedSidebarComponent } from './nav/app-container/full-size-container/pinned-sidebar/pinned-sidebar.component';
 
 

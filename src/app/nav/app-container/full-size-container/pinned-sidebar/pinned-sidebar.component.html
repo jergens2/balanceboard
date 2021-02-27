@@ -4,7 +4,7 @@
 
 
     <div class="babo-title-container" [routerLink]="'/about'">
-        
+
         <img style="width: 22px; height: 22px; margin-top: 5px;" src="assets/favicon.ico" alt="babo">
         <span class="babo-title">balanceboard</span>
     </div>
@@ -23,35 +23,40 @@
         <div *ngFor="let menuItem of menuItems" [ngStyle]="menuItem.ngStylePinned">
 
 
-            <div class="menu-item" *ngIf="menuItem.hasRouterLink" [routerLink]="menuItem.routerLink"
-                routerLinkActive='active-link-icon'>
-                <div class="menu-item-label">
-                    <div class="menu-item-icon" routerLinkActive='active-link-icon'>
-                        <fa-icon [icon]="menuItem.icon"></fa-icon>
-                    </div>
-                    <div class="menu-item-title">
-                        {{ menuItem.title }}
+            <div class="menu-item-container">
+
+                <div class="menu-item" *ngIf="menuItem.hasRouterLink" [routerLink]="menuItem.routerLink"
+                    routerLinkActive='active-link-icon'>
+                    <div class="menu-item-label">
+                        <div class="menu-item-icon" routerLinkActive='active-link-icon'>
+                            <fa-icon [icon]="menuItem.icon"></fa-icon>
+                        </div>
+                        <div class="menu-item-title">
+                            {{ menuItem.title }}
+                        </div>
                     </div>
                 </div>
+
+                <div class="menu-item" *ngIf="!menuItem.hasRouterLink" (click)="onClickMenuItem(menuItem)">
+                    <div class="menu-item-label" (click)="onClickMenuItem(menuItem)">
+                        <div class="menu-item-icon">
+                            <fa-icon [icon]="menuItem.icon"></fa-icon>
+                        </div>
+                        <div class="menu-item-title">
+                            {{ menuItem.title }}
+                        </div>
+                    </div>
+
+                </div>
+
                 <app-new-item-circle-button [diameter]="35" [icon]="menuItem.sidebarToolIcon"
                     (click)="onClickMenuItemTool(menuItem)" *ngIf="menuItem.hasSidebarToolComponent">
                 </app-new-item-circle-button>
+
+
             </div>
 
 
-            <div class="menu-item" *ngIf="!menuItem.hasRouterLink">
-                <div class="menu-item-label">
-                    <div class="menu-item-icon">
-                        <fa-icon [icon]="menuItem.icon"></fa-icon>
-                    </div>
-                    <div class="menu-item-title">
-                        {{ menuItem.title }}
-                    </div>
-                </div>
-                <app-new-item-circle-button [diameter]="35" [icon]="menuItem.sidebarToolIcon"
-                    (click)="onClickMenuItemTool(menuItem)" *ngIf="menuItem.hasSidebarToolComponent">
-                </app-new-item-circle-button>
-            </div>
 
 
         </div>

@@ -44,7 +44,6 @@ export class AppContainerComponent implements OnInit, OnDestroy {
     private bgService: BackgroundImageService,
   ) { }
 
-  private _sidebarIsOpen: boolean = true;
   private _showTools: boolean = false;
   private _appScreenSize: AppScreenSize;
 
@@ -62,7 +61,6 @@ export class AppContainerComponent implements OnInit, OnDestroy {
   public get showTools(): boolean { return this._showTools; }
   public get appScreenSize(): AppScreenSize { return this._appScreenSize; }
   public get sizeLabel(): AppScreenSizeLabel { return this.appScreenSize.label; }
-  public get sidebarIsOpen(): boolean { return this._sidebarIsOpen; }
 
 
   public get isSmallSize(): boolean { return this.appScreenSize.isSmallSize; }
@@ -172,20 +170,7 @@ export class AppContainerComponent implements OnInit, OnDestroy {
     this.userPromptService.logout();
   }
 
-  public onHeaderSidebarButtonClicked() {
-    this._sidebarIsOpen = !this._sidebarIsOpen;
-    // localStorage.setItem("sidebar_is_open", this._sidebarIsOpen.toString());
-  }
 
-  private _onScreenSizeChanged(appScreenSize: AppScreenSize) {
-    this._appScreenSize = appScreenSize;
-    if (this._appScreenSize.label < 2) {
-      this._sidebarIsOpen = false;
-    } else if (this._appScreenSize.label >= 2) {
-      if (localStorage.getItem('sidebar_is_open') === 'true') {
-        this._sidebarIsOpen = true;
-      }
-    }
-  }
+  private _onScreenSizeChanged(appScreenSize: AppScreenSize) {this._appScreenSize = appScreenSize;}
 
 }

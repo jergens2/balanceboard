@@ -49,6 +49,7 @@ export class UserAccountProfileService {
    * 
    */
   public saveChanges$(): Observable<boolean> {
+    console.log("Saving changes")
     const profile = this.userProfile;
     const _complete$: Subject<boolean> = new Subject();
     const url = serverUrl + "/api/user-account-profile/save";

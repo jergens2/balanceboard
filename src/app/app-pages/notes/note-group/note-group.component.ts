@@ -17,11 +17,20 @@ export class NoteGroupComponent implements OnInit {
   public get noNotesSameDate(): boolean {
     return this.noteGroup.dateYYYYMMDD === this.noteGroup.noNotesEndDateYYYYMMDD;
   }
+  public get ngClass(): any {
+    return { 
+      'padding-large': this.isFullSize, 
+      'padding-medium': this.isMediumSize,
+      'padding-small':this.isSmallSize,
+    }
+  }
 
   ngOnInit(): void {
   }
 
-  public get isNotSmall(): boolean { return !this.sizeService.isSmall; }
+  public get isSmallSize(): boolean { return this.sizeService.isSmallSize; }
+  public get isFullSize(): boolean { return this.sizeService.isFullSize; }
+  public get isMediumSize(): boolean { return this.sizeService.isMediumSize; }
   public get isNotToday(): boolean {
     return this.noteGroup.dateYYYYMMDD !== moment().format('YYYY-MM-DD');
   }

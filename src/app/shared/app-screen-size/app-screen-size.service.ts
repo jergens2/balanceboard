@@ -23,7 +23,9 @@ export class AppScreenSizeService {
   public get width$(): Observable<number> { return this._width$.asObservable(); }
   public get width(): number { return this._width$.getValue(); }
 
-  public get isSmall(): boolean { return this.appScreenSize.isSmallSize; }
+  public get isSmallSize(): boolean { return this.appScreenSize.isSmallSize; }
+  public get isMediumSize(): boolean { return this.appScreenSize.isMediumSize; }
+  public get isFullSize(): boolean { return this.appScreenSize.isFullSize; }
 
   public get maxComponentHeightPx(): number {
     if (this.appScreenSize.label !== AppScreenSizeLabel.MOBILE) {

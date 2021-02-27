@@ -1,19 +1,10 @@
-<p>tablet-container works!</p>
+<div class="container-root">
+    <div class="outlet-container">
+        <router-outlet></router-outlet>
+    </div>
+    <app-mini-sidebar class="sidebar-container-unpinned"></app-mini-sidebar>
+</div>
 <!-- 
-<div class="header">
-    <app-header (sidebarButtonClicked)="onHeaderSidebarButtonClicked()"></app-header>
-</div>
-<div class="sidebar" style="background-color: rgba(255, 255, 255, 0.6);">
-    <app-sidebar *ngIf="sidebarIsOpen"></app-sidebar>
-</div>
-
-<div class="content" *ngIf="!(showTools && (sizeLabel == 0 || sizeLabel == 1))"
-    [ngClass]="{'content-mobile': sizeLabel == 0, 'content-tablet': sizeLabel == 1, 'content-normal': sizeLabel == 2, 'content-large': sizeLabel == 3, 'content-large': (sizeLabel === 3 || sizeLabel === 4)}">
-    <router-outlet></router-outlet>
-</div>
-
-<div class="app-tools-container"
-    [ngClass]="{'app-tools-container-mobile': sizeLabel == 0, 'app-tools-container-tablet': sizeLabel == 1, 'app-tools-container-normal': sizeLabel == 2, 'app-tools-container-large': (sizeLabel === 3 || sizeLabel === 4)}"
-    *ngIf="showTools">
-    <app-toolbox></app-toolbox>
+<div *ngIf="showToolbox" class="toolbox-root">
+    <app-toolbox class="tool-container"></app-toolbox>
 </div> -->
