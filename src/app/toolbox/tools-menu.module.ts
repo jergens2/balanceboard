@@ -6,11 +6,11 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActionItemFormComponent } from './tools/tool-components/action-item-form/action-item-form.component';
-import { NotebookEntryFormComponent } from './tools/tool-components/notebook-entry-form/notebook-entry-form.component';
+import { NotebookEntryFormComponent } from '../app-pages/notes/notebook-entry/notebook-entry-form/notebook-entry-form.component';
 import { SharedModule } from '../shared/shared.module';
 import { FutureEventFormComponent } from './tools/tool-components/future-event-form/future-event-form.component';
-import { DaybookModule } from '../dashboard/daybook/daybook.module';
-import { TLEFModule } from '../dashboard/daybook/widgets/timelog/timelog-entry-form/tlef.module';
+import { DaybookModule } from '../app-pages/daybook/daybook.module';
+import { TLEFModule } from '../app-pages/daybook/widgets/timelog/timelog-entry-form/tlef.module';
 
 
 

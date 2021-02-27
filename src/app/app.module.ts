@@ -10,7 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { AppRoutingModule } from './app-routing.module';
-import { DashboardModule } from './dashboard/dashboard.module';
+import { AppPagesModule } from './app-pages/app-pages.module';
 
 import { AuthInterceptor } from './authentication/auth-interceptor';
 import { AuthenticationService } from './authentication/authentication.service';
@@ -36,10 +36,10 @@ import { ConfirmPasswordComponent } from './authentication/registration/confirm-
 import { TermsComponent } from './authentication/registration/terms/terms.component';
 import { SuccessConfirmationComponent } from './authentication/registration/success-confirmation/success-confirmation.component';
 import { UserActionPromptComponent } from './nav/user-action-prompt/user-action-prompt.component';
-import { SleepManagerModule } from './dashboard/daybook/sleep-manager/sleep-manager.module';
+import { SleepManagerModule } from './app-pages/daybook/sleep-manager/sleep-manager.module';
 import { LockScreenComponent } from './authentication/lock-screen/lock-screen.component';
 import { AppContainerComponent } from './nav/app-container/app-container.component';
-import { UserAccountProfileModule } from './dashboard/user-account-profile/user-account-profile.module';
+import { UserAccountProfileModule } from './app-pages/user-account-profile/user-account-profile.module';
 import { UapFooterComponent } from './nav/user-action-prompt/uap-footer/uap-footer.component';
 import { MobileMenuComponent } from './nav/app-container/mobile-container/mobile-menu/mobile-menu.component';
 import { MobileContainerComponent } from './nav/app-container/mobile-container/mobile-container.component';
@@ -86,7 +86,7 @@ import { PinnedSidebarComponent } from './nav/app-container/full-size-container/
     ReactiveFormsModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    DashboardModule,
+    AppPagesModule,
     SleepManagerModule,
     UserAccountProfileModule,
     SharedModule,

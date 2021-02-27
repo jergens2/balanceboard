@@ -29,6 +29,9 @@ export class MenuItem implements SidebarNewItemButton {
 
     public get itemType(): MenuItemType { return this._itemType; }
     public get isLogout(): boolean { return this.itemType === MenuItemType.LOGOUT; }
+    public get isTimelogEntry(): boolean { return this.itemType === MenuItemType.DAYBOOK; }
+
+
     public get ngStyleMini(): any { return this._ngStyleMini; }
     public get ngStylePinned(): any { return this._ngStylePinned; }
 

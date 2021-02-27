@@ -13,7 +13,7 @@
     <div class="tool-body">
       
       <app-action-item-form *ngIf="toolIsActionItem"></app-action-item-form>
-      <app-notebook-entry-form *ngIf="toolIsNote"></app-notebook-entry-form>
+      <app-notebook-entry-form [editNoteEntry]="editNoteEntry" *ngIf="toolIsNote"></app-notebook-entry-form>
       <app-timelog-entry-form *ngIf="toolIsTimelogEntry"></app-timelog-entry-form>
       <app-sleep-entry-form *ngIf="toolIsSleepEntry"></app-sleep-entry-form>
       <app-future-event-form *ngIf="toolIsFutureEvent"></app-future-event-form>

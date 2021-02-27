@@ -62,7 +62,6 @@
 }
 
 
-
 .menu-item-label{
     display:flex; 
     flex-direction: row; 
@@ -113,3 +112,34 @@
     cursor: pointer;
     color:black;
 }
+
+
+.babo-title-container{ 
+    width: 0px; 
+    left: 20px; 
+    top: 0px; 
+    position: absolute;
+
+    font-size: 0.8em;
+
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+.babo-title{
+    font-weight: 600;
+    margin-left: 10px;
+    color: rgb(115, 115, 133);
+}
+
+
+.babo-title-container:hover{
+    cursor: pointer;
+}
+.babo-title-container:hover > .babo-title{
+    font-weight: bold;
+    color: rgb(0, 89, 255);
+}
+
+

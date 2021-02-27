@@ -1,4 +1,4 @@
-import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
+import { ActivityCategoryDefinition } from "../../app-pages/activities/api/activity-category-definition.class";
 import { Subject, Observable } from "rxjs";
 
 export class CreateNewActivityItem{

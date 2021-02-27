@@ -1,0 +1,4 @@
+<div class="list-container" [ngStyle]="maxHeightStyle">
+    <app-timelog-entry-list-item class="timelog-entry-item" *ngFor="let timelogEntry of timelogEntryItems"
+    [timelogEntry]="timelogEntry"></app-timelog-entry-list-item>
+</div>

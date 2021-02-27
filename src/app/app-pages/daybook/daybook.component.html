@@ -1,0 +1,94 @@
+<div class="daybook-root">
+  <div class="daybook-header font-family-lexend" (mouseenter)="onMouseEnterHeader()"
+    (mouseleave)="onMouseLeaveHeader()">
+    <div class="header-button-container">
+      <fa-icon class="icon-button" [icon]="faArrowLeft" (click)="onClickDayBack()" *ngIf="mouseOverHeader"></fa-icon>
+    </div>
+    <div style="flex-grow: 2; display:flex;flex-direction: row; justify-content: center;">
+      <span style="font-size:1.4em;">{{ headerDate }}</span> <span
+        style="margin-left: 15px;">{{ headerDaysDiff }}</span>
+    </div>
+    <div class="header-button-container">
+      <fa-icon class="icon-button" [icon]="faArrowRight" (click)="onClickDayForward()" *ngIf="mouseOverHeader">
+      </fa-icon>
+    </div>
+  </div>
+
+  <div class="layout-flex-container">
+    <div class="layout-flex" style="padding: 5px;">
+
+      <!-- <div class="main-widget">
+
+        <app-timelog-large-frame *ngIf="widgetIsTimelog" class="main-widget-item"></app-timelog-large-frame>
+        <app-calendar-large *ngIf="widgetIsCalendar" [ngStyle]="primaryWidget.ngStyle" class="main-widget-item"
+          [ngClass]="primaryWidget.ngClass"></app-calendar-large>
+        <app-daily-task-list-large *ngIf="widgetIsDTL" [ngClass]="primaryWidget.ngStyle" class="main-widget-item"
+          [ngClass]="primaryWidget.ngClass"></app-daily-task-list-large>
+        <app-sleep-profile-large *ngIf="widgetIsSleepProfile" [ngStyle]="primaryWidget.ngStyle" class="main-widget-item"
+          [ngClass]="primaryWidget.ngClass"></app-sleep-profile-large>
+
+      </div> -->
+
+      <app-timelog-large-frame *ngIf="widgetIsTimelog" class="main-widget"></app-timelog-large-frame>
+      <app-calendar-large *ngIf="widgetIsCalendar" [ngStyle]="primaryWidget.ngStyle" class="main-widget"
+        [ngClass]="primaryWidget.ngClass"></app-calendar-large>
+      <app-daily-task-list-large *ngIf="widgetIsDTL" [ngClass]="primaryWidget.ngStyle" class="main-widget"
+        [ngClass]="primaryWidget.ngClass"></app-daily-task-list-large>
+      <app-sleep-profile-large *ngIf="widgetIsSleepProfile" [ngStyle]="primaryWidget.ngStyle" class="main-widget"
+        [ngClass]="primaryWidget.ngClass"></app-sleep-profile-large>
+
+
+      <div class="sidebar" *ngIf="appScreenSize > 1">
+        <div class="small-widget" *ngIf="!calendarWidget.isExpanded" (mouseenter)="calendarWidget.onMouseEnterWidget()"
+          (mouseleave)="calendarWidget.onMouseLeaveWidget()">
+          <app-calendar-small (expand)="calendarWidget.onClickExpand()"></app-calendar-small>
+        </div>
+        <div class="small-widget" *ngIf="!dailyTaskListWidget.isExpanded"
+          (mouseenter)="dailyTaskListWidget.onMouseEnterWidget()"
+          (mouseleave)="dailyTaskListWidget.onMouseLeaveWidget()">
+          <div class="small-widget-header">
+            <div class="swh-buffer"></div>
+            <div>Daily Task List</div>
+            <div class="swh-buffer">
+              <fa-icon [icon]="faExpand" *ngIf="dailyTaskListWidget.mouseOver" class="icon-button"
+                (click)="dailyTaskListWidget.onClickExpand()"></fa-icon>
+            </div>
+          </div>
+          <div class="small-widget-body">
+            <app-daily-task-list-small></app-daily-task-list-small>
+          </div>
+        </div>
+        <div class="small-widget" *ngIf="!timelogWidget.isExpanded" (mouseenter)="timelogWidget.onMouseEnterWidget()"
+          (mouseleave)="timelogWidget.onMouseLeaveWidget()">
+          <div class="small-widget-header">
+            <div class="swh-buffer"></div>
+            <div>Timelog</div>
+            <div class="swh-buffer">
+              <fa-icon [icon]="faExpand" *ngIf="timelogWidget.mouseOver" class="icon-button"
+                (click)="timelogWidget.onClickExpand()"></fa-icon>
+            </div>
+          </div>
+          <div class="small-widget-body">
+            <app-timelog-small></app-timelog-small>
+          </div>
+        </div>
+        <div class="small-widget" *ngIf="!sleepProfileWidget.isExpanded"
+          (mouseenter)="sleepProfileWidget.onMouseEnterWidget()">
+          <div class="small-widget-header" style="justify-content: center;">
+            Sleep Profile
+            <div class="swh-buffer">
+              <fa-icon [icon]="faExpand" *ngIf="sleepProfileWidget.mouseOver" class="icon-button"
+                (click)="sleepProfileWidget.onClickExpand()"></fa-icon>
+            </div>
+          </div>
+          <app-sleep-profile-widget class="small-widget-body"></app-sleep-profile-widget>
+        </div>
+        <div class="small-widget">
+          <div class="small-widget-header" style="justify-content: center;">
+            Calendar items
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

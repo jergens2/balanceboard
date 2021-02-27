@@ -1,11 +1,11 @@
-import { NoteHttpService } from '../../dashboard/notes/api/note-http.service';
-import { ActivityHttpService } from '../../dashboard/activities/api/activity-http.service';
-import { DaybookHttpService } from '../../dashboard/daybook/daybook-day-item/daybook-http.service';
-import { TaskHttpService } from '../../dashboard/tasks/task-http.service';
+import { NoteHttpService } from '../../app-pages/notes/api/note-http.service';
+import { ActivityHttpService } from '../../app-pages/activities/api/activity-http.service';
+import { DaybookHttpService } from '../../app-pages/daybook/daybook-day-item/daybook-http.service';
+import { TaskHttpService } from '../../app-pages/tasks/task-http.service';
 import { Observable, BehaviorSubject, forkJoin, Subscription } from 'rxjs';
 import { AppAsyncServiceList } from './async-data-service-list.interface';
-import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
-import { UserAccountProfileService } from '../../dashboard/user-account-profile/user-account-profile.service';
+import { SleepService } from '../../app-pages/daybook/sleep-manager/sleep.service';
+import { UserAccountProfileService } from '../../app-pages/user-account-profile/user-account-profile.service';
 
 export class AsyncDataServiceLoader {
 

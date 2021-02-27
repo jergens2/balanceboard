@@ -1,0 +1,44 @@
+<div class="tle-list-item-root no-select">
+
+    <div class="tle-circle" (click)="onClickCircle()"></div>
+
+    <div class="tle-item" [style.background-color]="backgroundColor">
+        <div class="header">
+            <div>
+                <span class="tle-time">{{ timelogEntry.startTime.format('h:mm a') }}</span>
+                to
+                <span class="tle-time">{{ timelogEntry.endTime.format('h:mm a') }}</span>
+            </div>
+
+            <div class="duration-string">
+                {{ durationString(timelogEntry) }}
+            </div>
+        </div>
+        <div class="body">
+
+            <div> {{ timelogEntry.embeddedNote }} </div>
+
+            <div style="display:flex;flex-direction: row; flex-wrap: wrap;">
+
+                <div *ngFor="let activityDisplayItem of activityDisplayItems" class="activity-item">
+
+                    <div class="activity-name" [ngClass]="{'small-activity-name':(isSmallSize || isVerySmallSize) }">
+                        {{ activityDisplayItem.name }}
+                    </div>
+
+                    <div class="units">
+                        <div *ngFor="let unit of activityDisplayItem.units" [ngStyle]="unit.ngStyle" class="unit">
+                        </div>
+                        <div class="duration-string">{{ activityDisplayItem.durationString}}</div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+</div>

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { UserPromptType } from './user-prompt-type.enum';
 import { Observable, Subject, forkJoin, Subscription, BehaviorSubject } from 'rxjs';
-import { UserAccountProfileService } from '../../dashboard/user-account-profile/user-account-profile.service';
-import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
+import { UserAccountProfileService } from '../../app-pages/user-account-profile/user-account-profile.service';
+import { SleepService } from '../../app-pages/daybook/sleep-manager/sleep.service';
 import { map } from 'rxjs/operators';
 
 @Injectable({

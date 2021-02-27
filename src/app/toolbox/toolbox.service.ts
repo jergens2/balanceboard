@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ToolType } from './tool-type.enum';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
+import { NotebookEntry } from '../app-pages/notes/notebook-entry/notebook-entry.class';
 
 
 
@@ -14,7 +15,16 @@ export class ToolboxService {
   private _toolQueue$: BehaviorSubject<ToolType[]> = new BehaviorSubject([]);
   private _onFormClosed$: Subject<boolean> = new Subject();
 
+  private _editNoteEntry: NotebookEntry;
+
+  public get editNoteEntry(): NotebookEntry { return this._editNoteEntry; }
+
+  public editNote(note: NotebookEntry){
+    this._editNoteEntry = note;
+    this._toolQueue$.next([ToolType.NOTEBOOK_ENTRY]);
+  }
   public openTool(tool: ToolType) {
+    this._editNoteEntry = null;
     this._toolQueue$.next([tool]);
     // if (this.currentToolQueue.length > 0) {
     //   if (this.currentToolQueue.indexOf(tool) > -1) {
@@ -66,7 +76,7 @@ export class ToolboxService {
     // }
     this._onFormClosed$.next(true);
     this._toolQueue$.next([]);
-
+    this._editNoteEntry = null;
   }
 
   // public get toolIsOpen$(): Observable<boolean> {

@@ -24,6 +24,8 @@ export class AppScreenSize {
     public get isMediumSize(): boolean { return this.isTablet || this.isNormal; }
     public get isFullSize(): boolean { return this.isLarge || this.isVeryLarge; }
 
+    
+
     constructor(width: number, height: number) {
         this._width = width;
         this._height = height;

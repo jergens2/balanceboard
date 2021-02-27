@@ -6,6 +6,15 @@
                 <fa-icon [icon]="faThumbtack"></fa-icon>
             </div>
         </div>
+
+        <div class="babo-title-container" [routerLink]="'/about'">
+
+            <img style="width: 22px; height: 22px; margin-top: 5px;" src="assets/favicon.ico" alt="babo">
+            <span class="babo-title">balanceboard</span>
+        </div>
+        <div style="margin-top: 20px;">
+
+        </div>
         <div *ngFor="let menuItem of menuItems" class="menu-item" [ngStyle]="menuItem.ngStyleMini">
 
             <div class="menu-item-label" routerLinkActive='active-link-icon' [routerLink]="menuItem.routerLink"
@@ -43,7 +52,7 @@
             </div>
 
 
-            <div class="menu-item-icon" *ngIf="!menuItem.hasRouterLink" >
+            <div class="menu-item-icon" *ngIf="!menuItem.hasRouterLink">
                 <fa-icon [icon]="menuItem.icon"></fa-icon>
             </div>
 

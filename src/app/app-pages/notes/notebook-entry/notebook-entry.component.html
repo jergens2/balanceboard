@@ -1,0 +1,32 @@
+<div class="notebook-entry-root" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()" [style.max-width]="maxWidth">
+  <div class="note-date">{{ notebookEntry.time }}</div>
+  <div class="note-header">
+
+    <div class="note-title-container">
+
+      <div class="note-title">{{ notebookEntry.title }}</div>
+      <div class="word-count">
+        ({{ wordCount }} words)
+      </div>
+    </div>
+
+    <div *ngIf="mouseOver" style="display:flex;flex-direction: row; align-items: center;">
+      <fa-icon class="icon-button" style="margin-right: 5px;" [icon]="faEdit" (click)="onClickEdit()"
+        style="margin-right:5px;"></fa-icon>
+      <!-- <fa-icon class="icon-button" style="margin-right: 5px;" [icon]="faTrash" (click)="onClickDelete()"></fa-icon> -->
+      <app-delete-confirm-button style="margin-right: 5px;" (delete)="onDeleteNote()" [smallMode]="true">
+      </app-delete-confirm-button>
+    </div>
+  </div>
+
+  <div class="note-text-container" [ngClass]="{'is-shrunk':isMinimized && !isExpanded}"  (click)="onClickNoteText()" [style.max-width]="noteTextMaxWidth">
+      {{ noteText }}
+
+  </div>
+
+
+  <div class="tags">
+    <span style="font-size:0.8em;font-weight:normal;color:gray;">Tags: </span>
+    <div *ngFor="let tag of notebookEntry.tags" class="tag" style="font-size:0.8em;font-weight:normal;"> {{ tag }} </div>
+  </div>
+</div>

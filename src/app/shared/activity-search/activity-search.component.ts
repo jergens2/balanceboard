@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { ActivityHttpService } from '../../dashboard/activities/api/activity-http.service';
-import { ActivityCategoryDefinition } from '../../dashboard/activities/api/activity-category-definition.class';
+import { ActivityHttpService } from '../../app-pages/activities/api/activity-http.service';
+import { ActivityCategoryDefinition } from '../../app-pages/activities/api/activity-category-definition.class';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { ActivitySearch } from './activity-search.class';
 import { ActivitySearchResult } from './activity-search-result.interface';

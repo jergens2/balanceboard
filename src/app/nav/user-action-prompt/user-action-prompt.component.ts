@@ -3,7 +3,7 @@ import { UserActionPromptService } from './user-action-prompt.service';
 import { UserPromptType } from './user-prompt-type.enum';
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { Subscription } from 'rxjs';
-import { SleepService } from '../../dashboard/daybook/sleep-manager/sleep.service';
+import { SleepService } from '../../app-pages/daybook/sleep-manager/sleep.service';
 import { BackgroundImageService } from '../../shared/background-image.service';
 
 @Component({

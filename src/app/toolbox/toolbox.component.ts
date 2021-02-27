@@ -5,10 +5,11 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { AppScreenSizeService } from '../shared/app-screen-size/app-screen-size.service';
 import { AppScreenSizeLabel } from '../shared/app-screen-size/app-screen-size-label.enum';
 import * as moment from 'moment';
-import { TimelogEntryItem } from '../dashboard/daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
+import { TimelogEntryItem } from '../app-pages/daybook/widgets/timelog/timelog-large-frame/timelog-body/timelog-entry/timelog-entry-item.class';
 import { AppScreenSize } from '../shared/app-screen-size/app-screen-size.class';
 
 import { trigger, state, style, animate, transition, keyframes, } from '@angular/animations';
+import { NotebookEntry } from '../app-pages/notes/notebook-entry/notebook-entry.class';
 
 @Component({
   selector: 'app-toolbox',
@@ -25,11 +26,11 @@ import { trigger, state, style, animate, transition, keyframes, } from '@angular
           transform: 'translateY(-100%)',
           opacity: 0.3,
         }),
-        animate(200,),
+        animate(120,),
 
       ]),
       transition('* => void', [
-        animate(200, style({
+        animate(120, style({
           transform: 'translateX(-100%)',
           opacity: 0.3,
         }))
@@ -66,6 +67,8 @@ export class ToolsComponent implements OnInit {
     else { return ''; }
   }
 
+
+  public get editNoteEntry(): NotebookEntry { return this.toolsService.editNoteEntry; }
 
   public screenSize: AppScreenSizeLabel;
 

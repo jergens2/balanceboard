@@ -11,8 +11,8 @@ import { ModalComponentType } from '../../../../modal/modal-component-type.enum'
 import { ModalService } from '../../../../modal/modal.service';
 import { ToolboxService } from '../../../../toolbox/toolbox.service';
 import { ToolType } from '../../../../toolbox/tool-type.enum';
-import { DaybookDisplayService } from '../../../../dashboard/daybook/daybook-display.service';
-import { DaybookWidgetType } from '../../../../dashboard/daybook/widgets/daybook-widget.class';
+import { DaybookDisplayService } from '../../../../app-pages/daybook/daybook-display.service';
+import { DaybookWidgetType } from '../../../../app-pages/daybook/widgets/daybook-widget.class';
 import { BackgroundImageService } from '../../../../shared/background-image.service';
 
 @Component({

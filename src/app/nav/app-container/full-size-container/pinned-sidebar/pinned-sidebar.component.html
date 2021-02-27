@@ -1,7 +1,16 @@
 <div class="pinned-sidebar-root no-select" [@appear]="isUnpinned ? 'disappear' : 'appear'" (mouseenter)="onMouseEnter()"
     (mouseleave)="onMouseLeave()">
 
+
+
+    <div class="babo-title-container" [routerLink]="'/about'">
+        
+        <img style="width: 22px; height: 22px; margin-top: 5px;" src="assets/favicon.ico" alt="babo">
+        <span class="babo-title">balanceboard</span>
+    </div>
+
     <div class="unpin-button-container">
+
         <div (click)="onClickUnpin()" class="unpin-button" *ngIf="mouseIsOver">
             <fa-icon [icon]="faChevronLeft"></fa-icon>
         </div>
@@ -11,11 +20,12 @@
     <div class="menu-items">
 
 
-        <div *ngFor="let menuItem of menuItems">
+        <div *ngFor="let menuItem of menuItems" [ngStyle]="menuItem.ngStylePinned">
 
 
-            <div class="menu-item" [ngStyle]="menuItem.ngStylePinned" *ngIf="menuItem.hasRouterLink" [routerLink]="menuItem.routerLink" routerLinkActive='active-link-icon' >
-                <div class="menu-item-label" >
+            <div class="menu-item" *ngIf="menuItem.hasRouterLink" [routerLink]="menuItem.routerLink"
+                routerLinkActive='active-link-icon'>
+                <div class="menu-item-label">
                     <div class="menu-item-icon" routerLinkActive='active-link-icon'>
                         <fa-icon [icon]="menuItem.icon"></fa-icon>
                     </div>
@@ -29,7 +39,7 @@
             </div>
 
 
-            <div class="menu-item" [ngStyle]="menuItem.ngStylePinned" *ngIf="!menuItem.hasRouterLink">
+            <div class="menu-item" *ngIf="!menuItem.hasRouterLink">
                 <div class="menu-item-label">
                     <div class="menu-item-icon">
                         <fa-icon [icon]="menuItem.icon"></fa-icon>

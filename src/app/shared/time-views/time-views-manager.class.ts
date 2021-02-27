@@ -1,10 +1,10 @@
-import { DaybookDayItem } from "../../dashboard/daybook/daybook-day-item/daybook-day-item.class";
-import { ActivityCategoryDefinition } from "../../dashboard/activities/api/activity-category-definition.class";
+import { DaybookDayItem } from "../../app-pages/daybook/daybook-day-item/daybook-day-item.class";
+import { ActivityCategoryDefinition } from "../../app-pages/activities/api/activity-category-definition.class";
 import * as moment from 'moment';
 import { TimeViewDayItem } from "./time-view-day-item.class";
 import { TimeViewMonth } from "./tv-month.class";
 import { TimeViewYear } from "./tv-year.class";
-import { NotebookEntry } from "../../dashboard/notes/notebook-entry/notebook-entry.class";
+import { NotebookEntry } from "../../app-pages/notes/notebook-entry/notebook-entry.class";
 import { ButtonMenu } from "../components/button-menu/button-menu.class";
 import { ColorConverter } from "../utilities/color-converter.class";
 import { ColorType } from "../utilities/color-type.enum";

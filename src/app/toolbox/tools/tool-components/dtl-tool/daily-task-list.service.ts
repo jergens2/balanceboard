@@ -7,7 +7,7 @@ import { AuthStatus } from '../../../../authentication/auth-status.class';
 import * as moment from 'moment';
 import { serverUrl } from '../../../../serverurl';
 import { map } from 'rxjs/operators';
-import { RoutineDefinitionService } from '../../../../dashboard/activities/routines/api/routine-definition.service';
+import { RoutineDefinitionService } from '../../../../app-pages/activities/routines/api/routine-definition.service';
 
 
 @Injectable({

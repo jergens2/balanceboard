@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserAccountProfileService } from 'src/app/dashboard/user-account-profile/user-account-profile.service';
+import { UserAccountProfileService } from 'src/app/app-pages/user-account-profile/user-account-profile.service';
 import { ToolboxService } from 'src/app/toolbox/toolbox.service';
 
 @Component({

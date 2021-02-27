@@ -4,8 +4,8 @@ import { ToolboxService } from '../../../toolbox.service';
 import { ToolType } from '../../../tool-type.enum';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { faCircle, faCheckCircle, IconDefinition } from '@fortawesome/free-regular-svg-icons';
-import { Task } from '../../../../dashboard/tasks/task/task.model';
-import { TaskHttpService } from '../../../../dashboard/tasks/task-http.service';
+import { Task } from '../../../../app-pages/tasks/task/task.model';
+import { TaskHttpService } from '../../../../app-pages/tasks/task-http.service';
 import { ModalService } from '../../../../modal/modal.service';
 import * as moment from 'moment';
 
