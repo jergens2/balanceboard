@@ -1,0 +1,67 @@
+.notes-date-selector-root{
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(243, 243, 243, 0.7);
+}
+
+
+.buttons-row{
+    padding: 10px;
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+.date-search{
+    width: 100%;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+.notes-grid{
+    display:grid;
+    padding: 10px;
+    
+}
+
+.one-by-twelve{
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(12, 1fr);
+}
+.two-by-six{
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+}
+.three-by-four{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+}
+.four-by-three{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+.six-by-two{
+    display:grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+
+
+.month-container{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    width:100%;
+    height:100%;
+}

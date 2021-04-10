@@ -30,6 +30,8 @@ export class UserAccountProfile {
     public get sidebarIsPinned(): boolean { return this._appPreferences.sidebarIsPinned; }
     public get daybook(): { listMode: boolean } { return this._appPreferences.daybook; }
 
+    public get notebook():{ searchMode: 'TEXT' | 'TAG' | 'DATE' } { return this._appPreferences.notebook; }
+
     public get defaultWakeupHour(): number { return this._appConfig.defaultWakeupHour; }
     public get defaultWakeupMinute(): number { return this._appConfig.defaultWakeupMinute; }
     public get defaultFallAsleepHour(): number { return this._appConfig.defaultFallAsleepHour; }
@@ -145,6 +147,9 @@ export class UserAccountProfile {
             daybook: {
                 listMode: true,
             },
+            notebook: {
+                searchMode: 'TEXT',
+            }
         };
         if (data) {
             if (data.appPreferences) {
@@ -152,9 +157,11 @@ export class UserAccountProfile {
                 const nightModeOn = ap.nightModeIsOn;
                 const sidebarPinned = ap.sidebarIsPinned;
                 const daybook = ap.daybook;
+                const notebook = ap.notebook;
                 if(nightModeOn !== null){ this._appPreferences.nightModeIsOn = nightModeOn;}
                 if(sidebarPinned !== null){ this._appPreferences.sidebarIsPinned = sidebarPinned; }
                 if(daybook){ this._appPreferences.daybook = daybook; }
+                if(notebook){ this._appPreferences.notebook = notebook; }
             }
         }
 
@@ -171,6 +178,7 @@ export class UserAccountProfile {
                 nightModeIsOn: this.nightModeIsOn,
                 sidebarIsPinned: this.sidebarIsPinned,
                 daybook: this.daybook,
+                notebook: this.notebook,
             },
             appConfig: {
                 defaultWakeupHour: this.defaultWakeupHour,

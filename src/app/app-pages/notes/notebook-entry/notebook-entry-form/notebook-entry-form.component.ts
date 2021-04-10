@@ -6,7 +6,6 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as moment from 'moment';
 import { NotebookEntry } from '../notebook-entry.class';
 import { NotebookEntryTypes } from '../notebook-entry-types.enum';
-import { NoteQueryService } from '../../note-query.service';
 import { ModalService } from '../../../../modal/modal.service';
 import { NoteHttpService } from '../../api/note-http.service';
 

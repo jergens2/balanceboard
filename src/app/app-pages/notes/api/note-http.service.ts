@@ -5,7 +5,7 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as moment from 'moment';
-import { NoteBuilder } from './note-builder.class';
+import { NoteBuilder } from '../notebook-entry/note-builder.class';
 import { NotebookEntryHttpShape } from '../notebook-entry/notebook-entry-http-shape.interface';
 
 @Injectable({

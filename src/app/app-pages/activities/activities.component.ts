@@ -36,7 +36,7 @@ export class ActivitiesComponent implements OnInit, OnDestroy {
   public get faPlus() { return faPlus };
   public readonly faSearch = faSearch; 
 
-  public get maxHeightPx(): string { return (this.sizeService.maxComponentHeightPx - 40) + "px"; }
+  public get maxHeightPx(): string { return (this.sizeService.height - 40) + "px"; }
 
   public get openActivity(): ActivityCategoryDefinition { return this._openActivity; }
   public get isLoading(): boolean { return this._isLoading; }

@@ -1,0 +1,131 @@
+.month-container{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.month{
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+    flex-direction: column;
+}
+
+.month-title{
+    width: 100%;
+    padding: 8px;
+    padding-bottom: 3px;
+    font-size: 0.9em;
+    color: rgb(71, 71, 71);
+    font-weight: bold;
+
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.month-title:hover{
+    cursor: pointer;
+    color: rgb(0, 53, 151);
+}
+.month-body{
+    padding: 5px;
+    padding-top: 0px;
+    width: 100%;
+    flex-grow: 2;
+    display:grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+}
+
+.date-container{
+
+    width: 100%;
+    height: 100%;
+
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.date{
+    width: 32px;
+    height: 32px;
+    margin: 2px;
+    padding: 1px;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    
+
+    background-color: white;
+    border-radius: 3px;
+    border: 2px solid white;
+}
+
+.date:hover{
+    border: 2px solid rgb(0, 89, 255);
+    cursor: pointer;
+}
+
+.date-number{
+    font-size: 0.7em;
+    color: gray;
+    display:flex;
+    flex-direction: row;
+    width:100%;
+    padding: 1px;
+    line-height: 1;
+}
+
+.is-dragging{
+    /* background-color:  rgb(0, 89, 255); */
+    border: 2px solid rgb(70, 135, 255);
+    -webkit-box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.25);
+    box-shadow: 0px 0px 15px 1px rgba(0,0,0,0.25);
+}
+
+
+.is-active{
+    border: 2px solid rgb(255, 174, 0);
+}
+.is-today{
+    border: 2px solid rgb(255, 51, 0);
+}
+
+.day-color-scale-0{
+    background-color: #ffffff;
+}
+.day-color-scale-1{
+    background-color: #d7edff;
+}
+.day-color-scale-2{
+    background-color: #acdaff;
+}
+.day-color-scale-3{
+    background-color: #82c7ff;
+}
+.day-color-scale-4{
+    background-color: #58b4ff;
+}
+.day-color-scale-5{
+    background-color: #2a9fff;
+}
+.day-color-scale-6{
+    background-color: #008cff;
+}
+.day-color-scale-5 > .date-number{
+    color: white;
+}
+.day-color-scale-4 > .date-number{
+    color: white;
+}
+.day-color-scale-6 > .date-number{
+    color: white;
+}

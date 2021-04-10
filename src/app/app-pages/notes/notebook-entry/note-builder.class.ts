@@ -1,4 +1,4 @@
-import { NotebookEntry } from '../notebook-entry/notebook-entry.class';
+import { NotebookEntry } from './notebook-entry.class';
 import * as moment from 'moment';
 
 export class NoteBuilder {

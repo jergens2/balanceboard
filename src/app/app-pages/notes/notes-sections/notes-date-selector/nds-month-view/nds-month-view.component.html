@@ -1,0 +1,11 @@
+<div class="nds-month-view-root">
+    <div class="month-title">{{ month.monthTitle }}</div>
+    <div class="days-grid">
+        <div *ngFor="let day of days" class="day-container">
+            <div class="day" *ngIf="!day.isBlankDay" [ngClass]="day.ngClass">
+                {{ day.date.format('D')}}
+            </div>
+            
+        </div>
+    </div>
+</div>

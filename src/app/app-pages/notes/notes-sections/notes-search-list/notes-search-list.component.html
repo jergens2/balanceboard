@@ -1,0 +1,18 @@
+<div class="search-list-root">
+    <div *ngFor="let note of notesList" class="note">
+        <div style="display:flex;flex-direction: row; align-items: center;" (click)="note.onClick()">
+            <div class="note-journal-date">
+                {{ note.journalDateYYYYMMDD }}
+            </div>
+            
+            <div class="note-title">
+                {{ note.title }}
+            </div>
+        </div>
+        <div *ngIf="note.isExpanded" class="note-text">
+            <div *ngFor="let line of note.textLines" style="min-height: 20px;">
+                {{ line}}
+            </div>
+        </div>
+    </div>
+</div>

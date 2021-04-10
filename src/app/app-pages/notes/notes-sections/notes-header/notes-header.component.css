@@ -1,0 +1,72 @@
+.notes-header-root{
+    width: 100%;
+    min-height: 100px;
+    flex-grow: 2;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}   
+
+.fixed-container{
+    position: fixed;
+    display: flex;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-buttons{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height:100px;
+}
+
+.header-button{
+    border: 1px solid white;
+    background-color: white;
+    font-size: 1.5em;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 65px;
+    width: 65px;
+    border-radius: 65px;
+    margin-left: 5px;
+    margin-right: 5px;
+
+
+
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.3);
+}
+
+.header-button:hover{
+    cursor: pointer;
+    border: 1px solid rgb(0, 89, 255);
+    color: rgb(0, 89, 255);
+}
+
+
+
+.header-item-container{
+    flex-grow: 2;
+    max-height: 400px;
+    background-color: red;
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-item{
+    background-color: white;
+    border-radius: 5px;
+
+}

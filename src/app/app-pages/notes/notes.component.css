@@ -1,18 +1,48 @@
 
-.notebook-root{
-    display:flex;
-    flex-direction: column;
+.notes-root{
     width: 100%;
     height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    display:grid;
+    grid-template-rows: 100px 1fr;
+    grid-template-columns: auto;
 }
 
-.notebook-entries-container{
+.header-container{
+
+    grid-row: 1 / span 1;
+    grid-column: 1 / span 1;
+
+    width:100%; 
+    display:flex;
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.header-item-container{
+    width:100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgba(0, 0, 255, 0.171);
+}
+
+
+.content-container{
+    grid-row: 2 / span 1;
+    grid-column: 1 / span 1;
+
+    height: 100%;
+
     display:flex;
     flex-direction: column;
     align-items: center;
-    /* overflow-y: auto; */
     background-color: rgba(252, 252, 252, 0);
 
+    overflow-y: auto;
 }
 .notebook-entries{
     flex-grow: 2;
@@ -26,7 +56,14 @@
     max-width: 1124px;
     /* width: 100%; */
     /* margin: 50px; */
-}
+
+
+    border-radius: 5px;
+} 
+
+
+
+
 
 .spinner-container{
     display:flex;
@@ -38,82 +75,4 @@
     height: 100%;
 }
 
-.header{
-    padding:3px;
-    font-size:1.3em;
 
-    display:flex;
-    flex-direction: row;
-    justify-content: space-between;
-    
-}
-.header-buttons{
-    display:flex;
-    flex-direction: row;
-    align-items: center;
-}
-.notebook-day{
-    display:flex;
-    flex-direction: column; 
-    align-items:center;
-     margin-bottom: 50px;
-     width: 100%;
-}
-.date-container{
-    display:flex;
-    flex-direction: row;
-    align-items: center;
-    justify-self: center;
-}
-.date{
-    font-weight: 500;
-    font-size: 1.6em;
-    margin: 10px;
-
-}
-.days-ago{
-    font-size: 0.9em;
-}
-.toggled-button{
-    color:rgb(51, 131, 255);
-}
-.icon-button{
-    padding:5px;
-}
-.icon-button:hover{
-    color:rgb(51, 131, 255);
-}
-
-.time-view-container{
-    width:100%;
-}
-
-.year-view-container{
-    width:100%;
-    display:flex;
-    flex-direction: column;
-}
-.year-view{
-    width:100%;
-}
-
-.controls{
-    display:flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-
-.tag-controls{
-    display:flex;
-    flex-direction: column;
-}
-
-
-.show-more-button{
-    width: 100%;
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.4em;
-}

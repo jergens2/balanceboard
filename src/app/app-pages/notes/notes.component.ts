@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { NotebookEntry } from './notebook-entry/notebook-entry.class';
-import { NoteQueryService } from './note-query.service';
 import * as moment from 'moment';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { faCog, faHashtag } from '@fortawesome/free-solid-svg-icons';
@@ -9,6 +8,8 @@ import { TimeViewsManager } from '../../shared/time-views/time-views-manager.cla
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { NoteHttpService } from './api/note-http.service';
 import { NoteGroup } from './note-group/note-group.interface';
+import { UserAccountProfileService } from '../user-account-profile/user-account-profile.service';
+import { AppScreenSizeService } from 'src/app/shared/app-screen-size/app-screen-size.service';
 
 @Component({
   selector: 'app-notes',
@@ -22,7 +23,22 @@ export class NotesComponent implements OnInit, OnDestroy {
   faCalendarAlt = faCalendarAlt;
 
 
-  constructor(private noteQueryService: NoteQueryService, private noteHttpService: NoteHttpService) { }
+  /**
+   * BEHAVIOR
+   * 
+   * -view notes in a list, like a journal
+   * -search notes
+   * -- when searching, get results for tags and notes.
+   *    searching necessarily requires a start date.  set to beginning of previous year.  e.g. if today is 2021-03-04, 
+   *    then start by going back to 2020-01-01
+   * -- can change the range start, which will initiate a load of older years with an HTTP request
+   * -- search provides search results in a list
+   * 
+   * --need to browse tags
+   * --browse by date selector. 
+   */
+
+  constructor(private noteHttpService: NoteHttpService, private sizeService: AppScreenSizeService) { }
 
   private _isLoading: boolean = true;
   private _showMoreButton: boolean = false;
@@ -30,32 +46,66 @@ export class NotesComponent implements OnInit, OnDestroy {
 
   private _allNotes: NotebookEntry[] = [];
 
+  private _openHeaderItem: 'TAGS'|'SEARCH'|'CALENDAR' | 'READ' = 'READ';
+
+
+
   private _allNoteGroups: NoteGroup[] = [];
   private _showNoteGroups: NoteGroup[] = [];
 
-  private get _maxDefaultResults(): number { return 30; }
+  private get _maxDefaultResults(): number { return 11; }
+  private _maxHeightStr: string;
+
 
   public get isLoading(): boolean { return this._isLoading; }
-  public get timeViewsManager(): TimeViewsManager { return this.noteQueryService.timeViewsManager; }
+  public get maxHeight(): string { return this._maxHeightStr; }
   public get showMoreButton(): boolean { return this._showMoreButton; }
-
+  
   public get noteGroups(): NoteGroup[] { return this._allNoteGroups; }
   public get showNoteGroups(): NoteGroup[] { return this._showNoteGroups; }
+
+  public get openItem(): 'TAGS'|'SEARCH'|'CALENDAR' | 'READ' { return this._openHeaderItem; }
+  public get headerItemIsOpen(): boolean { return this.openItem !== null; }
+  public get tagsIsOpen(): boolean { return this.openItem === 'TAGS'; }
+  public get searchIsOpen(): boolean { return this.openItem === 'SEARCH'; }
+  public get calendarIsOpen(): boolean { return this.openItem === 'CALENDAR';}
+  public get readIsOpen(): boolean { return this.openItem === 'READ'; }
+
+  public get showSearch(): boolean { return this.searchIsOpen && !this.isLoading; }
+  public get showTags(): boolean { return this.tagsIsOpen && !this.isLoading; }
+  public get showCalendar(): boolean { return this.calendarIsOpen && !this.isLoading; }
+  public get showRead(): boolean { return this.readIsOpen && !this.isLoading; }
+
+
+
+  public onHeaderItemSelected(item: 'TAGS'|'SEARCH'|'CALENDAR' | 'READ'){
+    this._openHeaderItem = item;
+  }
+
 
   private _subscriptions: Subscription[] = [];
 
   ngOnInit() {
+    this._updateSize();
     this._allNotes = this.noteHttpService.allNotes;
     this._subscriptions = [
       this.noteHttpService.allNotes$.subscribe((allNotes) => {
         this._allNotes = allNotes;
         this._reload();
       }),
-      // fromEvent(document, "scroll").subscribe(e => {
-      //   this.onWindowScroll();
-      // })
+      this.sizeService.appScreenSize$.subscribe((size)=>{
+        this._updateSize();
+      })
     ];
 
+  }
+
+
+  private _updateSize(){
+    const headerHeight = 100;
+    const windowHeight = this.sizeService.height;
+    const contentHeight = windowHeight - headerHeight;
+    this._maxHeightStr = contentHeight + 'px';
   }
 
 
@@ -69,7 +119,6 @@ export class NotesComponent implements OnInit, OnDestroy {
       }
       return 0;
     });
-    console.log("All notes is:" , allNotes)
     if (allNotes.length > 0) {
       let currentDateYYYYMMDD: string = allNotes[0].journalDateYYYYMMDD;
       let currentNoteGroup: NoteGroup = this._newNoteGroup(currentDateYYYYMMDD, []);
@@ -89,12 +138,8 @@ export class NotesComponent implements OnInit, OnDestroy {
             currentNoteGroup = this._newNoteGroup(newDateYYYYMMDD, [allNotes[i]]);
             currentDateYYYYMMDD = newDateYYYYMMDD;
           }
-
         }
       }
-
-
-
       this._allNoteGroups = noteGroups.sort((item1, item2) => {
         if (item1.dateYYYYMMDD < item2.dateYYYYMMDD) {
           return 1;
@@ -104,7 +149,6 @@ export class NotesComponent implements OnInit, OnDestroy {
           return 0;
         }
       });
-
       let currentGroupCount = 0;
       let currentIndex: number = 0;
       const showGroups: NoteGroup[] = [];
@@ -146,7 +190,7 @@ export class NotesComponent implements OnInit, OnDestroy {
   }
 
 
-  private _newNoteGroup(dateYYYYMMDD: string, notes: NotebookEntry[], endDateYYYYMMDD?: string): NoteGroup { 
+  private _newNoteGroup(dateYYYYMMDD: string, notes: NotebookEntry[], endDateYYYYMMDD?: string): NoteGroup {
     const noteGroup = {
       dateYYYYMMDD: dateYYYYMMDD,
       dateString: moment(dateYYYYMMDD).format('MMMM Do, YYYY'),
@@ -155,7 +199,7 @@ export class NotesComponent implements OnInit, OnDestroy {
       noNotesEndDateYYYYMMDD: dateYYYYMMDD,
       noNotesDateString: moment(dateYYYYMMDD).format('MMM Do, YYYY'),
     };
-    if(endDateYYYYMMDD){
+    if (endDateYYYYMMDD) {
       noteGroup.noNotesEndDateYYYYMMDD = endDateYYYYMMDD;
       noteGroup.noNotesDateString = moment(endDateYYYYMMDD).format('MMM Do, YYYY');
     }

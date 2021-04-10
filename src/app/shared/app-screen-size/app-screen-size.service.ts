@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { AppScreenSize } from './app-screen-size.class';
 import { AppScreenSizeLabel } from './app-screen-size-label.enum';
+import { UserAccountProfileService } from 'src/app/app-pages/user-account-profile/user-account-profile.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppScreenSizeService {
 
-  constructor() { console.log("screen size service init") }
+  constructor(private profileService: UserAccountProfileService) { }
 
 
   private _appScreenSize$: BehaviorSubject<AppScreenSize> = new BehaviorSubject(new AppScreenSize(window.innerWidth, window.innerHeight));
@@ -27,11 +28,21 @@ export class AppScreenSizeService {
   public get isMediumSize(): boolean { return this.appScreenSize.isMediumSize; }
   public get isFullSize(): boolean { return this.appScreenSize.isFullSize; }
 
-  public get maxComponentHeightPx(): number {
-    if (this.appScreenSize.label !== AppScreenSizeLabel.MOBILE) {
-      return (this.appScreenSize.height - 30)  //header is 30
-    } else {
-      return (this.appScreenSize.height);
+  public get miniSidebarWidth(): number { return 70; }
+  public get fullSidebarWidth(): number { return 225; }
+
+
+  public get maxComponentWidthPX(): number { 
+    if(this.isSmallSize){
+      return this.width;
+    }else if(this.isMediumSize){
+      return this.width - this.miniSidebarWidth;
+    }else if(this.isFullSize){
+      if(this.profileService.appPreferences.sidebarIsPinned){
+        return this.width - this.fullSidebarWidth;
+      }else{
+        return this.width - this.miniSidebarWidth;
+      }
     }
   }
 

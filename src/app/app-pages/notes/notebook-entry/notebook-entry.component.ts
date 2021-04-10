@@ -6,7 +6,6 @@ import { IModalOption } from '../../../modal/modal-option.interface';
 import { Modal } from '../../../modal/modal.class';
 import { ModalService } from '../../../modal/modal.service';
 import { ModalComponentType } from '../../../modal/modal-component-type.enum';
-import { NoteQueryService } from '../note-query.service';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { NoteHttpService } from '../api/note-http.service';
 import { AppScreenSizeService } from 'src/app/shared/app-screen-size/app-screen-size.service';
@@ -26,7 +25,6 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
   @Input() notebookEntry: NotebookEntry;
 
   constructor(private modalService: ModalService, 
-    private notebooksService: NoteQueryService, 
     private httpService: NoteHttpService,
     private sizeService: AppScreenSizeService,
     private profileService: UserAccountProfileService,
@@ -126,7 +124,6 @@ export class NotebookEntryComponent implements OnInit, OnDestroy {
 
   onDeleteNote(){
     this.httpService.deleteNotebookEntryHTTP$(this.notebookEntry);
-    this.notebooksService.deleteNote(this.notebookEntry);
   }
 
   onClickEdit(){

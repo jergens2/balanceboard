@@ -1,26 +1,23 @@
-<div class="notebook-root" >
+<div class="notes-root">
 
+  <app-notes-header class="header-container" (itemOpened)="onHeaderItemSelected($event)"></app-notes-header>
 
-  <div *ngIf="isLoading" class="spinner-container">
-    <div style="color: gray; font-style: italic;">Loading notes...</div>
-    <app-spinner style="width: 200px; height: 200px;"></app-spinner>
+  <div class="content-container" [style.max-height]="maxHeight">
+    <app-notes-date-selector *ngIf="showCalendar" style="width:100%;height:100%;"></app-notes-date-selector>
+    <app-notes-tags-browse *ngIf="showTags" style="width:100%;height:100%;"></app-notes-tags-browse>
+    <app-notes-search *ngIf="showSearch" style="width:100%;height:100%;"></app-notes-search>
 
-  </div>
-  <div *ngIf="!isLoading" style="display:flex;flex-direction: column;">
-    <div class="notes-query-bar">
-      <app-notes-header class="header"></app-notes-header>
-    </div>
-    <div class="notebook-entries-container" (scroll)="onWindowScroll()">
-      <div class="notebook-entries" (scroll)="onWindowScroll()">
-        <app-note-group *ngFor="let noteGroup of showNoteGroups" [noteGroup]="noteGroup" style="width: 100%;"></app-note-group>
+    <div class="notebook-entries-container" *ngIf="showRead">
+      <div class="notebook-entries">
+        <app-note-group *ngFor="let noteGroup of showNoteGroups" [noteGroup]="noteGroup" style="width: 100%;">
+        </app-note-group>
       </div>
-      
 
+      <div *ngIf="showMoreButton" class="show-more-button">
+        <button class="medium-button" style="margin: 20px;" (click)="onClickShowAll()">Show all</button>
+      </div>
     </div>
-    <div *ngIf="showMoreButton" class="show-more-button">
-      <button class="medium-button" style="margin: 20px;" (click)="onClickShowAll()">Show all</button>
-    </div>
+
   </div>
-
 
 </div>

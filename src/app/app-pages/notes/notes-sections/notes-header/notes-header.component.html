@@ -1,0 +1,19 @@
+<div class="notes-header-root" [style.height]="headerHeight">
+    <div class="fixed-container" [style.height]="headerHeight"> 
+        <div class="header-buttons">
+            <div class="header-button" (click)="onClickHeaderItem('READ')">
+                <fa-icon [icon]="faBookReader"></fa-icon>
+            </div>
+            <div class="header-button" (click)="onClickHeaderItem('CALENDAR')">
+                <fa-icon [icon]="faCalendar"></fa-icon>
+            </div>
+            <div class="header-button" (click)="onClickHeaderItem('SEARCH')">
+                <fa-icon [icon]="faSearch"></fa-icon>
+            </div>
+            <div class="header-button" (click)="onClickHeaderItem('TAGS')">
+                <fa-icon [icon]="faTags"></fa-icon>
+            </div>
+        </div>
+        
+    </div>
+</div>

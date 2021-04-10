@@ -1,0 +1,36 @@
+<div class="notes-date-selector-root" (mouseleave)="onMouseLeave()" (mouseup)="onMouseUp()">
+
+    <div class="buttons-row">
+        <div style="width: 100px;"></div>
+        <div style="display:flex;flex-direction: row;">
+            <button class="small-circle-button" style="margin: 3px;" (click)="onClickUp()">
+                <fa-icon [icon]="faAngleUp"></fa-icon>
+            </button>
+            <button class="small-circle-button" style="margin: 3px;" (click)="onClickDown()">
+                <fa-icon [icon]="faAngleDown"></fa-icon>
+            </button>
+        </div>
+        <app-button-menu [menu]="viewButtonMenu"></app-button-menu>
+    </div>
+
+
+    <div class="date-search">
+        <div class="notes-grid" [ngClass]="ngClassYearGrid" *ngIf="viewIsYear">
+            <app-notes-month *ngFor="let month of months" [notesMonth]="month" (monthClicked)="onMonthClicked($event)">
+            </app-notes-month>
+        </div>
+        <app-nds-years-view *ngIf="viewIsYears" [days]="days" [startDateYYYYMMDD]="yearsViewStartYYYYMMDD" style="width: 100%;"></app-nds-years-view>
+        <app-nds-month-view *ngIf="viewIsMonth" [month]="months[0]" style="width: 100%;"></app-nds-month-view>
+    </div>
+
+    <app-notes-search-list [notes]="searchList" *ngIf="showSearchList" style="width:100%;"></app-notes-search-list>
+    <div *ngIf="!showSearchList">
+        <span *ngIf="filterStartDateIsEnd">
+            No notes on {{ filterStartDateYYYYMMDD }}
+        </span>
+        <span *ngIf="!filterStartDateIsEnd">
+            No notes from {{ filterStartDateYYYYMMDD }} to {{ filterEndDateYYYYMMDD}}
+        </span>
+
+    </div>
+</div>

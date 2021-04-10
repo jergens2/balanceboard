@@ -1,0 +1,26 @@
+<div class="month-container no-select">
+    <div class="month">
+        <div class="month-title" (click)="onClickMonth()">
+            {{ monthTitle }}
+        </div>
+        <div class="month-body">
+            <div *ngFor="let day of days">
+                <div *ngIf="!day.isBlankDay" class="date-container">
+                    <div class="date" 
+                    (mousedown)="day.onMouseDown()" 
+                    (mouseover)="day.onMouseOver()" 
+                    (mouseup)="day.onMouseUp()" 
+                    [ngClass]="day.ngClass">
+                        <div class="date-number">
+                            {{ day.date.format('D')}}
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+</div>

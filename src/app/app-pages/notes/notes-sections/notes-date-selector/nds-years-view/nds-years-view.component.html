@@ -1,0 +1,17 @@
+<div class="root">
+    <div *ngFor="let year of years" class="year">
+        <div style="margin-right: 15px; ">
+            {{ yearTitle(year) }}
+        </div>
+        <div class="year-grid">
+            <div *ngFor="let item of year" class="day-container" [ngStyle]="item.ngStyle">
+                <div *ngIf="!item.day.isBlankDay" [ngClass]="item.day.ngClass" class="day" (mousedown)="item.day.onMouseDown()" 
+                (mouseover)="item.day.onMouseOver()" 
+                (mouseup)="item.day.onMouseUp()" >
+    
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>

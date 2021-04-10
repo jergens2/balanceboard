@@ -5,4 +5,8 @@ export interface UAPAppPreferences{
     daybook: {
         listMode: boolean;
     };
+
+    notebook: {
+        searchMode: 'TEXT' | 'TAG' | 'DATE';
+    }
 }

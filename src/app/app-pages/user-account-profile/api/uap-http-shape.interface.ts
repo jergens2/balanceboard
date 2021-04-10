@@ -10,6 +10,9 @@ export interface UAPHttpShape {
         daybook: {
             listMode: boolean;
         };
+        notebook: {
+            searchMode: 'TEXT' | 'TAG' | 'DATE';
+        }
     },
     appConfig: {
         defaultWakeupHour: number;
