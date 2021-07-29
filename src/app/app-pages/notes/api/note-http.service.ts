@@ -18,11 +18,14 @@ export class NoteHttpService {
   private _userId: string;
   private _rangeStart: moment.Moment;
   private _allNotes$: BehaviorSubject<NotebookEntry[]> = new BehaviorSubject([]);
+  private _earliestNoteDateYYYYMMDD: string = '';
 
   public get rangeStart(): moment.Moment { return this._rangeStart; }
   public get allNotes(): NotebookEntry[] { return this._allNotes$.getValue(); }
   public get allNotes$(): Observable<NotebookEntry[]> { return this._allNotes$.asObservable(); }
+  public get hasNotes(): boolean { return this.allNotes.length >0; }
 
+  public get earliestNoteDateYYYYMMDD(): string { return this._earliestNoteDateYYYYMMDD; }
 
 
   public login$(userId: string): Observable<boolean> {
@@ -35,7 +38,6 @@ export class NoteHttpService {
     this._allNotes$.next([]);
   }
   public saveNotebookEntry$(notebookEntry: NotebookEntry): Observable<NotebookEntry> {
-    console.log("SAVING NOTE: ", notebookEntry)
     notebookEntry.userId = this._userId;
     const requestUrl: string = serverUrl + '/api/notebook/create';
     const httpOptions = {
@@ -50,8 +52,8 @@ export class NoteHttpService {
       .pipe<NotebookEntry>(map((response: { message: string, data: any }) => {
         return NoteBuilder.buildNoteFromData(response.data);
       })).subscribe(notebookSaved => {
-        const allNotes = this._sortNotes([...this.allNotes, notebookSaved]);
-        this._allNotes$.next(allNotes);
+        const allNotes = [...this.allNotes, notebookSaved];
+        this._setAllNotes(allNotes);
         savedNote$.next(notebookSaved);
         savedNote$.complete();
       }, () => { }, () => { savedNote$.complete(); });
@@ -75,9 +77,8 @@ export class NoteHttpService {
         return response.data.map(d => NoteBuilder.buildNoteFromData(d));
       }))
       .subscribe({
-        next: (notes) => {
-          // console.log("It took this many MS to build notes: ", moment().diff(before, 'milliseconds'))
-          this._allNotes$.next(notes);
+        next: (allNotes) => {
+          this._setAllNotes(allNotes);
           isComplete$.next(true);
         },
         error: e => console.log('Error with notebooks', e),
@@ -85,13 +86,6 @@ export class NoteHttpService {
       });
     return isComplete$.asObservable();
   }
-
-
-
-
-
-
-
 
 
   /**
@@ -107,16 +101,13 @@ export class NoteHttpService {
         'Content-Type': 'application/json'
       })
     };
-    const before = moment();
-    // console.log("starting notes...")
     this.httpClient.get<{ message: string, data: any }>(requestUrl, httpOptions)
       .pipe<NotebookEntry[]>(map((response: { message: string, data: any[] }) => {
         return response.data.map(d => NoteBuilder.buildNoteFromData(d));
       }))
       .subscribe({
-        next: (notes) => {
-          // console.log("It took this many MS to build notes: ", moment().diff(before, 'milliseconds'))
-          this._allNotes$.next(notes);
+        next: (allNotes) => {
+          this._setAllNotes(allNotes);
           isComplete$.next(true);
         },
         error: e => console.log('Error with notebooks', e),
@@ -144,7 +135,7 @@ export class NoteHttpService {
         if (index >= 0) {
           allNotes.splice(index, 1, note);
         }
-        this._allNotes$.next(this._sortNotes(allNotes));
+        this._setAllNotes(allNotes);
         isComplete$.next(true);
       });
     return isComplete$.asObservable();
@@ -167,12 +158,28 @@ export class NoteHttpService {
         if (index >= 0) { 
           allNotes.splice(index, 1);
         }
-        this._allNotes$.next(this._sortNotes(allNotes));
+        this._setAllNotes(allNotes);
+
         isComplete$.next(true);
       });
     return isComplete$.asObservable();
   }
 
+
+
+
+  private _setAllNotes(allNotes: NotebookEntry[]){
+    this._allNotes$.next(this._sortNotes(allNotes));
+    if(allNotes.length > 0){
+      this._earliestNoteDateYYYYMMDD = allNotes[0].journalDateYYYYMMDD;
+      for(let i=0; i<allNotes.length; i++){
+        if(allNotes[i].journalDateYYYYMMDD < this._earliestNoteDateYYYYMMDD){
+          this._earliestNoteDateYYYYMMDD = allNotes[i].journalDateYYYYMMDD;
+        }
+      }
+    }
+
+  }
 
   private _sortNotes(notes: NotebookEntry[]): NotebookEntry[] {
     return notes.sort((note1, note2) => {

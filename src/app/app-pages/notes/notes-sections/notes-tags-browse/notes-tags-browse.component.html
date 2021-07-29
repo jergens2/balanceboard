@@ -1,1 +1,22 @@
-<p>notes-tags-browse works!</p>
+<div class="tags-root">
+    <div class="tags-container"> 
+        <div class="white-container">
+            <div *ngFor="let tag of notesTags" class="note-tag" [ngClass]="{'is-expanded':tag.isExpanded}">
+                <div class="tag-header no-select " (click)="onClickTagRow(tag)">
+                    <div class="tag-count" style="margin-right:15px;">
+                        {{tag.count}}
+                    </div>
+                    <div class="font-family-ubuntu tag-name" [ngClass]="{'tag-name-expanded':tag.isExpanded}">
+                        {{tag.name}}
+                    </div>
+                </div>
+                <div class="tag-body" *ngIf="tag.isExpanded">
+                    <app-notes-search-list [notes]="tag.notes"></app-notes-search-list>
+                </div> 
+                
+            </div>
+        </div>
+        
+    </div>
+
+</div>

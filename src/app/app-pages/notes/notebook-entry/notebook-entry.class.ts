@@ -80,6 +80,14 @@ export class NotebookEntry {
     }
     public set data(data: any) { this._data = data; }
 
+    public hasTag(tagName: string): boolean{ 
+        const foundTag = this.tags.find(tag => tag === tagName);
+        if(foundTag){
+            return true;
+        } else{
+            return false;
+        } 
+    }
     public tagsMatch(tags: string[]): boolean {
         return (this._tags.find(noteTag => tags.find(tag => tag === noteTag)) !== null);
     }
